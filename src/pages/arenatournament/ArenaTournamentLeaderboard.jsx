@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import socket from '../../socket-jwt';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -42,9 +42,22 @@ function CrownBadge({ tier, size = 'sm' }) {
 export default function ArenaTournamentLeaderboard() {
   const { tournamentId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const auth = useAuth();
   const user = auth?.user || null;
-  
+
+  // Coach assignment tie-in: the student may have arrived here from a coach's
+  // "play this tournament" assignment. We learn the assignment id either from
+  // the URL (?assignment=) or from the stash set when they joined (keyed by
+  // tournament id). When present + the tournament has ended, we show a
+  // "Submit assignment" button powered by mySummary below.
+  const assignmentId = searchParams.get('assignment')
+    || (() => { try { return sessionStorage.getItem(`assignmentForTournament:${tournamentId}`) || ''; } catch { return ''; } })();
+  const [assignSubmitting, setAssignSubmitting] = useState(false);
+  const [assignDone, setAssignDone] = useState(false);
+  const [assignResult, setAssignResult] = useState(null);
+  const [assignError, setAssignError] = useState('');
+
   const [tournament, setTournament] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
   const [teamLeaderboard, setTeamLeaderboard] = useState([]);
@@ -182,6 +195,24 @@ export default function ArenaTournamentLeaderboard() {
         username: user.username || user.displayName
       });
       setNewMessage('');
+    }
+  };
+
+  const submitAssignment = async () => {
+    if (!assignmentId || assignSubmitting || assignDone) return;
+    setAssignError('');
+    setAssignSubmitting(true);
+    try {
+      // The server pulls the authoritative participant row itself; we just tell
+      // it which tournament (covers code-only assignments with no pinned id).
+      const res = await api.post(`/api/coach/my-assignments/${assignmentId}/submit-tournament`, { tournamentId });
+      setAssignResult(res.data || null);
+      setAssignDone(true);
+      try { sessionStorage.removeItem(`assignmentForTournament:${tournamentId}`); } catch { /* ignore */ }
+    } catch (err) {
+      setAssignError(err.response?.data?.message || 'Could not submit. Make sure you played in this tournament.');
+    } finally {
+      setAssignSubmitting(false);
     }
   };
 
@@ -431,6 +462,48 @@ export default function ArenaTournamentLeaderboard() {
                     <div style={{ marginTop: '4px' }}><CrownBadge tier={topThree[2].crownTierAtJoin} size="lg" /></div>
                   </div>
                   <div className="trophy-score">{topThree[2].score} pts</div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Coach assignment submit card — only for students who came here from
+              a coach's "play this tournament" assignment and actually played. */}
+          {assignmentId && mySummary && (
+            <div style={{ marginBottom: '24px', padding: '20px 24px', borderRadius: '16px', background: 'linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(168,85,247,0.08) 100%)', border: '1px solid rgba(139,92,246,0.3)' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#a855f7', marginBottom: '10px' }}>🏆 Coach Assignment</h3>
+              {assignDone ? (
+                <div style={{ color: '#10b981', fontWeight: '700', fontSize: '15px' }}>
+                  ✓ Assignment submitted to your coach!
+                  {assignResult && (
+                    <div style={{ color: '#9ca3af', fontWeight: '500', fontSize: '13px', marginTop: '6px' }}>
+                      {assignResult.score} pts · {assignResult.wins}W-{assignResult.losses}L-{assignResult.draws}D · {assignResult.gamesPlayed} games{assignResult.rank > 0 ? ` · rank #${assignResult.rank}` : ''}
+                      {assignResult.allMet ? ' · 🎯 all goals met!' : ''}
+                    </div>
+                  )}
+                </div>
+              ) : tournament?.status === 'finished' ? (
+                <>
+                  <div style={{ color: '#d1d5db', fontSize: '14px', marginBottom: '12px' }}>
+                    This tournament has ended. Submit your result to complete the assignment.
+                  </div>
+                  <button
+                    onClick={submitAssignment}
+                    disabled={assignSubmitting}
+                    style={{
+                      padding: '12px 22px', borderRadius: '12px', border: 'none',
+                      background: assignSubmitting ? 'rgba(107,114,128,0.4)' : 'linear-gradient(135deg, #8b5cf6, #a855f7)',
+                      color: '#fff', fontWeight: '700', fontSize: '15px',
+                      cursor: assignSubmitting ? 'not-allowed' : 'pointer'
+                    }}
+                  >
+                    {assignSubmitting ? 'Submitting…' : '✅ Submit assignment to coach'}
+                  </button>
+                  {assignError && <div style={{ color: '#ef4444', fontSize: '13px', marginTop: '10px' }}>{assignError}</div>}
+                </>
+              ) : (
+                <div style={{ color: '#9ca3af', fontSize: '14px' }}>
+                  Keep playing! You can submit this assignment from here once the tournament ends.
                 </div>
               )}
             </div>

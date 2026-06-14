@@ -8,7 +8,11 @@ export default function ArenaTournamentJoin() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const codeFromUrl = searchParams.get('code') || '';
-  
+  // When a coach assigns "play this tournament", the student arrives with
+  // ?assignment=<id>. We carry it through join so the leaderboard can later
+  // show a "Submit assignment" button (stashed by tournament id in sessionStorage).
+  const assignmentId = searchParams.get('assignment') || '';
+
   const [joinCode, setJoinCode] = useState(codeFromUrl);
   const [tournament, setTournament] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -17,20 +21,17 @@ export default function ArenaTournamentJoin() {
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [teamCounts, setTeamCounts] = useState({});
 
-  useEffect(() => {
-    return () => {
-    };
-  }, []);
-
   const handleSearch = async (e) => {
-    e.preventDefault();
-    
+    if (e?.preventDefault) e.preventDefault();
+    const code = joinCode.trim().toUpperCase();
+    if (!code) return;
+
     setError('');
     setLoading(true);
     setTournament(null);
 
     try {
-      const response = await api.get(`/api/arenatournament/by-code/${joinCode.trim().toUpperCase()}`);
+      const response = await api.get(`/api/arenatournament/by-code/${code}`);
       const found = response.data.tournament;
       setTournament(found);
       setSelectedTeamId(null);
@@ -69,6 +70,11 @@ export default function ArenaTournamentJoin() {
 
       if (response.data.success) {
         trackEvent('tournament_joined', { tournamentId: tournament._id, teamId: selectedTeamId || null });
+        // Coach-assigned tournament: remember which assignment this play satisfies,
+        // keyed by tournament id, so the leaderboard can offer "Submit assignment".
+        if (assignmentId) {
+          try { sessionStorage.setItem(`assignmentForTournament:${tournament._id}`, assignmentId); } catch { /* ignore */ }
+        }
         navigate(`/arenatournament/lobby/${tournament._id}`);
       }
     } catch (err) {
@@ -77,6 +83,13 @@ export default function ArenaTournamentJoin() {
       setJoining(false);
     }
   };
+
+  // Arriving from a coach assignment (or a shared link) with ?code= prefilled —
+  // auto-search so the student lands straight on the tournament card.
+  useEffect(() => {
+    if (codeFromUrl) handleSearch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codeFromUrl]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -504,6 +517,25 @@ export default function ArenaTournamentJoin() {
                     ) : 'Join Tournament'}
                   </button>
                 </>
+              )}
+
+              {/* Already finished — let an assigned student jump to the results
+                  page to submit their assignment. */}
+              {tournament.status === 'finished' && assignmentId && (
+                <button
+                  onClick={() => {
+                    try { sessionStorage.setItem(`assignmentForTournament:${tournament._id}`, assignmentId); } catch { /* ignore */ }
+                    navigate(`/arenatournament/leaderboard/${tournament._id}?assignment=${assignmentId}`);
+                  }}
+                  style={{
+                    width: '100%', padding: '16px', marginTop: '24px',
+                    background: 'rgba(139, 92, 246, 0.15)', color: '#a855f7',
+                    border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '12px',
+                    fontSize: '16px', fontWeight: '600', cursor: 'pointer'
+                  }}
+                >
+                  View results &amp; submit assignment →
+                </button>
               )}
             </div>
           )}

@@ -83,6 +83,20 @@ export default function MyCoachPortal() {
       navigate(`/timed-race?topic=${encodeURIComponent(topic)}&time=${mins}&assignment=${a._id}`);
       return;
     }
+    // Arena Tournament: send the student to the existing Join page prefilled with
+    // the coach's tournament code, tagged with the assignment id. If we know the
+    // tournament id, stash the assignment keyed by it so the leaderboard (after
+    // join → lobby → live) can show a "Submit assignment" button without
+    // threading the id through every navigation in between. The Join page also
+    // re-stashes by tournament id on join, covering code-only assignments.
+    if (a.assignmentType === 'arena_tournament') {
+      const code = (a.arenaTournamentCode || '').toUpperCase();
+      if (a.arenaTournamentId) {
+        try { sessionStorage.setItem(`assignmentForTournament:${a.arenaTournamentId}`, a._id); } catch { /* ignore */ }
+      }
+      navigate(`/arenatournament/join?code=${encodeURIComponent(code)}&assignment=${a._id}`);
+      return;
+    }
     if (a.assignmentType !== 'puzzle_topic') return;
     const want = norm(a.topicName);
     const match = themes.find(t => norm(t.key) === want || norm(t.label) === want);
@@ -277,8 +291,9 @@ export default function MyCoachPortal() {
                 const isPgn = a.assignmentType === 'custom' && a.pgnTask;
                 const isTest = a.assignmentType === 'study_chapter';
                 const isRush = a.assignmentType === 'puzzle_rush';
+                const isArena = a.assignmentType === 'arena_tournament';
                 const cur = isPgn ? (a.foundCount || 0) : (a.progress || 0);
-                const tot = (isTest || isRush) ? 0 : (isPgn ? (a.pgnTask.findTarget || 0) : (a.targetCount || 0));
+                const tot = (isTest || isRush || isArena) ? 0 : (isPgn ? (a.pgnTask.findTarget || 0) : (a.targetCount || 0));
                 const pct = tot > 0 ? Math.min(100, Math.round((cur / tot) * 100)) : 0;
                 const statusLabel = a.status === 'completed' ? 'Completed' : a.status === 'in_progress' ? 'In progress' : 'Not started';
                 const statusClass = a.status === 'completed' ? 'mcp-present' : a.status === 'in_progress' ? 'mcp-catchup' : 'mcp-absent';
@@ -297,7 +312,9 @@ export default function MyCoachPortal() {
                           ? <span>· ⏱ Timed test{a.targetGrade > 0 ? ` · goal ${a.targetGrade}%` : ''}</span>
                           : isRush
                             ? <span>· ⚡ {a.rushTopicLabel || a.rushTopic || 'Mixed'} · {a.rushMinutes || 5} min{a.rushTargetSolved > 0 ? ` · goal ${a.rushTargetSolved}` : ''}</span>
-                            : (a.topicName && <span>· {a.topicName}</span>)}
+                            : isArena
+                              ? <span>· 🏆 Arena tournament{a.arenaTournamentCode ? ` · code ${a.arenaTournamentCode}` : ''}{a.targetGames > 0 ? ` · ${a.targetGames}+ games` : ''}{a.targetScore > 0 ? ` · ${a.targetScore}+ pts` : ''}{a.targetRank > 0 ? ` · top ${a.targetRank}` : ''}{a.targetWins > 0 ? ` · ${a.targetWins}+ wins` : ''}</span>
+                              : (a.topicName && <span>· {a.topicName}</span>)}
                       {a.dueDate && <span>· Due {fmtDate(a.dueDate)}</span>}
                     </div>
                     {tot > 0 && (
@@ -311,7 +328,12 @@ export default function MyCoachPortal() {
                         ✅ {a.solved} solved · ❌ {a.failed} failed · 🔥 {a.maxStreak} best streak
                       </div>
                     )}
-                    {(a.assignmentType === 'puzzle_topic' || a.assignmentType === 'custom' || a.assignmentType === 'study_chapter' || a.assignmentType === 'puzzle_rush') && a.status !== 'completed' && (
+                    {isArena && a.status === 'completed' && (a.arenaGamesPlayed > 0 || a.arenaScore > 0) && (
+                      <div className="mcp-assign-stats">
+                        🏆 {a.arenaScore} pts · {a.arenaWins}W-{a.arenaLosses}L-{a.arenaDraws}D · {a.arenaGamesPlayed} games{a.arenaRank > 0 ? ` · rank #${a.arenaRank}` : ''}
+                      </div>
+                    )}
+                    {(a.assignmentType === 'puzzle_topic' || a.assignmentType === 'custom' || a.assignmentType === 'study_chapter' || a.assignmentType === 'puzzle_rush' || isArena) && a.status !== 'completed' && (
                       <button className="mcp-assign-btn" onClick={() => startAssignment(a)}>
                         {a.assignmentType === 'custom'
                           ? (a.status === 'in_progress' ? 'Continue finding →' : 'Find the blunders →')
@@ -319,7 +341,9 @@ export default function MyCoachPortal() {
                             ? (a.status === 'in_progress' ? 'Continue test →' : 'Take the test →')
                             : a.assignmentType === 'puzzle_rush'
                               ? (a.status === 'in_progress' ? 'Race again →' : 'Start race →')
-                              : (a.status === 'in_progress' ? 'Continue assignment →' : 'Do assignment →')}
+                              : isArena
+                                ? 'Join tournament →'
+                                : (a.status === 'in_progress' ? 'Continue assignment →' : 'Do assignment →')}
                       </button>
                     )}
                     {a.status === 'completed' && (
@@ -387,10 +411,11 @@ export default function MyCoachPortal() {
                   const isPgn = a.assignmentType === 'custom' && a.pgnTask;
                   const isTest = a.assignmentType === 'study_chapter';
                   const isRush = a.assignmentType === 'puzzle_rush';
+                  const isArena = a.assignmentType === 'arena_tournament';
                   const cur = isPgn ? (a.foundCount || 0) : (a.progress || 0);
                   const tot = isPgn ? (a.pgnTask.findTarget || 0) : (a.targetCount || 0);
                   const pct = tot > 0 ? Math.min(100, Math.round((cur / tot) * 100)) : 0;
-                  const canStart = (a.assignmentType === 'puzzle_topic' || a.assignmentType === 'custom' || isTest || isRush) && a.status !== 'completed';
+                  const canStart = (a.assignmentType === 'puzzle_topic' || a.assignmentType === 'custom' || isTest || isRush || isArena) && a.status !== 'completed';
                   return (
                     <div key={a._id} className={`mcp-current-assign ${isNew ? 'mcp-assign-new' : ''}`}>
                       <div className="mcp-current-assign-label">
@@ -402,10 +427,12 @@ export default function MyCoachPortal() {
                           ? <span>Timed test{a.targetGrade > 0 ? <> · goal <strong>{a.targetGrade}%</strong></> : null}</span>
                           : isRush
                             ? <span>⚡ {a.rushTopicLabel || a.rushTopic || 'Mixed'} · {a.rushMinutes || 5} min{a.rushTargetSolved > 0 ? <> · goal <strong>{a.rushTargetSolved}</strong></> : null}</span>
-                            : <span>Your progress: <strong>{cur}/{tot}{isPgn ? ' found' : ''}</strong></span>}
+                            : isArena
+                              ? <span>🏆 Arena tournament{a.arenaTournamentCode ? <> · code <strong>{a.arenaTournamentCode}</strong></> : null}</span>
+                              : <span>Your progress: <strong>{cur}/{tot}{isPgn ? ' found' : ''}</strong></span>}
                         <span>Students done: <strong>{a.completedStudents}/{a.totalStudents}</strong></span>
                       </div>
-                      {!isTest && !isRush && <div className="mcp-assign-bar" style={{ marginTop: 8 }}><div style={{ width: `${pct}%` }} /></div>}
+                      {!isTest && !isRush && !isArena && <div className="mcp-assign-bar" style={{ marginTop: 8 }}><div style={{ width: `${pct}%` }} /></div>}
                       {canStart && (
                         <button className="mcp-assign-btn" style={{ marginTop: 12 }} onClick={() => startAssignment(a)}>
                           {a.assignmentType === 'custom'
@@ -414,7 +441,9 @@ export default function MyCoachPortal() {
                               ? (a.status === 'in_progress' ? 'Continue test →' : 'Take the test →')
                               : isRush
                                 ? (a.status === 'in_progress' ? 'Race again →' : 'Start race →')
-                                : (a.status === 'in_progress' ? 'Continue assignment →' : 'Do assignment →')}
+                                : isArena
+                                  ? 'Join tournament →'
+                                  : (a.status === 'in_progress' ? 'Continue assignment →' : 'Do assignment →')}
                         </button>
                       )}
                     </div>

@@ -22,6 +22,7 @@ const ASSIGNMENT_TYPES = [
   { id: 'puzzle_topic', label: '🧩 Puzzle topic', hint: 'Assign puzzles from a specific topic' },
   { id: 'study_chapter',label: '📖 Study test', hint: 'Timed test on a chapter — time & grade based' },
   { id: 'puzzle_rush',  label: '⚡ Timed race', hint: 'Beat the clock — solve as many as possible in time' },
+  { id: 'arena_tournament', label: '🏆 Play a tournament', hint: 'Play a real-game Arena Tournament — wins, losses & score' },
   { id: 'custom',       label: '🔍 Find the blunders', hint: 'Post PGNs with blunder answers — students find them' }
 ];
 
@@ -66,6 +67,13 @@ export default function CoachAssignments() {
     rushTopic: 'mixed',
     rushMinutes: 5,
     rushTargetSolved: 0,
+    // Arena Tournament (arena_tournament type): code/link + optional goals
+    arenaTournamentCode: '',
+    targetGames: 0,
+    targetScore: 0,
+    targetRank: 0,
+    targetWins: 0,
+    targetMaxLosses: 0,
     studentIds: [],
     dueDate: '',
     // PGN "find the blunders" (custom type)
@@ -168,6 +176,10 @@ export default function CoachAssignments() {
       return setCreateErr('Pick a study and a chapter for the test.');
     }
 
+    if (form.assignmentType === 'arena_tournament' && !form.arenaTournamentCode.trim()) {
+      return setCreateErr('Paste a tournament code or join link.');
+    }
+
     // Resolve the rush topic's display label so the coach UI/student card can
     // show a friendly name without re-fetching topics.
     const rushTopicDoc = rushTopics.find(t => t.id === form.rushTopic);
@@ -189,6 +201,7 @@ export default function CoachAssignments() {
         topicName: '', studyId: '', chapterId: '',
         targetCount: 10, testTimeLimit: 300, targetGrade: 0,
         rushTopic: 'mixed', rushMinutes: 5, rushTargetSolved: 0,
+        arenaTournamentCode: '', targetGames: 0, targetScore: 0, targetRank: 0, targetWins: 0, targetMaxLosses: 0,
         studentIds: [], dueDate: '',
         pgnFindTarget: 2, pgnGames: [{ pgn: '', blunders: [{ move: '', betterMove: '', explanation: '' }] }]
       });
@@ -256,6 +269,7 @@ export default function CoachAssignments() {
             const isBlunder = a.assignmentType === 'custom';
             const isStudyTest = a.assignmentType === 'study_chapter';
             const isRush = a.assignmentType === 'puzzle_rush';
+            const isArena = a.assignmentType === 'arena_tournament';
             // Only students who have actually started/submitted have results worth showing.
             const withResults = completions.filter(c => c.status !== 'pending');
             const isOpen = !!expanded[a._id];
@@ -265,7 +279,7 @@ export default function CoachAssignments() {
                   <div>
                     <div className="ca-title">{a.title}</div>
                     <div className="ca-meta">
-                      <span className="ca-type-pill">{isStudyTest ? 'study test' : isRush ? 'timed race' : a.assignmentType.replace('_', ' ')}</span>
+                      <span className="ca-type-pill">{isStudyTest ? 'study test' : isRush ? 'timed race' : isArena ? 'tournament' : a.assignmentType.replace('_', ' ')}</span>
                       {a.topicName && <span>· {a.topicName}</span>}
                       {a.assignmentType === 'puzzle_topic' && a.targetCount > 0 && <span>· {a.targetCount} puzzles</span>}
                       {isBlunder && a.pgnTask?.findTarget && <span>· find {a.pgnTask.findTarget}</span>}
@@ -274,6 +288,12 @@ export default function CoachAssignments() {
                       {isRush && <span>· {a.rushTopicLabel || a.rushTopic || 'Mixed'}</span>}
                       {isRush && <span>· ⚡ {a.rushMinutes || 5} min</span>}
                       {isRush && a.rushTargetSolved > 0 && <span>· goal {a.rushTargetSolved} solved</span>}
+                      {isArena && a.arenaTournamentCode && <span>· 🏆 {a.arenaTournamentCode}</span>}
+                      {isArena && a.targetGames > 0 && <span>· {a.targetGames}+ games</span>}
+                      {isArena && a.targetScore > 0 && <span>· {a.targetScore}+ pts</span>}
+                      {isArena && a.targetRank > 0 && <span>· top {a.targetRank}</span>}
+                      {isArena && a.targetWins > 0 && <span>· {a.targetWins}+ wins</span>}
+                      {isArena && a.targetMaxLosses > 0 && <span>· ≤{a.targetMaxLosses} losses</span>}
                       {a.dueDate && <span>· due {new Date(a.dueDate).toLocaleDateString()}</span>}
                     </div>
                   </div>
@@ -419,6 +439,54 @@ export default function CoachAssignments() {
                                 <td>🔥 {c.rushMaxStreak || 0}</td>
                                 <td>{c.rushAccuracy || 0}%</td>
                                 <td>{c.rushRuns || 1}</td>
+                                <td><span className={`ca-status ca-status-${c.status}`}>{statusLabel(c.status)}</span></td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    ) : isArena ? (
+                      // ── Arena Tournament: score / W-L-D / games / rank per student ──
+                      <table className="ca-results-table">
+                        <thead><tr>
+                          <th>Student</th><th>Score</th><th>W-L-D</th><th>Games</th>
+                          <th>Rank</th><th>🔥</th><th>Status</th>
+                        </tr></thead>
+                        <tbody>
+                          {withResults.map(c => {
+                            // A goal is "met" only when the coach set it (>0) and the result clears it.
+                            const scoreMet  = a.targetScore > 0 && (c.arenaScore || 0) >= a.targetScore;
+                            const gamesMet  = a.targetGames > 0 && (c.arenaGamesPlayed || 0) >= a.targetGames;
+                            const rankMet   = a.targetRank > 0 && c.arenaRank > 0 && c.arenaRank <= a.targetRank;
+                            const winsMet   = a.targetWins > 0 && (c.arenaWins || 0) >= a.targetWins;
+                            const lossOk    = a.targetMaxLosses > 0 && (c.arenaLosses || 0) <= a.targetMaxLosses;
+                            return (
+                              <tr key={c.studentId}>
+                                <td>{c.studentName}</td>
+                                <td>
+                                  <span className={a.targetScore > 0 ? (scoreMet ? 'ca-cell-ok' : 'ca-cell-no') : ''}>{c.arenaScore || 0}</span>
+                                  {a.targetScore > 0 && <span className="ca-muted"> / {a.targetScore} {scoreMet ? '✓' : ''}</span>}
+                                </td>
+                                <td>
+                                  <span className={winsMet ? 'ca-cell-ok' : ''}>{c.arenaWins || 0}</span>
+                                  -<span className={lossOk || a.targetMaxLosses === 0 ? '' : 'ca-cell-no'}>{c.arenaLosses || 0}</span>
+                                  -{c.arenaDraws || 0}
+                                  {(a.targetWins > 0 || a.targetMaxLosses > 0) && (
+                                    <span className="ca-muted">
+                                      {a.targetWins > 0 ? ` (${a.targetWins}+ W${winsMet ? '✓' : ''})` : ''}
+                                      {a.targetMaxLosses > 0 ? ` (≤${a.targetMaxLosses} L${lossOk ? '✓' : ''})` : ''}
+                                    </span>
+                                  )}
+                                </td>
+                                <td>
+                                  <span className={a.targetGames > 0 ? (gamesMet ? 'ca-cell-ok' : 'ca-cell-no') : ''}>{c.arenaGamesPlayed || 0}</span>
+                                  {a.targetGames > 0 && <span className="ca-muted"> / {a.targetGames} {gamesMet ? '✓' : ''}</span>}
+                                </td>
+                                <td>
+                                  <span className={a.targetRank > 0 ? (rankMet ? 'ca-cell-ok' : 'ca-cell-no') : ''}>{c.arenaRank > 0 ? `#${c.arenaRank}` : '—'}</span>
+                                  {a.targetRank > 0 && <span className="ca-muted"> / top {a.targetRank} {rankMet ? '✓' : ''}</span>}
+                                </td>
+                                <td>{c.arenaMaxStreak ? `${c.arenaMaxStreak}🔥` : '—'}</td>
                                 <td><span className={`ca-status ca-status-${c.status}`}>{statusLabel(c.status)}</span></td>
                               </tr>
                             );
@@ -613,6 +681,59 @@ export default function CoachAssignments() {
                       placeholder="e.g. 25"
                     />
                   </label>
+                </div>
+              )}
+
+              {/* Arena Tournament (arena_tournament) — link a tournament + optional goals */}
+              {form.assignmentType === 'arena_tournament' && (
+                <div className="ca-arena-builder">
+                  <label className="field">
+                    <span>Tournament code or join link</span>
+                    <input
+                      type="text"
+                      value={form.arenaTournamentCode}
+                      onChange={e => update('arenaTournamentCode', e.target.value)}
+                      placeholder="e.g. AB12CD34  —  or paste a join link"
+                    />
+                  </label>
+                  <div style={{ fontSize: 13, color: '#9ca3af', margin: '-4px 0 10px' }}>
+                    Paste the code or full link of an existing tournament, or{' '}
+                    <button
+                      type="button"
+                      className="ca-link"
+                      onClick={() => window.open('/arenatournament/create', '_blank')}
+                      style={{ background: 'none', border: 'none', color: '#06b6d4', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
+                    >
+                      create a new tournament
+                    </button>{' '}
+                    and copy its code back here.
+                  </div>
+
+                  <div className="ca-blunder-label">Goals (optional — leave 0 to skip; finishing always completes the assignment)</div>
+                  <div className="field-row">
+                    <label className="field" style={{ maxWidth: 150 }}>
+                      <span>Min games</span>
+                      <input type="number" min="0" value={form.targetGames} onChange={e => update('targetGames', e.target.value)} placeholder="0" />
+                    </label>
+                    <label className="field" style={{ maxWidth: 150 }}>
+                      <span>Min score</span>
+                      <input type="number" min="0" value={form.targetScore} onChange={e => update('targetScore', e.target.value)} placeholder="0" />
+                    </label>
+                    <label className="field" style={{ maxWidth: 150 }}>
+                      <span>Finish top-N</span>
+                      <input type="number" min="0" value={form.targetRank} onChange={e => update('targetRank', e.target.value)} placeholder="0" />
+                    </label>
+                  </div>
+                  <div className="field-row">
+                    <label className="field" style={{ maxWidth: 150 }}>
+                      <span>Min wins</span>
+                      <input type="number" min="0" value={form.targetWins} onChange={e => update('targetWins', e.target.value)} placeholder="0" />
+                    </label>
+                    <label className="field" style={{ maxWidth: 150 }}>
+                      <span>Max losses</span>
+                      <input type="number" min="0" value={form.targetMaxLosses} onChange={e => update('targetMaxLosses', e.target.value)} placeholder="0" />
+                    </label>
+                  </div>
                 </div>
               )}
 
