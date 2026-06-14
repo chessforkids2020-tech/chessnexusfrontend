@@ -1,0 +1,459 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+/* ── Page ── */
+.pz-page {
+  min-height: 100vh;
+  background: #0d1117;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  padding: 40px 32px 60px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.pz-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+.pz-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.pz-puzzle-emoji {
+  font-style: normal;
+}
+
+.pz-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+.pz-tagline-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 14px;
+  padding: 14px 20px;
+  max-width: 320px;
+}
+
+.pz-tagline-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  color: #10b981;
+}
+
+.pz-tagline-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.5;
+}
+
+/* ── Cards Grid ── */
+.pz-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* ── Card ── */
+.pz-card {
+  background: #161b22;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.pz-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Card Image ── */
+.pz-card-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #0d1117;
+}
+
+.pz-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.pz-card:hover .pz-card-img {
+  transform: scale(1.04);
+}
+
+/* ── Badge ── */
+.pz-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 11px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: 0.3px;
+}
+
+.badge-recommended {
+  background: #7c3aed;
+  color: #ffffff;
+}
+
+/* ── Card Body ── */
+.pz-card-body {
+  padding: 18px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.pz-card-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.pz-card-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  line-height: 1.55;
+  flex: 1;
+}
+
+/* ── Tags ── */
+.pz-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.pz-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.pz-tag-icon {
+  font-size: 13px;
+}
+
+/* ── CTA Buttons ── */
+.pz-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 9px 16px;
+  border-radius: 10px;
+  margin-top: 6px;
+  transition: filter 0.2s ease, transform 0.2s ease;
+  letter-spacing: 0.2px;
+}
+
+.pz-btn:hover {
+  filter: brightness(1.12);
+  transform: translateY(-2px);
+}
+
+.pz-btn-arrow {
+  font-size: 18px;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+.btn-purple {
+  background: #7c3aed;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+}
+
+.btn-green {
+  background: #10b981;
+  color: #000000;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+}
+
+.btn-blue {
+  background: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35);
+}
+
+.btn-orange {
+  background: #f97316;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+}
+
+/* ── Your Puzzle Stats (last 7 days) ── */
+.pz-stats-section {
+  margin-top: 28px;
+  background: #11161d;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 20px 22px 22px;
+}
+
+.pz-stats-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.pz-stats-icon {
+  font-size: 20px;
+}
+
+.pz-stats-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.pz-stats-period {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+.pz-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.pz-stat-card {
+  background: #161b22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.pz-stat-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.pz-stat-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.pz-stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.pz-stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+}
+
+/* per-stat accent colors on the value */
+.st-gold   .pz-stat-value { color: #fbbf24; }
+.st-green  .pz-stat-value { color: #34d399; }
+.st-red    .pz-stat-value { color: #f87171; }
+.st-blue   .pz-stat-value { color: #60a5fa; }
+.st-purple .pz-stat-value { color: #a78bfa; }
+
+/* ── Rating band modal ── */
+.pz-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: pzFade 0.18s ease;
+}
+
+@keyframes pzFade { from { opacity: 0; } to { opacity: 1; } }
+
+.pz-modal {
+  background: #11161d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 24px;
+  width: 100%;
+  max-width: 560px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+}
+
+.pz-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.pz-modal-title {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 4px;
+  color: #fff;
+}
+
+.pz-modal-sub {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+
+.pz-modal-close {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.pz-modal-close:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+
+.pz-modal-loading {
+  padding: 30px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.pz-band-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.pz-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 10px;
+  background: #161b22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.pz-band:hover {
+  transform: translateY(-2px);
+  border-color: #f97316;
+  background: rgba(249, 115, 22, 0.08);
+}
+
+.pz-band-range {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.pz-band-count {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .pz-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pz-stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .pz-page {
+    padding: 24px 16px 40px;
+  }
+
+  .pz-title {
+    font-size: 26px;
+  }
+
+  .pz-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pz-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pz-band-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pz-header {
+    flex-direction: column;
+  }
+
+  .pz-tagline-box {
+    max-width: 100%;
+  }
+}

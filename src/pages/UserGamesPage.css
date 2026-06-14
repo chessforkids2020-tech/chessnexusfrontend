@@ -1,0 +1,23 @@
+/* Extra styles for UserGamesPage on top of atg-* base classes */
+
+.upg-container {
+  /* inherits .atg-container */
+}
+
+.upg-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.upg-meta-total {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #a78bfa;
+}
+
+.upg-meta-last {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}

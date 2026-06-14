@@ -1,0 +1,148 @@
+/* ==============================================
+   Arena Race Puzzle Tournament - Leaderboard Page
+   Responsive: mobile / tablet / laptop / desktop
+   Single-column layout
+   ============================================== */
+
+/* ─── Page Shell ───────────────────────────── */
+.ar-lb-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 40px 20px;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.ar-lb-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ─── Result Card (top card: title + my rank) ─ */
+.ar-lb-result-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.ar-lb-result-title {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── Standings Card ────────────────────────── */
+.ar-lb-standings-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* ─── Back button ────────────────────────────── */
+.ar-lb-back-btn {
+  width: 100%;
+  padding: 14px;
+  background: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+/* ─── Standings list ─────────────────────────── */
+.ar-lb-participant {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+/* ─── Laptop (769px – 1024px) ──────────────── */
+@media (max-width: 1024px) {
+  .ar-lb-page {
+    padding: 30px 16px;
+  }
+
+  .ar-lb-result-card {
+    padding: 30px;
+  }
+
+  .ar-lb-result-title {
+    font-size: 30px;
+  }
+
+  .ar-lb-standings-card {
+    padding: 30px;
+  }
+}
+
+/* ─── Tablet (481px – 768px) ────────────────── */
+@media (max-width: 768px) {
+  .ar-lb-page {
+    padding: 20px 12px;
+  }
+
+  .ar-lb-result-card {
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .ar-lb-result-title {
+    font-size: 26px;
+  }
+
+  .ar-lb-standings-card {
+    padding: 24px;
+  }
+
+  .ar-lb-participant {
+    padding: 14px;
+    grid-template-columns: 50px 1fr auto;
+    gap: 12px;
+  }
+}
+
+/* ─── Mobile (≤ 480px) ──────────────────────── */
+@media (max-width: 480px) {
+  .ar-lb-page {
+    padding: 12px 8px;
+  }
+
+  .ar-lb-result-card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .ar-lb-result-title {
+    font-size: 22px;
+  }
+
+  .ar-lb-standings-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .ar-lb-participant {
+    padding: 10px 12px;
+    grid-template-columns: 44px 1fr auto;
+    gap: 10px;
+  }
+
+  .ar-lb-back-btn {
+    font-size: 14px;
+    padding: 12px;
+  }
+}

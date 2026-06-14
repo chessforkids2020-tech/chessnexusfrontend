@@ -1,0 +1,461 @@
+.team-race-puzzle {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.race-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.race-info-left,
+.race-info-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.team-badge-display {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.position-display {
+  background: #f8f9fa;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #555;
+}
+
+.race-timer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 32px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+}
+
+.timer-icon {
+  font-size: 28px;
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8f9fa;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.score-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.score-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.puzzle-progress {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.progress-bar-container {
+  height: 6px;
+  background: #e0e0e0;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.puzzle-content {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 30px;
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.puzzle-board-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.puzzle-info {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.puzzle-title {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.chessboard-wrapper {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  overflow-x: auto; /* Allow horizontal scrolling on very small screens if needed */
+}
+
+.puzzle-hints {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hint-item {
+  margin-bottom: 10px;
+  color: #555;
+  font-size: 15px;
+}
+
+.moves-made {
+  color: #667eea;
+  font-size: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.puzzle-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stats-card,
+.instructions-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card h4,
+.instructions-card h4 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.stat-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #333;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.instructions-card ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #555;
+}
+
+.instructions-card li {
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.btn-finish-early {
+  width: 100%;
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-finish-early:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+}
+
+.loading-screen,
+.error-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid #e0e0e0;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn-back {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: #5a6268;
+}
+
+@media (max-width: 1024px) {
+  .puzzle-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .puzzle-sidebar {
+    grid-row: 1;
+  }
+
+  .chessboard-wrapper {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .race-header-bar {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .race-info-left,
+  .race-info-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .race-timer {
+    font-size: 24px;
+  }
+
+  .puzzle-content {
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .chessboard-wrapper {
+    padding: 10px;
+  }
+
+  .puzzle-info {
+    padding: 15px;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .puzzle-title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .race-header-bar {
+    padding: 10px;
+  }
+
+  .race-info-left,
+  .race-info-right {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .race-timer {
+    font-size: 20px;
+  }
+
+  .timer-icon {
+    font-size: 24px;
+  }
+
+  .puzzle-content {
+    padding: 10px;
+  }
+
+  .chessboard-wrapper {
+    padding: 5px;
+    min-width: 0; /* Allow shrinking below content size */
+  }
+
+  .puzzle-info {
+    padding: 10px;
+  }
+
+  .puzzle-title {
+    font-size: 18px;
+  }
+
+  .puzzle-hints {
+    padding: 15px;
+  }
+
+  .stats-card,
+  .instructions-card {
+    padding: 15px;
+  }
+
+  /* Ensure the chessboard can be fully visible on small screens */
+  .chessboard-wrapper > div {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Live Leaderboard Styles */
+.leaderboard-card {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 15px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.leaderboard-header h4 {
+  margin: 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.leaderboard-toggle {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.leaderboard-toggle:hover {
+  background: #0056b3;
+}
+
+.leaderboard-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.leaderboard-loading {
+  text-align: center;
+  padding: 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.leaderboard-item:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-item.my-team {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border-radius: 4px;
+  padding: 8px;
+  margin: 2px 0;
+  border: 2px solid #28a745;
+}
+
+.rank {
+  font-size: 16px;
+  font-weight: bold;
+  margin-right: 10px;
+  min-width: 30px;
+  text-align: center;
+}
+
+.team-info {
+  flex: 1;
+}
+
+.team-info .team-name {
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.team-info .team-score {
+  color: #28a745;
+  font-size: 12px;
+  font-weight: bold;
+}

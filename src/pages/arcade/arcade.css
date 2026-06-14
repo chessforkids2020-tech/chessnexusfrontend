@@ -1,0 +1,220 @@
+/* ======================================================
+   Arcade Module — Responsive Styles
+   Covers: ArcadeHome, ArcadeLobby, ArcadeGame,
+           arcadeTheme, BingoChoose, TTTChoose
+   Breakpoints:
+     Desktop   ≥ 1025px  (default)
+     Laptop    769–1024px
+     Tablet    481–768px
+     Mobile    ≤ 480px
+   ====================================================== */
+
+/* ── Shell & Content Area ─────────────────────────── */
+.arc-shell {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.arc-content {
+  flex: 1;
+  margin-left: 186px; /* SIDEBAR_OFFSET */
+  position: relative;
+  z-index: 1;
+}
+
+/* ── ArcadeHome – Game Cards Grid ─────────────────── */
+.arc-home-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* ── ArcadeLobby / TTTChoose / BingoChoose ─────────
+   Option rows (icon + text + button side by side)    */
+.arc-lobby-option {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 28px 32px;
+}
+
+.arc-lobby-option-icon {
+  font-size: 56px;
+  flex-shrink: 0;
+}
+
+.arc-lobby-option-text {
+  flex: 1;
+}
+
+.arc-lobby-option-btn {
+  flex-shrink: 0;
+}
+
+/* Description text inside lobby option cards */
+.arc-lobby-desc {
+  display: block;
+}
+
+/* TTT board size selection grid */
+.arc-ttt-size-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* ── ArcadeGame – TTT Side-by-Side ─────────────────── */
+.arc-game-ttt {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+/* ── ArcadeGame – Bingo 3-Column ──────────────────── */
+.arc-game-bingo {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding-top: 34px;
+}
+
+/* ── Laptop (769px – 1024px) ──────────────────────── */
+@media (max-width: 1024px) {
+  .arc-content {
+    margin-left: 160px;
+  }
+
+  .arc-home-cards {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+  }
+
+  .arc-lobby-option {
+    gap: 18px;
+    padding: 22px 24px;
+  }
+
+  .arc-lobby-option-icon {
+    font-size: 48px;
+  }
+}
+
+/* ── Tablet (481px – 768px) ───────────────────────── */
+@media (max-width: 768px) {
+  /* Sidebar collapses — remove its margin */
+  .arc-content {
+    margin-left: 0;
+  }
+
+  /* Game cards: single column */
+  .arc-home-cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  /* Option rows: stack icon+text+btn vertically */
+  .arc-lobby-option {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 20px;
+  }
+
+  .arc-lobby-option-icon {
+    font-size: 42px;
+  }
+
+  /* Stretch buttons to full width inside stacked option cards */
+  .arc-lobby-option > button,
+  .arc-lobby-option-btn {
+    width: 100% !important;
+    flex-shrink: unset;
+  }
+
+  /* Hide descriptions in lobby option cards on tablet */
+  .arc-lobby-desc {
+    display: none;
+  }
+
+  /* TTT: stack vertically — TTT board on top, chessboard below */
+  .arc-game-ttt {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .arc-ttt-board { order: 1; width: 100%; min-width: unset !important; }
+  .arc-ttt-chess { order: 2; width: 100%; }
+
+  /* Bingo: stack cards vertically */
+  .arc-game-bingo {
+    flex-direction: column;
+    flex-wrap: wrap;
+    padding-top: 40px;
+    gap: 16px;
+  }
+}
+
+/* ── Mobile (≤ 480px) ─────────────────────────────── */
+@media (max-width: 480px) {
+  .arc-content {
+    margin-left: 0;
+  }
+
+  .arc-home-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .arc-lobby-option {
+    padding: 16px 14px;
+    gap: 10px;
+  }
+
+  .arc-lobby-option-icon {
+    font-size: 36px;
+  }
+
+  /* Stretch buttons to full width inside stacked option cards */
+  .arc-lobby-option > button,
+  .arc-lobby-option-btn {
+    width: 100% !important;
+    flex-shrink: unset;
+  }
+
+  /* Hide descriptions in lobby option cards on mobile */
+  .arc-lobby-desc {
+    display: none;
+  }
+
+  /* Board size selection: one per row on mobile */
+  .arc-ttt-size-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  /* TTT: full column stack — TTT board on top, chessboard below */
+  .arc-game-ttt {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .arc-ttt-board { order: 1; width: 100%; min-width: unset !important; }
+  .arc-ttt-chess { order: 2; width: 100%; }
+
+  /* Bingo stacks tightly */
+  .arc-game-bingo {
+    padding-top: 40px;
+    gap: 10px;
+  }
+
+  /* Scale chessboard on very small screens */
+  .arc-board-scale {
+    transform: scale(0.85);
+    transform-origin: top center;
+  }
+}

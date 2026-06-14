@@ -1,0 +1,400 @@
+/* Puzzles Page Responsive Styles - Obsidian Glass Theme */
+
+.puzzles-container {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: calc(100vh - 80px);
+  overflow: auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0a0a0a;
+  position: relative;
+}
+
+/* Background gradient effect */
+.puzzles-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), 
+              radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (max-width: 768px) {
+  /* Mobile-specific padding-top removed - handled globally by body */
+}
+
+.puzzles-left-panel {
+  flex: 0 0 350px;
+  width: 350px;
+  min-width: 280px;
+  padding: 25px;
+  background: rgba(23, 23, 23, 0.7);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  overflow-y: auto;
+  position: relative;
+}
+
+.puzzles-right-panel {
+  flex: 1;
+  background: #0a0a0a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow: auto;
+  min-width: 320px;
+  min-height: 500px;
+  max-width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure the chessboard container can grow */
+.puzzles-right-panel > div {
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Tablet (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .puzzles-left-panel {
+    flex: 0 0 300px;
+    width: 300px;
+    padding: 20px;
+  }
+  
+  .puzzles-right-panel {
+    min-width: 400px;
+    padding: 15px;
+  }
+}
+
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  .puzzles-container {
+    flex-direction: column;
+  }
+  
+  .puzzles-left-panel {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    max-height: none;
+    order: 1;
+    padding: 15px;
+  }
+  
+  .puzzles-right-panel {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    order: 2;
+    min-height: 450px;
+    padding: 10px;
+  }
+}
+
+/* Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .puzzles-left-panel {
+    padding: 10px;
+    gap: 12px;
+  }
+  
+  .puzzles-right-panel {
+    padding: 5px;
+    min-height: 380px;
+  }
+}
+
+/* Training Completion Responsive Styles */
+.training-stats-grid {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 12px !important;
+  margin-bottom: 30px;
+  width: 100%;
+}
+
+.training-stats-grid > div {
+  flex: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .training-stats-grid {
+    gap: 10px !important;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .training-stats-grid {
+    gap: 8px !important;
+    margin-bottom: 15px;
+  }
+}
+
+.training-completion-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center;
+  background: rgba(23, 23, 23, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  padding: 60px;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  max-width: 500px;
+  width: 100%;
+}
+
+.training-completion-title {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.training-completion-description {
+  color: #9ca3af;
+  margin-bottom: 40px;
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .training-completion-container {
+    padding: 40px 30px;
+    border-radius: 16px;
+    max-width: 100%;
+  }
+  
+  .training-completion-title {
+    font-size: 28px;
+  }
+  
+  .training-completion-description {
+    font-size: 16px;
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .training-completion-container {
+    padding: 30px 20px;
+    border-radius: 12px;
+  }
+  
+  .training-completion-title {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+  
+  .training-completion-description {
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+}
+
+/* Puzzle completion item styles */
+.puzzle-completion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.puzzle-completion-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.puzzle-completion-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .puzzle-completion-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px;
+  }
+  
+  .puzzle-completion-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  
+  .puzzle-completion-status {
+    align-self: flex-end;
+    font-size: 12px;
+  }
+}
+
+/* Current rating section responsive */
+.current-rating-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 16px;
+  width: 100%;
+}
+
+/* Puzzles table styles */
+.puzzles-table thead th {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.puzzles-table tbody tr td {
+  color: #334155;
+  background: transparent;
+}
+
+@media (max-width: 480px) {
+  .puzzles-table thead { display: none; }
+  .puzzles-table tbody tr { display: block; margin-bottom: 10px; border-top: none; }
+  .puzzles-table tbody tr td { display: flex; justify-content: space-between; padding: 8px 10px; }
+}
+
+.current-rating-label {
+  font-size: 13px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.current-rating-value {
+  font-size: 42px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 5px;
+  line-height: 1;
+}
+
+@media (max-width: 480px) {
+  .current-rating-section {
+    margin-bottom: 20px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .current-rating-value {
+    font-size: 32px;
+  }
+}
+
+/* Button responsive */
+.training-completion-button {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 30px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .training-completion-button {
+    margin-top: 20px;
+  }
+}
+
+/* Puzzles solved section */
+.puzzles-solved-section {
+  width: 100%;
+}
+
+/* Stats grid cards - obsidian glass theme */
+.training-stats-grid > div:nth-child(1) {
+  padding: 16px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 16px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.training-stats-grid > div:nth-child(2) {
+  padding: 16px;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 16px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.training-stats-grid > div:nth-child(1) > div:first-child {
+  font-size: 32px;
+  font-weight: 800;
+  color: #10b981;
+}
+
+.training-stats-grid > div:nth-child(1) > div:last-child {
+  color: #67e8f9;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.training-stats-grid > div:nth-child(2) > div:first-child {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ef4444;
+}
+
+.training-stats-grid > div:nth-child(2) > div:last-child {
+  color: #fca5a5;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Puzzle completion details text colors */
+.puzzle-completion-details > div:first-child {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.puzzle-completion-meta > span:first-child {
+  color: #9ca3af;
+}
+
+/* Completion status colors */
+.puzzle-completion-status {
+  font-weight: 700;
+}

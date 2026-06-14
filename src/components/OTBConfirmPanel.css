@@ -1,0 +1,433 @@
+.otb-confirm-card {
+  margin-top: 18px;
+  background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+  border: 1px solid #f59e0b55;
+  border-radius: 14px;
+  padding: 20px;
+  color: #e5e7eb;
+}
+
+.otb-confirm-header {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #ffffff10;
+}
+
+.otb-confirm-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.otb-confirm-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-bottom: 4px;
+}
+
+.otb-confirm-sub {
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+.otb-confirm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.otb-confirm-row {
+  background: #0f172a;
+  border: 1px solid #ffffff10;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.otb-confirm-row--simple {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.otb-confirm-row-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.otb-confirm-row-num {
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.otb-confirm-row-raw,
+.otb-confirm-row-label {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.otb-confirm-row-raw code {
+  background: #1f2937;
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: #fbbf24;
+  font-family: 'Courier New', monospace;
+}
+
+.otb-confirm-row-body {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.otb-confirm-board {
+  flex: 0 0 auto;
+}
+
+.otb-confirm-controls {
+  flex: 1 1 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.otb-confirm-label {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.otb-confirm-input {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #fbbf24;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.otb-confirm-input:focus {
+  border-color: #f59e0b;
+}
+
+.otb-confirm-hint {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.otb-confirm-progress {
+  margin-bottom: 16px;
+}
+.otb-confirm-progress-bar {
+  height: 6px;
+  background: #374151;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.otb-confirm-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+.otb-confirm-progress-label {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.otb-confirm-move-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-bottom: 14px;
+}
+.otb-confirm-side-badge {
+  background: #374151;
+  color: #e2e8f0;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.otb-confirm-scanned {
+  font-weight: 400;
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
+.otb-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #ffffff10;
+}
+
+.otb-confirm-cancel,
+.otb-confirm-submit {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: transform 0.1s, background 0.15s;
+}
+
+.otb-confirm-cancel {
+  background: #374151;
+  color: #e5e7eb;
+}
+
+.otb-confirm-cancel:hover:not(:disabled) {
+  background: #4b5563;
+}
+
+.otb-confirm-submit {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #111827;
+}
+
+.otb-confirm-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.otb-confirm-submit:disabled,
+.otb-confirm-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Individual board-section block ── */
+.otb-confirm-block {
+  background: #0f172a;
+  border: 1px solid #f59e0b33;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+/* ── Quick-fix text-only section ── */
+.otb-confirm-quick-section {
+  background: #0f172a;
+  border: 1px solid #ffffff10;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 4px;
+}
+
+.otb-confirm-quick-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.otb-confirm-quick-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.otb-confirm-quick-row:last-child {
+  margin-bottom: 0;
+}
+
+.otb-confirm-quick-num {
+  font-weight: 700;
+  color: #e2e8f0;
+  font-size: 0.92rem;
+  min-width: 40px;
+}
+
+.otb-confirm-quick-raw {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  min-width: 60px;
+}
+
+.otb-confirm-quick-raw code {
+  background: #1f2937;
+  padding: 2px 6px;
+  border-radius: 5px;
+  color: #fbbf24;
+  font-family: 'Courier New', monospace;
+}
+
+.otb-confirm-quick-input {
+  flex: 1 1 120px;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 7px;
+  padding: 7px 10px;
+  color: #fbbf24;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.otb-confirm-quick-input:focus {
+  border-color: #f59e0b;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Tablet (≤ 900px)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .otb-confirm-row-body {
+    gap: 12px;
+  }
+
+  .otb-confirm-controls {
+    flex: 1 1 180px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Mobile (≤ 640px)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .otb-confirm-card {
+    padding: 14px 12px;
+    border-radius: 12px;
+  }
+
+  .otb-confirm-header {
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+
+  .otb-confirm-icon {
+    font-size: 1.4rem;
+  }
+
+  .otb-confirm-title {
+    font-size: 0.97rem;
+  }
+
+  .otb-confirm-sub {
+    font-size: 0.82rem;
+  }
+
+  /* Board + controls stack vertically on mobile */
+  .otb-confirm-row-body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  /* Board: take full width but cap at 280px so it doesn't overflow */
+  .otb-confirm-board {
+    width: 100%;
+    max-width: 280px;
+    align-self: center;
+  }
+
+  .otb-confirm-controls {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  /* Row header: stack label below number on very small screens */
+  .otb-confirm-row-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .otb-confirm-input {
+    font-size: 0.92rem;
+    padding: 9px 10px;
+  }
+
+  /* Quick-fix rows: make label + input fill full width */
+  .otb-confirm-quick-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .otb-confirm-quick-num {
+    min-width: 32px;
+    font-size: 0.85rem;
+  }
+
+  .otb-confirm-quick-raw {
+    min-width: 48px;
+  }
+
+  .otb-confirm-quick-input {
+    flex: 1 1 100%;   /* full row on mobile */
+    font-size: 0.85rem;
+  }
+
+  /* Action buttons: stack full-width */
+  .otb-confirm-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+  }
+
+  .otb-confirm-cancel,
+  .otb-confirm-submit {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 0.93rem;
+    text-align: center;
+  }
+
+  .otb-confirm-progress-label {
+    font-size: 0.73rem;
+  }
+
+  .otb-confirm-move-title {
+    font-size: 0.88rem;
+  }
+
+  .otb-confirm-block {
+    padding: 10px;
+  }
+
+  .otb-confirm-quick-section {
+    padding: 10px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Small mobile (≤ 400px)
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+  .otb-confirm-card {
+    padding: 12px 10px;
+  }
+
+  .otb-confirm-board {
+    max-width: 240px;
+  }
+
+  .otb-confirm-title {
+    font-size: 0.9rem;
+  }
+}

@@ -1,0 +1,369 @@
+﻿/* ── CSS Variables (Obsidian Glass — matches ArenaTournamentLeaderboard) ── */
+.tournament-leaderboard-container {
+  --obs-bg:        #07090f;
+  --obs-surface:   rgba(255, 255, 255, 0.04);
+  --obs-glass:     rgba(255, 255, 255, 0.06);
+  --obs-border:    rgba(255, 255, 255, 0.08);
+  --obs-border-hi: rgba(6, 182, 212, 0.35);
+  --obs-cyan:      #06b6d4;
+  --obs-teal:      #10b981;
+  --obs-blue:      #3b82f6;
+  --obs-violet:    #8b5cf6;
+  --obs-amber:     #f59e0b;
+  --obs-red:       #ef4444;
+  --obs-text:      #e2e8f0;
+  --obs-muted:     #64748b;
+
+  min-height: 100vh;
+  background: var(--obs-bg);
+  font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif;
+  color: var(--obs-text);
+  padding: 24px 28px 56px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.tournament-leaderboard-container::before,
+.tournament-leaderboard-container::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(90px);
+  opacity: 0.10;
+  z-index: 0;
+}
+.tournament-leaderboard-container::before {
+  width: 560px; height: 560px;
+  top: -180px; left: -140px;
+  background: var(--obs-cyan);
+}
+.tournament-leaderboard-container::after {
+  width: 480px; height: 480px;
+  bottom: -120px; right: -120px;
+  background: var(--obs-teal);
+}
+
+.back-to-tournaments {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--obs-glass);
+  border: 1px solid var(--obs-border);
+  border-radius: 8px;
+  color: var(--obs-cyan);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 24px;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.back-to-tournaments:hover {
+  background: rgba(6, 182, 212, 0.12);
+  border-color: var(--obs-border-hi);
+  transform: translateX(-3px);
+}
+
+.tr-main-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.tournament-name-header {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 28px;
+  letter-spacing: -0.4px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--obs-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.podium-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 36px;
+  padding: 16px 0 4px;
+}
+
+.elegant-podium .trophy-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  width: min(31%, 270px);
+  padding: 16px 14px 0;
+  border: 1px solid var(--obs-border);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%),
+    rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 16px 28px rgba(0, 0, 0, 0.38);
+  overflow: hidden;
+}
+
+.elegant-podium .trophy-item::before {
+  content: '';
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  top: -58px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.22) 0%, transparent 70%);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.elegant-podium .trophy-icon {
+  --podium-tone: var(--obs-cyan);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 112px;
+  height: 112px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.02) 62%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 6px 24px rgba(6, 182, 212, 0.22);
+  filter: drop-shadow(0 4px 16px rgba(6, 182, 212, 0.22));
+}
+
+.elegant-podium .trophy-username {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  max-width: 160px;
+  word-break: break-word;
+}
+
+.elegant-podium .trophy-svg {
+  width: 86px;
+  height: 86px;
+}
+
+.elegant-podium .rank-ribbon {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  border: 1px solid;
+  border-radius: 999px;
+  padding: 5px 11px;
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 700;
+}
+
+.elegant-podium .team-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.elegant-podium .trophy-team-name {
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.elegant-podium .trophy-team-meta {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.elegant-podium .trophy-score {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--obs-text);
+  letter-spacing: 0.02em;
+  margin-top: 2px;
+}
+
+.elegant-podium .podium-base {
+  --podium-tone: var(--obs-cyan);
+  width: 100%;
+  height: 20px;
+  margin-top: 4px;
+  position: relative;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-bottom: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(10, 13, 21, 0.92) 100%),
+    rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.elegant-podium .podium-base::before {
+  content: '';
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 6px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.elegant-podium .podium-base::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08) 0,
+    rgba(255, 255, 255, 0.08) 6px,
+    transparent 6px,
+    transparent 14px
+  );
+  opacity: 0.3;
+}
+
+.elegant-podium .trophy-item.is-first {
+  transform: translateY(-14px);
+}
+
+.elegant-podium .trophy-item.is-first .podium-base {
+  height: 30px;
+}
+
+.elegant-podium .trophy-item.is-second .podium-base,
+.elegant-podium .trophy-item.is-third .podium-base {
+  height: 24px;
+}
+
+.elegant-podium .trophy-item.is-third {
+  transform: translateY(6px);
+}
+
+.leaderboard-table-container {
+  background: var(--obs-surface);
+  border: 1px solid var(--obs-border);
+  border-radius: 18px;
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  margin: 0 auto 24px;
+  width: min(100%, 920px);
+}
+
+.team-standings-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--obs-text);
+  margin: 0;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--obs-border);
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table thead tr {
+  background: rgba(6, 182, 212, 0.06);
+  border-bottom: 1px solid rgba(6, 182, 212, 0.18);
+}
+
+.leaderboard-table th {
+  padding: 12px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--obs-cyan);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.leaderboard-table th:first-child,
+.leaderboard-table td:first-child {
+  padding-left: 20px;
+}
+
+.leaderboard-table th:last-child,
+.leaderboard-table td:last-child {
+  padding-right: 24px;
+}
+
+.leaderboard-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s;
+}
+.leaderboard-table tbody tr:last-child { border-bottom: none; }
+.leaderboard-table tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+
+.leaderboard-table td {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--obs-text);
+  vertical-align: middle;
+}
+
+.team-row-first td { color: var(--obs-amber); }
+
+.rank-cell {
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+  width: 64px;
+  color: var(--obs-muted);
+}
+
+.player-cell {
+  min-width: 0;
+  text-align: left;
+}
+
+.player-cell-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+.score-cell {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--obs-cyan);
+  text-align: right;
+}
+
+@keyframes tr-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .tournament-leaderboard-container { padding: 16px 12px 40px; }
+  .podium-container {
+    gap: 10px;
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .elegant-podium .trophy-item,
+  .elegant-podium .trophy-item.is-first,
+  .elegant-podium .trophy-item.is-third {
+    width: 100%;
+    transform: none;
+  }
+  .elegant-podium .trophy-item .podium-base { height: 20px; }
+  .tournament-name-header { font-size: 20px; }
+}

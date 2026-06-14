@@ -1,0 +1,76 @@
+/* components/ResponsiveGrid.css */
+.responsive-grid {
+  display: grid;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+/* 1 column on mobile */
+@media (max-width: 480px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 2 columns on large mobile */
+@media (min-width: 481px) and (max-width: 768px) {
+  .responsive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 3 columns on tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .responsive-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 4 columns on laptops */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .responsive-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* 5+ columns on desktops */
+@media (min-width: 1281px) {
+  .responsive-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Optional: Auto-fit grid for dynamic content */
+.auto-fit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-md);
+}
+
+/* Responsive Cards */
+.responsive-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.responsive-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile card adjustments */
+@media (max-width: 768px) {
+  .responsive-card {
+    padding: var(--space-md);
+  }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+  .responsive-card {
+    padding: var(--space-sm);
+  }
+}

@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg:           #0a0a0a;
+  --glass-bg:     rgba(23, 23, 23, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glow-cyan:    #06b6d4;
+  --glow-emerald: #10b981;
+  --text-primary: #f0f0f0;
+  --text-muted:   #9ca3af;
+  --text-dim:     #6b7280;
+}
+
+/* ── Page shell ────────────────────────────────── */
+.event-page-container {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient glow blobs */
+.event-page-container::before,
+.event-page-container::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.event-page-container::before {
+  width: 700px; height: 700px;
+  top: -150px; left: -200px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.09) 0%, transparent 70%);
+}
+.event-page-container::after {
+  width: 600px; height: 600px;
+  bottom: -120px; right: -160px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.09) 0%, transparent 70%);
+}
+
+/* ── Card ──────────────────────────────────────── */
+.event-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 520px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 48px 40px 44px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  text-align: center;
+  animation: cardReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Cyan top accent line */
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glow-cyan), transparent);
+  border-radius: 999px;
+  opacity: 0.6;
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Badge / date chip ─────────────────────────── */
+.event-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.22);
+  color: var(--glow-cyan);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 22px;
+}
+.event-date-badge::before {
+  content: '📅';
+  font-size: 13px;
+}
+
+/* ── Title ─────────────────────────────────────── */
+.event-page-container h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin: 0 0 18px;
+  line-height: 1.25;
+  background: linear-gradient(135deg, var(--glow-cyan) 0%, var(--glow-emerald) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Divider ───────────────────────────────────── */
+.event-divider {
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--glow-cyan), var(--glow-emerald));
+  border-radius: 999px;
+  margin: 0 auto 20px;
+  opacity: 0.6;
+}
+
+/* ── Description ───────────────────────────────── */
+.event-desc {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin: 0 0 36px;
+}
+
+/* ── CTA button ────────────────────────────────── */
+.btn-primary {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--glow-cyan) 0%, var(--glow-emerald) 100%);
+  color: #fff;
+  padding: 14px 36px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(6, 182, 212, 0.52);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* ── Responsive ────────────────────────────────── */
+@media (max-width: 480px) {
+  .event-card { padding: 36px 22px 32px; }
+  .event-page-container h1 { font-size: 24px; }
+}

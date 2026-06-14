@@ -1,0 +1,366 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+.hm-page {
+  min-height: 100vh;
+  background: #0d1117;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  padding: 0 24px 80px;
+}
+
+.hm-layout {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 28px;
+  align-items: start;
+  padding-top: 0;
+}
+
+/* ── Left sidebar ── */
+.hm-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: sticky;
+  top: 24px;
+}
+
+.hm-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hm-brand-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.hm-brand-title {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.hm-brand-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hm-band-badge {
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  color: #fb923c;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* Rating card */
+.hm-rating-card {
+  background: linear-gradient(145deg, #1b2230, #161b22);
+  border: 1px solid rgba(124, 58, 237, 0.3);
+  border-radius: 18px;
+  padding: 22px 20px;
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.12);
+}
+
+.hm-rating-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 6px;
+}
+
+.hm-rating-value {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.hm-rating-delta {
+  font-size: 18px;
+  font-weight: 700;
+  animation: hmPop 0.4s ease;
+}
+
+.hm-rating-delta.up { color: #10b981; }
+.hm-rating-delta.down { color: #ef4444; }
+
+@keyframes hmPop {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hm-rating-note {
+  margin-top: 10px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Stats */
+.hm-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.hm-stat {
+  background: #161b22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px 8px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hm-stat-num {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.hm-green { color: #10b981; }
+.hm-red { color: #ef4444; }
+.hm-orange { color: #f59e0b; }
+
+.hm-stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Meta — shown below the board */
+.hm-meta {
+  background: #161b22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hm-meta-below {
+  margin-top: 10px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px 24px;
+}
+
+.hm-meta-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hm-meta-row strong { color: #fff; }
+.hm-cap { text-transform: capitalize; }
+
+/* Controls */
+.hm-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.hm-message-inline {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.hm-btn {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.hm-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.hm-btn-primary {
+  background: #7c3aed;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+}
+
+.hm-btn-ghost {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ── Right column ── */
+.hm-board-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-top: 0;
+}
+
+.hm-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #161b22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hm-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #06b6d4;
+  flex-shrink: 0;
+}
+
+.hm-status-solving .hm-status-dot { background: #06b6d4; }
+.hm-status-solved {
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #10b981;
+}
+.hm-status-solved .hm-status-dot { background: #10b981; box-shadow: 0 0 10px #10b981; }
+.hm-status-failed {
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+.hm-status-failed .hm-status-dot { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+
+.hm-board-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.hm-resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  cursor: nwse-resize;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 4px;
+  color: rgba(255, 255, 255, 0.45);
+  z-index: 10;
+  transition: color 0.15s;
+}
+
+.hm-resize-handle:hover {
+  color: rgba(124, 58, 237, 0.9);
+}
+
+.hm-tomove {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .hm-page {
+    padding: 0 16px 60px;
+  }
+  .hm-layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .hm-side {
+    position: static;
+    /* Show the board first, controls/stats below it on small screens. */
+    order: 2;
+  }
+  .hm-board-col {
+    order: 1;
+  }
+  .hm-board-wrap {
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .hm-page {
+    padding: 0 10px 50px;
+  }
+  .hm-rating-value {
+    font-size: 40px;
+  }
+  .hm-stats {
+    gap: 8px;
+  }
+}
+
+/* ── Exhausted overlay (Pieces mode: all puzzles at this count solved) ── */
+.hm-exhausted-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 17, 23, 0.82);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  border-radius: inherit;
+  z-index: 5;
+  padding: 16px;
+}
+
+.hm-exhausted-card {
+  background: #161b22;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  border-radius: 16px;
+  padding: 28px 24px;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+.hm-exhausted-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.hm-exhausted-title {
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: #34d399;
+}
+
+.hm-exhausted-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 18px;
+}

@@ -1,0 +1,30 @@
+/* ================= FOOTER ================= */
+.site-footer {
+  padding: 20px 20px;
+  text-align: center;
+
+ background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  border-top: 3px solid rgba(255, 107, 107, 0.25);
+
+  box-shadow:
+    0 -15px 40px rgba(255, 107, 107, 0.25),
+    0 -5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.footer-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: transparent;
+  background: linear-gradient(
+    135deg,
+    #ff6b6b,
+    #ff8e53,
+    #feca57,
+    #ee5a6f
+  );
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+}

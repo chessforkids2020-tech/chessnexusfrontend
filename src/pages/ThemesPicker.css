@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+.tp-page {
+  min-height: 100vh;
+  background: #0d1117;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  padding: 40px 32px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.tp-header {
+  margin-bottom: 32px;
+}
+
+.tp-back {
+  display: inline-block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  margin-bottom: 14px;
+  transition: color 0.15s ease;
+}
+.tp-back:hover { color: #10b981; }
+
+.tp-title {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.tp-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  max-width: 560px;
+  line-height: 1.5;
+}
+.tp-subtitle strong { color: rgba(255, 255, 255, 0.85); font-weight: 600; }
+
+/* ── Loading / error / empty states ── */
+.tp-state {
+  padding: 48px 0;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.tp-error { color: #f87171; }
+
+/* ── Group section ── */
+/* Each group carries its own accent color via --accent, used for the heading,
+   the card titles, and the icon tint — so the page is easy to scan by topic. */
+.tp-group {
+  margin-bottom: 30px;
+  --accent: #10b981;            /* fallback solid accent */
+  --accent-soft: rgba(16, 185, 129, 0.14);  /* icon background */
+  --accent-line: rgba(16, 185, 129, 0.30);  /* icon border */
+}
+.tp-g-checkmates { --accent: #f87171; --accent-soft: rgba(248, 113, 113, 0.14); --accent-line: rgba(248, 113, 113, 0.30); } /* red */
+.tp-g-tactics    { --accent: #60a5fa; --accent-soft: rgba(96, 165, 250, 0.14);  --accent-line: rgba(96, 165, 250, 0.30); }  /* blue */
+.tp-g-attacks    { --accent: #fbbf24; --accent-soft: rgba(251, 191, 36, 0.14);  --accent-line: rgba(251, 191, 36, 0.30); }  /* amber */
+.tp-g-endgames   { --accent: #34d399; --accent-soft: rgba(52, 211, 153, 0.14);  --accent-line: rgba(52, 211, 153, 0.30); }  /* green */
+
+.tp-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 14px;
+}
+
+/* ── Two-per-row grid (Lichess-style), responsive down to one ── */
+.tp-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* ── Theme card ── */
+.tp-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  text-align: left;
+  background: #161b22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+.tp-card:hover {
+  background: #1c232d;
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.tp-card:active { transform: translateY(0); }
+
+.tp-card-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  border-radius: 10px;
+}
+
+.tp-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tp-card-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.tp-card-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.tp-card-count {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+}
+
+.tp-card-desc {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.tp-card-arrow {
+  flex-shrink: 0;
+  align-self: center;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.3);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+.tp-card:hover .tp-card-arrow {
+  color: var(--accent);
+  transform: translateX(2px);
+}
+
+/* ── Mobile: single column ── */
+@media (max-width: 640px) {
+  .tp-page { padding: 28px 18px 48px; }
+  .tp-grid { grid-template-columns: 1fr; }
+  .tp-title { font-size: 22px; }
+}

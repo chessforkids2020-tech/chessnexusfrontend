@@ -1,0 +1,169 @@
+/* ── Floating Chat Widget ────────────────────────────────────────── */
+
+.fcw-root {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  pointer-events: none; /* let clicks pass through the gap */
+}
+
+.fcw-root > * {
+  pointer-events: auto;
+}
+
+/* ── Panel ── */
+.fcw-panel {
+  width: 380px;
+  height: 560px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(6, 182, 212, 0.12);
+  display: flex;
+  flex-direction: column;
+  animation: fcw-slide-up 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fcw-slide-up {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* ── Panel header (title bar) ── */
+.fcw-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #0e7490, #065f46);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.fcw-panel-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #e2e8f0;
+  letter-spacing: 0.3px;
+}
+
+.fcw-panel-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.fcw-action-btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #e2e8f0;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.fcw-action-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* ── Chat content area — overrides chat-container height ── */
+.fcw-chat-wrap {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.fcw-chat-wrap .chat-container {
+  height: 100% !important;
+  width: 100% !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+/* ── Bubble button ── */
+.fcw-bubble {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.18s, box-shadow 0.18s;
+  flex-shrink: 0;
+}
+
+.fcw-bubble:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 28px rgba(6, 182, 212, 0.6);
+}
+
+.fcw-bubble:active {
+  transform: scale(0.96);
+}
+
+/* ── Unread badge ── */
+.fcw-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid #0a0a0a;
+  animation: fcw-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes fcw-pop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+/* ── Mobile: full-screen slide-up panel ── */
+@media (max-width: 520px) {
+  .fcw-root {
+    bottom: 72px; /* above mobile nav */
+    right: 16px;
+  }
+
+  .fcw-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 82vh;
+    border-radius: 18px 18px 0 0;
+    border-bottom: none;
+  }
+
+  .fcw-bubble {
+    width: 52px;
+    height: 52px;
+  }
+}

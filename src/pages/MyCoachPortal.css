@@ -1,0 +1,621 @@
+.mcp-page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-family: 'Poppins', 'Inter', sans-serif;
+  padding: 28px 24px 60px;
+  position: relative;
+  overflow: hidden;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.mcp-bg {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 40%, rgba(6,182,212,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(16,185,129,0.07) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mcp-header { position: relative; z-index: 1; margin-bottom: 28px; }
+
+.mcp-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mcp-subtitle { color: #9ca3af; font-size: 15px; margin: 0; }
+
+.mcp-error {
+  position: relative; z-index: 1;
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #fca5a5;
+  padding: 12px 18px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* ── Tabs ── */
+.mcp-tabs {
+  position: relative; z-index: 1;
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 28px;
+}
+
+.mcp-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #9ca3af;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 24px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.mcp-tab:hover { color: #d1d5db; }
+
+.mcp-tab-active {
+  color: #ffffff;
+  border-bottom-color: #06b6d4;
+}
+
+.mcp-section {
+  position: relative; z-index: 1;
+  animation: mcpFade 0.4s ease-out;
+}
+
+@keyframes mcpFade {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Coach cards ── */
+.mcp-coach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.mcp-coach-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(23,23,23,0.7);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 16px;
+  padding: 20px 22px;
+}
+
+.mcp-coach-avatar { font-size: 38px; flex-shrink: 0; }
+
+.mcp-coach-name { font-size: 17px; font-weight: 700; color: #fff; }
+
+.mcp-coach-meta {
+  font-size: 13px;
+  color: #9ca3af;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mcp-break-tag {
+  background: rgba(245,158,11,0.18);
+  color: #fbbf24;
+  border: 1px solid rgba(245,158,11,0.3);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+/* ── Stats ── */
+.mcp-stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.mcp-stat {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px;
+  padding: 22px;
+  text-align: center;
+}
+
+.mcp-stat-num {
+  display: block;
+  font-size: 28px;
+  font-weight: 800;
+  color: #06b6d4;
+  margin-bottom: 6px;
+}
+
+.mcp-stat-label { font-size: 13px; color: #9ca3af; }
+
+/* ── Month nav ── */
+.mcp-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.mcp-month-label {
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mcp-nav-btn {
+  background: rgba(6,182,212,0.15);
+  border: 1px solid rgba(6,182,212,0.3);
+  color: #06b6d4;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  font-family: inherit;
+}
+
+.mcp-nav-btn:hover { background: rgba(6,182,212,0.25); transform: translateY(-2px); }
+
+/* ── Table ── */
+.mcp-table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(23,23,23,0.6);
+}
+
+.mcp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.mcp-table thead {
+  background: rgba(0,0,0,0.4);
+}
+
+.mcp-table th {
+  text-align: left;
+  padding: 15px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #67e8f9;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.mcp-table td {
+  padding: 15px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: #e5e7eb;
+}
+
+.mcp-table tbody tr:nth-child(even) { background: rgba(0,0,0,0.18); }
+
+.mcp-empty-row {
+  text-align: center !important;
+  color: #6b7280 !important;
+  padding: 40px !important;
+}
+
+.mcp-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mcp-present { background: rgba(16,185,129,0.2); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+.mcp-absent  { background: rgba(239,68,68,0.2); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+.mcp-catchup { background: rgba(245,158,11,0.2); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+
+/* ── Loading / empty ── */
+.mcp-loading {
+  position: relative; z-index: 1;
+  text-align: center;
+  color: #9ca3af;
+  padding: 80px 20px;
+  font-size: 16px;
+}
+
+.mcp-empty {
+  position: relative; z-index: 1;
+  text-align: center;
+  max-width: 420px;
+  margin: 80px auto;
+  background: rgba(23,23,23,0.7);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 22px;
+  padding: 44px 32px;
+}
+
+.mcp-empty-icon { font-size: 56px; margin-bottom: 16px; }
+
+.mcp-empty-title { font-size: 22px; font-weight: 700; margin: 0 0 10px; color: #fff; }
+
+.mcp-empty-desc { font-size: 14px; color: #9ca3af; line-height: 1.6; margin: 0 0 24px; }
+
+.mcp-empty-btn {
+  display: inline-block;
+  text-decoration: none;
+  background: rgba(6,182,212,0.15);
+  border: 1px solid rgba(6,182,212,0.3);
+  color: #06b6d4;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px 26px;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+}
+
+.mcp-empty-btn:hover { background: rgba(6,182,212,0.25); }
+
+@media (max-width: 600px) {
+  .mcp-tab { padding: 12px 14px; font-size: 13px; }
+  .mcp-title { font-size: 26px; }
+}
+
+/* ── Class Payment request form ── */
+.mcp-pay-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mcp-pay-field > span {
+  font-size: 11px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.mcp-pay-field > input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 9px 11px;
+  color: #e2e8f0;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+}
+
+.mcp-pay-field > input:focus {
+  border-color: rgba(6, 182, 212, 0.5);
+}
+
+.mcp-ok {
+  font-size: 13px;
+  color: #34d399;
+}
+
+/* ── Player (enrollment profile) card ── */
+.mcp-player-card {
+  max-width: 560px;
+  margin: 0 auto 20px;
+  background: linear-gradient(160deg, rgba(23,23,23,0.85) 0%, rgba(17,17,17,0.85) 100%);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.mcp-player-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 24px 22px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(6,182,212,0.14) 0%, transparent 60%),
+    radial-gradient(circle at 100% 0%, rgba(16,185,129,0.12) 0%, transparent 55%);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.mcp-player-avatar {
+  font-size: 40px;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  flex-shrink: 0;
+}
+
+.mcp-player-hero-text { flex: 1; min-width: 0; }
+
+.mcp-player-coach {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.mcp-player-sub {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+}
+
+.mcp-player-code {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(6,182,212,0.12);
+  border: 1px solid rgba(6,182,212,0.3);
+  border-radius: 12px;
+  padding: 8px 14px;
+  flex-shrink: 0;
+}
+
+.mcp-player-code-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #67e8f9;
+}
+
+.mcp-player-code-val {
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #fff;
+}
+
+.mcp-player-rows { padding: 8px 10px; }
+
+.mcp-player-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.mcp-player-row:last-child { border-bottom: none; }
+
+.mcp-player-row-ic {
+  font-size: 18px;
+  width: 26px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.mcp-player-row-label {
+  flex: 1;
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.mcp-player-row-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+@media (max-width: 520px) {
+  .mcp-player-hero { flex-wrap: wrap; }
+  .mcp-player-code { margin-left: auto; }
+}
+
+/* ── Overview: compact coach badge, top-right corner ── */
+.mcp-coach-corner-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.mcp-coach-corner {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(23,23,23,0.7);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 10px 14px;
+}
+
+.mcp-coach-corner-ic { font-size: 24px; }
+
+.mcp-coach-corner-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  text-align: right;
+}
+
+.mcp-coach-corner-meta {
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: right;
+  margin-top: 1px;
+}
+
+@media (max-width: 520px) {
+  .mcp-coach-corner-wrap { justify-content: flex-start; }
+  .mcp-coach-corner-name, .mcp-coach-corner-meta { text-align: left; }
+}
+
+/* ── Assignments ── */
+.mcp-assign-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.mcp-assign-card {
+  background: rgba(23,23,23,0.7);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+
+.mcp-assign-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.mcp-assign-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.mcp-assign-desc {
+  font-size: 13.5px;
+  color: #cbd5e1;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.mcp-assign-meta {
+  font-size: 12.5px;
+  color: #9ca3af;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.mcp-assign-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mcp-assign-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.mcp-assign-bar > div {
+  height: 100%;
+  background: linear-gradient(90deg, #06b6d4, #10b981);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.mcp-assign-pct {
+  font-size: 12px;
+  font-weight: 700;
+  color: #67e8f9;
+  flex-shrink: 0;
+}
+
+.mcp-assign-stats {
+  font-size: 12.5px;
+  color: #cbd5e1;
+  margin-top: 10px;
+}
+
+.mcp-assign-btn {
+  margin-top: 12px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mcp-assign-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(6,182,212,0.35);
+}
+
+.mcp-assign-done {
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #34d399;
+}
+
+/* ── Overview: current assignment banner ── */
+.mcp-current-assign {
+  background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(6,182,212,0.08));
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 16px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.mcp-current-assign-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #a78bfa;
+  margin-bottom: 4px;
+}
+
+.mcp-current-assign-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.mcp-current-assign-row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #cbd5e1;
+}
+
+.mcp-current-assign-row strong { color: #fff; }
+
+.mcp-current-assign + .mcp-current-assign { margin-top: 12px; }
+
+/* NEW assignment — distinct highlight color so it stands out at the top */
+.mcp-assign-new {
+  background: linear-gradient(135deg, rgba(245,158,11,0.16), rgba(239,68,68,0.08));
+  border-color: rgba(245,158,11,0.5);
+  box-shadow: 0 0 0 1px rgba(245,158,11,0.15);
+}
+.mcp-assign-new .mcp-current-assign-label { color: #fbbf24; }

@@ -1,0 +1,444 @@
+/* ======================================
+   MONTHLY FOCUS LIST PAGE
+   ====================================== */
+.mfl-page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  padding: 48px 20px 80px;
+  position: relative;
+}
+
+.mfl-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.07) 0%, transparent 55%),
+    radial-gradient(circle at 80% 70%, rgba(129, 140, 248, 0.07) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Hero ── */
+.mfl-hero {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+.mfl-title {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, #06b6d4, #818cf8, #10b981);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 10px;
+}
+
+.mfl-subtitle {
+  color: #9ca3af;
+  font-size: 1rem;
+  margin: 0 0 20px;
+}
+
+.mfl-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #34d399;
+}
+
+.mfl-count-badge.mfl-count-none {
+  background: rgba(107, 114, 128, 0.12);
+  border-color: rgba(107, 114, 128, 0.3);
+  color: #9ca3af;
+}
+
+.mfl-count-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: mfl-pulse 1.8s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes mfl-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ── Grid ── */
+.mfl-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Card ── */
+.mfl-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: default;
+}
+
+.mfl-card:hover {
+  border-color: rgba(129, 140, 248, 0.4);
+  box-shadow: 0 8px 40px rgba(129, 140, 248, 0.12);
+}
+
+.mfl-card-accent {
+  height: 3px;
+  background: linear-gradient(90deg, #06b6d4, #818cf8, #10b981);
+}
+
+.mfl-card-body {
+  padding: 22px 22px 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Status row */
+.mfl-card-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.mfl-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: mfl-pulse 1.8s infinite;
+  flex-shrink: 0;
+}
+
+.mfl-status-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #10b981;
+}
+
+.mfl-days-left {
+  margin-left: auto;
+  font-size: 11px;
+  color: #9ca3af;
+  background: rgba(255,255,255,0.05);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* Title */
+.mfl-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #e5e7eb;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.mfl-card-theme {
+  font-size: 0.82rem;
+  color: #818cf8;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Progress bar */
+.mfl-card-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mfl-progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.mfl-prog-label { color: #6b7280; }
+.mfl-prog-running { color: #10b981; font-weight: 600; }
+
+.mfl-prog-bar-bg {
+  height: 5px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.07);
+  overflow: hidden;
+}
+
+.mfl-prog-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #06b6d4, #10b981);
+  transition: width 0.5s ease;
+  min-width: 4px;
+}
+
+/* Task type pills */
+.mfl-card-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mfl-type-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+
+.mfl-type-puzzles            { background: rgba(6,182,212,0.1);  border-color: rgba(6,182,212,0.3);   color: #06b6d4; }
+.mfl-type-find_mistakes      { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3);  color: #f59e0b; }
+.mfl-type-tactics_identification { background: rgba(129,140,248,0.1); border-color: rgba(129,140,248,0.3); color: #818cf8; }
+.mfl-type-multiple_choice    { background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3);  color: #34d399; }
+.mfl-type-blunder_analysis   { background: rgba(239,68,68,0.1);  border-color: rgba(239,68,68,0.3);   color: #f87171; }
+
+/* XP info */
+.mfl-card-xp {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: auto;
+}
+
+.mfl-xp-sep { color: #374151; }
+
+/* Footer / CTA */
+.mfl-card-footer {
+  padding: 0 22px 22px;
+}
+
+.mfl-enter-btn {
+  display: block;
+  text-align: center;
+  padding: 12px;
+  background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(129,140,248,0.2));
+  border: 1px solid rgba(129,140,248,0.35);
+  border-radius: 12px;
+  color: #c7d2fe;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.mfl-enter-btn:hover {
+  background: linear-gradient(135deg, rgba(6,182,212,0.35), rgba(129,140,248,0.35));
+  border-color: rgba(129,140,248,0.6);
+  transform: translateY(-1px);
+  color: #e0e7ff;
+}
+
+/* ── Empty / error / loading ── */
+.mfl-empty {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 80px 20px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.mfl-empty-icon {
+  font-size: 3.5rem;
+  margin-bottom: 16px;
+}
+
+.mfl-empty h2 {
+  font-size: 1.4rem;
+  color: #e5e7eb;
+  margin: 0 0 8px;
+}
+
+.mfl-empty p {
+  color: #9ca3af;
+  margin: 0 0 28px;
+}
+
+.mfl-back-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  background: rgba(129,140,248,0.15);
+  border: 1px solid rgba(129,140,248,0.3);
+  border-radius: 10px;
+  color: #a5b4fc;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.mfl-back-btn:hover {
+  background: rgba(129,140,248,0.28);
+  color: #c7d2fe;
+}
+
+.mfl-spinner-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  gap: 16px;
+  color: #9ca3af;
+}
+
+.mfl-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255,255,255,0.08);
+  border-top-color: #06b6d4;
+  border-radius: 50%;
+  animation: mfl-spin 0.8s linear infinite;
+}
+
+@keyframes mfl-spin {
+  to { transform: rotate(360deg); }
+}
+
+.mfl-error {
+  text-align: center;
+  color: #f87171;
+  padding: 60px 20px;
+  font-size: 1rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .mfl-page { padding: 32px 14px 60px; }
+  .mfl-grid { grid-template-columns: 1fr; gap: 16px; }
+  .mfl-card-body { padding: 18px 18px 12px; }
+  .mfl-card-footer { padding: 0 18px 18px; }
+}
+
+/* ── Elite / Admin — Create Challenge ── */
+.mfl-elite-create {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.mfl-elite-btn {
+  padding: 11px 28px;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.mfl-elite-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.55);
+}
+
+.mfl-elite-btn--disabled {
+  background: rgba(107, 114, 128, 0.25);
+  box-shadow: none;
+  cursor: not-allowed;
+  color: #9ca3af;
+}
+
+.mfl-elite-note {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* ── Official (ChessNexus/Admin) Card ── */
+.mfl-card--official {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.05);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.2), 0 6px 30px rgba(245, 158, 11, 0.08);
+}
+
+.mfl-card--official:hover {
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.4), 0 10px 40px rgba(245, 158, 11, 0.15);
+}
+
+.mfl-card--official .mfl-card-accent {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24, #d97706);
+}
+
+.mfl-card--official .mfl-card-title {
+  color: #fef3c7;
+}
+
+.mfl-card--official .mfl-card-theme {
+  color: #fbbf24;
+}
+
+.mfl-card--official .mfl-prog-bar-fill {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.mfl-card--official .mfl-enter-btn {
+  background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(251,191,36,0.2));
+  border-color: rgba(245,158,11,0.45);
+  color: #fde68a;
+}
+
+.mfl-card--official .mfl-enter-btn:hover {
+  background: linear-gradient(135deg, rgba(245,158,11,0.35), rgba(251,191,36,0.35));
+  border-color: rgba(245,158,11,0.7);
+  color: #fef3c7;
+}
+
+.mfl-official-badge {
+  margin: 10px 22px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fbbf24;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  width: fit-content;
+}

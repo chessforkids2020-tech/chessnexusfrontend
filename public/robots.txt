@@ -1,0 +1,56 @@
+User-agent: *
+
+# Allow public pages
+Allow: /
+Allow: /features
+Allow: /chess-puzzles
+Allow: /chess-tactics-race
+Allow: /play-chess-online
+Allow: /analyse-my-chess-game
+Allow: /3d-chess-arena-tournament
+Allow: /chess-study
+Allow: /chess-community
+Allow: /puzzles
+Allow: /puzzles-hub
+Allow: /arena
+Allow: /arena-race
+Allow: /puzzle-tournament
+Allow: /individual-race
+Allow: /team-race
+Allow: /monthly-focus
+Allow: /leaderboard
+Allow: /study
+Allow: /games
+Allow: /arcade
+Allow: /social
+Allow: /events
+Allow: /schedule
+Allow: /contact
+Allow: /report
+Allow: /login
+Allow: /signup-request
+Allow: /best-racers
+
+# Block private / admin / in-game routes
+Disallow: /api/
+Disallow: /admin/
+Disallow: /admin-*
+Disallow: /waiting-room
+Disallow: /arena-waiting
+Disallow: /race
+Disallow: /round-scoreboard
+Disallow: /scoreboard
+Disallow: /verify-email
+Disallow: /resend-verification
+Disallow: /dashboard
+Disallow: /my-reports
+Disallow: /admin/reports
+Disallow: /attendance
+Disallow: /arena-result
+Disallow: /arena-lobby
+Disallow: /team-lobby
+Disallow: /study-duel
+Disallow: /coaching-room
+
+Sitemap: https://chessnexus.in/sitemap.xml
+Host: https://chessnexus.in

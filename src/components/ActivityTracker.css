@@ -1,0 +1,374 @@
+﻿.activity-tracker {
+  max-width: 1200px;
+  margin: 0 auto 32px auto;
+  padding: 0 16px;
+}
+
+.at-shell {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  padding: 14px;
+  background:
+    radial-gradient(circle at top left, rgba(6, 182, 212, 0.08), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.06), transparent 28%),
+    var(--obsidian-surface-elevated, rgba(23, 23, 23, 0.7));
+  border: 1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16));
+  box-shadow: var(--obsidian-shadow, 0 24px 80px rgba(3, 8, 20, 0.55)), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.at-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 22%, transparent 78%, rgba(255, 255, 255, 0.02));
+}
+
+.at-shell-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.at-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.at-heading-icon {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  color: var(--obsidian-accent, #7dd3fc);
+  background: var(--obsidian-panel, linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 24px rgba(6, 182, 212, 0.16);
+}
+
+.at-heading-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.at-title {
+  margin: 0;
+  font-size: clamp(18px, 3vw, 28px);
+  font-weight: 700;
+  color: var(--obsidian-text, #f8fafc);
+  letter-spacing: -0.02em;
+}
+
+.at-tabs {
+  display: inline-flex;
+  padding: 3px;
+  gap: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.at-tab {
+  min-width: 72px;
+  height: 34px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--obsidian-text-muted, rgba(203, 213, 225, 0.74));
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.at-tab:hover {
+  color: var(--obsidian-text, #f8fafc);
+}
+
+.at-tab--active {
+  color: var(--obsidian-text, #f8fafc);
+  background: var(--obsidian-button, linear-gradient(135deg, #06b6d4 0%, #10b981 100%));
+  box-shadow: var(--obsidian-glow, 0 12px 28px rgba(6, 182, 212, 0.18)), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.at-shell-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.at-summary-card,
+.at-chart-card {
+  border-radius: 18px;
+  border: 1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16));
+  background: var(--obsidian-panel, linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.at-summary-card {
+  padding: 12px;
+}
+
+.at-metric-list {
+  display: grid;
+  gap: 10px;
+}
+
+.at-metric-row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+}
+
+.at-metric-icon {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: var(--obsidian-accent, #7dd3fc);
+  background: rgba(6, 182, 212, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 20px rgba(6, 182, 212, 0.1);
+}
+
+.at-metric-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.at-metric-label-wrap {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.at-metric-value {
+  color: var(--obsidian-text, #f8fafc);
+  font-size: clamp(18px, 3vw, 26px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  justify-self: end;
+  text-align: right;
+}
+
+.at-metric-value--compact {
+  font-size: clamp(15px, 2.4vw, 21px);
+  letter-spacing: -0.02em;
+}
+
+.at-metric-label {
+  margin-top: 4px;
+  color: var(--obsidian-text-muted, rgba(203, 213, 225, 0.74));
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.at-metric-label--inline {
+  margin-top: 0;
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.at-week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.at-week-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.at-week-day-label {
+  color: rgba(203, 213, 225, 0.6);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.at-day-cell {
+  --at-intensity: 0;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.78), rgba(15, 23, 42, 0.96));
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.at-day-cell::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 9px;
+  background: radial-gradient(circle at center, rgba(6, 182, 212, calc(0.18 + var(--at-intensity) * 0.25)), transparent 68%);
+  opacity: calc(var(--at-intensity));
+}
+
+.at-day-cell--active {
+  background: linear-gradient(180deg, rgba(6, 182, 212, 0.95), rgba(16, 185, 129, 0.92));
+  border-color: var(--obsidian-border-strong, rgba(125, 211, 252, 0.32));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 10px 22px rgba(6, 182, 212, 0.22);
+}
+
+.at-day-cell--today {
+  outline: 2px solid var(--obsidian-border-strong, rgba(125, 211, 252, 0.32));
+  outline-offset: -2px;
+}
+
+.at-day-cell-core {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+  opacity: calc(0.2 + var(--at-intensity) * 0.8);
+}
+
+.at-chart-card {
+  padding: 14px 14px 10px;
+}
+
+.at-chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.at-kicker {
+  margin: 0 0 4px 0;
+  color: var(--obsidian-accent, #7dd3fc);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.at-chart-caption {
+  margin: 0;
+  color: var(--obsidian-text-muted, rgba(203, 213, 225, 0.74));
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.at-chart-badge {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--obsidian-border-strong, rgba(125, 211, 252, 0.32));
+  background: rgba(6, 182, 212, 0.08);
+  color: var(--obsidian-text-soft, #dbeafe);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.at-chart-frame {
+  width: 100%;
+  min-height: 220px;
+}
+
+.at-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.at-empty {
+  margin-top: 6px;
+  padding: 8px 0 2px;
+  text-align: center;
+  color: rgba(203, 213, 225, 0.44);
+  font-size: 12px;
+}
+
+.at-loading {
+  position: relative;
+  z-index: 1;
+  padding: 24px 10px;
+  text-align: center;
+  color: var(--obsidian-text-muted, rgba(203, 213, 225, 0.74));
+  font-size: 13px;
+}
+
+@media (max-width: 960px) {
+  .at-shell-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .activity-tracker {
+    padding: 0 10px;
+  }
+
+  .at-shell {
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .at-shell-header,
+  .at-chart-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .at-tabs {
+    width: 100%;
+  }
+
+  .at-tab {
+    flex: 1 1 0;
+  }
+
+  .at-summary-card,
+  .at-chart-card {
+    padding: 12px;
+  }
+
+  .at-metric-row {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+  }
+
+  .at-metric-label--inline {
+    grid-column: 2;
+  }
+
+  .at-week-strip {
+    gap: 8px;
+  }
+
+  .at-week-day-label {
+    font-size: 11px;
+  }
+}

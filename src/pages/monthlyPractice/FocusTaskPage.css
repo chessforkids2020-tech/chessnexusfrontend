@@ -1,0 +1,1036 @@
+/* ====================================
+   FOCUS TASK PAGE
+   OBSIDIAN GLASS THEME
+   ==================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
+
+/* Page Container */
+.focus-task-page {
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated Background */
+.focus-task-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 40%, rgba(6, 182, 212, 0.08) 0%, transparent 50%), 
+              radial-gradient(circle at 70% 60%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+  animation: pulse-bg 8s ease-in-out infinite;
+}
+
+@keyframes pulse-bg {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Content Container */
+.focus-task-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Loading State */
+.focus-task-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.focus-task-loading-icon {
+  font-size: 60px;
+  margin-bottom: 24px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.focus-task-loading-text {
+  color: #9ca3af;
+  font-size: 1.2em;
+  font-weight: 500;
+}
+
+/* Card Styles */
+.focus-card {
+  background: rgba(23, 23, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.focus-card:hover {
+  border-color: rgba(6, 182, 212, 0.2);
+}
+
+/* Error State */
+.focus-error-card {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  text-align: center;
+}
+
+.focus-error-title {
+  font-size: 2em;
+  margin: 0 0 16px 0;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.focus-error-message {
+  color: #fca5a5;
+  font-size: 1.1em;
+  margin-bottom: 24px;
+}
+
+/* Header */
+.focus-task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 24px 32px;
+  background: rgba(23, 23, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.focus-task-title {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2em;
+  font-weight: 900;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 1px;
+}
+
+.focus-day-badge {
+  display: inline-block;
+  padding: 8px 20px;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 25px;
+  color: #06b6d4;
+  font-weight: 700;
+  font-size: 0.95em;
+  letter-spacing: 0.5px;
+}
+
+/* Timer */
+.focus-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 1.2em;
+  color: #f59e0b;
+  font-family: 'Orbitron', monospace;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+}
+
+.focus-timer-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+  animation: pulse-timer 1s infinite;
+}
+
+@keyframes pulse-timer {
+  0%, 100% {
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.6);
+  }
+}
+
+/* Buttons */
+.focus-btn {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  font-family: 'Poppins', sans-serif;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.focus-btn-primary {
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+}
+
+.focus-btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(6, 182, 212, 0.6);
+}
+
+.focus-btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+}
+
+.focus-btn-success:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.6);
+}
+
+.focus-btn-secondary {
+  background: rgba(23, 23, 23, 0.7);
+  color: #9ca3af;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.focus-btn-secondary:hover {
+  border-color: rgba(6, 182, 212, 0.3);
+  color: #06b6d4;
+  transform: translateY(-3px);
+}
+
+.focus-btn-large {
+  font-size: 1.2em;
+  padding: 18px 48px;
+  width: 100%;
+}
+
+.focus-btn-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.focus-btn-link {
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Status Messages */
+.focus-status-card {
+  text-align: center;
+  padding: 48px 32px;
+}
+
+.focus-status-icon {
+  font-size: 80px;
+  margin-bottom: 24px;
+}
+
+.focus-status-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.2em;
+  font-weight: 900;
+  margin: 0 0 16px 0;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.focus-status-message {
+  color: #9ca3af;
+  font-size: 1.2em;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+/* Instructions Section */
+.focus-instructions {
+  background: rgba(6, 182, 212, 0.05);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.focus-instructions-title {
+  font-size: 1.3em;
+  font-weight: 700;
+  color: #06b6d4;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.focus-instructions-list {
+  margin: 0;
+  padding-left: 24px;
+  color: #d1d5db;
+  line-height: 1.8;
+}
+
+.focus-instructions-list li {
+  margin-bottom: 8px;
+}
+
+/* Task Info Badges */
+.focus-task-info-badges {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  margin-bottom: 32px;
+}
+
+.focus-info-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 25px;
+  color: #06b6d4;
+  font-weight: 700;
+  font-size: 0.95em;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
+}
+
+.focus-info-badge-xp {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.focus-info-badge-points {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+/* Skill Score Breakdown */
+.focus-skill-score-breakdown {
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.focus-breakdown-title {
+  font-size: 1.3em;
+  font-weight: 700;
+  color: #10b981;
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.focus-breakdown-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.focus-breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(23, 23, 23, 0.4);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.focus-breakdown-label {
+  color: #9ca3af;
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+.focus-breakdown-value {
+  color: #10b981;
+  font-weight: 700;
+  font-size: 1.05em;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Puzzle Card */
+.focus-puzzle-card {
+  background: rgba(23, 23, 23, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.focus-puzzle-card:hover {
+  border-color: rgba(6, 182, 212, 0.2);
+}
+
+.focus-puzzle-card-active {
+  border-color: rgba(6, 182, 212, 0.5);
+  background: rgba(6, 182, 212, 0.05);
+  box-shadow: 0 0 24px rgba(6, 182, 212, 0.2);
+}
+
+.focus-puzzle-content {
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.focus-puzzle-board {
+  width: 320px;
+  min-width: 280px;
+  flex-shrink: 0;
+}
+
+.focus-puzzle-details {
+  flex: 1;
+  min-width: 240px;
+}
+
+.focus-puzzle-number {
+  margin: 0 0 12px 0;
+  font-size: 1.2em;
+  font-weight: 700;
+  color: #06b6d4;
+}
+
+.focus-puzzle-description {
+  color: #9ca3af;
+  margin: 0 0 20px 0;
+  font-size: 1em;
+  line-height: 1.5;
+}
+
+/* Input Fields */
+.focus-input-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #e5e7eb;
+  font-size: 0.95em;
+  letter-spacing: 0.3px;
+}
+
+.focus-input {
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(23, 23, 23, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  font-size: 16px;
+  color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.focus-input::placeholder {
+  color: #6b7280;
+}
+
+.focus-input:focus {
+  outline: none;
+  border-color: rgba(6, 182, 212, 0.5);
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.2);
+  background: rgba(6, 182, 212, 0.05);
+}
+
+/* PGN Display & Viewer */
+.focus-pgn-section {
+  background: rgba(23, 23, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 32px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.focus-pgn-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5em;
+  color: #06b6d4;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.focus-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.focus-side-badge {
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.focus-side-white {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.focus-side-black {
+  background: rgba(0, 0, 0, 0.4);
+  color: #9ca3af;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.focus-side-badge strong {
+  color: #06b6d4;
+}
+
+.focus-pgn-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.pgn-btn {
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #06b6d4;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pgn-btn:hover:not(:disabled) {
+  background: rgba(6, 182, 212, 0.2);
+  transform: scale(1.1);
+}
+
+.pgn-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pgn-move-info {
+  font-family: 'Orbitron', sans-serif !important;
+  letter-spacing: 1px;
+  font-size: 14px;
+}
+
+.pgn-history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.pgn-history-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.pgn-history-list::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.3);
+  border-radius: 3px;
+}
+
+.pgn-history-list span:hover {
+  background: rgba(6, 182, 212, 0.1) !important;
+  color: #06b6d4 !important;
+}
+
+.focus-pgn-content {
+  background: rgba(23, 23, 23, 0.9);
+  padding: 20px;
+  border-radius: 12px;
+  overflow: auto;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  color: #d1d5db;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 280px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  line-height: 1.6;
+}
+
+/* Task Section Headers */
+.focus-section-title {
+  margin: 0 0 20px 0;
+  font-size: 1.3em;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.focus-section-title-icon {
+  font-size: 1.2em;
+}
+
+/* Answer Input Groups */
+.focus-answer-group {
+  margin-bottom: 20px;
+}
+
+/* Tactics Quick Select Buttons */
+.focus-tactics-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.focus-tactics-btn {
+  padding: 10px 18px;
+  background: rgba(23, 23, 23, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  color: #9ca3af;
+}
+
+.focus-tactics-btn:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+}
+
+.focus-tactics-btn-active {
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+}
+
+/* Submit Section */
+.focus-submit-section {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Result Card */
+.focus-result-card {
+  padding: 48px 32px;
+  text-align: center;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+}
+
+.focus-result-success {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.focus-result-partial {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.focus-result-icon {
+  font-size: 80px;
+  margin-bottom: 24px;
+}
+
+.focus-result-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 2.5em;
+  font-weight: 900;
+  margin: 0 0 16px 0;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.focus-result-score {
+  font-size: 3em;
+  font-weight: 800;
+  margin: 16px 0;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.focus-result-xp {
+  font-size: 1.8em;
+  font-weight: 700;
+  color: #10b981;
+  margin: 16px 0;
+}
+
+.focus-result-bonus {
+  font-size: 1.3em;
+  color: #f59e0b;
+  margin: 8px 0;
+}
+
+.focus-result-message {
+  color: #9ca3af;
+  font-size: 1.1em;
+  margin: 24px 0;
+}
+
+/* Answer Review */
+.focus-answer-review {
+  background: rgba(23, 23, 23, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 32px;
+  text-align: left;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.focus-answer-review-title {
+  font-size: 1.4em;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  color: #06b6d4;
+}
+
+.focus-answer-item {
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.focus-answer-correct {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.focus-answer-wrong {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.focus-answer-label {
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 8px;
+}
+
+.focus-answer-value {
+  color: #d1d5db;
+  font-size: 0.95em;
+}
+
+.focus-answer-correct-value {
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* Back Navigation */
+.focus-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #9ca3af;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 12px 20px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+}
+
+.focus-back-link:hover {
+  color: #06b6d4;
+  background: rgba(6, 182, 212, 0.1);
+  transform: translateX(-4px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .focus-task-page {
+    padding: 32px 16px;
+  }
+  
+  .focus-task-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .focus-puzzle-board {
+    width: 100%;
+  }
+}
+
+.focus-side-badge {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.85em;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.focus-side-white {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.focus-side-black {
+  background: rgba(0, 0, 0, 0.4);
+  color: #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.focus-side-both {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+  .focus-task-page {
+    padding: 24px 16px;
+  }
+  
+  .focus-card {
+    padding: 24px;
+  }
+  
+  .focus-task-title {
+    font-size: 1.5em;
+  }
+  
+  .focus-puzzle-content {
+    flex-direction: column;
+  }
+  
+  .focus-puzzle-board {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+  
+  .focus-timer {
+    font-size: 1em;
+    padding: 10px 20px;
+  }
+  
+  .focus-btn-large {
+    font-size: 1em;
+    padding: 16px 32px;
+  }
+  
+  .focus-tactics-buttons {
+    gap: 8px;
+  }
+  
+  .focus-tactics-btn {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+  
+  .focus-result-title {
+    font-size: 2em;
+  }
+  
+  .focus-result-score {
+    font-size: 2.2em;
+  }
+  
+  .focus-task-info-badges {
+    gap: 12px;
+  }
+  
+  .focus-info-badge {
+    font-size: 0.85em;
+    padding: 8px 16px;
+  }
+  
+  .focus-breakdown-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+}
+
+/* Scoring Note */
+.focus-scoring-note {
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.focus-scoring-note p {
+  margin: 0;
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .focus-task-title {
+    font-size: 1.3em;
+  }
+  
+  .focus-status-icon {
+    font-size: 60px;
+  }
+  
+  .focus-status-title {
+    font-size: 1.8em;
+  }
+  
+  .focus-result-icon {
+    font-size: 60px;
+  }
+}
+
+.focus-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 1000;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  padding: 20px;
+}
+
+.focus-popup-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 1001;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.focus-popup-close:hover {
+  background: #2563eb;
+  transform: scale(1.1);
+}
+
+.focus-popup-content {
+  background: #1a1a1a;
+  border-radius: 12px;
+  padding: 15px;
+  max-width: 95vw;
+  max-height: 95vh;
+  position: relative;
+  border: 1px solid #3b82f6;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.focus-popup-chessboard {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Spin animation for PGN analysis loading */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

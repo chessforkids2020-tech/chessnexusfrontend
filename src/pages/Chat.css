@@ -1,0 +1,498 @@
+.chat-container {
+  /* Lock chat to viewport to prevent page scrollbar from appearing/disappearing */
+  position: relative;
+  display: flex;
+  overflow: hidden; /* only internal areas should scroll */
+  background-color: #fff; /* keep page background visible */
+  width: 100%;
+  height: 85vh; /* Fixed height for the chat window within the page */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+}
+
+/* Compact (small) chat window */
+.chat-container.compact {
+  position: fixed;
+  inset: auto !important; /* override full-viewport */
+  width: 200px !important; /* aggressively small */
+  height: 320px !important; /* aggressively small */
+  right: 12px !important;
+  bottom: 12px !important;
+  border-radius: 10px !important;
+  box-shadow: 0 14px 36px rgba(0,0,0,0.32) !important;
+  overflow: hidden !important;
+  background-color: #fff; /* small card background for clarity */
+  z-index: 2000;
+}
+
+.chat-container.compact .chat-sidebar {
+  display: none; /* hide sidebar in compact mode */
+}
+
+.chat-container.compact .chat-main {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 10px !important;
+}
+
+/* More compact typography and tighter spacing for aggressive small mode */
+.chat-container.compact .chat-header { padding: 6px 8px; font-size: 0.85em; }
+.chat-container.compact .messages-area { padding: 6px; gap: 6px; }
+.chat-container.compact .message { padding: 6px 8px; border-radius: 10px; font-size: 0.75em; }
+.chat-container.compact .message-sender { display: none; }
+.chat-container.compact .message-content { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-container.compact .message-input-area { padding: 6px; }
+.chat-container.compact .message-input { padding: 6px; font-size: 0.8em; }
+.chat-container.compact .send-button { padding: 6px 8px; font-size: 0.8em; }
+
+/* Expanded mode: 2x compact */
+.chat-container.expanded {
+  inset: auto !important;
+  width: 100% !important; /* Responsive width */
+  max-width: none !important; /* Max width */
+  height: 85vh !important; /* Responsive height */
+  top: auto !important;
+  left: auto !important;
+  transform: none !important; /* Center exactly */
+  right: auto !important;
+  bottom: auto !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+  overflow: hidden !important;
+  background-color: #fff;
+  position: relative !important;
+}
+
+.chat-container.expanded .chat-sidebar {
+  display: flex !important; /* show sidebar in expanded mode */
+  flex: 0 0 300px !important;
+  min-width: 300px !important;
+}
+.chat-container.expanded .chat-main {
+  flex: 1 1 auto !important; /* fill remaining space next to sidebar */
+  height: 100% !important;
+  border-radius: 12px !important;
+}
+.chat-container.expanded .chat-header { padding: 10px 12px; font-size: 0.95em; }
+.chat-container.expanded .messages-area { padding: 12px; gap: 8px; }
+.chat-container.expanded .message { padding: 8px 12px; border-radius: 14px; font-size: 0.9em; }
+.chat-container.expanded .message-sender { font-size: 0.7em; }
+.chat-container.expanded .message-content { white-space: normal; }
+.chat-container.expanded .message-input-area { padding: 10px; }
+.chat-container.expanded .message-input { padding: 8px; font-size: 0.9em; }
+.chat-container.expanded .send-button { padding: 8px 12px; font-size: 0.9em; }
+
+.chat-sidebar {
+  flex: 0 0 300px; /* fixed flex-basis so it never shrinks */
+  min-width: 300px;
+  max-width: 320px;
+  background-color: #fff;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Allow sidebar to scroll independently */
+  position: relative;
+}
+
+.chat-sidebar-header {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 12px; /* space for scrollbar so content isn't hidden */
+  min-width: 0; /* allow proper truncation of children in flex layout */
+}
+
+.chat-item {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  overflow: hidden; /* Prevent long names/previews from overflowing */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-item:hover, .chat-item.active {
+  background-color: #e6f7ff;
+}
+
+.chat-item-name {
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-item-preview {
+  font-size: 0.85em;
+  color: #4b5563;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* WhatsApp-style: unread chats float to top with highlighted name */
+.chat-item.unread {
+  background-color: #fff7e6;
+}
+
+.chat-item.unread .chat-item-name {
+  color: #d4380d;
+  font-weight: 700;
+}
+
+.chat-item-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.chat-item-name-row .chat-item-name {
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.unread-badge {
+  background-color: #d4380d;
+  color: #fff;
+  border-radius: 50%;
+  min-width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7em;
+  font-weight: 700;
+  padding: 0 4px;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+
+.chat-main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Only inner area should scroll */
+  min-width: 0; /* Critical: prevents flex item from overflowing container */
+  position: relative; /* Ensure proper positioning */
+  box-sizing: border-box;
+}
+
+/* Temporary debug outlines - remove after verification */
+/* Removed debug outlines */
+
+.chat-header {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #213547; /* ensure header text is visible on light backgrounds */
+}
+
+.chat-sidebar h3 {
+  color: #111827;
+}
+
+/* Ensure header text and controls are visible in compact/expanded white card modes */
+.chat-container.compact .chat-header,
+.chat-container.expanded .chat-header {
+  color: #213547;
+}
+
+.chat-container.compact .btn-secondary,
+.chat-container.expanded .btn-secondary {
+  color: #213547;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+}
+
+/* small variant used for remove buttons in group chat dialogs */
+.btn-remove-small {
+  padding: 2px 6px !important;
+  font-size: 0.75em !important;
+  min-width: 0 !important;
+  width: auto !important;
+  line-height: 1 !important;
+}
+
+.messages-area {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto; /* Only message list scrolls vertically */
+  overscroll-behavior: contain; /* Prevent scroll chaining */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  text-align: left; /* Ensure text alignment is left by default */
+  justify-content: flex-start; /* Ensure messages start from top */
+  align-items: stretch; /* Allow messages to stretch and align properly */
+}
+
+/* Inner wrapper to center content without changing outer container layout */
+.messages-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.messages-inner.centered {
+  justify-content: center; /* vertical center content inside the fixed-height container */
+  /* Do NOT center horizontally to avoid narrow centered layout that hides sidebar */
+  align-items: stretch;
+}
+
+/* Center empty/loading blocks horizontally without narrowing message bubbles */
+.messages-inner.centered .empty-messages,
+.messages-inner.centered .loading-messages {
+  align-self: center;
+}
+
+/* Safety: ensure messages do not overflow horizontally */
+.message {
+  /* clamp bubble width so it never exceeds container */
+  max-width: min(70%, calc(100% - 120px));
+  width: fit-content; /* Keep tight to content but respect max-width */
+  padding: 10px 15px;
+  border-radius: 18px;
+  position: relative;
+  overflow-wrap: anywhere; /* Break very long words/URLs */
+  word-break: break-word;
+  box-sizing: border-box;
+  margin-bottom: 5px;
+  text-align: left; /* Ensure text inside message is left-aligned */
+}
+
+/* When there are few or no messages, center them vertically for better UX */
+.messages-area.centered {
+  justify-content: center;
+}
+
+/* Smooth transition when centering state toggles */
+.messages-area {
+  transition: justify-content 220ms ease, padding 160ms ease;
+}
+
+/* Subtle inner card shadow to emphasize the white chat card */
+.chat-main {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+}
+
+.message {
+  max-width: 70%;
+  width: fit-content; /* Ensure message bubble wraps content tightly */
+  padding: 10px 15px;
+  border-radius: 18px;
+  position: relative;
+  word-wrap: break-word;
+  margin-bottom: 5px;
+  text-align: left; /* Ensure text inside message is left-aligned */
+  align-self: flex-start; /* Default alignment */
+}
+
+.message.sent {
+  align-self: flex-end; /* Right align sent messages */
+  background-color: #1890ff;
+  color: white;
+  border-bottom-right-radius: 4px;
+  margin-left: auto; /* Push to right */
+  margin-right: 0;
+  overflow-wrap: anywhere;
+}
+
+.message.received {
+  align-self: flex-start; /* Left align received messages */
+  background-color: #f0f0f0;
+  color: #333;
+  border-bottom-left-radius: 4px;
+  margin-right: auto; /* Push to left */
+  margin-left: 0;
+  overflow-wrap: anywhere;
+}
+
+.message-sender {
+  font-size: 0.75em;
+  margin-bottom: 4px;
+  opacity: 0.8;
+}
+
+.message-content {
+  word-wrap: break-word;
+  white-space: pre-wrap; /* Preserve line breaks */
+  line-height: 1.4;
+}
+
+.empty-messages {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 40px 20px;
+  width: 100%;
+}
+
+.loading-messages {
+  text-align: center;
+  color: #666;
+  padding: 40px 20px;
+  width: 100%;
+  font-style: italic;
+}
+
+.message-input-area {
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  gap: 10px;
+}
+
+.message-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+  outline: none;
+}
+
+.send-button {
+  padding: 0 20px;
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.send-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.user-list-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-list-item:hover {
+  background-color: #f9f9f9;
+}
+
+.btn-primary {
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #888;
+  font-size: 1.2em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chat-container {
+    margin: 10px;
+    width: calc(100% - 20px);
+    height: calc(100vh - 140px);
+  }
+  
+  .chat-sidebar {
+    width: 250px;
+  }
+  
+  .message {
+    max-width: 85%;
+  }
+  
+  .messages-area {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-sidebar {
+    width: 200px;
+  }
+  
+  .chat-item {
+    padding: 10px;
+  }
+  
+  .message {
+    max-width: 90%;
+    padding: 8px 12px;
+  }
+  
+  .messages-area {
+    padding: 10px;
+    gap: 8px;
+  }
+}

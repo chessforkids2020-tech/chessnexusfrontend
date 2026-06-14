@@ -1,0 +1,347 @@
+/* ResponsiveLayout.css */
+
+/* Base Styles - Mobile First (0-480px) */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 14px; /* Base for mobile */
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background-color: var(--background-color);
+  overflow-x: hidden;
+}
+
+.responsive-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation */
+.responsive-nav {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  padding: var(--space-sm) var(--space-md);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.logo {
+  font-size: var(--text-2xl);
+}
+
+.logo-image {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-text {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Desktop Navigation */
+.desktop-nav {
+  display: none;
+  gap: var(--space-sm);
+}
+
+/* Mobile Menu Button */
+.mobile-menu-btn {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 30px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.menu-line {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-btn.active .menu-line:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.mobile-menu-btn.active .menu-line:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-btn.active .menu-line:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Mobile Navigation Dropdown */
+.mobile-nav-dropdown {
+  background: white;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: var(--space-md);
+  display: block;
+  border-bottom: 1px solid #eee;
+  transition: background 0.2s;
+}
+
+.nav-link:hover {
+  background: #f5f5f5;
+}
+
+/* Main Content */
+.responsive-main {
+  flex: 1;
+  padding: var(--space-md);
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.content-wrapper {
+  width: 100%;
+}
+
+/* Footer */
+.responsive-footer {
+  background: var(--text-primary);
+  color: white;
+  padding: var(--space-lg) var(--space-md);
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.footer-links a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: white;
+}
+
+/* =============================================== */
+/* RESPONSIVE BREAKPOINTS */
+/* =============================================== */
+
+/* Small Mobile (0-480px) */
+@media (max-width: 480px) {
+  html {
+    font-size: 13px;
+  }
+  
+  .responsive-main {
+    padding: var(--space-sm);
+  }
+  
+  .brand-text {
+    font-size: var(--text-base);
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+}
+
+/* Large Mobile (481-768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  
+  .nav-brand {
+    gap: var(--space-md);
+  }
+  
+  .logo {
+    font-size: var(--text-3xl);
+  }
+  
+  .brand-text {
+    font-size: var(--text-xl);
+  }
+}
+
+/* Tablet (769-1024px) - iPad Landscape & Portrait */
+@media (min-width: 769px) and (max-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+  
+  /* Show desktop nav on tablets */
+  .desktop-nav {
+    display: flex;
+  }
+  
+  .mobile-menu-btn {
+    display: none;
+  }
+  
+  .nav-link {
+    color: white;
+    border: none;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+  }
+  
+  .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .responsive-main {
+    padding: var(--space-lg);
+  }
+  
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+/* Laptop (1025-1280px) */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  html {
+    font-size: 16px;
+  }
+  
+  .responsive-nav {
+    padding: var(--space-md) var(--space-xl);
+  }
+  
+  .responsive-main {
+    padding: var(--space-xl);
+  }
+  
+  .desktop-nav {
+    gap: var(--space-md);
+  }
+}
+
+/* Desktop (1281px+) */
+@media (min-width: 1281px) {
+  html {
+    font-size: 16px;
+  }
+  
+  .responsive-nav,
+  .responsive-main,
+  .responsive-footer {
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .desktop-nav {
+    gap: var(--space-lg);
+  }
+  
+  .nav-link {
+    padding: var(--space-sm) var(--space-lg);
+  }
+}
+
+/* Extra Large Screens (1920px+) */
+@media (min-width: 1920px) {
+  .responsive-nav,
+  .responsive-main,
+  .responsive-footer {
+    max-width: 1600px;
+  }
+  
+  .responsive-main {
+    padding: var(--space-2xl);
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .nav-link,
+  button {
+    min-height: 44px; /* Apple's recommended minimum touch target */
+    min-width: 44px;
+  }
+  
+  .mobile-menu-btn {
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+  }
+}
+
+/* High-DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}

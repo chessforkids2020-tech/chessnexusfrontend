@@ -1,0 +1,297 @@
+.team-selection {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.team-selection-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 30px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.team-selection-header h1 {
+  font-size: 42px;
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.race-info {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 15px 0;
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+}
+
+.btn-back {
+  margin-top: 15px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: #5a6268;
+}
+
+.team-selection-content h2 {
+  font-size: 32px;
+  color: #333;
+  text-align: center;
+  margin: 0 0 15px 0;
+}
+
+.instruction {
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 40px 0;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.team-card {
+  background: white;
+  border: 3px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 25px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.team-card:hover:not(.team-full):not(.team-unbalanced) {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.25);
+  border-color: #667eea;
+}
+
+.team-card.team-full {
+  opacity: 0.7;
+  background: #f8f9fa;
+}
+
+.team-card.team-unbalanced {
+  opacity: 0.75;
+  border-color: #ffc107;
+  background: #fffbea;
+}
+
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.team-header h3 {
+  font-size: 24px;
+  margin: 0;
+  color: #333;
+}
+
+.player-count-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.player-count-badge .count {
+  font-size: 18px;
+}
+
+.player-count-badge .separator {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.player-count-badge .max {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.team-members {
+  min-height: 150px;
+  margin-bottom: 20px;
+}
+
+.no-members {
+  text-align: center;
+  padding: 50px 20px;
+  color: #999;
+  font-size: 16px;
+  font-style: italic;
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.member-item:hover {
+  background: #e9ecef;
+}
+
+.member-position {
+  background: #667eea;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  min-width: 40px;
+  text-align: center;
+}
+
+.member-name {
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+.member-more {
+  text-align: center;
+  padding: 10px;
+  color: #666;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.btn-join-team {
+  width: 100%;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-join-team:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+}
+
+.btn-join-team:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.team-full .btn-join-team {
+  background: #6c757d;
+}
+
+.team-unbalanced .btn-join-team {
+  background: #856404;
+  color: #fff3cd;
+  cursor: not-allowed;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+}
+
+.empty-state p {
+  font-size: 18px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .teams-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .race-info {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Enhanced "Go to Lobby" button */
+.btn-lobby {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(90deg, #ff7a18 0%, #ff4e50 50%, #af002d 100%);
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(175, 0, 45, 0.18);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.btn-lobby:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 14px 30px rgba(175, 0, 45, 0.26);
+}
+
+.btn-lobby:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.btn-lobby:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 122, 24, 0.12), 0 10px 24px rgba(175, 0, 45, 0.16);
+}
+
+.btn-lobby .lobby-icon {
+  font-size: 18px;
+}
+
+/* subtle attention animation (only on larger screens) */
+@media (min-width: 769px) {
+  .btn-lobby { animation: lobbyPulse 6s ease-in-out infinite; }
+}
+
+@keyframes lobbyPulse {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.01); }
+  100% { transform: translateY(0) scale(1); }
+}

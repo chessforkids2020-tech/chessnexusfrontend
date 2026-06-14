@@ -1,0 +1,299 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ── Reset & Root ──────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg:           #0a0a0a;
+  --glass-bg:     rgba(23, 23, 23, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glow-cyan:    #06b6d4;
+  --glow-emerald: #10b981;
+  --text-primary: #f0f0f0;
+  --text-muted:   #9ca3af;
+  --text-dim:     #6b7280;
+  --input-bg:     rgba(0, 0, 0, 0.35);
+  --input-border: rgba(255, 255, 255, 0.08);
+  --input-focus:  rgba(6, 182, 212, 0.45);
+  --error:        #ef4444;
+  --error-glow:   rgba(239, 68, 68, 0.25);
+}
+
+/* ── Page shell ────────────────────────────────── */
+.event-form-page {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 40px 20px 60px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* ambient radial glows — mirrors ChooseTopic background */
+.event-form-page::before,
+.event-form-page::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+.event-form-page::before {
+  width: 700px; height: 700px;
+  top: -120px; left: -180px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.09) 0%, transparent 70%);
+}
+.event-form-page::after {
+  width: 600px; height: 600px;
+  bottom: -100px; right: -140px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.09) 0%, transparent 70%);
+}
+
+/* ── Glass card ────────────────────────────────── */
+.event-form-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 560px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 40px 36px 44px;
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  animation: cardReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* thin cyan top accent line */
+.event-form-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glow-cyan), transparent);
+  border-radius: 999px;
+  opacity: 0.6;
+}
+
+/* ── Heading ───────────────────────────────────── */
+.event-form-container h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--glow-cyan) 0%, var(--glow-emerald) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* optional sub-rule under heading */
+.event-form-container h1 + p,
+.event-form-container h1 + small {
+  display: block;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin: 0 0 28px 0;
+}
+
+/* event name displayed beneath main heading */
+.event-name-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 8px 0 24px 0;
+  color: var(--glow-emerald);
+  text-align: center;
+}
+
+/* ── Form groups ───────────────────────────────── */
+.event-form {
+  margin-top: 28px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.form-group input {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.form-group input::placeholder {
+  color: var(--text-dim);
+}
+
+.form-group input:focus {
+  border-color: var(--glow-cyan);
+  background: rgba(6, 182, 212, 0.06);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+}
+
+/* number input — remove spinners */
+.form-group input[type="number"]::-webkit-inner-spin-button,
+.form-group input[type="number"]::-webkit-outer-spin-button { appearance: none; -webkit-appearance: none; }
+.form-group input[type="number"] { appearance: textfield; -moz-appearance: textfield; }
+
+/* ── Error states ──────────────────────────────── */
+.form-group input.error {
+  border-color: var(--error);
+  background: rgba(239, 68, 68, 0.06);
+  box-shadow: 0 0 0 3px var(--error-glow);
+}
+
+.error-msg {
+  color: var(--error);
+  font-size: 11.5px;
+  font-weight: 500;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.error-msg::before {
+  content: '⚠';
+  font-size: 11px;
+}
+
+/* ── Divider before actions ────────────────────── */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid var(--glass-border);
+}
+
+/* ── Buttons ───────────────────────────────────── */
+.btn-primary {
+  flex: 1;
+  background: linear-gradient(135deg, var(--glow-cyan) 0%, var(--glow-emerald) 100%);
+  color: #fff;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(6, 182, 212, 0.5);
+}
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--text-muted);
+  padding: 13px 20px;
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+.btn-secondary:hover {
+  border-color: rgba(255,255,255,0.18);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+/* ── Success screen ────────────────────────────── */
+.event-success {
+  text-align: center;
+  animation: cardReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.event-success .success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(16,185,129,0.18), rgba(6,182,212,0.12));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  font-size: 34px;
+  color: var(--glow-emerald);
+  margin: 0 auto 20px;
+  box-shadow: 0 0 28px rgba(16, 185, 129, 0.25);
+}
+
+.event-success h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 10px;
+  background: linear-gradient(135deg, var(--glow-cyan), var(--glow-emerald));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.event-success p {
+  color: var(--text-muted);
+  font-size: 14.5px;
+  line-height: 1.7;
+  margin: 0 0 28px;
+}
+
+.event-success .btn-primary {
+  display: inline-block;
+  width: auto;
+  min-width: 160px;
+  flex: none;
+}
+
+/* ── Responsive ────────────────────────────────── */
+@media (max-width: 480px) {
+  .event-form-container { padding: 28px 20px 32px; }
+  .event-form-container h1 { font-size: 24px; }
+  .form-actions { flex-direction: column; }
+  .btn-secondary { order: -1; }
+}

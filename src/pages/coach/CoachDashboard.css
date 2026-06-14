@@ -1,0 +1,457 @@
+.coach-dash {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 28px 24px 80px;
+  color: #e2e8f0;
+}
+
+.coach-loading,
+.coach-error {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(226, 232, 240, 0.7);
+  font-size: 15px;
+}
+
+.coach-error { color: #fca5a5; }
+
+/* ── Trial banner ───────────── */
+.coach-trial-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 22px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(12px);
+  flex-wrap: wrap;
+}
+
+.coach-trial-banner.trial {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.06));
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fcd34d;
+}
+
+.coach-trial-banner.paid {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 182, 212, 0.08));
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+}
+
+/* ── Header ────────────────── */
+.coach-dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 26px;
+  flex-wrap: wrap;
+}
+
+.coach-dash-header h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.coach-dash-sub {
+  margin: 0;
+  color: rgba(226, 232, 240, 0.6);
+  font-size: 14px;
+}
+
+.coach-dash-quicklinks {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.coach-dash-quicklinks a,
+.coach-dash-quicklinks button {
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* ── Stat cards ───────────────── */
+.coach-stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.coach-stat-card {
+  background: rgba(20, 20, 30, 0.6);
+  border: 1px solid rgba(6, 182, 212, 0.18);
+  border-radius: 14px;
+  padding: 18px 20px;
+  backdrop-filter: blur(10px);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.coach-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(6, 182, 212, 0.4);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #f1f5f9;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.stat-cap {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(226, 232, 240, 0.5);
+}
+
+.stat-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  margin: 10px 0 6px;
+  overflow: hidden;
+}
+
+.stat-bar > div {
+  height: 100%;
+  background: linear-gradient(90deg, #06b6d4, #10b981);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.stat-foot {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.55);
+}
+
+.stat-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12.5px;
+  color: #06b6d4;
+  text-decoration: none;
+}
+
+.stat-link:hover { text-decoration: underline; }
+
+/* ── Section block ────────────── */
+.coach-section {
+  margin-bottom: 32px;
+}
+
+.coach-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.coach-section-head h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #f1f5f9;
+}
+
+.coach-empty {
+  background: rgba(20, 20, 30, 0.6);
+  border: 1px dashed rgba(6, 182, 212, 0.3);
+  border-radius: 14px;
+  padding: 28px;
+  text-align: center;
+  color: rgba(226, 232, 240, 0.6);
+  font-size: 14px;
+}
+
+/* ── Students grid ────────────── */
+.coach-students-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.coach-student-card {
+  background: rgba(20, 20, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  backdrop-filter: blur(10px);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.coach-student-card:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  transform: translateY(-2px);
+}
+
+.student-top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.student-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  color: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.student-name {
+  font-weight: 600;
+  color: #f1f5f9;
+  font-size: 15px;
+}
+
+.student-sub {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.55);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tag {
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #67e8f9;
+  font-size: 10.5px;
+  padding: 1px 7px;
+  border-radius: 8px;
+}
+
+.student-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 10px;
+  border-radius: 9px;
+  margin-bottom: 12px;
+}
+
+.student-stats > div {
+  text-align: center;
+}
+
+.student-stats span {
+  display: block;
+  font-size: 10.5px;
+  color: rgba(226, 232, 240, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.student-stats strong {
+  font-size: 13px;
+  color: #e2e8f0;
+}
+
+.invite-pill {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.invite-pill code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11.5px;
+}
+
+.student-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.student-actions a {
+  text-decoration: none;
+  font-size: 12.5px;
+  padding: 6px 10px;
+}
+
+/* ── Assignments list ─────────── */
+.coach-assignment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.coach-assignment-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(20, 20, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.assign-title {
+  color: #f1f5f9;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.assign-meta {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.55);
+  margin-top: 2px;
+  text-transform: capitalize;
+}
+
+.assign-date {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.5);
+  white-space: nowrap;
+}
+
+/* ── Modal ─────────────────────── */
+.coach-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+  padding: 20px;
+  animation: fadeUp 0.18s ease;
+}
+
+.coach-modal {
+  width: 100%;
+  max-width: 520px;
+  background: rgba(20, 20, 30, 0.95);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 16px;
+  padding: 28px;
+  backdrop-filter: blur(20px);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.coach-modal h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #f1f5f9;
+}
+
+.modal-hint {
+  color: rgba(226, 232, 240, 0.6);
+  font-size: 13px;
+  margin: 0 0 18px;
+}
+
+.modal-divider {
+  text-align: center;
+  color: rgba(226, 232, 240, 0.4);
+  font-size: 12px;
+  margin: 8px 0 14px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.coach-modal .field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.coach-modal .field > span {
+  display: block;
+  font-size: 12.5px;
+  color: rgba(226, 232, 240, 0.7);
+  margin-bottom: 5px;
+}
+
+.coach-modal input,
+.coach-modal select,
+.coach-modal textarea {
+  width: 100%;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.coach-modal input:focus,
+.coach-modal select:focus,
+.coach-modal textarea:focus {
+  outline: none;
+  border-color: #06b6d4;
+}
+
+/* ── Activity chart ─────────────────── */
+.coach-chart-wrap {
+  height: 240px;
+  position: relative;
+  margin-top: 6px;
+}
+
+.coach-chart-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin: 0;
+  padding: 0 20px;
+  color: rgba(226, 232, 240, 0.38);
+  font-size: 14px;
+  text-align: center;
+}
+
+.coach-chart-placeholder a {
+  color: #06b6d4;
+  text-decoration: none;
+}
+
+.coach-chart-placeholder a:hover {
+  text-decoration: underline;
+}
