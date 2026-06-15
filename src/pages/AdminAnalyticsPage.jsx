@@ -24,6 +24,7 @@ const TABS = [
   { key: 'pages', label: 'Pages', icon: '📄' },
   { key: 'performance', label: 'Performance', icon: '📈' },
   { key: 'realtime', label: 'Real-time', icon: '⚡' },
+  { key: 'livefeed', label: 'Live Feed', icon: '📡' },
   { key: 'alerts', label: 'Alerts', icon: '⚠️' }
 ];
 
@@ -152,6 +153,13 @@ function timeAgo(d) {
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   return `${Math.floor(diff / 3600)}h ago`;
 }
+// Color for an HTTP status code (green 2xx, blue 3xx, amber 4xx, red 5xx).
+function statusColor(code) {
+  if (code >= 500) return '#f87171';
+  if (code >= 400) return '#fbbf24';
+  if (code >= 300) return '#60a5fa';
+  return '#34d399';
+}
 function build24hTrend(rows) {
   const map = new Map((rows || []).map(r => [r.hour, r.count]));
   const now = new Date(); const out = [];
@@ -194,6 +202,8 @@ export default function AdminAnalyticsPage() {
   const [realtime, setRealtime] = useState(null);
   const [traffic, setTraffic] = useState(null);
   const [rtHist, setRtHist] = useState({ online: [], games: [], loggedIn: [] });
+  const [feed, setFeed] = useState(null);
+  const [feedErrorsOnly, setFeedErrorsOnly] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -250,6 +260,21 @@ export default function AdminAnalyticsPage() {
     const id = setInterval(tick, REALTIME_POLL_MS);
     return () => { cancelled = true; clearInterval(id); };
   }, []);
+
+  // Live request-activity feed: only polls while the Live Feed tab is open.
+  useEffect(() => {
+    if (tab !== 'livefeed') return;
+    let cancelled = false;
+    const tick = () => {
+      const q = feedErrorsOnly ? '?status=error&limit=300' : '?limit=300';
+      api.get(`/api/admin/analytics/activity-feed${q}`)
+        .then(r => { if (!cancelled) setFeed(r.data); })
+        .catch(() => {});
+    };
+    tick();
+    const id = setInterval(tick, REALTIME_POLL_MS);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [tab, feedErrorsOnly]);
 
   const kpis = overview?.kpis || {};
   const rangeLabel = RANGE_TEXT[range] || 'Last 7 days';
@@ -672,6 +697,54 @@ export default function AdminAnalyticsPage() {
               </div>
             </Panel>
           </>
+        )}
+
+        {tab === 'livefeed' && (
+          <Panel
+            title="Request Activity"
+            icon="📡"
+            right={
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <button
+                  onClick={() => setFeedErrorsOnly(v => !v)}
+                  style={feedErrorsOnly ? s.toggleActive : s.toggle}
+                  title="Show only requests that returned 4xx/5xx"
+                >
+                  Errors only
+                </button>
+                <span style={s.liveBadge}>● LIVE</span>
+              </div>
+            }
+          >
+            <div style={{ color: '#64748b', fontSize: 12, padding: '0 2px 10px' }}>
+              Live HTTP requests since the last server restart. Spot a failing or slow endpoint here,
+              then SSH to the server and run <code style={{ color: '#94a3b8' }}>pm2 logs chessnexus-api</code> for the full trace.
+            </div>
+            <div style={s.stream}>
+              {(feed?.requests || []).length === 0 ? (
+                <div style={{ ...s.streamRow, color: '#64748b' }}>
+                  {feedErrorsOnly ? 'No errors recorded yet.' : 'Waiting for requests…'}
+                </div>
+              ) : (
+                feed.requests.map((r, i) => (
+                  <div key={i} style={s.streamRow}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                      <span style={{
+                        color: statusColor(r.status), fontWeight: 800, fontSize: 12,
+                        minWidth: 34, textAlign: 'right'
+                      }}>{r.status}</span>
+                      <span style={{ ...s.badge, background: 'rgba(255,255,255,0.06)', color: '#cbd5e1', border: '1px solid rgba(255,255,255,0.12)' }}>{r.method}</span>
+                      <span style={{ color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.path}</span>
+                      {r.errName ? (
+                        <span style={{ ...s.badge, background: 'rgba(248,113,113,0.14)', color: '#fca5a5', border: '1px solid rgba(248,113,113,0.3)' }}>{r.errName}</span>
+                      ) : null}
+                    </span>
+                    <span style={s.muted}>{r.ms}ms · {timeAgo(r.at)}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          </Panel>
         )}
       </main>
     </div>
