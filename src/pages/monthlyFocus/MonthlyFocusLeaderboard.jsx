@@ -183,7 +183,12 @@ export default function MonthlyFocusLeaderboard({ compact = false, limit = null,
               <span className="stat-label">Completed Days</span>
               <span className="stat-value">{userStats.completedDays || 0}/{focusInfo?.totalDays || currentFocus?.days?.length || 7}</span>
             </div>
-            
+
+            <div className="stat-item">
+              <span className="stat-label">Perfect Days</span>
+              <span className="stat-value">👑 {userStats.perfectDays || 0}</span>
+            </div>
+
             <div className="stat-item">
               <span className="stat-label">Status</span>
               <span className={`stat-badge ${getCompletionBadge(userStats.completedDays, userStats.perfectDays).class}`}>

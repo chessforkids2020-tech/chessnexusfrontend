@@ -10,17 +10,19 @@ const TestChapterSelection = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const studyType = searchParams.get('type') || 'positional';
+  // Unified study view: ignore any ?type filter and load ALL studies for testing.
+  const studyType = 'basic';
 
   const studyTypeNames = {
-    basic: 'Basic Studies',
-    positional: 'Positional Studies'
+    basic: 'Studies',
+    positional: 'Studies'
   };
 
   useEffect(() => {
     const fetchStudies = async () => {
       try {
-        const response = await api.get(`/api/testpuzzle/studies?studyType=${studyType}`);
+        // Load ALL studies (no studyType filter) so basic + positional tests appear together
+        const response = await api.get(`/api/testpuzzle/studies`);
         setStudies(response.data);
       } catch (err) {
         setError('Failed to load studies');
@@ -200,7 +202,7 @@ const TestChapterSelection = () => {
         >
           <span>←</span> Back to Study Types
         </button>
-        <h1 style={styles.title}>{studyTypeNames[studyType]} Test</h1>
+        <h1 style={styles.title}>Study Test</h1>
         <p style={styles.subtitle}>Select a study to take a test</p>
 
         <div style={styles.studiesGrid}>

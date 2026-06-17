@@ -964,11 +964,6 @@ export default function ArenaWaiting() {
                                   <PlayerName displayName={player.displayName} username={player.username} />
                                   {isMe && <span style={{ fontSize: '10px', background: 'rgba(6,182,212,0.2)', color: '#06b6d4', border: '1px solid rgba(6,182,212,0.3)', borderRadius: '4px', padding: '1px 6px', fontWeight: '700' }}>You</span>}
                                 </div>
-                                {player.username && player.displayName && player.username !== player.displayName && (
-                                  <div style={{ fontSize: '11px', color: '#6b7280', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    @{player.username}
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </td>

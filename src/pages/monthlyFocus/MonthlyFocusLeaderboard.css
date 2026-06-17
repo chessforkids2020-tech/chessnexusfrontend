@@ -223,6 +223,8 @@
 .stat-item {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 8px;
   padding: 20px;
   background: rgba(9,9,18,0.55);
@@ -258,10 +260,10 @@
 .stat-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 25px;
-  font-size: 0.95em;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8em;
   font-weight: 700;
   width: fit-content;
   letter-spacing: 0.3px;

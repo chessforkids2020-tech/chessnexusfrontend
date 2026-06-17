@@ -69,11 +69,10 @@ export default function Games() {
     {
       id: 2,
       title: "Masters Game",
-      subtitle: "Elite competition • Top players only",
+      subtitle: "Study famous games • Top players",
       icon: "👑",
       color: "#A78BFA",
-      disabled: true,
-      action: null
+      action: () => navigate('/master-games')
     },
     {
       id: 3,

@@ -94,12 +94,22 @@ export default function Footer() {
 
           .footer-text {
             margin: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
             font-weight: 500;
             color: #ffffff;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             letter-spacing: 0.5px;
+          }
+
+          .footer-text-logo {
+            height: 22px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0.9);
           }
 
           /* Subtle gradient overlay effect */
@@ -160,7 +170,8 @@ export default function Footer() {
             <Link to="/terms">Terms</Link>
           </nav>
           <p className="footer-text">
-            © {new Date().getFullYear()} CHESS NEXUS | CHESS FOR KIDS ♟️
+            © {new Date().getFullYear()} CHESS NEXUS
+            <img src="/logo.png" alt="Chess Nexus Logo" className="footer-text-logo" />
           </p>
         </div>
       </footer>

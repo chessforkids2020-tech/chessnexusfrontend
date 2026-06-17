@@ -11,11 +11,14 @@ const StudySelection = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const studyType = searchParams.get('type') || 'basic';
+  // Studies are unified into a single view. We ignore any ?type filter and
+  // always load ALL studies (basic + positional) together. Color/icon styling
+  // is kept fixed to the "basic" theme for a consistent look.
+  const studyType = 'basic';
 
   const studyTypeNames = {
-    basic: 'BASIC STUDY',
-    positional: 'POSITIONAL STUDY'
+    basic: 'STUDY',
+    positional: 'STUDY'
   };
 
   const studyTypeColors = {
@@ -36,7 +39,8 @@ const StudySelection = () => {
   useEffect(() => {
     const fetchStudies = async () => {
       try {
-        const response = await api.get(`/api/study/all?studyType=${studyType}`);
+        // Load ALL studies (no studyType filter) so basic + positional appear together
+        const response = await api.get(`/api/study/all`);
         setStudies(response.data);
       } catch (err) {
         setError('Failed to load studies');
@@ -337,11 +341,7 @@ const StudySelection = () => {
             <div style={styles.titleGlow}></div>
             <h1 style={styles.mainTitle}>{studyTypeNames[studyType]}</h1>
             <p style={styles.subtitle}>
-              {studyType === 'positional' 
-                ? 'Master strategic patterns — piece activity, weak squares, pawn structures, outposts, and exchanges.'
-                : studyType === 'realtime'
-                ? 'Analyze real games from grandmasters and learn practical decision-making under pressure.'
-                : 'Study critical moments from championship games and tournament battles.'}
+              Master chess concepts — tactics, opening principles, endgame patterns, strategic ideas, and positional play.
             </p>
           </div>
         </div>

@@ -536,6 +536,29 @@ export default function AdminAnalyticsPage() {
               </div>
             </Panel>
 
+            {/* Arena tournament games — the only games users play right now. */}
+            <Panel title="Arena Tournament Games" icon="🏟️" tag={rangeLabel} style={{ marginBottom: 18 }}>
+              <div style={s.statRow}>
+                <StatTile label="Arena Games Played" value={(games?.arena?.gamesPlayed ?? 0).toLocaleString()} />
+                <StatTile label="Completed" value={(games?.arena?.gamesCompleted ?? 0).toLocaleString()} accent="#34d399" />
+                <StatTile label="Aborted" value={(games?.arena?.gamesAborted ?? 0).toLocaleString()} accent="#f87171" />
+              </div>
+              <div style={s.subHead}>By tournament type</div>
+              {games?.arena?.byType?.length > 0 ? (
+                <table style={s.table}>
+                  <thead><tr><th style={s.th}>Type</th><th style={{ ...s.th, textAlign: 'right' }}>Games</th></tr></thead>
+                  <tbody>
+                    {games.arena.byType.map(t => (
+                      <tr key={t.type}>
+                        <td style={s.td}>{t.label}</td>
+                        <td style={{ ...s.td, textAlign: 'right', fontWeight: 700 }}>{t.count.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : <div style={s.muted}>No arena games played in this range.</div>}
+            </Panel>
+
             <Panel title="Puzzle Analytics" icon="🧩" tag={rangeLabel}>
               <div style={s.statRow}>
                 <StatTile label="Attempts" value={(puzzles?.attempts ?? 0).toLocaleString()} />

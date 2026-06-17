@@ -131,6 +131,11 @@ import SignupRequestForm from './pages/SignupRequestForm';
 import SignupRequests from './pages/SignupRequests';
 import BestRacersPage from './pages/BestRacersPage';
 import Games from './pages/game/Games';
+import MasterGamesHome from './pages/masterGames/MasterGamesHome';
+import MasterGamesBrowse from './pages/masterGames/MasterGamesBrowse';
+import MasterPlayer from './pages/masterGames/MasterPlayer';
+import ImmortalGames from './pages/masterGames/ImmortalGames';
+import AllPlayers from './pages/masterGames/AllPlayers';
 import Play from './pages/game/Play';
 import PlayWithStockfish from './pages/game/PlayWithStockfish';
 import GameAnalysis from './pages/GameAnalysis';
@@ -952,6 +957,31 @@ export default function App() {
         <Route path="/games" element={
           <UserLayout>
             <Games />
+          </UserLayout>
+        } />
+        <Route path="/master-games" element={
+          <UserLayout>
+            <MasterGamesHome />
+          </UserLayout>
+        } />
+        <Route path="/master-games/browse" element={
+          <UserLayout>
+            <MasterGamesBrowse />
+          </UserLayout>
+        } />
+        <Route path="/master-games/immortal" element={
+          <UserLayout>
+            <ImmortalGames />
+          </UserLayout>
+        } />
+        <Route path="/master-games/players" element={
+          <UserLayout>
+            <AllPlayers />
+          </UserLayout>
+        } />
+        <Route path="/master-games/player/:name" element={
+          <UserLayout>
+            <MasterPlayer />
           </UserLayout>
         } />
         <Route path="/arcade" element={<ArcadeHome />} />

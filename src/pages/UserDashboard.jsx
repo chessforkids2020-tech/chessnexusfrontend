@@ -815,6 +815,7 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
   const [isStudent, setIsStudent] = useState(false); // accepted a coach request
+  const [hasActiveCoach, setHasActiveCoach] = useState(false); // linked to a coach whose subscription is on
   const [hoveredCard, setHoveredCard] = useState(null);
   const [showSessionDebug, setShowSessionDebug] = useState(false);
   const [sessionDebug, setSessionDebug] = useState(null);
@@ -869,6 +870,18 @@ export default function UserDashboard() {
     let alive = true;
     api.get('/api/coach/my-coaches')
       .then(res => { if (alive) setIsStudent(!!res.data?.isStudent); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [isPublicView]);
+
+  // Whether the viewer is enrolled with a coach whose subscription is currently on.
+  // Drives the "Coach" badge next to the joined date. This endpoint already filters
+  // out coaches whose subscription has lapsed.
+  useEffect(() => {
+    if (isPublicView) return;
+    let alive = true;
+    api.get('/api/coach-attendance/my/coaches')
+      .then(res => { if (alive) setHasActiveCoach(Array.isArray(res.data) && res.data.length > 0); })
       .catch(() => {});
     return () => { alive = false; };
   }, [isPublicView]);
@@ -1256,6 +1269,25 @@ export default function UserDashboard() {
                   {user.memberSince && (
                     <span>📅 Joined {new Date(user.memberSince).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
                   )}
+                  {hasActiveCoach && (
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '2px 10px',
+                        borderRadius: '999px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        color: '#c4b5fd',
+                        background: 'rgba(139,92,246,0.12)',
+                        border: '1px solid rgba(139,92,246,0.35)',
+                      }}
+                      title="You're enrolled with a coach"
+                    >
+                      🎓 Coach
+                    </span>
+                  )}
                   {user.country && (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                       <CountryFlag country={user.country} height={16} />
@@ -1474,8 +1506,11 @@ export default function UserDashboard() {
 
             {/* Footer utilities — always visible, not daily content */}
             <div className="dash-footer">
-              {/* Student Attendance — only for users who accepted a coach request. */}
-              {isStudent && (
+              {/* Student Attendance — for users who are students in the admin/teacher
+                  attendance system (user.enrolled, added by an admin) OR who accepted a
+                  coach request (isStudent). Either path links to their /attendance portal
+                  with their attendance + payment history. */}
+              {(isStudent || user?.enrolled) && (
                 <div className="attendance-section">
                   <div
                     ref={(el) => cardRefs.current[3] = el}

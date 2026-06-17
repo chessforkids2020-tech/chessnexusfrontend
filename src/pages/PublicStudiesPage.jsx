@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { motion } from 'framer-motion';
 
-const STUDY_TYPES = ['all', 'basics', 'positional'];
+// Unified studies: positional filter removed. "all" already shows every study
+// (basic + positional) merged into one list.
+const STUDY_TYPES = ['all'];
 
 const typeColors = {
   basics:     { color: '#10b981', bg: 'rgba(16,185,129,0.15)' },

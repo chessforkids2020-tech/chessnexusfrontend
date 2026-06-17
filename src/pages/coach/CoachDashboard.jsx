@@ -323,6 +323,10 @@ export default function CoachDashboard() {
           </button>
         </div>
 
+        <p className="coach-add-hint" style={{ fontSize: '13px', color: '#a78bfa', margin: '-4px 0 12px' }}>
+          Enroll a student in attendance — the student will receive your assignments.
+        </p>
+
         {addNotice && (
           <div
             className="coach-empty"

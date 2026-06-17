@@ -32,26 +32,27 @@ const StudyOverview = () => {
     fetchStudyStats();
   }, []);
 
+  // Single unified "Study" card. Stats combine basic + positional so existing
+  // positional studies/chapters/puzzles still get counted in the merged view.
+  const basicStats = studyStats?.basic || { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Beginner' };
+  const positionalStats = studyStats?.positional || { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Advanced' };
+  const combinedStats = {
+    studies: (basicStats.studies || 0) + (positionalStats.studies || 0),
+    chapters: (basicStats.chapters || 0) + (positionalStats.chapters || 0),
+    puzzles: (basicStats.puzzles || 0) + (positionalStats.puzzles || 0),
+    difficulty: 'All Levels'
+  };
+
   const studyTypes = [
     {
       type: 'basic',
-      title: 'BASIC STUDY',
-      description: 'Master fundamental chess concepts — basic tactics, opening principles, endgame patterns, and essential strategies.',
+      title: 'STUDY',
+      description: 'Master chess concepts — tactics, opening principles, endgame patterns, strategic ideas, piece activity, weak squares, pawn structures, and more.',
       icon: '♟️',
       color: '#10b981',
       gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
       accentColor: 'rgba(16, 185, 129, 0.15)',
-      stats: studyStats?.basic || { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Beginner' } // Use dynamic data with fallback
-    },
-    {
-      type: 'positional',
-      title: 'POSITIONAL STUDY',
-      description: 'Master strategic patterns — piece activity, weak squares, pawn structures, outposts, and exchanges.',
-      icon: '⚡',
-      color: '#06b6d4',
-      gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
-      accentColor: 'rgba(6, 182, 212, 0.15)',
-      stats: studyStats?.positional || { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Advanced' } // Use dynamic data with fallback
+      stats: combinedStats
     }
   ];
 
@@ -589,6 +590,154 @@ const StudyOverview = () => {
               </div>
             </motion.div>
           ))}
+
+          {/* Master Games card — right side */}
+          <motion.div
+            style={styles.studyCard}
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            whileHover={{
+              y: -8,
+              scale: 1.02,
+              boxShadow: '0 20px 60px rgba(245, 158, 11, 0.15), 0 0 0 1px rgba(245, 158, 11, 0.25)',
+            }}
+            onMouseEnter={(e) => {
+              const glow = e.currentTarget.querySelector('.border-glow');
+              const corners = e.currentTarget.querySelectorAll('.corner-accent');
+              const hex = e.currentTarget.querySelector('.hexagon');
+              if (glow) glow.style.opacity = '0.6';
+              corners.forEach(corner => corner.style.opacity = '0.5');
+              if (hex) {
+                hex.style.background = 'rgba(245, 158, 11, 0.15)';
+                hex.style.borderColor = '#f59e0b';
+                hex.style.transform = 'scale(1.1) rotate(180deg)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              const glow = e.currentTarget.querySelector('.border-glow');
+              const corners = e.currentTarget.querySelectorAll('.corner-accent');
+              const hex = e.currentTarget.querySelector('.hexagon');
+              if (glow) glow.style.opacity = '0';
+              corners.forEach(corner => corner.style.opacity = '0.3');
+              if (hex) {
+                hex.style.background = 'rgba(0, 0, 0, 0.4)';
+                hex.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                hex.style.transform = 'scale(1) rotate(0deg)';
+              }
+            }}
+          >
+            <div
+              className="border-glow"
+              style={{ ...styles.cardBorderGlow, color: '#f59e0b' }}
+            />
+            <div
+              className="corner-accent"
+              style={{ ...styles.cornerAccent, ...styles.cornerTopRight, color: '#f59e0b' }}
+            />
+            <div
+              className="corner-accent"
+              style={{ ...styles.cornerAccent, ...styles.cornerBottomLeft, color: '#f59e0b' }}
+            />
+
+            <div style={styles.cardContent}>
+              <div style={styles.cardTopBar}>
+                <div style={styles.cardIconSection}>
+                  <div style={styles.cardIconHex}>
+                    <div className="hexagon" style={styles.hexagon} />
+                    <div style={styles.cardIcon}>🏆</div>
+                  </div>
+                  <div style={styles.cardTitleGroup}>
+                    <h2 style={styles.cardTitle}>MASTERS GAMES</h2>
+                    <span style={{
+                      ...styles.difficultyBadge,
+                      color: '#f59e0b',
+                      borderColor: 'rgba(245, 158, 11, 0.25)',
+                    }}>
+                      Grandmasters
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <p style={styles.cardDescription}>
+                Explore legendary games from world champions and grandmasters. Replay immortal classics and learn the ideas behind every move.
+              </p>
+
+              {/* Feature highlights — mirrors the Study card's stats grid for visual balance */}
+              <div style={styles.statsGrid}>
+                <Link to="/master-games/browse" style={{ textDecoration: 'none' }}>
+                  <motion.div
+                    style={styles.statBox}
+                    whileHover={{ y: -4, background: 'rgba(245, 158, 11, 0.15)', borderColor: 'rgba(245, 158, 11, 0.25)' }}
+                  >
+                    <div style={{ ...styles.statBoxValue, color: '#f59e0b' }}>♟</div>
+                    <div style={styles.statBoxLabel}>Browse</div>
+                  </motion.div>
+                </Link>
+                <Link to="/master-games/immortal" style={{ textDecoration: 'none' }}>
+                  <motion.div
+                    style={styles.statBox}
+                    whileHover={{ y: -4, background: 'rgba(245, 158, 11, 0.15)', borderColor: 'rgba(245, 158, 11, 0.25)' }}
+                  >
+                    <div style={{ ...styles.statBoxValue, color: '#f59e0b' }}>♛</div>
+                    <div style={styles.statBoxLabel}>Immortal</div>
+                  </motion.div>
+                </Link>
+                <Link to="/master-games/players" style={{ textDecoration: 'none' }}>
+                  <motion.div
+                    style={styles.statBox}
+                    whileHover={{ y: -4, background: 'rgba(245, 158, 11, 0.15)', borderColor: 'rgba(245, 158, 11, 0.25)' }}
+                  >
+                    <div style={{ ...styles.statBoxValue, color: '#f59e0b' }}>♚</div>
+                    <div style={styles.statBoxLabel}>Players</div>
+                  </motion.div>
+                </Link>
+              </div>
+
+              <div style={styles.actionsContainer}>
+                <Link
+                  to="/master-games"
+                  style={{ ...styles.actionButton, gridColumn: '1 / -1' }}
+                >
+                  <motion.div
+                    whileHover={{
+                      y: -6,
+                      background: 'rgba(245, 158, 11, 0.15)',
+                      borderColor: 'rgba(245, 158, 11, 0.3)',
+                      boxShadow: '0 12px 32px rgba(245, 158, 11, 0.15)',
+                    }}
+                    style={{
+                      ...styles.actionButton,
+                      margin: '-20px -16px',
+                      padding: '20px 16px',
+                    }}
+                    onMouseEnter={(e) => {
+                      const shimmer = e.currentTarget.querySelector('.shimmer');
+                      const icon = e.currentTarget.querySelector('.action-icon');
+                      if (shimmer) shimmer.style.transform = 'translateX(100%)';
+                      if (icon) icon.style.transform = 'scale(1.2) rotate(10deg)';
+                    }}
+                    onMouseLeave={(e) => {
+                      const shimmer = e.currentTarget.querySelector('.shimmer');
+                      const icon = e.currentTarget.querySelector('.action-icon');
+                      if (shimmer) shimmer.style.transform = 'translateX(-100%)';
+                      if (icon) icon.style.transform = 'scale(1) rotate(0deg)';
+                    }}
+                  >
+                    <div className="shimmer" style={styles.shimmer}></div>
+                    <div className="action-icon" style={styles.actionIconWrapper}>♚</div>
+                    <div style={{ ...styles.actionLabel, color: '#f59e0b' }}>
+                      Show Masters Games
+                    </div>
+                    <div style={styles.actionSubtext}>
+                      Browse champion classics
+                    </div>
+                  </motion.div>
+                </Link>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* Quick-access feature cards — bottom row */}

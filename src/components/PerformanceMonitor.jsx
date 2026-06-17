@@ -12,6 +12,41 @@ const TOURNAMENT_TYPE_LABELS = {
 };
 const formatTypeLabel = (t) => TOURNAMENT_TYPE_LABELS[t] || 'Standard';
 
+// Tiny inline sparkline for the puzzle stat cards. Renders a smooth-ish area
+// line of `data` (array of numbers) — progress over the selected window's
+// buckets (hours for 24h, days for 7d). No axes/labels, just the trend shape.
+function Sparkline({ data, color = '#a78bfa', width = 96, height = 26, fill = false }) {
+  if (!Array.isArray(data) || data.length < 2) return null;
+  // For the min/max we ignore a flat baseline so a real line still shows.
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const span = max - min || 1;
+  const stepX = width / (data.length - 1);
+  const y = (v) => height - 2 - ((v - min) / span) * (height - 4); // 2px padding top/bottom
+  const pts = data.map((v, i) => `${(i * stepX).toFixed(1)},${y(v).toFixed(1)}`);
+  const linePath = `M ${pts.join(' L ')}`;
+  const areaPath = `${linePath} L ${width},${height} L 0,${height} Z`;
+  const gid = `spark-${color.replace('#', '')}-${data.length}-${Math.round(max)}`;
+  return (
+    <svg
+      width={fill ? '100%' : width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      style={{ display: 'block', margin: fill ? '0' : '6px auto 0', overflow: 'visible', width: fill ? '100%' : undefined }}
+      preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={areaPath} fill={`url(#${gid})`} />
+      <path d={linePath} fill="none" stroke={color} strokeWidth="2"
+            strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 const styles = {
   container: {
     maxWidth: '1200px',
@@ -714,35 +749,61 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
               </div>
             </div>
 
-            {/* Puzzle Rating */}
+            {/* Puzzle Rating — split into two: left = rating + trend, right = sparkline */}
             <div style={styles.puzzleRatingCard}>
-              <div style={{ fontSize: 'clamp(24px, 6vw, 32px)', filter: 'drop-shadow(0 4px 12px rgba(6, 182, 212, 0.3))' }}>
-                🧩
-              </div>
-              <div style={{ flex: 1, marginLeft: 'clamp(12px, 3vw, 16px)' }}>
-                <div style={{ fontSize: 'clamp(11px, 2.5vw, 13px)', color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))', fontWeight: '500', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Puzzle Rating
+              {/* Left part: icon + rating value + up/down trend */}
+              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+                <div style={{ fontSize: 'clamp(24px, 6vw, 32px)', filter: 'drop-shadow(0 4px 12px rgba(6, 182, 212, 0.3))' }}>
+                  🧩
                 </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap' }}>
-                  <div style={{ fontSize: 'clamp(22px, 5vw, 28px)', fontWeight: '700', color: 'var(--obsidian-text-soft, #dbeafe)' }}>
-                    {rangeStats?.rating ?? (user?.liveRating || 1200)}
+                <div style={{ marginLeft: 'clamp(12px, 3vw, 16px)' }}>
+                  <div style={{ fontSize: 'clamp(11px, 2.5vw, 13px)', color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))', fontWeight: '500', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Puzzle Rating
                   </div>
-                  {(() => {
-                    const trend = rangeStats?.trend || 0;
-                    const up = trend > 0;
-                    const color = trend > 0 ? '#22c55e' : trend < 0 ? '#ef4444' : 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))';
-                    return (
-                      <span style={{ fontSize: 'clamp(12px, 3vw, 14px)', fontWeight: 700, color }}>
-                        {rangeStatsLoading ? '…' : trend === 0 ? '▬ no change' : `${up ? '▲ +' : '▼ '}${trend}`}
-                        {!rangeStatsLoading && trend !== 0 && (
-                          <span style={{ fontWeight: 500, color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))', marginLeft: '4px' }}>
-                            ({statsRange === '7d' ? '7d' : '24h'})
-                          </span>
-                        )}
-                      </span>
-                    );
-                  })()}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <div style={{ fontSize: 'clamp(22px, 5vw, 28px)', fontWeight: '700', color: 'var(--obsidian-text-soft, #dbeafe)' }}>
+                      {rangeStats?.rating ?? (user?.liveRating || 1200)}
+                    </div>
+                    {(() => {
+                      const trend = rangeStats?.trend || 0;
+                      const up = trend > 0;
+                      const color = trend > 0 ? '#22c55e' : trend < 0 ? '#ef4444' : 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))';
+                      return (
+                        <span style={{ fontSize: 'clamp(12px, 3vw, 14px)', fontWeight: 700, color }}>
+                          {/* No change → show only the square; no "no change" text. */}
+                          {rangeStatsLoading ? '…' : trend === 0 ? '▬' : `${up ? '▲ +' : '▼ '}${trend}`}
+                          {!rangeStatsLoading && trend !== 0 && (
+                            <span style={{ fontWeight: 500, color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))', marginLeft: '4px' }}>
+                              ({statsRange === '7d' ? '7d' : '24h'})
+                            </span>
+                          )}
+                        </span>
+                      );
+                    })()}
+                  </div>
                 </div>
+              </div>
+
+              {/* Divider */}
+              <div style={{ width: '1px', alignSelf: 'stretch', margin: '0 clamp(12px, 3vw, 20px)', background: 'var(--obsidian-border, rgba(148, 163, 184, 0.16))' }} />
+
+              {/* Right part: big rating sparkline filling the remaining space */}
+              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ fontSize: 'clamp(10px, 2.2vw, 11px)', color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                  Rating trend ({statsRange === '7d' ? '7 days' : '24 hrs'})
+                </div>
+                {!rangeStatsLoading && rangeStats?.series?.rating ? (
+                  <Sparkline
+                    data={rangeStats.series.rating}
+                    color={(rangeStats.trend || 0) >= 0 ? '#22c55e' : '#ef4444'}
+                    height={48}
+                    fill
+                  />
+                ) : (
+                  <div style={{ height: '48px', display: 'flex', alignItems: 'center', color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))', fontSize: '12px' }}>
+                    {rangeStatsLoading ? 'Loading…' : 'No data yet'}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -794,21 +855,25 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                   <div style={styles.ratingItem}>
                     <div style={styles.ratingLabel}>Puzzles Done</div>
                     <div style={styles.ratingValue}>{val(rs.attempts)}</div>
+                    {!rangeStatsLoading && <Sparkline data={rs.series?.attempts} color="#a78bfa" />}
                   </div>
                   {/* Solved */}
                   <div style={styles.ratingItem}>
                     <div style={styles.ratingLabel}>Solved</div>
                     <div style={{ ...styles.ratingValue, color: '#22c55e' }}>{val(rs.solved)}</div>
+                    {!rangeStatsLoading && <Sparkline data={rs.series?.solved} color="#22c55e" />}
                   </div>
                   {/* Failed */}
                   <div style={styles.ratingItem}>
                     <div style={styles.ratingLabel}>Failed</div>
                     <div style={{ ...styles.ratingValue, color: '#ef4444' }}>{val(rs.failed)}</div>
+                    {!rangeStatsLoading && <Sparkline data={rs.series?.failed} color="#ef4444" />}
                   </div>
                   {/* Accuracy + latest streak */}
                   <div style={styles.ratingItem}>
                     <div style={styles.ratingLabel}>Accuracy</div>
                     <div style={styles.ratingValue}>{rangeStatsLoading || rs.attempts == null ? dash : `${rs.accuracy}%`}</div>
+                    {!rangeStatsLoading && <Sparkline data={rs.series?.accuracy} color="#06b6d4" />}
                     <div style={{ fontSize: '12px', fontWeight: 700, color: '#f59e0b', marginTop: '4px' }}>
                       🔥 {rangeStatsLoading ? '…' : `${rs.streak || 0} streak`}
                     </div>

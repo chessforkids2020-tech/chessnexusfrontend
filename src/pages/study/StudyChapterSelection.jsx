@@ -11,6 +11,7 @@ const StudyChapterSelection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [studyType, setStudyType] = useState('basic');
+  const [search, setSearch] = useState('');
 
   const studyTypeColors = {
     basic: {
@@ -67,6 +68,15 @@ const StudyChapterSelection = () => {
   const handleChapterClick = (chapterId) => {
     navigate(`/study/chapter/${studyId}/${chapterId}`);
   };
+
+  // Filter chapters by the search box (title / description / chapter number).
+  const q = search.trim().toLowerCase();
+  const filteredChapters = q
+    ? chapters.filter((c) =>
+        (c.title || '').toLowerCase().includes(q) ||
+        (c.description || '').toLowerCase().includes(q) ||
+        String(c.chapterNumber || '').toLowerCase().includes(q))
+    : chapters;
 
   const styles = {
     page: {
@@ -173,6 +183,33 @@ const StudyChapterSelection = () => {
       maxWidth: '600px',
       margin: '0 auto',
       lineHeight: '1.6',
+    },
+    searchWrap: {
+      maxWidth: '520px',
+      margin: '0 auto 8px',
+      position: 'relative',
+    },
+    searchInput: {
+      width: '100%',
+      boxSizing: 'border-box',
+      padding: '14px 18px 14px 44px',
+      background: 'rgba(15, 15, 15, 0.6)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.08)',
+      borderRadius: '16px',
+      color: '#ffffff',
+      fontSize: '15px',
+      outline: 'none',
+    },
+    searchIcon: {
+      position: 'absolute',
+      left: '16px',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      color: '#94a3b8',
+      fontSize: '16px',
+      pointerEvents: 'none',
     },
     chaptersGrid: {
       display: 'grid',
@@ -379,12 +416,27 @@ const StudyChapterSelection = () => {
           </div>
         </div>
 
+        {chapters.length > 0 && (
+          <div style={styles.searchWrap}>
+            <span style={styles.searchIcon}>🔍</span>
+            <input
+              style={styles.searchInput}
+              type="text"
+              placeholder="Search chapters…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        )}
+
         {chapters.length === 0 ? (
           <div style={styles.emptyState}>No chapters available for this study.</div>
+        ) : filteredChapters.length === 0 ? (
+          <div style={styles.emptyState}>No chapters match “{search}”.</div>
         ) : (
           <>
           <div style={styles.chaptersGrid}>
-            {chapters.map((chapter, index) => (
+            {filteredChapters.map((chapter, index) => (
               <motion.div
                 key={chapter._id}
                 style={styles.chapterCard}

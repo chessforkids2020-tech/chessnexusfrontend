@@ -333,6 +333,218 @@ function TabPlayers() {
   );
 }
 
+// ── Paste-to-mark attendance ─────────────────────────────────────────────────
+// Two-step, safe-by-design: (1) paste names + pick a status → "Preview" asks the
+// server for the exact plan (no writes); (2) review the plan → "Confirm & Mark"
+// applies it. Matching is exact (display name OR username); ambiguous / unknown
+// names are never marked. Only the chosen date is affected.
+const OUTCOME_META = {
+  will_mark: { label: 'Will mark', color: '#10b981', icon: '✓' },
+  marked:    { label: 'Marked',    color: '#10b981', icon: '✓' },
+  already:   { label: 'Already',   color: '#38bdf8', icon: '•' },
+  on_break:  { label: 'On break',  color: '#fbbf24', icon: '⏸' },
+  full:      { label: 'Both classes full', color: '#fbbf24', icon: '⚠' },
+  ambiguous: { label: 'Ambiguous', color: '#fca5a5', icon: '⚠' },
+  not_found: { label: 'Not found', color: '#fca5a5', icon: '✗' },
+  duplicate: { label: 'Duplicate', color: '#94a3b8', icon: '↺' },
+};
+
+function PasteMarker({ selDate, onApplied }) {
+  const [open, setOpen]       = useState(false);
+  const [status, setStatus]   = useState('Present');
+  // Each status keeps its OWN pasted list. Switching Present → Absent must NOT
+  // carry over the names you typed for Present.
+  const [texts, setTexts]     = useState({ Present: '', Absent: '', 'Catch-up': '' });
+  const [preview, setPreview] = useState(null);   // server dry-run response
+  const [applied, setApplied] = useState(null);   // server apply response (what was actually written)
+  const [busy, setBusy]       = useState(false);
+  const [msg, setMsg]         = useState('');
+
+  const text = texts[status];
+  const setText = (val) =>
+    setTexts(prev => ({ ...prev, [status]: typeof val === 'function' ? val(prev[status]) : val }));
+
+  // Split pasted text into names: one per line, also allow comma separation.
+  const parseNames = (raw) =>
+    raw.split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+
+  // Any time the inputs that affect the plan change, invalidate a stale preview
+  // so a coach can never confirm a plan that doesn't match what's on screen.
+  const invalidate = () => { if (preview) setPreview(null); if (applied) setApplied(null); };
+
+  // Changing the chosen date (e.g. to a previous day) must invalidate a preview
+  // that was built for the old date — the plan only makes sense for one date.
+  useEffect(() => { setPreview(null); setApplied(null); setMsg(''); }, [selDate]);
+
+  const doPreview = async () => {
+    const names = parseNames(text);
+    if (!names.length) { setMsg('Paste at least one name.'); return; }
+    setBusy(true); setMsg('');
+    try {
+      const r = await api.post('/api/coach-attendance/attendance/bulk-paste', {
+        date: selDate, status, names, dryRun: true,
+      });
+      setPreview(r.data);
+    } catch (e) {
+      setMsg(e?.response?.data?.error || 'Could not build preview.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const doApply = async () => {
+    const names = parseNames(text);
+    if (!names.length) return;
+    setBusy(true); setMsg('');
+    try {
+      const r = await api.post('/api/coach-attendance/attendance/bulk-paste', {
+        date: selDate, status, names, dryRun: false,
+      });
+      // The server now returns the TRUE per-row result (marked vs skipped), so we
+      // display it as-is rather than assuming the plan succeeded.
+      setApplied(r.data);
+      setMsg(`✓ Marked ${r.data.created} student(s) as ${status} on ${selDate}.`);
+      setPreview(null);
+      setText('');
+      onApplied && onApplied();   // refresh the live attendance rows + summary below
+    } catch (e) {
+      setMsg(e?.response?.data?.error || 'Could not apply.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const s = preview?.summary;
+
+  return (
+    <div style={{ marginTop: 16, borderTop: '1px solid rgba(148,163,184,0.18)', paddingTop: 14 }}>
+      <button className="cap-btn cap-btn-ghost" onClick={() => setOpen(o => !o)} style={{ fontSize: 13 }}>
+        {open ? '▾' : '▸'} 📋 Paste names to mark attendance
+      </button>
+
+      {open && (
+        <div style={{ marginTop: 14 }}>
+          <div style={{ fontSize: 12.5, color: '#94a3b8', marginBottom: 12 }}>
+            Paste student names (one per line). They’ll be marked <strong>only for {selDate}</strong>.
+            Names are matched exactly to a player’s display name or username — anything that doesn’t
+            match is shown but never marked. Review the preview before confirming.
+          </div>
+
+          {/* Status selector — this box decides the status applied to all pasted names */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+            {['Present', 'Absent', 'Catch-up'].map(st => (
+              <button key={st}
+                className={`cap-att-btn${status === st ? ` cap-att-btn-${st.toLowerCase().replace('-up','up')}` : ''}`}
+                onClick={() => { setStatus(st); setPreview(null); setApplied(null); setMsg(''); }}>
+                Paste {st} here
+              </button>
+            ))}
+          </div>
+
+          <textarea
+            className="cap-input"
+            style={{ width: '100%', minHeight: 110, resize: 'vertical', fontFamily: 'inherit' }}
+            placeholder={`Paste ${status} names here — one per line\nAarav Kumar\npriya_2015\n…`}
+            value={text}
+            onChange={e => { setText(e.target.value); invalidate(); }}
+          />
+
+          {/* Two-step flow hint — Preview first, then Confirm. Keeps coaches from
+              thinking "Preview" did the marking (it doesn't — it only shows the plan). */}
+          <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 10, marginBottom: 6 }}>
+            {!preview
+              ? <>① <strong>Preview match</strong> to check the names → ② then a <strong>Confirm &amp; mark</strong> button appears to save.</>
+              : <>Review the plan below, then click <strong style={{ color: '#10b981' }}>Confirm &amp; mark</strong> to actually save it.</>}
+          </div>
+
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            {!preview ? (
+              <button className="cap-btn cap-btn-cyan" disabled={busy} onClick={doPreview}>
+                {busy ? 'Checking…' : '🔍 Step 1 — Preview match'}
+              </button>
+            ) : (
+              <>
+                <button className="cap-btn cap-btn-green" disabled={busy || (s?.willMark ?? 0) === 0} onClick={doApply}>
+                  {busy ? 'Marking…' : `✓ Step 2 — Confirm & mark ${s?.willMark ?? 0} as ${status}`}
+                </button>
+                <button className="cap-btn cap-btn-ghost" disabled={busy} onClick={() => setPreview(null)}>
+                  Edit list
+                </button>
+              </>
+            )}
+            {msg && <span style={{ fontSize: 13, color: msg.startsWith('✓') ? '#10b981' : '#fca5a5' }}>{msg}</span>}
+          </div>
+
+          {preview && (
+            <div style={{ marginTop: 16 }}>
+              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 12.5, marginBottom: 10 }}>
+                <span style={{ color: '#10b981' }}>Will mark: <strong>{s.willMark}</strong></span>
+                <span style={{ color: '#38bdf8' }}>Already: <strong>{s.already}</strong></span>
+                {s.notFound > 0 && <span style={{ color: '#fca5a5' }}>Not found: <strong>{s.notFound}</strong></span>}
+                {s.ambiguous > 0 && <span style={{ color: '#fca5a5' }}>Ambiguous: <strong>{s.ambiguous}</strong></span>}
+                {s.onBreak > 0 && <span style={{ color: '#fbbf24' }}>On break: <strong>{s.onBreak}</strong></span>}
+                {s.full > 0 && <span style={{ color: '#fbbf24' }}>Classes full: <strong>{s.full}</strong></span>}
+                {s.duplicate > 0 && <span style={{ color: '#94a3b8' }}>Duplicates: <strong>{s.duplicate}</strong></span>}
+              </div>
+              <div className="cap-table-wrap">
+                <table className="cap-table">
+                  <thead><tr><th>Pasted</th><th>Matched player</th><th>Result</th></tr></thead>
+                  <tbody>
+                    {preview.results.map((r, i) => {
+                      const meta = OUTCOME_META[r.outcome] || { label: r.outcome, color: '#94a3b8', icon: '•' };
+                      return (
+                        <tr key={i}>
+                          <td>{r.input}</td>
+                          <td>{r.studentName || <span className="cap-muted">—</span>}</td>
+                          <td style={{ color: meta.color, fontWeight: 600 }}>
+                            {meta.icon} {r.message || meta.label}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* AFTER applying: show exactly what was written, so the coach has clear
+              confirmation without hunting through the player list below. */}
+          {applied && (
+            <div style={{ marginTop: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#10b981', marginBottom: 8 }}>
+                ✓ Done — {applied.created} marked as {applied.status} on {applied.date}
+              </div>
+              <div className="cap-table-wrap">
+                <table className="cap-table">
+                  <thead><tr><th>Pasted</th><th>Matched player</th><th>Result</th></tr></thead>
+                  <tbody>
+                    {applied.results.map((r, i) => {
+                      const meta = OUTCOME_META[r.outcome] || { label: r.outcome, color: '#94a3b8', icon: '•' };
+                      return (
+                        <tr key={i}>
+                          <td>{r.input}</td>
+                          <td>{r.studentName || <span className="cap-muted">—</span>}</td>
+                          <td style={{ color: meta.color, fontWeight: 600 }}>
+                            {meta.icon} {r.message || meta.label}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="cap-muted" style={{ fontSize: 12, marginTop: 8 }}>
+                These marks are now saved and shown in the list below.
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ════════════════════════════════════════════════════════════════════════════
 // TAB: ATTENDANCE
 // ════════════════════════════════════════════════════════════════════════════
@@ -406,6 +618,11 @@ function TabAttendance() {
             Today: {istNow}
           </div>
         </div>
+
+        {/* Paste-to-mark: paste a list of names, preview the plan, then apply.
+            Marks ONLY the selected date above. Nothing is written until you
+            review the preview and click Confirm. */}
+        <PasteMarker selDate={selDate} onApplied={loadRecords} />
       </div>
 
       {!players.length ? (
