@@ -75,6 +75,10 @@ const AdminMonthlyFocus = () => {
     fetchFocuses();
   }, []);
 
+  useEffect(() => {
+    if (activeTab === 'notifications') fetchNotifications();
+  }, [activeTab]);
+
   const fetchFocuses = async () => {
     try {
       // High limit so both Admin and Elite tabs get the full list (split client-side).
@@ -95,6 +99,67 @@ const AdminMonthlyFocus = () => {
     } catch (err) {
       setError('Failed to load focus details');
     }
+  };
+
+  // ── Bell notifications (admin-managed) ────────────────────────────────────
+  const emptyNotifForm = {
+    icon: '🎯',
+    topic: '🏛️ ChessNexus Official',
+    title: '',
+    desc: '',
+    date: '',
+    link: '/monthly-focus',
+    linkLabel: 'Go to Monthly Focus →',
+  };
+  const [notifications, setNotifications] = useState([]);
+  const [notifForm, setNotifForm] = useState(emptyNotifForm);
+  const [editingNotifId, setEditingNotifId] = useState(null);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await api.get('/api/admin/notifications');
+      setNotifications(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      setError('Failed to load notifications');
+    }
+  };
+
+  const saveNotification = async () => {
+    if (!notifForm.title.trim()) { setError('Notification title is required'); return; }
+    try {
+      if (editingNotifId) {
+        await api.put(`/api/admin/notifications/${editingNotifId}`, notifForm);
+      } else {
+        await api.post('/api/admin/notifications', notifForm);
+      }
+      setNotifForm(emptyNotifForm);
+      setEditingNotifId(null);
+      fetchNotifications();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to save notification');
+    }
+  };
+
+  const editNotification = (n) => {
+    setEditingNotifId(n._id);
+    setNotifForm({
+      icon: n.icon || '', topic: n.topic || '', title: n.title || '',
+      desc: n.desc || '', date: n.date || '', link: n.link || '', linkLabel: n.linkLabel || ''
+    });
+  };
+
+  const publishNotification = async (id) => {
+    try { await api.post(`/api/admin/notifications/${id}/publish`); fetchNotifications(); }
+    catch { setError('Failed to publish'); }
+  };
+  const unpublishNotification = async (id) => {
+    try { await api.post(`/api/admin/notifications/${id}/unpublish`); fetchNotifications(); }
+    catch { setError('Failed to unpublish'); }
+  };
+  const deleteNotification = async (id) => {
+    if (!window.confirm('Delete this notification?')) return;
+    try { await api.delete(`/api/admin/notifications/${id}`); fetchNotifications(); }
+    catch { setError('Failed to delete'); }
   };
 
   const createFocus = async () => {
@@ -538,8 +603,128 @@ const AdminMonthlyFocus = () => {
         <button style={tabStyle('elite')} onClick={() => setActiveTab('elite')}>
           💎 Elite Focuses ({eliteCount})
         </button>
+        <button style={tabStyle('notifications')} onClick={() => setActiveTab('notifications')}>
+          🔔 Notifications
+        </button>
       </div>
 
+      {activeTab === 'notifications' ? (
+        <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '20px' }}>
+          {/* Create / edit form */}
+          <div style={styles.sidebar}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>
+              {editingNotifId ? '✏️ Edit Notification' : '➕ New Notification'}
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ width: '70px' }}>
+                  <label style={{ fontSize: '12px', color: '#6b7280' }}>Icon</label>
+                  <input style={styles.input} value={notifForm.icon}
+                    onChange={e => setNotifForm({ ...notifForm, icon: e.target.value })} placeholder="🎯" />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '12px', color: '#6b7280' }}>Topic</label>
+                  <input style={styles.input} value={notifForm.topic}
+                    onChange={e => setNotifForm({ ...notifForm, topic: e.target.value })} placeholder="🏛️ ChessNexus Official" />
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280' }}>Title *</label>
+                <input style={styles.input} value={notifForm.title}
+                  onChange={e => setNotifForm({ ...notifForm, title: e.target.value })} placeholder="Monthly Focus: June Endgame Goals" />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280' }}>Description</label>
+                <textarea style={{ ...styles.input, minHeight: '70px', resize: 'vertical' }} value={notifForm.desc}
+                  onChange={e => setNotifForm({ ...notifForm, desc: e.target.value })}
+                  placeholder="June Monthly Focus challenge starts on June 17th — ..." />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280' }}>Date label</label>
+                <input style={styles.input} value={notifForm.date}
+                  onChange={e => setNotifForm({ ...notifForm, date: e.target.value })} placeholder="June 2026" />
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '12px', color: '#6b7280' }}>Link</label>
+                  <input style={styles.input} value={notifForm.link}
+                    onChange={e => setNotifForm({ ...notifForm, link: e.target.value })} placeholder="/monthly-focus" />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontSize: '12px', color: '#6b7280' }}>Link label</label>
+                  <input style={styles.input} value={notifForm.linkLabel}
+                    onChange={e => setNotifForm({ ...notifForm, linkLabel: e.target.value })} placeholder="Go to Monthly Focus →" />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                <button style={{ ...styles.btn, ...styles.btnPrimary, flex: 1 }} onClick={saveNotification}>
+                  {editingNotifId ? 'Save Changes' : 'Create Draft'}
+                </button>
+                {editingNotifId && (
+                  <button style={{ ...styles.btn, ...styles.btnSecondary }}
+                    onClick={() => { setEditingNotifId(null); setNotifForm(emptyNotifForm); }}>
+                    Cancel
+                  </button>
+                )}
+              </div>
+              <p style={{ fontSize: '11.5px', color: '#9ca3af', margin: '4px 0 0', lineHeight: 1.5 }}>
+                Create a draft, then <b>Publish</b> it to show it to all users. Each published
+                notification appears as a new unread item in everyone's bell.
+              </p>
+            </div>
+          </div>
+
+          {/* Existing notifications list */}
+          <div style={styles.main}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>All Notifications ({notifications.length})</h3>
+            {notifications.length === 0 ? (
+              <p style={{ color: '#9ca3af' }}>No notifications yet. Create one on the left.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {notifications.map(n => (
+                  <div key={n._id} style={{
+                    border: '1px solid #e5e7eb', borderRadius: '10px', padding: '14px',
+                    background: n.published ? '#f0fdf4' : '#fff'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '11px', fontWeight: 700, color: '#0891b2' }}>{n.topic}</div>
+                        <div style={{ fontSize: '15px', fontWeight: 700, color: '#111827', margin: '2px 0' }}>
+                          {n.icon} {n.title}
+                        </div>
+                        {n.desc && <div style={{ fontSize: '13px', color: '#4b5563', lineHeight: 1.5 }}>{n.desc}</div>}
+                        <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '5px' }}>
+                          {n.date} {n.link ? `• ${n.link}` : ''}
+                        </div>
+                      </div>
+                      <span style={{
+                        fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: '999px',
+                        background: n.published ? '#dcfce7' : '#f3f4f6',
+                        color: n.published ? '#15803d' : '#6b7280', whiteSpace: 'nowrap'
+                      }}>
+                        {n.published ? '● Published' : '○ Draft'}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+                      {n.published ? (
+                        <button style={{ ...styles.btn, ...styles.btnSecondary, fontSize: '13px' }}
+                          onClick={() => unpublishNotification(n._id)}>Unpublish</button>
+                      ) : (
+                        <button style={{ ...styles.btn, ...styles.btnPrimary, fontSize: '13px' }}
+                          onClick={() => publishNotification(n._id)}>Publish</button>
+                      )}
+                      <button style={{ ...styles.btn, ...styles.btnSecondary, fontSize: '13px' }}
+                        onClick={() => editNotification(n)}>Edit</button>
+                      <button style={{ ...styles.btn, fontSize: '13px', background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca' }}
+                        onClick={() => deleteNotification(n._id)}>Delete</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
       <div style={styles.grid}>
         {/* Sidebar - Focus List */}
         <div style={styles.sidebar}>
@@ -796,6 +981,7 @@ const AdminMonthlyFocus = () => {
           )}
         </div>
       </div>
+      )}
 
       {/* Create Focus Modal */}
       {showCreateFocus && (

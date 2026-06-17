@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api, { resolveApiAssetUrl } from '../api';
 import { useAuth } from '../contexts/AuthContext';
-import appNotifications from '../data/notifications';
 
 
 function getCountryCode(country) {
@@ -111,15 +110,26 @@ export default function Sidebar({ user, onNavigate }) {
   // Notifications (sidebar bell)
   const [showNotifications, setShowNotifications] = useState(false);
   const bellRef = React.useRef(null);
+  // App-wide bell notifications now come from the backend (admin-managed) instead
+  // of a hardcoded array. Read/unread is still tracked per-user by notification id.
+  const [appNotifications, setAppNotifications] = useState([]);
   const [seenNotifIds, setSeenNotifIds] = useState(
     () => new Set(JSON.parse(localStorage.getItem('seenNotificationIds') || '[]'))
   );
   const appUnreadCount = appNotifications.filter(n => !seenNotifIds.has(n.id)).length;
   const markNotificationsSeen = () => {
-    const all = new Set(appNotifications.map(n => n.id));
+    const all = new Set([...seenNotifIds, ...appNotifications.map(n => n.id)]);
     setSeenNotifIds(all);
     localStorage.setItem('seenNotificationIds', JSON.stringify([...all]));
   };
+
+  const fetchAppNotifications = React.useCallback(async () => {
+    if (!isAuthenticated) { setAppNotifications([]); return; }
+    try {
+      const res = await api.get('/api/public/notifications');
+      setAppNotifications(Array.isArray(res.data) ? res.data : []);
+    } catch { /* silent — non-critical */ }
+  }, [isAuthenticated]);
 
   // Unread messages from friends (shown in the bell alongside app notifications)
   const [friendMsgs, setFriendMsgs] = useState([]);
@@ -181,12 +191,12 @@ export default function Sidebar({ user, onNavigate }) {
     // Fetch once, then poll. Poll quickly (30s) only while the bell is open;
     // otherwise refresh slowly (120s) just to keep the badge count fresh. This
     // cuts request volume well below the old constant 60s polling.
-    const poll = () => { fetchFriendUnread(); fetchReportReplies(); fetchCoachRequests(); };
+    const poll = () => { fetchFriendUnread(); fetchReportReplies(); fetchCoachRequests(); fetchAppNotifications(); };
     poll();
     const intervalMs = showNotifications ? 30000 : 120000;
     const id = setInterval(poll, intervalMs);
     return () => clearInterval(id);
-  }, [isAuthenticated, fetchFriendUnread, fetchReportReplies, fetchCoachRequests, showNotifications]);
+  }, [isAuthenticated, fetchFriendUnread, fetchReportReplies, fetchCoachRequests, fetchAppNotifications, showNotifications]);
 
   // Total red badge = unread app notifications + friend messages + report replies + coach requests
   const unreadNotifCount = appUnreadCount + friendMsgTotal + reportReplies.length + coachRequests.length;
