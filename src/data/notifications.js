@@ -8,7 +8,7 @@ const notifications = [
     icon: '🎯',
     topic: '🏛️ ChessNexus Official',
     title: 'Monthly Focus: June Endgame Goals',
-    desc: 'June Monthly Focus challenge starts on June 9th — master endgame technique, earn XP, climb the leaderboard & unlock exclusive badges!',
+    desc: 'June Monthly Focus challenge starts on June 17th — master endgame technique, earn XP, climb the leaderboard & unlock exclusive badges!',
     date: 'June 2026',
     link: '/monthly-focus',
     linkLabel: 'Go to Monthly Focus →',
