@@ -140,6 +140,7 @@ export default function ArenaTournamentLive() {
   const myParticipantRef = useRef(null);
   const carryToastShownRef = useRef(false);
   const clockIntervalRef = useRef(null);
+  const timeoutRetryRef = useRef(null); // repeatedly notifies server until a flagged game actually ends
   const firstMoveIntervalRef = useRef(null);
   const firstMovePhaseRef = useRef(2); // 0=White not moved, 1=Black not moved, 2=both moved
   const pairingRetryTimerRef = useRef(null);
@@ -193,6 +194,36 @@ export default function ArenaTournamentLive() {
     myParticipantRef.current = myParticipant;
   }, [myParticipant]);
 
+  // Fire the timeout to the server and keep retrying until the game actually ends.
+  // The server validates timeouts against its own clock (lastMoveAt); small client/server
+  // drift can make a single emit get silently rejected, leaving the loss popup stuck.
+  // Retrying every second guarantees the flag lands as soon as the server agrees.
+  const notifyTimeout = (timedOutColor) => {
+    const gameId = currentGameRef.current;
+    if (!gameId) return;
+    // Emit immediately, then keep retrying.
+    socket.emit('arenaTournamentTimeout', { gameId, timedOutColor });
+    if (timeoutRetryRef.current) return; // already retrying
+    timeoutRetryRef.current = setInterval(() => {
+      const gid = currentGameRef.current;
+      // Stop once the game is gone (ended/cleared) — the gameEnded handler clears currentGame.
+      if (!gid) {
+        clearInterval(timeoutRetryRef.current);
+        timeoutRetryRef.current = null;
+        return;
+      }
+      socket.emit('arenaTournamentTimeout', { gameId: gid, timedOutColor });
+    }, 1000);
+  };
+
+  // Stop the timeout retry loop (called when a game ends or is cleared).
+  const stopTimeoutRetry = () => {
+    if (timeoutRetryRef.current) {
+      clearInterval(timeoutRetryRef.current);
+      timeoutRetryRef.current = null;
+    }
+  };
+
   // Live game clock - ticks every second for the player whose turn it is
   useEffect(() => {
     // Clear any existing interval
@@ -216,7 +247,7 @@ export default function ArenaTournamentLive() {
             if (prev !== null && prev <= 0 && currentGameRef.current) {
               clearInterval(clockIntervalRef.current);
               clockIntervalRef.current = null;
-              socket.emit('arenaTournamentTimeout', { gameId: currentGameRef.current, timedOutColor: 'white' });
+              notifyTimeout('white');
             }
             return 0;
           }
@@ -228,7 +259,7 @@ export default function ArenaTournamentLive() {
             if (prev !== null && prev <= 0 && currentGameRef.current) {
               clearInterval(clockIntervalRef.current);
               clockIntervalRef.current = null;
-              socket.emit('arenaTournamentTimeout', { gameId: currentGameRef.current, timedOutColor: 'black' });
+              notifyTimeout('black');
             }
             return 0;
           }
@@ -540,6 +571,7 @@ export default function ArenaTournamentLive() {
       }
       
       // Clear game state immediately
+      stopTimeoutRetry();
       setCurrentGame(null);
       setGameState(null);
       setLastMove(null);
@@ -737,6 +769,10 @@ export default function ArenaTournamentLive() {
       socket.off('marathonPhaseChanged');
       clearInterval(interval);
       clearInterval(firstMoveIntervalRef.current);
+      if (timeoutRetryRef.current) {
+        clearInterval(timeoutRetryRef.current);
+        timeoutRetryRef.current = null;
+      }
     };
   }, [tournamentId, tournament?.endTime, user?.id, user?._id]);
 
