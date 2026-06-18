@@ -77,6 +77,7 @@ const AdminMonthlyFocus = () => {
 
   useEffect(() => {
     if (activeTab === 'notifications') fetchNotifications();
+    if (activeTab === 'liveNote') fetchLiveNotes();
   }, [activeTab]);
 
   const fetchFocuses = async () => {
@@ -159,6 +160,81 @@ const AdminMonthlyFocus = () => {
   const deleteNotification = async (id) => {
     if (!window.confirm('Delete this notification?')) return;
     try { await api.delete(`/api/admin/notifications/${id}`); fetchNotifications(); }
+    catch { setError('Failed to delete'); }
+  };
+
+  // ── Live note (admin-managed countdown banner) ────────────────────────────
+  const emptyLiveNoteForm = { title: '', note: '', targetLocal: '' }; // targetLocal: "YYYY-MM-DDTHH:mm" in IST
+  const [liveNotes, setLiveNotes] = useState([]);
+  const [liveNoteForm, setLiveNoteForm] = useState(emptyLiveNoteForm);
+  const [editingLiveNoteId, setEditingLiveNoteId] = useState(null);
+
+  // Convert a datetime-local string (entered as IST) to a UTC ISO string.
+  // IST is fixed at UTC+5:30, so subtract 5h30m from the wall-clock value.
+  const istLocalToUtcISO = (local) => {
+    if (!local) return '';
+    const [datePart, timePart] = local.split('T');
+    const [y, mo, d] = datePart.split('-').map(Number);
+    const [h, mi] = timePart.split(':').map(Number);
+    // Build the UTC instant that corresponds to this IST wall-clock time.
+    const utcMs = Date.UTC(y, mo - 1, d, h, mi) - (5 * 60 + 30) * 60 * 1000;
+    return new Date(utcMs).toISOString();
+  };
+
+  // Convert a stored UTC date back to a datetime-local string in IST (for editing).
+  const utcToIstLocal = (utc) => {
+    const t = new Date(new Date(utc).getTime() + (5 * 60 + 30) * 60 * 1000);
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${t.getUTCFullYear()}-${pad(t.getUTCMonth() + 1)}-${pad(t.getUTCDate())}T${pad(t.getUTCHours())}:${pad(t.getUTCMinutes())}`;
+  };
+
+  const fetchLiveNotes = async () => {
+    try {
+      const res = await api.get('/api/admin/live-notes');
+      setLiveNotes(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      setError('Failed to load live notes');
+    }
+  };
+
+  const saveLiveNote = async () => {
+    if (!liveNoteForm.title.trim()) { setError('Live note title is required'); return; }
+    if (!liveNoteForm.targetLocal) { setError('Date & time (IST) is required'); return; }
+    try {
+      const payload = {
+        title: liveNoteForm.title,
+        note: liveNoteForm.note,
+        targetAt: istLocalToUtcISO(liveNoteForm.targetLocal),
+      };
+      if (editingLiveNoteId) {
+        await api.put(`/api/admin/live-notes/${editingLiveNoteId}`, payload);
+      } else {
+        await api.post('/api/admin/live-notes', payload);
+      }
+      setLiveNoteForm(emptyLiveNoteForm);
+      setEditingLiveNoteId(null);
+      fetchLiveNotes();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to save live note');
+    }
+  };
+
+  const editLiveNote = (n) => {
+    setEditingLiveNoteId(n._id);
+    setLiveNoteForm({ title: n.title || '', note: n.note || '', targetLocal: n.targetAt ? utcToIstLocal(n.targetAt) : '' });
+  };
+
+  const activateLiveNote = async (id) => {
+    try { await api.post(`/api/admin/live-notes/${id}/activate`); fetchLiveNotes(); }
+    catch { setError('Failed to activate'); }
+  };
+  const deactivateLiveNote = async (id) => {
+    try { await api.post(`/api/admin/live-notes/${id}/deactivate`); fetchLiveNotes(); }
+    catch { setError('Failed to deactivate'); }
+  };
+  const deleteLiveNote = async (id) => {
+    if (!window.confirm('Delete this live note?')) return;
+    try { await api.delete(`/api/admin/live-notes/${id}`); fetchLiveNotes(); }
     catch { setError('Failed to delete'); }
   };
 
@@ -606,6 +682,9 @@ const AdminMonthlyFocus = () => {
         <button style={tabStyle('notifications')} onClick={() => setActiveTab('notifications')}>
           🔔 Notifications
         </button>
+        <button style={tabStyle('liveNote')} onClick={() => setActiveTab('liveNote')}>
+          ⏳ Live Note
+        </button>
       </div>
 
       {activeTab === 'notifications' ? (
@@ -717,6 +796,103 @@ const AdminMonthlyFocus = () => {
                         onClick={() => editNotification(n)}>Edit</button>
                       <button style={{ ...styles.btn, fontSize: '13px', background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca' }}
                         onClick={() => deleteNotification(n._id)}>Delete</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ) : activeTab === 'liveNote' ? (
+        <div style={{ display: 'grid', gridTemplateColumns: '380px 1fr', gap: '20px' }}>
+          {/* Create / edit form */}
+          <div style={styles.sidebar}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>
+              {editingLiveNoteId ? '✏️ Edit Live Note' : '➕ New Live Note'}
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280' }}>Title * <span style={{ color: '#9ca3af' }}>(small)</span></label>
+                <input style={styles.input} value={liveNoteForm.title}
+                  onChange={e => setLiveNoteForm({ ...liveNoteForm, title: e.target.value })}
+                  placeholder="Live Tournament Tonight" />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280' }}>Note <span style={{ color: '#9ca3af' }}>(smaller than title)</span></label>
+                <input style={styles.input} value={liveNoteForm.note}
+                  onChange={e => setLiveNoteForm({ ...liveNoteForm, note: e.target.value })}
+                  placeholder="Join from the Arena page" />
+              </div>
+              <div>
+                <label style={{ fontSize: '12px', color: '#6b7280' }}>Date &amp; time (IST) *</label>
+                <input type="datetime-local" style={styles.input} value={liveNoteForm.targetLocal}
+                  onChange={e => setLiveNoteForm({ ...liveNoteForm, targetLocal: e.target.value })} />
+                <p style={{ fontSize: '11px', color: '#9ca3af', margin: '4px 0 0' }}>
+                  Users see a countdown to this time. At zero it switches to “LIVE NOW”.
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                <button style={{ ...styles.btn, ...styles.btnPrimary, flex: 1 }} onClick={saveLiveNote}>
+                  {editingLiveNoteId ? 'Save Changes' : 'Create Draft'}
+                </button>
+                {editingLiveNoteId && (
+                  <button style={{ ...styles.btn, ...styles.btnSecondary }}
+                    onClick={() => { setEditingLiveNoteId(null); setLiveNoteForm(emptyLiveNoteForm); }}>
+                    Cancel
+                  </button>
+                )}
+              </div>
+              <p style={{ fontSize: '11.5px', color: '#9ca3af', margin: '4px 0 0', lineHeight: 1.5 }}>
+                Create a draft, then <b>Activate</b> it. The active note shows as a small
+                dismissible banner with a countdown at the top of the pages that have the
+                floating Schedule button (Home, Dashboard, Puzzles, Race, Arcade, Study,
+                Games, Game Analysis). Only one note is active at a time.
+              </p>
+            </div>
+          </div>
+
+          {/* Existing live notes list */}
+          <div style={styles.main}>
+            <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>All Live Notes ({liveNotes.length})</h3>
+            {liveNotes.length === 0 ? (
+              <p style={{ color: '#9ca3af' }}>No live notes yet. Create one on the left.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {liveNotes.map(n => (
+                  <div key={n._id} style={{
+                    border: '1px solid #e5e7eb', borderRadius: '10px', padding: '14px',
+                    background: n.active ? '#f0fdf4' : '#fff'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '15px', fontWeight: 700, color: '#111827', margin: '2px 0' }}>
+                          {n.title}
+                        </div>
+                        {n.note && <div style={{ fontSize: '13px', color: '#4b5563', lineHeight: 1.5 }}>{n.note}</div>}
+                        <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '5px' }}>
+                          ⏳ {n.targetAt ? new Date(n.targetAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) + ' IST' : '—'}
+                        </div>
+                      </div>
+                      <span style={{
+                        fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: '999px',
+                        background: n.active ? '#dcfce7' : '#f3f4f6',
+                        color: n.active ? '#15803d' : '#6b7280', whiteSpace: 'nowrap'
+                      }}>
+                        {n.active ? '● Active' : '○ Draft'}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+                      {n.active ? (
+                        <button style={{ ...styles.btn, ...styles.btnSecondary, fontSize: '13px' }}
+                          onClick={() => deactivateLiveNote(n._id)}>Deactivate</button>
+                      ) : (
+                        <button style={{ ...styles.btn, ...styles.btnPrimary, fontSize: '13px' }}
+                          onClick={() => activateLiveNote(n._id)}>Activate</button>
+                      )}
+                      <button style={{ ...styles.btn, ...styles.btnSecondary, fontSize: '13px' }}
+                        onClick={() => editLiveNote(n)}>Edit</button>
+                      <button style={{ ...styles.btn, fontSize: '13px', background: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca' }}
+                        onClick={() => deleteLiveNote(n._id)}>Delete</button>
                     </div>
                   </div>
                 ))}

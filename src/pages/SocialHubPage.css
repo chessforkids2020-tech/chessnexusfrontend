@@ -1266,11 +1266,16 @@
   display: grid;
   grid-template-columns: 340px 1fr;
   gap: 20px;
-  align-items: start;
+  /* Stretch both columns to equal height so the chat card can grow
+     to match the members card on the left. */
+  align-items: stretch;
 }
 
 .sh-club-detail-left  { display: flex; flex-direction: column; gap: 16px; }
 .sh-club-detail-right { display: flex; flex-direction: column; }
+/* Let the chat card consume the remaining height of the right column,
+   making it as tall as the (taller) left members card. */
+.sh-club-detail-right .sh-club-chat { flex: 1; height: auto; min-height: 520px; }
 
 .sh-members-pagination {
   margin-top: 12px;
@@ -1771,7 +1776,8 @@
 /* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .sh-club-detail-cols { grid-template-columns: 1fr; }
-  .sh-club-chat        { height: 400px; }
+  /* Stacked: revert chat to a compact fixed height (columns no longer pair up). */
+  .sh-club-detail-right .sh-club-chat { flex: none; height: 400px; min-height: 0; }
   .sh-club-activity-side { align-items: flex-start; }
   .sh-club-activity-item { flex-wrap: wrap; }
   .sh-featured-activities-track { grid-auto-columns: minmax(210px, 230px); }
@@ -1963,6 +1969,24 @@
 
 /* ── Leaderboard rows ───────────────────────────────────────────────────── */
 .pl-lb { display: flex; flex-direction: column; gap: 6px; }
+
+/* Split the puzzle-solvers leaderboard into two side-by-side columns
+   (ranks 1–5 left, 6–10 right) without growing the card's height. */
+.pl-lb-split {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 14px;
+}
+.pl-lb-split .pl-lb-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+@media (max-width: 640px) {
+  .pl-lb-split { flex-direction: column; }
+}
 
 .pl-row {
   display: flex;

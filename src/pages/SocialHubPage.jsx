@@ -483,7 +483,7 @@ function PlayersTab() {
       {/* ── RIGHT 75% — Best Players ────────────────────────────────────────── */}
       <main className="pl-best">
 
-        {/* Top 5 Daily Puzzle Solvers */}
+        {/* Top 10 Daily Puzzle Solvers — split into two columns */}
         <section className="pl-panel pl-panel-cyan">
           <PanelHead
             icon="🧩"
@@ -495,18 +495,33 @@ function PlayersTab() {
           {daily.length === 0 ? (
             <div className="pl-empty">No solvers yet.</div>
           ) : (
-            <div className="pl-lb">
-              {daily.map((u, i) => (
-                <LeaderRow
-                  key={u.username || i}
-                  rank={u.rank || i + 1}
-                  name={u.displayName || u.username}
-                  sub={u.todayDelta ? `▲ +${u.todayDelta} today` : 'puzzle rating'}
-                  score={u.rating}
-                  accent="cyan"
-                  user={u}
-                />
-              ))}
+            <div className="pl-lb pl-lb-split">
+              <div className="pl-lb-col">
+                {daily.slice(0, 5).map((u, i) => (
+                  <LeaderRow
+                    key={u.username || i}
+                    rank={u.rank || i + 1}
+                    name={u.displayName || u.username}
+                    sub={u.todayDelta ? `▲ +${u.todayDelta} today` : 'puzzle rating'}
+                    score={u.rating}
+                    accent="cyan"
+                    user={u}
+                  />
+                ))}
+              </div>
+              <div className="pl-lb-col">
+                {daily.slice(5, 10).map((u, i) => (
+                  <LeaderRow
+                    key={u.username || (i + 5)}
+                    rank={u.rank || i + 6}
+                    name={u.displayName || u.username}
+                    sub={u.todayDelta ? `▲ +${u.todayDelta} today` : 'puzzle rating'}
+                    score={u.rating}
+                    accent="cyan"
+                    user={u}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </section>

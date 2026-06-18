@@ -366,6 +366,7 @@ function AdminDashboard() {
   // Arena Tournaments admin state
   const [arenaTournaments, setArenaTournaments] = useState([]);
   const [loadingArenaTournaments, setLoadingArenaTournaments] = useState(false);
+  const [arenaListCollapsed, setArenaListCollapsed] = useState(true); // list is long — collapsed by default
   const [showArenaCreateModal, setShowArenaCreateModal] = useState(false);
   const [creatingArenaTournament, setCreatingArenaTournament] = useState(false);
   const [arenaCreateError, setArenaCreateError] = useState('');
@@ -1477,12 +1478,20 @@ function AdminDashboard() {
       <div style={{ ...styles.card, padding: 16, marginTop: 16, background: '#ffffff', border: '1px solid #e2e8f0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <div>
-            <h3 style={{ margin: 0, color: '#0f172a' }}>🏆 Arena Tournaments</h3>
+            <h3 style={{ margin: 0, color: '#0f172a', cursor: 'pointer', userSelect: 'none' }} onClick={() => setArenaListCollapsed(c => !c)}>
+              {arenaListCollapsed ? '▶' : '▼'} 🏆 Arena Tournaments
+              {arenaTournaments.length > 0 && (
+                <span style={{ marginLeft: 8, fontSize: 13, fontWeight: 600, color: '#64748b' }}>({arenaTournaments.length})</span>
+              )}
+            </h3>
             <p style={{ margin: '4px 0 0', color: '#475569', fontSize: 13 }}>
               Admin-created tournaments auto-reserve 5 bots. Deleting a tournament releases those bots so they're free for the next one.
             </p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
+            <button style={styles.secondaryBtn} onClick={() => setArenaListCollapsed(c => !c)}>
+              {arenaListCollapsed ? 'Expand' : 'Collapse'}
+            </button>
             <button style={styles.primaryBtn} onClick={openArenaCreateModal}>+ Create</button>
             <button style={styles.secondaryBtn} onClick={fetchArenaTournaments} disabled={loadingArenaTournaments}>
               {loadingArenaTournaments ? 'Loading…' : 'Refresh'}
@@ -1490,7 +1499,7 @@ function AdminDashboard() {
           </div>
         </div>
 
-        {arenaTournaments.length === 0 ? (
+        {arenaListCollapsed ? null : arenaTournaments.length === 0 ? (
           <div style={{ padding: 16, color: '#64748b', textAlign: 'center', background: '#f8fafc', borderRadius: 8 }}>
             No tournaments yet.
           </div>

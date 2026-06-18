@@ -34,7 +34,9 @@ function toWhiteCp(evaluation, sideToMove) {
   if (!evaluation) return 0;
   let cp;
   if (evaluation.type === 'mate') {
-    cp = evaluation.value >= 0 ? 100000 : -100000; // side-to-move mates / gets mated
+    // mate > 0: side-to-move delivers mate. mate <= 0 (incl. "mate 0" = already
+    // checkmated): side-to-move is getting mated. Treat 0 as a loss, not a win.
+    cp = evaluation.value > 0 ? 100000 : -100000; // side-to-move mates / gets mated
   } else {
     cp = evaluation.value; // centipawns, side-to-move POV
   }
@@ -64,7 +66,12 @@ export async function analyzeGame(sanMoves, opts = {}) {
     let mv;
     try { mv = chess.move(san); } catch { mv = null; }
     if (!mv) break;
-    steps.push({ san: mv.san, fenBefore, sideToMove, fenAfter: chess.fen() });
+    // A move that ends the game (checkmate / stalemate / draw) leaves no legal
+    // reply, so the engine can't be queried on fenAfter — flag it as terminal
+    // and skip classification (a mating move is the best possible move, never
+    // a blunder).
+    const terminal = chess.isGameOver();
+    steps.push({ san: mv.san, fenBefore, sideToMove, fenAfter: chess.fen(), terminal });
   }
 
   const total = steps.length;
@@ -76,6 +83,27 @@ export async function analyzeGame(sanMoves, opts = {}) {
   let prevAfterWhiteCp = 0; // eval after previous move (= before current, from White POV)
   for (let i = 0; i < steps.length; i++) {
     const step = steps[i];
+
+    // Game-ending move (checkmate/stalemate/draw): no legal reply exists, so the
+    // engine can't evaluate fenAfter. A checkmating move is the best possible
+    // move — never a blunder. Record it as terminal with no classification.
+    if (step.terminal) {
+      const isMate = step.san.endsWith('#');
+      // Decisive mate: the side that just moved is fully winning. Stalemate/draw: 0.
+      const finalWhiteCp = isMate
+        ? (step.sideToMove === 'w' ? 100000 : -100000)
+        : 0;
+      analysis.push({
+        ply: i + 1,
+        san: step.san,
+        fenAfter: step.fenAfter,
+        classification: null,
+        eval: Math.round(finalWhiteCp) / 100
+      });
+      prevAfterWhiteCp = finalWhiteCp;
+      onProgress(i + 1, total);
+      continue;
+    }
 
     // Best eval available before the move (side-to-move POV -> White POV).
     const before = await stockfish.getBestMove(step.fenBefore, { depth, moveTime: 1500 });

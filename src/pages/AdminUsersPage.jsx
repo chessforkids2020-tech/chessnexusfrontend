@@ -33,6 +33,33 @@ const styles = {
     fontSize: 14,
     fontWeight: 600
   },
+  tabBar: {
+    display: "flex",
+    gap: 8,
+    marginBottom: 16,
+    borderBottom: "2px solid #e2e8f0",
+  },
+  tab: {
+    padding: "10px 18px",
+    background: "transparent",
+    color: "#64748b",
+    border: "none",
+    borderBottom: "3px solid transparent",
+    marginBottom: -2,
+    cursor: "pointer",
+    fontSize: 15,
+    fontWeight: 600,
+    fontFamily: "Inter, Arial, sans-serif",
+  },
+  tabActive: {
+    color: "#0b6623",
+    borderBottom: "3px solid #0b6623",
+  },
+  tabCount: {
+    color: "#94a3b8",
+    fontWeight: 500,
+    fontSize: 13,
+  },
   searchContainer: {
     marginBottom: 20,
     display: "flex",
@@ -210,6 +237,8 @@ export default function AdminUsersPage() {
     email: ""
   });
   const [showCreateUser, setShowCreateUser] = useState(false);
+  // Which user list to show: 'registered' | 'guest'.
+  const [userTab, setUserTab] = useState('registered');
   // Column sorting. key = user field, direction = 'asc' | 'desc'.
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
@@ -268,6 +297,17 @@ export default function AdminUsersPage() {
       chessComUsername: user.chessComUsername || "",
       password: ""
     });
+  };
+
+  // Open the user's dashboard (same UserDashboard layout as /player/:displayName).
+  // Opens in a new tab so the admin keeps their place in the user list.
+  const openUserProfile = (user) => {
+    const handle = user.displayName || user.username;
+    if (!handle) {
+      alert('This user has no username/display name to open a profile.');
+      return;
+    }
+    window.open(`/player/${encodeURIComponent(handle)}`, '_blank', 'noopener,noreferrer');
   };
 
   const cancelEditing = () => {
@@ -411,21 +451,17 @@ export default function AdminUsersPage() {
       {sortableTh('Username', 'username')}
       {sortableTh('Display Name', 'displayName')}
       {sortableTh('Role', 'role')}
-      {sortableTh('Age', 'age')}
       {sortableTh('Country', 'country')}
-      {sortableTh('Time Zone', 'timeZone')}
       {sortableTh('Lichess', 'lichessUsername')}
       {sortableTh('Chess.com', 'chessComUsername')}
       {sortableTh('Status', 'isCurrentlyOnline')}
-      <th style={styles.th}>Assigned Round</th>
-      <th style={styles.th}>Assigned Batch</th>
       {sortableTh('Created', 'createdAt')}
       <th style={styles.th}>Actions</th>
     </tr>
   );
 
   const renderUserRow = (user) => (
-    <tr key={user._id} style={styles.tableRow}>
+    <tr key={user._id} className="admin-user-row" style={styles.tableRow}>
       <td style={styles.td}>
         {editingUser === user._id ? (
           <input
@@ -476,35 +512,12 @@ export default function AdminUsersPage() {
       <td style={styles.td}>
         {editingUser === user._id ? (
           <input
-            type="number"
-            value={editingData.age}
-            onChange={(e) => setEditingData({...editingData, age: e.target.value})}
-            style={{ ...styles.input, width: "100%", marginTop: 0 }}
-          />
-        ) : (
-          user.age || '-'
-        )}
-      </td>
-      <td style={styles.td}>
-        {editingUser === user._id ? (
-          <input
             value={editingData.country}
             onChange={(e) => setEditingData({...editingData, country: e.target.value})}
             style={{ ...styles.input, width: "100%", marginTop: 0 }}
           />
         ) : (
           user.country || '-'
-        )}
-      </td>
-      <td style={styles.td}>
-        {editingUser === user._id ? (
-          <input
-            value={editingData.timeZone}
-            onChange={(e) => setEditingData({...editingData, timeZone: e.target.value})}
-            style={{ ...styles.input, width: "100%", marginTop: 0 }}
-          />
-        ) : (
-          user.timeZone || '-'
         )}
       </td>
       <td style={styles.td}>
@@ -557,22 +570,6 @@ export default function AdminUsersPage() {
         </span>
       </td>
       <td style={styles.td}>
-        {user.assignedRounds && user.assignedRounds.length > 0 ? (
-          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-            {user.assignedRounds.map((roundId, idx) => (
-              <span key={idx} style={styles.assignmentTag}>
-                Round {idx + 1}
-              </span>
-            ))}
-          </div>
-        ) : '-'}
-      </td>
-      <td style={styles.td}>
-        {user.assignedBatch ? (
-          <span style={styles.assignmentTag}>Batch {user.assignedBatch}</span>
-        ) : '-'}
-      </td>
-      <td style={styles.td}>
         <div style={{ fontSize: 12 }}>
           {new Date(user.createdAt).toLocaleDateString()}
           <div style={{ color: '#888', fontSize: 11 }}>
@@ -597,6 +594,12 @@ export default function AdminUsersPage() {
           </div>
         ) : (
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            <button
+              onClick={() => openUserProfile(user)}
+              style={{ ...styles.smallBtn, background: "#2563eb" }}
+            >
+              Profile
+            </button>
             <button
               onClick={() => startEditingUser(user)}
               style={{ ...styles.smallBtn, background: "#f59e0b" }}
@@ -631,6 +634,11 @@ export default function AdminUsersPage() {
 
   return (
     <div style={styles.page}>
+      {/* Row hover highlight — slight green tint when the mouse is over a user row */}
+      <style>{`
+        tr.admin-user-row:hover { background-color: #ecfdf3 !important; }
+        tr.admin-user-row:hover td { background-color: #ecfdf3 !important; }
+      `}</style>
       <div style={styles.header}>
         <h1 style={styles.title}>👥 User Management</h1>
         <button onClick={() => nav('/admin')} style={styles.backBtn}>← Back to Dashboard</button>
@@ -754,11 +762,26 @@ export default function AdminUsersPage() {
         </div>
       ) : (
       <>
-      {/* Registered users */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 0 10px' }}>
-        <h2 style={{ ...styles.title, fontSize: 20, margin: 0 }}>Registered Users</h2>
-        <span style={{ color: '#64748b', fontSize: 13 }}>({registeredUsers.length})</span>
+      {/* Tabs: Registered Users | Guest Users */}
+      <div style={styles.tabBar}>
+        <button
+          type="button"
+          onClick={() => setUserTab('registered')}
+          style={userTab === 'registered' ? { ...styles.tab, ...styles.tabActive } : styles.tab}
+        >
+          Registered Users <span style={styles.tabCount}>({registeredUsers.length})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setUserTab('guest')}
+          style={userTab === 'guest' ? { ...styles.tab, ...styles.tabActive } : styles.tab}
+        >
+          Guest Users <span style={styles.tabCount}>({guestUsers.length})</span>
+        </button>
       </div>
+
+      {/* Registered users */}
+      {userTab === 'registered' && (
       <div style={styles.tableContainer}>
         {registeredUsers.length === 0 ? (
           <div style={styles.noResults}>
@@ -771,7 +794,7 @@ export default function AdminUsersPage() {
             </thead>
             <tbody>
               {registeredUsers.map(user => (
-                <tr key={user._id} style={styles.tableRow}>
+                <tr key={user._id} className="admin-user-row" style={styles.tableRow}>
                   <td style={styles.td}>
                     {editingUser === user._id ? (
                       <input 
@@ -820,21 +843,9 @@ export default function AdminUsersPage() {
                   </td>
                   <td style={styles.td}>
                     {editingUser === user._id ? (
-                      <input 
-                        type="number"
-                        value={editingData.age} 
-                        onChange={(e) => setEditingData({...editingData, age: e.target.value})} 
-                        style={{ ...styles.input, width: "100%", marginTop: 0 }}
-                      />
-                    ) : (
-                      user.age || '-'
-                    )}
-                  </td>
-                  <td style={styles.td}>
-                    {editingUser === user._id ? (
-                      <input 
-                        value={editingData.country} 
-                        onChange={(e) => setEditingData({...editingData, country: e.target.value})} 
+                      <input
+                        value={editingData.country}
+                        onChange={(e) => setEditingData({...editingData, country: e.target.value})}
                         style={{ ...styles.input, width: "100%", marginTop: 0 }}
                       />
                     ) : (
@@ -843,19 +854,8 @@ export default function AdminUsersPage() {
                   </td>
                   <td style={styles.td}>
                     {editingUser === user._id ? (
-                      <input 
-                        value={editingData.timeZone} 
-                        onChange={(e) => setEditingData({...editingData, timeZone: e.target.value})} 
-                        style={{ ...styles.input, width: "100%", marginTop: 0 }}
-                      />
-                    ) : (
-                      user.timeZone || '-'
-                    )}
-                  </td>
-                  <td style={styles.td}>
-                    {editingUser === user._id ? (
-                      <input 
-                        value={editingData.lichessUsername} 
+                      <input
+                        value={editingData.lichessUsername}
                         onChange={(e) => setEditingData({...editingData, lichessUsername: e.target.value})} 
                         style={{ ...styles.input, width: "100%", marginTop: 0 }}
                       />
@@ -902,22 +902,6 @@ export default function AdminUsersPage() {
                     </span>
                   </td>
                   <td style={styles.td}>
-                    {user.assignedRounds && user.assignedRounds.length > 0 ? (
-                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                        {user.assignedRounds.map((roundId, idx) => (
-                          <span key={idx} style={styles.assignmentTag}>
-                            Round {idx + 1}
-                          </span>
-                        ))}
-                      </div>
-                    ) : '-'}
-                  </td>
-                  <td style={styles.td}>
-                    {user.assignedBatch ? (
-                      <span style={styles.assignmentTag}>Batch {user.assignedBatch}</span>
-                    ) : '-'}
-                  </td>
-                  <td style={styles.td}>
                     <div style={{ fontSize: 12 }}>
                       {new Date(user.createdAt).toLocaleDateString()}
                       <div style={{ color: '#888', fontSize: 11 }}>
@@ -942,14 +926,20 @@ export default function AdminUsersPage() {
                       </div>
                     ) : (
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                        <button 
-                          onClick={() => startEditingUser(user)} 
+                        <button
+                          onClick={() => openUserProfile(user)}
+                          style={{ ...styles.smallBtn, background: "#2563eb" }}
+                        >
+                          Profile
+                        </button>
+                        <button
+                          onClick={() => startEditingUser(user)}
                           style={{ ...styles.smallBtn, background: "#f59e0b" }}
                         >
                           Edit
                         </button>
-                        <button 
-                          onClick={() => deleteUser(user._id)} 
+                        <button
+                          onClick={() => deleteUser(user._id)}
                           style={{ ...styles.smallBtn, background: "#dc2626" }}
                         >
                           Delete
@@ -963,15 +953,14 @@ export default function AdminUsersPage() {
           </table>
         )}
       </div>
+      )}
 
       {/* Guest users */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '24px 0 10px' }}>
-        <h2 style={{ ...styles.title, fontSize: 20, margin: 0 }}>Guest Users</h2>
-        <span style={{ color: '#64748b', fontSize: 13 }}>({guestUsers.length})</span>
-      </div>
+      {userTab === 'guest' && (
       <div style={styles.tableContainer}>
         {renderTable(guestUsers, searchTerm ? 'No guest users match your search' : 'No guest users found')}
       </div>
+      )}
       </>
       )}
     </div>
