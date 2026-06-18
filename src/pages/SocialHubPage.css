@@ -1266,16 +1266,20 @@
   display: grid;
   grid-template-columns: 340px 1fr;
   gap: 20px;
-  /* Stretch both columns to equal height so the chat card can grow
-     to match the members card on the left. */
-  align-items: stretch;
+  align-items: start;
 }
 
 .sh-club-detail-left  { display: flex; flex-direction: column; gap: 16px; }
 .sh-club-detail-right { display: flex; flex-direction: column; }
-/* Let the chat card consume the remaining height of the right column,
-   making it as tall as the (taller) left members card. */
-.sh-club-detail-right .sh-club-chat { flex: 1; height: auto; min-height: 520px; }
+
+/* Keep the club chat the SAME height as a full members card (10 members
+   per page + pagination) and scroll its messages internally, so the chat
+   never runs longer than the members list beside it.
+   Card padding (48) + title (~32) + 10 rows (~62 each = 620) + pagination (~38). */
+.sh-club-detail-right .sh-club-chat {
+  height: 740px;
+  min-height: 0;
+}
 
 .sh-members-pagination {
   margin-top: 12px;
