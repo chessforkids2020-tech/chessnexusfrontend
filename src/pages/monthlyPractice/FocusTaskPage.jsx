@@ -1323,17 +1323,14 @@ export default function FocusTaskPage() {
                     <p className="focus-puzzle-description">
                       What tactics pattern is this?
                     </p>
-                    <label className="focus-input-label">Tactics Name:</label>
-                    <input 
-                      className="focus-input"
-                      placeholder="e.g., Fork, Pin, Hanging, Discovery..."
-                      value={answers[index] || ''}
-                      onChange={e => updateAnswer(index, e.target.value)}
-                      onFocus={() => setCurrentIndex(index)}
-                    />
+                    {/* Pick the tactic below. These are the choices — tap one. The
+                        text box is only for a different pattern not listed here. */}
+                    <label className="focus-input-label">Choose the tactic:</label>
                     <div className="focus-tactics-buttons">
-                      {['Fork', 'Pin', 'Hanging', 'Discovery', 'Mate in 2', 'Attack f2/f7'].map(tactic => (
-                        <button 
+                      {['Fork', 'Pin', 'Skewer', 'Discovered Attack', 'Double Check',
+                        'Deflection', 'Hanging Piece', 'Back Rank Mate', 'Smothered Mate',
+                        'Mate in 2', 'Attack f2/f7'].map(tactic => (
+                        <button
                           key={tactic}
                           className={`focus-tactics-btn ${answers[index]?.toLowerCase() === tactic.toLowerCase() ? 'focus-tactics-btn-active' : ''}`}
                           onClick={() => updateAnswer(index, tactic)}
@@ -1342,6 +1339,16 @@ export default function FocusTaskPage() {
                         </button>
                       ))}
                     </div>
+                    <label className="focus-input-label" style={{ marginTop: '12px', opacity: 0.85 }}>
+                      Or type a different pattern:
+                    </label>
+                    <input
+                      className="focus-input"
+                      placeholder="Only if it's not one of the choices above"
+                      value={answers[index] || ''}
+                      onChange={e => updateAnswer(index, e.target.value)}
+                      onFocus={() => setCurrentIndex(index)}
+                    />
                   </div>
                 </div>
               </div>

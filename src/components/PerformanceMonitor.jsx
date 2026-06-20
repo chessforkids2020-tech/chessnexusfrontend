@@ -428,7 +428,7 @@ function getMFBadge(completedDays, perfectDays) {
   return { emoji: '🌱', name: 'Beginner' };
 }
 
-const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSummary = null }) => {
+const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSummary = null, publicMonthlyFocus = null }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedRaceType, setSelectedRaceType] = useState(null);
   // Puzzle Stats card time range: '24h' | '7d'
@@ -491,8 +491,16 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
     return () => { alive = false; };
   }, [user, statsRange, publicTrainingStats]);
 
-  // Fetch Monthly Focus data — all current focuses + per-focus user stats
+  // Fetch Monthly Focus data — all current focuses + per-focus user stats.
+  // In spectator view (publicMonthlyFocus provided) use the VIEWED user's stats
+  // straight from the public profile payload instead of fetching, which would
+  // otherwise return the logged-in viewer's own stats.
   useEffect(() => {
+    if (publicMonthlyFocus) {
+      setFocusData(publicMonthlyFocus);
+      setFocusLoading(false);
+      return;
+    }
     let alive = true;
     const fetchFocusData = async () => {
       setFocusLoading(true);
@@ -523,7 +531,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
       fetchFocusData();
     }
     return () => { alive = false; };
-  }, [user]);
+  }, [user, publicMonthlyFocus]);
 
   // Fetch Arena Tournament summary
   useEffect(() => {

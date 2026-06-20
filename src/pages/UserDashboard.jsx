@@ -1487,6 +1487,7 @@ export default function UserDashboard() {
               user={user}
               publicTrainingStats={publicView?.trainingStats || null}
               publicArenaSummary={publicView?.arenaSummary || null}
+              publicMonthlyFocus={isPublicView ? (publicView?.monthlyFocus || { focuses: [], statsMap: {} }) : null}
             />
 
             <DashboardTabs activeTab={activeTab} onChange={selectTab} />
@@ -1496,7 +1497,6 @@ export default function UserDashboard() {
             {visitedTabs.has('activity') && (
               <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'activity'}>
                 <ActivityTracker publicData={publicView?.activity || null} />
-                <MonthlyFocusPanel publicData={isPublicView ? (publicView?.monthlyFocus || { focuses: [], statsMap: {} }) : null} />
               </div>
             )}
 
