@@ -187,14 +187,20 @@ export default function HomepagePuzzle() {
         const userSan = moveResult.san.toLowerCase().replace(/[+#]/g, '');
         const targetSan = expectedMove.toLowerCase().replace(/[+#]/g, '');
 
-        if (userSan === targetSan) {
+        // Accept any move that delivers immediate checkmate — covers positions
+        // with multiple ways to mate where the alternate mate differs from the
+        // single recorded solution move.
+        const isAltMate = newChess.isCheckmate();
+
+        if (userSan === targetSan || isAltMate) {
           // Correct move!
           setChess(newChess);
           setMoveIndex(moveIndex + 1);
           setStatus('Correct! ✓');
           
-          // Check if puzzle complete
-          if (moveIndex + 1 >= solutionMoves.length) {
+          // Check if puzzle complete — checkmate ends the puzzle immediately,
+          // even when the recorded solution had more moves queued.
+          if (isAltMate || moveIndex + 1 >= solutionMoves.length) {
             setTimeout(() => {
               setStatus('Puzzle solved! 🎉');
               setShowLoginPrompt(true);

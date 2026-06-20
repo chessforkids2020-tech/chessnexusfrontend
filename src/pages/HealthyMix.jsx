@@ -325,7 +325,11 @@ export default function HealthyMix() {
       const res = await api.post('/api/public/healthymix/submit', {
         puzzleId: puzzle._id || puzzle.id,
         solved,
-        usedSolution: usedSolutionRef.current
+        usedSolution: usedSolutionRef.current,
+        // Tells the backend which surface served this puzzle. Only 'themes'
+        // changes scoring (reduced solve reward); the rest score like classic
+        // Healthy Mix.
+        mode: trainingMode
       });
       setRating(res.data.newRating);
       setRatingDelta(res.data.pointsChange);

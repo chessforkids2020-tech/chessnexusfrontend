@@ -723,6 +723,10 @@ export default function Puzzles() {
     const uciMove = move.from + move.to + (move.promotion || '');
     const sanMove = move.san;
     const currentMoveIndex = moveIndexRef.current;
+    // Whether the user's move delivers immediate checkmate — covers positions
+    // with multiple ways to mate where the alternate mate differs from the
+    // single recorded solution move.
+    const isAltMate = game.isCheckmate();
     
     const evaluateMove = async () => {
       setMessage('Verifying move...');
@@ -742,7 +746,7 @@ export default function Puzzles() {
         const normalizedSan = normalizeMove(sanMove);
         const normalizedExpected = normalizeMove(expectedMove);
         
-        if (normalizedSan === normalizedExpected || uciMove === expectedMove) {
+        if (normalizedSan === normalizedExpected || uciMove === expectedMove || isAltMate) {
           if (soundEnabled) playSound('correct');
           setMessage(failedStepRef.current ? 'Correct! (But penalty already applied)' : 'Perfect move!');
           return { correct: true, isBestMove: true };

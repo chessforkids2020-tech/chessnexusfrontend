@@ -681,13 +681,19 @@ function MFStatCard({ icon, label, value, accent }) {
   );
 }
 
-function MonthlyFocusPanel() {
-  const [data, setData] = useState(null);
-  const [mfLoading, setMfLoading] = useState(true);
+// When `publicData` is provided (spectator view), the panel renders the VIEWED
+// user's monthly-focus stats supplied by /api/public/profile/:displayName.
+// Otherwise it fetches the logged-in user's own stats.
+function MonthlyFocusPanel({ publicData = null }) {
+  const [data, setData] = useState(publicData);
+  const [mfLoading, setMfLoading] = useState(!publicData);
 
   const currentMonthLabel = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
 
   useEffect(() => {
+    // Spectator view: data comes from props, no fetch needed.
+    if (publicData) { setData(publicData); setMfLoading(false); return; }
+
     let alive = true;
     const load = async () => {
       try {
@@ -710,7 +716,7 @@ function MonthlyFocusPanel() {
     };
     load();
     return () => { alive = false; };
-  }, []);
+  }, [publicData]);
 
   if (mfLoading || !data) return null;
 
@@ -958,6 +964,7 @@ export default function UserDashboard() {
             activity: data.activity || { activeDates: [], stats: { totalDays: 0, currentStreak: 0, totalMinutes: 0 } },
             trainingStats: data.trainingStats || { correct: 0, wrong: 0 },
             arenaSummary: data.arenaSummary || { totalTournaments: 0, totalGamesPlayed: 0, arenaCrownTier: 'none', arenaCarryPoints: 0 },
+            monthlyFocus: data.monthlyFocus || { focuses: [], statsMap: {} },
           });
           setErr(null);
         } catch (e) {
@@ -1489,6 +1496,7 @@ export default function UserDashboard() {
             {visitedTabs.has('activity') && (
               <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'activity'}>
                 <ActivityTracker publicData={publicView?.activity || null} />
+                <MonthlyFocusPanel publicData={isPublicView ? (publicView?.monthlyFocus || { focuses: [], statsMap: {} }) : null} />
               </div>
             )}
 

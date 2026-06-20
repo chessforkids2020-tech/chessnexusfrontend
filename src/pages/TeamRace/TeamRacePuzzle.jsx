@@ -535,29 +535,57 @@ function TeamRacePuzzle() {
     const currentPuzzle = currentPuzzleMerged?.puzzleDoc || currentPuzzleMerged;
     if (!currentPuzzle) return false;
 
-    const gameCopy = new Chess(game.fen());
+    // Position BEFORE the user's move — used to resolve the stored expected move
+    // to UCI from the same position (same approach as TimedRace).
+    const preMoveFen = game.fen();
+
+    const gameCopy = new Chess(preMoveFen);
     const move = gameCopy.move({ from, to, promotion: promotion || 'q' });
 
     if (!move) return false;
 
     const uciMove = move.from + move.to + (move.promotion || '');
-    
+
     const newUserMoves = [...userMoves, uciMove];
     setUserMoves(newUserMoves);
     setGame(gameCopy);
     setLastMove({ from: move.from, to: move.to });
 
     const solution = currentPuzzle?.solution || [];
-    const expectedUserMoves = solution.filter((_, idx) => idx % 2 === 1);
+    // USER-FIRST: the user's moves are at even solution indices (0, 2, 4…);
+    // opponent replies are odd (1, 3, 5…). Must match the resume logic above —
+    // using odd here compared the user's move against the opponent's reply, so a
+    // correct first move "failed" → 0 points and skipped to the next puzzle.
+    const expectedUserMoves = solution.filter((_, idx) => idx % 2 === 0);
 
-    const userMovesStr = newUserMoves.join(' ');
-    const expectedStr = expectedUserMoves.slice(0, newUserMoves.length).join(' ');
+    // Resolve THIS move's expected solution move to UCI from the pre-move FEN.
+    // The stored move may be SAN ("Rb1#", "a1=Q") or UCI ("b2b1"), so a raw
+    // string compare against the user's UCI would wrongly fail on SAN puzzles —
+    // exactly how TimedRace normalizes it.
+    const expectedRaw = expectedUserMoves[newUserMoves.length - 1];
+    const expectedMoveUCI = (() => {
+      if (!expectedRaw) return '';
+      const pre = new Chess(preMoveFen);
+      let m = null;
+      try { m = pre.move(expectedRaw, { sloppy: true }); } catch (_) { m = null; }
+      if (!m && expectedRaw.length >= 4) {
+        try {
+          m = pre.move({
+            from: expectedRaw.slice(0, 2),
+            to: expectedRaw.slice(2, 4),
+            promotion: expectedRaw[4] || undefined
+          });
+        } catch (_) { m = null; }
+      }
+      return m ? (m.from + m.to + (m.promotion || '')).toLowerCase() : '';
+    })();
 
     // Lichess rule: accept the stored move, OR any move that delivers immediate
     // checkmate (covers "multiple ways to mate" — alternate mates are valid).
     const isAltMate = gameCopy.isCheckmate();
+    const moveMatches = !!expectedMoveUCI && uciMove.toLowerCase() === expectedMoveUCI;
 
-    if (isAltMate || userMovesStr === expectedStr) {
+    if (isAltMate || moveMatches) {
       if (isAltMate || newUserMoves.length === expectedUserMoves.length) {
         const timeSpent = Math.floor((Date.now() - puzzleStartTime) / 1000);
         submitPuzzle(true, newUserMoves.join(' '), timeSpent);
