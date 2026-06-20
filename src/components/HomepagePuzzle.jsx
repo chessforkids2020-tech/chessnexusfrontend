@@ -4,10 +4,35 @@ import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
+import stockfishService from '../services/stockfishService';
+
+// Map a Stockfish eval (cp or mate, side-to-move perspective) to a single
+// comparable number so "mate in 1" > "mate in 4" > any normal advantage.
+// (Same mapping Monthly Focus uses for engine-judged puzzles.)
+function evalToCp(evaluation) {
+  if (!evaluation) return 0;
+  if (evaluation.type === 'mate') {
+    const m = evaluation.value;
+    const big = 100000 - Math.min(Math.abs(m), 50) * 1000;
+    return m >= 0 ? big : -big;
+  }
+  return evaluation.value;
+}
+const MATE_THRESHOLD = 40000; // evals above this came from a forced-mate score
 
 export default function HomepagePuzzle() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+
+  // The daily-puzzle "already attempted" flag must be PER ACCOUNT, not global —
+  // otherwise on a shared browser (e.g. a coach logging into different students'
+  // accounts) one student's solve would wrongly block the next student. The
+  // puzzle CONTENT cache stays global (same puzzle for everyone); only the
+  // attempt flag is scoped by user id (falls back to 'guest' when logged out).
+  const attemptKey = useCallback(
+    () => `homepagePuzzleAttempt_${(user && (user._id || user.id)) || 'guest'}`,
+    [user]
+  );
   const [chess, setChess] = useState(new Chess());
   const [puzzle, setPuzzle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,6 +44,12 @@ export default function HomepagePuzzle() {
   const [moveIndex, setMoveIndex] = useState(0);
   const [botThinking, setBotThinking] = useState(false);
   const [hasError, setHasError] = useState(false);
+  // Stockfish is used to accept ALTERNATIVE forced-mate lines: in a mate-in-N
+  // there are often several first/intermediate moves that still force mate, but a
+  // plain SAN-vs-solution check only accepts the one recorded line. The engine
+  // judges whether the user's move preserves the forced mate.
+  const engineReadyRef = useRef(false);
+  const [judging, setJudging] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const [isLandscape, setIsLandscape] = useState(window.innerHeight < window.innerWidth && window.innerWidth <= 1024);
 
@@ -88,14 +119,14 @@ export default function HomepagePuzzle() {
           setStatus('Puzzle complete! 🎉');
           setShowLoginPrompt(true);
           const today = new Date().toDateString();
-          localStorage.setItem('homepagePuzzleAttempt', today);
+          localStorage.setItem(attemptKey(), today);
           setAttemptedToday(true);
         }
       } catch (error) {
       }
       setBotThinking(false);
     }, 600);
-  }, []);
+  }, [attemptKey]);
 
   // Fetch or load cached daily puzzle
   useEffect(() => {
@@ -103,12 +134,18 @@ export default function HomepagePuzzle() {
       try {
         const today = new Date().toDateString();
         
-        // Check if user already attempted today's puzzle
-        const lastAttempt = localStorage.getItem('homepagePuzzleAttempt');
+        // Check if THIS account already attempted today's puzzle (per-user key).
+        const lastAttempt = localStorage.getItem(attemptKey());
         if (lastAttempt === today) {
           setAttemptedToday(true);
           setStatus(user ? "You've already solved today's puzzle!" : "You've already solved today's puzzle! Login for more.");
           // We'll still continue to load the puzzle so they can see it
+        } else {
+          // Fresh account (e.g. coach switched students on a shared browser):
+          // clear any "attempted" state carried over from the previous user.
+          setAttemptedToday(false);
+          setShowLoginPrompt(false);
+          setWrongAttempts(0);
         }
 
         // Check if we have today's puzzle cached
@@ -162,79 +199,150 @@ export default function HomepagePuzzle() {
     };
 
     loadDailyPuzzle();
-  }, [isAuthenticated]);
+    // Re-run when the account changes (attemptKey changes with the user id), so a
+    // shared browser re-evaluates "already attempted" for the newly active user.
+  }, [isAuthenticated, attemptKey]);
+
+  // Boot Stockfish in the background once a puzzle is on the board, so it's ready
+  // to judge alternative mate lines. Non-blocking: if it fails to load, we simply
+  // fall back to the strict solution check.
+  useEffect(() => {
+    if (!puzzle) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        if (!stockfishService.isReady()) await stockfishService.init();
+        if (!cancelled) engineReadyRef.current = true;
+      } catch {
+        if (!cancelled) engineReadyRef.current = false;
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [puzzle]);
+
+  // Ask Stockfish whether the user's move keeps the forced mate (or is otherwise
+  // as good as the engine's best). Used only when the move doesn't match the
+  // recorded solution and isn't an immediate mate — i.e. an alternative line.
+  // Returns true if the move should be ACCEPTED.
+  const engineAcceptsMove = useCallback(async (fenBefore, chessAfter) => {
+    if (!engineReadyRef.current) return false;
+    try {
+      const depth = 12;
+      const pre = await stockfishService.getBestMove(fenBefore, { depth, moveTime: 1200 });
+      const bestCp = evalToCp(pre.evaluation);
+
+      // Only judge positions that were a forced WIN for the mover; otherwise this
+      // isn't a "multiple ways to mate" case and we keep the strict check.
+      if (bestCp < MATE_THRESHOLD) return false;
+
+      let userCpAfter;
+      if (chessAfter.isCheckmate()) {
+        return true; // delivered mate — always accept
+      } else if (chessAfter.isGameOver()) {
+        userCpAfter = chessAfter.isDraw() ? 0 : -bestCp; // stalemate/draw = threw it away
+      } else {
+        const post = await stockfishService.getBestMove(chessAfter.fen(), { depth, moveTime: 1200 });
+        userCpAfter = -evalToCp(post.evaluation); // flip to the user's perspective
+      }
+      // Accept if the user's move still forces mate at least as fast (loss <= 0).
+      return (bestCp - userCpAfter) <= 0;
+    } catch {
+      return false;
+    }
+  }, []);
 
   // Handle move - UPDATED with better state management
   const handleMove = useCallback((move) => {
-    
-    if (!puzzle || showLoginPrompt || botThinking) {
+
+    if (!puzzle || showLoginPrompt || botThinking || judging) {
       return false;
     }
 
     try {
-      const newChess = new Chess(chess.fen());
+      const fenBefore = chess.fen();
+      const newChess = new Chess(fenBefore);
       const moveResult = newChess.move(move);
 
       if (moveResult) {
         // Check if move matches solution
-        const solutionMoves = Array.isArray(puzzle.solution) 
-          ? puzzle.solution 
+        const solutionMoves = Array.isArray(puzzle.solution)
+          ? puzzle.solution
           : puzzle.solution.split(' ').filter(m => m.trim());
-        
+
         const expectedMove = solutionMoves[moveIndex];
-        
+
         // Case-insensitive comparison and handling potential + or # symbols
         const userSan = moveResult.san.toLowerCase().replace(/[+#]/g, '');
         const targetSan = expectedMove.toLowerCase().replace(/[+#]/g, '');
 
-        // Accept any move that delivers immediate checkmate — covers positions
-        // with multiple ways to mate where the alternate mate differs from the
-        // single recorded solution move.
+        // Immediate checkmate is always correct (covers the FINAL move of any
+        // mate line, incl. alternate mates).
         const isAltMate = newChess.isCheckmate();
 
-        if (userSan === targetSan || isAltMate) {
-          // Correct move!
+        // ── Accept / reject closures ──────────────────────────────────────────
+        const acceptMove = () => {
           setChess(newChess);
           setMoveIndex(moveIndex + 1);
           setStatus('Correct! ✓');
-          
-          // Check if puzzle complete — checkmate ends the puzzle immediately,
-          // even when the recorded solution had more moves queued.
+          // Checkmate ends the puzzle immediately, even if the recorded solution
+          // had more moves queued.
           if (isAltMate || moveIndex + 1 >= solutionMoves.length) {
             setTimeout(() => {
               setStatus('Puzzle solved! 🎉');
               setShowLoginPrompt(true);
               const today = new Date().toDateString();
-              localStorage.setItem('homepagePuzzleAttempt', today);
+              localStorage.setItem(attemptKey(), today);
               setAttemptedToday(true);
             }, 800);
           } else {
-            // Bot makes next move
             setTimeout(() => {
               makeBotMove(newChess, solutionMoves, moveIndex + 1);
             }, 800);
           }
-        } else {
-          // Wrong move!
-          
-          // Update wrong attempts counter FIRST
+        };
+
+        const rejectMove = () => {
           const newWrongAttempts = wrongAttempts + 1;
           setWrongAttempts(newWrongAttempts);
-          
-          // Then update status with the new count
           setStatus(`Incorrect! Try again. (${newWrongAttempts} attempts)`);
-          
-          // Reset to position after bot's last move
           setTimeout(() => {
             const resetChess = new Chess(puzzle.fen);
-            // Replay moves up to current position
             for (let i = 0; i < moveIndex; i++) {
               resetChess.move(solutionMoves[i]);
             }
             setChess(resetChess);
             setStatus('Your turn! Find the best move.');
           }, 1500);
+        };
+
+        // ── Fast path: exact recorded move or an immediate mate — accept now ──
+        if (userSan === targetSan || isAltMate) {
+          acceptMove();
+          return true;
         }
+
+        // ── Alternative line: let Stockfish decide if it still forces mate. ──
+        // Show the move on the board while the engine thinks, then resolve.
+        setChess(newChess);
+        setStatus('Checking your move…');
+        setJudging(true);
+        engineAcceptsMove(fenBefore, newChess)
+          .then((accepted) => {
+            setJudging(false);
+            if (accepted) {
+              acceptMove();
+            } else {
+              // Roll the board back to the pre-move position before showing the
+              // retry, so the rejected move doesn't linger.
+              setChess(new Chess(fenBefore));
+              rejectMove();
+            }
+          })
+          .catch(() => {
+            setJudging(false);
+            setChess(new Chess(fenBefore));
+            rejectMove();
+          });
 
         return true;
       }
@@ -242,7 +350,7 @@ export default function HomepagePuzzle() {
     }
 
     return false;
-  }, [chess, puzzle, attemptedToday, showLoginPrompt, showSolution, wrongAttempts, moveIndex, botThinking, makeBotMove]);
+  }, [chess, puzzle, attemptedToday, showLoginPrompt, showSolution, wrongAttempts, moveIndex, botThinking, judging, makeBotMove, attemptKey, engineAcceptsMove]);
 
   const handleShowSolution = () => {
     setShowSolution(true);
@@ -360,7 +468,7 @@ export default function HomepagePuzzle() {
           orientation={puzzle?.orientation || 'white'}
           boardWidth={boardSize}
           showCoordinates={false}
-          draggable={!botThinking}
+          draggable={!botThinking && !judging}
         />
       </div>
 
