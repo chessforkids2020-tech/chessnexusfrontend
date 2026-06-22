@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import CoffeeCta from '../../components/CoffeeCta';
 import AboutFeatureCTA from '../../components/marketing/AboutFeatureCTA';
+import FriendGameSetup from './FriendGameSetup';
 import './Games.css';
 
 export default function Games() {
   const navigate = useNavigate();
+  const [showFriendSetup, setShowFriendSetup] = useState(false);
   const [floatingPieces, setFloatingPieces] = useState([]);
   const [onlinePlayers, setOnlinePlayers] = useState(2898);
   const [tournaments, setTournaments] = useState([]);
@@ -66,6 +68,14 @@ export default function Games() {
 
   // Play options for right column
   const playOptions = [
+    {
+      id: 'friend',
+      title: "Play with a Friend",
+      subtitle: "Private game by code • Even as a guest",
+      icon: "🤝",
+      color: "#34D399",
+      action: () => setShowFriendSetup(true)
+    },
     {
       id: 2,
       title: "Masters Game",
@@ -470,6 +480,8 @@ export default function Games() {
           ]}
         />
       </div>
+
+      {showFriendSetup && <FriendGameSetup onClose={() => setShowFriendSetup(false)} />}
     </div>
   );
 }

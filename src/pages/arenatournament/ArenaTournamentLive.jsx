@@ -678,7 +678,7 @@ export default function ArenaTournamentLive() {
     socket.on('marathonPhaseTransitionPending', (data) => {
       setMarathonPhasePending(true);
       setWaitingForPairing(false);
-      setMarathonPhaseBanner(data.message || 'Hour 1 complete! Finish your game — Blitz phase coming...');
+      setMarathonPhaseBanner(data.message || 'Phase 1 complete! Finish your game — Blitz phase coming...');
     });
 
     socket.on('marathonPhaseChanged', (data) => {
@@ -1253,9 +1253,9 @@ export default function ArenaTournamentLive() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: '16px', fontSize: '11px', color: '#9ca3af', whiteSpace: 'nowrap' }}>
-              <span style={{ color: marathonPhase === 0 && !marathonPhasePending ? '#ef4444' : '#6b7280', fontWeight: marathonPhase === 0 ? '700' : '400' }}>Hour 1: 2+1</span>
+              <span style={{ color: marathonPhase === 0 && !marathonPhasePending ? '#ef4444' : '#6b7280', fontWeight: marathonPhase === 0 ? '700' : '400' }}>Phase 1 (45m): 2+1</span>
               <span>→</span>
-              <span style={{ color: marathonPhase === 1 ? '#06b6d4' : '#6b7280', fontWeight: marathonPhase === 1 ? '700' : '400' }}>Hour 2: 3+2</span>
+              <span style={{ color: marathonPhase === 1 ? '#06b6d4' : '#6b7280', fontWeight: marathonPhase === 1 ? '700' : '400' }}>Phase 2 (45m): 3+2</span>
             </div>
           </div>
         )}

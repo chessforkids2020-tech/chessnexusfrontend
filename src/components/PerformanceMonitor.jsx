@@ -428,7 +428,7 @@ function getMFBadge(completedDays, perfectDays) {
   return { emoji: '🌱', name: 'Beginner' };
 }
 
-const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSummary = null, publicMonthlyFocus = null }) => {
+const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSummary = null, publicMonthlyFocus = null, publicPuzzleStatsRange = null }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedRaceType, setSelectedRaceType] = useState(null);
   // Puzzle Stats card time range: '24h' | '7d'
@@ -474,7 +474,14 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
   // Fetch Puzzle Stats for the selected range (24h / 7d). Re-runs on toggle.
   useEffect(() => {
     let alive = true;
-    // Public/shared dashboards can't call the login-only range endpoint.
+    // Spectator view: the range endpoint is viewer-scoped, so use the viewed
+    // user's pre-computed range stats from the public profile payload instead.
+    if (publicPuzzleStatsRange) {
+      setRangeStats(publicPuzzleStatsRange[statsRange] || null);
+      setRangeStatsLoading(false);
+      return;
+    }
+    // Public/shared dashboards (no range data) can't call the login-only endpoint.
     if (publicTrainingStats) { setRangeStatsLoading(false); return; }
     const fetchRangeStats = async () => {
       setRangeStatsLoading(true);
@@ -489,7 +496,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
     };
     if (user) fetchRangeStats();
     return () => { alive = false; };
-  }, [user, statsRange, publicTrainingStats]);
+  }, [user, statsRange, publicTrainingStats, publicPuzzleStatsRange]);
 
   // Fetch Monthly Focus data — all current focuses + per-focus user stats.
   // In spectator view (publicMonthlyFocus provided) use the VIEWED user's stats
@@ -1132,6 +1139,9 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         raceType={selectedRaceType}
+        /* In public/spectate view, fetch the viewed user's stats (not the viewer's).
+           publicArenaSummary is only set when spectating someone else's profile. */
+        displayName={publicArenaSummary ? (user?.displayName || user?.username) : undefined}
         timeLimit={
           selectedRaceType === 'timedRace' ? 5 :
           selectedRaceType === 'arenaRace' ? 10 :

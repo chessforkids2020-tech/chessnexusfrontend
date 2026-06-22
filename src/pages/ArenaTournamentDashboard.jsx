@@ -634,38 +634,43 @@ export default function ArenaTournamentDashboard() {
                 )}
               </Card>
 
-              {/* Performance Overview — broken down by tournament type */}
-              <Card>
-                <SectionLabel>Performance Overview</SectionLabel>
-                <div style={{ marginTop: 14, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)" }}>
-                  {/* header row */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", background: "rgba(255,255,255,0.04)", padding: "8px 10px" }}>
-                    {["Type", "Played", "Wins", "Top 3", "Win %", "Points"].map((h, i) => (
-                      <div key={h} style={{ fontSize: 9.5, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.04em", textAlign: i === 0 ? "left" : "center" }}>{h}</div>
-                    ))}
-                  </div>
-                  {/* per-type rows */}
-                  {perfByType.map((row) => {
-                    const tc = typeColor(row.type);
-                    const dim = row.played === 0;
-                    return (
-                      <div key={row.type} style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", padding: "9px 10px", borderTop: "1px solid rgba(255,255,255,0.05)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
-                          <span style={{ width: 22, height: 22, borderRadius: 6, background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                            {TYPE_ICON[row.type] || "♞"}
-                          </span>
-                          <span style={{ fontSize: 11.5, fontWeight: 700, color: "#e5e7eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(row.type)}</span>
+              {/* Blunder DNA (own profile) — replaces the old Performance Overview card.
+                  Public profiles keep the per-type Performance Overview instead. */}
+              {!isPublic ? (
+                <BlunderDnaCard />
+              ) : (
+                <Card>
+                  <SectionLabel>Performance Overview</SectionLabel>
+                  <div style={{ marginTop: 14, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)" }}>
+                    {/* header row */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", background: "rgba(255,255,255,0.04)", padding: "8px 10px" }}>
+                      {["Type", "Played", "Wins", "Top 3", "Win %", "Points"].map((h, i) => (
+                        <div key={h} style={{ fontSize: 9.5, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.04em", textAlign: i === 0 ? "left" : "center" }}>{h}</div>
+                      ))}
+                    </div>
+                    {/* per-type rows */}
+                    {perfByType.map((row) => {
+                      const tc = typeColor(row.type);
+                      const dim = row.played === 0;
+                      return (
+                        <div key={row.type} style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", padding: "9px 10px", borderTop: "1px solid rgba(255,255,255,0.05)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
+                            <span style={{ width: 22, height: 22, borderRadius: 6, background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                              {TYPE_ICON[row.type] || "♞"}
+                            </span>
+                            <span style={{ fontSize: 11.5, fontWeight: 700, color: "#e5e7eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(row.type)}</span>
+                          </div>
+                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#e5e7eb" }}>{row.played}</div>
+                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#34d399" }}>{row.wins}</div>
+                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#fbbf24" }}>{row.top3}</div>
+                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#06b6d4" }}>{row.winRate}%</div>
+                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#a78bfa" }}>{row.points}</div>
                         </div>
-                        <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#e5e7eb" }}>{row.played}</div>
-                        <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#34d399" }}>{row.wins}</div>
-                        <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#fbbf24" }}>{row.top3}</div>
-                        <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#06b6d4" }}>{row.winRate}%</div>
-                        <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#a78bfa" }}>{row.points}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </Card>
+                      );
+                    })}
+                  </div>
+                </Card>
+              )}
 
             </div>
             {/* ════════════════ END RIGHT SIDEBAR ════════════════ */}
@@ -1214,6 +1219,51 @@ function GamesPanel({ name, onBack }) {
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
+// ── Blunder DNA card — your mistake profile across ALL analyzed games ─────────
+// Reads /api/game-insights/dna (whole-history, not just one run). Own profile only.
+const DNA_COLORS = { tactics: "#22d3ee", loose: "#fbbf24", endgame: "#a78bfa" };
+function BlunderDnaCard() {
+  const [dna, setDna]   = React.useState(null);
+  const [loaded, setLd] = React.useState(false);
+  React.useEffect(() => {
+    let alive = true;
+    api.get("/api/game-insights/dna")
+      .then((res) => { if (alive) setDna(res.data?.hasData ? res.data : null); })
+      .catch(() => {})
+      .finally(() => { if (alive) setLd(true); });
+    return () => { alive = false; };
+  }, []);
+
+  return (
+    <Card>
+      <SectionLabel>🧬 Your Blunder DNA</SectionLabel>
+      {!loaded ? (
+        <div style={{ fontSize: 12, color: "#6b7280", marginTop: 12 }}>Loading…</div>
+      ) : !dna ? (
+        <div style={{ fontSize: 12, color: "#6b7280", marginTop: 12, lineHeight: 1.6 }}>
+          No mistakes analyzed yet. Open the <strong style={{ color: "#9ca3af" }}>Nexus Guide</strong> on your
+          dashboard and click <strong style={{ color: "#9ca3af" }}>Analyze my games</strong> to build your profile.
+        </div>
+      ) : (
+        <>
+          <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 6, marginBottom: 12 }}>
+            From {dna.total} mistakes across your games
+          </div>
+          {dna.dna.map((d) => (
+            <div key={d.key} style={{ display: "flex", alignItems: "center", gap: 10, margin: "9px 0" }}>
+              <span style={{ flex: "0 0 42px", textAlign: "right", fontSize: 14, fontWeight: 800, color: "#fff", fontVariantNumeric: "tabular-nums" }}>{d.pct}%</span>
+              <span style={{ flex: "0 0 108px", fontSize: 12.5, color: "#cbd5e1" }}>{d.label}</span>
+              <div style={{ flex: 1, height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 999, overflow: "hidden" }}>
+                <div style={{ width: `${d.pct}%`, height: "100%", borderRadius: 999, background: DNA_COLORS[d.key] || "#22d3ee", transition: "width .5s ease" }} />
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+    </Card>
+  );
+}
+
 const Card       = ({ children, highlight, style: extra }) => (
   <div style={{ ...S.card, ...(highlight ? S.cardHighlight : {}), ...extra }}>{children}</div>
 );

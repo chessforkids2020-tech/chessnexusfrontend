@@ -8,6 +8,8 @@ import './UserDashboard.css';
 import PerformanceMonitor from "../components/PerformanceMonitor";
 import ActivityTracker from "../components/ActivityTracker";
 import BestRacers from "../components/BestRacers";
+import FriendGamesSection from "../components/FriendGamesSection";
+import GameInsightsPanel from "../components/GameInsightsPanel";
 import CoffeeBadge from "../components/CoffeeBadge";
 import CoffeeCta from "../components/CoffeeCta";
 
@@ -110,6 +112,32 @@ function BadgeUnlockPopup({ badgeInfo, onClose, remaining }) {
         </button>
       </div>
     </div>
+  );
+}
+
+// Public "Coach" badge — shown for verified coaches next to the joined date.
+// Gold/teal so it reads distinctly from the purple "enrolled-with-a-coach" chip.
+function CoachBadge() {
+  return (
+    <span
+      title="Verified coach on Chess Nexus"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '4px',
+        padding: '2px 10px',
+        borderRadius: '999px',
+        fontSize: '12px',
+        fontWeight: 800,
+        color: '#0a0a0a',
+        background: 'linear-gradient(135deg, #fbbf24, #10b981)',
+        border: '1px solid rgba(251,191,36,0.5)',
+        boxShadow: '0 0 12px rgba(16,185,129,0.25)',
+        letterSpacing: '0.02em',
+      }}
+    >
+      🎓 Coach
+    </span>
   );
 }
 
@@ -965,6 +993,7 @@ export default function UserDashboard() {
             trainingStats: data.trainingStats || { correct: 0, wrong: 0 },
             arenaSummary: data.arenaSummary || { totalTournaments: 0, totalGamesPlayed: 0, arenaCrownTier: 'none', arenaCarryPoints: 0 },
             monthlyFocus: data.monthlyFocus || { focuses: [], statsMap: {} },
+            puzzleStatsRange: data.puzzleStatsRange || null,
           });
           setErr(null);
         } catch (e) {
@@ -1270,12 +1299,14 @@ export default function UserDashboard() {
                   )}
                   {user.chessExperience && <span>• {user.chessExperience}</span>}
                   {user.memberSince && <span>• Member since {new Date(user.memberSince).getFullYear()}</span>}
+                  {user.isCoach && <CoachBadge />}
                 </p>
               ) : (
                 <p className="welcome-quote" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
                   {user.memberSince && (
                     <span>📅 Joined {new Date(user.memberSince).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
                   )}
+                  {user.isCoach && <CoachBadge />}
                   {hasActiveCoach && (
                     <span
                       style={{
@@ -1488,6 +1519,7 @@ export default function UserDashboard() {
               publicTrainingStats={publicView?.trainingStats || null}
               publicArenaSummary={publicView?.arenaSummary || null}
               publicMonthlyFocus={isPublicView ? (publicView?.monthlyFocus || { focuses: [], statsMap: {} }) : null}
+              publicPuzzleStatsRange={isPublicView ? (publicView?.puzzleStatsRange || null) : null}
             />
 
             <DashboardTabs activeTab={activeTab} onChange={selectTab} />
@@ -1546,6 +1578,15 @@ export default function UserDashboard() {
 
         {/* Guest highlights (no account) — preserved from previous behavior */}
         {!isViewerLoggedIn && !isPublicView && <BestRacers />}
+
+        {/* My Mistakes — auto blunder-puzzles from your own tournament games.
+            Owner's own dashboard, logged-in only. Distinct from the human "My Coach". */}
+        {!isPublicView && isViewerLoggedIn && user && <GameInsightsPanel />}
+
+        {/* Games with Friends — owner's own dashboard only. Renders nothing if empty. */}
+        {!isPublicView && user && (
+          <FriendGamesSection userId={user._id || user.id} />
+        )}
 
         {loading && (
           <div className="loading-card">

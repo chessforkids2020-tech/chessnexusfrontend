@@ -144,6 +144,7 @@ import ArcadeLobby from './pages/arcade/ArcadeLobby';
 import TTTChoose from './pages/arcade/TTTChoose';
 import BingoChoose from './pages/arcade/BingoChoose';
 import ArcadeGame from './pages/arcade/ArcadeGame';
+import FriendGame from './pages/game/FriendGame';
 import LiveGame from './pages/game/LiveGame';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SupporterProvider } from './context/SupporterContext';
@@ -989,7 +990,11 @@ export default function App() {
         <Route path="/arcade/ttt" element={<TTTChoose />} />
         <Route path="/arcade/bingo" element={<BingoChoose />} />
         <Route path="/arcade/game" element={<ArcadeGame />} />
-        
+
+        {/* Play with a Friend — guest-accessible (like arcade). /friend/new = create. */}
+        <Route path="/friend/new" element={<FriendGame />} />
+        <Route path="/friend/:code" element={<FriendGame />} />
+
         <Route path="/play" element={
           <UserLayout>
             <ProtectedRoute>

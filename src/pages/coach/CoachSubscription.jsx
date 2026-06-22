@@ -127,27 +127,64 @@ export default function CoachSubscription() {
   const currentPlan = status?.coachSubscription?.plan;
   const access = status?.access || {};
   const isElite = status?.isElite;
-  // Elite AND admin get coach access free for as long as they hold the role.
-  const isPrivileged = access.reason === 'privileged' || isElite;
+  // Admins get unlimited free coach access. Elite is handled separately (6-month
+  // free window with manual renewal), so it is NOT treated as unlimited here.
+  const isAdmin = access.reason === 'privileged' && !isElite;
+  const isEliteFree = isElite || access.reason === 'elite_free' || currentPlan === 'elite_free';
 
-  // Privileged users get coaching free — show a thank-you banner, hide purchase UI
-  if (isPrivileged) {
+  // Admins — unlimited free, hide purchase UI.
+  if (isAdmin) {
     return (
       <div className="coach-dash">
         <div className="coach-dash-header">
           <div>
             <h1>💎 Coach Subscription</h1>
-            <p className="coach-dash-sub">Your membership includes everything.</p>
+            <p className="coach-dash-sub">Your role includes everything.</p>
           </div>
           <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
         </div>
         <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(251,191,36,0.15),rgba(245,158,11,0.08))', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 12, padding: '24px 28px' }}>
           <div>
-            <div className="cs-current-label" style={{ color: '#fbbf24' }}>✨ {isElite ? 'Elite Member' : 'Admin'}</div>
+            <div className="cs-current-label" style={{ color: '#fbbf24' }}>✨ Admin</div>
             <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 22 }}>Coach access included — free</div>
             <div className="cs-current-meta" style={{ marginTop: 6 }}>
-              Your {isElite ? 'Elite membership' : 'admin role'} includes full coach access (up to 100 students) at no extra cost. No subscription needed.
+              Your admin role includes full coach access (up to 100 students) at no extra cost.
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Elite members — 6 months free, then renew by contacting the Nexus team.
+  if (isEliteFree) {
+    const eliteExpired = !access.active;
+    return (
+      <div className="coach-dash">
+        <div className="coach-dash-header">
+          <div>
+            <h1>💎 Coach Subscription</h1>
+            <p className="coach-dash-sub">Elite Coach access — 6 months free.</p>
+          </div>
+          <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
+        </div>
+        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(251,191,36,0.15),rgba(245,158,11,0.08))', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 12, padding: '24px 28px' }}>
+          <div>
+            <div className="cs-current-label" style={{ color: '#fbbf24' }}>💎 Elite Member</div>
+            <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 22 }}>
+              {eliteExpired ? 'Your 6 months of free coach access has ended' : 'Coach access — free for 6 months'}
+            </div>
+            <div className="cs-current-meta" style={{ marginTop: 8, lineHeight: 1.6 }}>
+              {eliteExpired ? (
+                <>To continue your coach membership, please contact the Nexus team on the Contact Us page.</>
+              ) : (
+                <><strong>{access.daysRemaining}</strong> day{access.daysRemaining === 1 ? '' : 's'} remaining.
+                  When it's about to finish, renew by contacting the Nexus team on the Contact Us page.</>
+              )}
+            </div>
+            <button className="btn-primary" style={{ marginTop: 16 }} onClick={() => navigate('/contact')}>
+              Contact Nexus team
+            </button>
           </div>
         </div>
       </div>

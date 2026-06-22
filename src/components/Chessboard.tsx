@@ -1193,14 +1193,21 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
     const strokeW = squareSize * 0.14;
     const headLen = squareSize * 0.38;
     const headHalfAngle = Math.PI / 5;
+    // Stop the arrow SHORT of the target square's center so the piece sitting
+    // there stays visible — instead of every arrowhead piling up dead-center and
+    // burying the piece. The arrow "tip" is pulled back toward the source by a
+    // fraction of a square; the line + head are built off this pulled-back tip.
+    const tipSetback = squareSize * 0.22;
+    const tipX = toX - Math.cos(angle) * tipSetback;
+    const tipY = toY - Math.sin(angle) * tipSetback;
     const startX = fromX + Math.cos(angle) * squareSize * 0.25;
     const startY = fromY + Math.sin(angle) * squareSize * 0.25;
-    const endX = toX - Math.cos(angle) * headLen * 0.45;
-    const endY = toY - Math.sin(angle) * headLen * 0.45;
-    const bx = toX - headLen * Math.cos(angle - headHalfAngle);
-    const by = toY - headLen * Math.sin(angle - headHalfAngle);
-    const cx = toX - headLen * Math.cos(angle + headHalfAngle);
-    const cy = toY - headLen * Math.sin(angle + headHalfAngle);
+    const endX = tipX - Math.cos(angle) * headLen * 0.45;
+    const endY = tipY - Math.sin(angle) * headLen * 0.45;
+    const bx = tipX - headLen * Math.cos(angle - headHalfAngle);
+    const by = tipY - headLen * Math.sin(angle - headHalfAngle);
+    const cx = tipX - headLen * Math.cos(angle + headHalfAngle);
+    const cy = tipY - headLen * Math.sin(angle + headHalfAngle);
     const color = arrow.color || '#4caf50';
     return (
       <g key={key} opacity={opacity}>
@@ -1212,7 +1219,7 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
           strokeLinecap="round"
         />
         <polygon
-          points={`${toX},${toY} ${bx},${by} ${cx},${cy}`}
+          points={`${tipX},${tipY} ${bx},${by} ${cx},${cy}`}
           fill={color}
         />
       </g>

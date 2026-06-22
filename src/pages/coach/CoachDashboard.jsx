@@ -93,6 +93,7 @@ function buildChartOptions(data, days) {
 function planLabel(plan) {
   return ({
     trial: 'Free Trial',
+    elite_free: 'Elite Coach (6 months free)',
     coach: 'Coach',
     // Legacy plan ids (still shown correctly for any pre-existing subscribers).
     starter: 'Starter',
@@ -220,26 +221,47 @@ export default function CoachDashboard() {
   // Elite/admin users get coaching free for as long as they hold that role —
   // no trial countdown and no upgrade prompt.
   const isPrivileged = access.reason === 'privileged';
-  const isTrial = !isPrivileged && plan === 'trial';
+  const isEliteFree = access.reason === 'elite_free';
+  const isTrial = !isPrivileged && !isEliteFree && plan === 'trial';
+  const eliteRenewSoon = isEliteFree && access.renewalReminder;
 
   return (
     <div className="coach-dash">
       {/* ── Top status bar ───────────────────── */}
-      <div className={`coach-trial-banner ${isPrivileged ? 'paid' : isTrial ? 'trial' : 'paid'}`}>
-        <div>
-          <strong>{isPrivileged ? 'Free Coach Access' : planLabel(plan)}</strong>
-          {isPrivileged
-            ? <> · included with your {summary?.isElite ? 'Elite' : 'Admin'} membership</>
-            : isTrial
-              ? <> · {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'} left in your free trial</>
-              : <> · renews in {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'}</>}
+      {isEliteFree ? (
+        <div className={`coach-trial-banner ${eliteRenewSoon ? 'trial' : 'paid'}`}>
+          <div>
+            <strong>💎 Elite Coach Access — Free for 6 months</strong>
+            {eliteRenewSoon ? (
+              <> · ⚠️ Your coach membership is about to finish ({access.daysRemaining} day
+                {access.daysRemaining === 1 ? '' : 's'} left). To continue, contact the Nexus team on the Contact Us page.</>
+            ) : (
+              <> · {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'} remaining</>
+            )}
+          </div>
+          {eliteRenewSoon && (
+            <button className="btn-primary" onClick={() => navigate('/contact')}>
+              Contact Nexus team
+            </button>
+          )}
         </div>
-        {!isPrivileged && (
-          <button className="btn-primary" onClick={() => navigate('/coach/subscription')}>
-            {isTrial ? 'Upgrade now' : 'Manage plan'}
-          </button>
-        )}
-      </div>
+      ) : (
+        <div className={`coach-trial-banner ${isPrivileged ? 'paid' : isTrial ? 'trial' : 'paid'}`}>
+          <div>
+            <strong>{isPrivileged ? 'Free Coach Access' : planLabel(plan)}</strong>
+            {isPrivileged
+              ? <> · included with your {summary?.isElite ? 'Elite' : 'Admin'} membership</>
+              : isTrial
+                ? <> · {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'} left in your free trial</>
+                : <> · renews in {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'}</>}
+          </div>
+          {!isPrivileged && (
+            <button className="btn-primary" onClick={() => navigate('/coach/subscription')}>
+              {isTrial ? 'Upgrade now' : 'Manage plan'}
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="coach-dash-header">
         <div>

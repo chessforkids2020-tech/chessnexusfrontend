@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
 
-const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit }) => {
+const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit, displayName }) => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [topicsMap, setTopicsMap] = useState({});
@@ -10,7 +10,7 @@ const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit }) => {
     if (isOpen && raceType) {
       fetchDetailedStats();
     }
-  }, [isOpen, raceType]);
+  }, [isOpen, raceType, displayName]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -35,6 +35,8 @@ const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit }) => {
       const params = { raceType };
       // If a timeLimit is provided (for timed races or arena races), include it
       if (timeLimit) params.timeLimit = Number(timeLimit);
+      // When viewing another user's profile, fetch THEIR stats (not the viewer's).
+      if (displayName) params.displayName = displayName;
 
       const response = await api.get(
         '/api/auth/detailed-race-stats',
