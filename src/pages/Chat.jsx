@@ -32,7 +32,12 @@ const Chat = () => {
   const [showParticipantsModal, setShowParticipantsModal] = useState(false);
   const [groupParticipants, setGroupParticipants] = useState([]);
   const [isMuted, setIsMuted] = useState(false);
+  // Admin inbox tab: 'conversations' = real chats, 'welcomes' = auto-welcome
+  // threads the user hasn't replied to yet. Only shown to admins.
+  const [chatTab, setChatTab] = useState('conversations');
   const messagesEndRef = useRef(null);
+
+  const isAdmin = user?.role === 'admin';
   
   const playNotificationSound = () => {
     if (isMuted) return;
@@ -460,8 +465,34 @@ const Chat = () => {
             <button onClick={() => setShowGroupModal(true)} className="btn-primary" style={{ padding: '4px 8px', fontSize: '0.8em' }}>Grp</button>
           </div>
         </div>
+        {isAdmin && (() => {
+          const welcomeCount = chats.filter(c => c.isWelcome).length;
+          return (
+            <div className="chat-tabs">
+              <button
+                className={`chat-tab ${chatTab === 'conversations' ? 'active' : ''}`}
+                onClick={() => setChatTab('conversations')}
+              >
+                Conversations
+              </button>
+              <button
+                className={`chat-tab ${chatTab === 'welcomes' ? 'active' : ''}`}
+                onClick={() => setChatTab('welcomes')}
+              >
+                Welcomes{welcomeCount > 0 ? ` (${welcomeCount})` : ''}
+              </button>
+            </div>
+          );
+        })()}
         <div className="chat-list" ref={chatListRef}>
-          {chats.map(chat => (
+          {chats
+            .filter(chat => {
+              // Non-admins see everything (their inbox isn't cluttered by welcomes).
+              if (!isAdmin) return true;
+              // Admins: split welcome-only threads from real conversations.
+              return chatTab === 'welcomes' ? chat.isWelcome : !chat.isWelcome;
+            })
+            .map(chat => (
             <div 
               key={chat._id} 
               className={`chat-item ${selectedChat?._id === chat._id ? 'active' : ''} ${(chat.unreadCount || 0) > 0 && selectedChat?._id !== chat._id ? 'unread' : ''}`}
