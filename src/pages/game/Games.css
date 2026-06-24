@@ -333,6 +333,17 @@
   }
 }
 
+/* Hero tournament banner accents */
+@keyframes heroPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.15); }
+}
+@keyframes heroBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+.games-hero-banner button:hover { filter: brightness(1.08); }
+
 @keyframes trophyBounce {
   0%, 100% {
     transform: translateY(0);
@@ -528,6 +539,32 @@
 .play-option-card:hover .arrow-icon {
   color: #4ECDC4;
   transform: translateX(4px);
+}
+
+/* Horizontal play-options row below the hero banner */
+.games-play-row {
+  display: flex;
+  gap: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  flex-wrap: wrap;
+}
+
+.play-option-card--row {
+  flex: 1 1 0;
+  min-width: 240px;
+}
+
+/* On hover the row cards lift rather than slide sideways */
+.play-option-card--row:hover {
+  transform: translateY(-3px);
+}
+
+@media (max-width: 640px) {
+  .games-play-row { flex-direction: column; }
 }
 
 /* Info Card */

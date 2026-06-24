@@ -1,0 +1,92 @@
+/* ── Inline playable daily card ───────────────────────────────────── */
+.mmb-card {
+  background: rgba(20, 25, 35, 0.7);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 16px;
+  padding: 16px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mmb-head { text-align: center; }
+
+.mmb-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 999px;
+  padding: 3px 10px;
+  margin-bottom: 6px;
+}
+
+.mmb-title {
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0 0 3px;
+  background: linear-gradient(135deg, #fff, #fbbf24);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mmb-sub {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.mmb-board {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* ── Feedback + reveal ────────────────────────────────────────────── */
+.mmb-fb { border-radius: 12px; padding: 11px 14px; font-size: 14px; font-weight: 700; }
+.mmb-fb-correct { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7; }
+.mmb-fb-wrong { background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); color: #fda4af; }
+
+.mmb-reveal {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.mmb-move { font-size: 15px; color: #e5e7eb; }
+.mmb-move strong { color: #fbbf24; }
+.mmb-best { color: rgba(255, 255, 255, 0.5); font-size: 13px; }
+.mmb-comment { margin: 0; font-size: 13px; line-height: 1.5; color: rgba(255, 255, 255, 0.7); }
+
+.mmb-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.mmb-line-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(255, 255, 255, 0.4); }
+.mmb-line-move { font-family: 'Courier New', monospace; font-size: 13px; background: rgba(255, 255, 255, 0.06); border-radius: 6px; padding: 2px 7px; color: #e5e7eb; }
+
+.mmb-context { display: flex; flex-direction: column; gap: 2px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 9px; }
+.mmb-context-players { font-weight: 700; font-size: 14px; color: #fff; }
+.mmb-context-meta { font-size: 12px; color: rgba(255, 255, 255, 0.5); }
+
+/* ── Loading skeleton ─────────────────────────────────────────────── */
+.mmb-card--loading { align-items: center; }
+.mmb-skeleton {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  background: linear-gradient(100deg, rgba(255,255,255,0.04) 30%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.04) 70%);
+  background-size: 200% 100%;
+  animation: mmbShimmer 1.4s infinite;
+}
+.mmb-caption-sub { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
+@keyframes mmbShimmer { to { background-position: -200% 0; } }
