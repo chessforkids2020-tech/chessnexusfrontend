@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
+import CoachPromptCard from './CoachPromptCard';
 
 // ── Country helpers (image flags render on Windows; Unicode flags don't) ──────
 function getCountryCode(country) {
@@ -237,6 +238,7 @@ export default function ProfilePanel() {
   };
 
   return (
+    <>
     <section style={{
       background: 'rgba(255,255,255,0.04)',
       border: '1px solid rgba(255,255,255,0.08)',
@@ -439,5 +441,9 @@ export default function ProfilePanel() {
         </div>
       </div>
     </section>
+
+    {/* "Are you a chess coach?" prompt — at the very bottom of the Profile tab */}
+    <CoachPromptCard />
+    </>
   );
 }

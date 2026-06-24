@@ -377,7 +377,7 @@ export default function HomepagePuzzle() {
 
   return (
     <div className="homepage-puzzle-container">
-      {status && !hasError && (
+      {status && !hasError && !showLoginPrompt && (
         <div className="puzzle-header">
           <p className="puzzle-status">{status}</p>
         </div>
@@ -458,8 +458,8 @@ export default function HomepagePuzzle() {
         <Chessboard
           position={chess.fen()}
           onDrop={(sourceSquare, targetSquare, promotion) => {
-            const move = { 
-              from: sourceSquare, 
+            const move = {
+              from: sourceSquare,
               to: targetSquare,
               promotion: promotion || 'q'
             };
@@ -470,37 +470,37 @@ export default function HomepagePuzzle() {
           showCoordinates={false}
           draggable={!botThinking && !judging}
         />
-      </div>
 
-
-      {showLoginPrompt && (
-        <div className="login-prompt-overlay">
-          <div className="login-prompt-card">
-            <div className="prompt-icon">🎉</div>
-            <h4>Great Job!</h4>
-            <p>You solved today's puzzle!</p>
-            {!user ? (
-              <>
-                <p className="prompt-message">Login to access more puzzles and track your progress.</p>
-                <div className="prompt-buttons">
-                  <button className="login-btn" onClick={handleLogin}>
-                    Login Now
-                  </button>
-                  <button className="dismiss-btn" onClick={dismissPrompt}>
-                    Maybe Later
+        {/* Success popup — rendered OVER the chessboard */}
+        {showLoginPrompt && (
+          <div className="hp-puzzle-win-overlay">
+            <div className="hp-puzzle-win-card">
+              <div className="hp-puzzle-win-icon">🎉</div>
+              <h4 className="hp-puzzle-win-title">Great Job!</h4>
+              <p className="hp-puzzle-win-text">You solved today's puzzle!</p>
+              {!user ? (
+                <>
+                  <p className="hp-puzzle-win-sub">Login to access more puzzles and track your progress.</p>
+                  <div className="hp-puzzle-win-buttons">
+                    <button className="hp-puzzle-win-btn primary" onClick={handleLogin}>
+                      Login Now
+                    </button>
+                    <button className="hp-puzzle-win-btn ghost" onClick={dismissPrompt}>
+                      Maybe Later
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="hp-puzzle-win-buttons">
+                  <button className="hp-puzzle-win-btn primary" onClick={dismissPrompt}>
+                    Close
                   </button>
                 </div>
-              </>
-            ) : (
-              <div className="prompt-buttons">
-                <button className="login-btn" onClick={dismissPrompt}>
-                  Close
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

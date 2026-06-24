@@ -345,7 +345,7 @@ function LeaderRow({ rank, name, sub, score, scoreLabel, accent = 'cyan', showAv
       <RankBadge rank={rank} />
       {showAvatar && <PlayerAvatar user={user} name={name} size={avatarSize} />}
       <div className="pl-row-info">
-        <div className="pl-row-name">{name}</div>
+        <div className="pl-row-name" title={typeof name === 'string' ? name : undefined}>{name}</div>
         {sub && <div className="pl-row-sub">{sub}</div>}
       </div>
       {score != null && (
@@ -405,6 +405,29 @@ function PlayersTab() {
   const [arena, setArena]     = useState({ standard: [], marathon: [], chess960: [] });
   const [loading, setLoading] = useState(true);
 
+  // ── Player search ──────────────────────────────────────────────────────────
+  const [search, setSearch]   = useState('');
+  const [results, setResults] = useState([]);
+  const [searching, setSearching] = useState(false);
+
+  useEffect(() => {
+    const q = search.trim();
+    if (q.length < 2) { setResults([]); setSearching(false); return; }
+    setSearching(true);
+    const t = setTimeout(async () => {
+      try {
+        const res = await api.get(`/api/friends/search?q=${encodeURIComponent(q)}`);
+        setResults(Array.isArray(res.data) ? res.data : []);
+      } catch { setResults([]); }
+      finally { setSearching(false); }
+    }, 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const openProfile = (u) => {
+    navigate(`/player/${encodeURIComponent(u.displayName || u.username)}`);
+  };
+
   // Lightweight poll just for the daily-puzzle ratings so they update in real time
   const fetchDaily = useCallback(async () => {
     try {
@@ -440,6 +463,42 @@ function PlayersTab() {
   const { standard = [], marathon = [], chess960 = [] } = arena || {};
 
   return (
+    <>
+    {/* ── Player search ── */}
+    <div className="pl-search-wrap">
+      <input
+        className="sh-search-input pl-search-input"
+        type="text"
+        placeholder="🔍 Search players by name or @username…"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        autoComplete="off"
+        spellCheck={false}
+      />
+      {search.trim().length >= 2 && (
+        <div className="pl-search-results">
+          {searching ? (
+            <div className="pl-search-empty">Searching…</div>
+          ) : results.length === 0 ? (
+            <div className="pl-search-empty">No players found.</div>
+          ) : (
+            results.map(u => (
+              <button key={u._id} className="pl-search-row" onClick={() => openProfile(u)}>
+                <PlayerAvatar user={u} size={34} />
+                <div className="pl-search-info">
+                  <div className="pl-search-name" title={u.displayName || u.username}>
+                    {u.displayName || u.username}
+                  </div>
+                  <div className="pl-search-handle">@{u.username}</div>
+                </div>
+                <span className="pl-search-go">View →</span>
+              </button>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+
     <div className="pl-grid">
 
       {/* ── LEFT 25% — Most Active Users ───────────────────────────────────── */}
@@ -461,7 +520,7 @@ function PlayersTab() {
                 <span className="pl-active-rank">{i + 1}</span>
                 <PlayerAvatar user={u} size={40} online={u.isOnline} />
                 <div className="pl-row-info">
-                  <div className="pl-row-name">
+                  <div className="pl-row-name" title={u.displayName || u.username || ''}>
                     <PlayerName displayName={u.displayName} username={u.username} />
                   </div>
                   <div className="pl-active-meta">
@@ -556,6 +615,7 @@ function PlayersTab() {
 
       </main>
     </div>
+    </>
   );
 }
 
@@ -909,9 +969,9 @@ function FriendsTab() {
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <button
                     className="sh-btn-challenge"
-                    title="Challenge to Puzzle Race"
-                    onClick={() => navigate('/arena')}
-                  >⚡ Race</button>
+                    title="Play a private game with this friend"
+                    onClick={() => navigate('/games?friend=1')}
+                  >🔥 Play</button>
                   <button
                     className="sh-btn-secondary"
                     style={{ padding: '6px 12px', fontSize: 13 }}

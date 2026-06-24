@@ -12,15 +12,37 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
+import { Chess } from 'chess.js';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import GameReplay from '../components/GameReplay';
+import PieceSelector from '../components/PositionEditor/PieceSelector';
+import EditableBoard from '../components/PositionEditor/EditableBoard';
+import SetupControls from '../components/PositionEditor/SetupControls';
+import FenBar from '../components/PositionEditor/FenBar';
 import OTBConfirmPanel from '../components/OTBConfirmPanel';
 import CoffeeCta from '../components/CoffeeCta';
 import AboutFeatureCTA from '../components/marketing/AboutFeatureCTA';
 import './GameAnalysis.css';
 
 ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Filler, Tooltip, Legend);
+
+// ─── Brand logos (inline SVG, no external assets) ─────────────────────────────
+// Path data from Simple Icons (CC0). Rendered in each brand's colour.
+function ChessComLogo({ size = 22 }) {
+  return (
+    <svg height={size} viewBox="0 0 24 24" role="img" aria-label="Chess.com" focusable="false">
+      <path fill="#81B64C" d="M12 0a3.85 3.85 0 0 0-3.875 3.846A3.84 3.84 0 0 0 9.73 6.969l-2.79 1.85c0 .622.144 1.114.434 1.649H9.83c-.014.245-.014.549-.014.925 0 .025.003.048.006.071-.064 1.353-.507 3.472-3.62 5.842-.816.625-1.423 1.495-1.806 2.533a.33.33 0 0 0-.045.084 8.124 8.124 0 0 0-.39 2.516c0 .1.216 1.561 8.038 1.561s8.038-1.46 8.038-1.561c0-2.227-.824-4.048-2.24-5.133-4.034-3.08-3.586-5.74-3.644-6.838h2.458c.29-.535.434-1.027.434-1.649l-2.79-1.836a3.86 3.86 0 0 0 1.604-3.123A3.873 3.873 0 0 0 13.445.275c-.004-.002-.01.004-.015.004A3.76 3.76 0 0 0 12 0Z"/>
+    </svg>
+  );
+}
+function LichessLogo({ size = 22 }) {
+  return (
+    <svg height={size} viewBox="0 0 24 24" role="img" aria-label="Lichess" focusable="false">
+      <path fill="currentColor" d="M10.457 6.161a.237.237 0 0 0-.296.165c-.8 2.785 2.819 5.579 5.214 7.428.653.504 1.216.939 1.591 1.292 1.745 1.642 2.564 2.851 2.733 3.178a.24.24 0 0 0 .275.122c.047-.013 4.726-1.3 3.934-4.574a.257.257 0 0 0-.023-.06L18.204 3.407 18.93.295a.24.24 0 0 0-.262-.293c-1.7.201-3.115.435-4.5 1.425-4.844-.323-8.718.9-11.213 3.539C.334 7.737-.246 11.515.085 14.128c.763 5.655 5.191 8.631 9.081 9.532.993.229 1.974.34 2.923.34 3.344 0 6.297-1.381 7.946-3.85a.24.24 0 0 0-.372-.3c-3.411 3.527-9.002 4.134-13.296 1.444-4.485-2.81-6.202-8.41-3.91-12.749C4.741 4.221 8.801 2.362 13.888 3.31c.056.01.115 0 .165-.029l.335-.197c.926-.546 1.961-1.157 2.873-1.279l-.694 1.993a.243.243 0 0 0 .02.202l6.082 10.192c-.193 2.028-1.706 2.506-2.226 2.611-.287-.645-.814-1.364-2.306-2.803-.422-.407-1.21-.941-2.124-1.56-2.364-1.601-5.937-4.02-5.391-5.984a.239.239 0 0 0-.165-.295z"/>
+    </svg>
+  );
+}
 
 // ─── CAPS Score Card ──────────────────────────────────────────────────────────
 function CapsCard({ capsScore }) {
@@ -795,110 +817,6 @@ function TrendCharts({ trends }) {
   );
 }
 
-// ─── Opening Repertoire ───────────────────────────────────────────────────────
-function RepertoireCol({ entries, type }) {
-  const isWeak = type === 'weaknesses';
-  const accent = isWeak ? '#ef4444' : '#10b981';
-  if (!entries || entries.length === 0) {
-    return (
-      <div className="ga-repc-empty">
-        {isWeak ? 'No consistent weak openings in this sample.' : 'No strong openings detected yet.'}
-      </div>
-    );
-  }
-  return (
-    <div className="ga-repc-list">
-      {entries.map((e, i) => {
-        const pct = isWeak ? e.lossRate : e.winRate;
-        return (
-          <div key={i} className={`ga-repc-row ${isWeak ? 'weak' : 'strong'}`}>
-            <div className="ga-repc-top">
-              <span className="ga-repc-eco">{e.ecoCode}</span>
-              <span className="ga-repc-name">
-                {e.name}
-                {e.lowSample && <span className="ga-repc-low">Low</span>}
-              </span>
-            </div>
-            <div className="ga-repc-wdl">
-              <span className="ga-w">{e.wins}W</span>
-              <span className="ga-sep"> · </span>
-              <span className="ga-d">{e.draws}D</span>
-              <span className="ga-sep"> · </span>
-              <span className="ga-l">{e.losses}L</span>
-              <span className="ga-repc-played">({e.played} games)</span>
-            </div>
-            <div className="ga-repc-bar-row">
-              <div className="ga-repc-bar-bg">
-                <div className="ga-repc-bar-fill" style={{ width: `${pct}%`, background: accent }} />
-              </div>
-              <span className="ga-repc-pct" style={{ color: accent }}>{pct}%</span>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function OpeningRepertoire({ openingRepertoire, totalGames }) {
-  const [activeTab, setActiveTab] = useState('white');
-  if (!openingRepertoire) return null;
-  const { asWhite, asBlack } = openingRepertoire;
-  if (!asWhite && !asBlack) return null;
-  const data = activeTab === 'white' ? asWhite : asBlack;
-  return (
-    <div className="ga-rep-card">
-      {/* Header */}
-      <div className="ga-rep-card-header">
-        <div>
-          <span className="ga-rep-card-title">♟ Opening Repertoire</span>
-          {totalGames > 0 && (
-            <span className="ga-rep-total-games">Based on {totalGames} games</span>
-          )}
-        </div>
-        <div className="ga-rep-tabs">
-          <button
-            className={`ga-rep-tab${activeTab === 'white' ? ' active white' : ''}`}
-            onClick={() => setActiveTab('white')}
-          >
-            ♔ White
-          </button>
-          <button
-            className={`ga-rep-tab${activeTab === 'black' ? ' active black' : ''}`}
-            onClick={() => setActiveTab('black')}
-          >
-            ♚ Black
-          </button>
-        </div>
-      </div>
-
-      {/* Two columns: Strengths | Weaknesses */}
-      <div className="ga-rep-cols">
-        <div className="ga-rep-col ga-rep-col-strong">
-          <div className="ga-rep-col-head strong">
-            <span>✓ Strengths</span>
-            {data?.strengths?.length > 0 && (
-              <span className="ga-rep-col-badge strong">{data.strengths.length}</span>
-            )}
-          </div>
-          <div className="ga-rep-col-hint">Openings you win most — keep playing these.</div>
-          <RepertoireCol entries={data?.strengths} type="strengths" />
-        </div>
-        <div className="ga-rep-col ga-rep-col-weak">
-          <div className="ga-rep-col-head weak">
-            <span>⚠ Weaknesses</span>
-            {data?.weaknesses?.length > 0 && (
-              <span className="ga-rep-col-badge weak">{data.weaknesses.length}</span>
-            )}
-          </div>
-          <div className="ga-rep-col-hint">Openings you lose most — need study.</div>
-          <RepertoireCol entries={data?.weaknesses} type="weaknesses" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ─── OpeningIntelligence ──────────────────────────────────────────────────────
 
 function OpeningIntelligence({ openingIntelligence }) {
@@ -1404,7 +1322,7 @@ export default function GameAnalysis() {
   const [loadingPrev, setLoadingPrev]     = useState(true);
   const [selectedGameIndex, setSelectedGameIndex] = useState(null);
   const [history, setHistory]             = useState([]);
-  const [lifetimeRepertoire, setLifetimeRepertoire] = useState(null); // { asWhite, asBlack, totalGames }
+  // Opening Repertoire UI was removed — repertoire is no longer fetched/shown.
   const [usageLoggedForCacheId, setUsageLoggedForCacheId] = useState(null);
 
   // ── OTB scoresheet scanner state ─────────────────────────────────────────
@@ -1416,15 +1334,39 @@ export default function GameAnalysis() {
   const [otbError, setOtbError] = useState(null);
   const [otbLimitReached, setOtbLimitReached] = useState(false);
 
+  // ── Detailed-report (server) state — used by Quick Analyze's report button ──
+  const [pgnAnalyzing, setPgnAnalyzing] = useState(false);
+  const [pgnError, setPgnError] = useState(null);
+
+  // ── Quick Analyze state (FEN/PGN → live engine board, nothing saved to DB) ──
+  const [quickFen, setQuickFen] = useState('');
+  const [quickPgn, setQuickPgn] = useState('');
+  const [quickError, setQuickError] = useState(null);
+  const [quickGame, setQuickGame] = useState(null); // { pgn, playerSide, moveAnalysis }
+
+  // Board editor (set up a position by hand, then Quick Analyze it).
+  const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  const [showEditor, setShowEditor] = useState(false);
+  const [editorChess, setEditorChess] = useState(() => new Chess(START_FEN));
+  const [selectedPiece, setSelectedPiece] = useState(undefined); // undefined=drag, null=erase, str=place
+  const editorFen = editorChess.fen();
+
+  const setEditorFromFen = (fen) => {
+    try { setEditorChess(new Chess(fen, { skipValidation: true })); } catch { /* ignore */ }
+  };
+  const openEditor = () => {
+    // Seed the editor from the typed FEN if valid, else the standard start.
+    const f = quickFen.trim();
+    try { setEditorChess(new Chess(f || START_FEN, { skipValidation: true })); }
+    catch { setEditorChess(new Chess(START_FEN)); }
+    setShowEditor(true);
+  };
+
   const pollRef = useRef(null);
 
-  // Fetch lifetime opening repertoire for a given platform + username
-  const fetchRepertoire = useCallback((plat, uname) => {
-    if (!plat || !uname) return;
-    api.get(`/api/game-analysis/opening-repertoire?platform=${plat}&username=${encodeURIComponent(uname)}`)
-      .then(res => setLifetimeRepertoire(res.data))
-      .catch(() => {});
-  }, []);
+  // Opening Repertoire feature removed — keep a no-op so existing call sites stay
+  // valid without fetching/showing the (now-removed) repertoire panel.
+  const fetchRepertoire = useCallback(() => {}, []);
 
   // Fetch user profile to pre-fill usernames
   useEffect(() => {
@@ -1541,7 +1483,7 @@ export default function GameAnalysis() {
 
   async function handleAnalyze(e) {
     e.preventDefault();
-    if (platform === 'otb') return; // OTB has its own scan/analyze flow
+    if (platform === 'otb' || platform === 'quick') return; // these have their own analyze flow
     if (platform !== 'chessnexus' && !username.trim()) {
       setError('Please enter your username.');
       return;
@@ -1682,9 +1624,105 @@ export default function GameAnalysis() {
     }
   }
 
+  // ── Quick Analyze — open the live engine board from a pasted FEN or PGN.
+  // No server call, nothing saved to DB; it's the same study board as a game.
+  function handleQuickAnalyze() {
+    setQuickError(null);
+    const fen = quickFen.trim();
+    const pgn = quickPgn.trim();
+
+    // PGN takes priority if both are filled.
+    if (pgn) {
+      const c = new Chess();
+      let ok = true;
+      try { if (c.loadPgn(pgn, { strict: false }) === false) ok = false; } catch { ok = false; }
+      if (!ok || c.history().length < 1) {
+        setQuickError('Could not read that PGN. Paste a valid PGN with at least one move.');
+        return;
+      }
+      // Re-emit a clean PGN from the parsed moves.
+      const sans = c.history();
+      const clean = new Chess();
+      sans.forEach(s => clean.move(s, { strict: false }));
+      setQuickGame({ pgn: clean.pgn(), playerSide: 'white', moveAnalysis: [], opening: 'Quick Analyze' });
+      return;
+    }
+
+    if (fen) {
+      // Validate the FEN, then wrap it as a header-only PGN so the board loads it.
+      let valid = true;
+      try { new Chess(fen); } catch { valid = false; }
+      if (!valid) {
+        setQuickError('That FEN is not valid. Check it and try again.');
+        return;
+      }
+      const side = (fen.split(' ')[1] === 'b') ? 'black' : 'white';
+      const headerPgn = `[SetUp "1"]\n[FEN "${fen}"]\n\n*`;
+      setQuickGame({ pgn: headerPgn, playerSide: side, moveAnalysis: [], opening: 'Quick Analyze' });
+      return;
+    }
+
+    setQuickError('Paste a FEN or a PGN to analyse.');
+  }
+
+  // Analyze the position currently set up in the board editor.
+  function handleEditorAnalyze() {
+    setQuickError(null);
+    const fen = editorChess.fen();
+    // Need exactly one king per side for a legal, analysable position.
+    const board = fen.split(' ')[0];
+    const wk = (board.match(/K/g) || []).length;
+    const bk = (board.match(/k/g) || []).length;
+    if (wk !== 1 || bk !== 1) {
+      setQuickError('Set up exactly one White king and one Black king before analysing.');
+      return;
+    }
+    const side = (fen.split(' ')[1] === 'b') ? 'black' : 'white';
+    const headerPgn = `[SetUp "1"]\n[FEN "${fen}"]\n\n*`;
+    setQuickGame({ pgn: headerPgn, playerSide: side, moveAnalysis: [], opening: 'Quick Analyze' });
+  }
+
+  // Quick Analyze → full server-side detailed report (reuses the PGN pipeline).
+  async function handleQuickDetailed() {
+    setQuickError(null);
+    setPgnError(null);
+    const pgn = quickPgn.trim();
+    if (!pgn) { setQuickError('Paste a PGN (with moves) to get a detailed report.'); return; }
+    setPgnAnalyzing(true);
+    setError(null);
+    setResult(null);
+    setLastAnalysis(null);
+    try {
+      const res = await api.post('/api/otb-analysis/analyze-pgn', { pgn });
+      const { cacheId: id, status } = res.data;
+      setCacheId(id);
+      setPollStatus(status);
+      setLoading(true);
+      startPolling(id, true);
+    } catch (err) {
+      setPgnError(err?.response?.data?.message || 'Failed to analyse that PGN. Please check it and try again.');
+    } finally {
+      setPgnAnalyzing(false);
+    }
+  }
+
   const progressPct = progress
     ? Math.round(((progress.current || 0) / Math.max(progress.total || 10, 1)) * 100)
     : 0;
+
+  // Quick Analyze takes over the page with just the live engine board.
+  if (quickGame) {
+    return (
+      <div className="ga-page">
+        <GameReplay
+          game={quickGame}
+          quick
+          totalGames={1}
+          onClose={() => setQuickGame(null)}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="ga-page">
@@ -1695,7 +1733,9 @@ export default function GameAnalysis() {
         <div style={{ flex: 1 }}>
           <h1 className="ga-title">Analyze My Games</h1>
           <p className="ga-subtitle">
-            {platform === 'otb'
+            {platform === 'quick'
+              ? 'Quick Analyze — paste a FEN or PGN. Study it instantly on a live Stockfish board, or run a full Detailed Report for a PGN.'
+              : platform === 'otb'
               ? 'Snap a photo of your over-the-board scoresheet. Chess Nexus reads the moves and analyses the game with Stockfish.'
               : platform === 'chessnexus'
               ? 'Analyzes your last 25 Arena Tournament games played on ChessNexus.'
@@ -1727,17 +1767,21 @@ export default function GameAnalysis() {
           <div className="ga-platform-row">
             <button
               type="button"
-              className={`ga-platform-btn ${platform === 'chesscom' ? 'active' : ''}`}
+              className={`ga-platform-btn ga-platform-logo ${platform === 'chesscom' ? 'active' : ''}`}
               onClick={() => setPlatform('chesscom')}
+              title="Chess.com"
+              aria-label="Chess.com"
             >
-              ♟ Chess.com
+              <ChessComLogo />
             </button>
             <button
               type="button"
-              className={`ga-platform-btn ${platform === 'lichess' ? 'active' : ''}`}
+              className={`ga-platform-btn ga-platform-logo ${platform === 'lichess' ? 'active' : ''}`}
               onClick={() => setPlatform('lichess')}
+              title="Lichess"
+              aria-label="Lichess"
             >
-              🏰 Lichess
+              <LichessLogo />
             </button>
             <button
               type="button"
@@ -1753,10 +1797,17 @@ export default function GameAnalysis() {
             >
               📷 OTB Scoresheet
             </button>
+            <button
+              type="button"
+              className={`ga-platform-btn ${platform === 'quick' ? 'active' : ''}`}
+              onClick={() => setPlatform('quick')}
+            >
+              ⚡ Quick Analyze
+            </button>
           </div>
 
           {/* Account mode toggle — logged-in non-guest users only; hidden for ChessNexus & OTB */}
-          {user && user.role !== 'guest' && platform !== 'chessnexus' && platform !== 'otb' && (
+          {user && user.role !== 'guest' && platform !== 'chessnexus' && platform !== 'otb' && platform !== 'quick' && (
             <>
               <div className="ga-mode-row">
                 <button
@@ -1781,7 +1832,7 @@ export default function GameAnalysis() {
           )}
 
           {/* Guest notice for chess.com / lichess */}
-          {(!user || user.role === 'guest') && platform !== 'chessnexus' && platform !== 'otb' && (
+          {(!user || user.role === 'guest') && platform !== 'chessnexus' && platform !== 'otb' && platform !== 'quick' && (
             <p className="ga-scout-hint">🔭 Analysing 50 games in scout mode. <a href="/login" style={{color:'#f59e0b'}}>Log in</a> to track your progress over time.</p>
           )}
 
@@ -1815,6 +1866,101 @@ export default function GameAnalysis() {
             ) : (
               <LoginPrompt feature="ChessNexus Analysis" />
             )
+          ) : platform === 'quick' ? (
+            <div className="ga-pgn-section">
+              <p className="ga-pgn-side-label" style={{ margin: '0 0 2px' }}>
+                ⚡ Paste a FEN or a PGN. <strong>Quick Analyze</strong> opens a live
+                Stockfish board (depth 18, 4 lines, nothing saved). For a PGN you
+                can also run a full <strong>Detailed Report</strong>.
+              </p>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
+                <input
+                  className="ga-username-input"
+                  type="text"
+                  placeholder="FEN — e.g. r1bqkbnr/pppp1ppp/2n5/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3"
+                  value={quickFen}
+                  onChange={e => setQuickFen(e.target.value)}
+                  spellCheck={false}
+                  style={{ fontFamily: "'Courier New', monospace", fontSize: 13, flex: 1 }}
+                />
+                <button
+                  type="button"
+                  onClick={() => (showEditor ? setShowEditor(false) : openEditor())}
+                  style={{
+                    flexShrink: 0, padding: '0 14px', borderRadius: 12,
+                    border: '1px solid rgba(168,85,247,0.4)', background: 'rgba(168,85,247,0.12)',
+                    color: '#c084fc', fontSize: 13, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
+                  }}
+                >
+                  {showEditor ? '✕ Close editor' : '✏️ Board editor'}
+                </button>
+              </div>
+
+              {/* ── Board editor (set up a position by hand) ── */}
+              {showEditor && (
+                <div className="ga-editor-wrap">
+                  <div className="ga-editor-pieces">
+                    <PieceSelector selectedPiece={selectedPiece} onSelectPiece={setSelectedPiece} />
+                    <div style={{ marginTop: 10 }}>
+                      <SetupControls chess={editorChess} onFenChange={setEditorFromFen} />
+                    </div>
+                    <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
+                      <button type="button" className="ga-editor-mini" onClick={() => setEditorFromFen('8/8/8/8/8/8/8/8 w - - 0 1')}>🗑 Clear</button>
+                      <button type="button" className="ga-editor-mini" onClick={() => setEditorFromFen(START_FEN)}>♟ Start</button>
+                    </div>
+                  </div>
+                  <div className="ga-editor-board">
+                    <EditableBoard
+                      chess={editorChess}
+                      selectedPiece={selectedPiece}
+                      onFenChange={setEditorFromFen}
+                      orientation="white"
+                      boardWidth={320}
+                    />
+                    <div style={{ marginTop: 8 }}>
+                      <FenBar fen={editorFen} onFenChange={setEditorFromFen} />
+                    </div>
+                    <div className="ga-input-row ga-analyze-row" style={{ marginTop: 12 }}>
+                      <button type="button" className="ga-analyze-btn" onClick={handleEditorAnalyze}>
+                        ⚡ Quick Analyze this position →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, margin: '4px 0' }}>— or —</div>
+              <textarea
+                className="ga-pgn-textarea"
+                placeholder={'Paste a PGN here…\n1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 …'}
+                value={quickPgn}
+                onChange={e => setQuickPgn(e.target.value)}
+                rows={6}
+                spellCheck={false}
+              />
+              <div className="ga-input-row ga-analyze-row" style={{ marginTop: 14, gap: 10, flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="ga-analyze-btn"
+                  disabled={!quickFen.trim() && !quickPgn.trim()}
+                  onClick={handleQuickAnalyze}
+                >
+                  ⚡ Quick Analyze →
+                </button>
+                <button
+                  type="button"
+                  className="ga-analyze-btn"
+                  style={{ background: 'rgba(6,182,212,0.15)', color: '#06b6d4', border: '1px solid rgba(6,182,212,0.4)' }}
+                  disabled={pgnAnalyzing || loading || !quickPgn.trim()}
+                  title={!quickPgn.trim() ? 'Paste a PGN to get a detailed report' : undefined}
+                  onClick={handleQuickDetailed}
+                >
+                  {pgnAnalyzing ? 'Starting…' : '📊 Detailed Report →'}
+                </button>
+              </div>
+              {quickError && <div className="ga-error">{quickError}</div>}
+              {pgnError && <div className="ga-error">{pgnError}</div>}
+            </div>
           ) : (
             <div className="ga-input-row">
               <input
@@ -1832,7 +1978,7 @@ export default function GameAnalysis() {
             </div>
           )}
 
-          {platform !== 'otb' && !(platform === 'chessnexus' && (!user || user.role === 'guest')) && (
+          {platform !== 'otb' && platform !== 'quick' && !(platform === 'chessnexus' && (!user || user.role === 'guest')) && (
             <div className="ga-input-row ga-analyze-row">
               <button
                 type="submit"
@@ -2031,14 +2177,6 @@ export default function GameAnalysis() {
           {/* Tactics */}
           <h3 className="ga-section-title">🎯 Tactics Missed</h3>
           <TacticsBar tacticsStats={result.tacticsStats} />
-
-          {/* Opening Repertoire */}
-          {(lifetimeRepertoire || result.openingRepertoire) && (
-            <OpeningRepertoire
-              openingRepertoire={lifetimeRepertoire || result.openingRepertoire}
-              totalGames={lifetimeRepertoire?.totalGames || null}
-            />
-          )}
 
           {/* Recommendations */}
           <Recommendations result={result} />

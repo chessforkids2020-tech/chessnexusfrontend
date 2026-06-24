@@ -231,7 +231,7 @@ export default function ArenaTournamentLobby() {
               <div>
                 <strong style={{ color: '#555', display: 'block', fontSize: '14px' }}>Time Control</strong>
                 <span style={{ color: '#333', fontSize: '18px', fontWeight: '600' }}>
-                  {tournament?.timeControl.minutes}:{tournament?.timeControl.seconds.toString().padStart(2, '0')}
+                  {tournament?.timeControl.minutes}+{tournament?.timeControl.increment || 0}
                 </span>
               </div>
               <div>

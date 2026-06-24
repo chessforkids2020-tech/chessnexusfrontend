@@ -367,11 +367,11 @@ const StudyOverview = () => {
           <motion.div
             style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
             whileHover={{ scale: 1.03, background: 'rgba(52,211,153,0.1)', boxShadow: '0 12px 40px rgba(52,211,153,0.12)' }}
-            onClick={() => navigate('/my-puzzles')}
+            onClick={() => navigate('/my-studies')}
           >
-            <div style={{ fontSize: 32, marginBottom: 10 }}>🧩</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: '#34d399', marginBottom: 6 }}>My Positions</div>
-            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>View and manage your saved custom positions. Share links with friends or play any saved position.</div>
+            <div style={{ fontSize: 32, marginBottom: 10 }}>📚</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: '#34d399', marginBottom: 6 }}>My Studies</div>
+            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>View and manage your studies — organised by chapters. Play through your saved positions.</div>
           </motion.div>
 
           <motion.div
@@ -382,6 +382,16 @@ const StudyOverview = () => {
             <div style={{ fontSize: 32, marginBottom: 10 }}>📚</div>
             <div style={{ fontSize: 17, fontWeight: 800, color: '#fbbf24', marginBottom: 6 }}>Public Studies</div>
             <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Browse community-created studies with chapters and positions. Create your own and share your knowledge.</div>
+          </motion.div>
+
+          <motion.div
+            style={{ background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            whileHover={{ scale: 1.03, background: 'rgba(96,165,250,0.1)', boxShadow: '0 12px 40px rgba(96,165,250,0.12)' }}
+            onClick={() => navigate('/study/books')}
+          >
+            <div style={{ fontSize: 32, marginBottom: 10 }}>📖</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: '#60a5fa', marginBottom: 6 }}>Books</div>
+            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Read chess books — chapters, topics and positions you can play through. Chapter 1 free for everyone.</div>
           </motion.div>
         </div>
 

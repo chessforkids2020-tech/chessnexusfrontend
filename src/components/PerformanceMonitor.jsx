@@ -428,7 +428,7 @@ function getMFBadge(completedDays, perfectDays) {
   return { emoji: '🌱', name: 'Beginner' };
 }
 
-const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSummary = null, publicMonthlyFocus = null, publicPuzzleStatsRange = null }) => {
+const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSummary = null, publicMonthlyFocus = null, publicPuzzleStatsRange = null, viewedDisplayName = null }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedRaceType, setSelectedRaceType] = useState(null);
   // Puzzle Stats card time range: '24h' | '7d'
@@ -828,35 +828,54 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
         <div style={styles.fullWidthSection}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', marginBottom: '8px' }}>
             <h3 style={{ ...styles.columnTitle, margin: 0 }}>🧩 Puzzle Stats</h3>
-            <div style={{ display: 'inline-flex', background: 'rgba(6, 182, 212, 0.1)', border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))', borderRadius: '10px', padding: '3px' }}>
-              {[
-                { id: '24h', label: '24 hrs' },
-                { id: '7d', label: '7 days' },
-              ].map(opt => {
-                const active = statsRange === opt.id;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setStatsRange(opt.id)}
-                    style={{
-                      padding: '6px 14px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: '12.5px',
-                      fontWeight: 700,
-                      letterSpacing: '0.02em',
-                      transition: 'all 0.2s ease',
-                      background: active ? 'linear-gradient(135deg, #06b6d4, #10b981)' : 'transparent',
-                      color: active ? '#04201f' : 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))',
-                      boxShadow: active ? '0 4px 12px rgba(6,182,212,0.3)' : 'none',
-                    }}
-                  >
-                    {opt.label}
-                  </button>
-                );
-              })}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'inline-flex', background: 'rgba(6, 182, 212, 0.1)', border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))', borderRadius: '10px', padding: '3px' }}>
+                {[
+                  { id: '24h', label: '24 hrs' },
+                  { id: '7d', label: '7 days' },
+                ].map(opt => {
+                  const active = statsRange === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setStatsRange(opt.id)}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '12.5px',
+                        fontWeight: 700,
+                        letterSpacing: '0.02em',
+                        transition: 'all 0.2s ease',
+                        background: active ? 'linear-gradient(135deg, #06b6d4, #10b981)' : 'transparent',
+                        color: active ? '#04201f' : 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))',
+                        boxShadow: active ? '0 4px 12px rgba(6,182,212,0.3)' : 'none',
+                      }}
+                    >
+                      {opt.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <Link
+                to={viewedDisplayName ? `/player/${encodeURIComponent(viewedDisplayName)}/puzzle-dashboard` : '/puzzle-dashboard'}
+                style={{
+                  padding: '7px 14px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(6,182,212,0.4)',
+                  background: 'rgba(6,182,212,0.12)',
+                  color: '#06b6d4',
+                  fontSize: '12.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  textDecoration: 'none',
+                }}
+              >
+                Puzzle Dashboard →
+              </Link>
             </div>
           </div>
           <div style={styles.ratingCard}>
@@ -883,15 +902,6 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                     <div style={styles.ratingLabel}>Failed</div>
                     <div style={{ ...styles.ratingValue, color: '#ef4444' }}>{val(rs.failed)}</div>
                     {!rangeStatsLoading && <Sparkline data={rs.series?.failed} color="#ef4444" />}
-                  </div>
-                  {/* Accuracy + latest streak */}
-                  <div style={styles.ratingItem}>
-                    <div style={styles.ratingLabel}>Accuracy</div>
-                    <div style={styles.ratingValue}>{rangeStatsLoading || rs.attempts == null ? dash : `${rs.accuracy}%`}</div>
-                    {!rangeStatsLoading && <Sparkline data={rs.series?.accuracy} color="#06b6d4" />}
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#f59e0b', marginTop: '4px' }}>
-                      🔥 {rangeStatsLoading ? '…' : `${rs.streak || 0} streak`}
-                    </div>
                   </div>
                 </div>
               );

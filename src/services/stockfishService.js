@@ -174,6 +174,61 @@ class StockfishService {
     });
   }
 
+  // Analyze a position and stream the top-N lines (MultiPV) with their FULL
+  // principal variation (UCI moves). Used by the live "Stockfish" panel in
+  // game analysis. Calls onUpdate({ depth, lines }) repeatedly as the engine
+  // deepens, and resolves with the final set when 'bestmove' arrives.
+  //   lines: [{ k, scoreType:'cp'|'mate', score, depth, pv:[uci,...] }]
+  analyzePosition(fen, { depth = 18, multipv = 3, onUpdate } = {}) {
+    return new Promise((resolve, reject) => {
+      if (!this.ready) { reject(new Error('Engine not ready')); return; }
+
+      const lines = {};
+      let lastDepth = 0;
+      const messageId = `analyze_${this.messageId++}`;
+
+      const handler = (message) => {
+        if (message.startsWith('info') && message.includes(' pv ') && message.includes('score')) {
+          const k = parseInt(message.match(/multipv (\d+)/)?.[1] || '1', 10);
+          const d = parseInt(message.match(/depth (\d+)/)?.[1] || '0', 10);
+          const scoreMatch = message.match(/score (cp|mate) (-?\d+)/);
+          const pvMatch = message.match(/ pv (.+)$/);
+          if (scoreMatch && pvMatch) {
+            const pv = pvMatch[1].trim().split(/\s+/);
+            lines[k] = {
+              k,
+              depth: d,
+              scoreType: scoreMatch[1],
+              score: parseInt(scoreMatch[2], 10),
+              pv,
+            };
+            lastDepth = Math.max(lastDepth, d);
+            if (typeof onUpdate === 'function') {
+              onUpdate({ depth: lastDepth, lines: Object.values(lines).sort((a, b) => a.k - b.k) });
+            }
+          }
+        }
+        if (message.startsWith('bestmove')) {
+          this.callbacks.delete(messageId);
+          resolve({ depth: lastDepth, lines: Object.values(lines).sort((a, b) => a.k - b.k) });
+        }
+      };
+
+      this.callbacks.set(messageId, handler);
+      this.sendCommand('stop');
+      this.sendCommand(`setoption name MultiPV value ${multipv}`);
+      this.sendCommand(`position fen ${fen}`);
+      this.sendCommand(`go depth ${depth}`);
+    });
+  }
+
+  // Stop the current search (used when the user steps to another position).
+  stop() {
+    if (this.worker && this.ready) {
+      try { this.worker.postMessage('stop'); } catch { /* ignore */ }
+    }
+  }
+
   async getNextMove(fen, puzzle, options = {}) {
     const { followSolution = true, depth = 15 } = options;
     

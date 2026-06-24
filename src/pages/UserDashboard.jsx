@@ -124,19 +124,41 @@ function CoachBadge() {
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '4px',
-        padding: '2px 10px',
-        borderRadius: '999px',
-        fontSize: '12px',
-        fontWeight: 800,
-        color: '#0a0a0a',
-        background: 'linear-gradient(135deg, #fbbf24, #10b981)',
-        border: '1px solid rgba(251,191,36,0.5)',
-        boxShadow: '0 0 12px rgba(16,185,129,0.25)',
-        letterSpacing: '0.02em',
+        gap: '5px',
+        padding: '3px 11px',
+        borderRadius: '8px',
+        fontSize: '11px',
+        fontWeight: 700,
+        color: '#e5e7eb',
+        background: 'rgba(255,255,255,0.06)',
+        border: '1px solid rgba(255,255,255,0.18)',
+        backdropFilter: 'blur(6px)',
+        WebkitBackdropFilter: 'blur(6px)',
+        letterSpacing: '0.04em',
+        textTransform: 'uppercase',
       }}
     >
-      🎓 Coach
+      <span style={{ fontSize: '12px' }}>🎓</span>
+      Coach
+      <span
+        aria-hidden
+        title="Verified"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: '13px',
+          height: '13px',
+          borderRadius: '50%',
+          background: 'rgba(16,185,129,0.9)',
+          color: '#04110d',
+          fontSize: '9px',
+          fontWeight: 900,
+          lineHeight: 1,
+        }}
+      >
+        ✓
+      </span>
     </span>
   );
 }
@@ -465,15 +487,6 @@ function TodayStrip() {
     );
   }
 
-  if (minsToday !== null && minsToday > 0) {
-    chips.push(
-      <div key="mins" className="today-chip">
-        <span className="today-chip-emoji">⏱</span>
-        <span className="today-chip-text"><strong>{minsToday}</strong> min today</span>
-      </div>
-    );
-  }
-
   if (chips.length === 0) return null;
   return <div className="today-strip">{chips}</div>;
 }
@@ -566,127 +579,6 @@ function getCountryFlag(country) {
   return [...code].map(c => String.fromCodePoint(c.charCodeAt(0) + 127397)).join('');
 }
 
-// ── "Are you a chess coach?" prompt card ────────────────────────────
-function CoachPromptCard({ user, navigate }) {
-  const [coachStatus, setCoachStatus] = useState(null); // null | { isCoach, access }
-  const [dismissed, setDismissed] = useState(() => localStorage.getItem('coachPromptDismissed') === '1');
-
-  useEffect(() => {
-    let alive = true;
-    api.get('/api/coach/status')
-      .then(r => { if (alive) setCoachStatus(r.data); })
-      .catch(() => { if (alive) setCoachStatus({ isCoach: false }); });
-    return () => { alive = false; };
-  }, []);
-
-  if (!coachStatus) return null;
-
-  // Already a coach → show "Go to coach dashboard" mini-card
-  if (coachStatus.isCoach) {
-    return (
-      <div style={{
-        background: 'linear-gradient(135deg, rgba(6,182,212,0.12), rgba(16,185,129,0.08))',
-        border: '1px solid rgba(6,182,212,0.35)',
-        borderRadius: '14px',
-        padding: '16px 22px',
-        margin: '16px 0',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '16px',
-        flexWrap: 'wrap',
-        backdropFilter: 'blur(10px)'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ fontSize: '28px' }}>🎓</div>
-          <div>
-            <div style={{ color: '#67e8f9', fontWeight: 600, fontSize: '15px' }}>
-              You're set up as a coach
-            </div>
-            <div style={{ color: 'rgba(226,232,240,0.65)', fontSize: '12.5px', marginTop: '2px' }}>
-              {coachStatus.access?.active
-                ? `${coachStatus.access.daysRemaining} day(s) remaining`
-                : 'Subscription expired — renew to continue'}
-            </div>
-          </div>
-        </div>
-        <button
-          onClick={() => navigate('/coach/dashboard')}
-          style={{
-            background: 'linear-gradient(135deg, #06b6d4, #10b981)',
-            color: '#0a0a0a',
-            border: 'none',
-            padding: '9px 18px',
-            borderRadius: '10px',
-            fontWeight: 600,
-            fontSize: '13px',
-            cursor: 'pointer'
-          }}
-        >
-          Open coach dashboard →
-        </button>
-      </div>
-    );
-  }
-
-  if (dismissed) return null;
-
-  return (
-    <div style={{
-      background: 'linear-gradient(135deg, rgba(245,158,11,0.1), rgba(6,182,212,0.06))',
-      border: '1px solid rgba(6,182,212,0.3)',
-      borderRadius: '16px',
-      padding: '22px 26px',
-      margin: '20px 0',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '18px',
-      flexWrap: 'wrap',
-      backdropFilter: 'blur(10px)',
-      position: 'relative'
-    }}>
-      <button
-        onClick={() => { localStorage.setItem('coachPromptDismissed', '1'); setDismissed(true); }}
-        title="Dismiss"
-        style={{
-          position: 'absolute', top: '8px', right: '12px',
-          background: 'transparent', border: 'none', color: 'rgba(226,232,240,0.4)',
-          fontSize: '18px', cursor: 'pointer', lineHeight: 1
-        }}
-      >×</button>
-      <div style={{ fontSize: '42px', filter: 'drop-shadow(0 4px 14px rgba(6,182,212,0.4))' }}>🎓</div>
-      <div style={{ flex: 1, minWidth: '220px' }}>
-        <div style={{
-          color: '#f1f5f9', fontWeight: 700, fontSize: '17px', marginBottom: '4px',
-          background: 'linear-gradient(135deg, #06b6d4, #10b981)',
-          WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent'
-        }}>
-          Are you a chess coach?
-        </div>
-        <div style={{ color: 'rgba(226,232,240,0.7)', fontSize: '13.5px', lineHeight: 1.5 }}>
-          Manage your students, give assignments, and track progress — all in one place.
-          Start with a <strong style={{ color: '#fcd34d' }}>30-day free trial</strong>. No card required.
-        </div>
-      </div>
-      <button
-        onClick={() => navigate('/coach/onboarding')}
-        style={{
-          background: 'linear-gradient(135deg, #06b6d4, #10b981)',
-          color: '#0a0a0a',
-          border: 'none',
-          padding: '11px 22px',
-          borderRadius: '10px',
-          fontWeight: 600,
-          fontSize: '14px',
-          cursor: 'pointer',
-          boxShadow: '0 6px 20px rgba(6,182,212,0.35)'
-        }}
-      >
-        Yes — I'm a coach →
-      </button>
-    </div>
-  );
-}
 
 // ─── Monthly Focus Helpers ───────────────────────────────────────────────────
 function getMonthlyFocusBadge(completedDays, perfectDays) {
@@ -849,7 +741,6 @@ export default function UserDashboard() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
   const [isStudent, setIsStudent] = useState(false); // accepted a coach request
-  const [hasActiveCoach, setHasActiveCoach] = useState(false); // linked to a coach whose subscription is on
   const [hoveredCard, setHoveredCard] = useState(null);
   const [showSessionDebug, setShowSessionDebug] = useState(false);
   const [sessionDebug, setSessionDebug] = useState(null);
@@ -908,17 +799,6 @@ export default function UserDashboard() {
     return () => { alive = false; };
   }, [isPublicView]);
 
-  // Whether the viewer is enrolled with a coach whose subscription is currently on.
-  // Drives the "Coach" badge next to the joined date. This endpoint already filters
-  // out coaches whose subscription has lapsed.
-  useEffect(() => {
-    if (isPublicView) return;
-    let alive = true;
-    api.get('/api/coach-attendance/my/coaches')
-      .then(res => { if (alive) setHasActiveCoach(Array.isArray(res.data) && res.data.length > 0); })
-      .catch(() => {});
-    return () => { alive = false; };
-  }, [isPublicView]);
 
   // Intersection Observer for scroll animations
   useEffect(() => {
@@ -966,6 +846,8 @@ export default function UserDashboard() {
             displayName: data.displayName,
             username: data.username,
             role: data.role, // so role badges (e.g. 💎 Elite) show on the public/spectate profile
+            isCoach: !!data.isCoach,
+            coachVerified: !!data.coachVerified,
             country: data.country,
             liveRating: data.liveRating,
             ratings: data.ratings || {},
@@ -1299,33 +1181,14 @@ export default function UserDashboard() {
                   )}
                   {user.chessExperience && <span>• {user.chessExperience}</span>}
                   {user.memberSince && <span>• Member since {new Date(user.memberSince).getFullYear()}</span>}
-                  {user.isCoach && <CoachBadge />}
+                  {user.isCoach && user.coachVerified && <CoachBadge />}
                 </p>
               ) : (
                 <p className="welcome-quote" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
                   {user.memberSince && (
                     <span>📅 Joined {new Date(user.memberSince).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
                   )}
-                  {user.isCoach && <CoachBadge />}
-                  {hasActiveCoach && (
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        padding: '2px 10px',
-                        borderRadius: '999px',
-                        fontSize: '12px',
-                        fontWeight: 700,
-                        color: '#c4b5fd',
-                        background: 'rgba(139,92,246,0.12)',
-                        border: '1px solid rgba(139,92,246,0.35)',
-                      }}
-                      title="You're enrolled with a coach"
-                    >
-                      🎓 Coach
-                    </span>
-                  )}
+                  {user.isCoach && user.coachVerified && <CoachBadge />}
                   {user.country && (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                       <CountryFlag country={user.country} height={16} />
@@ -1520,6 +1383,7 @@ export default function UserDashboard() {
               publicArenaSummary={publicView?.arenaSummary || null}
               publicMonthlyFocus={isPublicView ? (publicView?.monthlyFocus || { focuses: [], statsMap: {} }) : null}
               publicPuzzleStatsRange={isPublicView ? (publicView?.puzzleStatsRange || null) : null}
+              viewedDisplayName={isPublicView ? routeDisplayName : null}
             />
 
             <DashboardTabs activeTab={activeTab} onChange={selectTab} />
@@ -1570,8 +1434,6 @@ export default function UserDashboard() {
               )}
 
               {!isPublicView && <MyCoachCard />}
-
-              {!isPublicView && <CoachPromptCard user={user} navigate={navigate} />}
             </div>
           </>
         )}
@@ -1583,9 +1445,11 @@ export default function UserDashboard() {
             Owner's own dashboard, logged-in only. Distinct from the human "My Coach". */}
         {!isPublicView && isViewerLoggedIn && user && <GameInsightsPanel />}
 
-        {/* Games with Friends — owner's own dashboard only. Renders nothing if empty. */}
-        {!isPublicView && user && (
-          <FriendGamesSection userId={user._id || user.id} />
+        {/* Games with Friends — visible on own AND public/spectator dashboards.
+            In public view user._id is the username (no real id is exposed); the
+            backend route resolves either. Renders nothing if empty. */}
+        {user && (
+          <FriendGamesSection userId={user._id || user.id || user.username} />
         )}
 
         {loading && (

@@ -758,10 +758,10 @@ export default function Sidebar({ user, onNavigate }) {
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
-              title="Games"
+              title="Play"
             >
               <span style={styles.navIcon}>🎮</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Games</span>}
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Play</span>}
             </div>
 
             {/* 3D Arena nav item — visible to all; guests are redirected to login */}

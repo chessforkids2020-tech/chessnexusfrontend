@@ -69,6 +69,15 @@ export default function HealthyMix() {
   const assignmentId = searchParams.get('assignment');
   const hasAssignment = assignmentId != null && assignmentId !== '';
 
+  // Redo mode (from the Puzzle Dashboard): replay the EXACT puzzles the user got
+  // wrong, by id, on this same board. The id list is handed over via sessionStorage.
+  const isRedo = searchParams.get('redo') === '1';
+  const redoQueueRef = useRef(null);   // [{ _id, fen, solution, rating, ... }]
+  const redoIdxRef = useRef(0);
+  const [redoTotal, setRedoTotal] = useState(0);
+  const [redoSolved, setRedoSolved] = useState(0);
+  const [redoDone, setRedoDone] = useState(false);
+
   // Which training mode this session is — used to tag analytics so the admin
   // Puzzle Analytics can break HealthyMix solves down by themes / rating / pieces.
   const trainingMode = hasTheme ? 'themes' : hasPieces ? 'pieces' : hasBand ? 'rating' : 'healthymix';
@@ -229,12 +238,64 @@ export default function HealthyMix() {
   }, []);
 
   // ── Load a puzzle ──
+  // Render a puzzle object onto the board (shared by normal + redo flows).
+  const renderPuzzle = useCallback((p) => {
+    const game = new Chess(p.fen || 'start');
+    chessRef.current = game;
+    let sol = [];
+    if (Array.isArray(p.solution)) sol = p.solution;
+    else if (typeof p.solution === 'string') sol = p.solution.split(/[,\s]+/).filter(Boolean);
+    solutionRef.current = sol;
+    moveIndexRef.current = 0;
+    usedSolutionRef.current = false;
+    submittedRef.current = false;
+    failedRef.current = false;
+    tooEasyRef.current = false;
+    puzzleStartTimeRef.current = Date.now();
+    setPuzzle(p);
+    setFen(game.fen());
+    setOrientation(game.turn() === 'w' ? 'white' : 'black');
+    setStatusSynced('solving');
+    setMessage('Your turn — find the best move.');
+    setLoading(false);
+  }, [setStatusSynced]);
+
   const loadPuzzle = useCallback(async (excludeId) => {
     setLoading(true);
     setStatusSynced('loading');
     setMessage('Loading…');
     setRatingDelta(null);
     setLastMove(null);
+
+    // ── Redo mode: serve the exact failed puzzles, in order, from the queue. ──
+    if (isRedo) {
+      try {
+        if (!redoQueueRef.current) {
+          let ids = [];
+          try { ids = JSON.parse(sessionStorage.getItem('redoPuzzleIds') || '[]'); } catch { ids = []; }
+          if (!ids.length) { setMessage('No puzzles to redo.'); setLoading(false); return; }
+          const res = await api.post('/api/public/healthymix/by-ids', { ids });
+          redoQueueRef.current = res.data.puzzles || [];
+          redoIdxRef.current = 0;
+          setRedoTotal(redoQueueRef.current.length);
+          setRedoSolved(0);
+        }
+        const queue = redoQueueRef.current;
+        if (redoIdxRef.current >= queue.length) {
+          setRedoDone(true);
+          setStatusSynced('loading');
+          setMessage('');
+          setLoading(false);
+          return;
+        }
+        renderPuzzle(queue[redoIdxRef.current]);
+      } catch {
+        setMessage('Could not load redo puzzles.');
+        setLoading(false);
+      }
+      return;
+    }
+
     try {
       const params = {};
       if (excludeId) params.exclude = excludeId;
@@ -303,7 +364,7 @@ export default function HealthyMix() {
         : 'No puzzles available. Try again later.');
       setLoading(false);
     }
-  }, [setStatusSynced, hasBand, bandMin, bandMax, hasTheme, theme, themeLabel, hasPieces, piecesParam, trainingMode, user]);
+  }, [setStatusSynced, hasBand, bandMin, bandMax, hasTheme, theme, themeLabel, hasPieces, piecesParam, trainingMode, user, isRedo, renderPuzzle]);
 
   useEffect(() => { loadPuzzle(); }, [loadPuzzle]);
 
@@ -329,7 +390,14 @@ export default function HealthyMix() {
         // Tells the backend which surface served this puzzle. Only 'themes'
         // changes scoring (reduced solve reward); the rest score like classic
         // Healthy Mix.
-        mode: trainingMode
+        mode: trainingMode,
+        // What the user actually chose, so the Puzzle Dashboard labels "Recent
+        // puzzles" by their selection (theme / rating band / piece count /
+        // Healthy Mix) rather than the puzzle's incidental Lichess tags.
+        selectedTheme: hasTheme ? theme : undefined,
+        selectedPieces: hasPieces ? piecesParam : undefined,
+        selectedBandMin: hasBand ? bandMin : undefined,
+        selectedBandMax: hasBand ? bandMax : undefined
       });
       setRating(res.data.newRating);
       setRatingDelta(res.data.pointsChange);
@@ -342,7 +410,7 @@ export default function HealthyMix() {
       // If this is a coach assignment, count this attempt toward it.
       reportAssignmentAttempt(solved);
     } catch (_) { /* ignore network errors for UX */ }
-  }, [puzzle, reportAssignmentAttempt, trainingMode, hasTheme, theme, hasPieces, piecesParam, user]);
+  }, [puzzle, reportAssignmentAttempt, trainingMode, hasTheme, theme, hasPieces, piecesParam, hasBand, bandMin, bandMax, user]);
 
   // ── Play the opponent's reply move from the solution ──
   const playBotMove = useCallback((idx) => {
@@ -499,7 +567,18 @@ export default function HealthyMix() {
     step();
   }, [submitResult, setStatusSynced]);
 
-  const next = () => loadPuzzle(puzzle?._id || puzzle?.id);
+  const next = () => {
+    if (isRedo) {
+      // Count a solved redo (only if solved without revealing the solution).
+      if (status === 'solved' && !usedSolutionRef.current) {
+        setRedoSolved(n => n + 1);
+      }
+      redoIdxRef.current += 1;
+      loadPuzzle();
+      return;
+    }
+    loadPuzzle(puzzle?._id || puzzle?.id);
+  };
 
   // Retry the SAME puzzle from the start (no rating change either way — it was
   // already scored on the first wrong move). Lets the user re-attempt the line.
@@ -717,6 +796,33 @@ export default function HealthyMix() {
                 </div>
               </div>
             )}
+
+            {/* Redo complete overlay — shown after replaying all failed puzzles. */}
+            {redoDone && (() => {
+              const pct = redoTotal ? Math.round((redoSolved / redoTotal) * 100) : 0;
+              const good = pct >= 70;
+              return (
+                <div className="hm-exhausted-overlay">
+                  <div className="hm-exhausted-card">
+                    <div className="hm-exhausted-icon">{good ? '🎉' : '📈'}</div>
+                    <h3 className="hm-exhausted-title">
+                      Redo complete — {redoSolved}/{redoTotal} solved ({pct}%)
+                    </h3>
+                    <p className="hm-exhausted-text">
+                      {good
+                        ? 'Great improvement! You handled most of your earlier mistakes.'
+                        : 'Some of these still need work — keep practicing these themes.'}
+                    </p>
+                    <button
+                      className="hm-btn hm-btn-primary"
+                      onClick={() => navigate('/puzzle-dashboard')}
+                    >
+                      Back to Puzzle Dashboard →
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
           {/* Puzzle meta — below the board */}

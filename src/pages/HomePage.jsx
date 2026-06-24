@@ -60,6 +60,62 @@ const CONTEST_CONFIG = {
   '3d_arena_tournament': { icon: '🎮', name: '3D Arena Tournament',   desc: 'Live chess in 3D — feel real!', color: '#a855f7', link: 'http://localhost:5174' },
 };
 
+// Arena Tournament formats — each shown as its own row under the tournament card.
+// activityType (DB) → display config. Order defines render order.
+const TOURNAMENT_FORMATS = [
+  { type: 'arena_tournament',      icon: '🏆', name: 'Standard',    desc: 'Classic competitive tournament', color: '#ec4899' },
+  { type: 'team_tournament',       icon: '🥇', name: 'Team Battle', desc: 'Teams clash for the crown',      color: '#f59e0b' },
+  { type: 'chess960',              icon: '🔀', name: 'Chess960',    desc: 'Randomized starting position',   color: '#06b6d4' },
+  { type: 'bullet_blitz_marathon', icon: '⚡', name: 'Marathon',    desc: 'Endurance bullet & blitz',       color: '#a855f7' },
+];
+
+const CONTEST_WANTED = ['arena_race', 'team_race', 'monthly_focus', 'arena_tournament', '3d_arena_tournament'];
+
+// Compute the Live Contests rows from raw /api/schedule data. Pass null/[] for
+// the empty (loading/failed) state. Pure + synchronous so it can seed initial
+// state from a localStorage cache for instant first paint.
+function buildContestRows(data) {
+  if (!Array.isArray(data) || data.length === 0) {
+    return CONTEST_WANTED.map(type => ({ type, item: null, occ: null, items: null, cfg: CONTEST_CONFIG[type] }));
+  }
+  const rows = [];
+  for (const type of CONTEST_WANTED) {
+    const candidates = data.filter(i => i.activityType === type);
+    if (type === 'arena_tournament') {
+      // ONE row: soonest upcoming (or live) tournament across ALL formats.
+      let best = null; // { fmt, occ }
+      for (const fmt of TOURNAMENT_FORMATS) {
+        for (const item of data.filter(i => i.activityType === fmt.type)) {
+          const occ = getNextOccurrence(item);
+          if (!occ) continue;
+          if (!best) { best = { fmt, occ }; continue; }
+          if (occ.isLive && !best.occ.isLive) { best = { fmt, occ }; continue; }
+          if (occ.isLive === best.occ.isLive && occ.target < best.occ.target) best = { fmt, occ };
+        }
+      }
+      rows.push({ type, items: null, item: null, occ: best?.occ || null, cfg: best?.fmt || CONTEST_CONFIG[type] });
+    } else {
+      let best = null, bestTarget = Infinity;
+      for (const item of candidates) {
+        const occ = getNextOccurrence(item);
+        if (occ && occ.target < bestTarget) { bestTarget = occ.target; best = { item, occ }; }
+      }
+      rows.push({ type, items: null, item: best?.item || null, occ: best?.occ || null, cfg: CONTEST_CONFIG[type] });
+    }
+  }
+  return rows;
+}
+
+// Synchronously read the cached raw schedule (for instant first paint).
+function readCachedContestRows() {
+  try {
+    const raw = localStorage.getItem('homepageScheduleCache');
+    return raw ? buildContestRows(JSON.parse(raw)) : buildContestRows(null);
+  } catch {
+    return buildContestRows(null);
+  }
+}
+
 const FEATURES = [
   {
     icon: "🧠",
@@ -177,9 +233,16 @@ function LiveTimer({ target, color, label, inline }) {
   );
 }
 
-function ContestRow({ icon, title, desc, time, isLive }) {
+function ContestRow({ icon, title, desc, time, isLive, onClick, className = '' }) {
+  const clickable = typeof onClick === 'function';
   return (
-    <div className={`hp-contest-row${isLive ? ' hp-contest-row-live' : ''}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={!clickable}
+      className={`hp-contest-row hp-contest-row-btn${isLive ? ' hp-contest-row-live' : ''}${className ? ' ' + className : ''}`}
+      style={clickable ? undefined : { cursor: 'default' }}
+    >
       <div className="hp-contest-icon-wrap">{icon}</div>
       <div className="hp-contest-body">
         <div className="hp-contest-name-row">
@@ -189,7 +252,10 @@ function ContestRow({ icon, title, desc, time, isLive }) {
         <div className="hp-contest-desc">{desc}</div>
       </div>
       {time}
-    </div>
+      {clickable && (
+        <span className="hp-contest-join">{isLive ? 'Join Now' : 'Join'} →</span>
+      )}
+    </button>
   );
 }
 
@@ -226,7 +292,9 @@ export default function HomePage() {
   const navigate    = useNavigate();
 
   const [topPlayers,        setTopPlayers]        = useState([]);
-  const [contests,          setContests]          = useState([]);
+  // Seed from the cached schedule so Live Contests paints instantly, then the
+  // background fetch refreshes it. Falls back to empty rows on first ever visit.
+  const [contests,          setContests]          = useState(readCachedContestRows);
 
   const [activePlayers,     setActivePlayers]     = useState(getActivePlayers);
   const [arenaTarget]                             = useState(getArenaTarget);
@@ -254,35 +322,13 @@ export default function HomePage() {
   };
 
   const fetchSchedule = async () => {
-    const WANTED   = ['arena_race', 'team_race', 'monthly_focus', 'arena_tournament', '3d_arena_tournament'];
-    const makeEmpty = () => WANTED.map(type => ({ type, item: null, occ: null, items: null, cfg: CONTEST_CONFIG[type] }));
     try {
       const { data } = await api.get('/api/schedule');
-      const rows = [];
-      for (const type of WANTED) {
-        const candidates = data.filter(i => i.activityType === type);
-        if (type === 'arena_tournament') {
-          const allItems = [];
-          for (const item of candidates) {
-            const occ = getNextOccurrence(item);
-            if (occ) allItems.push({ item, occ });
-          }
-          allItems.sort((a, b) => a.occ.target - b.occ.target);
-          // Show only ONE card: live tournament if any, else the single next upcoming
-          const liveEntry = allItems.find(e => e.occ.isLive);
-          const best = liveEntry ? [liveEntry] : allItems.slice(0, 1);
-          rows.push({ type, items: best, item: best[0]?.item || null, occ: best[0]?.occ || null, cfg: CONTEST_CONFIG[type] });
-        } else {
-          let best = null, bestTarget = Infinity;
-          for (const item of candidates) {
-            const occ = getNextOccurrence(item);
-            if (occ && occ.target < bestTarget) { bestTarget = occ.target; best = { item, occ }; }
-          }
-          rows.push({ type, items: null, item: best?.item || null, occ: best?.occ || null, cfg: CONTEST_CONFIG[type] });
-        }
-      }
-      setContests(rows);
-    } catch { setContests(makeEmpty()); }
+      try { localStorage.setItem('homepageScheduleCache', JSON.stringify(data)); } catch {}
+      setContests(buildContestRows(data));
+    } catch {
+      setContests(buildContestRows(null));
+    }
   };
 
   const fetchFocusChampion = async () => {
@@ -301,6 +347,13 @@ export default function HomePage() {
       const adminFocus = all.find(f => f.createdBy?.role === 'admin' || !f.createdBy);
       if (adminFocus) setAdminFocusId(adminFocus._id);
     } catch {}
+  };
+
+  const CONTEST_ROUTES = {
+    arena_race:       '/arena',
+    team_race:        '/team-race',
+    monthly_focus:    '/monthly-focus',
+    arena_tournament: '/arenatournament',
   };
 
   const open3DArena = () => {
@@ -386,56 +439,30 @@ export default function HomePage() {
                 <span className="hp-section-label-bar" />
                 🔥 Live Contests
               </div>
-              {contests.map(({ item, occ, cfg, type, items }, i) => (
+              {contests.map(({ occ, cfg, type }, i) => (
                 <React.Fragment key={type}>
                   {i > 0 && <div className="hp-contest-divider" />}
-                  {type === 'arena_tournament' && items && items.length > 0 ? (
-                    items.map((entry, j) => (
-                      <React.Fragment key={j}>
-                        {j > 0 && <div className="hp-contest-divider" style={{ opacity: 0.4 }} />}
-                        <ContestRow
-                          icon={cfg.icon}
-                          title={cfg.name}
-                          desc={cfg.desc}
-                          isLive={entry.occ.isLive || false}
-                          time={<LiveTimer target={entry.occ.target} color={cfg.color} label={entry.occ.isLive ? 'Ends in' : 'Starts in'} />}
-                        />
-                      </React.Fragment>
-                    ))
-                  ) : (
-                    <ContestRow
-                      icon={cfg.icon}
-                      title={cfg.name}
-                      desc={cfg.desc}
-                      isLive={occ?.isLive || false}
-                      time={
-                        occ
-                          ? <LiveTimer target={occ.target} color={cfg.color} label={occ.isLive ? 'Ends in' : 'Starts in'} />
-                          : <span className="hp-contest-ended">No schedule</span>
-                      }
-                    />
-                  )}
+                  <ContestRow
+                    className={type === 'arena_tournament' ? 'hp-contest-row-lg' : ''}
+                    icon={cfg.icon}
+                    title={cfg.name}
+                    desc={cfg.desc}
+                    isLive={occ?.isLive || false}
+                    time={
+                      occ
+                        ? <LiveTimer target={occ.target} color={cfg.color} label={occ.isLive ? 'Ends in' : 'Starts in'} />
+                        : <span className="hp-contest-ended">No schedule</span>
+                    }
+                    onClick={
+                      !occ
+                        ? undefined
+                        : type === '3d_arena_tournament'
+                          ? open3DArena
+                          : CONTEST_ROUTES[type] ? () => navigate(CONTEST_ROUTES[type]) : undefined
+                    }
+                  />
                 </React.Fragment>
               ))}
-              <div className="hp-contest-divider" />
-              <div
-                className="hp-contest-row hp-contest-row-3d"
-                style={{ cursor: 'pointer' }}
-                onClick={open3DArena}
-              >
-                <div className="hp-contest-icon-wrap hp-3d-icon">🎮</div>
-                <div className="hp-contest-body">
-                  <div className="hp-contest-name-row">
-                    <span className="hp-contest-title hp-3d-title">3D Arena Tournament</span>
-                    <span className="hp-3d-badge">3D</span>
-                  </div>
-                  <div className="hp-contest-desc hp-3d-desc">Next-Generation Gaming</div>
-                  <div className="hp-3d-timer-slot">
-                    <span className="hp-3d-timer-label">Starts in</span>
-                    <span className="hp-3d-timer-val">—</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>

@@ -83,17 +83,83 @@ export default function ArenaTournament() {
       }}>
         {/* Header Section */}
         <div style={{
+          position: 'relative',
           background: 'rgba(23, 23, 23, 0.7)',
           borderRadius: '20px',
           padding: '40px',
           boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
           marginBottom: '30px',
-          textAlign: 'center',
+          textAlign: 'left',
           border: '1px solid rgba(255, 255, 255, 0.05)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
           animation: 'slideInUp 0.6s ease-out'
         }}>
+          {/* ─── Arena Status (compact icon badges) — top right ─── */}
+          <div style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+
+          {/* Crown Status */}
+          {(() => {
+            const crownMap = {
+              gold:     { emoji: '👑', label: 'Gold Crown',     sub: 'Opponents earn +4 pts for beating you', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)',  border: 'rgba(245,158,11,0.4)' },
+              platinum: { emoji: '👑', label: 'Platinum Crown', sub: 'Opponents earn +4 pts for beating you', color: '#e2e8f0', bg: 'rgba(226,232,240,0.1)',  border: 'rgba(226,232,240,0.3)' },
+              gem:      { emoji: '💎', label: 'Gem Crown',      sub: 'Opponents earn +4 pts for beating you', color: '#60a5fa', bg: 'rgba(96,165,250,0.12)',  border: 'rgba(96,165,250,0.4)' },
+            };
+            const c = user?.arenaCrownTier && crownMap[user.arenaCrownTier];
+            const badgeBase = {
+              width: '44px', height: '44px', borderRadius: '50%', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', fontSize: '22px',
+              flexShrink: 0, cursor: 'default',
+              backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+            };
+            return c ? (
+              <span title={`${c.label} — ${c.sub}`} style={{ ...badgeBase, background: c.bg, border: `1px solid ${c.border}`, filter: `drop-shadow(0 0 8px ${c.color})` }}>{c.emoji}</span>
+            ) : (
+              <span title="No Crown Yet — Win a tournament to earn one" style={{ ...badgeBase, background: 'rgba(23,23,23,0.7)', border: '1px solid rgba(255,255,255,0.08)', opacity: 0.45 }}>👑</span>
+            );
+          })()}
+
+          {/* Carry Bonus Status */}
+          {(() => {
+            const pts = user?.arenaCarryPoints || 0;
+            const expiry = user?.arenaCarryPointsExpiry ? new Date(user.arenaCarryPointsExpiry) : null;
+            const expired = expiry && expiry < new Date();
+            const progress = user?.arenaCarryQualifyingCount || 0;
+            const badgeBase = {
+              position: 'relative',
+              width: '44px', height: '44px', borderRadius: '50%', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', fontSize: '22px',
+              flexShrink: 0, cursor: 'default',
+              backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+            };
+            if (pts > 0 && !expired) {
+              const daysLeft = expiry ? Math.ceil((expiry - new Date()) / (1000 * 60 * 60 * 24)) : null;
+              const tip = `+${pts} Carry Bonus Ready — ${daysLeft !== null ? `Expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}` : 'Use in next tournament'}`;
+              return (
+                <span title={tip} style={{ ...badgeBase, background: 'rgba(124,58,237,0.14)', border: '1px solid rgba(124,58,237,0.4)', filter: 'drop-shadow(0 0 8px #8b5cf6)' }}>🎁</span>
+              );
+            }
+            const tipNo = progress > 0
+              ? `No Carry Bonus (${progress}/3) — ${3 - progress} more qualifying tournament${3 - progress !== 1 ? 's' : ''} needed (play ≥3 games each)`
+              : 'No Carry Bonus — Play ≥3 games in 3 separate tournaments to earn +2 pts';
+            return (
+              <span title={tipNo} style={{ ...badgeBase, background: 'rgba(23,23,23,0.7)', border: '1px solid rgba(255,255,255,0.08)', opacity: progress > 0 ? 0.7 : 0.45 }}>
+                🎁
+                {progress > 0 && (
+                  <span style={{ position: 'absolute', bottom: '-4px', right: '-4px', background: '#7c3aed', color: '#fff', borderRadius: '999px', padding: '0 5px', fontSize: '10px', fontWeight: '800', lineHeight: '15px', border: '1px solid rgba(0,0,0,0.4)' }}>{progress}/3</span>
+                )}
+              </span>
+            );
+          })()}
+          </div>
+
           <h1 style={{
             fontSize: '36px',
             fontWeight: '800',
@@ -122,7 +188,7 @@ export default function ArenaTournament() {
                 navigate('/arenatournament/create');
               }}
               style={{
-                padding: '20px',
+                padding: '12px 20px',
                 background: 'rgba(6, 182, 212, 0.15)',
                 color: '#06b6d4',
                 border: '1px solid rgba(6, 182, 212, 0.3)',
@@ -153,7 +219,7 @@ export default function ArenaTournament() {
                 navigate('/arenatournament/join');
               }}
               style={{
-                padding: '20px',
+                padding: '12px 20px',
                 background: 'rgba(16, 185, 129, 0.15)',
                 color: '#10b981',
                 border: '1px solid rgba(16, 185, 129, 0.3)',
@@ -179,83 +245,6 @@ export default function ArenaTournament() {
               🔗 Join Tournament
             </button>
           </div>
-        </div>
-
-        {/* ─── Arena Status ─── */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '20px',
-          marginBottom: '30px'
-        }}>
-
-          {/* Crown Status */}
-          {(() => {
-            const crownMap = {
-              gold:     { emoji: '👑', label: 'Gold Crown',     sub: 'Opponents earn +4 pts for beating you', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',   border: 'rgba(245,158,11,0.3)' },
-              platinum: { emoji: '👑', label: 'Platinum Crown', sub: 'Opponents earn +4 pts for beating you', color: '#e2e8f0', bg: 'rgba(226,232,240,0.07)', border: 'rgba(226,232,240,0.2)' },
-              gem:      { emoji: '💎', label: 'Gem Crown',      sub: 'Opponents earn +4 pts for beating you', color: '#60a5fa', bg: 'rgba(96,165,250,0.1)',   border: 'rgba(96,165,250,0.3)' },
-            };
-            const c = user?.arenaCrownTier && crownMap[user.arenaCrownTier];
-            return c ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: c.bg, border: `1px solid ${c.border}`, borderRadius: '16px', padding: '20px 24px', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-                <span style={{ fontSize: '36px', filter: `drop-shadow(0 0 10px ${c.color})`, flexShrink: 0 }}>{c.emoji}</span>
-                <div>
-                  <div style={{ color: c.color, fontWeight: '800', fontSize: '16px' }}>{c.label}</div>
-                  <div style={{ color: '#9ca3af', fontSize: '12px', marginTop: '4px' }}>{c.sub}</div>
-                </div>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(23,23,23,0.7)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px 24px', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-                <span style={{ fontSize: '36px', opacity: 0.3, flexShrink: 0 }}>👑</span>
-                <div>
-                  <div style={{ color: '#6b7280', fontWeight: '800', fontSize: '16px' }}>No Crown Yet</div>
-                  <div style={{ color: '#4b5563', fontSize: '12px', marginTop: '4px' }}>Win a tournament to earn one</div>
-                </div>
-              </div>
-            );
-          })()}
-
-          {/* Carry Bonus Status */}
-          {(() => {
-            const pts = user?.arenaCarryPoints || 0;
-            const expiry = user?.arenaCarryPointsExpiry ? new Date(user.arenaCarryPointsExpiry) : null;
-            const expired = expiry && expiry < new Date();
-            const progress = user?.arenaCarryQualifyingCount || 0;
-            if (pts > 0 && !expired) {
-              const daysLeft = expiry ? Math.ceil((expiry - new Date()) / (1000 * 60 * 60 * 24)) : null;
-              return (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.3)', borderRadius: '16px', padding: '20px 24px', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-                  <span style={{ fontSize: '36px', filter: 'drop-shadow(0 0 10px #8b5cf6)', flexShrink: 0 }}>🎁</span>
-                  <div>
-                    <div style={{ color: '#a78bfa', fontWeight: '800', fontSize: '16px' }}>+{pts} Carry Bonus Ready</div>
-                    <div style={{ color: '#9ca3af', fontSize: '12px', marginTop: '4px' }}>
-                      {daysLeft !== null ? `Expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}` : 'Use in next tournament'}
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-            return (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(23,23,23,0.7)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px 24px', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 8px 24px rgba(0,0,0,0.4)' }}>
-                <span style={{ fontSize: '36px', opacity: 0.3, flexShrink: 0 }}>🎁</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ color: '#6b7280', fontWeight: '800', fontSize: '16px' }}>No Carry Bonus</div>
-                    {progress > 0 && (
-                      <span style={{ background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.4)', color: '#a78bfa', borderRadius: '6px', padding: '2px 8px', fontSize: '12px', fontWeight: '700' }}>{progress}/3</span>
-                    )}
-                  </div>
-                  <div style={{ color: '#4b5563', fontSize: '12px', marginTop: '4px' }}>
-                    {progress > 0
-                      ? `${3 - progress} more qualifying tournament${3 - progress !== 1 ? 's' : ''} needed (play \u22653 games each)`
-                      : 'Play \u22653 games in 3 separate tournaments to earn +2 pts'}
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-
         </div>
 
         {/* Tournaments List Section */}
@@ -434,7 +423,7 @@ export default function ArenaTournament() {
                       <div style={{ fontSize: '16px', fontWeight: '600', color: '#06b6d4' }}>
                         {tournament.tournamentType === 'bullet_blitz_marathon'
                           ? <span style={{ color: '#f59e0b' }}>⚡ 2+1 → 3+2</span>
-                          : `${tournament.timeControl.minutes}:${tournament.timeControl.seconds.toString().padStart(2, '0')}`}
+                          : `${tournament.timeControl.minutes}+${tournament.timeControl.increment || 0}`}
                       </div>
                     </div>
 

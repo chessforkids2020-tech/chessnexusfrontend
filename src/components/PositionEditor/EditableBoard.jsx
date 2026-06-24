@@ -36,11 +36,16 @@ export default function EditableBoard({ chess, selectedPiece, onFenChange, orien
       // Eraser
       chess.remove(square);
     } else {
-      // Place piece
-      const color = selectedPiece === selectedPiece.toUpperCase() ? 'w' : 'b';
-      const type = selectedPiece.toLowerCase();
-      chess.remove(square);
-      chess.put({ type, color }, square);
+      // Toggle place/remove: clicking a square that ALREADY holds the exact
+      // selected piece removes it (easy erase); otherwise place the piece.
+      if (getPiece(square) === selectedPiece) {
+        chess.remove(square);
+      } else {
+        const color = selectedPiece === selectedPiece.toUpperCase() ? 'w' : 'b';
+        const type = selectedPiece.toLowerCase();
+        chess.remove(square);
+        chess.put({ type, color }, square);
+      }
     }
     onFenChange(chess.fen());
   }

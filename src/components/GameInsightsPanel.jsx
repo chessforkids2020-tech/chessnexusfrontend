@@ -10,9 +10,9 @@ const THEME_LABEL = {
   mate: '🏁 Checkmate', fork: '⑂ Fork', pin: '📌 Pin', skewer: '🍢 Skewer',
   hanging_piece: '🪝 Hanging Piece', queen_win: '👑 Win the Queen',
   discovered_attack: '💥 Discovered Attack', sacrifice: '🎯 Sacrifice',
-  long_combination: '🧩 Combination', tactic: '⚡ Tactic',
+  long_combination: '🧩 Combination', tactic: '♟️ Healthy Mix',
 };
-const themeLabel = (t) => THEME_LABEL[t] || '⚡ Tactic';
+const themeLabel = (t) => THEME_LABEL[t] || '♟️ Healthy Mix';
 
 /**
  * NEXUS GUIDE — a personal-coach persona on the dashboard. Speaks to the player
@@ -86,8 +86,12 @@ export default function GameInsightsPanel() {
   };
 
   const trainWeakness = (themeKey) => {
-    const key = themeKey || guide?.trainThemeKey;
-    if (key) navigate(`/training/healthy-mix?theme=${encodeURIComponent(key)}`);
+    // Only accept a real string key; ignore event objects from direct onClick.
+    const key = (typeof themeKey === 'string' && themeKey) ? themeKey : guide?.trainThemeKey;
+    if (!key || typeof key !== 'string') return;
+    // Generic tactics → plain Healthy Mix (no theme filter).
+    if (key === 'healthymix') navigate('/training/healthy-mix');
+    else navigate(`/training/healthy-mix?theme=${encodeURIComponent(key)}`);
   };
 
   const openPuzzle = (p) => {
@@ -214,7 +218,7 @@ export default function GameInsightsPanel() {
               You've lost to {guide.weaknessNoun} <strong>{guide.weaknessCount} times</strong> — immediate practice needed.
             </div>
           </div>
-          <button className="gip-critical-btn" onClick={trainWeakness}>Train now →</button>
+          <button className="gip-critical-btn" onClick={() => trainWeakness()}>Train now →</button>
         </div>
       )}
 

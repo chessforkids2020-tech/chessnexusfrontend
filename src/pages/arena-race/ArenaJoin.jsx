@@ -676,6 +676,10 @@ export default function ArenaJoin() {
                     ? new Date(startMs).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     : null;
 
+                  // Display name without the trailing date (e.g. "– 23 Jun 2026").
+                  const rawName = race.name || `${race.topic} Race`;
+                  const displayName = rawName.replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim();
+
                   const fmtCountdown = (ms) => {
                     if (ms <= 0) return 'Starting now';
                     const h = Math.floor(ms / 3600000);
@@ -706,7 +710,7 @@ export default function ArenaJoin() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <h3 style={{ color: '#fff', margin: '0 0 4px 0', fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>
-                            {race.name || `${race.topic} Race`}
+                            {displayName}
                           </h3>
                           <div style={{ color: '#06b6d4', fontWeight: 700, fontFamily: 'monospace', fontSize: 12, letterSpacing: 1 }}>ROOM: {race.roomId}</div>
                         </div>
@@ -728,20 +732,14 @@ export default function ArenaJoin() {
                         )}
                       </div>
 
-                      {/* Start time + countdown */}
+                      {/* Countdown only (no date / start time) */}
                       {fmtStartTime && (
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', borderRadius: 10, padding: '10px 14px' }}>
-                          <div>
-                            <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 }}>Start Time (IST)</div>
-                            <div style={{ fontSize: 20, fontWeight: 800, color: isLive ? '#22c55e' : '#06b6d4' }}>{fmtStartTime}</div>
+                          <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                            {isLive ? 'In progress' : 'Starts in'}
                           </div>
-                          <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 2 }}>
-                              {isLive ? 'In progress' : 'Starts in'}
-                            </div>
-                            <div style={{ fontSize: 18, fontWeight: 800, color: isLive ? '#22c55e' : isSoon ? '#fbbf24' : '#9ca3af' }}>
-                              {isLive ? '🚀 Now' : fmtCountdown(diffMs)}
-                            </div>
+                          <div style={{ fontSize: 20, fontWeight: 800, color: isLive ? '#22c55e' : isSoon ? '#fbbf24' : '#06b6d4' }}>
+                            {isLive ? '🚀 Now' : fmtCountdown(diffMs)}
                           </div>
                         </div>
                       )}
@@ -929,7 +927,7 @@ export default function ArenaJoin() {
                   padding: '16px 18px',
                 }}>
                   <div style={{ color: '#fff', fontWeight: 700, fontSize: 15, marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {race.name || `${race.topic} Race`}
+                    {(race.name || `${race.topic} Race`).replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim()}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: 8 }}>
                     <div style={{ color: '#9ca3af', fontSize: 13 }}>📚 <span style={{ color: '#e2e8f0' }}>{race.topic}</span></div>

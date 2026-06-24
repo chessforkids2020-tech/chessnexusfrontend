@@ -48,7 +48,7 @@ export default function PositionEditor({ initialFen = START_FEN }) {
 
   // ── Save modal state ──────────────────────────────────────────────
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const [saveTab, setSaveTab] = useState('private'); // 'private' | 'public'
+  const [saveTab, setSaveTab] = useState('private-study'); // 'private-study' | 'public'
   const [modalTitle, setModalTitle] = useState('');
   const [modalDesc, setModalDesc] = useState('');
   const [modalSolution, setModalSolution] = useState('');
@@ -121,7 +121,7 @@ export default function PositionEditor({ initialFen = START_FEN }) {
     setModalTitle(titleInput.trim());
     setModalDesc('');
     setModalSolution('');
-    setSaveTab('private');
+    setSaveTab('private-study');
     setStudyMode('pick');
     setSelectedCategory('');
     setSelectedStudyId('');
@@ -173,27 +173,6 @@ export default function PositionEditor({ initialFen = START_FEN }) {
     }, 500);
   }
 
-  // Save as private puzzle
-  async function handlePrivateSave() {
-    setModalSaving(true);
-    setModalError('');
-    try {
-      const res = await api.post('/api/user-puzzles', {
-        fen: chess.fen(),
-        title: modalTitle,
-        description: modalDesc,
-        isPublic: false,
-      });
-      setModalSuccess(`✅ Saved privately! Share code: ${res.data.shareCode}`);
-      setSaveMsg(`✅ Saved! Share code: ${res.data.shareCode}`);
-      setTitleInput('');
-      setTimeout(() => { setShowSaveModal(false); navigate('/my-puzzles'); }, 1200);
-    } catch {
-      setModalError('❌ Failed to save. Are you logged in?');
-    } finally {
-      setModalSaving(false);
-    }
-  }
 
   // Save to public OR private study
   async function handlePublicSave() {
@@ -441,7 +420,7 @@ export default function PositionEditor({ initialFen = START_FEN }) {
 
               {/* Tab chooser */}
               <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
-                {[['private', '🔒 Private Puzzle'], ['private-study', '🔒 Private Study'], ['public', '🌐 Public Study']].map(([tab, label]) => (
+                {[['private-study', '🔒 Private Study'], ['public', '🌐 Public Study']].map(([tab, label]) => (
                   <button
                     key={tab}
                     onClick={() => setSaveTab(tab)}
@@ -450,12 +429,6 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                 ))}
               </div>
 
-              {/* Private tab content */}
-              {saveTab === 'private' && (
-                <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 18, padding: '10px 14px', background: 'rgba(99,102,241,0.08)', borderRadius: 10, border: '1px solid rgba(99,102,241,0.2)' }}>
-                  Saved as a standalone private puzzle to <strong style={{ color: '#a5b4fc' }}>My Positions</strong>. Best for a single position you want to share via link.
-                </div>
-              )}
               {saveTab === 'private-study' && (
                 <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 14, padding: '10px 14px', background: 'rgba(99,102,241,0.08)', borderRadius: 10, border: '1px solid rgba(99,102,241,0.2)' }}>
                   Saved into your <strong style={{ color: '#a5b4fc' }}>Private Study</strong> — organised by chapters. View and play through positions at <strong style={{ color: '#a5b4fc' }}>My Studies</strong>. Only you can see it.
@@ -583,10 +556,10 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                     style={{ flex: 1, padding: '11px 0', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontSize: 14 }}
                   >Cancel</button>
                   <button
-                    onClick={saveTab === 'private' ? handlePrivateSave : handlePublicSave}
+                    onClick={handlePublicSave}
                     disabled={modalSaving}
                     style={{ flex: 2, padding: '11px 0', borderRadius: 10, border: 'none', background: saveTab === 'public' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #6366f1, #4f46e5)', color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 700, opacity: modalSaving ? 0.7 : 1 }}
-                  >{modalSaving ? '⏳ Saving...' : saveTab === 'public' ? '🌐 Save to Public Study' : saveTab === 'private-study' ? '🔒 Save to Private Study' : '🔒 Save as Private Puzzle'}</button>
+                  >{modalSaving ? '⏳ Saving...' : saveTab === 'public' ? '🌐 Save to Public Study' : '🔒 Save to Private Study'}</button>
                 </div>
               )}
               {modalSuccess && (

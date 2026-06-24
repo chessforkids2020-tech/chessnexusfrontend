@@ -284,7 +284,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
+  margin-bottom: 8px;
+}
+
+/* Make the puzzle section label a bit larger than the shared default */
+.hp-potd-header .hp-section-label {
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+/* Puzzle status line ("Your turn…", "Puzzle solved! 🎉") — smaller */
+.homepage-puzzle-container .puzzle-header {
+  margin: 0 0 4px;
+}
+.homepage-puzzle-container .puzzle-status {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--t2);
+  text-align: center;
 }
 
 .hp-potd-board {
@@ -396,8 +414,91 @@
   cursor: default;
 }
 
+/* When a contest row is rendered as a real <button>, neutralize the global
+   button {} styles (white bg, padding, blue focus) so it matches the row. */
+button.hp-contest-row.hp-contest-row-btn {
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  background-color: transparent;
+  background-image: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  margin: 0;
+  box-shadow: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+button.hp-contest-row.hp-contest-row-btn:disabled {
+  cursor: default;
+  opacity: 1;
+}
+button.hp-contest-row.hp-contest-row-btn:focus,
+button.hp-contest-row.hp-contest-row-btn:focus-visible {
+  outline: none;
+  border-color: transparent;
+}
+button.hp-contest-row.hp-contest-row-btn:not(:disabled):hover {
+  background: rgba(6,182,212,0.06);
+  border-color: rgba(6,182,212,0.14);
+  transform: translateX(4px);
+}
+
 .hp-contest-row:not(:last-child) {
   margin-bottom: 6px;
+}
+
+/* Join CTA pill on each contest row */
+.hp-contest-join {
+  flex-shrink: 0;
+  margin-left: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #04110d;
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  box-shadow: 0 2px 10px rgba(6,182,212,0.25);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+}
+.hp-contest-row-btn:not(:disabled):hover .hp-contest-join {
+  transform: translateX(2px);
+  box-shadow: 0 4px 16px rgba(6,182,212,0.4);
+}
+/* Live contests get a brighter, attention-grabbing pill */
+.hp-contest-row-live .hp-contest-join {
+  background: linear-gradient(135deg, #ef4444, #f59e0b);
+  box-shadow: 0 2px 10px rgba(239,68,68,0.3);
+  animation: hp-join-pulse 1.6s ease-in-out infinite;
+}
+@keyframes hp-join-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.05); }
+}
+/* Slightly bigger pill on the enlarged Arena Tournament row */
+.hp-contest-row-lg .hp-contest-join {
+  padding: 8px 18px;
+  font-size: 0.85rem;
+}
+
+/* Larger Arena Tournament row in Live Contests */
+.hp-contest-row.hp-contest-row-lg {
+  padding: 28px 14px;
+  gap: 16px;
+}
+.hp-contest-row.hp-contest-row-lg .hp-contest-icon-wrap {
+  width: 58px;
+  height: 58px;
+  font-size: 30px;
+}
+.hp-contest-row.hp-contest-row-lg .hp-contest-title {
+  font-size: 1.1rem;
+}
+.hp-contest-row.hp-contest-row-lg .hp-contest-desc {
+  font-size: 0.88rem;
 }
 
 .hp-contest-divider {
@@ -1964,3 +2065,101 @@
   .hp-greeting { font-size: 13px; }
   .hp-contest-title { font-size: 11px; }
 }
+
+/* =====================================================
+   HOMEPAGE PUZZLE — WIN POPUP (rendered over the board)
+   ===================================================== */
+.hp-puzzle-win-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(5, 7, 14, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-radius: 8px;
+  animation: hp-puzzle-win-fade 0.25s ease-out;
+}
+
+@keyframes hp-puzzle-win-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.hp-puzzle-win-card {
+  width: min(86%, 320px);
+  text-align: center;
+  padding: 22px 20px 20px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, rgba(20, 22, 34, 0.96), rgba(12, 14, 22, 0.96));
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6),
+              0 0 0 1px rgba(16, 185, 129, 0.08),
+              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: hp-puzzle-win-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes hp-puzzle-win-pop {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.hp-puzzle-win-icon {
+  font-size: 44px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.hp-puzzle-win-title {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.hp-puzzle-win-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #d1d5db;
+}
+
+.hp-puzzle-win-sub {
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+.hp-puzzle-win-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.hp-puzzle-win-btn {
+  padding: 9px 18px;
+  border-radius: 9px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform 0.12s ease, opacity 0.2s ease, background 0.2s ease;
+}
+.hp-puzzle-win-btn:active { transform: scale(0.96); }
+
+.hp-puzzle-win-btn.primary {
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  color: #04110d;
+}
+.hp-puzzle-win-btn.primary:hover { opacity: 0.9; }
+
+.hp-puzzle-win-btn.ghost {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e5e7eb;
+}
+.hp-puzzle-win-btn.ghost:hover { background: rgba(255, 255, 255, 0.12); }

@@ -98,6 +98,10 @@ import TestChapterSelection from './pages/study/TestChapterSelection';
 import TestChapterSelectionDetail from './pages/study/TestChapterSelectionDetail';
 import StudyResult from './pages/study/StudyResult';
 import AdminStudyManagement from './pages/study/AdminStudyManagement';
+import AdminBookManagement from './pages/study/AdminBookManagement';
+import BooksList from './pages/study/BooksList';
+import BookContents from './pages/study/BookContents';
+import BookReader from './pages/study/BookReader';
 // New Test Puzzle System
 import AdminTestManagement from './pages/test/AdminTestManagement';
 import UserTestStudySelection from './pages/test/UserTestStudySelection';
@@ -125,6 +129,7 @@ import Puzzles from './pages/Puzzles';
 import PuzzlesHub from './pages/PuzzlesHub';
 import Training from './pages/Training';
 import HealthyMix from './pages/HealthyMix';
+import PuzzleDashboard from './pages/PuzzleDashboard';
 import ThemesPicker from './pages/ThemesPicker';
 import PiecesPicker from './pages/PiecesPicker';
 import SignupRequestForm from './pages/SignupRequestForm';
@@ -159,7 +164,6 @@ import CoachingRoomCreate from './pages/study-sparring/CoachingRoomCreate';
 import CoachingRoomStudent from './pages/study-sparring/CoachingRoomStudent';
 import StudySparringJoin from './pages/study-sparring/StudySparringJoin';
 import PositionCreatorPage from './pages/PositionCreatorPage';
-import MyPuzzles from './pages/MyPuzzles';
 import MyStudiesPage from './pages/MyStudiesPage';
 import PublicStudiesPage from './pages/PublicStudiesPage';
 import UserStudyDetailPage from './pages/UserStudyDetailPage';
@@ -298,6 +302,12 @@ export default function App() {
         <Route path="/player/:displayName" element={
           <UserLayout>
             <UserDashboard />
+          </UserLayout>
+        } />
+        {/* Public player Puzzle Dashboard — spectators can view another user's */}
+        <Route path="/player/:displayName/puzzle-dashboard" element={
+          <UserLayout>
+            <PuzzleDashboard />
           </UserLayout>
         } />
         {/* Public player games — no login required */}
@@ -581,6 +591,16 @@ export default function App() {
             <div style={styles.content}>
               <ProtectedRoute requiredRole="admin">
                 <AdminStudyManagement />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
+        <Route path="/admin/books" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminBookManagement />
               </ProtectedRoute>
             </div>
             <Footer />
@@ -1042,6 +1062,13 @@ export default function App() {
             </ProtectedRoute>
           </UserLayout>
         } />
+        <Route path="/puzzle-dashboard" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <PuzzleDashboard />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
         <Route path="/puzzles/themes" element={
           <UserLayout>
             <ProtectedRoute>
@@ -1254,6 +1281,27 @@ export default function App() {
             </ProtectedRoute>
           </UserLayout>
         } />
+        <Route path="/study/books" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <BooksList />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/study/books/:id" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <BookContents />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/study/books/:id/node/:nodeId" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <BookReader />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
         <Route path="/study/chapter/:studyId/:chapterId" element={
           <ProtectedRoute>
             <StudyPuzzleView />
@@ -1374,13 +1422,8 @@ export default function App() {
             <PositionCreatorPage />
           </ProtectedRoute>
         } />
-        <Route path="/my-puzzles" element={
-          <UserLayout>
-            <ProtectedRoute>
-              <MyPuzzles />
-            </ProtectedRoute>
-          </UserLayout>
-        } />
+        {/* /my-puzzles removed — saved positions live under My Studies now. */}
+        <Route path="/my-puzzles" element={<Navigate to="/my-studies" replace />} />
 
         {/* ===== MY STUDIES (PRIVATE + PUBLIC) ===== */}
         <Route path="/my-studies" element={

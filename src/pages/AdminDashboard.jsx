@@ -363,6 +363,8 @@ function AdminDashboard() {
   const [pendingSignupCount, setPendingSignupCount] = useState(0);
   const [pendingPaymentCount, setPendingPaymentCount] = useState(0);
   const [coachAnalytics, setCoachAnalytics] = useState(null);
+  const [coachList, setCoachList] = useState(null);
+  const [coachListLoading, setCoachListLoading] = useState(false);
   // Arena Tournaments admin state
   const [arenaTournaments, setArenaTournaments] = useState([]);
   const [loadingArenaTournaments, setLoadingArenaTournaments] = useState(false);
@@ -618,6 +620,28 @@ function AdminDashboard() {
       }
     } finally {
       setLoading(false);
+    }
+  }
+
+  // Load the detailed coach list (lazy — when admin opens the coach section).
+  async function loadCoaches() {
+    setCoachListLoading(true);
+    try {
+      const res = await api.get('/api/admin/coaches');
+      setCoachList(res.data?.coaches || []);
+    } catch {
+      setCoachList([]);
+    } finally {
+      setCoachListLoading(false);
+    }
+  }
+
+  async function verifyCoach(id, verified) {
+    try {
+      await api.post(`/api/admin/coaches/${id}/verify`, { verified });
+      setCoachList(list => (list || []).map(c => c.id === id ? { ...c, verified } : c));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to update coach');
     }
   }
 
@@ -1080,6 +1104,7 @@ function AdminDashboard() {
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/arena')}>🏁 Race Arena</button>
           <button style={styles.secondaryBtn} onClick={openArenaCreateModal}>🏆 New Arena Tournament</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/studies')}>📚 Study Management</button>
+          <button style={styles.secondaryBtn} onClick={() => nav('/admin/books')}>📖 Book Management</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/monthly-focus')}>🎯 Monthly Focus</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/team-race')}>👥 Team Race</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/schedule')}>📅 Activity Schedule</button>
@@ -1705,6 +1730,85 @@ function AdminDashboard() {
         {!coachAnalytics && (
           <p style={{ color: '#94a3b8', fontSize: 13 }}>Coach analytics unavailable</p>
         )}
+
+        {/* ── Coach list: who they are, status, payments, verify ── */}
+        <div style={{ marginTop: 24, background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: 18, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <h4 style={{ margin: 0, color: '#072b05', fontSize: 14 }}>Coaches &amp; Applicants</h4>
+            <button
+              onClick={loadCoaches}
+              disabled={coachListLoading}
+              style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid #10b981', background: '#10b981', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+            >
+              {coachListLoading ? 'Loading…' : (coachList ? '↻ Refresh' : 'Load coaches')}
+            </button>
+          </div>
+
+          {coachList === null ? (
+            <p style={{ color: '#94a3b8', fontSize: 13, margin: 0 }}>Click “Load coaches” to see the full list with verify controls.</p>
+          ) : coachList.length === 0 ? (
+            <p style={{ color: '#94a3b8', fontSize: 13, margin: 0 }}>No coaches or applicants yet.</p>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ textAlign: 'left', color: '#6b7280', borderBottom: '2px solid #e2e8f0' }}>
+                    <th style={{ padding: '8px 10px' }}>Coach</th>
+                    <th style={{ padding: '8px 10px' }}>Type</th>
+                    <th style={{ padding: '8px 10px' }}>Plan</th>
+                    <th style={{ padding: '8px 10px' }}>Students</th>
+                    <th style={{ padding: '8px 10px' }}>Applied</th>
+                    <th style={{ padding: '8px 10px' }}>Last paid</th>
+                    <th style={{ padding: '8px 10px' }}>Total paid</th>
+                    <th style={{ padding: '8px 10px' }}>Status</th>
+                    <th style={{ padding: '8px 10px' }}>Verify</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {coachList.map(c => {
+                    const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+                    return (
+                      <tr key={c.id} style={{ borderBottom: '1px solid #f1f5f9', color: '#1f2937' }}>
+                        <td style={{ padding: '8px 10px' }}>
+                          <div style={{ fontWeight: 700 }}>{c.coachName || c.displayName}</div>
+                          <div style={{ color: '#94a3b8', fontSize: 11 }}>@{c.username}{c.email ? ` · ${c.email}` : ''}</div>
+                        </td>
+                        <td style={{ padding: '8px 10px' }}>{c.coachType === 'academy' ? `🏫 ${c.academyName || 'Academy'}` : '👤 Individual'}</td>
+                        <td style={{ padding: '8px 10px' }}>{c.plan || '—'}{c.subStatus ? ` (${c.subStatus})` : ''}</td>
+                        <td style={{ padding: '8px 10px' }}>{c.studentsCount}</td>
+                        <td style={{ padding: '8px 10px' }}>{fmtDate(c.appliedAt)}</td>
+                        <td style={{ padding: '8px 10px' }}>{fmtDate(c.lastPaidAt)}</td>
+                        <td style={{ padding: '8px 10px' }}>{c.totalPaid ? `₹${Math.round(c.totalPaid / 100)}` : '—'}</td>
+                        <td style={{ padding: '8px 10px' }}>
+                          {c.verified
+                            ? <span style={{ color: '#10b981', fontWeight: 700 }}>✓ Verified</span>
+                            : c.isCoach
+                              ? <span style={{ color: '#f59e0b', fontWeight: 700 }}>Unverified</span>
+                              : <span style={{ color: '#94a3b8' }}>Applicant</span>}
+                        </td>
+                        <td style={{ padding: '8px 10px' }}>
+                          {c.isCoach && (
+                            <button
+                              onClick={() => verifyCoach(c.id, !c.verified)}
+                              style={{
+                                padding: '5px 12px', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                                border: `1px solid ${c.verified ? '#ef4444' : '#10b981'}`,
+                                background: c.verified ? '#fff' : '#10b981',
+                                color: c.verified ? '#ef4444' : '#fff',
+                              }}
+                            >
+                              {c.verified ? 'Unverify' : 'Verify'}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Rounds Backup Section */}

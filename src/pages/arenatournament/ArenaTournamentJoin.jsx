@@ -330,7 +330,7 @@ export default function ArenaTournamentJoin() {
                     Time Control
                   </div>
                   <div style={{ fontSize: '16px', fontWeight: '600', color: '#06b6d4' }}>
-                    {tournament.timeControl.minutes}:{tournament.timeControl.seconds.toString().padStart(2, '0')}
+                    {tournament.timeControl.minutes}+{tournament.timeControl.increment || 0}
                   </div>
                 </div>
 
