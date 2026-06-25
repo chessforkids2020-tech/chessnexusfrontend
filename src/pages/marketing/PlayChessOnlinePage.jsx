@@ -51,6 +51,14 @@ const FAQ = [
     q: "Do I need to download anything to play?",
     a: "No downloads needed — Chess Nexus runs right in your browser. Create a free account and start playing in seconds.",
   },
+  {
+    q: "Is Chess Nexus a free chess game online?",
+    a: "Yes. Chess Nexus is a free chess game online — you can play live games, take on the computer, and join tournaments in your browser with no ads and nothing to pay.",
+  },
+  {
+    q: "Can I play 2-player chess online?",
+    a: "Yes. To play 2-player chess with someone you know, start a friend game to create a private room and share the link — or play side by side on one device. Either way it's free and runs online in your browser.",
+  },
 ];
 
 export default function PlayChessOnlinePage() {
@@ -80,7 +88,7 @@ export default function PlayChessOnlinePage() {
         description:
           "Play chess online for free on Chess Nexus — live games against real people or against the Stockfish engine. Watch live games and review your own. No ads, no downloads.",
         keywords:
-          "play chess online, play chess vs computer, free online chess, play chess against stockfish, live chess games, online chess no ads",
+          "play chess online, chess game online, free chess games, play chess vs computer, free online chess, play chess against stockfish, live chess games, 2 player chess online, online chess no ads",
         canonical: CANONICAL,
       }}
       jsonLd={[webPageSchema, faqSchema]}
@@ -125,6 +133,9 @@ export default function PlayChessOnlinePage() {
           </Link>
           <Link to="/play" className="mkt-btn mkt-btn-ghost">
             Find an opponent
+          </Link>
+          <Link to="/play-chess-with-friends" className="mkt-btn mkt-btn-ghost">
+            Play with a friend
           </Link>
         </div>
       </section>

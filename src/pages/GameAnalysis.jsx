@@ -1744,6 +1744,7 @@ export default function GameAnalysis() {
               : 'Scout mode — analyzes the last 50 games of any player. No data is saved to your profile.'}
           </p>
         </div>
+        <CoffeeCta variant="pill" style={{ flexShrink: 0, alignSelf: 'flex-start' }} />
       </div>
 
       {/* ── Input Form ── */}

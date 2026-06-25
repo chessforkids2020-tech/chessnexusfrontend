@@ -50,12 +50,14 @@ function ClubChat({ chatId, currentUser }) {
   const [loadingHistory, setLoadingHistory] = useState(true);
   const bottomRef                 = useRef(null);
   const inputRef                  = useRef(null);
+  const didInitialScroll          = useRef(false);
 
   const myId = currentUser?._id?.toString() || currentUser?.id?.toString();
 
   // ── Load history ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (!chatId) return;
+    didInitialScroll.current = false;
     setLoadingHistory(true);
     api.get(`/api/chat/${chatId}/messages?limit=60`)
       .then(r => setMessages(r.data))
@@ -90,8 +92,17 @@ function ClubChat({ chatId, currentUser }) {
   }, [chatId]);
 
   // ── Auto-scroll ───────────────────────────────────────────────────────────
+  // First load (history): jump straight to the newest message — no visible
+  // top-to-bottom scroll through the whole backlog. New incoming messages
+  // animate smoothly.
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messages.length === 0) return;
+    if (!didInitialScroll.current) {
+      bottomRef.current?.scrollIntoView({ behavior: 'auto' });
+      didInitialScroll.current = true;
+    } else {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   const sendMessage = async (e) => {

@@ -6,14 +6,12 @@ import "../../components/marketing/marketing.css";
 const CANONICAL = "/privacy-policy";
 
 // ⚠️ REVIEW BEFORE PUBLISHING — placeholders to confirm with the operator:
-//   • CONTACT_EMAIL: the address you actually monitor for privacy requests.
 //   • LEGAL_ENTITY:  the registered name of the business/person operating the app.
 //   • EFFECTIVE_DATE: keep updated whenever this policy materially changes.
 // This document is a good-faith template, not legal advice. Have it reviewed by a
 // lawyer for GDPR/UK GDPR (EU/UK) and the DPDP Act 2023 (India) compliance.
 // Chess Nexus is a general-audience service and does not knowingly collect data
 // from children under 13 (or the minimum age in your jurisdiction).
-const CONTACT_EMAIL = "chessforkids2020@gmail.com";
 const LEGAL_ENTITY = "Chess Nexus";
 const EFFECTIVE_DATE = "June 12, 2026";
 
@@ -150,8 +148,7 @@ export default function PrivacyPolicyPage() {
             <p>
               If you are a parent or guardian and believe a child under the
               applicable minimum age has provided us with personal information,
-              please contact us at{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we will
+              please <Link to="/contact">contact us</Link> and we will
               delete it promptly.
             </p>
           </section>
@@ -377,8 +374,7 @@ export default function PrivacyPolicyPage() {
             <p>
               If you have questions, concerns or requests about your privacy —
               including to access, correct, export or delete your information —
-              please contact us at{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+              please reach us through our <Link to="/contact">Contact Us</Link> page.
             </p>
           </section>
 

@@ -34,6 +34,22 @@ export const FEATURES = [
       "Play live games against other members or challenge the Stockfish engine — all free, no ads.",
   },
   {
+    slug: "/play-chess-with-friends",
+    appPath: "/friend/new",
+    icon: "🤝",
+    title: "Play With Friends",
+    blurb:
+      "Create a private room, share a link and play 2-player chess with a friend in real time — free, no ads.",
+  },
+  {
+    slug: "/masters-chess-games",
+    appPath: "/master-games",
+    icon: "👑",
+    title: "Masters Games",
+    blurb:
+      "Play through famous grandmaster and World Champion games move by move, and guess the master's move — free.",
+  },
+  {
     slug: "/analyse-my-chess-game",
     appPath: "/game-analysis",
     icon: "🔬",

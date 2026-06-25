@@ -35,6 +35,18 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://chessnexus.in/play-chess-with-friends</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://chessnexus.in/masters-chess-games</loc>
+    <lastmod>2026-06-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://chessnexus.in/analyse-my-chess-game</loc>
     <lastmod>2026-06-10</lastmod>
     <changefreq>weekly</changefreq>

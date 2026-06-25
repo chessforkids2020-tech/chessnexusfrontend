@@ -168,6 +168,8 @@ export default function Footer() {
             <Link to="/privacy-policy">Privacy Policy</Link>
             <span className="footer-sep">|</span>
             <Link to="/terms">Terms</Link>
+            <span className="footer-sep">|</span>
+            <Link to="/refund-policy">Refund</Link>
           </nav>
           <p className="footer-text">
             © {new Date().getFullYear()} CHESS NEXUS

@@ -55,7 +55,10 @@ const BookContents = () => {
   return (
     <div style={styles.container}>
       <button style={styles.backButton} onClick={() => navigate('/study/books')}>← All books</button>
-      <h1 style={styles.title}>{data.title}</h1>
+      <h1 style={styles.title}>
+        {data.title}
+        {data.freeForAll && <span style={styles.freeBadge}>FREE</span>}
+      </h1>
       {data.author && <div style={styles.author}>by {data.author}</div>}
 
       <div style={styles.toc}>
@@ -78,7 +81,8 @@ const BookContents = () => {
 const styles = {
   container: { maxWidth: 820, margin: '0 auto', padding: 24 },
   backButton: { background: 'none', border: 'none', color: '#34d399', cursor: 'pointer', fontSize: 15, padding: 0, marginBottom: 8 },
-  title: { fontSize: 30, color: '#e5e7eb', margin: '4px 0' },
+  title: { fontSize: 30, color: '#e5e7eb', margin: '4px 0', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
+  freeBadge: { background: '#10b981', color: '#fff', fontSize: 13, fontWeight: 800, letterSpacing: 0.5, padding: '3px 10px', borderRadius: 6, verticalAlign: 'middle' },
   author: { color: '#9ca3af', fontSize: 16, marginBottom: 20, fontStyle: 'italic' },
   toc: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '20px 26px' },
   tocHeading: { color: '#34d399', fontSize: 16, textTransform: 'uppercase', letterSpacing: 1, marginTop: 0 },

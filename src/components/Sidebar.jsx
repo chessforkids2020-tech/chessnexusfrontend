@@ -709,7 +709,7 @@ export default function Sidebar({ user, onNavigate }) {
               {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Race Hub</span>}
             </div>
 
-            <div 
+            <div
               style={isActive('/study') ? styles.navItemActive : styles.navItem}
               onClick={() => {
                 if ((isMobile || isLandscape) && !isExpanded) {

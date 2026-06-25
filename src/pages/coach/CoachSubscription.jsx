@@ -22,8 +22,11 @@ export default function CoachSubscription() {
   const expired = new URLSearchParams(location.search).get('expired') === '1';
 
   const [plans, setPlans] = useState([]);
+  const [currencies, setCurrencies] = useState([]);   // [{ code, symbol, label }]
+  const [currency, setCurrency] = useState('INR');     // coach-selected checkout currency
+  const [durations, setDurations] = useState([1, 3, 6, 12]); // offered month options
+  const [months, setMonths] = useState(3);             // coach-selected duration (default 3)
   const [status, setStatus] = useState(null);
-  const cycle = 'monthly'; // single plan is monthly-only
   const [loading, setLoading] = useState(true);
   const [activating, setActivating] = useState(null); // plan id while activating
   const [history, setHistory] = useState([]);
@@ -41,6 +44,13 @@ export default function CoachSubscription() {
       const raw = p.data?.plans || {};
       const arr = Array.isArray(raw) ? raw : Object.values(raw);
       setPlans(arr);
+      const curs = p.data?.currencies || [];
+      setCurrencies(curs);
+      // Default the dropdown to the server's default (INR) the first time.
+      setCurrency(prev => (curs.some(c => c.code === prev) ? prev : (p.data?.defaultCurrency || 'INR')));
+      const durs = p.data?.durations || [1, 3, 6, 12];
+      setDurations(durs);
+      setMonths(prev => (durs.includes(prev) ? prev : (p.data?.defaultMonths || 3)));
       setStatus(st.data);
       setHistory(h.data?.payments || []);
     } catch (e) {
@@ -56,7 +66,7 @@ export default function CoachSubscription() {
     setErr(''); setMsg('');
     setActivating(planId);
     try {
-      const orderRes = await api.post('/api/coach-subscription/order', { plan: planId, billingCycle: cycle });
+      const orderRes = await api.post('/api/coach-subscription/order', { plan: planId, currency, months });
       const data = orderRes.data;
 
       // Dev fallback: backend returns { devMode: true } when keys aren't configured
@@ -76,7 +86,7 @@ export default function CoachSubscription() {
         currency: data.currency || 'INR',
         order_id: data.orderId,
         name: 'Chess Coach',
-        description: `${planId} plan · ${cycle}`,
+        description: `${planId} plan · ${months} month${months === 1 ? '' : 's'}`,
         prefill: {
           name: status?.coachProfile?.coachName || '',
           email: status?.email || ''
@@ -89,7 +99,6 @@ export default function CoachSubscription() {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               planId,
-              billingCycle: cycle
             });
             setMsg(`✅ Payment successful. Welcome to ${planId.toUpperCase()}!`);
             await loadAll();
@@ -121,6 +130,19 @@ export default function CoachSubscription() {
       setErr(e.response?.data?.message || 'Could not cancel.');
     }
   };
+
+  // Symbol for the selected currency (falls back to the code itself).
+  const curMeta = currencies.find(c => c.code === currency);
+  const curSymbol = curMeta?.symbol || currency + ' ';
+  const fmt = (minor) => (minor / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  // Monthly price (minor units) for a plan in the selected currency. Uses the
+  // per-currency table when present, else the INR base price.
+  const monthlyMinor = (p) => (
+    (p.monthlyPrices && p.monthlyPrices[currency] != null) ? p.monthlyPrices[currency] : p.monthlyPrice
+  );
+  // Total charge for the selected duration, formatted.
+  const totalFor = (p) => fmt(monthlyMinor(p) * months);
+  const perMonthFor = (p) => fmt(monthlyMinor(p));
 
   if (loading) return <div className="coach-loading">Loading plans…</div>;
 
@@ -227,19 +249,54 @@ export default function CoachSubscription() {
         </div>
       )}
 
+      {currencies.length > 1 && (
+        <div className="cs-currency-row">
+          <label htmlFor="cs-currency">Pay in</label>
+          <select
+            id="cs-currency"
+            className="cs-currency-select"
+            value={currency}
+            onChange={e => setCurrency(e.target.value)}
+          >
+            {currencies.map(c => (
+              <option key={c.code} value={c.code}>{c.code} — {c.label}</option>
+            ))}
+          </select>
+          <span className="cs-currency-hint">Choose the currency you'd like to be charged in.</span>
+        </div>
+      )}
+
+      <div className="cs-duration-row">
+        <label>Subscribe for</label>
+        <div className="cs-duration-pills">
+          {durations.map(m => (
+            <button
+              key={m}
+              type="button"
+              className={`cs-duration-pill ${months === m ? 'is-active' : ''}`}
+              onClick={() => setMonths(m)}
+            >
+              {m} month{m === 1 ? '' : 's'}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="cs-plans">
         {plans.filter(p => p.id !== 'trial').map(p => {
           const isCurrent = p.id === currentPlan;
-          const inr = (p.monthlyPrice / 100).toLocaleString('en-IN');
 
           return (
             <div key={p.id} className={`cs-plan ${isCurrent ? 'is-current' : ''}`}>
               <div className="cs-plan-name">{p.name}</div>
               <div className="cs-plan-price">
-                <span className="currency">₹</span>
-                <span className="amount">{inr}</span>
-                <span className="cycle">per month</span>
+                <span className="currency">{curSymbol}</span>
+                <span className="amount">{totalFor(p)}</span>
+                <span className="cycle">for {months} month{months === 1 ? '' : 's'}</span>
               </div>
+              {months > 1 && (
+                <div className="cs-plan-permonth">{curSymbol}{perMonthFor(p)} / month</div>
+              )}
               <div className="cs-plan-students">Up to {p.maxStudents.toLocaleString()} students</div>
               <ul className="cs-plan-features">
                 {(p.features || []).map(f => <li key={f}>✓ {f}</li>)}
@@ -263,14 +320,14 @@ export default function CoachSubscription() {
           <div className="coach-section-head"><h2>Payment history</h2></div>
           <div className="cs-history">
             <div className="cs-history-row cs-history-head">
-              <span>Date</span><span>Plan</span><span>Cycle</span><span>Amount</span><span>Status</span>
+              <span>Date</span><span>Plan</span><span>Duration</span><span>Amount</span><span>Status</span>
             </div>
             {history.map(h => (
               <div key={h._id} className="cs-history-row">
                 <span>{new Date(h.createdAt).toLocaleDateString()}</span>
                 <span>{h.planId}</span>
-                <span>{h.billingCycle}</span>
-                <span>{h.currency} {(h.amount / 100).toLocaleString('en-IN')}</span>
+                <span>{h.months ? `${h.months} mo` : h.billingCycle}</span>
+                <span>{h.currency} {(h.amount / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}</span>
                 <span className={`pill pill-${h.status === 'paid' ? 'completed' : h.status === 'failed' ? 'overdue' : 'pending'}`}>
                   {h.status}
                 </span>

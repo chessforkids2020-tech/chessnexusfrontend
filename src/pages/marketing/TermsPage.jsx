@@ -6,13 +6,11 @@ import "../../components/marketing/marketing.css";
 const CANONICAL = "/terms";
 
 // ⚠️ REVIEW BEFORE PUBLISHING — placeholders to confirm with the operator:
-//   • CONTACT_EMAIL: the address you actually monitor for support/legal notices.
 //   • LEGAL_ENTITY:  the registered name of the business/person operating the app.
 //   • GOVERNING_LAW: the country/state whose law and courts apply.
 //   • EFFECTIVE_DATE: keep updated whenever these terms materially change.
 // This document is a good-faith template, not legal advice. Have it reviewed by a
 // lawyer (especially the payments, refunds, liability and governing-law clauses).
-const CONTACT_EMAIL = "chessforkids2020@gmail.com";
 const LEGAL_ENTITY = "Chess Nexus";
 const GOVERNING_LAW = "India";
 const EFFECTIVE_DATE = "June 12, 2026";
@@ -188,9 +186,10 @@ export default function TermsPage() {
               <li>
                 Subscription payments are non-refundable except where required by
                 law or expressly stated by us. If you believe you were charged in
-                error, contact us at{" "}
-                <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we will
-                review it in good faith.
+                error, <Link to="/contact">contact us</Link> and we will
+                review it in good faith. See our{" "}
+                <Link to="/refund-policy">Refund &amp; Cancellation Policy</Link> for
+                full details.
               </li>
             </ul>
           </section>
@@ -300,8 +299,8 @@ export default function TermsPage() {
           <section>
             <h2>16. Contact us</h2>
             <p>
-              Questions about these Terms? Contact us at{" "}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+              Questions about these Terms? Reach us through our{" "}
+              <Link to="/contact">Contact Us</Link> page.
             </p>
           </section>
 

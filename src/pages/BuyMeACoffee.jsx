@@ -3,7 +3,7 @@
 // (Razorpay / UPI / Indian bank) and USD (PayPal / international cards via
 // Razorpay International). After payment the user confirms with us and a
 // 30-day ☕ supporter badge appears next to their displayName everywhere.
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
@@ -23,25 +23,42 @@ const C = {
   amberBorder: 'rgba(245,158,11,0.45)'
 };
 
+// Two choices combine to set the price and how long the badge lasts:
+//   1. A coffee (base price tier)         2. A duration (1 / 3 / 6 / 12 months)
+// Final price = coffee base price × months. The ☕ badge then lives for that many
+// months. A single payment — no auto-renewal.
 const COFFEE_TIERS_INR = [
-  { id: 'simple',   emoji: '☕', name: 'Simple Coffee',     amount: 100,  blurb: 'A warm thank-you. Fuels one bug fix.' },
-  { id: 'espresso', emoji: '🥃', name: 'American Espresso', amount: 250,  blurb: 'A jolt of focus. Pays for a new feature sprint.' },
-  { id: 'latte',    emoji: '🍵', name: 'Cafe Latte',        amount: 500,  blurb: 'Helps cover a day of server bills.' }
+  { id: 'simple',   emoji: '☕', name: 'Simple Coffee',     base: 100, blurb: 'A warm thank-you. Fuels one bug fix.' },
+  { id: 'espresso', emoji: '🥃', name: 'American Espresso', base: 250, blurb: 'A jolt of focus. Pays for a feature sprint.' },
+  { id: 'latte',    emoji: '🍵', name: 'Cafe Latte',        base: 500, blurb: 'Helps cover a day of server bills.' }
 ];
 
 const COFFEE_TIERS_USD = [
-  { id: 'simple',   emoji: '☕', name: 'Simple Coffee',     amount: 3,  blurb: 'A warm thank-you. Fuels one bug fix.' },
-  { id: 'espresso', emoji: '🥃', name: 'American Espresso', amount: 5,  blurb: 'A jolt of focus. Pays for a new feature sprint.' },
-  { id: 'latte',    emoji: '🍵', name: 'Cafe Latte',        amount: 10, blurb: 'Helps cover a day of server bills.' }
+  { id: 'simple',   emoji: '☕', name: 'Simple Coffee',     base: 3,  blurb: 'A warm thank-you. Fuels one bug fix.' },
+  { id: 'espresso', emoji: '🥃', name: 'American Espresso', base: 5,  blurb: 'A jolt of focus. Pays for a feature sprint.' },
+  { id: 'latte',    emoji: '🍵', name: 'Cafe Latte',        base: 10, blurb: 'Helps cover a day of server bills.' }
 ];
+
+// Duration options shown as tabs above the coffees. They multiply the price and
+// set the badge length.
+const DURATIONS = [
+  { months: 1,  label: '1 Month'   },
+  { months: 3,  label: '3 Months'  },
+  { months: 6,  label: '6 Months'  },
+  { months: 12, label: '12 Months' }
+];
+
+const DEFAULT_MONTHS = 3;          // 3 months selected by default
+const MIN_BASE = { INR: 100, USD: 3 }; // minimum per-coffee base for manual entry
 
 export default function BuyMeACoffee() {
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
   const refreshSupporters = useSupporterRefresh();
   const [currency, setCurrency] = useState('INR');
-  const [selectedTier, setSelectedTier] = useState(COFFEE_TIERS_INR[1]); // espresso default
-  const [customAmount, setCustomAmount] = useState('');
+  const [months, setMonths] = useState(DEFAULT_MONTHS); // duration tab; 3 by default
+  const [selectedCoffeeId, setSelectedCoffeeId] = useState('espresso'); // espresso default
+  const [customBase, setCustomBase] = useState(''); // manual per-coffee amount
   const [info, setInfo] = useState({ payment: {}, supporters: [] });
   const [myStatus, setMyStatus] = useState({ active: false, pendingCount: 0 });
   const [loading, setLoading] = useState(true);
@@ -50,8 +67,12 @@ export default function BuyMeACoffee() {
   const [providerRef, setProviderRef] = useState('');
   const [thankYou, setThankYou] = useState(false);
   const [step, setStep] = useState('pick'); // 'pick' | 'confirm'
+  // Once the user manually picks a currency, never let the async /info response
+  // override it.
+  const userToggledCurrency = useRef(false);
 
-  const tiers = currency === 'INR' ? COFFEE_TIERS_INR : COFFEE_TIERS_USD;
+  const coffees = currency === 'INR' ? COFFEE_TIERS_INR : COFFEE_TIERS_USD;
+  const minBase = MIN_BASE[currency];
 
   useEffect(() => {
     let mounted = true;
@@ -64,6 +85,12 @@ export default function BuyMeACoffee() {
         if (!mounted) return;
         setInfo(infoRes.data || { payment: {}, supporters: [] });
         setMyStatus(meRes.data || { active: false, pendingCount: 0 });
+        // Apply the server's suggested currency (from saved pref or geolocation),
+        // unless the user has already toggled it manually.
+        const suggested = infoRes.data?.suggestedCurrency;
+        if (!userToggledCurrency.current && ['INR', 'USD'].includes(suggested)) {
+          setCurrency(prev => (prev === suggested ? prev : suggested));
+        }
       } catch (err) {
         // non-fatal — page still renders, payment buttons just lack provider URLs
       } finally {
@@ -73,38 +100,34 @@ export default function BuyMeACoffee() {
     return () => { mounted = false; };
   }, [user]);
 
-  const effectiveAmount = useMemo(() => {
-    const custom = Number(customAmount);
-    if (Number.isFinite(custom) && custom > 0) return custom;
-    return selectedTier?.amount || 0;
-  }, [customAmount, selectedTier]);
+  // The active coffee — either a preset tier or the manual "Your Amount" card.
+  const isCustom = customBase !== '';
+  const customNum = Number(customBase);
+  const selectedCoffee = useMemo(
+    () => coffees.find(c => c.id === selectedCoffeeId) || coffees[1],
+    [coffees, selectedCoffeeId]
+  );
+  const baseAmount = isCustom
+    ? (Number.isFinite(customNum) ? customNum : 0)
+    : (selectedCoffee?.base || 0);
 
-  const effectiveTierId = useMemo(() => {
-    const custom = Number(customAmount);
-    if (Number.isFinite(custom) && custom > 0) return 'custom';
-    return selectedTier?.id || 'custom';
-  }, [customAmount, selectedTier]);
+  const effectiveMonths = months;
+  const effectiveAmount = baseAmount * months;            // coffee price × months
+  const effectiveTierId = isCustom ? 'custom' : (selectedCoffee?.id || 'espresso');
+  const customBelowMin = isCustom && Number.isFinite(customNum) && customNum < minBase;
+  const canContinue = baseAmount >= minBase;
 
   const switchCurrency = (c) => {
-    setCurrency(c);
-    const next = (c === 'INR' ? COFFEE_TIERS_INR : COFFEE_TIERS_USD)[1];
-    setSelectedTier(next);
-    setCustomAmount('');
+    userToggledCurrency.current = true;
+    setCurrency(c); // coffee/month selection preserved; prices recompute for the new currency
+    setCustomBase('');
   };
 
-  const handleTierClick = (tier) => {
-    if (!user) { navigate('/login'); return; }
-    setSelectedTier(tier);
-    setCustomAmount('');
-    setThankYou(false);
-    setStep('confirm');
-  };
+  const pickCoffee = (id) => { setSelectedCoffeeId(id); setCustomBase(''); };
 
-  const handleCustomContinue = () => {
+  const handleContinue = () => {
     if (!user) { navigate('/login'); return; }
-    const amt = Number(customAmount);
-    if (!Number.isFinite(amt) || amt <= 0) return;
-    setSelectedTier(null);
+    if (!canContinue) return;
     setThankYou(false);
     setStep('confirm');
   };
@@ -127,7 +150,8 @@ export default function BuyMeACoffee() {
       const orderRes = await api.post('/api/coffee/create-order', {
         amount: effectiveAmount,
         currency,
-        tier: effectiveTierId
+        tier: effectiveTierId,
+        months: effectiveMonths
       });
       const { orderId, keyId } = orderRes.data;
 
@@ -140,13 +164,12 @@ export default function BuyMeACoffee() {
       }
 
       // 3. Open Razorpay Checkout
-      const tierObj = customAmount ? null : selectedTier;
       const rzp = new window.Razorpay({
         key: keyId,
         amount: Math.round(effectiveAmount * 100),
         currency,
         name: 'ChessNexus',
-        description: `${tierObj?.name || 'Custom Coffee'} — Supporter Badge`,
+        description: `${isCustom ? 'Custom Coffee' : selectedCoffee?.name} — ${effectiveMonths} ${effectiveMonths === 1 ? 'month' : 'months'} supporter badge`,
         order_id: orderId,
         prefill: { name: user?.displayName || '' },
         theme: { color: '#f59e0b' },
@@ -160,6 +183,7 @@ export default function BuyMeACoffee() {
               amount: effectiveAmount,
               currency,
               tier: effectiveTierId,
+              months: effectiveMonths,
               provider: 'razorpay',
               providerRef: response.razorpay_payment_id,
               razorpayOrderId: response.razorpay_order_id,
@@ -192,9 +216,10 @@ export default function BuyMeACoffee() {
 
   // ─── CONFIRM STEP ────────────────────────────────────────────────────
   if (step === 'confirm') {
-    const tierObj = customAmount ? null : selectedTier;
+    const coffeeObj = isCustom ? null : selectedCoffee;
     const displayAmt = effectiveAmount;
     const symbol = currency === 'INR' ? '₹' : '$';
+    const monthsLabel = effectiveMonths === 1 ? '1 month' : `${effectiveMonths} months`;
     return (
       <div style={styles.page}>
         <div style={styles.bgGlow} />
@@ -213,12 +238,16 @@ export default function BuyMeACoffee() {
 
                 {/* Amount header */}
                 <div style={{ textAlign: 'center', padding: '28px 24px 20px', borderBottom: `1px solid ${C.panelBorder}` }}>
-                  <div style={{ fontSize: 54 }}>{tierObj?.emoji || '☕'}</div>
-                  <div style={{ color: C.textDim, fontSize: 13, marginTop: 6 }}>{tierObj?.name || 'Custom Coffee'}</div>
+                  <div style={{ fontSize: 54 }}>{coffeeObj?.emoji || '☕'}</div>
+                  <div style={{ color: C.textDim, fontSize: 13, marginTop: 6 }}>
+                    {coffeeObj?.name || 'Custom Coffee'} · {monthsLabel}
+                  </div>
                   <div style={{ fontSize: 46, fontWeight: 800, color: C.amber, margin: '6px 0 2px', fontFamily: 'Poppins, sans-serif', lineHeight: 1 }}>
                     {symbol}{displayAmt}
                   </div>
-                  <div style={{ color: C.textFaint, fontSize: 12, marginTop: 2 }}>{currency}</div>
+                  <div style={{ color: C.textFaint, fontSize: 12, marginTop: 2 }}>
+                    {symbol}{baseAmount} × {effectiveMonths} {effectiveMonths === 1 ? 'month' : 'months'} · {currency}
+                  </div>
                 </div>
 
                 {/* Badge preview */}
@@ -231,7 +260,7 @@ export default function BuyMeACoffee() {
                   </div>
                   <p style={{ color: C.textDim, fontSize: 13, lineHeight: 1.65, margin: 0 }}>
                     A <strong style={{ color: '#fde68a' }}>☕ supporter badge</strong> appears next to your display name for{' '}
-                    <strong style={{ color: C.text }}>30 days</strong> — visible on your dashboard, leaderboards, and everywhere on ChessNexus.
+                    <strong style={{ color: C.text }}>{monthsLabel}</strong> — visible on your dashboard, leaderboards, and everywhere on ChessNexus. One-time payment, no auto-renewal.
                   </p>
                 </div>
 
@@ -297,6 +326,33 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
           )}
         </div>
 
+        {/* Elite membership — our little gratitude to supporters */}
+        <div style={styles.eliteCard}>
+          <div style={styles.eliteHeader}>
+            <span style={styles.eliteBadge}>✨ ELITE MEMBERSHIP</span>
+            <span style={styles.eliteSubtle}>Our little gratitude towards our supporters 💛</span>
+          </div>
+          <p style={styles.eliteIntro}>
+            Support ChessNexus for <strong style={{ color: '#fde68a' }}>6 months or more</strong> and unlock{' '}
+            <strong style={{ color: C.text }}>Elite Membership</strong> — creator tools and perks reserved for the
+            people who keep ChessNexus alive.
+          </p>
+          <div style={styles.eliteGrid}>
+            <Eliter icon="🎯" text="Create your own Monthly Focus challenges" />
+            <Eliter icon="🏁" text="Host and run your own Team Races" />
+            <Eliter icon="🏟️" text="Launch 3D Arena Tournaments" />
+            <Eliter icon="🧑‍🏫" text="ChessNexus Coach free for 6 months" />
+          </div>
+
+          <div style={styles.eliteAllNote}>
+            <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>📚</span>
+            <span>
+              <strong style={{ color: C.text }}>Full access to every chess book in ChessNexus</strong> —
+              for <strong style={{ color: '#fde68a' }}>every supporter</strong>, any amount, any duration.
+            </span>
+          </div>
+        </div>
+
         {/* Currency switch */}
         <div style={styles.sectionTitleRow}>
           <h2 style={styles.sectionTitle}>Pick a coffee</h2>
@@ -316,34 +372,64 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
           </div>
         </div>
 
-        {/* Coffee tiers */}
+        {/* Duration selector — sets badge length and multiplies the price */}
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ color: C.textDim, fontSize: 13, fontWeight: 600, marginBottom: 8 }}>
+            How long should your ☕ badge last?
+          </div>
+          <div style={styles.durationTabs}>
+            {DURATIONS.map(d => {
+              const active = months === d.months;
+              return (
+                <button
+                  key={d.months}
+                  type="button"
+                  onClick={() => setMonths(d.months)}
+                  style={{
+                    ...styles.durationTab,
+                    ...(active ? styles.durationTabActive : null)
+                  }}
+                >
+                  {d.label}
+                </button>
+              );
+            })}
+          </div>
+          <div style={{ color: C.textFaint, fontSize: 12, marginTop: 8 }}>
+            One-time payment, no auto-renewal. Your coffee price × {effectiveMonths}{' '}
+            {effectiveMonths === 1 ? 'month' : 'months'}.
+          </div>
+        </div>
+
+        {/* Coffee tiers — price shown is base × selected months */}
         <div style={styles.tierGrid}>
-          {tiers.map(tier => {
-            const active = !customAmount && selectedTier?.id === tier.id;
+          {coffees.map(coffee => {
+            const active = !isCustom && selectedCoffeeId === coffee.id;
+            const price = coffee.base * months;
             return (
               <button
-                key={tier.id}
+                key={coffee.id}
                 type="button"
-                onClick={() => handleTierClick(tier)}
+                onClick={() => pickCoffee(coffee.id)}
                 style={{
                   ...styles.tierCard,
                   ...(active ? styles.tierCardActive : null)
                 }}
               >
-                <div style={{ fontSize: 36, marginBottom: 6 }}>{tier.emoji}</div>
-                <div style={styles.tierName}>{tier.name}</div>
+                <div style={{ fontSize: 36, marginBottom: 6 }}>{coffee.emoji}</div>
+                <div style={styles.tierName}>{coffee.name}</div>
                 <div style={styles.tierAmount}>
-                  {currency === 'INR' ? `₹${tier.amount}` : `$${tier.amount}`}
+                  {currency === 'INR' ? `₹${price}` : `$${price}`}
                 </div>
-                <div style={styles.tierBlurb}>{tier.blurb}</div>
+                <div style={styles.tierBlurb}>{coffee.blurb}</div>
               </button>
             );
           })}
 
-          {/* Custom amount card */}
+          {/* Manual amount card */}
           <div style={{
             ...styles.tierCard,
-            ...(customAmount ? styles.tierCardActive : null),
+            ...(isCustom ? styles.tierCardActive : null),
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
             cursor: 'default'
           }}>
@@ -353,29 +439,42 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
               <span style={styles.currencyPrefix}>{currency === 'INR' ? '₹' : '$'}</span>
               <input
                 type="number"
-                min="1"
-                placeholder="e.g. 1000"
-                value={customAmount}
-                onChange={(e) => { setCustomAmount(e.target.value); setSelectedTier(null); }}
+                min={minBase}
+                placeholder={`e.g. ${currency === 'INR' ? '300' : '8'}`}
+                value={customBase}
+                onChange={(e) => { setCustomBase(e.target.value); }}
                 style={styles.customInput}
               />
+              <span style={{ color: C.textFaint, fontSize: 12, marginLeft: 6 }}>/ mo</span>
             </div>
-            {customAmount && (
+            {isCustom && !customBelowMin && (
               <div style={{ color: C.amber, fontSize: 13, fontWeight: 700 }}>
-                {currency === 'INR' ? '₹' : '$'}{customAmount}
+                {currency === 'INR' ? '₹' : '$'}{baseAmount * months} total
               </div>
             )}
-            <div style={{ ...styles.tierBlurb, textAlign: 'center' }}>Pick any amount you like.</div>
-            {customAmount && Number(customAmount) > 0 && (
-              <button
-                type="button"
-                onClick={handleCustomContinue}
-                style={{ ...styles.primaryBtn, padding: '7px 16px', fontSize: 13, marginTop: 4, borderRadius: 10 }}
-              >
-                Continue →
-              </button>
+            {customBelowMin ? (
+              <div style={{ color: '#f87171', fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
+                Minimum is {currency === 'INR' ? '₹' : '$'}{minBase}/mo.
+              </div>
+            ) : (
+              <div style={{ ...styles.tierBlurb, textAlign: 'center' }}>
+                Any amount — min {currency === 'INR' ? '₹' : '$'}{minBase}/mo.
+              </div>
             )}
           </div>
+        </div>
+
+        {/* Continue */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 22 }}>
+          <button
+            type="button"
+            disabled={!canContinue}
+            onClick={handleContinue}
+            style={{ ...styles.primaryBtn, padding: '13px 32px', fontSize: 15, borderRadius: 14, opacity: canContinue ? 1 : 0.5, cursor: canContinue ? 'pointer' : 'not-allowed' }}
+          >
+            Continue · {currency === 'INR' ? '₹' : '$'}{effectiveAmount} for {effectiveMonths}{' '}
+            {effectiveMonths === 1 ? 'month' : 'months'} →
+          </button>
         </div>
 
         {/* Where the money goes */}
@@ -449,6 +548,15 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
 
 function labelFor(p) {
   return { razorpay: 'Razorpay', paypal: 'PayPal', upi: 'UPI', bank: 'bank transfer' }[p] || p;
+}
+
+function Eliter({ icon, text }) {
+  return (
+    <div style={styles.eliteItem}>
+      <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>{icon}</span>
+      <span style={{ color: C.text, fontSize: 13.5, lineHeight: 1.4, fontWeight: 500 }}>{text}</span>
+    </div>
+  );
 }
 
 function WhyCard({ icon, title, text, accent, border, step }) {
@@ -581,6 +689,71 @@ const styles = {
     fontSize: 13,
     fontWeight: 600
   },
+  eliteCard: {
+    marginTop: 22,
+    background: 'linear-gradient(135deg, rgba(245,158,11,0.10), rgba(139,92,246,0.08))',
+    border: '1px solid rgba(245,158,11,0.35)',
+    borderRadius: 20,
+    padding: '22px 24px',
+    backdropFilter: 'blur(14px)',
+    WebkitBackdropFilter: 'blur(14px)'
+  },
+  eliteHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    flexWrap: 'wrap',
+    marginBottom: 12
+  },
+  eliteBadge: {
+    display: 'inline-block',
+    padding: '5px 12px',
+    borderRadius: 999,
+    background: 'rgba(245,158,11,0.20)',
+    border: `1px solid ${C.amberBorder}`,
+    color: '#fde68a',
+    fontSize: 12,
+    fontWeight: 800,
+    letterSpacing: 0.8
+  },
+  eliteSubtle: {
+    color: C.textDim,
+    fontSize: 13,
+    fontWeight: 500
+  },
+  eliteIntro: {
+    margin: '0 0 16px',
+    color: C.textDim,
+    fontSize: 14.5,
+    lineHeight: 1.6
+  },
+  eliteGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: 10
+  },
+  eliteItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    background: 'rgba(255,255,255,0.04)',
+    border: `1px solid ${C.panelBorder}`,
+    borderRadius: 12,
+    padding: '11px 14px'
+  },
+  eliteAllNote: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    marginTop: 12,
+    background: 'rgba(16,185,129,0.10)',
+    border: '1px solid rgba(16,185,129,0.35)',
+    borderRadius: 12,
+    padding: '12px 14px',
+    color: C.textDim,
+    fontSize: 13.5,
+    lineHeight: 1.5
+  },
   whyGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -628,6 +801,29 @@ const styles = {
     background: 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(16,185,129,0.2))',
     color: C.text,
     boxShadow: '0 0 0 1px rgba(6,182,212,0.4)'
+  },
+  durationTabs: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 8
+  },
+  durationTab: {
+    flex: '1 1 auto',
+    minWidth: 90,
+    background: C.panel,
+    border: `1px solid ${C.panelBorder}`,
+    borderRadius: 12,
+    padding: '10px 14px',
+    color: C.textDim,
+    fontWeight: 600,
+    fontSize: 14,
+    cursor: 'pointer',
+    fontFamily: 'Poppins, sans-serif'
+  },
+  durationTabActive: {
+    background: 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.08))',
+    color: C.text,
+    boxShadow: `0 0 0 1px ${C.amberBorder}`
   },
   tierGrid: {
     display: 'grid',

@@ -5,6 +5,7 @@
   border-radius: 10px;
   margin-bottom: 16px;
   font-size: 14px;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
@@ -23,6 +24,7 @@
   border-radius: 14px;
   padding: 16px 22px;
   margin-bottom: 22px;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   flex-wrap: wrap;
 }
@@ -80,6 +82,62 @@
 }
 
 /* Plans grid */
+.cs-currency-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+.cs-currency-row label { font-weight: 600; color: #e2e8f0; }
+.cs-currency-select {
+  background: rgba(20,20,30,0.8);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.cs-currency-select:focus { outline: none; border-color: #06b6d4; }
+.cs-currency-hint { color: #94a3b8; font-size: 12.5px; }
+
+.cs-duration-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.cs-duration-row label { font-weight: 600; color: #e2e8f0; font-size: 14px; }
+.cs-duration-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.cs-duration-pill {
+  background: rgba(20,20,30,0.7);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #cbd5e1;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.cs-duration-pill:hover { border-color: rgba(6,182,212,0.6); color: #e2e8f0; }
+.cs-duration-pill.is-active {
+  background: rgba(6,182,212,0.18);
+  border-color: #06b6d4;
+  color: #67e8f9;
+  font-weight: 700;
+}
+
+.cs-plan-permonth {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: -6px;
+  margin-bottom: 12px;
+}
+
 .cs-plans {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -93,6 +151,7 @@
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 16px;
   padding: 24px 22px;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
@@ -199,6 +258,7 @@
   background: rgba(20,20,30,0.6);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 12px;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   overflow: hidden;
 }

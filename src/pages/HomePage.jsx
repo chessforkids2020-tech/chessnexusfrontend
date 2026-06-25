@@ -408,8 +408,7 @@ export default function HomePage() {
               </div>
             )}
           </div>
-          {/* CoffeeCta temporarily hidden — Razorpay verification in progress (re-enable ~June 2, 2026) */}
-          {/* <CoffeeCta variant="pill" style={{ padding: '6px 12px', fontSize: 12 }} /> */}
+          <CoffeeCta variant="pill" style={{ padding: '6px 12px', fontSize: 12 }} />
         </div>
 
         {/* ── TOP ROW: Puzzle + Right Column ── */}
@@ -639,7 +638,7 @@ export default function HomePage() {
             <p className="hp-cta-sub">Join Chess Nexus today and become part of a growing community of chess players and learners.</p>
           </div>
           <Link to={user ? "/puzzles" : "/login"} className="hp-cta-btn">
-            {user ? "Start Playing Now →" : "Login to Play →"}
+            {user ? "Start Solving Now →" : "Login to Play →"}
           </Link>
         </div>
 

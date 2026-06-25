@@ -156,6 +156,9 @@ export default function ChessPuzzlesPage() {
           <Link to="/monthly-focus" className="mkt-btn mkt-btn-ghost">
             Try the Monthly Focus
           </Link>
+          <Link to="/masters-chess-games" className="mkt-btn mkt-btn-ghost">
+            Study masters games
+          </Link>
         </div>
       </section>
 

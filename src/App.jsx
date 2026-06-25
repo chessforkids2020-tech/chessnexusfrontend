@@ -21,9 +21,12 @@ import FeaturesPage from "./pages/marketing/FeaturesPage";
 import MembersPage from "./pages/marketing/MembersPage";
 import PrivacyPolicyPage from "./pages/marketing/PrivacyPolicyPage";
 import TermsPage from "./pages/marketing/TermsPage";
+import RefundPolicyPage from "./pages/marketing/RefundPolicyPage";
 import ChessPuzzlesPage from "./pages/marketing/ChessPuzzlesPage";
 import ChessTacticsRacePage from "./pages/marketing/ChessTacticsRacePage";
 import PlayChessOnlinePage from "./pages/marketing/PlayChessOnlinePage";
+import PlayWithFriendsPage from "./pages/marketing/PlayWithFriendsPage";
+import MastersGamesPage from "./pages/marketing/MastersGamesPage";
 import AnalyseMyChessGamePage from "./pages/marketing/AnalyseMyChessGamePage";
 import ArenaTournamentPage from "./pages/marketing/ArenaTournamentPage";
 import ChessStudyPage from "./pages/marketing/ChessStudyPage";
@@ -51,6 +54,7 @@ import PuzzleBoard from "./pages/PuzzleBoard";
 import Scoreboard from "./pages/Scoreboard";
 import RoundScoreboard from "./pages/RoundScoreboard";
 import AdminDashboard from './pages/AdminDashboard';
+import AdminSupporters from './pages/AdminSupporters';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminContestPage from './pages/AdminContestPage';
 import AdminMetricsPage from './pages/AdminMetricsPage';
@@ -379,6 +383,11 @@ export default function App() {
             <TermsPage />
           </UserLayout>
         } />
+        <Route path="/refund-policy" element={
+          <UserLayout>
+            <RefundPolicyPage />
+          </UserLayout>
+        } />
         <Route path="/chess-puzzles" element={
           <UserLayout>
             <ChessPuzzlesPage />
@@ -392,6 +401,16 @@ export default function App() {
         <Route path="/play-chess-online" element={
           <UserLayout>
             <PlayChessOnlinePage />
+          </UserLayout>
+        } />
+        <Route path="/play-chess-with-friends" element={
+          <UserLayout>
+            <PlayWithFriendsPage />
+          </UserLayout>
+        } />
+        <Route path="/masters-chess-games" element={
+          <UserLayout>
+            <MastersGamesPage />
           </UserLayout>
         } />
         <Route path="/analyse-my-chess-game" element={
@@ -485,6 +504,16 @@ export default function App() {
             <div style={styles.content}>
               <ProtectedRoute requiredRole="admin">
                 <AdminReports />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
+        <Route path="/admin/supporters" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminSupporters />
               </ProtectedRoute>
             </div>
             <Footer />

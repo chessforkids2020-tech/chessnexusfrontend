@@ -6,6 +6,8 @@ Allow: /features
 Allow: /chess-puzzles
 Allow: /chess-tactics-race
 Allow: /play-chess-online
+Allow: /play-chess-with-friends
+Allow: /masters-chess-games
 Allow: /analyse-my-chess-game
 Allow: /3d-chess-arena-tournament
 Allow: /chess-study

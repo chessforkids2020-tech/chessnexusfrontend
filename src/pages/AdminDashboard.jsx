@@ -1109,6 +1109,7 @@ function AdminDashboard() {
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/team-race')}>👥 Team Race</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/schedule')}>📅 Activity Schedule</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/reports')}>🚩 Reports</button>
+          <button style={styles.secondaryBtn} onClick={() => nav('/admin/supporters')}>☕ Supporters</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/chat')}>💬 Chat</button>
           <button style={styles.primaryBtn} onClick={fetchAll}>Refresh</button>
         </div>

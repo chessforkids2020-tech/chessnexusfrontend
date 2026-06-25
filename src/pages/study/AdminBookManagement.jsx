@@ -45,7 +45,8 @@ const AdminBookManagement = () => {
   const [error, setError] = useState(null);
 
   // Book-level form
-  const [form, setForm] = useState({ title: '', author: '', description: '' });
+  const [form, setForm] = useState({ title: '', author: '', description: '', category: '' });
+  const [categories, setCategories] = useState([]);
   const [editingBookId, setEditingBookId] = useState(null);
   // Cover chosen in the create form (only used when creating a NEW book).
   const [newCoverFile, setNewCoverFile] = useState(null);
@@ -68,6 +69,9 @@ const AdminBookManagement = () => {
     finally { setLoading(false); }
   };
   useEffect(() => { fetchBooks(); }, []);
+  useEffect(() => {
+    api.get('/api/books/categories').then(res => setCategories(res.data)).catch(() => {});
+  }, []);
 
   const reloadOpenBook = async (id) => {
     const res = await api.get(`/api/books/admin/${id}`);
@@ -94,7 +98,7 @@ const AdminBookManagement = () => {
           await uploadCoverFor(res.data._id, newCoverFile, false);
         }
       }
-      setForm({ title: '', author: '', description: '' });
+      setForm({ title: '', author: '', description: '', category: '' });
       setEditingBookId(null);
       clearNewCover();
       fetchBooks();
@@ -108,6 +112,11 @@ const AdminBookManagement = () => {
 
   const updateFreeChapters = async (book, n) => {
     await api.put(`/api/books/admin/${book._id}`, { freeChapters: n });
+    fetchBooks();
+  };
+
+  const toggleFreeForAll = async (book) => {
+    await api.put(`/api/books/admin/${book._id}`, { freeForAll: !book.freeForAll });
     fetchBooks();
   };
 
@@ -348,6 +357,13 @@ const AdminBookManagement = () => {
           <input style={styles.input} value={form.author} onChange={e => setForm({ ...form, author: e.target.value })} /></div>
         <div style={styles.formGroup}><label style={styles.label}>Description</label>
           <textarea style={{ ...styles.input, minHeight: 60 }} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} /></div>
+        <div style={styles.formGroup}><label style={styles.label}>Category</label>
+          <select style={styles.input} value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
+            <option value="">— Uncategorised —</option>
+            {categories.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>Groups this book on the Books page. "Free for everyone" books also appear under a Free Books section automatically.</div>
+        </div>
         {!editingBookId && (
           <div style={styles.formGroup}>
             <label style={styles.label}>Cover image (optional)</label>
@@ -368,7 +384,7 @@ const AdminBookManagement = () => {
         )}
         <div style={styles.buttonGroup}>
           <button type="submit" style={styles.primaryButton}>{editingBookId ? 'Save' : 'Create book'}</button>
-          {editingBookId && <button type="button" style={styles.cancelButton} onClick={() => { setEditingBookId(null); setForm({ title: '', author: '', description: '' }); }}>Cancel</button>}
+          {editingBookId && <button type="button" style={styles.cancelButton} onClick={() => { setEditingBookId(null); setForm({ title: '', author: '', description: '', category: '' }); }}>Cancel</button>}
         </div>
       </form>
 
@@ -383,22 +399,30 @@ const AdminBookManagement = () => {
                 <h3 style={styles.cardTitle}>{book.title}</h3>
                 <div style={{ color: '#666', fontSize: 14 }}>by {book.author || '—'}</div>
                 <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>{book.topLevelCount} chapters</div>
-                <div style={{ marginTop: 6 }}>
+                <div style={{ marginTop: 6, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{ ...styles.badge, background: book.published ? '#e6f4ea' : '#fff4e5', color: book.published ? '#1a7f37' : '#b26a00' }}>
                     {book.published ? 'Published' : 'Draft'}
                   </span>
+                  {book.category && <span style={{ ...styles.badge, background: '#eef2ff', color: '#4338ca' }}>{book.category}</span>}
                 </div>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, fontSize: 13, color: '#555' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10, fontSize: 13, color: '#555', cursor: 'pointer' }}>
+              <input type="checkbox" checked={!!book.freeForAll}
+                onChange={() => toggleFreeForAll(book)} />
+              Free for everyone (whole book)
+            </label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, fontSize: 13, color: book.freeForAll ? '#aaa' : '#555' }}>
               Free chapters:
               <input type="number" min={0} value={book.freeChapters}
-                style={{ width: 56, padding: 4, border: '1px solid #ccc', borderRadius: 4 }}
+                disabled={book.freeForAll}
+                title={book.freeForAll ? 'Whole book is free — this is ignored' : ''}
+                style={{ width: 56, padding: 4, border: '1px solid #ccc', borderRadius: 4, background: book.freeForAll ? '#f0f0f0' : '#fff' }}
                 onChange={(e) => updateFreeChapters(book, Math.max(0, +e.target.value))} />
             </div>
             <div style={{ ...styles.buttonGroup, marginTop: 10 }}>
               <button style={{ ...styles.button, ...styles.manageButton }} onClick={() => { reloadOpenBook(book._id); setSelectedNode(null); }}>Edit contents</button>
-              <button style={{ ...styles.button, ...styles.editButton }} onClick={() => { setEditingBookId(book._id); setForm({ title: book.title, author: book.author, description: book.description || '' }); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Meta</button>
+              <button style={{ ...styles.button, ...styles.editButton }} onClick={() => { setEditingBookId(book._id); setForm({ title: book.title, author: book.author, description: book.description || '', category: book.category || '' }); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Meta</button>
               <button style={{ ...styles.button, background: '#0d6efd', color: '#fff' }} onClick={() => { coverRef.current.dataset.bookId = book._id; coverRef.current.click(); }}>Cover</button>
               <button style={{ ...styles.button, background: book.published ? '#fd7e14' : '#198754', color: '#fff' }} onClick={() => togglePublish(book)}>{book.published ? 'Unpublish' : 'Publish'}</button>
               <button style={{ ...styles.button, ...styles.deleteButton }} onClick={() => deleteBook(book._id)}>Delete</button>
