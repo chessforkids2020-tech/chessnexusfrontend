@@ -3,23 +3,16 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PlayerName from '../components/PlayerName';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import api, { resolveApiAssetUrl } from '../api';
+import api from '../api';
 import Chat from './Chat';
 import BestRacers from '../components/BestRacers';
 import AboutFeatureCTA from '../components/marketing/AboutFeatureCTA';
+import UserAvatar from '../components/UserAvatar';
 import './SocialHubPage.css';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 function initials(name) {
   return (name || '?')[0].toUpperCase();
-}
-
-function avatarView(user) {
-  const image = user?.profilePhotoUrl || user?.activeAvatarUrl;
-  if (image) return { kind: 'image', src: resolveApiAssetUrl(image) };
-  if (user?.activeLego) return { kind: 'emoji', value: '🧱' };
-  if (user?.active3dModel) return { kind: 'emoji', value: '🌌' };
-  return { kind: 'initial', value: initials(user?.displayName || user?.username) };
 }
 
 const TIER_META = {
@@ -154,11 +147,7 @@ function FeedTab({ user }) {
             {onlineFriends.map(f => (
               <div key={f._id} className="sh-online-friend">
                 <div className="sh-avatar sh-avatar-sm" style={{ position: 'relative' }}>
-                  {avatarView(f).kind === 'image' ? (
-                    <img src={avatarView(f).src} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    avatarView(f).value
-                  )}
+                  <UserAvatar user={f} size={34} />
                   <span className="sh-online-dot" />
                 </div>
                 <span className="sh-online-name"><PlayerName displayName={f.displayName} username={f.username} /></span>
@@ -302,31 +291,12 @@ function FeedTab({ user }) {
 // ════════════════════════════════════════════════════════════════════════════
 //  PLAYERS TAB
 // ════════════════════════════════════════════════════════════════════════════
-function hueFromString(s) {
-  let h = 0;
-  for (let i = 0; i < (s || '').length; i++) h = (h * 31 + s.charCodeAt(i)) % 360;
-  return h;
-}
-
-// Avatar — uses a real photo/emoji when available, otherwise a coloured initial
+// Avatar — renders the shared UserAvatar (photo / basic / 3D / initials),
+// keeping the online ring overlay. 3D models render as a still frame here.
 function PlayerAvatar({ user, name, size = 40, online }) {
-  const av = user ? avatarView(user) : null;
-  const label = (name || user?.displayName || user?.username || '?');
-  const hue = hueFromString(label);
   return (
-    <div className="pl-ava" style={{ width: size, height: size, fontSize: size * 0.42 }}>
-      {av && av.kind === 'image' ? (
-        <img src={av.src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-      ) : av && av.kind === 'emoji' ? (
-        <span>{av.value}</span>
-      ) : (
-        <span
-          className="pl-ava-initial"
-          style={{ background: `linear-gradient(135deg, hsl(${hue} 68% 48%), hsl(${(hue + 45) % 360} 70% 36%))` }}
-        >
-          {label[0].toUpperCase()}
-        </span>
-      )}
+    <div className="pl-ava" style={{ width: size, height: size, position: 'relative' }}>
+      <UserAvatar user={user} displayName={name} size={size} />
       {online && <span className="pl-online-ring" />}
     </div>
   );
@@ -952,11 +922,7 @@ function FriendsTab() {
             return (
               <div key={f.friendshipId} className="sh-friend-item">
                 <div className="sh-avatar" style={{ position: 'relative' }}>
-                  {avatarView(f.user).kind === 'image' ? (
-                    <img src={avatarView(f.user).src} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    avatarView(f.user).value
-                  )}
+                  <UserAvatar user={f.user} size={42} />
                   {isOnline && <span className="sh-online-dot" />}
                 </div>
                 <div style={{ flex: 1 }}>
@@ -997,11 +963,7 @@ function FriendsTab() {
           requests.map(r => (
             <div key={r.friendshipId} className="sh-friend-item">
               <div className="sh-avatar">
-                {avatarView(r.user).kind === 'image' ? (
-                  <img src={avatarView(r.user).src} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                ) : (
-                  avatarView(r.user).value
-                )}
+                <UserAvatar user={r.user} size={42} />
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}>{r.user?.displayName || r.user?.username}</div>
@@ -1036,11 +998,7 @@ function FriendsTab() {
             return (
               <div key={u._id} className="sh-friend-item">
                 <div className="sh-avatar">
-                  {avatarView(u).kind === 'image' ? (
-                    <img src={avatarView(u).src} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    avatarView(u).value
-                  )}
+                  <UserAvatar user={u} size={42} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}>{u.displayName || 'Player'}</div>

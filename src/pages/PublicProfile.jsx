@@ -3,7 +3,7 @@
 // URL: /player/:displayName
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { resolveApiAssetUrl } from '../api';
+import UserAvatar from '../components/UserAvatar';
 
 const API = import.meta.env.VITE_API_URL || window.location.origin;
 
@@ -134,10 +134,6 @@ export default function PublicProfile() {
 
   const memberYear = profile.memberSince ? new Date(profile.memberSince).getFullYear() : null;
 
-  const avatarUrl = profile.profilePhotoUrl
-    ? resolveApiAssetUrl(profile.profilePhotoUrl)
-    : null;
-
   const crownLabel = CROWN_LABELS[profile.arenaCrownTier];
 
   return (
@@ -154,13 +150,7 @@ export default function PublicProfile() {
         {/* ── Header ─────────────────────────────────────── */}
         <div style={s.heroSection}>
           <div style={s.avatarWrap}>
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="avatar" style={s.avatarImg} />
-            ) : (
-              <div style={s.avatarInitials}>
-                {(profile.displayName || profile.username || '?')[0].toUpperCase()}
-              </div>
-            )}
+            <UserAvatar user={profile} size={90} live />
           </div>
           <div style={s.heroText}>
             <h1 style={s.heroName}>{profile.displayName || profile.username}</h1>

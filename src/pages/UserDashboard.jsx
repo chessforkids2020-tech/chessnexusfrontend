@@ -1,5 +1,6 @@
 // src/pages/UserDashboard.jsx
 import React, { useEffect, useState, useRef } from "react";
+import ReactDOM from "react-dom";
 import ReactConfetti from 'react-confetti';
 import api, { resolveApiAssetUrl } from '../api';
 import { trackEvent } from '../lib/analytics';
@@ -11,6 +12,7 @@ import BestRacers from "../components/BestRacers";
 import FriendGamesSection from "../components/FriendGamesSection";
 import GameInsightsPanel from "../components/GameInsightsPanel";
 import CoffeeBadge from "../components/CoffeeBadge";
+import UserAvatar from "../components/UserAvatar";
 import CoffeeCta from "../components/CoffeeCta";
 
 // ─── Badge Tracks: Starter → Gold → Platinum ────────────────────────────────
@@ -356,6 +358,194 @@ function WatchGamesCard({ displayName }) {
           <button className="watch-games-btn">▶ Watch</button>
         </Link>
       </div>
+    </div>
+  );
+}
+
+// ─── XP Wallet card ──────────────────────────────────────────────────────────
+// Activity XP earned across the app — SEPARATE from Monthly Focus XP.
+// Shown right under the welcome card. The full breakdown (total + per source)
+// is visible to everyone, including spectators — XP can't be bought or traded.
+function WalletCard({ wallet }) {
+  const total = wallet?.total || 0;
+  const by = wallet?.bySource || {};
+  const [showHelp, setShowHelp] = React.useState(false);
+
+  const sources = [
+    { key: 'puzzles',  icon: '🧩', label: 'Puzzles' },
+    { key: 'games',    icon: '🎮', label: 'Games' },
+    { key: 'races',    icon: '🏁', label: 'Races' },
+    { key: 'analysis', icon: '🔍', label: 'Analysis' },
+    { key: 'arena',    icon: '⚔️', label: 'Arena' },
+    { key: 'social',   icon: '💬', label: 'Social' },
+  ];
+
+  // How XP is earned — shown in the help popup.
+  const helpRows = [
+    { icon: '🧩', text: 'Every puzzle (daily, healthy mix, theme, rating, pieces)', xp: '+2 XP' },
+    { icon: '🎮', text: 'Every game (Tic-Tac-Toe, Bingo)', xp: '+2 XP' },
+    { icon: '🏁', text: 'Every race in the Race Hub (5–30 min races)', xp: '+5 XP' },
+    { icon: '🔍', text: 'Every game analysis you run', xp: '+3 XP' },
+    { icon: '⚔️', text: 'Every Arena Tournament game you play', xp: '+3 XP' },
+    { icon: '🤝', text: 'Inviting a friend who joins', xp: '+10 XP' },
+    { icon: '💜', text: 'Accepting a friend (both of you earn it)', xp: '+2 XP' },
+  ];
+
+  return (
+    <div
+      style={{
+        position: 'relative',
+        margin: '14px 0 6px',
+        background: 'var(--obsidian-surface, rgba(23, 23, 23, 0.7))',
+        WebkitBackdropFilter: 'blur(20px)',
+        backdropFilter: 'blur(20px)',
+        border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+        borderRadius: '18px',
+        padding: '16px 20px',
+        boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0, 0, 0, 0.5))',
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        gap: '18px',
+      }}
+    >
+      {/* Total balance */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: 0 }}>
+        <div
+          style={{
+            width: 56, height: 56, flexShrink: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 30, borderRadius: '16px',
+            background: 'var(--obsidian-panel, linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02)))',
+            border: '1px solid var(--obsidian-border-strong, rgba(6, 182, 212, 0.3))',
+          }}
+        >
+          👛
+        </div>
+        <div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 7,
+            fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+            color: 'var(--obsidian-accent, #06b6d4)',
+          }}>
+            XP Wallet
+            <button
+              type="button"
+              aria-label="How do I earn XP?"
+              onClick={() => setShowHelp(v => !v)}
+              style={{
+                width: 18, height: 18, flexShrink: 0,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: '50%', cursor: 'pointer',
+                background: showHelp
+                  ? 'var(--obsidian-accent, #06b6d4)'
+                  : 'var(--obsidian-panel, rgba(6,182,212,0.12))',
+                border: '1px solid var(--obsidian-border-strong, rgba(6, 182, 212, 0.3))',
+                color: showHelp ? '#06121a' : 'var(--obsidian-accent, #67e8f9)',
+                fontSize: 12, fontWeight: 800, lineHeight: 1, padding: 0,
+              }}
+            >
+              ?
+            </button>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+            <span style={{
+              fontSize: 30, fontWeight: 800, lineHeight: 1,
+              color: 'var(--obsidian-text, #f8fafc)',
+              textShadow: 'var(--obsidian-glow, 0 0 18px rgba(6,182,212,0.25))',
+            }}>
+              {total.toLocaleString()}
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))' }}>XP</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Per-source breakdown — visible to everyone */}
+      {(
+        <div style={{
+          display: 'flex', flexWrap: 'wrap', gap: '10px',
+          marginLeft: 'auto', alignItems: 'center',
+        }}>
+          {sources.map(s => (
+            <div
+              key={s.key}
+              title={`${s.label}: ${(by[s.key] || 0).toLocaleString()} XP`}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 7,
+                background: 'var(--obsidian-panel, rgba(0, 0, 0, 0.3))',
+                border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+                borderRadius: '999px',
+                padding: '6px 12px',
+              }}
+            >
+              <span style={{ fontSize: 15 }}>{s.icon}</span>
+              <span style={{ fontSize: 12, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))' }}>{s.label}</span>
+              <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--obsidian-text, #f8fafc)' }}>{(by[s.key] || 0).toLocaleString()}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* How-to-earn popup — portaled to document.body so it escapes every
+          parent stacking/transform context (welcome card, performance monitor,
+          etc.) and reliably covers the whole screen. */}
+      {showHelp && ReactDOM.createPortal(
+        <div
+          onClick={() => setShowHelp(false)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 99999,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(0, 0, 0, 0.5)', padding: 16,
+          }}
+        >
+          <div
+            role="dialog"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: 'min(380px, calc(100vw - 32px))',
+              background: 'var(--obsidian-surface, rgba(23, 23, 23, 0.92))',
+              WebkitBackdropFilter: 'blur(24px)',
+              backdropFilter: 'blur(24px)',
+              border: '1px solid var(--obsidian-border-strong, rgba(6, 182, 212, 0.3))',
+              borderRadius: '14px',
+              boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0, 0, 0, 0.6))',
+              padding: '14px 16px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+              <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--obsidian-accent, #06b6d4)' }}>How you earn XP</span>
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={() => setShowHelp(false)}
+                style={{
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', fontSize: 18, lineHeight: 1, padding: 2,
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {helpRows.map((r, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ fontSize: 16, width: 22, textAlign: 'center', flexShrink: 0 }}>{r.icon}</span>
+                  <span style={{ flex: 1, fontSize: 12.5, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', lineHeight: 1.4 }}>{r.text}</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--obsidian-accent, #67e8f9)', flexShrink: 0 }}>{r.xp}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{
+              marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+              fontSize: 11, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', lineHeight: 1.5,
+            }}>
+              Wallet XP is separate from your Monthly Focus XP — it just tracks how active you are across the app.
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
@@ -867,6 +1057,7 @@ export default function UserDashboard() {
             lichessUsername: data.lichessUsername,
             memberSince: data.memberSince,
             coffeeSupporter: !!data.coffeeSupporter,
+            xpWallet: data.xpWallet || { total: 0, bySource: {} }, // spectators see the full breakdown too
             enrolled: false, // never show student attendance on public profile
           });
           setBadges(data.badges || []);
@@ -1131,20 +1322,10 @@ export default function UserDashboard() {
         {user && (
           <div className="welcome-section">
             <div className="welcome-avatar-wrap">
-              {(user.profilePhotoUrl || user.activeAvatarUrl) ? (
-                <img
-                  className="welcome-avatar-img"
-                  src={resolveApiAssetUrl(user.profilePhotoUrl || user.activeAvatarUrl)}
-                  alt="avatar"
-                />
-              ) : user.activeLego ? (
+              {user.activeLego && !(user.profilePhotoUrl || user.activeAvatarUrl) && !user.active3dModel ? (
                 <div className="welcome-avatar-initials welcome-avatar-emoji">🧱</div>
-              ) : user.active3dModel ? (
-                <div className="welcome-avatar-initials welcome-avatar-emoji">🌌</div>
               ) : (
-                <div className="welcome-avatar-initials">
-                  {(user.displayName || user.username || '?')[0].toUpperCase()}
-                </div>
+                <UserAvatar user={user} size={120} live />
               )}
             </div>
             <div className="welcome-text">
@@ -1369,6 +1550,12 @@ export default function UserDashboard() {
               );
             })()}
           </div>
+        )}
+
+        {/* XP Wallet — activity XP, separate from Monthly Focus XP. Sits right
+            under the welcome card; full breakdown is visible to everyone. */}
+        {user && (
+          <WalletCard wallet={user.xpWallet} />
         )}
 
         {/* ── Tabbed dashboard: Today strip + Practice / Achievements / Games ── */}

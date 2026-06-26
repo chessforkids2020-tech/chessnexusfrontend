@@ -51,6 +51,8 @@ const BooksList = () => {
     <div key={book._id} style={styles.card} onClick={() => navigate(`/study/books/${book._id}`)}>
       <div style={styles.coverWrap}>
         {book.freeForAll && <span style={styles.freeBadge}>FREE</span>}
+        {!book.freeForAll && book.unlocked && <span style={styles.unlockedBadge}>👛 Unlocked</span>}
+        {!book.freeForAll && !book.unlocked && book.xpPrice > 0 && <span style={styles.priceBadge}>👛 {book.xpPrice} XP</span>}
         {book.coverImage
           ? <img src={`${API_BASE}/api/public/book-covers/${book.coverImage}`} alt="" style={styles.cover} draggable={false} />
           : <div style={styles.coverPlaceholder}>📖</div>}
@@ -69,7 +71,7 @@ const BooksList = () => {
       <div style={styles.header}>
         <button style={styles.backButton} onClick={() => navigate('/study')}>← Back to Study</button>
         <h1 style={styles.title}>📚 Books</h1>
-        <p style={styles.subtitle}>Read chess books. Chapter 1 is free for everyone; later chapters are for supporters & coaches.</p>
+        <p style={styles.subtitle}>Read chess books. Chapter 1 is free for everyone; unlock the rest with your XP — or free as a supporter, coach, or elite member.</p>
       </div>
 
       {error && <div style={styles.error}>{error}</div>}
@@ -104,6 +106,8 @@ const styles = {
   card: { background: 'rgba(255,255,255,0.03)', borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer', display: 'flex', flexDirection: 'column' },
   coverWrap: { position: 'relative' },
   freeBadge: { position: 'absolute', top: 8, left: 8, zIndex: 1, background: '#10b981', color: '#fff', fontSize: 11, fontWeight: 800, letterSpacing: 0.5, padding: '3px 8px', borderRadius: 6, boxShadow: '0 2px 6px rgba(0,0,0,0.3)' },
+  priceBadge: { position: 'absolute', top: 8, right: 8, zIndex: 1, background: 'linear-gradient(135deg, #7c3aed, #06b6d4)', color: '#fff', fontSize: 11, fontWeight: 800, padding: '3px 8px', borderRadius: 6, boxShadow: '0 2px 6px rgba(0,0,0,0.3)' },
+  unlockedBadge: { position: 'absolute', top: 8, right: 8, zIndex: 1, background: 'rgba(15,23,42,0.85)', color: '#c4b5fd', border: '1px solid rgba(124,58,237,0.5)', fontSize: 11, fontWeight: 800, padding: '3px 8px', borderRadius: 6, boxShadow: '0 2px 6px rgba(0,0,0,0.3)' },
   cover: { width: '100%', height: 230, objectFit: 'cover', display: 'block', background: '#222' },
   coverPlaceholder: { width: '100%', height: 230, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 64, background: 'linear-gradient(135deg,#1f3a2f,#16302a)' },
   cardBody: { padding: 12 },

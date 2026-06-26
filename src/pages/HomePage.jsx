@@ -613,6 +613,19 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* ── CTA (moved up: directly below Why Chess Nexus) ── */}
+        <div className="hp-glass hp-cta">
+          <div className="hp-cta-glow" />
+          <span className="hp-cta-chess">♟</span>
+          <div className="hp-cta-text">
+            <h2 className="hp-cta-heading">Ready to Level Up Your Chess?</h2>
+            <p className="hp-cta-sub">Join Chess Nexus today and become part of a growing community of chess players and learners.</p>
+          </div>
+          <Link to={user ? "/puzzles" : "/login"} className="hp-cta-btn">
+            {user ? "Start Solving Now →" : "Login to Play →"}
+          </Link>
+        </div>
+
         {/* ── LEADERBOARD ── */}
         <div className="hp-glass hp-leaderboard">
           <div className="hp-lb-topbar">
@@ -629,17 +642,25 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ── CTA FOOTER ── */}
-        <div className="hp-glass hp-cta">
-          <div className="hp-cta-glow" />
-          <span className="hp-cta-chess">♟</span>
-          <div className="hp-cta-text">
-            <h2 className="hp-cta-heading">Ready to Level Up Your Chess?</h2>
-            <p className="hp-cta-sub">Join Chess Nexus today and become part of a growing community of chess players and learners.</p>
+        {/* ── COLLABORATE / BECOME ELITE (same card as Members page) ── */}
+        <div className="hp-callout">
+          <span className="hp-callout-icon">🤝</span>
+          <div>
+            <h2>Want to collaborate or become an Elite member?</h2>
+            <p>
+              Interested in coaching on Chess Nexus, hosting tournaments, or
+              partnering with us? Reach out — we'd love to work with you and help
+              you become an Elite member.
+            </p>
+            <div className="hp-callout-row">
+              <Link to="/contact" className="hp-callout-btn hp-callout-btn-primary">
+                Contact us to collaborate
+              </Link>
+              <Link to="/features" className="hp-callout-btn hp-callout-btn-ghost">
+                See all features
+              </Link>
+            </div>
           </div>
-          <Link to={user ? "/puzzles" : "/login"} className="hp-cta-btn">
-            {user ? "Start Solving Now →" : "Login to Play →"}
-          </Link>
         </div>
 
       </div>

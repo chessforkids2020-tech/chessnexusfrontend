@@ -7,6 +7,7 @@ import api, { resolveApiAssetUrl } from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 import { getFriendIdentity } from './friendIdentity';
 import FriendGameChat from '../../components/FriendGameChat';
+import UserAvatar from '../../components/UserAvatar';
 import './FriendGame.css';
 
 const SOCKET_URL = (import.meta?.env?.VITE_API_URL) ||
@@ -58,13 +59,19 @@ function MoveList({ moves, current, onSelect }) {
 
 // Avatar: resolved image (custom photo or basic avatar) if present, else a
 // colored initial circle. `imageUrl` is expected already-absolute.
-function PlayerAvatar({ name, imageUrl }) {
-  const initial = (name || '?').trim().charAt(0).toUpperCase() || '?';
+function PlayerAvatar({ name, user, imageUrl }) {
+  // In-game avatar: renders the shared UserAvatar (3D shown as a still frame).
+  // `imageUrl` (resolved photo/basic url) is passed through as profilePhotoUrl so
+  // basic-avatar players still render even when only the resolved url is known.
   return (
     <div className="fg-avatar">
-      {imageUrl
-        ? <img src={imageUrl} alt="" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-        : <span>{initial}</span>}
+      <UserAvatar
+        user={user}
+        displayName={name}
+        profilePhotoUrl={user?.profilePhotoUrl || imageUrl}
+        active3dModel={user?.active3dModel}
+        size={34}
+      />
     </div>
   );
 }
@@ -394,6 +401,10 @@ export default function FriendGame() {
       <div className="fg-player-id">
         <PlayerAvatar
           name={player?.displayName || (isYou ? me.displayName : undefined)}
+          user={isYou ? {
+            profilePhotoUrl: player?.profilePhotoUrl || me.profilePhotoUrl,
+            active3dModel: player?.active3dModel || me.active3dModel,
+          } : player}
           imageUrl={avatarUrlFor(isYou ? {
             profilePhotoUrl: player?.profilePhotoUrl || me.profilePhotoUrl,
             activeAvatar: player?.activeAvatar || me.activeAvatar,

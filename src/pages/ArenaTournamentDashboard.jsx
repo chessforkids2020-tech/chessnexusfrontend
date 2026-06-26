@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Chess } from "chess.js";
-import api, { resolveApiAssetUrl } from "../api";
+import api from "../api";
 import SEO from "../components/SEO";
+import UserAvatar from "../components/UserAvatar";
 import Chessboard from "../components/Chessboard";
 import { useAuth } from "../contexts/AuthContext";
 import "./arenatournament/ArenaTournamentLeaderboard.css";
@@ -202,9 +203,13 @@ export default function ArenaTournamentDashboard() {
   const memberYear = profile?.memberSince ? new Date(profile.memberSince).getFullYear() : null;
   const dayStreak  = profile?.activity?.stats?.currentStreak || 0;
   const verified   = ["elite", "admin"].includes(profile?.role);
-  const rawPhoto   = profile?.profilePhotoUrl || profile?.activeAvatarUrl
-                   || (!isPublic && (user?.profilePhotoUrl || user?.activeAvatarUrl)) || null;
-  const photo      = rawPhoto ? (rawPhoto.startsWith("http") ? rawPhoto : resolveApiAssetUrl(rawPhoto)) : null;
+  // Avatar source: the viewed profile when available, else the logged-in user's
+  // own fields (private view). Passed to the shared <UserAvatar> (3D shown frozen).
+  const avatarUser = {
+    profilePhotoUrl: profile?.profilePhotoUrl || (!isPublic ? user?.profilePhotoUrl : null) || null,
+    activeAvatarUrl: profile?.activeAvatarUrl || (!isPublic ? user?.activeAvatarUrl : null) || null,
+    active3dModel:   profile?.active3dModel   || (!isPublic ? user?.active3dModel : null) || null,
+  };
 
   return (
     <div style={S.page}>
@@ -233,9 +238,7 @@ export default function ArenaTournamentDashboard() {
                   {/* LEFT — avatar + name + trophies chip */}
                   <div style={{ display: "flex", alignItems: "flex-start", gap: 16, minWidth: 0 }}>
                     <div style={S.avatar}>
-                      {photo
-                        ? <img src={photo} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                        : (ownerName[0] || "?").toUpperCase()}
+                      <UserAvatar user={avatarUser} displayName={ownerName} size={68} />
                     </div>
                     <div style={{ minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 22, fontWeight: 800 }}>

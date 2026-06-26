@@ -79,12 +79,15 @@ const BookReader = () => {
         <button style={styles.backButton} onClick={() => navigate(`/study/books/${id}`)}>← Contents</button>
         <div style={styles.paywall}>
           <div style={{ fontSize: 48 }}>🔒</div>
-          <h2 style={{ color: '#34d399', margin: '12px 0 6px' }}>Supporters & coaches only</h2>
-          <p style={{ color: '#cbd5e1', maxWidth: 440, textAlign: 'center' }}>
-            Chapter 1 is free for everyone. To read the rest of the book, become a supporter,
-            or sign in as a verified coach / elite member.
+          <h2 style={{ color: '#34d399', margin: '12px 0 6px' }}>This chapter is locked</h2>
+          <p style={{ color: '#cbd5e1', maxWidth: 460, textAlign: 'center' }}>
+            Chapter 1 is free for everyone. To read the rest, <strong>unlock the whole book with your XP</strong>,
+            or get it free as a supporter, verified coach, or elite member.
           </p>
-          <button style={styles.supportBtn} onClick={() => navigate('/buy-coffee')}>☕ Become a supporter</button>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 4 }}>
+            <button style={styles.xpBtn} onClick={() => navigate(`/study/books/${id}`)}>👛 Unlock with XP</button>
+            <button style={styles.supportBtn} onClick={() => navigate('/buy-coffee')}>☕ Become a supporter</button>
+          </div>
         </div>
       </div>
     );
@@ -146,6 +149,7 @@ const styles = {
   navBtn: { background: '#34d399', color: '#06281d', border: 'none', padding: '10px 18px', borderRadius: 8, cursor: 'pointer', fontWeight: 700 },
   paywall: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 40 },
   supportBtn: { marginTop: 16, background: '#34d399', color: '#06281d', border: 'none', padding: '12px 22px', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 16 },
+  xpBtn: { marginTop: 16, background: 'linear-gradient(135deg, #7c3aed, #06b6d4)', color: '#fff', border: 'none', padding: '12px 22px', borderRadius: 8, cursor: 'pointer', fontWeight: 800, fontSize: 16 },
   error: { background: '#fdecea', color: '#c62828', padding: '10px 14px', borderRadius: 6 },
 };
 

@@ -1,7 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
-import api, { resolveApiAssetUrl } from '../api';
+import api from '../api';
+import UserAvatar from './UserAvatar';
 import { useAuth } from '../contexts/AuthContext';
 
 
@@ -103,6 +104,11 @@ export default function Sidebar({ user, onNavigate }) {
   const [showQuickSearch, setShowQuickSearch] = useState(false);
   const quickSearchInputRef = React.useRef(null);
 
+  // Friends online (replaces the search button for logged-in users)
+  const [onlineFriends, setOnlineFriends] = useState([]);
+  const [showFriends, setShowFriends] = useState(false);
+  const friendsRef = React.useRef(null);
+
   const navigate = useNavigate();
   const location = useLocation();
   const { refreshUser, isAuthenticated, logout } = useAuth();
@@ -176,6 +182,25 @@ export default function Sidebar({ user, onNavigate }) {
     } catch { /* silent — non-critical */ }
   }, [isAuthenticated]);
 
+  // Friends currently online (lastActivity within ~5 min, backend-defined)
+  const onlineFriends404s = React.useRef(0);
+  const onlineFriendsDisabled = React.useRef(false);
+  const fetchOnlineFriends = React.useCallback(async () => {
+    if (!isAuthenticated || onlineFriendsDisabled.current) {
+      setOnlineFriends([]); return;
+    }
+    try {
+      const res = await api.get('/api/social/online-friends');
+      onlineFriends404s.current = 0;
+      setOnlineFriends(Array.isArray(res.data?.friends) ? res.data.friends : []);
+    } catch (err) {
+      if (err?.response?.status === 404 && ++onlineFriends404s.current >= 2) {
+        onlineFriendsDisabled.current = true; // endpoint unavailable on this backend
+      }
+      /* otherwise silent — non-critical */
+    }
+  }, [isAuthenticated]);
+
   const respondToCoachRequest = async (linkId, action) => {
     try {
       await api.post(`/api/coach/requests/${linkId}/${action}`);
@@ -191,12 +216,13 @@ export default function Sidebar({ user, onNavigate }) {
     // Fetch once, then poll. Poll quickly (30s) only while the bell is open;
     // otherwise refresh slowly (120s) just to keep the badge count fresh. This
     // cuts request volume well below the old constant 60s polling.
-    const poll = () => { fetchFriendUnread(); fetchReportReplies(); fetchCoachRequests(); fetchAppNotifications(); };
+    const poll = () => { fetchFriendUnread(); fetchReportReplies(); fetchCoachRequests(); fetchAppNotifications(); fetchOnlineFriends(); };
     poll();
-    const intervalMs = showNotifications ? 30000 : 120000;
+    // Poll faster (30s) while either the bell or friends panel is open.
+    const intervalMs = (showNotifications || showFriends) ? 30000 : 120000;
     const id = setInterval(poll, intervalMs);
     return () => clearInterval(id);
-  }, [isAuthenticated, fetchFriendUnread, fetchReportReplies, fetchCoachRequests, fetchAppNotifications, showNotifications]);
+  }, [isAuthenticated, fetchFriendUnread, fetchReportReplies, fetchCoachRequests, fetchAppNotifications, fetchOnlineFriends, showNotifications, showFriends]);
 
   // Total red badge = unread app notifications + friend messages + report replies + coach requests
   const unreadNotifCount = appUnreadCount + friendMsgTotal + reportReplies.length + coachRequests.length;
@@ -1055,28 +1081,45 @@ export default function Sidebar({ user, onNavigate }) {
 
                 <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.13)', flexShrink: 0 }} />
 
-                {/* Search toggle */}
+                {/* Friends online toggle (replaces player search for logged-in users) */}
                 <button
+                  ref={friendsRef}
                   style={{
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    padding: '11px 0',
-                    background: showQuickSearch ? 'rgba(6,182,212,0.15)' : 'transparent',
+                    padding: '11px 0', position: 'relative',
+                    background: showFriends ? 'rgba(16,185,129,0.15)' : 'transparent',
                     border: 'none', cursor: 'pointer',
-                    color: showQuickSearch ? '#06b6d4' : '#94a3b8',
+                    color: showFriends ? '#34d399' : '#94a3b8',
                     transition: 'background 0.2s, color 0.2s',
                   }}
                   onClick={() => {
-                    const next = !showQuickSearch;
-                    setShowQuickSearch(next);
-                    if (!next) { setSearchQuery(''); setSearchResults([]); setSearchOpen(false); }
+                    if ((isMobile || isLandscape) && !isExpanded) { setIsExpanded(true); return; }
+                    const next = !showFriends;
+                    setShowFriends(next);
+                    if (next) fetchOnlineFriends(); // refresh on open
                   }}
-                  title="Search Players"
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(6,182,212,0.15)'; e.currentTarget.style.color = '#06b6d4'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = showQuickSearch ? 'rgba(6,182,212,0.15)' : 'transparent'; e.currentTarget.style.color = showQuickSearch ? '#06b6d4' : '#94a3b8'; }}
+                  title={onlineFriends.length > 0 ? `${onlineFriends.length} friend${onlineFriends.length === 1 ? '' : 's'} online` : 'Friends online'}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(16,185,129,0.15)'; e.currentTarget.style.color = '#34d399'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = showFriends ? 'rgba(16,185,129,0.15)' : 'transparent'; e.currentTarget.style.color = showFriends ? '#34d399' : '#94a3b8'; }}
                 >
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  {/* People / friends icon */}
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                   </svg>
+                  {onlineFriends.length > 0 && (
+                    <span style={{
+                      position: 'absolute', top: '6px', right: '50%', transform: 'translateX(16px)',
+                      minWidth: '16px', height: '16px', padding: '0 4px',
+                      background: '#22c55e', color: '#062611', borderRadius: '999px',
+                      fontSize: '10px', fontWeight: 800, lineHeight: '16px', textAlign: 'center',
+                      boxShadow: '0 0 0 2px rgba(10,10,10,0.95)',
+                    }}>
+                      {onlineFriends.length}
+                    </span>
+                  )}
                 </button>
 
                 <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.13)', flexShrink: 0 }} />
@@ -1265,17 +1308,7 @@ export default function Sidebar({ user, onNavigate }) {
                   onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(6,182,212,0.12)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 >
-                  <div style={{
-                    width: '34px', height: '34px', borderRadius: '50%', flexShrink: 0,
-                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '14px', fontWeight: '700', color: '#fff', overflow: 'hidden',
-                  }}>
-                    {player.profilePhotoUrl
-                      ? <img src={`${import.meta.env.VITE_API_URL || window.location.origin}${player.profilePhotoUrl}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      : (player.displayName || '?')[0].toUpperCase()
-                    }
-                  </div>
+                  <UserAvatar user={player} size={34} />
                   <div style={{ minWidth: 0, flex: 1 }}>
                     <div style={{ fontSize: '13px', fontWeight: '600', color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '260px' }}>
                       {player.displayName}
@@ -1288,6 +1321,116 @@ export default function Sidebar({ user, onNavigate }) {
                 </div>
               ))}
             </div>,
+            document.body
+          );
+        })()
+      }
+
+      {/* ── Friends-online panel — overlay anchored to the friends button ── */}
+      {showFriends && isAuthenticated &&
+        (() => {
+          const rect = friendsRef.current?.getBoundingClientRect();
+          if (!rect) return null;
+          return createPortal(
+            <>
+              {/* click-away backdrop */}
+              <div
+                onClick={() => setShowFriends(false)}
+                style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'transparent' }}
+              />
+              <div
+                style={{
+                  position: 'fixed',
+                  bottom: window.innerHeight - rect.top + 8,
+                  left: rect.left,
+                  width: 'max-content',
+                  minWidth: '280px',
+                  maxWidth: '360px',
+                  background: 'rgba(10,15,30,0.98)',
+                  border: '1px solid rgba(16,185,129,0.3)',
+                  borderRadius: '14px',
+                  boxShadow: '0 -8px 32px rgba(0,0,0,0.65)',
+                  zIndex: 9999,
+                  backdropFilter: 'blur(16px)',
+                  maxHeight: '60vh',
+                  overflowY: 'auto',
+                  padding: '12px',
+                }}
+              >
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+                }}>
+                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#e2e8f0', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '#22c55e', boxShadow: '0 0 6px #22c55e', flexShrink: 0 }} />
+                    Friends online
+                    <span style={{ color: '#34d399', fontWeight: 800 }}>{onlineFriends.length}</span>
+                  </span>
+                  <button
+                    onClick={() => setShowFriends(false)}
+                    style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '15px' }}
+                    title="Close"
+                  >✕</button>
+                </div>
+
+                {onlineFriends.length === 0 ? (
+                  <div style={{ color: '#64748b', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
+                    None of your friends are online right now.
+                    <div
+                      onClick={() => { handleNavigate('/social'); setShowFriends(false); }}
+                      style={{ fontSize: '11.5px', color: '#34d399', fontWeight: 600, marginTop: '10px', cursor: 'pointer' }}
+                    >
+                      Go to Social Hub →
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {onlineFriends.map((f) => (
+                      <div
+                        key={f._id || f.username}
+                        onClick={() => {
+                          setShowFriends(false);
+                          if (onNavigate) onNavigate();
+                          navigate(`/player/${encodeURIComponent(f.displayName || f.username)}`);
+                        }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '10px',
+                          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)',
+                          borderRadius: '10px', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
+                          transition: 'border-color 0.2s, background 0.2s',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'; e.currentTarget.style.background = 'rgba(16,185,129,0.08)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                      >
+                        <div style={{ position: 'relative', flexShrink: 0 }}>
+                          <UserAvatar user={f} size={34} />
+                          <span style={{
+                            position: 'absolute', bottom: '-1px', right: '-1px',
+                            width: '11px', height: '11px', borderRadius: '999px',
+                            background: '#22c55e', border: '2px solid rgba(10,15,30,0.98)',
+                          }} />
+                        </div>
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {f.displayName || f.username}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#34d399', fontWeight: 600 }}>
+                            ● Online
+                          </div>
+                        </div>
+                        <span style={{ fontSize: '11px', color: '#475569', flexShrink: 0, marginLeft: '6px' }}>→</span>
+                      </div>
+                    ))}
+                    <div
+                      onClick={() => { handleNavigate('/social'); setShowFriends(false); }}
+                      style={{ fontSize: '11.5px', color: '#34d399', fontWeight: 600, textAlign: 'right', cursor: 'pointer', marginTop: '2px' }}
+                    >
+                      Open Social Hub →
+                    </div>
+                  </>
+                )}
+              </div>
+            </>,
             document.body
           );
         })()
@@ -1430,16 +1573,7 @@ export default function Sidebar({ user, onNavigate }) {
                         onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(6,182,212,0.4)'; e.currentTarget.style.background = 'rgba(6,182,212,0.08)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
                       >
-                        <div style={{
-                          width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0, overflow: 'hidden',
-                          background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '13px', fontWeight: 700, color: '#fff',
-                        }}>
-                          {m.friend?.profilePhotoUrl
-                            ? <img src={resolveApiAssetUrl(m.friend.profilePhotoUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            : (m.friend?.displayName || '?')[0].toUpperCase()}
-                        </div>
+                        <UserAvatar user={m.friend} size={32} />
                         <div style={{ minWidth: 0, flex: 1 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

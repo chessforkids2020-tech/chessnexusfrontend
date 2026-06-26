@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import api, { resolveApiAssetUrl } from '../api';
 import { useAuth } from '../contexts/AuthContext';
+import UserAvatar from './UserAvatar';
 
 const AVATAR_TIER_RANK = { none: 0, basic: 1, customPhoto: 2, '3d': 3 };
 const tierUnlocked = (userTier, requiredTier) =>
@@ -39,33 +40,55 @@ export default function AvatarStudio() {
   const { user, refreshUser } = useAuth();
 
   const [avatarOptions, setAvatarOptions] = useState({ basicOptions: [], model3dOptions: [] });
-  const [avatarLoading, setAvatarLoading] = useState(false);
+  const [, setAvatarLoading] = useState(false);
   const [avatarSaving, setAvatarSaving] = useState(false);
   const [avatarError, setAvatarError] = useState('');
   const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
   const [avatarPickerType, setAvatarPickerType] = useState(null);
+  // XP unlock state (alternative to invites).
+  const [walletXp, setWalletXp] = useState(0);
+  const [xpPrices, setXpPrices] = useState({ customPhoto: 0, '3d': 0 });
+  const [unlockTier, setUnlockTier] = useState(null);   // tier currently being purchased
+
+  const loadAvatarOptions = async () => {
+    setAvatarLoading(true);
+    setAvatarError('');
+    try {
+      const res = await api.get('/api/auth/avatar-options');
+      setAvatarOptions({
+        basicOptions: res.data?.basicOptions || [],
+        model3dOptions: res.data?.model3dOptions || [],
+      });
+      setWalletXp(res.data?.walletXp || 0);
+      setXpPrices(res.data?.xpPrices || { customPhoto: 0, '3d': 0 });
+    } catch {
+      setAvatarError('Failed to load avatar gallery');
+    } finally {
+      setAvatarLoading(false);
+    }
+  };
 
   useEffect(() => {
-    let mounted = true;
-    const loadAvatarOptions = async () => {
-      setAvatarLoading(true);
-      setAvatarError('');
-      try {
-        const res = await api.get('/api/auth/avatar-options');
-        if (!mounted) return;
-        setAvatarOptions({
-          basicOptions: res.data?.basicOptions || [],
-          model3dOptions: res.data?.model3dOptions || [],
-        });
-      } catch (error) {
-        if (mounted) setAvatarError('Failed to load avatar gallery');
-      } finally {
-        if (mounted) setAvatarLoading(false);
-      }
-    };
     loadAvatarOptions();
-    return () => { mounted = false; };
   }, []);
+
+  // Spend wallet XP to unlock a customization tier (customPhoto | 3d).
+  const unlockWithXp = async (tier) => {
+    if (unlockTier) return;
+    setUnlockTier(tier);
+    setAvatarError('');
+    try {
+      await api.post('/api/auth/avatar/unlock', { tier });
+      await refreshUser();        // user.unlockedAvatarTier now raised
+      await loadAvatarOptions();  // refresh wallet + prices
+    } catch (error) {
+      const d = error.response?.data;
+      if (d?.shortfall) setAvatarError(`Not enough XP — you need ${d.shortfall} more.`);
+      else setAvatarError(d?.message || 'Could not unlock this.');
+    } finally {
+      setUnlockTier(null);
+    }
+  };
 
   const saveAvatarChoice = async (payload) => {
     setAvatarSaving(true);
@@ -258,17 +281,29 @@ export default function AvatarStudio() {
               padding: 14,
               color: '#fde68a',
             }}>
-              <div style={{ fontWeight: 700, marginBottom: 6 }}>Invite friends to unlock Custom Picture</div>
-              <div style={{ fontSize: 12, marginBottom: 10 }}>Unlocks at 5 invites.</div>
-              <button type="button" onClick={() => { closeAvatarPicker(); navigate('/social'); }} style={{
-                border: 'none',
-                borderRadius: 8,
-                padding: '8px 12px',
-                background: '#f59e0b',
-                color: '#111827',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}>Go to Invite Friends</button>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>Unlock Custom Picture</div>
+              <div style={{ fontSize: 12, marginBottom: 10 }}>
+                Spend <strong>{xpPrices.customPhoto} XP</strong> from your wallet
+                {' '}(you have <strong style={{ color: walletXp >= xpPrices.customPhoto ? '#86efac' : '#fca5a5' }}>{walletXp} XP</strong>),
+                {' '}or invite 5 friends to unlock it free.
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  disabled={walletXp < xpPrices.customPhoto || unlockTier === 'customPhoto'}
+                  onClick={() => unlockWithXp('customPhoto')}
+                  style={{
+                    border: 'none', borderRadius: 8, padding: '8px 12px', fontWeight: 800, cursor: walletXp < xpPrices.customPhoto ? 'not-allowed' : 'pointer',
+                    background: walletXp < xpPrices.customPhoto ? 'rgba(148,163,184,0.3)' : 'linear-gradient(135deg, #7c3aed, #06b6d4)',
+                    color: walletXp < xpPrices.customPhoto ? '#94a3b8' : '#fff',
+                  }}
+                >
+                  {unlockTier === 'customPhoto' ? 'Unlocking…' : (walletXp < xpPrices.customPhoto ? `Need ${xpPrices.customPhoto - walletXp} more XP` : `👛 Unlock for ${xpPrices.customPhoto} XP`)}
+                </button>
+                <button type="button" onClick={() => { closeAvatarPicker(); navigate('/social'); }} style={{
+                  border: 'none', borderRadius: 8, padding: '8px 12px', background: '#f59e0b', color: '#111827', fontWeight: 700, cursor: 'pointer',
+                }}>Invite Friends</button>
+              </div>
             </div>
           )
         )}
@@ -287,17 +322,29 @@ export default function AvatarStudio() {
               padding: 14,
               color: '#ddd6fe',
             }}>
-              <div style={{ fontWeight: 700, marginBottom: 6 }}>Invite friends to unlock 3D avatars</div>
-              <div style={{ fontSize: 12, marginBottom: 10 }}>Unlocks at 45 invites.</div>
-              <button type="button" onClick={() => { closeAvatarPicker(); navigate('/social'); }} style={{
-                border: 'none',
-                borderRadius: 8,
-                padding: '8px 12px',
-                background: '#a855f7',
-                color: '#f5f3ff',
-                fontWeight: 700,
-                cursor: 'pointer',
-              }}>Go to Invite Friends</button>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>Unlock 3D avatars</div>
+              <div style={{ fontSize: 12, marginBottom: 10 }}>
+                Spend <strong>{xpPrices['3d']} XP</strong> from your wallet
+                {' '}(you have <strong style={{ color: walletXp >= xpPrices['3d'] ? '#86efac' : '#fca5a5' }}>{walletXp} XP</strong>),
+                {' '}or invite 45 friends to unlock it free.
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  disabled={walletXp < xpPrices['3d'] || unlockTier === '3d'}
+                  onClick={() => unlockWithXp('3d')}
+                  style={{
+                    border: 'none', borderRadius: 8, padding: '8px 12px', fontWeight: 800, cursor: walletXp < xpPrices['3d'] ? 'not-allowed' : 'pointer',
+                    background: walletXp < xpPrices['3d'] ? 'rgba(148,163,184,0.3)' : 'linear-gradient(135deg, #7c3aed, #06b6d4)',
+                    color: walletXp < xpPrices['3d'] ? '#94a3b8' : '#fff',
+                  }}
+                >
+                  {unlockTier === '3d' ? 'Unlocking…' : (walletXp < xpPrices['3d'] ? `Need ${xpPrices['3d'] - walletXp} more XP` : `👛 Unlock for ${xpPrices['3d']} XP`)}
+                </button>
+                <button type="button" onClick={() => { closeAvatarPicker(); navigate('/social'); }} style={{
+                  border: 'none', borderRadius: 8, padding: '8px 12px', background: '#a855f7', color: '#f5f3ff', fontWeight: 700, cursor: 'pointer',
+                }}>Invite Friends</button>
+              </div>
             </div>
           )
         )}
@@ -316,22 +363,9 @@ export default function AvatarStudio() {
           height: 56,
           borderRadius: '50%',
           border: '2px solid rgba(255,255,255,0.16)',
-          background: 'rgba(0,0,0,0.25)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
           overflow: 'hidden',
-          fontSize: 26,
         }}>
-          {user.profilePhotoUrl ? (
-            <img src={user.profilePhotoUrl} alt="custom avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : selectedBasicAvatar ? (
-            <img src={resolveApiAssetUrl(selectedBasicAvatar.imageUrl)} alt="basic avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : selected3dModel ? (
-            <span>{selected3dModel.emoji}</span>
-          ) : (
-            <span>{(user.displayName || user.username || '?')[0].toUpperCase()}</span>
-          )}
+          <UserAvatar user={user} size={56} live />
         </div>
         <div style={{ color: '#cbd5e1', fontSize: 13 }}>
           {user.profilePhotoUrl ? 'Current: Custom Picture' : selectedBasicAvatar ? 'Current: Basic Avatar' : selected3dModel ? 'Current: 3D Avatar' : 'Current: Initials Avatar'}
@@ -350,7 +384,7 @@ export default function AvatarStudio() {
         {[
           { key: 'basic', title: 'Basic Avatar', color: '#06b6d4', icon: '🎨' },
           { key: 'customPhoto', title: 'Custom Picture', color: '#f59e0b', icon: '📸' },
-          { key: '3d', title: '3D Model', color: '#a855f7', icon: '🌌', comingSoon: true },
+          { key: '3d', title: '3D Model', color: '#a855f7', icon: '🌌' },
         ].map((card) => (
           <div key={card.key} style={{ position: 'relative' }}>
             {card.comingSoon && (

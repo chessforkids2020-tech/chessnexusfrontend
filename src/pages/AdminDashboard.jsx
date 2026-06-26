@@ -338,6 +338,63 @@ const roundsBackupStyles = {
 // Merge styles
 Object.assign(styles, roundsBackupStyles);
 
+// ─── Avatar XP Prices (admin-tunable wallet prices for cosmetic unlocks) ──────
+function AvatarXpPrices() {
+  const [prices, setPrices] = useState({ avatarCustomPhoto: 0, avatar3d: 0 });
+  const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  useEffect(() => {
+    api.get('/api/admin/settings')
+      .then(res => { setPrices(res.data?.xpPrices || { avatarCustomPhoto: 0, avatar3d: 0 }); setLoaded(true); })
+      .catch(() => setLoaded(true));
+  }, []);
+
+  const save = async () => {
+    setSaving(true); setMsg('');
+    try {
+      const res = await api.put('/api/admin/settings', { xpPrices: prices });
+      setPrices(res.data?.xpPrices || prices);
+      setMsg('Saved ✓');
+      setTimeout(() => setMsg(''), 2500);
+    } catch {
+      setMsg('Save failed');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const inputStyle = { width: 90, padding: 6, border: '1px solid #cbd5e1', borderRadius: 6 };
+
+  return (
+    <div style={{ ...styles.card, padding: 16, marginTop: 20, background: '#ffffff', border: '1px solid #e2e8f0' }}>
+      <h3 style={{ marginTop: 0, marginBottom: 4, color: '#0f172a' }}>👛 Avatar XP Prices</h3>
+      <div style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
+        Wallet XP a user spends to unlock these avatar tiers (invite milestones still unlock them free).
+      </div>
+      {!loaded ? <div style={{ color: '#94a3b8' }}>Loading…</div> : (
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: '#334155' }}>
+            📸 Custom Photo (XP)
+            <input type="number" min={0} style={inputStyle} value={prices.avatarCustomPhoto}
+              onChange={e => setPrices({ ...prices, avatarCustomPhoto: Math.max(0, +e.target.value || 0) })} />
+          </label>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: '#334155' }}>
+            🌌 3D Model (XP)
+            <input type="number" min={0} style={inputStyle} value={prices.avatar3d}
+              onChange={e => setPrices({ ...prices, avatar3d: Math.max(0, +e.target.value || 0) })} />
+          </label>
+          <button onClick={save} disabled={saving} style={{ ...styles.primaryBtn, opacity: saving ? 0.6 : 1 }}>
+            {saving ? 'Saving…' : 'Save prices'}
+          </button>
+          {msg && <span style={{ fontSize: 13, color: msg.includes('fail') ? '#dc2626' : '#16a34a' }}>{msg}</span>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AdminDashboard() {
   const nav = useNavigate();
   const { logout } = useAuth();
@@ -1114,6 +1171,8 @@ function AdminDashboard() {
           <button style={styles.primaryBtn} onClick={fetchAll}>Refresh</button>
         </div>
       </div>
+
+      <AvatarXpPrices />
 
       <div style={{
         ...styles.card,

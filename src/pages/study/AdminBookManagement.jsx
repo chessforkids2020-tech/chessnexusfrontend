@@ -45,7 +45,7 @@ const AdminBookManagement = () => {
   const [error, setError] = useState(null);
 
   // Book-level form
-  const [form, setForm] = useState({ title: '', author: '', description: '', category: '' });
+  const [form, setForm] = useState({ title: '', author: '', description: '', category: '', xpPrice: 0 });
   const [categories, setCategories] = useState([]);
   const [editingBookId, setEditingBookId] = useState(null);
   // Cover chosen in the create form (only used when creating a NEW book).
@@ -98,7 +98,7 @@ const AdminBookManagement = () => {
           await uploadCoverFor(res.data._id, newCoverFile, false);
         }
       }
-      setForm({ title: '', author: '', description: '', category: '' });
+      setForm({ title: '', author: '', description: '', category: '', xpPrice: 0 });
       setEditingBookId(null);
       clearNewCover();
       fetchBooks();
@@ -112,6 +112,11 @@ const AdminBookManagement = () => {
 
   const updateFreeChapters = async (book, n) => {
     await api.put(`/api/books/admin/${book._id}`, { freeChapters: n });
+    fetchBooks();
+  };
+
+  const updateXpPrice = async (book, n) => {
+    await api.put(`/api/books/admin/${book._id}`, { xpPrice: Math.max(0, n) });
     fetchBooks();
   };
 
@@ -364,6 +369,14 @@ const AdminBookManagement = () => {
           </select>
           <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>Groups this book on the Books page. "Free for everyone" books also appear under a Free Books section automatically.</div>
         </div>
+        <div style={styles.formGroup}><label style={styles.label}>Unlock price (XP)</label>
+          <input type="number" min={0} style={styles.input} value={form.xpPrice}
+            onChange={e => setForm({ ...form, xpPrice: Math.max(0, +e.target.value || 0) })} />
+          <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>
+            XP a regular user spends to unlock all chapters of this book. <b>0 = free for everyone</b> (no XP needed).
+            Supporters, coaches and elite members always read it free without spending XP.
+          </div>
+        </div>
         {!editingBookId && (
           <div style={styles.formGroup}>
             <label style={styles.label}>Cover image (optional)</label>
@@ -384,7 +397,7 @@ const AdminBookManagement = () => {
         )}
         <div style={styles.buttonGroup}>
           <button type="submit" style={styles.primaryButton}>{editingBookId ? 'Save' : 'Create book'}</button>
-          {editingBookId && <button type="button" style={styles.cancelButton} onClick={() => { setEditingBookId(null); setForm({ title: '', author: '', description: '', category: '' }); }}>Cancel</button>}
+          {editingBookId && <button type="button" style={styles.cancelButton} onClick={() => { setEditingBookId(null); setForm({ title: '', author: '', description: '', category: '', xpPrice: 0 }); }}>Cancel</button>}
         </div>
       </form>
 
@@ -404,6 +417,9 @@ const AdminBookManagement = () => {
                     {book.published ? 'Published' : 'Draft'}
                   </span>
                   {book.category && <span style={{ ...styles.badge, background: '#eef2ff', color: '#4338ca' }}>{book.category}</span>}
+                  {!book.freeForAll && (book.xpPrice > 0
+                    ? <span style={{ ...styles.badge, background: '#f5f3ff', color: '#7c3aed' }}>👛 {book.xpPrice} XP</span>
+                    : <span style={{ ...styles.badge, background: '#ecfdf5', color: '#047857' }}>Free (no XP)</span>)}
                 </div>
               </div>
             </div>
@@ -420,9 +436,18 @@ const AdminBookManagement = () => {
                 style={{ width: 56, padding: 4, border: '1px solid #ccc', borderRadius: 4, background: book.freeForAll ? '#f0f0f0' : '#fff' }}
                 onChange={(e) => updateFreeChapters(book, Math.max(0, +e.target.value))} />
             </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, fontSize: 13, color: book.freeForAll ? '#aaa' : '#555' }}>
+              Unlock price (XP):
+              <input type="number" min={0} defaultValue={book.xpPrice || 0}
+                key={`xp-${book._id}-${book.xpPrice}`}
+                disabled={book.freeForAll}
+                title={book.freeForAll ? 'Whole book is free — this is ignored. 0 = free for everyone.' : '0 = free for everyone'}
+                style={{ width: 72, padding: 4, border: '1px solid #ccc', borderRadius: 4, background: book.freeForAll ? '#f0f0f0' : '#fff' }}
+                onBlur={(e) => { const n = Math.max(0, +e.target.value || 0); if (n !== (book.xpPrice || 0)) updateXpPrice(book, n); }} />
+            </div>
             <div style={{ ...styles.buttonGroup, marginTop: 10 }}>
               <button style={{ ...styles.button, ...styles.manageButton }} onClick={() => { reloadOpenBook(book._id); setSelectedNode(null); }}>Edit contents</button>
-              <button style={{ ...styles.button, ...styles.editButton }} onClick={() => { setEditingBookId(book._id); setForm({ title: book.title, author: book.author, description: book.description || '', category: book.category || '' }); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Meta</button>
+              <button style={{ ...styles.button, ...styles.editButton }} onClick={() => { setEditingBookId(book._id); setForm({ title: book.title, author: book.author, description: book.description || '', category: book.category || '', xpPrice: book.xpPrice || 0 }); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Meta</button>
               <button style={{ ...styles.button, background: '#0d6efd', color: '#fff' }} onClick={() => { coverRef.current.dataset.bookId = book._id; coverRef.current.click(); }}>Cover</button>
               <button style={{ ...styles.button, background: book.published ? '#fd7e14' : '#198754', color: '#fff' }} onClick={() => togglePublish(book)}>{book.published ? 'Unpublish' : 'Publish'}</button>
               <button style={{ ...styles.button, ...styles.deleteButton }} onClick={() => deleteBook(book._id)}>Delete</button>

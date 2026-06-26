@@ -3,21 +3,14 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import socket from '../socket-jwt';
-import api, { resolveApiAssetUrl } from '../api';
+import api from '../api';
+import UserAvatar from '../components/UserAvatar';
 import './SocialHubPage.css';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
-function initials(name) { return (name || '?')[0].toUpperCase(); }
 function containsBlockedLink(text) {
   if (!text) return false;
   return /(?:https?:\/\/|www\.|\b[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z]{2,})+(?:\/\S*)?)/i.test(text);
-}
-function avatarView(user) {
-  const image = user?.profilePhotoUrl || user?.activeAvatarUrl;
-  if (image) return { kind: 'image', src: resolveApiAssetUrl(image) };
-  if (user?.activeLego) return { kind: 'emoji', value: '🧱' };
-  if (user?.active3dModel) return { kind: 'emoji', value: '🌌' };
-  return { kind: 'initial', value: initials(user?.displayName || user?.username) };
 }
 function fmtTime(dateStr) {
   if (!dateStr) return '';
@@ -156,11 +149,7 @@ function ClubChat({ chatId, currentUser }) {
               <div key={msg._id || i} className={`sh-msg-row${isMe ? ' sh-msg-row-me' : ''}`}>
                 {!isMe && (
                   <div className="sh-msg-avatar">
-                    {avatarView(msg.sender).kind === 'image' ? (
-                      <img src={avatarView(msg.sender).src} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      avatarView(msg.sender).value
-                    )}
+                    <UserAvatar user={msg.sender} size={28} />
                   </div>
                 )}
                 <div className="sh-msg-bubble-wrap">
@@ -551,11 +540,7 @@ export default function ClubDetailPage() {
             {pagedMembers.map(m => (
               <div key={m.userId} className="sh-member-row">
                 <div className="sh-avatar">
-                  {avatarView(m).kind === 'image' ? (
-                    <img src={avatarView(m).src} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    avatarView(m).value
-                  )}
+                  <UserAvatar user={m} size={42} />
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}>
