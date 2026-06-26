@@ -4,6 +4,7 @@ import { Chess } from 'chess.js';
 import Chessboard from '../../components/Chessboard';
 import io from 'socket.io-client';
 import api from '../../api';
+import PlayerName from '../../components/PlayerName';
 import './TeamRacePuzzle.css';
 
 // Module-level cache to persist across component remounts
@@ -819,7 +820,7 @@ function TeamRacePuzzle() {
                           return (
                             <tr key={player.userId || i} className={myUserId && String(player.userId) === myUserId ? 'lb-my-row' : ''}>
                               <td className="lb-rank">{abs === 0 ? '🥇' : abs === 1 ? '🥈' : abs === 2 ? '🥉' : `#${abs + 1}`}</td>
-                              <td className="lb-name">{player.displayName || player.username}</td>
+                              <td className="lb-name"><PlayerName displayName={player.displayName} username={player.username} userId={player.userId} /></td>
                               <td className="lb-score">{player.totalScore}</td>
                             </tr>
                           );
@@ -827,7 +828,7 @@ function TeamRacePuzzle() {
                         {myPlayer && !myOnPage && (
                           <tr className="lb-my-row lb-pinned-row">
                             <td className="lb-rank">{myRankIdx === 0 ? '🥇' : myRankIdx === 1 ? '🥈' : myRankIdx === 2 ? '🥉' : `#${myRankIdx + 1}`}</td>
-                            <td className="lb-name">📍 {myPlayer.displayName || myPlayer.username}</td>
+                            <td className="lb-name">📍 <PlayerName displayName={myPlayer.displayName} username={myPlayer.username} userId={myPlayer.userId} /></td>
                             <td className="lb-score">{myPlayer.totalScore}</td>
                           </tr>
                         )}

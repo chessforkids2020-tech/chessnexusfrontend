@@ -700,7 +700,7 @@ export default function HealthyMix() {
                 </span>
               )}
             </div>
-            <div className="hm-rating-note">Shared with your Daily Puzzles</div>
+            <div className="hm-rating-note">{toMoveLabel}</div>
           </div>
 
           {/* Session stats */}

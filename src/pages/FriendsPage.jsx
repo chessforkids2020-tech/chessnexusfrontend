@@ -174,7 +174,7 @@ export default function FriendsPage() {
                 <div key={u._id} style={s.card}>
                   <div style={s.avatar}>{(u.displayName || u.username || '?')[0].toUpperCase()}</div>
                   <div style={s.cardInfo}>
-                    <div style={s.cardName}>{u.displayName || u.username}</div>
+                    <div style={s.cardName}><PlayerName displayName={u.displayName} username={u.username} userId={u._id} /></div>
                     <div style={s.cardSub}>@{u.username} · {u.friendCount || 0} friends</div>
                   </div>
                   {!st || st.status === 'none' ? (

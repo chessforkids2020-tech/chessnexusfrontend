@@ -532,9 +532,6 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
               <div key={i} style={styles.supporterChip}>
                 <span aria-hidden style={{ marginRight: 6 }}>☕</span>
                 <span style={{ color: C.text, fontWeight: 600 }}>{s.displayName}</span>
-                <span style={{ color: C.textFaint, marginLeft: 6, fontSize: 12 }}>
-                  · {s.currency === 'INR' ? '₹' : '$'}{s.amount}
-                </span>
               </div>
             ))}
           </div>

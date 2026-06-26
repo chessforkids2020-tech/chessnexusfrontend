@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import socket from '../socket-jwt';
 import api from '../api';
 import UserAvatar from '../components/UserAvatar';
+import PlayerName from '../components/PlayerName';
 import './SocialHubPage.css';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -544,7 +545,7 @@ export default function ClubDetailPage() {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}>
-                    {m.displayName || m.username}
+                    <PlayerName displayName={m.displayName} username={m.username} userId={m.userId} />
                   </div>
                 </div>
                 {m.role === 'owner' && <span className="sh-owner-badge">Owner</span>}

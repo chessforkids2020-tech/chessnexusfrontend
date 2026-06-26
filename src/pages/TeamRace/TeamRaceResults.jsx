@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
+import PlayerName from '../../components/PlayerName';
 import './TeamRaceResults.css';
 
 function TeamRaceResults() {
@@ -240,7 +241,7 @@ function TeamRaceResults() {
                     <tr key={r._id}>
                       <td className="rank-cell">{medals[i] || i + 1}</td>
                       <td className="player-cell">
-                        <div className="player-cell-content">{r.userId?.displayName || r.userId?.username || '—'}</div>
+                        <div className="player-cell-content">{r.userId ? <PlayerName displayName={r.userId.displayName} username={r.userId.username} userId={r.userId._id} /> : '—'}</div>
                       </td>
                       <td>
                         {r.teamId?.teamName ? (

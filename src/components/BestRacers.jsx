@@ -148,7 +148,7 @@ const BestRacers = ({ compact = false }) => {
                   <div style={styles.racerRank}>{getMedalEmoji(index)}</div>
                   <div style={styles.racerInfo}>
                     <div style={styles.racerName}>
-                      <PlayerName displayName={racer.displayName} username={racer.username} />
+                      <PlayerName displayName={racer.displayName} username={racer.username} userId={racer.userId} />
                     </div>
                     <div style={styles.racerUsername}>{topicsMap[racer.topic]?.title || racer.topic || 'checkmate'} • 20 min</div>
                   </div>
@@ -182,7 +182,7 @@ const BestRacers = ({ compact = false }) => {
                   <div style={styles.racerRank}>{getMedalEmoji(index)}</div>
                   <div style={styles.racerInfo}>
                     <div style={styles.racerName}>
-                      <PlayerName displayName={racer.displayName} username={racer.username} />
+                      <PlayerName displayName={racer.displayName} username={racer.username} userId={racer.userId} />
                     </div>
                     <div style={styles.racerUsername}>{racer.timeLimit}min race • {topicsMap[racer.topic]?.title || racer.topic || 'checkmate'}</div>
                   </div>
@@ -216,7 +216,7 @@ const BestRacers = ({ compact = false }) => {
                   <div style={styles.racerRank}>{getMedalEmoji(index)}</div>
                   <div style={styles.racerInfo}>
                     <div style={styles.racerName}>
-                      <PlayerName displayName={racer.displayName} username={racer.username} />
+                      <PlayerName displayName={racer.displayName} username={racer.username} userId={racer.userId} />
                     </div>
                     <div style={styles.racerUsername}>{racer.timeLimit || 10}min race • {topicsMap[racer.topic]?.title || racer.topic || 'checkmate'}</div>
                   </div>
@@ -281,7 +281,7 @@ const BestRacers = ({ compact = false }) => {
                               {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx+1}.`}
                             </td>
                             <td style={styles.td}>
-                              <div style={{fontWeight: '600', color: '#ffffff'}}><PlayerName displayName={u.displayName} username={u.username} /></div>
+                              <div style={{fontWeight: '600', color: '#ffffff'}}><PlayerName displayName={u.displayName} username={u.username} userId={u.userId} /></div>
                             </td>
                             <td style={{...styles.td, ...styles.pointsCell}}>{u.score}</td>
                           </tr>

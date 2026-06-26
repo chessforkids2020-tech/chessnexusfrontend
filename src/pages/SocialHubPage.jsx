@@ -150,7 +150,7 @@ function FeedTab({ user }) {
                   <UserAvatar user={f} size={34} />
                   <span className="sh-online-dot" />
                 </div>
-                <span className="sh-online-name"><PlayerName displayName={f.displayName} username={f.username} /></span>
+                <span className="sh-online-name"><PlayerName displayName={f.displayName} username={f.username} userId={f._id} /></span>
                 <button
                   className="sh-btn-challenge"
                   title="Challenge to Puzzle Race"
@@ -217,7 +217,7 @@ function FeedTab({ user }) {
                   <span className={`sh-lb-rank ${i === 0 ? 'sh-lb-rank-gold' : i === 1 ? 'sh-lb-rank-silver' : i === 2 ? 'sh-lb-rank-bronze' : ''}`}>
                     {i < 3 ? ['🥇','🥈','🥉'][i] : i + 1}
                   </span>
-                  <span className="sh-lb-name">{inv.displayName || inv.username}</span>
+                  <span className="sh-lb-name"><PlayerName displayName={inv.displayName} username={inv.username} userId={inv._id} /></span>
                   <span className="sh-lb-score">{inv.inviteCount} {inv.inviteCount === 1 ? 'invite' : 'invites'}</span>
                 </div>
               ))}
@@ -250,7 +250,7 @@ function FeedTab({ user }) {
                     <span className={`sh-lb-rank ${i === 0 ? 'sh-lb-rank-gold' : i === 1 ? 'sh-lb-rank-silver' : i === 2 ? 'sh-lb-rank-bronze' : ''}`}>
                       {i < 3 ? ['🥇','🥈','🥉'][i] : i + 1}
                     </span>
-                    <span className="sh-lb-name">{isMe ? 'You' : (entry.displayName || entry.username)}</span>
+                    <span className="sh-lb-name">{isMe ? 'You' : <PlayerName displayName={entry.displayName} username={entry.username} userId={entry._id} />}</span>
                     <span className="sh-lb-score">{entry.totalScore}pts</span>
                   </div>
                 );
@@ -457,7 +457,7 @@ function PlayersTab() {
                 <PlayerAvatar user={u} size={34} />
                 <div className="pl-search-info">
                   <div className="pl-search-name" title={u.displayName || u.username}>
-                    {u.displayName || u.username}
+                    <PlayerName displayName={u.displayName} username={u.username} userId={u._id} />
                   </div>
                   <div className="pl-search-handle">@{u.username}</div>
                 </div>
@@ -491,7 +491,7 @@ function PlayersTab() {
                 <PlayerAvatar user={u} size={40} online={u.isOnline} />
                 <div className="pl-row-info">
                   <div className="pl-row-name" title={u.displayName || u.username || ''}>
-                    <PlayerName displayName={u.displayName} username={u.username} />
+                    <PlayerName displayName={u.displayName} username={u.username} userId={u._id} />
                   </div>
                   <div className="pl-active-meta">
                     {u.isOnline
@@ -654,7 +654,7 @@ function InviteTab({ user }) {
                   {i < 3 ? ['🥇','🥈','🥉'][i] : i + 1}
                 </span>
                 <span className="sh-lb-name">
-                  {entry.displayName || entry.username}{isMe ? ' (you)' : ''}
+                  <PlayerName displayName={entry.displayName} username={entry.username} userId={entry._id} />{isMe ? ' (you)' : ''}
                 </span>
                 <span className="sh-lb-score">{entry.activeReferrals}</span>
               </div>
@@ -793,7 +793,7 @@ function InviteTab({ user }) {
               <div key={inv.id || i} className="sh-invite-item">
                 <div className="sh-avatar sh-avatar-sm">{initials(inv.user?.displayName || inv.user?.username || 'User')}</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}>{inv.user?.displayName || inv.user?.username || 'Deleted User'}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}>{inv.user ? <PlayerName displayName={inv.user.displayName} username={inv.user.username} userId={inv.user._id} /> : 'Deleted User'}</div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>@{inv.user?.username || 'unknown'}</div>
                 </div>
                 <span className={inv.status === 'active' ? 'sh-chip-active' : (inv.status === 'request_pending' ? 'sh-chip-request' : 'sh-chip-pending')}>
@@ -927,7 +927,7 @@ function FriendsTab() {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {f.user?.displayName || f.user?.username}
+                    <PlayerName displayName={f.user?.displayName} username={f.user?.username} userId={f.user?._id} />
                     {isOnline && <span style={{ fontSize: 11, color: '#10b981', fontWeight: 500 }}>● online</span>}
                   </div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>@{f.user?.username}</div>
@@ -966,7 +966,7 @@ function FriendsTab() {
                 <UserAvatar user={r.user} size={42} />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}>{r.user?.displayName || r.user?.username}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}><PlayerName displayName={r.user?.displayName} username={r.user?.username} userId={r.user?._id} /></div>
                 <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>@{r.user?.username}</div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -1001,7 +1001,7 @@ function FriendsTab() {
                   <UserAvatar user={u} size={42} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}>{u.displayName || 'Player'}</div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}><PlayerName displayName={u.displayName} username={u.username} userId={u._id} /></div>
                   <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>{u.friendCount || 0} friends</div>
                 </div>
                 {!st || st.status === 'none' ? (

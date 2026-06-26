@@ -646,7 +646,7 @@ export default function ArenaTournamentLobby() {
                           flex: 1, minWidth: 0,
                           textShadow: crown ? `0 0 10px ${crown.color}55` : 'none'
                         }}>
-                          <PlayerName displayName={p.displayName} username={p.username} />
+                          <PlayerName displayName={p.displayName} username={p.username} userId={p.userId} />
                         </span>
                         {/* You tag */}
                         {isMe && (

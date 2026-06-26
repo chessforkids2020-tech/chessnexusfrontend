@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../api';
 import { getTopicTitle } from '../../utils/topicTitles';
+import PlayerName from '../../components/PlayerName';
 import './TeamLobby.css';
 
 function TeamLobby() {
@@ -425,7 +426,7 @@ function TeamLobby() {
                 <div className="team-mini-players">
                   {(team.players || []).slice(0, 3).map(player => (
                     <div key={player.userId._id} className="mini-player">
-                      {player.userId.displayName}
+                      <PlayerName displayName={player.userId.displayName} username={player.userId.username} userId={player.userId._id} />
                     </div>
                   ))}
                   {(team.players || []).length > 3 && (
@@ -467,7 +468,7 @@ function TeamLobby() {
                           <span className="position-badge">#{player.position}</span>
                         </div>
                         <div className="player-name">
-                          {player.userId.displayName}
+                          <PlayerName displayName={player.userId.displayName} username={player.userId.username} userId={player.userId._id} />
                         </div>
                         <div className="player-team">
                           <span className="team-badge" style={{
@@ -581,7 +582,7 @@ function TeamLobby() {
                           return (
                             <tr key={player.userId} className={String(player.userId) === myId ? 'lb-my-row' : ''}>
                               <td className="lb-rank">{abs === 0 ? '🥇' : abs === 1 ? '🥈' : abs === 2 ? '🥉' : `#${abs + 1}`}</td>
-                              <td className="lb-name">{player.displayName || player.username}</td>
+                              <td className="lb-name"><PlayerName displayName={player.displayName} username={player.username} userId={player.userId} /></td>
                               <td className="lb-score">{player.totalScore}</td>
                             </tr>
                           );
@@ -589,7 +590,7 @@ function TeamLobby() {
                         {myPlayer && !myOnPage && (
                           <tr className="lb-my-row lb-pinned-row">
                             <td className="lb-rank">{myRankIdx === 0 ? '🥇' : myRankIdx === 1 ? '🥈' : myRankIdx === 2 ? '🥉' : `#${myRankIdx + 1}`}</td>
-                            <td className="lb-name">📍 {myPlayer.displayName || myPlayer.username}</td>
+                            <td className="lb-name">📍 <PlayerName displayName={myPlayer.displayName} username={myPlayer.username} userId={myPlayer.userId} /></td>
                             <td className="lb-score">{myPlayer.totalScore}</td>
                           </tr>
                         )}

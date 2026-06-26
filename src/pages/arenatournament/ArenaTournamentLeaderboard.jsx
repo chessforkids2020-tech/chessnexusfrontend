@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import socket from '../../socket-jwt';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
+import PlayerName from '../../components/PlayerName';
 import './ArenaTournamentLeaderboard.css';
 
 const CROWN_TIERS = {
@@ -431,7 +432,7 @@ export default function ArenaTournamentLeaderboard() {
                     <img src="/arenatrophies/arenasecond.png" alt="2nd Place Trophy" style={{ width: '180px', height: '180px', objectFit: 'contain' }} />
                   </div>
                   <div className="trophy-username">
-                    <span style={{ color: CROWN_TIERS[topThree[1].crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[topThree[1].crownTierAtJoin] ? '800' : 'inherit', textShadow: CROWN_TIERS[topThree[1].crownTierAtJoin] ? `0 0 10px ${CROWN_TIERS[topThree[1].crownTierAtJoin].color}66` : 'none' }}>{topThree[1].displayName}</span>
+                    <span style={{ color: CROWN_TIERS[topThree[1].crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[topThree[1].crownTierAtJoin] ? '800' : 'inherit', textShadow: CROWN_TIERS[topThree[1].crownTierAtJoin] ? `0 0 10px ${CROWN_TIERS[topThree[1].crownTierAtJoin].color}66` : 'none' }}><PlayerName displayName={topThree[1].displayName} username={topThree[1].username} userId={topThree[1].userId} /></span>
                     {String(topThree[1].userId) === String(user?.id || user?._id) && <span className="you-badge-trophy">You</span>}
                     <div style={{ marginTop: '4px' }}><CrownBadge tier={topThree[1].crownTierAtJoin} size="lg" /></div>
                   </div>
@@ -444,7 +445,7 @@ export default function ArenaTournamentLeaderboard() {
                     <img src="/arenatrophies/arenafirst.png" alt="1st Place Trophy" style={{ width: '210px', height: '210px', objectFit: 'contain' }} />
                   </div>
                   <div className="trophy-username">
-                    <span style={{ color: CROWN_TIERS[topThree[0].crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[topThree[0].crownTierAtJoin] ? '800' : 'inherit', textShadow: CROWN_TIERS[topThree[0].crownTierAtJoin] ? `0 0 10px ${CROWN_TIERS[topThree[0].crownTierAtJoin].color}66` : 'none' }}>{topThree[0].displayName}</span>
+                    <span style={{ color: CROWN_TIERS[topThree[0].crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[topThree[0].crownTierAtJoin] ? '800' : 'inherit', textShadow: CROWN_TIERS[topThree[0].crownTierAtJoin] ? `0 0 10px ${CROWN_TIERS[topThree[0].crownTierAtJoin].color}66` : 'none' }}><PlayerName displayName={topThree[0].displayName} username={topThree[0].username} userId={topThree[0].userId} /></span>
                     {String(topThree[0].userId) === String(user?.id || user?._id) && <span className="you-badge-trophy">You</span>}
                     <div style={{ marginTop: '4px' }}><CrownBadge tier={topThree[0].crownTierAtJoin} size="lg" /></div>
                   </div>
@@ -457,7 +458,7 @@ export default function ArenaTournamentLeaderboard() {
                     <img src="/arenatrophies/arenathird.png" alt="3rd Place Trophy" style={{ width: '150px', height: '150px', objectFit: 'contain' }} />
                   </div>
                   <div className="trophy-username">
-                    <span style={{ color: CROWN_TIERS[topThree[2].crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[topThree[2].crownTierAtJoin] ? '800' : 'inherit', textShadow: CROWN_TIERS[topThree[2].crownTierAtJoin] ? `0 0 10px ${CROWN_TIERS[topThree[2].crownTierAtJoin].color}66` : 'none' }}>{topThree[2].displayName}</span>
+                    <span style={{ color: CROWN_TIERS[topThree[2].crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[topThree[2].crownTierAtJoin] ? '800' : 'inherit', textShadow: CROWN_TIERS[topThree[2].crownTierAtJoin] ? `0 0 10px ${CROWN_TIERS[topThree[2].crownTierAtJoin].color}66` : 'none' }}><PlayerName displayName={topThree[2].displayName} username={topThree[2].username} userId={topThree[2].userId} /></span>
                     {String(topThree[2].userId) === String(user?.id || user?._id) && <span className="you-badge-trophy">You</span>}
                     <div style={{ marginTop: '4px' }}><CrownBadge tier={topThree[2].crownTierAtJoin} size="lg" /></div>
                   </div>
@@ -598,7 +599,7 @@ export default function ArenaTournamentLeaderboard() {
                         {onlineUserIds.includes(participant.userId) && (
                           <span className="online-dot-small" title="Online" />
                         )}
-                        <span style={{ color: CROWN_TIERS[participant.crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[participant.crownTierAtJoin] ? '700' : 'inherit', textShadow: CROWN_TIERS[participant.crownTierAtJoin] ? `0 0 8px ${CROWN_TIERS[participant.crownTierAtJoin].color}55` : 'none' }}>{participant.displayName}</span>
+                        <span style={{ color: CROWN_TIERS[participant.crownTierAtJoin]?.color || 'inherit', fontWeight: CROWN_TIERS[participant.crownTierAtJoin] ? '700' : 'inherit', textShadow: CROWN_TIERS[participant.crownTierAtJoin] ? `0 0 8px ${CROWN_TIERS[participant.crownTierAtJoin].color}55` : 'none' }}><PlayerName displayName={participant.displayName} username={participant.username} userId={participant.userId} /></span>
                         {isMe && <span className="you-badge-small">You</span>}
                         <CrownBadge tier={participant.crownTierAtJoin} />
                       </td>

@@ -3,6 +3,7 @@ import SEO from '../components/SEO';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
 import StudyPuzzleSidebar from '../components/StudyPuzzleSidebar';
+import PlayerName from '../components/PlayerName';
 import { motion } from 'framer-motion';
 
 const Leaderboard = () => {
@@ -556,7 +557,11 @@ const Leaderboard = () => {
                     </td>
                     <td style={styles.td}>
                       <div style={styles.userCell}>
-                        <strong>{entry.user.displayName || entry.user.username.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</strong>
+                        <strong><PlayerName
+                          displayName={entry.user.displayName || entry.user.username.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          username={entry.user.username}
+                          userId={entry.user._id}
+                        /></strong>
                       </div>
                     </td>
                     <td style={styles.td}>
