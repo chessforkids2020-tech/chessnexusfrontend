@@ -309,13 +309,20 @@ function RankBadge({ rank }) {
   return <div className="pl-rank pl-rank-n">{rank}</div>;
 }
 
-function LeaderRow({ rank, name, sub, score, scoreLabel, accent = 'cyan', showAvatar = true, user, avatarSize = 36 }) {
+function LeaderRow({ rank, name, sub, score, scoreLabel, accent = 'cyan', showAvatar = true, user, avatarSize = 36, username, displayName, userId }) {
+  // When we have player identifiers, render through PlayerName so the ☕
+  // supporter badge appears; otherwise fall back to the plain name.
+  const canBadge = username != null || displayName != null || userId != null;
   return (
     <div className={`pl-row${rank === 1 ? ' pl-row-top' : ''}`}>
       <RankBadge rank={rank} />
       {showAvatar && <PlayerAvatar user={user} name={name} size={avatarSize} />}
       <div className="pl-row-info">
-        <div className="pl-row-name" title={typeof name === 'string' ? name : undefined}>{name}</div>
+        <div className="pl-row-name" title={typeof name === 'string' ? name : undefined}>
+          {canBadge
+            ? <PlayerName displayName={displayName ?? (typeof name === 'string' ? name : undefined)} username={username} userId={userId} />
+            : name}
+        </div>
         {sub && <div className="pl-row-sub">{sub}</div>}
       </div>
       {score != null && (
@@ -357,6 +364,9 @@ function ArenaLeaderCol({ icon, title, rows, accent }) {
             key={r._id || i}
             rank={i + 1}
             name={r.displayName || r.username || 'Player'}
+            displayName={r.displayName}
+            username={r.username}
+            userId={r._id || r.userId}
             score={r.score}
             accent={accent}
             user={r}
@@ -531,6 +541,9 @@ function PlayersTab() {
                     key={u.username || i}
                     rank={u.rank || i + 1}
                     name={u.displayName || u.username}
+                    displayName={u.displayName}
+                    username={u.username}
+                    userId={u._id || u.userId}
                     sub={u.todayDelta ? `▲ +${u.todayDelta} today` : 'puzzle rating'}
                     score={u.rating}
                     accent="cyan"
@@ -544,6 +557,9 @@ function PlayersTab() {
                     key={u.username || (i + 5)}
                     rank={u.rank || i + 6}
                     name={u.displayName || u.username}
+                    displayName={u.displayName}
+                    username={u.username}
+                    userId={u._id || u.userId}
                     sub={u.todayDelta ? `▲ +${u.todayDelta} today` : 'puzzle rating'}
                     score={u.rating}
                     accent="cyan"

@@ -4,6 +4,7 @@ import socket from '../../socket';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../api';
 import { getTopicTitle } from '../../utils/topicTitles';
+import PlayerName from '../../components/PlayerName';
 import './TeamSelection.css';
 
 function TeamSelection() {
@@ -240,7 +241,7 @@ function TeamSelection() {
                               <div key={player.userId._id} className="member-item">
                                 <span className="member-position">#{player.position}</span>
                                 <span className="member-name">
-                                  {player.userId.displayName}
+                                  <PlayerName displayName={player.userId.displayName} username={player.userId.username} userId={player.userId._id} />
                                 </span>
                               </div>
                             ))
