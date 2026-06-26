@@ -104,7 +104,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
   // User-drawn arrows
   const [localArrows, setLocalArrows] = useState<Array<{ from: string; to: string; color: string }>>([]);
   const [previewArrow, setPreviewArrow] = useState<{ from: string; to: string; color: string } | null>(null);
-  const arrowDragRef = useRef<{ square: string; color: string } | null>(null);
+  const arrowDragRef = useRef<{ square: string; color: string; button: number } | null>(null);
   // User-highlighted squares
   const [highlightedSquares, setHighlightedSquares] = useState<Record<string, string>>({});
   // Premove: a move queued during opponent's turn, fired automatically when it becomes player's turn
@@ -375,7 +375,18 @@ const Chessboard: React.FC<ChessboardProps> = ({
 
   const handleMouseDown = (e: React.MouseEvent, row: number, col: number) => {
     if (e.button !== 0) return; // Only handle left clicks
-    // Left click clears user-drawn arrows, highlights, and any pending premove
+
+    // Modifier-held left click (Ctrl/Alt/Shift) → draw arrows / highlight squares
+    // instead of moving a piece. This mirrors right-click drawing so users on a
+    // trackpad (where right-click drag is awkward) can draw with a left click while
+    // holding a modifier. The actual draw is finished in the global mouse-up handler.
+    if (e.ctrlKey || e.altKey || e.shiftKey) {
+      // The board-level onMouseDown already set arrowDragRef; don't clear arrows
+      // and don't start a piece move/drag.
+      return;
+    }
+
+    // Plain left click clears user-drawn arrows, highlights, and any pending premove
     setLocalArrows([]);
     setPreviewArrow(null);
     setHighlightedSquares({});
@@ -642,7 +653,9 @@ const Chessboard: React.FC<ChessboardProps> = ({
     };
 
     const handleRightMouseUp = (e: MouseEvent) => {
-      if (e.button !== 2 || !arrowDragRef.current) return;
+      // End the draw on the SAME button that started it: right-click draws end on
+      // button 2; modifier-held left-click draws end on button 0.
+      if (!arrowDragRef.current || e.button !== arrowDragRef.current.button) return;
       if (boardRef.current) {
         const rect = boardRef.current.getBoundingClientRect();
         const sq = getSquareFromBoardCoords(e.clientX - rect.left, e.clientY - rect.top);
@@ -873,7 +886,12 @@ const Chessboard: React.FC<ChessboardProps> = ({
         data-square={squareId}
         style={squareStyle}
         onMouseDown={(e) => {
-          if (e.button === 0) e.stopPropagation();
+          // Plain left click is handled per-square (stop bubbling to the board
+          // handler). But a modifier-held left click is a "draw" gesture — let it
+          // bubble to the board-level handler that arms arrowDragRef.
+          if (e.button === 0 && !(e.ctrlKey || e.altKey || e.shiftKey)) {
+            e.stopPropagation();
+          }
           handleMouseDown(e, row, col);
         }}
         onContextMenu={(e) => {
@@ -1269,13 +1287,19 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
         // clicks a destination, re-clicks the same piece (toggle off), or picks
         // another piece — matching Lichess/Chess.com behaviour.
         onMouseDown={(e) => {
-          if (e.button === 2) {
+          // Two ways to start drawing:
+          //  1. Right mouse button (classic), OR
+          //  2. Left button while holding Ctrl/Alt/Shift (trackpad-friendly).
+          const isModifierLeft = e.button === 0 && (e.ctrlKey || e.altKey || e.shiftKey);
+          if (e.button === 2 || isModifierLeft) {
             e.preventDefault();
             const rect = boardRef.current!.getBoundingClientRect();
             const sq = getSquareFromBoardCoords(e.clientX - rect.left, e.clientY - rect.top);
             if (sq) {
+              // Colour depends on which modifier is held (works for both buttons):
+              // Ctrl=red, Alt=blue, Shift=yellow, none=green.
               const color = e.ctrlKey ? '#f44336' : e.altKey ? '#2196f3' : e.shiftKey ? '#ffeb3b' : '#4caf50';
-              arrowDragRef.current = { square: sq, color };
+              arrowDragRef.current = { square: sq, color, button: e.button };
             }
           }
         }}
