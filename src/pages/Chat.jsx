@@ -9,11 +9,6 @@ import './Chat.css';
 
 const API = import.meta.env.VITE_API_URL;
 
-function containsBlockedLink(text) {
-  if (!text) return false;
-  return /(?:https?:\/\/|www\.|\b[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z]{2,})+(?:\/\S*)?)/i.test(text);
-}
-
 const Chat = () => {
   const { user, fetchUnreadCount } = useAuth();
   const location = useLocation();
@@ -444,7 +439,6 @@ const Chat = () => {
 
   // Determine whether inner messages content should be vertically centered
   const shouldCenterMessagesInner = loadingMessages || (!loadingMessages && (!selectedChat || messages.length === 0 || messages.length < 4));
-  const hasBlockedLink = containsBlockedLink(newMessage);
 
   return (
     <div className={`chat-container ${sizeMode === 'compact' ? 'compact' : sizeMode === 'expanded' ? 'expanded' : ''}`}>
@@ -583,15 +577,10 @@ const Chat = () => {
             onChange={(e) => setNewMessage(e.target.value)}
             disabled={!selectedChat}
           />
-          <button type="submit" className="send-button" disabled={!selectedChat || !newMessage.trim() || hasBlockedLink}>
+          <button type="submit" className="send-button" disabled={!selectedChat || !newMessage.trim()}>
             Send
           </button>
         </form>
-        {selectedChat && hasBlockedLink && (
-          <div style={{ color: '#ef4444', fontSize: 12, padding: '0 12px 10px' }}>
-            Links are not allowed in chat messages.
-          </div>
-        )}
       </div>
 
       {/* New Chat Modal */}

@@ -9,10 +9,21 @@ import PlayerName from '../components/PlayerName';
 import './SocialHubPage.css';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
-function containsBlockedLink(text) {
+// Club chats allow ONLY chessnexus.in / 3darena.chessnexus.in links. This mirrors
+// the server rule (utils/chatModeration.js) so the user gets instant feedback.
+const CLUB_ALLOWED_HOSTS = ['chessnexus.in', '3darena.chessnexus.in'];
+const LINK_RE = /(?:https?:\/\/|www\.|\b[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z]{2,})+(?:\/\S*)?)/gi;
+function containsDisallowedClubLink(text) {
   if (!text) return false;
-  return /(?:https?:\/\/|www\.|\b[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z]{2,})+(?:\/\S*)?)/i.test(text);
+  const matches = text.match(LINK_RE);
+  if (!matches) return false;
+  return matches.some((tok) => {
+    const host = tok.trim().replace(/^https?:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0].toLowerCase();
+    if (!host) return false; // scheme-only fragment (e.g. "https://") — ignore
+    return !CLUB_ALLOWED_HOSTS.some((a) => host === a || host.endsWith('.' + a));
+  });
 }
+
 function fmtTime(dateStr) {
   if (!dateStr) return '';
   const d = new Date(dateStr);
@@ -102,7 +113,7 @@ function ClubChat({ chatId, currentUser }) {
   const sendMessage = async (e) => {
     e?.preventDefault();
     const text = input.trim();
-    if (!text || sending || containsBlockedLink(text)) return;
+    if (!text || sending || containsDisallowedClubLink(text)) return;
     setSending(true);
     setInput('');
     try {
@@ -120,7 +131,7 @@ function ClubChat({ chatId, currentUser }) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   };
 
-  const hasBlockedLink = containsBlockedLink(input);
+  const hasDisallowedLink = containsDisallowedClubLink(input);
 
   return (
     <div className="sh-club-chat">
@@ -184,14 +195,14 @@ function ClubChat({ chatId, currentUser }) {
         <button
           type="submit"
           className="sh-club-chat-send"
-          disabled={!input.trim() || sending || hasBlockedLink}
+          disabled={!input.trim() || sending || hasDisallowedLink}
         >
           {sending ? '…' : '➤'}
         </button>
       </form>
-      {hasBlockedLink && (
+      {hasDisallowedLink && (
         <div style={{ color: '#ef4444', fontSize: 12, marginTop: 6 }}>
-          Links are not allowed in chat messages.
+          Only chessnexus.in links are allowed in club chats.
         </div>
       )}
     </div>
