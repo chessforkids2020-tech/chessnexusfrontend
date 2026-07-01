@@ -343,14 +343,6 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             <Eliter icon="🏟️" text="Launch 3D Arena Tournaments" />
             <Eliter icon="🧑‍🏫" text="ChessNexus Coach free for 6 months" />
           </div>
-
-          <div style={styles.eliteAllNote}>
-            <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>📚</span>
-            <span>
-              <strong style={{ color: C.text }}>Full access to every chess book in ChessNexus</strong> —
-              for <strong style={{ color: '#fde68a' }}>every supporter</strong>, any amount, any duration.
-            </span>
-          </div>
         </div>
 
         {/* Currency switch */}
@@ -737,19 +729,6 @@ const styles = {
     border: `1px solid ${C.panelBorder}`,
     borderRadius: 12,
     padding: '11px 14px'
-  },
-  eliteAllNote: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    marginTop: 12,
-    background: 'rgba(16,185,129,0.10)',
-    border: '1px solid rgba(16,185,129,0.35)',
-    borderRadius: 12,
-    padding: '12px 14px',
-    color: C.textDim,
-    fontSize: 13.5,
-    lineHeight: 1.5
   },
   whyGrid: {
     display: 'grid',

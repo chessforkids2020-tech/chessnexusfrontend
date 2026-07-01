@@ -91,6 +91,29 @@ export function deleteNode(root, path) {
   return path.slice(0, -1);
 }
 
+// Whether the tree contains ANY user-added variation (any node with more than
+// one child somewhere along the tree). Used to show/hide "delete all variations".
+export function hasAnyVariations(root) {
+  const stack = [root];
+  while (stack.length) {
+    const n = stack.pop();
+    if (n.children.length > 1) return true;
+    for (const c of n.children) stack.push(c);
+  }
+  return false;
+}
+
+// Strip every user-added variation, leaving only the mainline (children[0] chain).
+// Mutates `root` in place and returns it.
+export function clearAllVariations(root) {
+  let cur = root;
+  while (cur.children.length > 0) {
+    cur.children = [cur.children[0]]; // keep only the mainline child
+    cur = cur.children[0];
+  }
+  return root;
+}
+
 // Whether `path` lies entirely on the mainline (children[0] chain).
 export function isMainlinePath(root, path) {
   let cur = root;

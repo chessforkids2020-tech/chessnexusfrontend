@@ -365,16 +365,6 @@ const StudyOverview = () => {
         {/* Quick-access feature cards — top row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 32 }}>
           <motion.div
-            style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
-            whileHover={{ scale: 1.03, background: 'rgba(52,211,153,0.1)', boxShadow: '0 12px 40px rgba(52,211,153,0.12)' }}
-            onClick={() => navigate('/my-studies')}
-          >
-            <div style={{ fontSize: 32, marginBottom: 10 }}>📚</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: '#34d399', marginBottom: 6 }}>My Studies</div>
-            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>View and manage your studies — organised by chapters. Play through your saved positions.</div>
-          </motion.div>
-
-          <motion.div
             style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
             whileHover={{ scale: 1.03, background: 'rgba(251,191,36,0.1)', boxShadow: '0 12px 40px rgba(251,191,36,0.12)' }}
             onClick={() => navigate('/public-studies')}
@@ -385,13 +375,13 @@ const StudyOverview = () => {
           </motion.div>
 
           <motion.div
-            style={{ background: 'rgba(96,165,250,0.06)', border: '1px solid rgba(96,165,250,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
-            whileHover={{ scale: 1.03, background: 'rgba(96,165,250,0.1)', boxShadow: '0 12px 40px rgba(96,165,250,0.12)' }}
-            onClick={() => navigate('/study/books')}
+            style={{ background: 'rgba(34,211,238,0.06)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            whileHover={{ scale: 1.03, background: 'rgba(34,211,238,0.1)', boxShadow: '0 12px 40px rgba(34,211,238,0.12)' }}
+            onClick={() => navigate('/study/endgames')}
           >
-            <div style={{ fontSize: 32, marginBottom: 10 }}>📖</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: '#60a5fa', marginBottom: 6 }}>Books</div>
-            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Read chess books — chapters, topics and positions you can play through. Chapter 1 free for everyone.</div>
+            <div style={{ fontSize: 32, marginBottom: 10 }}>🏁</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: '#22d3ee', marginBottom: 6 }}>Endgames</div>
+            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Master endgames from real grandmaster games — rook, pawn, queen, minor-piece and more. Pick a type and play through how champions converted them.</div>
           </motion.div>
         </div>
 
@@ -519,7 +509,7 @@ const StudyOverview = () => {
                 <div style={styles.actionsContainer}>
                   <Link
                     to={`/study/learn?type=${studyType.type}`}
-                    style={styles.actionButton}
+                    style={{ ...styles.actionButton, gridColumn: '1 / -1' }}
                   >
                     <motion.div
                       whileHover={{ 
@@ -553,46 +543,6 @@ const StudyOverview = () => {
                       </div>
                       <div style={styles.actionSubtext}>
                         Learn concepts
-                      </div>
-                    </motion.div>
-                  </Link>
-
-                  <Link
-                    to={`/study/test?type=${studyType.type}`}
-                    style={styles.actionButton}
-                  >
-                    <motion.div
-                      whileHover={{ 
-                        y: -6,
-                        background: studyType.accentColor,
-                        borderColor: `${studyType.color}50`,
-                        boxShadow: `0 12px 32px ${studyType.accentColor}`,
-                      }}
-                      style={{
-                        ...styles.actionButton,
-                        margin: '-20px -16px',
-                        padding: '20px 16px',
-                      }}
-                      onMouseEnter={(e) => {
-                        const shimmer = e.currentTarget.querySelector('.shimmer');
-                        const icon = e.currentTarget.querySelector('.action-icon');
-                        if (shimmer) shimmer.style.transform = 'translateX(100%)';
-                        if (icon) icon.style.transform = 'scale(1.2) rotate(-10deg)';
-                      }}
-                      onMouseLeave={(e) => {
-                        const shimmer = e.currentTarget.querySelector('.shimmer');
-                        const icon = e.currentTarget.querySelector('.action-icon');
-                        if (shimmer) shimmer.style.transform = 'translateX(-100%)';
-                        if (icon) icon.style.transform = 'scale(1) rotate(0deg)';
-                      }}
-                    >
-                      <div className="shimmer" style={styles.shimmer}></div>
-                      <div className="action-icon" style={styles.actionIconWrapper}>🧠</div>
-                      <div style={{ ...styles.actionLabel, color: studyType.color }}>
-                        Test
-                      </div>
-                      <div style={styles.actionSubtext}>
-                        Apply knowledge
                       </div>
                     </motion.div>
                   </Link>
@@ -752,6 +702,16 @@ const StudyOverview = () => {
 
         {/* Quick-access feature cards — bottom row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16, marginTop: 32 }}>
+          <motion.div
+            style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            whileHover={{ scale: 1.03, background: 'rgba(52,211,153,0.1)', boxShadow: '0 12px 40px rgba(52,211,153,0.12)' }}
+            onClick={() => navigate('/my-studies')}
+          >
+            <div style={{ fontSize: 32, marginBottom: 10 }}>📚</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: '#34d399', marginBottom: 6 }}>My Studies</div>
+            <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>View and manage your studies — organised by chapters. Play through your saved positions.</div>
+          </motion.div>
+
           <motion.div
             style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
             whileHover={{ scale: 1.03, background: 'rgba(239,68,68,0.1)', boxShadow: '0 12px 40px rgba(239,68,68,0.12)' }}

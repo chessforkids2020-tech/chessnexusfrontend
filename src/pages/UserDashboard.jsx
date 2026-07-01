@@ -7,6 +7,7 @@ import { trackEvent } from '../lib/analytics';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import './UserDashboard.css';
 import PerformanceMonitor from "../components/PerformanceMonitor";
+import DetailedRaceStatsModal from "../components/DetailedRaceStatsModal";
 import ActivityTracker from "../components/ActivityTracker";
 import BestRacers from "../components/BestRacers";
 import FriendGamesSection from "../components/FriendGamesSection";
@@ -362,25 +363,13 @@ function WatchGamesCard({ displayName }) {
   );
 }
 
-// ─── XP Wallet card ──────────────────────────────────────────────────────────
-// Activity XP earned across the app — SEPARATE from Monthly Focus XP.
-// Shown right under the welcome card. The full breakdown (total + per source)
-// is visible to everyone, including spectators — XP can't be bought or traded.
-function WalletCard({ wallet }) {
+// ─── XP Wallet ───────────────────────────────────────────────────────────────
+// Standalone XP wallet block: total XP + "how to earn" popup.
+// Rendered in the right-hand panel below Highest Race Points.
+function XpWallet({ wallet }) {
   const total = wallet?.total || 0;
-  const by = wallet?.bySource || {};
   const [showHelp, setShowHelp] = React.useState(false);
 
-  const sources = [
-    { key: 'puzzles',  icon: '🧩', label: 'Puzzles' },
-    { key: 'games',    icon: '🎮', label: 'Games' },
-    { key: 'races',    icon: '🏁', label: 'Races' },
-    { key: 'analysis', icon: '🔍', label: 'Analysis' },
-    { key: 'arena',    icon: '⚔️', label: 'Arena' },
-    { key: 'social',   icon: '💬', label: 'Social' },
-  ];
-
-  // How XP is earned — shown in the help popup.
   const helpRows = [
     { icon: '🧩', text: 'Every puzzle (daily, healthy mix, theme, rating, pieces)', xp: '+2 XP' },
     { icon: '🎮', text: 'Every game (Tic-Tac-Toe, Bingo)', xp: '+2 XP' },
@@ -392,160 +381,162 @@ function WalletCard({ wallet }) {
   ];
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        margin: '14px 0 6px',
-        background: 'var(--obsidian-surface, rgba(23, 23, 23, 0.7))',
-        WebkitBackdropFilter: 'blur(20px)',
-        backdropFilter: 'blur(20px)',
-        border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
-        borderRadius: '18px',
-        padding: '16px 20px',
-        boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0, 0, 0, 0.5))',
-        display: 'flex',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        gap: '18px',
-      }}
-    >
-      {/* Total balance */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: 0 }}>
-        <div
-          style={{
-            width: 56, height: 56, flexShrink: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 30, borderRadius: '16px',
-            background: 'var(--obsidian-panel, linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.02)))',
-            border: '1px solid var(--obsidian-border-strong, rgba(6, 182, 212, 0.3))',
-          }}
-        >
-          👛
-        </div>
-        <div>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 7,
-            fontSize: 12, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
-            color: 'var(--obsidian-accent, #06b6d4)',
-          }}>
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 18,
+      padding: '24px 24px', borderRadius: 16,
+      background: 'rgba(6,182,212,0.06)',
+      border: '1px solid rgba(6,182,212,0.22)',
+    }}>
+      <span style={{ fontSize: 42, lineHeight: 1, flexShrink: 0 }}>👛</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--obsidian-accent, #06b6d4)' }}>
             XP Wallet
-            <button
-              type="button"
-              aria-label="How do I earn XP?"
-              onClick={() => setShowHelp(v => !v)}
-              style={{
-                width: 18, height: 18, flexShrink: 0,
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                borderRadius: '50%', cursor: 'pointer',
-                background: showHelp
-                  ? 'var(--obsidian-accent, #06b6d4)'
-                  : 'var(--obsidian-panel, rgba(6,182,212,0.12))',
-                border: '1px solid var(--obsidian-border-strong, rgba(6, 182, 212, 0.3))',
-                color: showHelp ? '#06121a' : 'var(--obsidian-accent, #67e8f9)',
-                fontSize: 12, fontWeight: 800, lineHeight: 1, padding: 0,
-              }}
-            >
-              ?
-            </button>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-            <span style={{
-              fontSize: 30, fontWeight: 800, lineHeight: 1,
-              color: 'var(--obsidian-text, #f8fafc)',
-              textShadow: 'var(--obsidian-glow, 0 0 18px rgba(6,182,212,0.25))',
-            }}>
-              {total.toLocaleString()}
-            </span>
-            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))' }}>XP</span>
-          </div>
+          </span>
+          <button
+            type="button"
+            aria-label="How do I earn XP?"
+            onClick={() => setShowHelp(v => !v)}
+            style={{
+              width: 20, height: 20, flexShrink: 0,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: '50%', cursor: 'pointer',
+              background: showHelp ? 'var(--obsidian-accent, #06b6d4)' : 'rgba(6,182,212,0.12)',
+              border: '1px solid rgba(6,182,212,0.3)',
+              color: showHelp ? '#06121a' : '#67e8f9',
+              fontSize: 12, fontWeight: 800, padding: 0,
+            }}
+          >?</button>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+          <span style={{ fontSize: 40, fontWeight: 800, lineHeight: 1, color: 'var(--obsidian-text, #f8fafc)' }}>
+            {total.toLocaleString()}
+          </span>
+          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))' }}>XP</span>
         </div>
       </div>
 
-      {/* Per-source breakdown — visible to everyone */}
-      {(
-        <div style={{
-          display: 'flex', flexWrap: 'wrap', gap: '10px',
-          marginLeft: 'auto', alignItems: 'center',
-        }}>
-          {sources.map(s => (
-            <div
-              key={s.key}
-              title={`${s.label}: ${(by[s.key] || 0).toLocaleString()} XP`}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 7,
-                background: 'var(--obsidian-panel, rgba(0, 0, 0, 0.3))',
-                border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
-                borderRadius: '999px',
-                padding: '6px 12px',
-              }}
-            >
-              <span style={{ fontSize: 15 }}>{s.icon}</span>
-              <span style={{ fontSize: 12, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))' }}>{s.label}</span>
-              <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--obsidian-text, #f8fafc)' }}>{(by[s.key] || 0).toLocaleString()}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* How-to-earn popup — portaled to document.body so it escapes every
-          parent stacking/transform context (welcome card, performance monitor,
-          etc.) and reliably covers the whole screen. */}
+      {/* How-to-earn popup */}
       {showHelp && ReactDOM.createPortal(
         <div
           onClick={() => setShowHelp(false)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 99999,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(0, 0, 0, 0.5)', padding: 16,
-          }}
+          style={{ position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', padding: 16 }}
         >
           <div
             role="dialog"
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
             style={{
               width: 'min(380px, calc(100vw - 32px))',
-              background: 'var(--obsidian-surface, rgba(23, 23, 23, 0.92))',
-              WebkitBackdropFilter: 'blur(24px)',
-              backdropFilter: 'blur(24px)',
-              border: '1px solid var(--obsidian-border-strong, rgba(6, 182, 212, 0.3))',
-              borderRadius: '14px',
-              boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0, 0, 0, 0.6))',
-              padding: '14px 16px',
+              background: 'var(--obsidian-surface, rgba(23,23,23,0.95))',
+              WebkitBackdropFilter: 'blur(24px)', backdropFilter: 'blur(24px)',
+              border: '1px solid rgba(6,182,212,0.3)', borderRadius: 14,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.6)', padding: '16px 18px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--obsidian-accent, #06b6d4)' }}>How you earn XP</span>
-              <button
-                type="button"
-                aria-label="Close"
-                onClick={() => setShowHelp(false)}
-                style={{
-                  background: 'transparent', border: 'none', cursor: 'pointer',
-                  color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', fontSize: 18, lineHeight: 1, padding: 2,
-                }}
-              >
-                ×
-              </button>
+              <button type="button" onClick={() => setShowHelp(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 18, lineHeight: 1, padding: 2 }}>×</button>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
               {helpRows.map((r, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ fontSize: 16, width: 22, textAlign: 'center', flexShrink: 0 }}>{r.icon}</span>
                   <span style={{ flex: 1, fontSize: 12.5, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', lineHeight: 1.4 }}>{r.text}</span>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--obsidian-accent, #67e8f9)', flexShrink: 0 }}>{r.xp}</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#67e8f9', flexShrink: 0 }}>{r.xp}</span>
                 </div>
               ))}
             </div>
-            <div style={{
-              marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
-              fontSize: 11, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', lineHeight: 1.5,
-            }}>
-              Wallet XP is separate from your Monthly Focus XP — it just tracks how active you are across the app.
+            <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(148,163,184,0.16)', fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>
+              XP is separate from Monthly Focus XP — it tracks how active you are across the app.
             </div>
           </div>
         </div>,
         document.body
       )}
+    </div>
+  );
+}
+
+// ─── Game Ratings card ───────────────────────────────────────────────────────
+// ─── Stats Bar ───────────────────────────────────────────────────────────────
+// One horizontal card right below the welcome card.
+// 4 sections: bullet / blitz / rapid / classical Elo ratings.
+// Last (5th) slot: reserved for chess960 — added later.
+function StatsBar({ ratings }) {
+  const [ratingDeltas, setRatingDeltas] = React.useState({});
+
+  React.useEffect(() => {
+    api.get('/api/user/rating-changes')
+      .then(res => setRatingDeltas(res.data || {}))
+      .catch(() => {});
+  }, []);
+
+  const ratingCats = [
+    { key: 'bullet',    label: 'Bullet',    icon: '⚡', color: '#f59e0b' },
+    { key: 'blitz',     label: 'Blitz',     icon: '🔥', color: '#ef4444' },
+    { key: 'rapid',     label: 'Rapid',     icon: '🐇', color: '#22c55e' },
+    { key: 'classical', label: 'Classical', icon: '🐢', color: '#818cf8' },
+  ];
+
+  const divider = (
+    <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--obsidian-border, rgba(148,163,184,0.16))', flexShrink: 0 }} />
+  );
+
+  return (
+    <div style={{
+      position: 'relative',
+      margin: '14px 0 6px',
+      background: 'var(--obsidian-surface, rgba(23,23,23,0.7))',
+      WebkitBackdropFilter: 'blur(20px)',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid var(--obsidian-border, rgba(148,163,184,0.16))',
+      borderRadius: 18,
+      boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0,0,0,0.5))',
+      display: 'flex',
+      alignItems: 'stretch',
+      overflow: 'hidden',
+      minHeight: 90,
+    }}>
+      {/* Sections 1–4: rating cells */}
+      {ratingCats.map((c, i) => (
+        <React.Fragment key={c.key}>
+          {(() => {
+            const delta = ratingDeltas[c.key];
+            const hasDelta = delta != null && delta !== 0;
+            const isUp = delta > 0;
+            return (
+              <div style={{
+                flex: '1 1 0', minWidth: 0,
+                padding: '14px 12px',
+                display: 'flex', flexDirection: 'column',
+                alignItems: 'center', justifyContent: 'center',
+                gap: 3,
+                transition: 'background 0.15s',
+              }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                onMouseLeave={e => e.currentTarget.style.background = ''}
+              >
+                <span style={{ fontSize: 20 }}>{c.icon}</span>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+                  <span style={{ fontSize: 22, fontWeight: 800, lineHeight: 1, color: '#f1f5f9' }}>
+                    {ratings?.[c.key] ?? 1200}
+                  </span>
+                  {hasDelta && (
+                    <span style={{ fontSize: 11, fontWeight: 800, color: isUp ? '#22c55e' : '#ef4444', lineHeight: 1 }}>
+                      {isUp ? '+' : ''}{delta}
+                    </span>
+                  )}
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: c.color, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  {c.label}
+                </span>
+              </div>
+            );
+          })()}
+          {i < ratingCats.length - 1 && divider}
+        </React.Fragment>
+      ))}
+
     </div>
   );
 }
@@ -682,11 +673,12 @@ function TodayStrip() {
 }
 
 // ─── Dashboard Tabs ─────────────────────────────────────────────────────────
-function DashboardTabs({ activeTab, onChange, gamesCount = 0 }) {
+function DashboardTabs({ activeTab, onChange }) {
   const tabs = [
-    { id: 'activity', icon: '📅', label: 'Practice Activity' },
+    { id: 'nexusguide',   icon: '🧭', label: 'Nexus Guide' },
+    { id: 'friendgames',  icon: '🎮', label: 'Games with Friends' },
     { id: 'achievements', icon: '🏅', label: 'My Achievements' },
-    // 'games' / Watch My Games tab hidden — available in Arena Tournament dashboard instead
+    { id: 'mycoach',      icon: '👨‍🏫', label: 'My Coach' },
   ];
   return (
     <div className="dash-tabs" role="tablist">
@@ -700,7 +692,6 @@ function DashboardTabs({ activeTab, onChange, gamesCount = 0 }) {
         >
           <span className="dash-tab-icon">{t.icon}</span>
           <span className="dash-tab-label">{t.label}</span>
-          {t.id === 'games' && gamesCount > 0 && <span className="dash-tab-dot">{gamesCount}</span>}
         </button>
       ))}
     </div>
@@ -828,19 +819,20 @@ function MonthlyFocusPanel({ publicData = null }) {
     return () => { alive = false; };
   }, [publicData]);
 
-  if (mfLoading || !data) return null;
+  if (mfLoading) return null;
 
   const isOfficial = f => !f.createdBy || f.createdBy?.role === 'admin';
 
-  const officialFocuses = data.focuses.filter(isOfficial);
-  const eliteFocuses    = data.focuses.filter(f => !isOfficial(f));
+  const focuses = data?.focuses || [];
+  const statsMap = data?.statsMap || {};
 
-  const officialWithStats = officialFocuses.filter(f => data.statsMap[f._id]);
-  const eliteWithStats    = eliteFocuses.filter(f => data.statsMap[f._id]);
+  const officialFocuses   = focuses.filter(isOfficial);
+  const eliteFocuses      = focuses.filter(f => !isOfficial(f));
+  const officialWithStats = officialFocuses.filter(f => statsMap[f._id]);
+  const eliteWithStats    = eliteFocuses.filter(f => statsMap[f._id]);
   const tableRows         = [...officialWithStats, ...eliteWithStats];
 
-  // Nothing to show at all
-  if (officialWithStats.length === 0 && tableRows.length === 0 && officialFocuses.length === 0) return null;
+  const hasAnything = officialFocuses.length > 0 || tableRows.length > 0;
 
   return (
     <div className="mfp-section">
@@ -854,6 +846,7 @@ function MonthlyFocusPanel({ publicData = null }) {
         </div>
         <Link to="/monthly-focus" className="mfp-view-all">View All →</Link>
       </div>
+      {!hasAnything && <p style={{ color: 'rgba(203,213,225,0.4)', fontSize: 13, margin: '8px 0 0' }}>No Monthly Focus challenge active this month.</p>}
 
       {/* Official challenge horizontal stat cards */}
       {officialWithStats.map(focus => {
@@ -926,6 +919,7 @@ function MonthlyFocusPanel({ publicData = null }) {
 }
 
 export default function UserDashboard() {
+  const { displayName: routeDisplayName } = useParams();
   const [user, setUser] = useState(null);
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -943,10 +937,35 @@ export default function UserDashboard() {
   // Dashboard tabs. Performance stats live on the page; tabs hold one focused
   // section each: Activity (heatmap) / Achievements / Games.
   // Default to 'activity' but remember the last tab a returning user was on.
-  const DASH_TABS = ['activity', 'achievements'];
+  const [puzzleCardRange, setPuzzleCardRange] = useState('24h');
+  const [puzzleCardStats24, setPuzzleCardStats24] = useState(null);
+  const [puzzleCardStats7d, setPuzzleCardStats7d] = useState(null);
+  const puzzleCardStats = puzzleCardRange === '7d' ? puzzleCardStats7d : puzzleCardStats24;
+  useEffect(() => {
+    if (!user) return;
+    api.get('/api/public/puzzle-stats/range?range=24h').then(r => setPuzzleCardStats24(r.data)).catch(() => {});
+    api.get('/api/public/puzzle-stats/range?range=7d').then(r => setPuzzleCardStats7d(r.data)).catch(() => {});
+  }, [user]);
+
+
+
+  const [ownArenaSummary, setOwnArenaSummary] = useState(null);
+  useEffect(() => {
+    if (!user || routeDisplayName) return;
+    const dn = user.displayName || user.username;
+    if (!dn) return;
+    api.get(`/api/public/profile/${encodeURIComponent(dn)}`)
+      .then(r => setOwnArenaSummary(r.data?.arenaSummary || null))
+      .catch(() => {});
+  }, [user, routeDisplayName]);
+
+  const [raceModalOpen, setRaceModalOpen] = useState(false);
+  const [raceModalType, setRaceModalType] = useState(null);
+  const openRaceModal = (type) => { setRaceModalType(type); setRaceModalOpen(true); };
+  const DASH_TABS = ['nexusguide', 'friendgames', 'achievements', 'mycoach'];
   const initialTab = (() => {
     const saved = localStorage.getItem('dashboardTab');
-    return DASH_TABS.includes(saved) ? saved : 'activity';
+    return DASH_TABS.includes(saved) ? saved : 'nexusguide';
   })();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [visitedTabs, setVisitedTabs] = useState(() => new Set([initialTab]));
@@ -965,7 +984,6 @@ export default function UserDashboard() {
   const [editSaving, setEditSaving] = useState(false);
   const [editMsg, setEditMsg] = useState(null); // { type: 'ok'|'err', text: string }
   const navigate = useNavigate();
-  const { displayName: routeDisplayName } = useParams();
   const isPublicView = Boolean(routeDisplayName);
   // Viewer is logged in only if they actually have a token
   const isViewerLoggedIn = Boolean(localStorage.getItem('authToken'));
@@ -1552,92 +1570,288 @@ export default function UserDashboard() {
           </div>
         )}
 
-        {/* XP Wallet — activity XP, separate from Monthly Focus XP. Sits right
-            under the welcome card; full breakdown is visible to everyone. */}
+        {/* Stats Bar — 4 ratings (bullet / blitz / rapid / classical) */}
         {user && (
-          <WalletCard wallet={user.xpWallet} />
+          <StatsBar ratings={user.ratings} />
         )}
 
-        {/* ── Tabbed dashboard: Today strip + Practice / Achievements / Games ── */}
+        {/* ── Tabbed dashboard ── */}
         {user && (
           <>
             {!isPublicView && <TodayStrip />}
 
-            {/* Performance stats (includes Monthly Focus) — above the tabs */}
-            <PerformanceMonitor
-              user={user}
-              publicTrainingStats={publicView?.trainingStats || null}
-              publicArenaSummary={publicView?.arenaSummary || null}
-              publicMonthlyFocus={isPublicView ? (publicView?.monthlyFocus || { focuses: [], statsMap: {} }) : null}
-              publicPuzzleStatsRange={isPublicView ? (publicView?.puzzleStatsRange || null) : null}
-              viewedDisplayName={isPublicView ? routeDisplayName : null}
+            {/* Two-column card: 65% Practice Activity | 35% right panel (TBD) */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '65fr 35fr',
+              gap: 16,
+              margin: '0 0 18px 0',
+            }}>
+              <div style={{ overflow: 'hidden' }}>
+                <ActivityTracker publicData={publicView?.activity || null} />
+              </div>
+              <div style={{
+                background: 'var(--obsidian-surface-elevated, rgba(23,23,23,0.7))',
+                border: '1px solid var(--obsidian-border, rgba(148,163,184,0.16))',
+                borderRadius: 24,
+                padding: '20px 18px',
+                boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0,0,0,0.5))',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+              }}>
+                {/* XP Wallet — above Highest Race Points */}
+                {user && <XpWallet wallet={user.xpWallet} />}
+
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--obsidian-accent, #06b6d4)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
+                  🏆 Highest Race Points
+                </div>
+                {[
+                  { icon: '🏃‍♂️', label: 'Individual Race', value: user?.highestTimedRaceScore || 0, type: 'timedRace' },
+                  { icon: '🏟️',   label: 'Arena Race',      value: user?.highestArenaRaceScore || 0, type: 'arenaRace' },
+                  { icon: '👥',   label: 'Team Race',       value: user?.highestTeamRaceScore || 0,  type: 'teamRace' },
+                ].map(r => (
+                  <div
+                    key={r.label}
+                    onClick={() => openRaceModal(r.type)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 14,
+                      padding: '14px 16px', borderRadius: 14, cursor: 'pointer',
+                      background: 'var(--obsidian-panel, linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02)))',
+                      border: '1px solid var(--obsidian-border, rgba(148,163,184,0.16))',
+                      transition: 'transform 0.18s, border-color 0.18s, box-shadow 0.18s',
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.transform = 'translateY(-3px)';
+                      e.currentTarget.style.borderColor = 'rgba(6,182,212,0.35)';
+                      e.currentTarget.style.boxShadow = '0 8px 24px rgba(6,182,212,0.2)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.transform = '';
+                      e.currentTarget.style.borderColor = '';
+                      e.currentTarget.style.boxShadow = '';
+                    }}
+                  >
+                    <span style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{r.icon}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>
+                        {r.label}
+                      </div>
+                      <div style={{ fontSize: 26, fontWeight: 800, lineHeight: 1, color: '#f1f5f9' }}>
+                        {r.value.toLocaleString()}
+                      </div>
+                    </div>
+                    <span style={{ fontSize: 12, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.5))' }}>→</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Combined card — Puzzle Stats | Tournament Stats | Daily Puzzles */}
+            <div style={{
+              display: 'flex',
+              background: 'var(--obsidian-surface-elevated, rgba(23,23,23,0.7))',
+              border: '1px solid var(--obsidian-border, rgba(148,163,184,0.16))',
+              borderRadius: 24,
+              boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0,0,0,0.5))',
+              margin: '0 0 18px 0',
+              overflow: 'hidden',
+              position: 'relative',
+            }}>
+              {(() => {
+                const ps = puzzleCardStats;
+                const solved   = ps?.solved  ?? 0;
+                const total    = ps?.attempts ?? 0;
+                const pct      = total > 0 ? Math.round((solved / total) * 100) : 0;
+                const rating   = ps?.rating   ?? (user?.liveRating || 1200);
+                const trend    = ps?.trend    ?? null;
+                const accuracy = ps?.accuracy ?? (total > 0 ? pct : null);
+                const streak   = ps?.streak   ?? 0;
+                const R = 78; const C = 2 * Math.PI * R;
+                const offset   = C - (pct / 100) * C;
+                const viewedDN = isPublicView ? routeDisplayName : null;
+                const arena    = isPublicView ? publicView?.arenaSummary : ownArenaSummary;
+
+                const mkSpark = (data, color) => {
+                  if (!Array.isArray(data) || data.length < 2) return null;
+                  const max = Math.max(...data); const min = Math.min(...data);
+                  const allSame = max === min;
+                  const span = allSame ? 1 : max - min;
+                  const W = 100; const H = 22;
+                  const stepX = W / (data.length - 1);
+                  const y = v => allSame ? H / 2 : H - 3 - ((v - min) / span) * (H - 6);
+                  const pts = data.map((v, i) => `${(i * stepX).toFixed(1)},${y(v).toFixed(1)}`);
+                  return (
+                    <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block', opacity: allSame ? 0.3 : 1 }} preserveAspectRatio="none" aria-hidden="true">
+                      <path d={`M ${pts.join(' L ')}`} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+                    </svg>
+                  );
+                };
+
+                const arenaStats = [
+                  { icon: '🏆', label: 'Tournaments', value: arena?.totalTournaments ?? '—', accent: '#f59e0b', glow: 'rgba(255,255,255,0.03)' },
+                  { icon: '⚔️',  label: 'Games',       value: arena?.totalGamesPlayed ?? '—',  accent: '#06b6d4', glow: 'rgba(255,255,255,0.03)' },
+                  { icon: '⚡',  label: 'Carry Pts',   value: arena?.arenaCarryPoints > 0 ? `+${arena.arenaCarryPoints}` : (arena ? '0' : '—'), accent: '#a855f7', glow: 'rgba(255,255,255,0.03)' },
+                ];
+
+                return (
+                  <>
+                    {/* ── Section 1: Puzzle Stats (circle + table) ── */}
+                    <div style={{ flex: '38 1 0', minWidth: 0, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ fontSize: 15 }}>🧩</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, color: 'rgba(203,213,225,0.45)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Puzzle Stats</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                          <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', borderRadius: 7, padding: 2, gap: 2 }}>
+                            {['24h','7d'].map(r => (
+                              <button key={r} onClick={() => setPuzzleCardRange(r)} style={{ border: 'none', cursor: 'pointer', padding: '2px 8px', borderRadius: 5, fontSize: 10, fontWeight: 700, background: puzzleCardRange === r ? 'linear-gradient(135deg,#06b6d4,#10b981)' : 'transparent', color: puzzleCardRange === r ? '#04201f' : 'rgba(203,213,225,0.4)', transition: 'all 0.15s' }}>{r}</button>
+                            ))}
+                          </div>
+                          <Link to={viewedDN ? `/player/${encodeURIComponent(viewedDN)}/puzzle-dashboard` : '/puzzle-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 5, background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                        {/* Circle */}
+                        <div style={{ position: 'relative', width: 170, height: 170, flexShrink: 0 }}>
+                          <svg viewBox="0 0 170 170" width="170" height="170" style={{ transform: 'rotate(-90deg)' }}>
+                            <circle cx="85" cy="85" r={R} fill="none" stroke="rgba(148,163,184,0.12)" strokeWidth="11" />
+                            <circle cx="85" cy="85" r={R} fill="none" stroke="#10b981" strokeWidth="11" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.6s ease' }} />
+                          </svg>
+                          <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+                            <span style={{ fontSize: 36, fontWeight: 900, color: '#f1f5f9', lineHeight: 1 }}>{solved}</span>
+                            <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(203,213,225,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>solved</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: '#10b981' }}>{pct}%</span>
+                          </div>
+                        </div>
+                        {/* Stats rows */}
+                        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          {[
+                            { label: 'Puzzle Rating', value: rating, extra: trend > 0 ? `+${trend}` : trend < 0 ? `${trend}` : '—', extraColor: trend > 0 ? '#22c55e' : trend < 0 ? '#ef4444' : 'rgba(203,213,225,0.3)', valueColor: '#f1f5f9', spark: mkSpark(ps?.series?.rating, '#f1f5f9') },
+                            { label: 'Accuracy',      value: accuracy != null ? `${accuracy}%` : '—', extra: null, valueColor: '#a78bfa', spark: mkSpark(ps?.series?.accuracy, '#a78bfa') },
+                            { label: 'Best Streak',   value: streak, extra: null, valueColor: '#f59e0b', spark: mkSpark(ps?.series?.solved, '#f59e0b') },
+                          ].map((row, i) => (
+                            <div key={i} style={{ display: 'grid', gridTemplateColumns: '90px 60px 1fr', alignItems: 'center', gap: '0 8px' }}>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(203,213,225,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{row.label}</span>
+                              <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
+                                <span style={{ fontSize: 17, fontWeight: 900, color: row.valueColor }}>{row.value}</span>
+                                {row.extra && <span style={{ fontSize: 10, fontWeight: 700, color: row.extraColor }}>{row.extra}</span>}
+                              </div>
+                              <div style={{ minWidth: 0 }}>{row.spark}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(148,163,184,0.1)', flexShrink: 0, zIndex: 1 }} />
+
+                    {/* ── Section 2: Tournament Stats ── */}
+                    <div style={{ flex: '32 1 0', minWidth: 0, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12, position: 'relative', zIndex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span style={{ fontSize: 15 }}>🏟️</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, color: 'rgba(203,213,225,0.45)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Tournament</span>
+                        </div>
+                        <Link to={isPublicView ? `/arena-tournament-dashboard/${encodeURIComponent(routeDisplayName)}` : '/arena-tournament-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 5, background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {arenaStats.map((s, i) => (
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 12, background: s.glow, border: '1px solid rgba(148,163,184,0.08)' }}>
+                            <span style={{ fontSize: 18 }}>{s.icon}</span>
+                            <span style={{ flex: 1, fontSize: 11, fontWeight: 700, color: 'rgba(203,213,225,0.5)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{s.label}</span>
+                            <span style={{ fontSize: 20, fontWeight: 900, color: s.accent }}>{s.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(148,163,184,0.1)', flexShrink: 0, zIndex: 1 }} />
+
+                    {/* ── Section 3: Today's Daily Puzzles ── */}
+                    <div style={{ flex: '30 1 0', minWidth: 0, position: 'relative', zIndex: 1 }}>
+                      <PerformanceMonitor
+                        user={user}
+                        publicTrainingStats={publicView?.trainingStats || null}
+                        publicArenaSummary={null}
+                        publicMonthlyFocus={null}
+                        publicPuzzleStatsRange={null}
+                        viewedDisplayName={isPublicView ? routeDisplayName : null}
+                        section="dailypuzzle"
+                      />
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+
+            {/* Monthly Focus — shown directly below the stats card */}
+            <MonthlyFocusPanel
+              publicData={isPublicView ? (publicView?.monthlyFocus || { focuses: [], statsMap: {} }) : null}
             />
 
             <DashboardTabs activeTab={activeTab} onChange={selectTab} />
 
-            {/* Panels are mounted on first visit and kept alive (hidden) so the
-                heatmap doesn't refetch when switching tabs. */}
-            {visitedTabs.has('activity') && (
-              <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'activity'}>
-                <ActivityTracker publicData={publicView?.activity || null} />
+            {/* Tab 1 — Nexus Guide (your training buddy) */}
+            {visitedTabs.has('nexusguide') && (
+              <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'nexusguide'}>
+                {!isPublicView && isViewerLoggedIn && <GameInsightsPanel />}
               </div>
             )}
 
+            {/* Tab 2 — Games with Friends */}
+            {visitedTabs.has('friendgames') && (
+              <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'friendgames'}>
+                <FriendGamesSection userId={user._id || user.id || user.username} />
+              </div>
+            )}
+
+            {/* Tab 3 — My Achievements */}
             {visitedTabs.has('achievements') && (
               <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'achievements'}>
                 <BadgeWall badges={badges} userId={user._id || user.id || 'me'} isPublicView={isPublicView} />
               </div>
             )}
 
-            {visitedTabs.has('games') && (
-              <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'games'}>
-                <WatchGamesCard displayName={user.displayName || user.username} />
+            {/* Tab 4 — My Coach */}
+            {visitedTabs.has('mycoach') && (
+              <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'mycoach'}>
+                {(isStudent || user?.enrolled) && (
+                  <div className="attendance-section">
+                    <div
+                      ref={(el) => cardRefs.current[3] = el}
+                      data-card-index="3"
+                      className={`racing-mode-card attendance-card ${animatedCards.has(3) ? 'scroll-animated' : ''} ${hoveredCard === 3 ? 'racing-mode-card-hover' : ''}`}
+                      onMouseEnter={() => setHoveredCard(3)}
+                      onMouseLeave={() => setHoveredCard(null)}
+                    >
+                      <div className="racing-mode-icon">📋</div>
+                      <h3 className="racing-mode-title">Student Attendance</h3>
+                      <p className="racing-mode-description">View your attendance records and manage payments.</p>
+                      <Link to="/attendance" style={{ textDecoration: 'none' }}>
+                        <button className="watch-games-btn">View Attendance</button>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+                {!isPublicView && <MyCoachCard />}
               </div>
             )}
 
-            {/* Footer utilities — always visible, not daily content */}
-            <div className="dash-footer">
-              {/* Student Attendance — for users who are students in the admin/teacher
-                  attendance system (user.enrolled, added by an admin) OR who accepted a
-                  coach request (isStudent). Either path links to their /attendance portal
-                  with their attendance + payment history. */}
-              {(isStudent || user?.enrolled) && (
-                <div className="attendance-section">
-                  <div
-                    ref={(el) => cardRefs.current[3] = el}
-                    data-card-index="3"
-                    className={`racing-mode-card attendance-card ${animatedCards.has(3) ? 'scroll-animated' : ''} ${hoveredCard === 3 ? 'racing-mode-card-hover' : ''}`}
-                    onMouseEnter={() => setHoveredCard(3)}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    <div className="racing-mode-icon">📋</div>
-                    <h3 className="racing-mode-title">Student Attendance</h3>
-                    <p className="racing-mode-description">View your attendance records and manage payments.</p>
-                    <Link to="/attendance" style={{ textDecoration: 'none' }}>
-                      <button className="watch-games-btn">View Attendance</button>
-                    </Link>
-                  </div>
-                </div>
-              )}
-
-              {!isPublicView && <MyCoachCard />}
-            </div>
+            <DetailedRaceStatsModal
+              isOpen={raceModalOpen}
+              onClose={() => setRaceModalOpen(false)}
+              raceType={raceModalType}
+              timeLimit={raceModalType === 'timedRace' ? 5 : raceModalType === 'arenaRace' ? 10 : 30}
+            />
           </>
         )}
 
         {/* Guest highlights (no account) — preserved from previous behavior */}
         {!isViewerLoggedIn && !isPublicView && <BestRacers />}
-
-        {/* My Mistakes — auto blunder-puzzles from your own tournament games.
-            Owner's own dashboard, logged-in only. Distinct from the human "My Coach". */}
-        {!isPublicView && isViewerLoggedIn && user && <GameInsightsPanel />}
-
-        {/* Games with Friends — visible on own AND public/spectator dashboards.
-            In public view user._id is the username (no real id is exposed); the
-            backend route resolves either. Renders nothing if empty. */}
-        {user && (
-          <FriendGamesSection userId={user._id || user.id || user.username} />
-        )}
 
         {loading && (
           <div className="loading-card">

@@ -10,8 +10,14 @@ import FriendGameChat from '../../components/FriendGameChat';
 import UserAvatar from '../../components/UserAvatar';
 import './FriendGame.css';
 
-const SOCKET_URL = (import.meta?.env?.VITE_API_URL) ||
+const SOCKET_URL = import.meta?.env?.VITE_API_URL ||
   window.location.origin.replace('5173', '5000');
+
+// In production the Render proxy supports WebSocket natively; prefer it so we
+// don't stall on HTTP long-polling (which Render's infrastructure can buffer for
+// minutes). Locally, fall back to polling first so it still works without WSS.
+const IS_PROD = import.meta?.env?.PROD;
+const SOCKET_TRANSPORTS = IS_PROD ? ['websocket'] : ['polling', 'websocket'];
 
 function fmtClock(secs) {
   if (secs == null) return '--:--';
@@ -129,6 +135,7 @@ export default function FriendGame() {
   const [fen, setFen] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
   const [clocks, setClocks] = useState({ white: null, black: null });
   const [phase, setPhase] = useState('connecting'); // connecting|waiting|active|aborted|finished
+  const [connectError, setConnectError] = useState(false);
   const [result, setResult] = useState(null);
   const [opponentLeft, setOpponentLeft] = useState(false);
   const [drawOffered, setDrawOffered] = useState(false);
@@ -211,16 +218,21 @@ export default function FriendGame() {
     if (authLoading) return;
 
     const s = io(`${SOCKET_URL}/friendgame`, {
-      transports: ['polling', 'websocket'], // polling first (matches working server config)
+      transports: SOCKET_TRANSPORTS,
       forceNew: true,            // dedicated connection — don't queue behind the app's main socket
-      reconnectionAttempts: 5,
-      reconnectionDelay: 500,
-      timeout: 8000,             // fail fast instead of hanging forever
+      reconnectionAttempts: IS_PROD ? Infinity : 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: IS_PROD ? 30000 : 8000,
     });
     socketRef.current = s;
 
-    s.on('connect_error', (err) => console.warn('[FriendGame] connect_error:', err?.message || err));
+    s.on('connect_error', (err) => {
+      console.warn('[FriendGame] connect_error:', err?.message || err);
+      setConnectError(true);
+    });
     s.on('connect', () => {
+      setConnectError(false);
       const ident = {
         userId: me.userId, displayName: me.displayName, username: me.username,
         profilePhotoUrl: me.profilePhotoUrl, activeAvatar: me.activeAvatar,
@@ -231,6 +243,7 @@ export default function FriendGame() {
           variant: createIntent.variant,
           timeControl: createIntent.timeControl,
           chatEnabled: createIntent.chatEnabled,
+          isRated: createIntent.isRated,
           ...ident,
         });
       } else {
@@ -277,7 +290,7 @@ export default function FriendGame() {
     s.on('game_over', (r) => {
       applyRoom(r);
       setPhase('finished');
-      setResult({ text: r.result, winnerColor: r.winnerColor, winnerName: r.winnerName });
+      setResult({ text: r.result, winnerColor: r.winnerColor, winnerName: r.winnerName, ratingChanges: r.ratingChanges || null });
     });
 
     s.on('game_aborted', (r) => { applyRoom(r); setPhase('aborted'); });
@@ -374,6 +387,32 @@ export default function FriendGame() {
     });
   };
 
+  // Invite friend by display name
+  const [inviteDisplayName, setInviteDisplayName] = useState('');
+  const [inviteSending, setInviteSending] = useState(false);
+  const [inviteMsg, setInviteMsg] = useState(null); // { ok, text }
+
+  const sendGameInvite = async () => {
+    const name = inviteDisplayName.trim();
+    if (!name) return;
+    setInviteSending(true);
+    setInviteMsg(null);
+    try {
+      const res = await api.post('/api/game-invites', {
+        displayName: name,
+        roomCode,
+        timeControlLabel: room?.timeControlLabel || '',
+        variant: room?.variant || 'standard',
+      });
+      setInviteMsg({ ok: true, text: `Invite sent to ${res.data.inviteeName}!` });
+      setInviteDisplayName('');
+    } catch (err) {
+      setInviteMsg({ ok: false, text: err?.response?.data?.message || 'Failed to send invite' });
+    } finally {
+      setInviteSending(false);
+    }
+  };
+
   // ── Move-list navigation ───────────────────────────────────────────────────
   const isLive = viewPly === null || viewPly >= moves.length;
   // FEN to display: live position, or the replayed position at viewPly.
@@ -427,6 +466,13 @@ export default function FriendGame() {
           <div className="fg-room-header">
             <span className="fg-room-meta">
               {room?.timeControlLabel || ''} {room?.variant === 'chess960' ? '• Chess960' : ''}
+              {' • '}
+              <span style={{
+                fontWeight: 700,
+                color: room?.isRated ? '#6ee7b7' : '#94a3b8',
+              }}>
+                {room?.isRated ? 'Rated' : 'Casual'}
+              </span>
             </span>
           </div>
 
@@ -457,8 +503,21 @@ export default function FriendGame() {
           {isCreator && !roomCode && (phase === 'connecting' || phase === 'waiting') && (
             <div className="fg-invite">
               <div className="fg-code-generating">
-                <span className="fg-spinner" />
-                <p className="fg-invite-label">Please wait, room code is generating…</p>
+                {connectError ? (
+                  <>
+                    <p className="fg-invite-label" style={{ color: '#f87171' }}>
+                      Connection failed — retrying…
+                    </p>
+                    <p style={{ fontSize: '11px', color: '#9ca3af', margin: '4px 0 0' }}>
+                      The server may be starting up. Please wait a moment.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <span className="fg-spinner" />
+                    <p className="fg-invite-label">Creating room…</p>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -471,6 +530,35 @@ export default function FriendGame() {
                 <button className="fg-copy-btn">{copied ? '✓ Copied' : 'Copy code'}</button>
               </div>
               <p className="fg-waiting">Waiting for opponent to join…</p>
+
+              {isCreator && user && (
+                <div className="fg-invite-friend">
+                  <p className="fg-invite-friend-label">Invite friend</p>
+                  <div className="fg-invite-friend-row">
+                    <input
+                      className="fg-invite-friend-input"
+                      type="text"
+                      placeholder="Enter display name"
+                      value={inviteDisplayName}
+                      onChange={(e) => { setInviteDisplayName(e.target.value); setInviteMsg(null); }}
+                      onKeyDown={(e) => e.key === 'Enter' && !inviteSending && sendGameInvite()}
+                      disabled={inviteSending}
+                    />
+                    <button
+                      className="fg-invite-friend-btn"
+                      onClick={sendGameInvite}
+                      disabled={inviteSending || !inviteDisplayName.trim()}
+                    >
+                      {inviteSending ? '…' : 'Invite'}
+                    </button>
+                  </div>
+                  {inviteMsg && (
+                    <p className={`fg-invite-friend-msg ${inviteMsg.ok ? 'ok' : 'err'}`}>
+                      {inviteMsg.text}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -509,6 +597,20 @@ export default function FriendGame() {
               <div className="fg-result-overlay">
                 <h3>{result.text}</h3>
                 <p>{result.winnerName ? `${result.winnerName} wins` : 'Draw'}</p>
+                {result.ratingChanges && (() => {
+                  const mine = myColor === 'black' ? result.ratingChanges.black : result.ratingChanges.white;
+                  if (!mine) return null;
+                  const up = mine.change >= 0;
+                  return (
+                    <p style={{ margin: '2px 0 8px', fontSize: '14px' }}>
+                      <span style={{ color: '#94a3b8' }}>Your {result.ratingChanges.category} rating: </span>
+                      <strong style={{ color: '#e2e8f0' }}>{mine.new} </strong>
+                      <strong style={{ color: up ? '#6ee7b7' : '#fca5a5' }}>
+                        ({up ? '+' : ''}{mine.change})
+                      </strong>
+                    </p>
+                  );
+                })()}
                 <div className="fg-result-actions">
                   <button className="fg-primary" onClick={() => socketRef.current.emit('rematch', { roomCode })}>Rematch</button>
                   <button className="fg-secondary" onClick={() => navigate('/games')}>Leave</button>

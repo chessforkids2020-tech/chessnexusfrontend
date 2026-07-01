@@ -2,6 +2,7 @@
 import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api';
+import socket from '../socket';
 import UserAvatar from './UserAvatar';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -182,6 +183,29 @@ export default function Sidebar({ user, onNavigate }) {
     } catch { /* silent — non-critical */ }
   }, [isAuthenticated]);
 
+  // Incoming game invites (play-with-friend requests)
+  const [gameInvites, setGameInvites] = useState([]);
+  const fetchGameInvites = React.useCallback(async () => {
+    if (!isAuthenticated) { setGameInvites([]); return; }
+    try {
+      const res = await api.get('/api/game-invites/incoming');
+      setGameInvites(Array.isArray(res.data) ? res.data : []);
+    } catch { /* silent — non-critical */ }
+  }, [isAuthenticated]);
+
+  const respondToGameInvite = async (inviteId, action, roomCode) => {
+    try {
+      await api.post(`/api/game-invites/${inviteId}/respond`, { action });
+      setGameInvites(prev => prev.filter(i => i._id !== inviteId));
+      if (action === 'accept' && roomCode) {
+        navigate(`/friend/${roomCode}`);
+        setShowNotifications(false);
+      }
+    } catch (e) {
+      console.error('game invite respond failed', e?.response?.data?.message || e.message);
+    }
+  };
+
   // Friends currently online (lastActivity within ~5 min, backend-defined)
   const onlineFriends404s = React.useRef(0);
   const onlineFriendsDisabled = React.useRef(false);
@@ -216,16 +240,35 @@ export default function Sidebar({ user, onNavigate }) {
     // Fetch once, then poll. Poll quickly (30s) only while the bell is open;
     // otherwise refresh slowly (120s) just to keep the badge count fresh. This
     // cuts request volume well below the old constant 60s polling.
-    const poll = () => { fetchFriendUnread(); fetchReportReplies(); fetchCoachRequests(); fetchAppNotifications(); fetchOnlineFriends(); };
+    const poll = () => { fetchFriendUnread(); fetchReportReplies(); fetchCoachRequests(); fetchAppNotifications(); fetchOnlineFriends(); fetchGameInvites(); };
     poll();
     // Poll faster (30s) while either the bell or friends panel is open.
     const intervalMs = (showNotifications || showFriends) ? 30000 : 120000;
     const id = setInterval(poll, intervalMs);
     return () => clearInterval(id);
-  }, [isAuthenticated, fetchFriendUnread, fetchReportReplies, fetchCoachRequests, fetchAppNotifications, fetchOnlineFriends, showNotifications, showFriends]);
+  }, [isAuthenticated, fetchFriendUnread, fetchReportReplies, fetchCoachRequests, fetchAppNotifications, fetchOnlineFriends, fetchGameInvites, showNotifications, showFriends]);
 
-  // Total red badge = unread app notifications + friend messages + report replies + coach requests
-  const unreadNotifCount = appUnreadCount + friendMsgTotal + reportReplies.length + coachRequests.length;
+  // Real-time game invite via main socket
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const handler = (invite) => {
+      setGameInvites(prev => {
+        if (prev.some(i => i._id === invite.inviteId)) return prev;
+        return [{
+          _id: invite.inviteId,
+          roomCode: invite.roomCode,
+          timeControlLabel: invite.timeControlLabel,
+          variant: invite.variant,
+          inviterId: { displayName: invite.from?.displayName, username: invite.from?.displayName },
+        }, ...prev];
+      });
+    };
+    socket.on('game_invite', handler);
+    return () => socket.off('game_invite', handler);
+  }, [isAuthenticated]);
+
+  // Total red badge = unread app notifications + friend messages + report replies + coach requests + game invites
+  const unreadNotifCount = appUnreadCount + friendMsgTotal + reportReplies.length + coachRequests.length + gameInvites.length;
 
   // Load coach status once when authenticated
   useEffect(() => {
@@ -1479,6 +1522,44 @@ export default function Sidebar({ user, onNavigate }) {
                   >✕</button>
                 </div>
 
+                {/* Game invites — someone invited this user to play a friend game */}
+                {gameInvites.length > 0 && (
+                  <>
+                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
+                      ♟️ Game invites
+                    </div>
+                    {gameInvites.map(inv => {
+                      const from = inv.inviterId;
+                      const fromName = from?.displayName || from?.username || 'Someone';
+                      const tc = inv.timeControlLabel || '';
+                      const variant = inv.variant === 'chess960' ? ' • Chess960' : '';
+                      return (
+                        <div
+                          key={inv._id}
+                          style={{
+                            background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.25)',
+                            borderRadius: '10px', padding: '9px 11px', marginBottom: '8px',
+                          }}
+                        >
+                          <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#6ee7b7' }}>
+                            ♟️ <strong>{fromName}</strong> wants to play {tc}{variant}
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                            <button
+                              onClick={() => respondToGameInvite(inv._id, 'accept', inv.roomCode)}
+                              style={{ flex: 1, background: 'rgba(16,185,129,0.18)', color: '#34d399', border: '1px solid rgba(16,185,129,0.4)', borderRadius: '8px', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                            >✓ Accept</button>
+                            <button
+                              onClick={() => respondToGameInvite(inv._id, 'decline', inv.roomCode)}
+                              style={{ flex: 1, background: 'rgba(239,68,68,0.12)', color: '#f87171', border: '1px solid rgba(239,68,68,0.35)', borderRadius: '8px', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                            >✕ Decline</button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+
                 {/* Coach requests — a coach wants to add this user as a student. Approve / Decline inline. */}
                 {coachRequests.length > 0 && (
                   <>
@@ -1600,7 +1681,7 @@ export default function Sidebar({ user, onNavigate }) {
                   </>
                 )}
 
-                {appNotifications.length === 0 && friendMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 ? (
+                {appNotifications.length === 0 && friendMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 ? (
                   <div style={{ color: '#64748b', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
                     You're all caught up — no notifications.
                   </div>

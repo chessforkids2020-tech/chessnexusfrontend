@@ -54,6 +54,7 @@ import PuzzleBoard from "./pages/PuzzleBoard";
 import Scoreboard from "./pages/Scoreboard";
 import RoundScoreboard from "./pages/RoundScoreboard";
 import AdminDashboard from './pages/AdminDashboard';
+import AdminEndgamesPage from './pages/AdminEndgamesPage';
 import AdminSupporters from './pages/AdminSupporters';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminContestPage from './pages/AdminContestPage';
@@ -91,6 +92,7 @@ import EventRegistration from './pages/EventRegistration';
 import EventPage from './pages/EventPage';
 import EventSubmissions from './pages/EventSubmissions';
 import StudyOverview from './pages/study/StudyOverview';
+import StudyEndgamesPage from './pages/study/StudyEndgamesPage';
 import StudySelection from './pages/study/StudySelection';
 import StudyChapterSelection from './pages/study/StudyChapterSelection';
 import StudyPuzzleView from './pages/study/StudyPuzzleView';
@@ -514,6 +516,16 @@ export default function App() {
             <div style={styles.content}>
               <ProtectedRoute requiredRole="admin">
                 <AdminSupporters />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
+        <Route path="/admin/endgames" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminEndgamesPage />
               </ProtectedRoute>
             </div>
             <Footer />
@@ -1294,6 +1306,13 @@ export default function App() {
         <Route path="/study" element={
           <UserLayout>
             <StudyOverview />
+          </UserLayout>
+        } />
+        <Route path="/study/endgames" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <StudyEndgamesPage />
+            </ProtectedRoute>
           </UserLayout>
         } />
         <Route path="/study/learn" element={

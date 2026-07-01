@@ -573,14 +573,14 @@ export default function ArenaTournamentLeaderboard() {
               <thead>
                 <tr>
                   <th>Rank</th>
-                  <th>Player</th>
+                  <th style={{ textAlign: 'left' }}>Player</th>
                   {tournament?.tournamentType === 'team_battle' && <th>Team</th>}
+                  <th style={{ textAlign: 'center' }}>Rating</th>
                   <th>W</th>
                   <th>L</th>
                   <th>D</th>
                   <th>Games</th>
-                  <th>🔥</th>
-                  <th>Score</th>
+                  <th style={{ textAlign: 'right' }}>Score</th>
                 </tr>
               </thead>
               <tbody>
@@ -613,11 +613,11 @@ export default function ArenaTournamentLeaderboard() {
                           ) : '—'}
                         </td>
                       )}
+                      <td style={{ textAlign: 'center', fontWeight: '700', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{participant.tournamentRating ?? 1200}</td>
                       <td className="win-cell">{participant.wins}</td>
                       <td className="loss-cell">{participant.losses}</td>
                       <td className="draw-cell">{participant.draws}</td>
                       <td className="games-cell">{participant.gamesPlayed}</td>
-                      <td className="streak-cell" title="Best win streak">{participant.maxStreak > 0 ? `${participant.maxStreak}🔥` : '—'}</td>
                       <td className="score-cell">{participant.score}</td>
                     </tr>
                   );

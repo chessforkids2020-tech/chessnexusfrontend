@@ -9,6 +9,12 @@
   font-family: Poppins, sans-serif;
 }
 
+/* Quick Analyze board view has no page heading — put the Back button at the
+   very top of the page. */
+.ga-page-quick {
+  padding-top: 0;
+}
+
 /* ── Header ───────────────────────────────────────────────────────────────── */
 .ga-header {
   display: flex;
@@ -226,16 +232,30 @@
 /* Board editor inside Quick Analyze */
 .ga-editor-wrap {
   display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
+  gap: 10px;
+  flex-wrap: nowrap;          /* keep the three columns side-by-side */
   align-items: flex-start;
   background: rgba(168, 85, 247, 0.05);
   border: 1px solid rgba(168, 85, 247, 0.2);
   border-radius: 12px;
   padding: 12px;
 }
-.ga-editor-pieces { flex: 0 0 auto; min-width: 150px; }
-.ga-editor-board  { flex: 1; min-width: 300px; }
+.ga-editor-pieces { flex: 0 0 auto; min-width: 0; }
+.ga-editor-board  { flex: 0 0 auto; min-width: 0; }
+/* Right column: side-to-move, en passant, clear/start */
+.ga-editor-side {
+  flex: 1 1 160px;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* On narrow screens, let it stack (board first, then controls). */
+@media (max-width: 760px) {
+  .ga-editor-wrap { flex-wrap: wrap; }
+  .ga-editor-side { flex-basis: 100%; }
+}
 .ga-editor-mini {
   padding: 6px 12px;
   border-radius: 8px;
@@ -997,6 +1017,26 @@
   animation: grFadeIn 0.3s ease;
 }
 
+/* Quick Analyze: pull everything up — there's no page heading above it, so the
+   Back button sits at the very top of the page. */
+.gr-quick {
+  margin-top: 0;
+}
+.gr-quick .gr-header {
+  margin-bottom: 6px;
+  /* Keep the header above the lifted board so the Back button stays clickable
+     (the negative board margin below would otherwise overlap it). */
+  position: relative;
+  z-index: 2;
+}
+/* Absorb the chessboard's top coordinate-gutter band so the board sits close to
+   the Back button instead of floating low. */
+.gr-quick .gr-board-col {
+  margin-top: -16px;
+  position: relative;
+  z-index: 1;
+}
+
 /* Let the replay view break out of the page's 900px column so the Stockfish
    panel gets more width (board stays fixed). Symmetric breakout keeps it
    centred and never pushes content off-screen. Capped at ~1180px total. */
@@ -1509,6 +1549,53 @@
 }
 .gr-study-return:hover { background: rgba(168, 85, 247, 0.3); }
 
+/* Inline text link inside the study hint (e.g. "Delete all variations") */
+.gr-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: #c4b5fd;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.gr-link-btn:hover { color: #e9d5ff; }
+
+/* Right-click context menu on the move list (Lichess-style) */
+.gr-ctx-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+}
+.gr-ctx-menu {
+  position: fixed;
+  z-index: 999;
+  min-width: 190px;
+  background: rgba(23, 23, 23, 0.98);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.gr-ctx-item {
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 9px 12px;
+  border-radius: 7px;
+  color: #e5e7eb;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.gr-ctx-item:hover { background: rgba(168, 85, 247, 0.2); color: #f3e8ff; }
+
 /* Inline study variation ( … ) shown right after the branch move */
 .gr-var {
   display: inline;
@@ -1567,6 +1654,45 @@
   border-radius: 999px;
   padding: 2px 9px;
 }
+
+/* Engine on/off switch (in the engine panel header) */
+.gr-engine-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gr-engine-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 9px 2px 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.gr-engine-toggle.on {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.14);
+  color: #6ee7b7;
+}
+.gr-engine-toggle-knob {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #6b7280;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.gr-engine-toggle.on .gr-engine-toggle-knob {
+  background: #10b981;
+  transform: translateX(2px);
+}
+.gr-engine-off { opacity: 0.92; }
+
 .gr-engine-empty {
   font-size: 12px;
   color: #6b7280;

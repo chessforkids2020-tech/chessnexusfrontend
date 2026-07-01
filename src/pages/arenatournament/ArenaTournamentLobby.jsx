@@ -49,6 +49,7 @@ export default function ArenaTournamentLobby() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [timeUntilStart, setTimeUntilStart] = useState('');
+  const [timeUntilEnd, setTimeUntilEnd] = useState('');
   const [isCreator, setIsCreator] = useState(false);
   const [starting, setStarting] = useState(false);
   const [joining, setJoining] = useState(false);
@@ -63,6 +64,10 @@ export default function ArenaTournamentLobby() {
   const [teamCounts, setTeamCounts] = useState({});
   // Ref to always hold latest loadTournamentData — prevents stale-closure bug in socket handlers
   const loadTournamentDataRef = useRef(null);
+  // Ref mirroring the latest tournament so the 1s countdown interval reads live
+  // status/actualStartTime/endTime (not the value captured when the effect ran).
+  const tournamentRef = useRef(null);
+  useEffect(() => { tournamentRef.current = tournament; }, [tournament]);
 
   useEffect(() => {
     if (!socket.connected) {
@@ -110,6 +115,35 @@ export default function ArenaTournamentLobby() {
           const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
           const seconds = Math.floor((diff % (1000 * 60)) / 1000);
           setTimeUntilStart(`${hours}h ${minutes}m ${seconds}s`);
+        }
+      }
+
+      // "Ends in" countdown while the tournament is active. End = endTime if the
+      // server has set it, otherwise (start + configured duration). Read from the
+      // ref so live status/start/end are used, not the stale captured value.
+      const liveT = tournamentRef.current;
+      if (liveT?.status === 'active') {
+        let endMs = liveT.endTime ? new Date(liveT.endTime).getTime() : null;
+        if (!endMs) {
+          const startBase = liveT.actualStartTime || liveT.scheduledStartTime;
+          const dur = liveT.tournamentDuration;
+          if (startBase && dur) {
+            const durMs = ((dur.hours || 0) * 60 + (dur.minutes || 0)) * 60 * 1000;
+            endMs = new Date(startBase).getTime() + durMs;
+          }
+        }
+        if (endMs) {
+          const eDiff = endMs - Date.now();
+          if (eDiff <= 0) {
+            setTimeUntilEnd('Ending soon...');
+          } else {
+            const h = Math.floor(eDiff / (1000 * 60 * 60));
+            const m = Math.floor((eDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((eDiff % (1000 * 60)) / 1000);
+            setTimeUntilEnd(`${h}h ${m}m ${s}s`);
+          }
+        } else {
+          setTimeUntilEnd('');
         }
       }
     }, 1000);
@@ -428,6 +462,13 @@ export default function ArenaTournamentLobby() {
             </div>
           )}
 
+          {tournament?.status === 'active' && timeUntilEnd && (
+            <div style={{ background: 'rgba(16, 185, 129, 0.1)', borderRadius: '12px', padding: '20px', marginBottom: '20px', textAlign: 'center', border: '1px solid rgba(16, 185, 129, 0.2)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
+              <div style={{ color: '#10b981', display: 'block', fontSize: '13px', marginBottom: '8px', fontWeight: '600' }}>Tournament ends in</div>
+              <div style={{ color: '#10b981', fontSize: '28px', fontWeight: '800' }}>{timeUntilEnd}</div>
+            </div>
+          )}
+
           {isCreator && !tournament?.isAutoScheduled && (tournament?.status === 'scheduled' || tournament?.status === 'lobby' || (tournament?.status === 'active' && !tournament?.actualStartTime)) && (
             <div style={{ marginBottom: '20px' }}>
               <div style={{ padding: '16px', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: '12px', marginBottom: '16px', textAlign: 'center', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
@@ -643,11 +684,40 @@ export default function ArenaTournamentLobby() {
                           fontSize: '15px', fontWeight: crown ? '700' : isMe ? '700' : '500',
                           color: crown ? crown.color : isMe ? '#67e8f9' : '#e2e8f0',
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          flex: 1, minWidth: 0,
+                          minWidth: 0, maxWidth: '100%',
                           textShadow: crown ? `0 0 10px ${crown.color}55` : 'none'
                         }}>
                           <PlayerName displayName={p.displayName} username={p.username} userId={p.userId} />
                         </span>
+                        {/* Rating right beside the name (e.g. "cc 1200"), shown as
+                            bright text to match the name. For a marathon it flips
+                            bullet→blitz at phase 2. Blank for old rows. */}
+                        {(() => {
+                          const isMarathon = tournament?.tournamentType === 'bullet_blitz_marathon';
+                          const inBlitzPhase = isMarathon && (tournament?.currentPhase ?? 0) >= 1;
+                          const shown = isMarathon
+                            ? (inBlitzPhase ? p.blitzRatingAtJoin : p.bulletRatingAtJoin)
+                            : p.ratingAtJoin;
+                          if (shown == null) return null;
+                          const label = isMarathon
+                            ? (inBlitzPhase ? 'Blitz rating when joined' : 'Bullet rating when joined')
+                            : 'Rating when joined';
+                          return (
+                            <span
+                              title={label}
+                              style={{
+                                fontSize: '14px', fontWeight: '700', flexShrink: 0,
+                                color: crown ? crown.color : isMe ? '#67e8f9' : '#e2e8f0',
+                                fontVariantNumeric: 'tabular-nums',
+                                textShadow: crown ? `0 0 10px ${crown.color}55` : 'none'
+                              }}
+                            >
+                              {shown}
+                            </span>
+                          );
+                        })()}
+                        {/* spacer pushes the tags to the right edge */}
+                        <span style={{ flex: 1, minWidth: 0 }} />
                         {/* You tag */}
                         {isMe && (
                           <span style={{ fontSize: '11px', color: '#06b6d4', fontWeight: '700', background: 'rgba(6,182,212,0.18)', border: '1px solid rgba(6,182,212,0.35)', padding: '2px 7px', borderRadius: '8px', flexShrink: 0, letterSpacing: '0.02em' }}>you</span>

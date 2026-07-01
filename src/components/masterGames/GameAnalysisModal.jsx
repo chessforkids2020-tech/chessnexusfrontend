@@ -6,7 +6,6 @@ import {
   firstNode, nextNode, prevNode, lastNode, fenAt, lastMoveAt,
   rehydrateTree, hasVariations
 } from './moveTree';
-import { analyzeGame } from './analyzeGame';
 
 // Variations the user adds are kept in the browser only (localStorage), never the
 // DB. Key is per game so each game restores its own exploration on refresh.
@@ -19,9 +18,9 @@ const lsKey = (gameId) => `mg.analysis.${gameId}`;
 // play LEGAL moves anywhere to create nested variations; replaying a main-line
 // move just continues it. Nothing is persisted — reload resets exploration.
 //
-// Annotations come straight from the imported PGN's NAGs ($4/$2/$6). There are
-// no engine evals or best-move lines (the PGN doesn't carry them) — users who
-// want the engine can run Stockfish themselves elsewhere.
+// Annotations come from the imported PGN's NAGs ($4/$2/$6) OR, when a game is
+// unanalyzed, from a deep server-side Stockfish run triggered by the Analyze
+// button (POST /api/master-games/:id/analyze) and cached in the DB for everyone.
 
 // Colours mirror the ChessNexus GameReplay scheme.
 const CLASS_META = {
@@ -100,23 +99,51 @@ export default function GameAnalysisModal({ gameId, onClose }) {
     return true;
   }, [tree, currentId]);
 
-  // ── Lazy analysis: run Stockfish in the browser, then cache to the server ──
+  // ── Analysis: run deep Stockfish on the SERVER, then cache to the DB ──
+  // Quality no longer depends on the user's device. The server runs at most one
+  // analysis at a time, so if it's busy with another game we briefly retry. The
+  // progress bar is an estimate (the request is a single call, not streamed).
   const runAnalysis = useCallback(async () => {
     if (!game || analyzing) return;
     setAnalyzing(true); setAnalyzeError(null); setProgress(0);
+
+    // Smoothly creep the progress bar while we wait on the server. Estimate the
+    // duration from the move count (~2 positions/move). Caps at 95% until done.
+    const moveCount = (game.moves || []).length || 40;
+    const estMs = Math.max(8000, moveCount * 900);
+    const startedAt = Date.now();
+    const ticker = setInterval(() => {
+      const frac = Math.min(0.95, (Date.now() - startedAt) / estMs);
+      setProgress(frac);
+    }, 300);
+
+    const MAX_BUSY_RETRIES = 30; // ~30 * 4s = up to 2 min waiting for a free engine
     try {
-      const { analysis, depth } = await analyzeGame(game.moves || [], {
-        depth: 14,
-        onProgress: (done, total) => setProgress(total ? done / total : 0)
-      });
+      let analysis = null;
+      for (let attempt = 0; attempt <= MAX_BUSY_RETRIES; attempt++) {
+        try {
+          const res = await api.post(`/api/master-games/${gameId}/analyze`, { depth: 20 });
+          analysis = res.data?.analysis || [];
+          break;
+        } catch (e) {
+          // 429 = engine busy with another game → wait and retry.
+          if (e?.response?.status === 429 && attempt < MAX_BUSY_RETRIES) {
+            await new Promise(r => setTimeout(r, 4000));
+            continue;
+          }
+          throw e;
+        }
+      }
+      if (!analysis) throw new Error('busy');
+
       // Annotate the main line in place so the user's own variations are kept.
       setTree(prev => annotateMainLine(prev, analysis));
       setAnalyzed(true);
-      // Cache it for every future viewer (fire-and-forget; first writer wins).
-      api.post(`/api/master-games/${gameId}/analysis`, { analysis, depth }).catch(() => {});
+      setProgress(1);
     } catch {
-      setAnalyzeError('Analysis failed. Your browser may not support the engine — try again.');
+      setAnalyzeError('Analysis failed — the engine may be busy. Please try again.');
     } finally {
+      clearInterval(ticker);
       setAnalyzing(false);
     }
   }, [game, gameId, analyzing]);

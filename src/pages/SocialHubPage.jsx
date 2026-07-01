@@ -349,7 +349,7 @@ function PanelHead({ icon, title, subtitle, live, accent = 'cyan' }) {
   );
 }
 
-function ArenaLeaderCol({ icon, title, rows, accent }) {
+function ArenaLeaderCol({ icon, title, rows, accent, showRating = false, startRank = 0 }) {
   return (
     <div className={`pl-arena pl-arena-${accent}`}>
       <div className="pl-arena-head">
@@ -362,12 +362,15 @@ function ArenaLeaderCol({ icon, title, rows, accent }) {
         rows.map((r, i) => (
           <LeaderRow
             key={r._id || i}
-            rank={i + 1}
+            rank={startRank + i + 1}
             name={r.displayName || r.username || 'Player'}
             displayName={r.displayName}
             username={r.username}
             userId={r._id || r.userId}
+            // Rating-bearing cards show the player's category Elo under the name.
+            sub={showRating ? `${r.rating ?? '—'}` : undefined}
             score={r.score}
+            scoreLabel="pts"
             accent={accent}
             user={r}
             avatarSize={28}
@@ -382,7 +385,8 @@ function PlayersTab() {
   const navigate = useNavigate();
   const [active, setActive]   = useState([]);
   const [daily, setDaily]     = useState([]);
-  const [arena, setArena]     = useState({ standard: [], marathon: [], chess960: [] });
+  const [arena, setArena]     = useState({ bullet: [], blitz: [], rapid: [], teamBullet: [], teamBlitz: [], teamRapid: [], chess960: [], marathon: [] });
+  const [arenaTab, setArenaTab] = useState('standard'); // best-arena card active tab
   const [loading, setLoading] = useState(true);
 
   // ── Player search ──────────────────────────────────────────────────────────
@@ -421,12 +425,12 @@ function PlayersTab() {
     Promise.all([
       api.get('/api/social/most-active').then(r => r.data).catch(() => []),
       fetchDaily(),
-      api.get('/api/social/arena-weekly-leaders').then(r => r.data).catch(() => ({ standard: [], marathon: [], chess960: [] })),
+      api.get('/api/social/arena-weekly-leaders').then(r => r.data).catch(() => ({ bullet: [], blitz: [], rapid: [], teamBullet: [], teamBlitz: [], teamRapid: [], chess960: [], marathon: [] })),
     ]).then(([a, d, ar]) => {
       if (!alive) return;
       setActive(Array.isArray(a) ? a : []);
       setDaily(Array.isArray(d) ? d : []);
-      setArena(ar || { standard: [], marathon: [], chess960: [] });
+      setArena(ar || { bullet: [], blitz: [], rapid: [], teamBullet: [], teamBlitz: [], teamRapid: [], chess960: [], marathon: [] });
     }).finally(() => { if (alive) setLoading(false); });
 
     // Refresh daily-puzzle ratings every 20s for near real-time updates
@@ -440,7 +444,7 @@ function PlayersTab() {
 
   if (loading) return <div className="sh-empty"><div className="sh-spinner" /></div>;
 
-  const { standard = [], marathon = [], chess960 = [] } = arena || {};
+  const { bullet = [], blitz = [], rapid = [], teamBullet = [], teamBlitz = [], teamRapid = [], chess960 = [], marathon = [] } = arena || {};
 
   return (
     <>
@@ -495,7 +499,7 @@ function PlayersTab() {
           <div className="pl-empty" style={{ padding: '28px 0' }}>No activity yet this week.</div>
         ) : (
           <div className="pl-active-list">
-            {active.map((u, i) => (
+            {active.slice(0, 15).map((u, i) => (
               <div key={u._id || i} className={`pl-active-row${i === 0 ? ' pl-active-top' : ''}`}>
                 <span className="pl-active-rank">{i + 1}</span>
                 <PlayerAvatar user={u} size={40} online={u.isOnline} />
@@ -579,27 +583,81 @@ function PlayersTab() {
           </div>
         </section>
 
-        {/* Best Arena Players This Week */}
-        <section className="pl-panel pl-panel-violet">
-          <PanelHead
-            icon="🏆"
-            title="Best Arena Players — This Week"
-            subtitle="Each player's single best tournament result in the last 7 days"
-            accent="violet"
-          />
-          <div className="pl-arena-grid">
-            <ArenaLeaderCol icon="⚔️" title="Standard Arena"        rows={standard} accent="cyan" />
-            <ArenaLeaderCol icon="💥" title="Bullet Blitz Marathon" rows={marathon} accent="amber" />
-            <ArenaLeaderCol icon="♟️" title="Chess 960"             rows={chess960} accent="violet" />
-          </div>
-        </section>
-
         <div className="pl-cta">
           <button className="pl-cta-btn" onClick={() => navigate('/arenatournament')}>🏆 Browse Tournaments</button>
           <button className="pl-cta-btn" onClick={() => navigate('/race')}>⚡ Start a Race</button>
         </div>
 
       </main>
+
+      {/* Best Arena Players This Week — full width, 4 tabs */}
+      <section className="pl-panel pl-panel-violet pl-fullspan">
+        <PanelHead
+          icon="🏆"
+          title="Best Arena Players — This Week"
+          subtitle="Top point-scorers in this week's tournaments"
+          accent="violet"
+        />
+
+        {(() => {
+          const ARENA_TABS = [
+            { id: 'standard', label: 'Standard Arena',        icon: '⚔️' },
+            { id: 'team',     label: 'Team Battle',           icon: '🛡️' },
+            { id: 'chess960', label: 'Chess960',              icon: '♟️' },
+            { id: 'marathon', label: 'Bullet Blitz Marathon', icon: '💥' },
+          ];
+          return (
+            <>
+              <div className="pl-arena-tabs">
+                {ARENA_TABS.map(t => (
+                  <button
+                    key={t.id}
+                    className={`pl-arena-tab${arenaTab === t.id ? ' pl-arena-tab-active' : ''}`}
+                    onClick={() => setArenaTab(t.id)}
+                  >
+                    <span className="pl-arena-tab-icon">{t.icon}</span>
+                    <span>{t.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {arenaTab === 'standard' && (
+                // Standard arena split into 3 time-control cards, each with its
+                // own category rating (bullet / blitz / rapid).
+                <div className="pl-arena-grid pl-arena-grid-3">
+                  <ArenaLeaderCol icon="🚀" title="Bullet Arena" rows={bullet} accent="rose"    showRating />
+                  <ArenaLeaderCol icon="⚡" title="Blitz Arena"  rows={blitz}  accent="cyan"    showRating />
+                  <ArenaLeaderCol icon="⏱️" title="Rapid Arena"  rows={rapid}  accent="emerald" showRating />
+                </div>
+              )}
+              {arenaTab === 'team' && (
+                // Team Battle split into 3 time-control cards, like Standard Arena.
+                <div className="pl-arena-grid pl-arena-grid-3">
+                  <ArenaLeaderCol icon="🚀" title="Bullet Team" rows={teamBullet} accent="rose"    showRating />
+                  <ArenaLeaderCol icon="⚡" title="Blitz Team"  rows={teamBlitz}  accent="cyan"    showRating />
+                  <ArenaLeaderCol icon="⏱️" title="Rapid Team"  rows={teamRapid}  accent="emerald" showRating />
+                </div>
+              )}
+              {arenaTab === 'chess960' && (
+                // Top 15 (users + bots), 3 cards of 5, continuous ranks. No rating.
+                <div className="pl-arena-grid pl-arena-grid-3">
+                  <ArenaLeaderCol icon="♟️" title="Top 1–5"   rows={chess960.slice(0, 5)}   accent="violet" startRank={0} />
+                  <ArenaLeaderCol icon="♟️" title="Top 6–10"  rows={chess960.slice(5, 10)}  accent="violet" startRank={5} />
+                  <ArenaLeaderCol icon="♟️" title="Top 11–15" rows={chess960.slice(10, 15)} accent="violet" startRank={10} />
+                </div>
+              )}
+              {arenaTab === 'marathon' && (
+                // Top 15 (users + bots), split into 3 cards of 5 with continuous ranks.
+                <div className="pl-arena-grid pl-arena-grid-3">
+                  <ArenaLeaderCol icon="💥" title="Top 1–5"   rows={marathon.slice(0, 5)}   accent="amber" startRank={0} />
+                  <ArenaLeaderCol icon="💥" title="Top 6–10"  rows={marathon.slice(5, 10)}  accent="amber" startRank={5} />
+                  <ArenaLeaderCol icon="💥" title="Top 11–15" rows={marathon.slice(10, 15)} accent="amber" startRank={10} />
+                </div>
+              )}
+            </>
+          );
+        })()}
+      </section>
     </div>
     </>
   );
@@ -1295,6 +1353,21 @@ export default function SocialHubPage() {
 
   const isGuest = user?.role === 'guest';
 
+  // Most-active club (for the header pill). /api/clubs/mine returns clubs sorted
+  // most-active first (by their chat's last-activity time), so [0] is the winner.
+  const [topClub, setTopClub] = useState(null);
+  useEffect(() => {
+    if (isGuest) return;
+    let alive = true;
+    (async () => {
+      try {
+        const res = await api.get('/api/clubs/mine');
+        if (alive && Array.isArray(res.data) && res.data.length) setTopClub(res.data[0]);
+      } catch { /* silent — pill just won't show */ }
+    })();
+    return () => { alive = false; };
+  }, [isGuest]);
+
   const activeTab = pathname.startsWith('/social/chat') ? 'chat'
                   : pathname.startsWith('/players')   ? 'players'
                   : pathname.startsWith('/friends')   ? 'friends'
@@ -1369,14 +1442,31 @@ export default function SocialHubPage() {
           <h1 className="sh-title">Social Hub</h1>
           <p className="sh-subtitle">{subtitles[activeTab]}</p>
         </div>
-        <button
-          type="button"
-          className={`sh-chat-launch${activeTab === 'chat' ? ' sh-chat-launch-active' : ''}`}
-          onClick={() => navigate('/social/chat')}
-        >
-          <span>💬 Chat</span>
-          {unreadCount > 0 && <span className="sh-chat-launch-badge">{unreadCount}</span>}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Most-active club shortcut — left of the Chat button */}
+          {topClub && (
+            <button
+              type="button"
+              className="sh-topclub-pill"
+              title={`Jump to ${topClub.name} — your most active club this month${topClub.monthlyMessages ? ` (${topClub.monthlyMessages} messages)` : ''}`}
+              onClick={() => navigate(`/clubs/${topClub._id}`)}
+            >
+              <span className="sh-topclub-trophy">🏆</span>
+              <span className="sh-topclub-text">
+                <span className="sh-topclub-label">Most active club</span>
+                <span className="sh-topclub-name">{topClub.name}</span>
+              </span>
+            </button>
+          )}
+          <button
+            type="button"
+            className={`sh-chat-launch${activeTab === 'chat' ? ' sh-chat-launch-active' : ''}`}
+            onClick={() => navigate('/social/chat')}
+          >
+            <span>💬 Chat</span>
+            {unreadCount > 0 && <span className="sh-chat-launch-badge">{unreadCount}</span>}
+          </button>
+        </div>
       </div>
 
       {/* Top-level Tabs */}

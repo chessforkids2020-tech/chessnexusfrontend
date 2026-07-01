@@ -308,6 +308,19 @@ export default function CoachAssignments() {
                   <div className="stat-bar"><div style={{ width: `${pct}%` }} /></div>
                 </div>
 
+                {/* Roster: who this assignment was given to, with each
+                    student's status — visible even before anyone starts. */}
+                {completions.length > 0 && (
+                  <div className="ca-assigned">
+                    <span className="ca-assigned-label">Assigned to:</span>
+                    {completions.map(c => (
+                      <span key={c.studentId} className={`ca-assigned-pill ca-status-${c.status}`}>
+                        {c.studentName} · {statusLabel(c.status)}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 <button className="ca-results-toggle" onClick={() => toggleExpand(a._id)}>
                   {isOpen ? '▾ Hide student results' : `▸ View student results (${withResults.length})`}
                 </button>

@@ -2249,6 +2249,7 @@ a.today-chip:hover {
 }
 
 .dash-tabpanel { animation: dashFade 0.25s ease; }
+.dash-tabpanel[hidden] { display: none !important; animation: none; }
 @keyframes dashFade {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }

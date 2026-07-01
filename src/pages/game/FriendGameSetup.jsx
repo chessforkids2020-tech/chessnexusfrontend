@@ -20,6 +20,7 @@ export default function FriendGameSetup({ onClose }) {
   const [customInc, setCustomInc] = useState(0);
   const [variant, setVariant] = useState('standard');
   const [chatEnabled, setChatEnabled] = useState(true);
+  const [isRated, setIsRated] = useState(false); // default casual (current behavior)
 
   // Join form state
   const [joinCode, setJoinCode] = useState('');
@@ -42,6 +43,8 @@ export default function FriendGameSetup({ onClose }) {
         variant,
         timeControl: resolvedTc,
         chatEnabled,
+        // Chess960 is always casual (mirrors the arena rule).
+        isRated: isRated && variant === 'standard',
       },
     });
   };
@@ -134,6 +137,31 @@ export default function FriendGameSetup({ onClose }) {
                 {variant === 'chess960' && (
                   <p className="fg-tc-note">A random starting position is generated for both players.</p>
                 )}
+
+                <h3 className="fg-col-title" style={{ marginTop: 18 }}>⚡ Mode</h3>
+                <div className="fg-variant">
+                  <button
+                    className={`fg-var ${isRated && variant === 'standard' ? 'active' : ''}`}
+                    onClick={() => setIsRated(true)}
+                    disabled={variant === 'chess960'}
+                    title={variant === 'chess960' ? 'Chess960 games are always casual' : 'Win/loss changes your rating'}
+                  >
+                    Rated
+                  </button>
+                  <button
+                    className={`fg-var ${!isRated || variant === 'chess960' ? 'active' : ''}`}
+                    onClick={() => setIsRated(false)}
+                  >
+                    Unrated
+                  </button>
+                </div>
+                <p className="fg-tc-note">
+                  {variant === 'chess960'
+                    ? 'Chess960 games are always casual — no rating change.'
+                    : (isRated
+                        ? 'Rated: both players’ ratings go up/down on win or loss. Both must be logged in.'
+                        : 'Unrated: just for fun — no rating change.')}
+                </p>
 
                 <h3 className="fg-col-title" style={{ marginTop: 18 }}>Options</h3>
                 <label className="fg-check">

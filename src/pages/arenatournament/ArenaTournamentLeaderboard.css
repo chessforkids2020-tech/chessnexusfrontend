@@ -1415,7 +1415,10 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--obs-cyan);
-  text-align: left;
+  /* Default centered so headers line up over their (centered) value columns.
+     Player header is left-aligned and Score header right-aligned via inline
+     styles in the JSX to match those columns. */
+  text-align: center;
   white-space: nowrap;
 }
 

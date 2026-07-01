@@ -1,0 +1,11 @@
+{
+	"type": "npm",
+	"name": "stockfish",
+	"version": "18.0.8",
+	"status": 403,
+	"message": "Package size exceeded the configured limit of 150 MB.",
+	"links": {
+		"stats": "https://data.jsdelivr.com/v1/stats/packages/npm/stockfish@18.0.8",
+		"entrypoints": "https://data.jsdelivr.com/v1/packages/npm/stockfish@18.0.8/entrypoints"
+	}
+}

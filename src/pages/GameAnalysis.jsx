@@ -18,7 +18,7 @@ import { useAuth } from '../contexts/AuthContext';
 import GameReplay from '../components/GameReplay';
 import PieceSelector from '../components/PositionEditor/PieceSelector';
 import EditableBoard from '../components/PositionEditor/EditableBoard';
-import SetupControls from '../components/PositionEditor/SetupControls';
+import SetupControls, { SideToMoveControl, CastlingControl, EnPassantControl } from '../components/PositionEditor/SetupControls';
 import FenBar from '../components/PositionEditor/FenBar';
 import OTBConfirmPanel from '../components/OTBConfirmPanel';
 import CoffeeCta from '../components/CoffeeCta';
@@ -184,7 +184,7 @@ function TimePressureCard({ timePressureStats }) {
 }
 
 // ─── Peer Comparison Card ─────────────────────────────────────────────────────
-function PeerComparisonCard({ peerComparison }) {
+export function PeerComparisonCard({ peerComparison }) {
   if (!peerComparison) return null;
   const { playerBandDisplay, avgCpLoss, benchmarkCpLoss, blundersPerGame, benchmarkBlundersPerGame, cpLossVsBenchmark, blunderVsBenchmark } = peerComparison;
   const cpColor = cpLossVsBenchmark <= 0 ? '#10b981' : cpLossVsBenchmark <= 30 ? '#f59e0b' : '#ef4444';
@@ -337,7 +337,7 @@ function ProgressHistoryCharts({ history }) {
 }
 
 // ─── Endgame Type Stats ───────────────────────────────────────────────────────
-function EndgameStats({ endgameStats }) {
+export function EndgameStats({ endgameStats }) {
   if (!endgameStats || endgameStats.length === 0) return null;
   return (
     <div className="ga-endgame-stats-wrap">
@@ -424,7 +424,7 @@ function AccuracyDoughnut({ accuracy, color, size = 120 }) {
   );
 }
 
-function PhaseCard({ phase, data, icon }) {
+export function PhaseCard({ phase, data, icon }) {
   if (!data) return null;
   const { label, color } = phaseLabel(data.accuracy, data.blunders ?? 0, data.mistakes ?? 0);
   return (
@@ -685,7 +685,7 @@ const THEME_LABELS = {
   positional:      'Blunder'
 };
 
-function GameBreakdownTable({ games }) {
+export function GameBreakdownTable({ games }) {
   if (!games || games.length === 0) return null;
   return (
     <div className="ga-breakdown-wrap">
@@ -751,7 +751,7 @@ function GameBreakdownTable({ games }) {
 
 // ─── TrendCharts ──────────────────────────────────────────────────────────────
 
-function TrendCharts({ trends }) {
+export function TrendCharts({ trends }) {
   if (!trends || !trends.accuracyPerGame || trends.accuracyPerGame.length === 0) return null;
   const labels = trends.accuracyPerGame.map((_, i) => `G${i + 1}`);
 
@@ -1713,7 +1713,7 @@ export default function GameAnalysis() {
   // Quick Analyze takes over the page with just the live engine board.
   if (quickGame) {
     return (
-      <div className="ga-page">
+      <div className="ga-page ga-page-quick">
         <GameReplay
           game={quickGame}
           quick
@@ -1900,23 +1900,22 @@ export default function GameAnalysis() {
               {/* ── Board editor (set up a position by hand) ── */}
               {showEditor && (
                 <div className="ga-editor-wrap">
+                  {/* LEFT: piece palette + castling rights */}
                   <div className="ga-editor-pieces">
                     <PieceSelector selectedPiece={selectedPiece} onSelectPiece={setSelectedPiece} />
-                    <div style={{ marginTop: 10 }}>
-                      <SetupControls chess={editorChess} onFenChange={setEditorFromFen} />
-                    </div>
-                    <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
-                      <button type="button" className="ga-editor-mini" onClick={() => setEditorFromFen('8/8/8/8/8/8/8/8 w - - 0 1')}>🗑 Clear</button>
-                      <button type="button" className="ga-editor-mini" onClick={() => setEditorFromFen(START_FEN)}>♟ Start</button>
+                    <div style={{ marginTop: 14 }}>
+                      <CastlingControl chess={editorChess} onFenChange={setEditorFromFen} />
                     </div>
                   </div>
+
+                  {/* MIDDLE: editable board + FEN + analyze */}
                   <div className="ga-editor-board">
                     <EditableBoard
                       chess={editorChess}
                       selectedPiece={selectedPiece}
                       onFenChange={setEditorFromFen}
                       orientation="white"
-                      boardWidth={320}
+                      boardWidth={300}
                     />
                     <div style={{ marginTop: 8 }}>
                       <FenBar fen={editorFen} onFenChange={setEditorFromFen} />
@@ -1925,6 +1924,16 @@ export default function GameAnalysis() {
                       <button type="button" className="ga-analyze-btn" onClick={handleEditorAnalyze}>
                         ⚡ Quick Analyze this position →
                       </button>
+                    </div>
+                  </div>
+
+                  {/* RIGHT: side-to-move, en passant, clear / start */}
+                  <div className="ga-editor-side">
+                    <SideToMoveControl chess={editorChess} onFenChange={setEditorFromFen} />
+                    <EnPassantControl chess={editorChess} onFenChange={setEditorFromFen} />
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      <button type="button" className="ga-editor-mini" onClick={() => setEditorFromFen('8/8/8/8/8/8/8/8 w - - 0 1')}>🗑️ Clear</button>
+                      <button type="button" className="ga-editor-mini" onClick={() => setEditorFromFen(START_FEN)}>⟳ Start</button>
                     </div>
                   </div>
                 </div>

@@ -5,9 +5,10 @@ import stockfishService from '../services/stockfishService';
 import {
   buildTreeFromPgn, loadTreeInto, saveTree, getMainlinePath,
   nodeAtPath, addMove, deleteNode, isMainlinePath,
+  hasAnyVariations, clearAllVariations, treeStorageKey,
 } from './gameTree';
 
-const ENGINE_LABEL = 'Stockfish 17.1';
+const ENGINE_LABEL = 'Stockfish 18';
 const ENGINE_DEPTH = 18;
 const ENGINE_LINES = 3;
 
@@ -26,28 +27,36 @@ function formatEval(line, sideToMove) {
 // Convert a UCI principal variation into a readable SAN string with move numbers,
 // starting from `fen`. Caps the length so the line stays short.
 function pvToSan(fen, pv, maxPlies = 8) {
+  // Never fall back to raw UCI — if a move can't be converted we stop and return
+  // only the SAN converted so far. Raw UCI (e.g. "g1f3") in the UI is confusing,
+  // especially when it's a move that has effectively already happened.
+  const out = [];
   try {
-    const c = new Chess(fen);
-    const out = [];
+    // 'start'/'startpos'/'' would make `new Chess()` throw — normalize to the
+    // real starting FEN so the opening position converts correctly.
+    const startFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    const c = new Chess(!fen || fen === 'start' || fen === 'startpos' ? startFen : fen);
     for (let i = 0; i < Math.min(pv.length, maxPlies); i++) {
       const uci = pv[i];
+      if (!uci || uci.length < 4) break;
       // moveNumber() is the full-move number of the position BEFORE the move.
       const moveNo = c.moveNumber();
       const whiteToMove = c.turn() === 'w';
-      const mv = c.move({
-        from: uci.slice(0, 2),
-        to: uci.slice(2, 4),
-        promotion: uci.length > 4 ? uci[4] : undefined,
-      });
-      if (!mv) break;
+      let mv = null;
+      try {
+        mv = c.move({
+          from: uci.slice(0, 2),
+          to: uci.slice(2, 4),
+          promotion: uci.length > 4 ? uci[4] : undefined,
+        });
+      } catch { mv = null; }
+      if (!mv) break; // illegal here — stop rather than print UCI
       if (whiteToMove) out.push(`${moveNo}.${mv.san}`);
       else if (out.length === 0) out.push(`${moveNo}...${mv.san}`);
       else out.push(mv.san);
     }
-    return out.join(' ');
-  } catch {
-    return pv.slice(0, maxPlies).join(' ');
-  }
+  } catch { /* return whatever SAN we managed */ }
+  return out.join(' ');
 }
 
 // Ply (full-move number, whose turn) for a node given its FEN.
@@ -170,17 +179,35 @@ function nodeFenBefore(root, nodePath) {
 
 // Live Stockfish panel — shows the top-3 lines for the current position with
 // White-perspective evals and the best continuation for each line.
-function EnginePanel({ fen, numLines = ENGINE_LINES }) {
-  const [lines, setLines] = useState([]);
+// `enabled` lets the user switch the engine off (stops it thinking, hides lines).
+// `onToggle` flips that state from the panel's header switch.
+function EnginePanel({ fen, numLines = ENGINE_LINES, enabled = true, onToggle }) {
+  // Keep the lines together with the EXACT fen they were computed for. The PV is
+  // a list of UCI moves relative to that position; converting it to SAN against a
+  // different (newer) fen makes the first move illegal — which previously caused
+  // raw UCI like "g1f3" to leak into the display. Pairing them guarantees we only
+  // ever render a PV against its own position.
+  const [result, setResult] = useState({ fen: null, lines: [] });
   const [depth, setDepth] = useState(0);
   const [status, setStatus] = useState('init'); // init | thinking | done | error
   const reqIdRef = useRef(0);
 
+  // Only render lines that belong to the current fen (drop stale ones instantly).
+  const lines = result.fen === fen ? result.lines : [];
   const sideToMove = (fen || '').split(' ')[1] === 'b' ? 'b' : 'w';
 
   useEffect(() => {
     let cancelled = false;
     const myReq = ++reqIdRef.current;
+
+    // Engine switched off — make sure it isn't thinking and show nothing.
+    if (!enabled) {
+      stockfishService.stop();
+      setResult({ fen: null, lines: [] });
+      setDepth(0);
+      setStatus('off');
+      return () => { cancelled = true; };
+    }
 
     async function run() {
       try {
@@ -189,7 +216,14 @@ function EnginePanel({ fen, numLines = ENGINE_LINES }) {
           await stockfishService.init();
         }
         if (cancelled || myReq !== reqIdRef.current) return;
-        setLines([]);
+        // Small debounce so React 18 StrictMode's double-mount (and rapid move
+        // stepping) collapses to a single analysis. Without this, the first run's
+        // cleanup calls stockfishService.stop() — which, since the engine is a
+        // shared singleton, also kills the second run, leaving it stuck on
+        // "Analysing…" until the next position change.
+        await new Promise((r) => setTimeout(r, 60));
+        if (cancelled || myReq !== reqIdRef.current) return;
+        setResult({ fen, lines: [] });
         setDepth(0);
         setStatus('thinking');
         await stockfishService.analyzePosition(fen, {
@@ -198,7 +232,7 @@ function EnginePanel({ fen, numLines = ENGINE_LINES }) {
           onUpdate: ({ depth: d, lines: ls }) => {
             if (cancelled || myReq !== reqIdRef.current) return;
             setDepth(d);
-            setLines(ls);
+            setResult({ fen, lines: ls });
           },
         });
         if (cancelled || myReq !== reqIdRef.current) return;
@@ -211,32 +245,45 @@ function EnginePanel({ fen, numLines = ENGINE_LINES }) {
 
     return () => {
       cancelled = true;
-      stockfishService.stop();
+      // Only stop the engine if no newer request has superseded us. A stale
+      // cleanup must NOT stop the engine that a newer run just started.
+      if (myReq === reqIdRef.current) stockfishService.stop();
     };
-  }, [fen, numLines]);
+  }, [fen, numLines, enabled]);
 
   return (
-    <div className="gr-engine">
+    <div className={`gr-engine${enabled ? '' : ' gr-engine-off'}`}>
       <div className="gr-engine-head">
         <span className="gr-engine-name">🐟 {ENGINE_LABEL}</span>
-        <span className="gr-engine-depth">
-          {status === 'error' ? 'unavailable'
-            : status === 'init' ? 'loading…'
-            : `depth ${depth}/${ENGINE_DEPTH}`}
-        </span>
+        <div className="gr-engine-head-right">
+          {enabled && (
+            <span className="gr-engine-depth">
+              {status === 'error' ? 'unavailable'
+                : status === 'init' ? 'loading…'
+                : `depth ${depth}/${ENGINE_DEPTH}`}
+            </span>
+          )}
+          {/* On/off switch — lets the user stop the live engine entirely. */}
+          <button
+            type="button"
+            className={`gr-engine-toggle${enabled ? ' on' : ''}`}
+            onClick={onToggle}
+            title={enabled ? 'Turn the engine off' : 'Turn the engine on'}
+            aria-pressed={enabled}
+          >
+            <span className="gr-engine-toggle-knob" />
+            <span className="gr-engine-toggle-text">{enabled ? 'On' : 'Off'}</span>
+          </button>
+        </div>
       </div>
-      {status === 'error' ? (
+      {!enabled ? (
+        <div className="gr-engine-empty">Engine off — turn it on to see Stockfish lines.</div>
+      ) : status === 'error' ? (
         <div className="gr-engine-empty">Engine could not start in this browser.</div>
       ) : lines.length === 0 ? (
         <div className="gr-engine-empty">Analysing…</div>
       ) : (
         <table className="gr-engine-table">
-          <thead>
-            <tr>
-              <th className="gr-engine-th-eval">Eval</th>
-              <th className="gr-engine-th-line">Best line</th>
-            </tr>
-          </thead>
           <tbody>
             {lines.slice(0, numLines).map((ln) => {
               const ev = formatEval(ln, sideToMove);
@@ -279,6 +326,17 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
   }, [turningPoint, playerSide]);
 
   const [playing, setPlaying]   = useState(false);
+  // Live Stockfish on/off — user preference, persisted across games & sessions.
+  const [engineOn, setEngineOn] = useState(() => {
+    try { return localStorage.getItem('gaEngineOn') !== 'false'; } catch { return true; }
+  });
+  const toggleEngine = useCallback(() => {
+    setEngineOn(prev => {
+      const next = !prev;
+      try { localStorage.setItem('gaEngineOn', String(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
   const activeTab = 'moves'; // single view (Stockfish + moves); tabs removed
   const timerRef = useRef(null);
   const commentRef = useRef(null);
@@ -288,6 +346,7 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
   // children, nested to any depth. `path` = ids from root to the current node.
   const [tree, setTree] = useState(() => loadTreeInto(pgn, buildTreeFromPgn(pgn)));
   const [path, setPath] = useState([]); // [] = starting position
+  const [moveMenu, setMoveMenu] = useState(null); // {x,y} right-click menu on move list, or null
 
   // Rebuild the tree when the game changes.
   useEffect(() => {
@@ -434,6 +493,21 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
     saveTree(pgn, tree);
   }, [tree, path, onMainline, pgn]);
 
+  // Whether the user has added any variations at all (controls show/hide of the
+  // "delete all" affordance).
+  const hasVars = useMemo(() => hasAnyVariations(tree), [tree]);
+
+  // Lichess-style "delete all variations": wipe every user line, keep only the
+  // game mainline, drop the saved tree, and return to the start position. Used
+  // by the toolbar button and the right-click context menu on the move list.
+  const clearVariations = useCallback(() => {
+    if (!hasVars) return;
+    clearAllVariations(tree);
+    setPath([]);
+    setTree({ ...tree }); // new ref so memos recompute
+    try { localStorage.removeItem(treeStorageKey(pgn)); } catch { /* ignore */ }
+  }, [tree, pgn, hasVars]);
+
   // Detailed move analysis only applies on the GAME mainline. The mainline ply
   // equals path length when we're on the mainline; in a variation there's none.
   const mainlinePly = onMainline ? path.length : 0;
@@ -473,14 +547,17 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
   const totalInaccuracies = moveAnalysis.filter(m => m.classification === 'inaccuracy').length;
 
   return (
-    <div className="gr-container">
-      {/* Header */}
+    <div className={`gr-container${quick ? ' gr-quick' : ''}`}>
+      {/* Header. In Quick Analyze there's no "game" to label (it's a pasted FEN/
+          PGN), so drop the "Game N" + opening info and keep just a Back button. */}
       <div className="gr-header">
-        <button className="gr-back-btn" onClick={onClose}>← Back to Overview</button>
-        <div className="gr-header-info">
-          <span className="gr-game-num">Game {gameNumber}</span>
-          <span className="gr-opening">{opening || 'Unknown'}</span>
-        </div>
+        <button className="gr-back-btn" onClick={onClose}>{quick ? '← Back' : '← Back to Overview'}</button>
+        {!quick && (
+          <div className="gr-header-info">
+            <span className="gr-game-num">Game {gameNumber}</span>
+            <span className="gr-opening">{opening || 'Unknown'}</span>
+          </div>
+        )}
       </div>
 
       <div className="gr-layout">
@@ -515,10 +592,16 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
           {exploring ? (
             <div className="gr-study-banner">
               <span>🔬 In your variation — saved on this device</span>
-              <button className="gr-study-return" onClick={deleteCurrentVariation}>🗑 Delete line</button>
+              <span style={{ display: 'flex', gap: 8 }}>
+                <button className="gr-study-return" onClick={deleteCurrentVariation}>🗑 Delete line</button>
+                {hasVars && <button className="gr-study-return" onClick={clearVariations} title="Remove every variation and return to the game line">🧹 Delete all</button>}
+              </span>
             </div>
           ) : (
-            <div className="gr-study-hint">💡 Drag a piece to try your own moves · they're saved here · drag ⤡ to resize</div>
+            <div className="gr-study-hint">
+              💡 Drag a piece to try your own moves · they're saved here · drag ⤡ to resize
+              {hasVars && <> · <button className="gr-link-btn" onClick={clearVariations} title="Remove every variation and return to the game line">🧹 Delete all variations</button></>}
+            </div>
           )}
 
           {/* Win Chance Bar */}
@@ -552,11 +635,24 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
           {/* ── MOVES TAB ── */}
           {activeTab === 'moves' && (<>
           {/* Live Stockfish engine lines for the current position */}
-          <EnginePanel fen={currentFen} numLines={quick ? 4 : 3} />
+          <EnginePanel
+            fen={currentFen}
+            numLines={quick ? 4 : 3}
+            enabled={engineOn}
+            onToggle={toggleEngine}
+          />
 
           {/* Move list — full variation tree. Mainline inline; user variations
-              shown nested in ( … ), persisted on this device. */}
-          <div className="gr-move-list">
+              shown nested in ( … ), persisted on this device. Right-click for a
+              Lichess-style menu (delete all variations). */}
+          <div
+            className="gr-move-list"
+            onContextMenu={(e) => {
+              if (!hasVars) return; // nothing to act on → let the native menu show
+              e.preventDefault();
+              setMoveMenu({ x: e.clientX, y: e.clientY });
+            }}
+          >
             <div className="gr-move-list-inner">
               <MoveTree
                 root={tree}
@@ -567,6 +663,34 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
               />
             </div>
           </div>
+
+          {/* Right-click context menu for the move list */}
+          {moveMenu && (
+            <>
+              {/* click-away / scroll catcher */}
+              <div
+                className="gr-ctx-overlay"
+                onClick={() => setMoveMenu(null)}
+                onContextMenu={(e) => { e.preventDefault(); setMoveMenu(null); }}
+              />
+              <div className="gr-ctx-menu" style={{ top: moveMenu.y, left: moveMenu.x }}>
+                <button
+                  className="gr-ctx-item"
+                  onClick={() => { clearVariations(); setMoveMenu(null); }}
+                >
+                  🧹 Delete all variations
+                </button>
+                {exploring && (
+                  <button
+                    className="gr-ctx-item"
+                    onClick={() => { deleteCurrentVariation(); setMoveMenu(null); }}
+                  >
+                    🗑 Delete this line
+                  </button>
+                )}
+              </div>
+            </>
+          )}
 
           {/* Commentary */}
           <div className="gr-commentary">

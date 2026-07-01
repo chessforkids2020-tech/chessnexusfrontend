@@ -428,7 +428,7 @@ function getMFBadge(completedDays, perfectDays) {
   return { emoji: '🌱', name: 'Beginner' };
 }
 
-const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSummary = null, publicMonthlyFocus = null, publicPuzzleStatsRange = null, viewedDisplayName = null }) => {
+const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSummary = null, publicMonthlyFocus = null, publicPuzzleStatsRange = null, viewedDisplayName = null, section = 'all' }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedRaceType, setSelectedRaceType] = useState(null);
   // Puzzle Stats card time range: '24h' | '7d'
@@ -600,13 +600,75 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
   const correctOffset = circumference - (correctPercentage / 100) * circumference;
   const wrongOffset = circumference - (wrongPercentage / 100) * circumference;
 
+  const showOverview = section === 'all' || section === 'overview';
+  const showPractice = section === 'all' || section === 'practice';
+  const showPuzzleStats = showPractice || section === 'puzzlestats';
+  const showRacePoints = showPractice && section !== 'puzzlestats';
+  // daily puzzle circles: shown standalone OR in 'all' mode, NOT in 'overview' (moved to 40% panel)
+  const showDailyPuzzle = section === 'dailypuzzle' || section === 'all';
+
+  // ── Daily Puzzle standalone card ─────────────────────────────────────────
+  if (section === 'dailypuzzle') {
+    const totalPuzzlesDp = dailyStats.correct + dailyStats.wrong;
+    const radiusDp = 42;
+    const circumferenceDp = 2 * Math.PI * radiusDp;
+    const correctOffsetDp = circumferenceDp - ((dailyStats.correct / 5) * circumferenceDp);
+    const wrongOffsetDp   = circumferenceDp - ((dailyStats.wrong   / 5) * circumferenceDp);
+    return (
+      <div style={{ padding: 'clamp(16px,4vw,24px)', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        {/* Header */}
+        <h3 style={{ ...styles.columnTitle, marginBottom: 14 }}>🧩 Today's Daily Puzzles</h3>
+        <div style={{ fontSize: 'clamp(12px, 2.5vw, 13px)', color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', textAlign: 'center', marginBottom: 16, lineHeight: 1.5 }}>
+          {totalPuzzlesDp >= 5 ? "🎉 You've finished your daily batch of 5 puzzles!"
+            : totalPuzzlesDp > 0 ? `📈 Progress: ${totalPuzzlesDp}/5 puzzles completed`
+            : '🚀 Start your daily puzzles!'}
+        </div>
+        {/* Two halves with a divider */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
+          {/* Correct */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, flex: 1 }}>
+            <div style={{ position: 'relative', width: 'clamp(72px,18vw,96px)', height: 'clamp(72px,18vw,96px)' }}>
+              <svg style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }} viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="rgba(148,163,184,0.18)" strokeWidth="8" />
+                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="#10b981" strokeWidth="8" strokeLinecap="round"
+                  strokeDasharray={circumferenceDp} strokeDashoffset={correctOffsetDp} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+              </svg>
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: 'clamp(20px,5vw,28px)', fontWeight: 800, color: '#10b981' }}>
+                {dailyStats.correct}
+              </div>
+            </div>
+            <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#10b981' }}>Correct</span>
+          </div>
+
+          {/* Divider */}
+          <div style={{ width: 1, height: 90, background: 'var(--obsidian-border, rgba(148,163,184,0.16))', flexShrink: 0 }} />
+
+          {/* Wrong */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, flex: 1 }}>
+            <div style={{ position: 'relative', width: 'clamp(72px,18vw,96px)', height: 'clamp(72px,18vw,96px)' }}>
+              <svg style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }} viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="rgba(148,163,184,0.18)" strokeWidth="8" />
+                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="#ef4444" strokeWidth="8" strokeLinecap="round"
+                  strokeDasharray={circumferenceDp} strokeDashoffset={wrongOffsetDp} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+              </svg>
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: 'clamp(20px,5vw,28px)', fontWeight: 800, color: '#ef4444' }}>
+                {dailyStats.wrong}
+              </div>
+            </div>
+            <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#ef4444' }}>Wrong</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={styles.container}>
-      <div style={styles.contentWrapper}>
-        {/* Top Section: Two Columns with Equal Height */}
+    <div style={section !== 'all' ? { ...styles.container, margin: 0, padding: 0 } : styles.container}>
+      <div style={section !== 'all' ? { ...styles.contentWrapper, borderRadius: '24px', height: '100%' } : styles.contentWrapper}>
+        {/* Top Section: Two Columns (race points left, daily puzzles right) */}
         <div style={styles.topSection}>
-          {/* Left Column: Highest Points */}
-          <div style={styles.column}>
+          {/* Left Column: Highest Points — practice tab only (not puzzlestats) */}
+          {showRacePoints && <div style={styles.column}>
             <h3 style={styles.columnTitle}>🏆 Highest Race Points</h3>
             <div
               style={styles.highestPointCard}
@@ -683,14 +745,14 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                 <div style={styles.detailsHint}>Click for details →</div>
               </div>
             </div>
-          </div>
+          </div>}
 
-          {/* Right Column: Daily Puzzle Stats & Puzzle Rating */}
-          <div style={styles.column}>
-            <h3 style={styles.columnTitle}>🧩 Today's Daily Puzzles</h3>
-            
+          {/* Right Column: Puzzle Rating (overview) or Daily Puzzle standalone */}
+          {(showOverview || showDailyPuzzle) && <div style={styles.column}>
+            {showDailyPuzzle && <h3 style={styles.columnTitle}>🧩 Today's Daily Puzzles</h3>}
+
             {/* Daily Puzzle Progress with Circles */}
-            <div style={styles.dailyPuzzleCard}>
+            {showDailyPuzzle && <div style={styles.dailyPuzzleCard}>
               <div style={styles.dailyPuzzleHeader}>
                 {totalPuzzles >= 5 
                   ? "🎉 You've finished your daily batch of 5 puzzles!"
@@ -762,154 +824,14 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                   </div>
                 </div>
               </div>
-            </div>
+            </div>}
 
-            {/* Puzzle Rating — split into two: left = rating + trend, right = sparkline */}
-            <div style={styles.puzzleRatingCard}>
-              {/* Left part: icon + rating value + up/down trend */}
-              <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-                <div style={{ fontSize: 'clamp(24px, 6vw, 32px)', filter: 'drop-shadow(0 4px 12px rgba(6, 182, 212, 0.3))' }}>
-                  🧩
-                </div>
-                <div style={{ marginLeft: 'clamp(12px, 3vw, 16px)' }}>
-                  <div style={{ fontSize: 'clamp(11px, 2.5vw, 13px)', color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))', fontWeight: '500', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Puzzle Rating
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <div style={{ fontSize: 'clamp(22px, 5vw, 28px)', fontWeight: '700', color: 'var(--obsidian-text-soft, #dbeafe)' }}>
-                      {rangeStats?.rating ?? (user?.liveRating || 1200)}
-                    </div>
-                    {(() => {
-                      const trend = rangeStats?.trend || 0;
-                      const up = trend > 0;
-                      const color = trend > 0 ? '#22c55e' : trend < 0 ? '#ef4444' : 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))';
-                      return (
-                        <span style={{ fontSize: 'clamp(12px, 3vw, 14px)', fontWeight: 700, color }}>
-                          {/* No change → show only the square; no "no change" text. */}
-                          {rangeStatsLoading ? '…' : trend === 0 ? '▬' : `${up ? '▲ +' : '▼ '}${trend}`}
-                          {!rangeStatsLoading && trend !== 0 && (
-                            <span style={{ fontWeight: 500, color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))', marginLeft: '4px' }}>
-                              ({statsRange === '7d' ? '7d' : '24h'})
-                            </span>
-                          )}
-                        </span>
-                      );
-                    })()}
-                  </div>
-                </div>
-              </div>
-
-              {/* Divider */}
-              <div style={{ width: '1px', alignSelf: 'stretch', margin: '0 clamp(12px, 3vw, 20px)', background: 'var(--obsidian-border, rgba(148, 163, 184, 0.16))' }} />
-
-              {/* Right part: big rating sparkline filling the remaining space */}
-              <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <div style={{ fontSize: 'clamp(10px, 2.2vw, 11px)', color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
-                  Rating trend ({statsRange === '7d' ? '7 days' : '24 hrs'})
-                </div>
-                {!rangeStatsLoading && rangeStats?.series?.rating ? (
-                  <Sparkline
-                    data={rangeStats.series.rating}
-                    color={(rangeStats.trend || 0) >= 0 ? '#22c55e' : '#ef4444'}
-                    height={48}
-                    fill
-                  />
-                ) : (
-                  <div style={{ height: '48px', display: 'flex', alignItems: 'center', color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))', fontSize: '12px' }}>
-                    {rangeStatsLoading ? 'Loading…' : 'No data yet'}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          </div>}
         </div>
 
-        {/* ── Puzzle Stats card (above Arena Tournament Summary) ── */}
-        <div style={styles.fullWidthSection}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', marginBottom: '8px' }}>
-            <h3 style={{ ...styles.columnTitle, margin: 0 }}>🧩 Puzzle Stats</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <div style={{ display: 'inline-flex', background: 'rgba(6, 182, 212, 0.1)', border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))', borderRadius: '10px', padding: '3px' }}>
-                {[
-                  { id: '24h', label: '24 hrs' },
-                  { id: '7d', label: '7 days' },
-                ].map(opt => {
-                  const active = statsRange === opt.id;
-                  return (
-                    <button
-                      key={opt.id}
-                      type="button"
-                      onClick={() => setStatsRange(opt.id)}
-                      style={{
-                        padding: '6px 14px',
-                        borderRadius: '8px',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '12.5px',
-                        fontWeight: 700,
-                        letterSpacing: '0.02em',
-                        transition: 'all 0.2s ease',
-                        background: active ? 'linear-gradient(135deg, #06b6d4, #10b981)' : 'transparent',
-                        color: active ? '#04201f' : 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))',
-                        boxShadow: active ? '0 4px 12px rgba(6,182,212,0.3)' : 'none',
-                      }}
-                    >
-                      {opt.label}
-                    </button>
-                  );
-                })}
-              </div>
-              <Link
-                to={viewedDisplayName ? `/player/${encodeURIComponent(viewedDisplayName)}/puzzle-dashboard` : '/puzzle-dashboard'}
-                style={{
-                  padding: '7px 14px',
-                  borderRadius: '10px',
-                  border: '1px solid rgba(6,182,212,0.4)',
-                  background: 'rgba(6,182,212,0.12)',
-                  color: '#06b6d4',
-                  fontSize: '12.5px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  textDecoration: 'none',
-                }}
-              >
-                Puzzle Dashboard →
-              </Link>
-            </div>
-          </div>
-          <div style={styles.ratingCard}>
-            {(() => {
-              const rs = rangeStats || {};
-              const dash = rangeStatsLoading ? '…' : '—';
-              const val = (n) => (rangeStatsLoading || rs.attempts == null ? dash : n);
-              return (
-                <div style={{ ...styles.ratingGrid, gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))' }}>
-                  {/* Puzzles done */}
-                  <div style={styles.ratingItem}>
-                    <div style={styles.ratingLabel}>Puzzles Done</div>
-                    <div style={styles.ratingValue}>{val(rs.attempts)}</div>
-                    {!rangeStatsLoading && <Sparkline data={rs.series?.attempts} color="#a78bfa" />}
-                  </div>
-                  {/* Solved */}
-                  <div style={styles.ratingItem}>
-                    <div style={styles.ratingLabel}>Solved</div>
-                    <div style={{ ...styles.ratingValue, color: '#22c55e' }}>{val(rs.solved)}</div>
-                    {!rangeStatsLoading && <Sparkline data={rs.series?.solved} color="#22c55e" />}
-                  </div>
-                  {/* Failed */}
-                  <div style={styles.ratingItem}>
-                    <div style={styles.ratingLabel}>Failed</div>
-                    <div style={{ ...styles.ratingValue, color: '#ef4444' }}>{val(rs.failed)}</div>
-                    {!rangeStatsLoading && <Sparkline data={rs.series?.failed} color="#ef4444" />}
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
-        </div>
 
-        <div style={styles.fullWidthSection}>
+        {/* ── Arena Tournament Summary — overview tab only ── */}
+        {showOverview && <div style={styles.fullWidthSection}>
           <h3 style={styles.columnTitle}>🏟️ Arena Tournament Summary</h3>
           <div style={styles.ratingCard}>
             <div style={styles.ratingGrid}>
@@ -961,188 +883,8 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
               </div>
             </div>
           </div>
-        </div>
+        </div>}
 
-        {/* Monthly Focus Challenge Section */}
-        {(() => {
-          const currentMonthLabel = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
-
-          if (focusLoading) {
-            return (
-              <div style={styles.focusCard}>
-                <div style={styles.mfHeader}>
-                  <div style={styles.mfHeaderLeft}>
-                    <span style={{ fontSize: '22px' }}>🎯</span>
-                    <div>
-                      <h3 style={styles.mfTitle}>Monthly Focus Challenge</h3>
-                      <p style={styles.mfMonth}>{currentMonthLabel}</p>
-                    </div>
-                  </div>
-                </div>
-                <div style={styles.focusEmptyState}>Loading focus data...</div>
-              </div>
-            );
-          }
-
-          const focuses = focusData?.focuses || [];
-          const statsMap = focusData?.statsMap || {};
-
-          const isOfficial = f => !f.createdBy || f.createdBy?.role === 'admin';
-          const officialFocuses   = focuses.filter(isOfficial);
-          const eliteFocuses      = focuses.filter(f => !isOfficial(f));
-          const officialWithStats = officialFocuses.filter(f => statsMap[f._id]);
-          const eliteWithStats    = eliteFocuses.filter(f => statsMap[f._id]);
-          const tableRows         = [...officialWithStats, ...eliteWithStats];
-
-          const hasAnything = officialFocuses.length > 0 || tableRows.length > 0;
-          if (!hasAnything) {
-            return (
-              <div style={styles.focusCard}>
-                <div style={styles.mfHeader}>
-                  <div style={styles.mfHeaderLeft}>
-                    <span style={{ fontSize: '22px' }}>🎯</span>
-                    <div>
-                      <h3 style={styles.mfTitle}>Monthly Focus Challenge</h3>
-                      <p style={styles.mfMonth}>{currentMonthLabel}</p>
-                    </div>
-                  </div>
-                  <Link to="/monthly-focus" style={styles.mfViewAll}>View All →</Link>
-                </div>
-                <div style={styles.focusEmptyState}>No Monthly Focus challenge active this month.</div>
-              </div>
-            );
-          }
-
-          return (
-            <div style={styles.focusCard}>
-              {/* Header */}
-              <div style={styles.mfHeader}>
-                <div style={styles.mfHeaderLeft}>
-                  <span style={{ fontSize: '22px' }}>🎯</span>
-                  <div>
-                    <h3 style={styles.mfTitle}>Monthly Focus Challenge</h3>
-                    <p style={styles.mfMonth}>{currentMonthLabel}</p>
-                  </div>
-                </div>
-                <Link to="/monthly-focus" style={styles.mfViewAll}>View All →</Link>
-              </div>
-
-              {/* Official challenge played by user — horizontal stat cards */}
-              {officialWithStats.map(focus => {
-                const s = statsMap[focus._id];
-                const badge = getMFBadge(s.completedDays, s.perfectDays);
-                return (
-                  <div key={focus._id} style={styles.mfOfficialBlock}>
-                    <div style={styles.mfOfficialLabel}>🏛️ ChessNexus Official</div>
-                    <div style={styles.mfOfficialFocusName}>{focus.title}</div>
-                    <div style={styles.mfStatCards}>
-                      <div style={{ ...styles.mfStatCard, borderColor: 'rgba(245,158,11,0.3)' }}>
-                        <div style={styles.mfStatCardIcon}>🏅</div>
-                        <div style={{ ...styles.mfStatCardValue, color: '#f59e0b' }}>{s.rank ? `#${s.rank}` : '—'}</div>
-                        <div style={styles.mfStatCardLabel}>Rank</div>
-                      </div>
-                      <div style={{ ...styles.mfStatCard, borderColor: 'rgba(6,182,212,0.3)' }}>
-                        <div style={styles.mfStatCardIcon}>⚡</div>
-                        <div style={{ ...styles.mfStatCardValue, color: '#06b6d4' }}>{s.focusXp ?? 0}</div>
-                        <div style={styles.mfStatCardLabel}>XP</div>
-                      </div>
-                      <div style={{ ...styles.mfStatCard, borderColor: 'rgba(129,140,248,0.3)' }}>
-                        <div style={styles.mfStatCardIcon}>🧠</div>
-                        <div style={{ ...styles.mfStatCardValue, color: '#818cf8' }}>{s.skillScore ?? 0}</div>
-                        <div style={styles.mfStatCardLabel}>Skill Score</div>
-                      </div>
-                      <div style={{ ...styles.mfStatCard, borderColor: 'rgba(16,185,129,0.3)' }}>
-                        <div style={styles.mfStatCardIcon}>🎖️</div>
-                        <div style={{ ...styles.mfStatCardValue, color: '#10b981', fontSize: 'clamp(12px, 2.8vw, 14px)' }}>
-                          {badge ? `${badge.emoji} ${badge.name}` : '—'}
-                        </div>
-                        <div style={styles.mfStatCardLabel}>Badge</div>
-                      </div>
-                      <div style={{ ...styles.mfStatCard, borderColor: 'rgba(232,121,249,0.3)' }}>
-                        <div style={styles.mfStatCardIcon}>✨</div>
-                        <div style={{ ...styles.mfStatCardValue, color: '#e879f9' }}>{s.perfectDays ?? 0}</div>
-                        <div style={styles.mfStatCardLabel}>Perfect Days</div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {/* Invite to join if official is active but user hasn't played */}
-              {officialWithStats.length === 0 && officialFocuses.length > 0 && (
-                <div style={styles.mfJoinInvite}>
-                  <span>🏛️ An official Monthly Focus challenge is active this month!</span>
-                  <Link to="/monthly-focus" style={styles.mfJoinLink}>Join now →</Link>
-                </div>
-              )}
-
-              {/* Table: all participated focuses (official first, then elite) */}
-              {tableRows.length > 0 && (
-                <div style={styles.mfTableWrap}>
-                  <table style={styles.mfTable}>
-                    <thead>
-                      <tr style={{ background: 'rgba(6,182,212,0.08)' }}>
-                        {['Focus Name', 'Rank', 'XP', 'Skill Score', 'Badge'].map(h => (
-                          <th key={h} style={{
-                            padding: '10px 14px',
-                            textAlign: h === 'Focus Name' ? 'left' : 'center',
-                            fontSize: '11px',
-                            fontWeight: '700',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.6px',
-                            color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))',
-                            borderBottom: '1px solid rgba(148,163,184,0.16)',
-                            whiteSpace: 'nowrap',
-                          }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tableRows.map((focus, idx) => {
-                        const s = statsMap[focus._id];
-                        const off = isOfficial(focus);
-                        const badge = getMFBadge(s.completedDays, s.perfectDays);
-                        const creator = off ? 'ChessNexus' : (focus.createdBy?.displayName || focus.createdBy?.username || 'Elite');
-                        return (
-                          <tr key={focus._id} style={{
-                            background: off ? 'rgba(251,191,36,0.05)' : (idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)'),
-                            borderBottom: '1px solid rgba(148,163,184,0.10)',
-                          }}>
-                            <td style={{ padding: '10px 14px' }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                {off && <span title="ChessNexus Official">🏛️</span>}
-                                <div>
-                                  <div style={{ fontWeight: '600', color: 'var(--obsidian-text-soft, #dbeafe)', fontSize: 'clamp(12px,2.8vw,14px)' }}>
-                                    {focus.title}
-                                  </div>
-                                  <div style={{ fontSize: '11px', color: 'var(--obsidian-text-muted, rgba(203,213,225,0.6))' }}>
-                                    by {creator}
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                            <td style={{ padding: '10px 14px', textAlign: 'center', fontWeight: '700', color: '#f59e0b' }}>
-                              {s.rank ? `#${s.rank}` : '—'}
-                            </td>
-                            <td style={{ padding: '10px 14px', textAlign: 'center', fontWeight: '700', color: '#06b6d4' }}>
-                              {s.focusXp ?? 0}
-                            </td>
-                            <td style={{ padding: '10px 14px', textAlign: 'center', fontWeight: '700', color: '#818cf8' }}>
-                              {s.skillScore ?? 0}
-                            </td>
-                            <td style={{ padding: '10px 14px', textAlign: 'center', color: '#10b981', fontWeight: '600' }}>
-                              {badge ? `${badge.emoji} ${badge.name}` : '—'}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          );
-        })()}
       </div>
 
       <DetailedRaceStatsModal

@@ -112,11 +112,11 @@ export default function Puzzles() {
       } else if (width <= 768) {
         setBoardWidth(Math.min(450, width - 60));
       } else if (width <= 1024) {
-        // ~35 % of viewport, capped at 480
-        setBoardWidth(Math.min(480, Math.floor(width * 0.35)));
+        // ~50 % of viewport, capped at 490
+        setBoardWidth(Math.min(490, Math.floor(width * 0.50)));
       } else {
-        // ~32 % of viewport on large/wide screens, capped at 600
-        setBoardWidth(Math.min(600, Math.floor(width * 0.32)));
+        // ~50 % of viewport on large/wide screens, capped at 510
+        setBoardWidth(Math.min(510, Math.floor(width * 0.50)));
       }
     };
     
@@ -1421,13 +1421,16 @@ export default function Puzzles() {
 
         {/* CHESSBOARD VIEW */}
         {dailyStatus === 'active' && (
-          <div style={{ 
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)', 
+          <div style={{
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
             borderRadius: '4px',
-            overflow: 'hidden',
             position: 'relative',
             opacity: gameOver ? 0.8 : 1,
-            transition: 'opacity 0.3s'
+            transition: 'opacity 0.3s',
+            /* Lift the board to absorb the Chessboard's empty TOP coordinate
+               gutter. `overflow` is left visible so the BOTTOM file labels
+               (h g f … a) are never clipped (this page only). */
+            marginTop: -40
           }}>
             {/* Game Over Overlay */}
             {gameOver && (

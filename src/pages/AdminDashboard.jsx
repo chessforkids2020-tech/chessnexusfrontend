@@ -1161,10 +1161,8 @@ function AdminDashboard() {
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/arena')}>🏁 Race Arena</button>
           <button style={styles.secondaryBtn} onClick={openArenaCreateModal}>🏆 New Arena Tournament</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/studies')}>📚 Study Management</button>
-          <button style={styles.secondaryBtn} onClick={() => nav('/admin/books')}>📖 Book Management</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/monthly-focus')}>🎯 Monthly Focus</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/team-race')}>👥 Team Race</button>
-          <button style={styles.secondaryBtn} onClick={() => nav('/admin/schedule')}>📅 Activity Schedule</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/reports')}>🚩 Reports</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/supporters')}>☕ Supporters</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/chat')}>💬 Chat</button>
@@ -2154,6 +2152,49 @@ function AdminDashboard() {
             </div>
           </div>
         )}
+
+        {/* ── Content management cards (moved from header) ─────────────── */}
+        <div style={{ marginTop: 28, marginBottom: 16 }}>
+          <h3 style={{ margin: '0 0 12px', color: '#0f172a', fontSize: 18 }}>Content Management</h3>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 14,
+          }}>
+            {[
+              { icon: '♟', title: 'Endgames', desc: 'Manage endgame studies & positions', route: '/admin/endgames' },
+              { icon: '📖', title: 'Book Management', desc: 'Manage chess books & lessons', route: '/admin/books' },
+              { icon: '📅', title: 'Activity Schedule', desc: 'Manage the tournament & race calendar', route: '/admin/schedule' },
+            ].map((c) => (
+              <div
+                key={c.route}
+                onClick={() => nav(c.route)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') nav(c.route); }}
+                style={{
+                  ...styles.card,
+                  marginBottom: 0,
+                  padding: 18,
+                  cursor: 'pointer',
+                  border: '1px solid #e2e8f0',
+                  transition: 'transform 0.15s, box-shadow 0.15s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 14,
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 12px 28px rgba(0,0,0,0.10)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.03)'; }}
+              >
+                <div style={{ fontSize: 30, lineHeight: 1 }}>{c.icon}</div>
+                <div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: 15 }}>{c.title}</div>
+                  <div style={{ color: '#64748b', fontSize: 13, marginTop: 2 }}>{c.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Arena Tournament Create Modal */}
         {showArenaCreateModal && (

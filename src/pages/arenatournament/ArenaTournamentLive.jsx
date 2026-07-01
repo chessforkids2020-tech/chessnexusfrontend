@@ -1307,6 +1307,14 @@ export default function ArenaTournamentLive() {
                       {onlineUserIds.includes(p.userId) && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 4px #10b981', flexShrink: 0 }} title="Online" />}
                       {crown && <span title={`${crown.label}`} style={{ fontSize: '13px', flexShrink: 0, filter: `drop-shadow(${crown.glow})` }}>{crown.emoji}</span>}
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0, color: crown?.color || '#fff', fontWeight: crown ? '700' : '600', textShadow: crown ? `0 0 8px ${crown.color}88` : 'none' }}><PlayerName displayName={p.displayName} username={p.username} userId={p.userId} /></span>
+                      <span title="Tournament rating" style={{ fontSize: '10px', fontWeight: '700', color: '#94a3b8', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+                        {p.tournamentRating ?? 1200}
+                        {p.tournamentRatingChange ? (
+                          <span style={{ marginLeft: '2px', color: p.tournamentRatingChange > 0 ? '#10b981' : '#ef4444' }}>
+                            {p.tournamentRatingChange > 0 ? `+${p.tournamentRatingChange}` : p.tournamentRatingChange}
+                          </span>
+                        ) : null}
+                      </span>
                       {p.earlyBirdBonus && <span title="Early Bird: +3 pts" style={{ fontSize: '11px', flexShrink: 0 }}>🐦</span>}
                       {p.carryBonusApplied > 0 && <span title={`Carry Bonus: +${p.carryBonusApplied} pts`} style={{ fontSize: '11px', flexShrink: 0 }}>🎁</span>}
                       {p.comebackSurgeActive && <span title="Comeback Surge ready!" style={{ fontSize: '11px', flexShrink: 0 }}>⚡</span>}

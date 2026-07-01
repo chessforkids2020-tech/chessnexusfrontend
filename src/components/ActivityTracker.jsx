@@ -313,49 +313,6 @@ export default function ActivityTracker({ publicData = null }) {
         </div>
 
         <div className="at-shell-body">
-          <div className="at-summary-card">
-            <div className="at-metric-list">
-              <MetricRow
-                icon={<StreakIcon />}
-                value={currentStreak}
-                label="Current Streak"
-              />
-              <MetricRow
-                icon={<TimeIcon />}
-                value={fmtTime(totalMinutes)}
-                label="Time Spent"
-                compactValue={true}
-              />
-              <MetricRow
-                icon={<DaysIcon />}
-                value={totalDays}
-                label="Days Active"
-                compactValue={true}
-              />
-            </div>
-
-            <div className="at-week-strip">
-              {weekData.map(({ date, dateStr, minutes }, index) => {
-                const intensity = weekPeakMinutes > 0 ? minutes / weekPeakMinutes : 0;
-                const isToday = index === weekData.length - 1;
-                const isActive = minutes > 0;
-
-                return (
-                  <div className="at-week-day" key={dateStr}>
-                    <span className="at-week-day-label">{DAY_INITIALS[date.getUTCDay()]}</span>
-                    <div
-                      className={`at-day-cell${isActive ? ' at-day-cell--active' : ''}${isToday ? ' at-day-cell--today' : ''}`}
-                      style={{ '--at-intensity': intensity }}
-                      title={`${DAY_ABBR[date.getUTCDay()]}: ${minutes} minute${minutes === 1 ? '' : 's'}`}
-                    >
-                      <span className="at-day-cell-core" />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
           <div className="at-chart-card">
             <div className="at-chart-header">
               <div>
@@ -374,6 +331,26 @@ export default function ActivityTracker({ publicData = null }) {
                 No activity yet - play any puzzle or game to start tracking.
               </div>
             )}
+
+            <div className="at-metric-list at-metric-list--below-chart">
+              <MetricRow
+                icon={<StreakIcon />}
+                value={currentStreak}
+                label="Current Streak"
+              />
+              <MetricRow
+                icon={<TimeIcon />}
+                value={fmtTime(totalMinutes)}
+                label="Time Spent"
+                compactValue={true}
+              />
+              <MetricRow
+                icon={<DaysIcon />}
+                value={totalDays}
+                label="Days Active"
+                compactValue={true}
+              />
+            </div>
           </div>
         </div>
       </div>
