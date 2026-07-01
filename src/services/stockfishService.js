@@ -223,9 +223,17 @@ class StockfishService {
 
       const lines = {};
       let lastDepth = 0;
+      let started = false;   // becomes true once WE launched `go` for THIS position
       const messageId = `analyze_${this.messageId++}`;
 
       const handler = (message) => {
+        // Ignore everything until our own `go` has been sent. When we switch
+        // positions we first send `stop`, which makes the PREVIOUS search emit a
+        // final flurry of info lines + a `bestmove`. That stray `bestmove` would
+        // otherwise resolve+delete this brand-new handler before its search even
+        // starts — leaving the engine idle (stuck at "Analysing…" on the 2nd move).
+        if (!started) return;
+
         if (message.startsWith('info') && message.includes(' pv ') && message.includes('score')) {
           const k = parseInt(message.match(/multipv (\d+)/)?.[1] || '1', 10);
           const d = parseInt(message.match(/depth (\d+)/)?.[1] || '0', 10);
@@ -259,12 +267,13 @@ class StockfishService {
 
       this.callbacks.set(messageId, handler);
 
-      // Stop any current search FIRST, then set up + launch the new one on the next
-      // tick. Sending `stop` and `go` in the same synchronous burst races in the
-      // Stockfish WASM build: the engine can process the trailing `stop`/`go` out of
-      // order and end up idle — which showed up as the panel stuck at "depth 0 /
-      // Analysing…" after the first move (no `info` lines ever arrive). Deferring the
-      // new `position`+`go` by one tick lets the engine settle after `stop`.
+      // Stop any current search FIRST, then launch the new one after a short delay.
+      // `stop` makes the PREVIOUS search flush a final burst of info lines + a
+      // `bestmove`. We must let that stale bestmove arrive and be ignored (handler
+      // stays inert while `started` is false) BEFORE we start our own search — the
+      // delay guarantees ordering. Sending stop+go synchronously (or on a 0ms tick)
+      // races and can leave the engine idle / consume the stale bestmove, which was
+      // the "2nd move stuck at Analysing…" bug.
       this.sendCommand('stop');
       setTimeout(() => {
         // If this handler was already superseded (a newer analyze started), don't
@@ -274,8 +283,9 @@ class StockfishService {
           this.sendCommand(`setoption name MultiPV value ${multipv}`);
           this.sendCommand(`position fen ${fen}`);
           this.sendCommand(`go depth ${depth}`);
+          started = true; // from now on, info/bestmove belong to THIS search
         } catch { /* worker gone */ }
-      }, 0);
+      }, 30);
     });
   }
 
