@@ -258,10 +258,24 @@ class StockfishService {
       };
 
       this.callbacks.set(messageId, handler);
+
+      // Stop any current search FIRST, then set up + launch the new one on the next
+      // tick. Sending `stop` and `go` in the same synchronous burst races in the
+      // Stockfish WASM build: the engine can process the trailing `stop`/`go` out of
+      // order and end up idle — which showed up as the panel stuck at "depth 0 /
+      // Analysing…" after the first move (no `info` lines ever arrive). Deferring the
+      // new `position`+`go` by one tick lets the engine settle after `stop`.
       this.sendCommand('stop');
-      this.sendCommand(`setoption name MultiPV value ${multipv}`);
-      this.sendCommand(`position fen ${fen}`);
-      this.sendCommand(`go depth ${depth}`);
+      setTimeout(() => {
+        // If this handler was already superseded (a newer analyze started), don't
+        // launch a stale search.
+        if (!this.callbacks.has(messageId)) return;
+        try {
+          this.sendCommand(`setoption name MultiPV value ${multipv}`);
+          this.sendCommand(`position fen ${fen}`);
+          this.sendCommand(`go depth ${depth}`);
+        } catch { /* worker gone */ }
+      }, 0);
     });
   }
 
