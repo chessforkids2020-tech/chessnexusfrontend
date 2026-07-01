@@ -212,27 +212,35 @@ class StockfishService {
     return new Promise((resolve, reject) => {
       if (!this.ready) { reject(new Error('Engine not ready')); return; }
 
-      // Cancel any previous analyze handler so its in-flight `info` lines (for the
-      // OLD position) can't leak into this new analysis. Without this, lingering
-      // info lines from the previous position get recorded here and produce a PV
-      // whose first move is already played (illegal in the new fen) — which showed
-      // up as a blank Best Line or raw UCI in the UI.
+      // GENERATION token: every analyze bumps a shared counter and captures its own
+      // generation. Only the LATEST generation's handler acts on engine messages, so
+      // stale `info`/`bestmove` from a previous (stopped) search — which arrive with
+      // unpredictable timing after each `stop` — are ignored no matter when they land.
+      // This is what makes rapid successive moves reliable (the old timing/started
+      // approach broke on the 3rd–4th quick move).
+      this._analyzeGen = (this._analyzeGen || 0) + 1;
+      const gen = this._analyzeGen;
+
+      // Drop any previous analyze handlers.
       for (const key of [...this.callbacks.keys()]) {
         if (String(key).startsWith('analyze_')) this.callbacks.delete(key);
       }
 
       const lines = {};
       let lastDepth = 0;
-      let started = false;   // becomes true once WE launched `go` for THIS position
-      const messageId = `analyze_${this.messageId++}`;
+      let sawOwnInfo = false;    // have we received a valid info line for OUR fen yet?
+      const messageId = `analyze_${gen}`;
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        this.callbacks.delete(messageId);
+        resolve({ depth: lastDepth, lines: Object.values(lines).sort((a, b) => a.k - b.k) });
+      };
 
       const handler = (message) => {
-        // Ignore everything until our own `go` has been sent. When we switch
-        // positions we first send `stop`, which makes the PREVIOUS search emit a
-        // final flurry of info lines + a `bestmove`. That stray `bestmove` would
-        // otherwise resolve+delete this brand-new handler before its search even
-        // starts — leaving the engine idle (stuck at "Analysing…" on the 2nd move).
-        if (!started) return;
+        // Only the current generation reacts; anything from an older search is stale.
+        if (gen !== this._analyzeGen) return;
 
         if (message.startsWith('info') && message.includes(' pv ') && message.includes('score')) {
           const k = parseInt(message.match(/multipv (\d+)/)?.[1] || '1', 10);
@@ -241,14 +249,13 @@ class StockfishService {
           const pvMatch = message.match(/ pv (.+)$/);
           if (scoreMatch && pvMatch) {
             const pv = pvMatch[1].trim().split(/\s+/);
-            // Authoritative guard: drop any line whose PV doesn't legally start
-            // from the position we asked about. This alone kills the stale-PV leak
-            // (old search's lines arriving right after we switch positions) without
-            // relying on message timing.
+            // Drop any line whose PV doesn't legally start from OUR position. This
+            // also filters the trailing info lines of a just-stopped previous search
+            // (their PV starts from the old fen), so only our own search's lines pass.
             if (!pvMatchesPosition(fen, pv)) return;
+            sawOwnInfo = true;
             lines[k] = {
-              k,
-              depth: d,
+              k, depth: d,
               scoreType: scoreMatch[1],
               score: parseInt(scoreMatch[2], 10),
               pv,
@@ -259,33 +266,28 @@ class StockfishService {
             }
           }
         }
-        if (message.startsWith('bestmove')) {
-          this.callbacks.delete(messageId);
-          resolve({ depth: lastDepth, lines: Object.values(lines).sort((a, b) => a.k - b.k) });
-        }
+        // A `bestmove` only ends US if we've actually seen our own search's output.
+        // The `stop` we send when switching positions makes the PREVIOUS search emit
+        // a `bestmove` that reaches this (same-generation) handler before our search
+        // has produced anything — honoring it would resolve us early and leave the
+        // engine idle (the "stuck after a few moves" bug). Requiring sawOwnInfo first
+        // makes that stray bestmove a no-op.
+        if (message.startsWith('bestmove') && sawOwnInfo) finish();
       };
 
       this.callbacks.set(messageId, handler);
 
-      // Stop any current search FIRST, then launch the new one after a short delay.
-      // `stop` makes the PREVIOUS search flush a final burst of info lines + a
-      // `bestmove`. We must let that stale bestmove arrive and be ignored (handler
-      // stays inert while `started` is false) BEFORE we start our own search — the
-      // delay guarantees ordering. Sending stop+go synchronously (or on a 0ms tick)
-      // races and can leave the engine idle / consume the stale bestmove, which was
-      // the "2nd move stuck at Analysing…" bug.
-      this.sendCommand('stop');
-      setTimeout(() => {
-        // If this handler was already superseded (a newer analyze started), don't
-        // launch a stale search.
-        if (!this.callbacks.has(messageId)) return;
-        try {
-          this.sendCommand(`setoption name MultiPV value ${multipv}`);
-          this.sendCommand(`position fen ${fen}`);
-          this.sendCommand(`go depth ${depth}`);
-          started = true; // from now on, info/bestmove belong to THIS search
-        } catch { /* worker gone */ }
-      }, 30);
+      // Stop any current search, then (re)configure and launch ours. The generation
+      // gate above makes the exact stop/go timing irrelevant — no need to defer.
+      try {
+        this.sendCommand('stop');
+        this.sendCommand(`setoption name MultiPV value ${multipv}`);
+        this.sendCommand(`position fen ${fen}`);
+        this.sendCommand(`go depth ${depth}`);
+      } catch (e) {
+        this.callbacks.delete(messageId);
+        reject(e);
+      }
     });
   }
 
