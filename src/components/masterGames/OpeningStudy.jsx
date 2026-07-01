@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import api from '../../api';
-import { Chess } from 'chess.js';
 import Chessboard from '../Chessboard';
-import stockfishService from '../../services/stockfishService';
 import GameAnalysisModal from './GameAnalysisModal';
+import EnginePanel from '../EnginePanel'; // self-contained (imports its own CSS)
 import {
   buildTreeFromGame, applyMove, pathToNode,
   nextNode, prevNode, lastNode, fenAt, lastMoveAt
@@ -33,12 +32,9 @@ export default function OpeningStudy() {
   const [currentId, setCurrentId] = useState(null);        // null = start position
   const [orientation, setOrientation] = useState('white');
 
-  // Stockfish panel
+  // Stockfish panel — on/off only; the shared <EnginePanel> owns all engine logic
+  // (identical behavior to the Quick Analyze board).
   const [engineOn, setEngineOn] = useState(false);
-  const [engineReady, setEngineReady] = useState(false);
-  const [pvLines, setPvLines] = useState([]);              // [{ k, scoreType, score, depth, pvSan:[..] }]
-  const [engineDepth, setEngineDepth] = useState(0);
-  const engineAbort = useRef(0);                            // bumps to invalidate stale async results
 
   // Explorer (DB) panel. Only the Masters DB is wired for now — the ChessNexus
   // (arena) source is hidden until there are enough arena games to be useful.
@@ -92,38 +88,6 @@ export default function OpeningStudy() {
     return () => window.removeEventListener('keydown', onKey);
   }, [goPrev, goNext]);
 
-  // ── Stockfish: init once when turned on; quit on unmount ──
-  useEffect(() => {
-    if (!engineOn) return;
-    let alive = true;
-    if (!stockfishService.isReady()) {
-      stockfishService.init()
-        .then(() => { if (alive) setEngineReady(true); })
-        .catch(() => { if (alive) { setEngineReady(false); setEngineOn(false); } });
-    } else {
-      setEngineReady(true);
-    }
-    return () => { alive = false; };
-  }, [engineOn]);
-
-  // Quit the engine when the whole panel unmounts (leaving the page).
-  useEffect(() => () => { try { stockfishService.quit(); } catch { /* ignore */ } }, []);
-
-  // Analyse the current position whenever it changes (while the engine is on).
-  useEffect(() => {
-    if (!engineOn || !engineReady) { setPvLines([]); setEngineDepth(0); return; }
-    const token = ++engineAbort.current;
-    setPvLines([]); setEngineDepth(0);
-    stockfishService.analyzePosition(fen, {
-      depth: 20, multipv: 3,
-      onUpdate: ({ depth, lines }) => {
-        if (token !== engineAbort.current) return;         // a newer position superseded this
-        setEngineDepth(depth);
-        setPvLines(lines.map(l => ({ ...l, pvSan: uciPvToSan(fen, l.pv) })));
-      }
-    }).catch(() => { /* engine stopped / superseded */ });
-    return () => { stockfishService.stop(); };
-  }, [fen, engineOn, engineReady]);
 
   // ── Explorer: (re)load when opened or the current line changes ──
   useEffect(() => {
@@ -279,11 +243,6 @@ export default function OpeningStudy() {
             >
               ⚙ Stockfish {engineOn ? 'on' : 'off'}
             </button>
-            {engineOn && (
-              <span style={st.depthTag}>
-                {engineReady ? `depth ${engineDepth}` : 'starting…'}
-              </span>
-            )}
             <span style={{ flex: 1 }} />
             {/* Masters DB toggle (narrower; ChessNexus/arena source hidden for now) */}
             <button
@@ -309,16 +268,10 @@ export default function OpeningStudy() {
             </div>
           )}
 
-          {/* 3-line PV */}
+          {/* 3-line PV — shared engine panel (same as Quick Analyze) */}
           {engineOn && (
             <div style={st.pvBox}>
-              {pvLines.length === 0 && <div style={st.pvEmpty}>Analysing…</div>}
-              {pvLines.map(line => (
-                <div key={line.k} style={st.pvRow}>
-                  <span style={st.pvEval}>{formatScore(line, fen)}</span>
-                  <span style={st.pvMoves}>{line.pvSan?.slice(0, 12).join(' ') || '…'}</span>
-                </div>
-              ))}
+              <EnginePanel fen={fen} enabled={engineOn} numLines={3} />
             </div>
           )}
 
@@ -463,35 +416,6 @@ function MoveToken({ tree, node, isCurrent, onGo }) {
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-// Convert an engine PV (UCI moves) to SAN for display, from a given FEN.
-function uciPvToSan(fen, pvUci) {
-  if (!Array.isArray(pvUci) || !pvUci.length) return [];
-  try {
-    const c = new Chess(fen && fen !== 'start' ? fen : START_FEN);
-    const out = [];
-    for (const uci of pvUci) {
-      if (!uci || uci.length < 4) break;
-      const mv = c.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci.length > 4 ? uci[4] : undefined });
-      if (!mv) break;
-      out.push(mv.san);
-    }
-    return out;
-  } catch { return []; }
-}
-
-// Format a PV score from the side-to-move's engine value into a white-relative
-// "+1.2" / "M3" string (so the sign always means "good for white").
-function formatScore(line, fen) {
-  const whiteToMove = (fen || '').split(' ')[1] !== 'b';
-  const sign = whiteToMove ? 1 : -1;
-  if (line.scoreType === 'mate') {
-    const m = sign * line.score;
-    return `M${Math.abs(m)}${m < 0 ? '⁻' : ''}`.replace('⁻', '');
-  }
-  const pawns = (sign * line.score) / 100;
-  return `${pawns >= 0 ? '+' : ''}${pawns.toFixed(2)}`;
-}
-
 function displayName(name) {
   if (!name) return '';
   const i = name.indexOf(',');
@@ -542,11 +466,8 @@ const st = {
   engineBtnOn: { background: 'rgba(167,139,250,0.18)', color: C.accent, borderColor: C.accent },
   depthTag: { fontSize: 12, color: C.textFaint },
 
-  pvBox: { background: 'rgba(0,0,0,0.22)', border: `1px solid ${C.border}`, borderRadius: 10, padding: '6px 8px', marginBottom: 10, minHeight: 70 },
-  pvEmpty: { color: C.textFaint, fontSize: 12, padding: '6px 2px' },
-  pvRow: { display: 'flex', gap: 8, alignItems: 'baseline', padding: '3px 2px', fontSize: 13 },
-  pvEval: { fontWeight: 800, color: '#fff', minWidth: 46, fontVariantNumeric: 'tabular-nums' },
-  pvMoves: { color: C.textMut, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+  // EnginePanel is self-styled (.gr-engine); this wrapper just adds bottom spacing.
+  pvBox: { marginBottom: 10 },
 
   notation: { flex: '1 1 auto', minHeight: 260, maxHeight: 380, overflowY: 'auto', lineHeight: 2.2, fontSize: 17, color: C.text, background: 'rgba(0,0,0,0.18)', border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px 16px' },
   empty: { color: C.textFaint, fontSize: 15, padding: 6 },

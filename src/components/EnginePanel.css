@@ -1,0 +1,113 @@
+/* Shared live Stockfish panel styles (used by EnginePanel.jsx everywhere:
+   opening study, masters game study, endgame studies). Class names kept as
+   .gr-engine-* to match the existing Quick Analyze / GameReplay panel look. */
+.gr-engine {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(6, 182, 212, 0.18);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 0;
+}
+.gr-engine-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.gr-engine-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #e5e7eb;
+}
+.gr-engine-depth {
+  font-size: 11px;
+  font-weight: 600;
+  color: #06b6d4;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.gr-engine-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gr-engine-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 9px 2px 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.gr-engine-toggle.on {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.14);
+  color: #6ee7b7;
+}
+.gr-engine-toggle-knob {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #6b7280;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.gr-engine-toggle.on .gr-engine-toggle-knob {
+  background: #10b981;
+  transform: translateX(2px);
+}
+.gr-engine-off { opacity: 0.92; }
+
+.gr-engine-empty {
+  font-size: 12px;
+  color: #6b7280;
+  padding: 6px 2px;
+}
+.gr-engine-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.gr-engine-table th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.gr-engine-th-eval { width: 58px; }
+.gr-engine-tr:not(:last-child) td {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.gr-engine-eval {
+  vertical-align: top;
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  padding: 7px 10px;
+}
+.gr-engine-eval.pos { color: #10b981; }
+.gr-engine-eval.neg { color: #ef4444; }
+.gr-engine-pv {
+  vertical-align: top;
+  font-size: 12.5px;
+  color: #cbd5e1;
+  font-family: 'Courier New', monospace;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  padding: 7px 10px 7px 0;
+}
