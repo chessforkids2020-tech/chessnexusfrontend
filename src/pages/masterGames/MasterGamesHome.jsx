@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api, { resolveApiAssetUrl } from '../../api';
 import ImmortalCard from '../../components/masterGames/ImmortalCard';
 import GameAnalysisModal from '../../components/masterGames/GameAnalysisModal';
+import OpeningStudy from '../../components/masterGames/OpeningStudy';
 
 // Featured photos live in the frontend public/ dir (served at /players/<file>),
 // so a root-relative path is resolved by the browser against the frontend origin.
@@ -103,6 +104,9 @@ export default function MasterGamesHome() {
         <h1 style={st.h1}>Master Games</h1>
         <p style={st.sub}>Study the famous players. Pick a champion to browse their games, or explore the whole library by opening, year and tournament.</p>
 
+        {/* ── Opening study (interactive board + engine + opening explorer) ── */}
+        <OpeningStudy />
+
         {/* ── Featured players ── */}
         <div style={st.sectionHead}>
           <h2 style={st.sectionTitle}>Featured players</h2>
@@ -114,11 +118,7 @@ export default function MasterGamesHome() {
             <button key={p.name} style={st.playerCard} onClick={() => openPlayer(p.name)}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = C.accent; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = C.border; }}>
-              <div style={st.playerPhoto}>
-                {p.photoUrl
-                  ? <img src={photoSrc(p.photoUrl)} alt={p.name} style={st.playerPhotoImg} />
-                  : <span style={st.playerPhotoPlaceholder}>{displayName(p.name).charAt(0).toUpperCase()}</span>}
-              </div>
+              <FeaturedPhoto player={p} />
               <div style={st.playerCardName}>
                 {p.title && <span style={st.title}>{p.title} </span>}{displayName(p.name)}
               </div>
@@ -208,6 +208,20 @@ export default function MasterGamesHome() {
 
         {openGameId && <GameAnalysisModal gameId={openGameId} onClose={() => setOpenGameId(null)} />}
       </div>
+    </div>
+  );
+}
+
+// Featured photo with graceful fallback: no photoUrl OR a 404'd image → letter
+// avatar (never the browser's broken-image icon + alt text).
+function FeaturedPhoto({ player }) {
+  const [failed, setFailed] = useState(false);
+  const src = player.photoUrl && !failed ? photoSrc(player.photoUrl) : '';
+  return (
+    <div style={st.playerPhoto}>
+      {src
+        ? <img src={src} alt={displayName(player.name)} style={st.playerPhotoImg} onError={() => setFailed(true)} />
+        : <span style={st.playerPhotoPlaceholder}>{displayName(player.name).charAt(0).toUpperCase()}</span>}
     </div>
   );
 }

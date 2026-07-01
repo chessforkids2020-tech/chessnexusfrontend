@@ -30,9 +30,11 @@ export default function MasterPlayer() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [openGameId, setOpenGameId] = useState(null);
+  const [photoFailed, setPhotoFailed] = useState(false); // fall back to letter avatar if the photo 404s
 
   const load = useCallback(() => {
     setLoading(true);
+    setPhotoFailed(false);
     api.get(`/api/master-games/player/${encodeURIComponent(decodedName)}`, { params: { page, limit: 25 } })
       .then(res => {
         setPlayer(res.data.player || { name: decodedName });
@@ -57,8 +59,8 @@ export default function MasterPlayer() {
         {/* ── Player header ── */}
         <div style={st.header}>
           <div style={st.avatar}>
-            {player?.photoUrl
-              ? <img src={photoSrc(player.photoUrl)} alt={display} style={st.avatarImg} />
+            {player?.photoUrl && !photoFailed
+              ? <img src={photoSrc(player.photoUrl)} alt={display} style={st.avatarImg} onError={() => setPhotoFailed(true)} />
               : <span style={st.avatarPlaceholder}>{display.charAt(0).toUpperCase()}</span>}
           </div>
           <div style={st.headerInfo}>

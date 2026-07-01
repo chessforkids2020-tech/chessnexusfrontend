@@ -1339,12 +1339,31 @@ export default function UserDashboard() {
 
         {user && (
           <div className="welcome-section">
-            <div className="welcome-avatar-wrap">
-              {user.activeLego && !(user.profilePhotoUrl || user.activeAvatarUrl) && !user.active3dModel ? (
-                <div className="welcome-avatar-initials welcome-avatar-emoji">🧱</div>
-              ) : (
-                <UserAvatar user={user} size={120} live />
-              )}
+            <div className="welcome-avatar-col">
+              <div className="welcome-avatar-wrap">
+                {user.activeLego && !(user.profilePhotoUrl || user.activeAvatarUrl) && !user.active3dModel ? (
+                  <div className="welcome-avatar-initials welcome-avatar-emoji">🧱</div>
+                ) : (
+                  <UserAvatar user={user} size={120} live />
+                )}
+              </div>
+              {/* Share Profile — sits directly under the avatar */}
+              <button
+                className="welcome-share-btn"
+                onClick={() => {
+                  const link = `${window.location.origin}/player/${encodeURIComponent(user.displayName || user.username)}`;
+                  navigator.clipboard.writeText(link);
+                  setProfileLinkCopied(true);
+                  setTimeout(() => setProfileLinkCopied(false), 2500);
+                }}
+                style={{
+                  background: profileLinkCopied ? '#0f766e' : 'var(--obsidian-pill)',
+                  color: profileLinkCopied ? '#ecfeff' : 'var(--obsidian-accent)',
+                  border: profileLinkCopied ? '1px solid rgba(45, 212, 191, 0.35)' : '1px solid var(--obsidian-border)',
+                }}
+              >
+                {profileLinkCopied ? '✓ Copied!' : '🔗 Share Profile'}
+              </button>
             </div>
             <div className="welcome-text">
               <h1 className="welcome-title">
@@ -1383,60 +1402,40 @@ export default function UserDashboard() {
                   {user.isCoach && user.coachVerified && <CoachBadge />}
                 </p>
               ) : (
-                <p className="welcome-quote" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
+                <p className="welcome-quote welcome-meta-row">
                   {user.memberSince && (
-                    <span>📅 Joined {new Date(user.memberSince).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                    <span className="welcome-meta-pill">📅 Joined {new Date(user.memberSince).getFullYear()}</span>
                   )}
                   {user.isCoach && user.coachVerified && <CoachBadge />}
                   {user.country && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                      <CountryFlag country={user.country} height={16} />
-                      {user.country}
+                    <span className="welcome-meta-flag" title={user.country} aria-label={user.country}>
+                      <CountryFlag country={user.country} height={18} />
                     </span>
                   )}
                 </p>
               )}
               {user.biography && (
-                <p style={{
-                  margin: '8px 0 0',
-                  maxWidth: '560px',
-                  fontSize: '14px',
-                  lineHeight: 1.6,
-                  color: 'var(--obsidian-text-soft, #94a3b8)',
-                  whiteSpace: 'pre-wrap',
+                <div style={{
+                  margin: '12px 0 0',
+                  maxWidth: '620px',
+                  padding: '12px 16px',
+                  background: 'var(--obsidian-pill, rgba(255,255,255,0.04))',
+                  border: '1px solid var(--obsidian-border, rgba(255,255,255,0.08))',
+                  borderLeft: '3px solid var(--obsidian-accent, #06b6d4)',
+                  borderRadius: '12px',
                 }}>
-                  {user.biography}
-                </p>
+                  <p style={{
+                    margin: 0,
+                    fontSize: '14px',
+                    lineHeight: 1.65,
+                    color: 'var(--obsidian-text-soft, #94a3b8)',
+                    whiteSpace: 'pre-wrap',
+                    fontStyle: 'italic',
+                  }}>
+                    “{user.biography}”
+                  </p>
+                </div>
               )}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', marginTop: '10px' }}>
-                <button
-                  onClick={() => {
-                    const link = `${window.location.origin}/player/${encodeURIComponent(user.displayName || user.username)}`;
-                    navigator.clipboard.writeText(link);
-                    setProfileLinkCopied(true);
-                    setTimeout(() => setProfileLinkCopied(false), 2500);
-                  }}
-                  style={{
-                    background: profileLinkCopied ? '#0f766e' : 'var(--obsidian-pill)',
-                    color: profileLinkCopied ? '#ecfeff' : 'var(--obsidian-accent)',
-                    border: profileLinkCopied ? '1px solid rgba(45, 212, 191, 0.35)' : '1px solid var(--obsidian-border)',
-                    borderRadius: '20px',
-                    padding: '6px 16px',
-                    fontSize: '13px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    boxShadow: profileLinkCopied ? '0 14px 32px rgba(20, 184, 166, 0.18)' : '0 12px 28px rgba(56, 189, 248, 0.08)',
-                  }}
-                >
-                  {profileLinkCopied ? '✓ Profile Link Copied!' : (isPublicView ? '🔗 Share This Profile' : '🔗 Share My Profile')}
-                </button>
-                {/* CoffeeCta temporarily hidden — Razorpay verification in progress (re-enable ~June 2, 2026) */}
-                {/* !isPublicView && (
-                  <CoffeeCta variant="inline" style={{ padding: '5px 11px', fontSize: 12 }} />
-                ) */}
-              </div>
-
             </div>
 
             {/* Right-side trophies: Focus Champion + Marathon + Team Battle + Arena Crown */}
@@ -1448,7 +1447,7 @@ export default function UserDashboard() {
               const hasCrown = user.arenaCrownTier && user.arenaCrownTier !== 'none';
               if (!user.isFocusChampion && !hasMarathon && !hasTeamBattle && !hasCrown) return null;
               return (
-              <div style={{ marginLeft: 'auto', flexShrink: 0, display: 'flex', gap: '0', alignItems: 'center' }}>
+              <div className="welcome-trophies-panel">
                 {user.isFocusChampion && (
                   <div
                     className="focus-champion-trophy"

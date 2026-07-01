@@ -21,6 +21,21 @@ function displayName(name) {
   return first ? `${first} ${last}` : last;
 }
 
+// Photo with a graceful fallback: if the profile has no photoUrl OR the image file
+// 404s (a player whose picture hasn't been added yet), show the letter avatar
+// instead of the browser's broken-image icon + alt text.
+function PlayerPhoto({ player }) {
+  const [failed, setFailed] = useState(false);
+  const src = player.photoUrl && !failed ? photoSrc(player.photoUrl) : '';
+  return (
+    <div style={st.playerPhoto}>
+      {src
+        ? <img src={src} alt={displayName(player.name)} style={st.playerPhotoImg} onError={() => setFailed(true)} />
+        : <span style={st.playerPhotoPlaceholder}>{displayName(player.name).charAt(0).toUpperCase()}</span>}
+    </div>
+  );
+}
+
 export default function AllPlayers() {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
@@ -49,11 +64,7 @@ export default function AllPlayers() {
             <button key={p.name} style={st.playerCard} onClick={() => openPlayer(p.name)}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.borderColor = C.accent; }}
               onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = C.border; }}>
-              <div style={st.playerPhoto}>
-                {p.photoUrl
-                  ? <img src={photoSrc(p.photoUrl)} alt={p.name} style={st.playerPhotoImg} />
-                  : <span style={st.playerPhotoPlaceholder}>{displayName(p.name).charAt(0).toUpperCase()}</span>}
-              </div>
+              <PlayerPhoto player={p} />
               <div style={st.playerCardName}>
                 {p.title && <span style={st.title}>{p.title} </span>}{displayName(p.name)}
               </div>

@@ -29,7 +29,7 @@ const CLASS_META = {
   inaccuracy: { symbol: '?!', color: '#eab308', icon: '?!', label: 'Inaccuracy', desc: 'An inaccuracy — a slightly imprecise move.' }
 };
 
-export default function GameAnalysisModal({ gameId, onClose }) {
+export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -66,15 +66,19 @@ export default function GameAnalysisModal({ gameId, onClose }) {
           if (raw) restoredTree = rehydrateTree(JSON.parse(raw));
         } catch { restoredTree = null; }
 
-        setTree(restoredTree || base);
+        const activeTree = restoredTree || base;
+        setTree(activeTree);
         setAnalyzed(!!g.analyzed);
-        setCurrentId(null);
+        // Open at the requested ply (used by the opening-study explorer so the game
+        // opens exactly where the user's studied line reached). Walk firstborn
+        // children `initialPly` times from the root; fall back to start on mismatch.
+        setCurrentId(nodeAtPly(activeTree, initialPly));
         hydratedRef.current = true;
       })
       .catch(() => alive && setError('Could not load this game.'))
       .finally(() => alive && setLoading(false));
     return () => { alive = false; };
-  }, [gameId]);
+  }, [gameId, initialPly]);
 
   // Persist the tree to localStorage whenever it changes from user interaction —
   // but only once the user has actually added a variation (keeps storage clean).
@@ -336,6 +340,22 @@ function annotateMainLine(tree, analysis) {
     ply++;
   }
   return { ...tree, nodes };
+}
+
+// Node id after walking `ply` firstborn (main-line) steps from the root.
+// ply 0 (or invalid) → null (the start position). If the game is shorter than the
+// requested ply, stop at the last available node so the game still opens.
+function nodeAtPly(tree, ply) {
+  if (!tree || !ply || ply < 1) return null;
+  let cur = tree.nodes[tree.rootId];
+  let id = null;
+  for (let i = 0; i < ply; i++) {
+    const nextId = cur.children[0];
+    if (!nextId) break;
+    id = nextId;
+    cur = tree.nodes[nextId];
+  }
+  return id;
 }
 
 // Stored "Last, First" → "First Last" for readability.
