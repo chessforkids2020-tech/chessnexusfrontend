@@ -320,7 +320,7 @@ function LeaderRow({ rank, name, sub, score, scoreLabel, accent = 'cyan', showAv
       <div className="pl-row-info">
         <div className="pl-row-name" title={typeof name === 'string' ? name : undefined}>
           {canBadge
-            ? <PlayerName displayName={displayName ?? (typeof name === 'string' ? name : undefined)} username={username} userId={userId} />
+            ? <PlayerName linkToProfile displayName={displayName ?? (typeof name === 'string' ? name : undefined)} username={username} userId={userId} />
             : name}
         </div>
         {sub && <div className="pl-row-sub">{sub}</div>}
@@ -505,7 +505,7 @@ function PlayersTab() {
                 <PlayerAvatar user={u} size={40} online={u.isOnline} />
                 <div className="pl-row-info">
                   <div className="pl-row-name" title={u.displayName || u.username || ''}>
-                    <PlayerName displayName={u.displayName} username={u.username} userId={u._id} />
+                    <PlayerName linkToProfile displayName={u.displayName} username={u.username} userId={u._id} />
                   </div>
                   <div className="pl-active-meta">
                     {u.isOnline

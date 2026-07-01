@@ -556,7 +556,7 @@ export default function ClubDetailPage() {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}>
-                    <PlayerName displayName={m.displayName} username={m.username} userId={m.userId} />
+                    <PlayerName linkToProfile displayName={m.displayName} username={m.username} userId={m.userId} />
                   </div>
                 </div>
                 {m.role === 'owner' && <span className="sh-owner-badge">Owner</span>}
