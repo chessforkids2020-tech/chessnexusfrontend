@@ -9,6 +9,31 @@ import './Chat.css';
 
 const API = import.meta.env.VITE_API_URL;
 
+// ── Link moderation (mirrors backend utils/chatModeration.js) ─────────────────
+// Links are allowed freely in 1-on-1 and non-club group chats. In CLUB chats
+// (chat.clubId set) only chessnexus.in / 3darena.chessnexus.in links are allowed.
+const LINK_RE = /(?:https?:\/\/|www\.|\b[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z]{2,})+(?:\/\S*)?)/gi;
+const CLUB_ALLOWED_HOSTS = ['chessnexus.in', '3darena.chessnexus.in'];
+const hostOf = (token) => {
+  let t = token.trim().replace(/^https?:\/\//i, '').replace(/^www\./i, '');
+  return t.split(/[/?#]/)[0].toLowerCase();
+};
+const isAllowedHost = (host) =>
+  CLUB_ALLOWED_HOSTS.some((a) => host === a || host.endsWith('.' + a));
+
+// True only when `chat` is a CLUB chat AND the text has a link off the allow-list.
+// Non-club chats (DMs, plain groups) never block — links are fine there.
+function containsBlockedLink(text, chat) {
+  if (!chat || !chat.clubId) return false;          // links allowed outside clubs
+  if (!text || typeof text !== 'string') return false;
+  const matches = text.match(LINK_RE);
+  if (!matches) return false;
+  return matches.some((token) => {
+    const host = hostOf(token);
+    return host ? !isAllowedHost(host) : false;      // ignore scheme-only fragments
+  });
+}
+
 const Chat = () => {
   const { user, fetchUnreadCount } = useAuth();
   const location = useLocation();
@@ -244,7 +269,13 @@ const Chat = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedChat || containsBlockedLink(newMessage)) return;
+    if (!newMessage.trim() || !selectedChat) return;
+    // In club chats, only chessnexus.in links are allowed — tell the user instead
+    // of silently doing nothing.
+    if (containsBlockedLink(newMessage, selectedChat)) {
+      alert('Only chessnexus.in links are allowed in club chats.');
+      return;
+    }
 
     const messageContent = newMessage.trim();
     
