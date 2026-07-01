@@ -455,3 +455,88 @@
 .coach-chart-placeholder a:hover {
   text-decoration: underline;
 }
+
+/* ── Students roster TABLE (replaces the card grid) ──────────────────────── */
+.coach-students-table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(20, 20, 30, 0.6);
+  backdrop-filter: blur(10px);
+}
+.coach-students-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 640px;
+}
+.coach-students-table thead th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}
+.coach-students-table th.cst-num,
+.coach-students-table td.cst-num { text-align: center; }
+.coach-students-table th.cst-actions,
+.coach-students-table td.cst-actions { text-align: right; }
+.coach-students-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.12s ease;
+}
+.coach-students-table tbody tr:last-child { border-bottom: none; }
+.coach-students-table tbody tr:hover { background: rgba(6, 182, 212, 0.06); }
+.coach-students-table td { padding: 10px 14px; color: rgba(255, 255, 255, 0.85); }
+
+/* Player cell: avatar + name/username */
+.cst-player-cell { display: flex; align-items: center; gap: 10px; }
+.cst-avatar {
+  width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  display: flex; align-items: center; justify-content: center;
+  color: #67e8f9; font-weight: 700; font-size: 15px; overflow: hidden;
+}
+.cst-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.cst-player-meta { min-width: 0; }
+.cst-name { font-weight: 600; color: #fff; line-height: 1.2; }
+.cst-sub {
+  font-size: 12px; color: rgba(255, 255, 255, 0.45);
+  display: flex; align-items: center; gap: 7px; margin-top: 2px;
+}
+.cst-tag {
+  background: rgba(139, 92, 246, 0.18); color: #c4b5fd;
+  padding: 1px 7px; border-radius: 999px; font-size: 10.5px; font-weight: 600;
+}
+.cst-num { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* Row action buttons */
+.cst-btns { display: inline-flex; gap: 6px; justify-content: flex-end; }
+.cst-btn {
+  padding: 5px 11px; border-radius: 8px; font-size: 12.5px; font-weight: 600;
+  cursor: pointer; border: 1px solid transparent; text-decoration: none;
+  white-space: nowrap; transition: filter 0.15s ease, background 0.15s ease;
+  display: inline-flex; align-items: center;
+}
+.cst-btn:hover { filter: brightness(1.15); }
+.cst-btn-profile {
+  background: rgba(6, 182, 212, 0.15); color: #67e8f9;
+  border-color: rgba(6, 182, 212, 0.4);
+}
+.cst-btn-progress {
+  background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.cst-btn-delete {
+  background: rgba(239, 68, 68, 0.12); color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.cst-btn-disabled {
+  background: rgba(255, 255, 255, 0.03); color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.08); cursor: not-allowed;
+}

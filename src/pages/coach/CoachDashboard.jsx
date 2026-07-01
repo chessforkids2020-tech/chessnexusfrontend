@@ -388,38 +388,75 @@ export default function CoachDashboard() {
         )}
 
         {students.length > 0 && (
-          <div className="coach-students-grid">
-            {students.map(s => {
-              const u = s.studentId;
-              return (
-                <div key={s._id} className="coach-student-card">
-                  <div className="student-top">
-                    <div className="student-avatar">
-                      {(s.studentName || u?.displayName || u?.username || '?').charAt(0).toUpperCase()}
-                    </div>
-                    <div className="student-meta">
-                      <div className="student-name">{s.studentName || u?.displayName || u?.username || 'Unnamed'}</div>
-                      <div className="student-sub">
-                        {u?.username && <>@{u.username}</>}
-                        {s.groupTag && <span className="tag">{s.groupTag}</span>}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="student-stats">
-                    <div><span>Rating</span><strong>{u?.liveRating ?? '—'}</strong></div>
-                    <div><span>Country</span><strong>{u?.country || '—'}</strong></div>
-                    <div><span>Source</span><strong>{s.source}</strong></div>
-                  </div>
-                  {s.inviteStatus === 'pending' && s.inviteCode && (
-                    <div className="invite-pill">Invite code: <code>{s.inviteCode}</code></div>
-                  )}
-                  <div className="student-actions">
-                    <Link to={`/coach/students/${s._id}`} className="btn-ghost">View progress →</Link>
-                    <button className="btn-danger" onClick={() => removeStudent(s._id)}>Remove</button>
-                  </div>
-                </div>
-              );
-            })}
+          <div className="coach-students-table-wrap">
+            <table className="coach-students-table">
+              <thead>
+                <tr>
+                  <th className="cst-player">Student</th>
+                  <th className="cst-num">Puzzle</th>
+                  <th className="cst-num">Bullet</th>
+                  <th className="cst-num">Blitz</th>
+                  <th className="cst-num">Rapid</th>
+                  <th className="cst-actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map(s => {
+                  const u = s.studentId;
+                  const name = s.studentName || u?.displayName || u?.username || 'Unnamed';
+                  const r = s.ratings || {};
+                  // Public profile is keyed by displayName; fall back to username.
+                  const profileKey = u?.displayName || u?.username;
+                  return (
+                    <tr key={s._id}>
+                      <td className="cst-player">
+                        <div className="cst-player-cell">
+                          <div className="cst-avatar">
+                            {u?.profilePhotoUrl
+                              ? <img src={u.profilePhotoUrl} alt={name} />
+                              : <span>{name.charAt(0).toUpperCase()}</span>}
+                          </div>
+                          <div className="cst-player-meta">
+                            <div className="cst-name">{name}</div>
+                            <div className="cst-sub">
+                              {u?.username && <>@{u.username}</>}
+                              {s.groupTag && <span className="cst-tag">{s.groupTag}</span>}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="cst-num">{u?.liveRating ?? '—'}</td>
+                      <td className="cst-num">{r.bullet ?? '—'}</td>
+                      <td className="cst-num">{r.blitz ?? '—'}</td>
+                      <td className="cst-num">{r.rapid ?? '—'}</td>
+                      <td className="cst-actions">
+                        <div className="cst-btns">
+                          {profileKey ? (
+                            <Link
+                              to={`/player/${encodeURIComponent(profileKey)}`}
+                              className="cst-btn cst-btn-profile"
+                              title="Open student's public profile"
+                            >Profile</Link>
+                          ) : (
+                            <span className="cst-btn cst-btn-disabled" title="No linked account yet">Profile</span>
+                          )}
+                          <Link
+                            to={`/coach/students/${s._id}`}
+                            className="cst-btn cst-btn-progress"
+                            title="View this student's progress"
+                          >Progress</Link>
+                          <button
+                            className="cst-btn cst-btn-delete"
+                            onClick={() => removeStudent(s._id)}
+                            title="Remove from roster"
+                          >Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
