@@ -423,84 +423,21 @@ function AvatarXpPrices() {
 }
 
 // ─── Recent coffee supporters (dashboard glance) ─────────────────────────────
-// Surfaces the latest ☕ supporters right on the admin main page so a new
-// subscription is noticed immediately. Reuses GET /api/coffee/admin/list.
-function RecentSupporters() {
-  const nav = useNavigate();
-  const [rows, setRows] = useState([]);
-  const [pendingCount, setPendingCount] = useState(0);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        const [recent, pending] = await Promise.all([
-          api.get('/api/coffee/admin/list?limit=6'),
-          api.get('/api/coffee/admin/list?status=pending&limit=1').catch(() => ({ data: {} })),
-        ]);
-        if (!alive) return;
-        setRows(recent.data?.supporters || []);
-        setPendingCount(pending.data?.total || 0);
-      } catch { /* ignore */ } finally {
-        if (alive) setLoaded(true);
-      }
-    })();
-    return () => { alive = false; };
-  }, []);
-
-  const money = (amt, cur) => `${cur === 'INR' ? '₹' : cur === 'USD' ? '$' : ''}${amt}`;
-  const when = (d) => { try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); } catch { return ''; } };
-  const badge = (s) => s === 'active'
-    ? { bg: '#dcfce7', fg: '#166534', label: 'Active' }
-    : s === 'pending'
-      ? { bg: '#fef9c3', fg: '#854d0e', label: 'Pending' }
-      : { bg: '#fee2e2', fg: '#991b1b', label: 'Rejected' };
-
-  // Don't clutter the dashboard if nobody has ever subscribed.
-  if (loaded && rows.length === 0) return null;
-
+// Small red "needs attention" pip for admin nav buttons (like chat unread).
+// Renders nothing when count is 0. The parent button must be position:relative.
+function renderNavBadge(count) {
+  if (!count) return null;
   return (
-    <div style={{ ...styles.card, padding: 16, marginTop: 20, background: '#ffffff', border: '1px solid #e2e8f0' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <div>
-          <h3 style={{ marginTop: 0, marginBottom: 2, color: '#0f172a' }}>
-            ☕ Coffee supporters
-            {pendingCount > 0 && (
-              <span style={{ marginLeft: 8, fontSize: 12, fontWeight: 700, color: '#854d0e', background: '#fef9c3', borderRadius: 999, padding: '2px 9px' }}>
-                {pendingCount} pending
-              </span>
-            )}
-          </h3>
-          <p style={{ margin: 0, color: '#64748b', fontSize: 13 }}>Latest users who subscribed for a coffee.</p>
-        </div>
-        <button style={styles.secondaryBtn} onClick={() => nav('/admin/supporters')}>View all →</button>
-      </div>
-
-      {!loaded ? (
-        <div style={{ color: '#94a3b8', fontSize: 13 }}>Loading…</div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {rows.map(r => {
-            const u = r.userId || {};
-            const b = badge(r.status);
-            return (
-              <div key={r._id} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: 12, alignItems: 'center', padding: '8px 10px', borderRadius: 8, background: '#f8fafc', border: '1px solid #eef2f7' }}>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {u.displayName || u.username || 'User'}
-                  </div>
-                  <div style={{ fontSize: 12, color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email || ''}</div>
-                </div>
-                <div style={{ fontWeight: 700, color: '#0f172a' }}>{money(r.amount, r.currency)}</div>
-                <div style={{ fontSize: 12, color: '#475569' }}>{r.months}mo · {when(r.paidAt)}</div>
-                <span style={{ fontSize: 11, fontWeight: 700, color: b.fg, background: b.bg, borderRadius: 999, padding: '3px 9px' }}>{b.label}</span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
+    <span style={{
+      position: 'absolute', top: -8, right: -8,
+      minWidth: 18, height: 18, padding: '0 5px',
+      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+      fontSize: 11, fontWeight: 800, lineHeight: 1,
+      color: '#fff', background: '#ef4444', borderRadius: 999,
+      boxShadow: '0 0 0 2px #fff',
+    }}>
+      {count > 99 ? '99+' : count}
+    </span>
   );
 }
 
@@ -528,6 +465,25 @@ function AdminDashboard() {
   // Signup & payment requests state
   const [pendingSignupCount, setPendingSignupCount] = useState(0);
   const [pendingPaymentCount, setPendingPaymentCount] = useState(0);
+  // "Needs attention" counts for the top nav badges (like chat unread pips):
+  // open reports, pending supporters, unverified coaches. Polled for a
+  // near-real-time feel.
+  const [badgeCounts, setBadgeCounts] = useState({ reports: 0, supporters: 0, coaches: 0 });
+  useEffect(() => {
+    let alive = true;
+    const fetchBadges = () => {
+      api.get('/api/admin/badge-counts')
+        .then(r => { if (alive && r.data) setBadgeCounts({
+          reports: r.data.reports || 0,
+          supporters: r.data.supporters || 0,
+          coaches: r.data.coaches || 0,
+        }); })
+        .catch(() => {});
+    };
+    fetchBadges();
+    const id = setInterval(fetchBadges, 30000); // refresh every 30s
+    return () => { alive = false; clearInterval(id); };
+  }, []);
   // Arena Tournaments admin state
   const [arenaTournaments, setArenaTournaments] = useState([]);
   const [loadingArenaTournaments, setLoadingArenaTournaments] = useState(false);
@@ -1245,15 +1201,19 @@ function AdminDashboard() {
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/studies')}>📚 Study Management</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/monthly-focus')}>🎯 Monthly Focus</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/team-race')}>👥 Team Race</button>
-          <button style={styles.secondaryBtn} onClick={() => nav('/admin/reports')}>🚩 Reports</button>
-          <button style={styles.secondaryBtn} onClick={() => nav('/admin/supporters')}>☕ Supporters</button>
-          <button style={styles.secondaryBtn} onClick={() => nav('/admin/coaches')}>🎓 Coaches</button>
+          <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/reports')}>
+            🚩 Reports{renderNavBadge(badgeCounts.reports)}
+          </button>
+          <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/supporters')}>
+            ☕ Supporters{renderNavBadge(badgeCounts.supporters)}
+          </button>
+          <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/coaches')}>
+            🎓 Coaches{renderNavBadge(badgeCounts.coaches)}
+          </button>
           <button style={styles.secondaryBtn} onClick={() => nav('/chat')}>💬 Chat</button>
           <button style={styles.primaryBtn} onClick={fetchAll}>Refresh</button>
         </div>
       </div>
-
-      <RecentSupporters />
 
       <AvatarXpPrices />
 

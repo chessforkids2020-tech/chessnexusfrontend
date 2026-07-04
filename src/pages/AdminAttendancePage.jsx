@@ -944,12 +944,12 @@ const AdminAttendancePage = () => {
                     <td style={styles.td}>{item.classesAttended}</td>
                     <td style={styles.td}>{item.remainingClasses}</td>
                     <td style={styles.td}>
-                      <span style={{...styles.badge, ...(item.paymentStatus === 'Paid' ? styles.paidBadge : styles.unpaidBadge)}}>
+                      <span style={{ fontWeight: 600, color: item.paymentStatus === 'Paid' ? '#166534' : '#991b1b' }}>
                         {item.paymentStatus}
                       </span>
                     </td>
                     <td style={styles.td}>
-                      <span style={{...styles.badge, background: item.percentageInCycle.includes('100') ? '#dcfce7' : item.percentageInCycle.includes('80') ? '#fef3c7' : '#fee2e2', color: item.percentageInCycle.includes('100') ? '#166534' : item.percentageInCycle.includes('80') ? '#92400e' : '#991b1b'}}>
+                      <span style={{ fontWeight: 600, color: item.percentageInCycle.includes('100') ? '#166534' : item.percentageInCycle.includes('80') ? '#92400e' : '#991b1b' }}>
                         {item.percentageInCycle}
                       </span>
                     </td>
@@ -1134,7 +1134,7 @@ const AdminAttendancePage = () => {
                             <button
                               style={{
                                 ...styles.button,
-                                background: '#4caf50',
+                                background: 'rgba(76, 175, 80, 0.7)',
                                 color: '#fff',
                                 fontSize: '0.8rem',
                                 padding: '4px 8px'
@@ -1146,7 +1146,7 @@ const AdminAttendancePage = () => {
                             <button
                               style={{
                                 ...styles.button,
-                                background: '#f44336',
+                                background: 'rgba(244, 67, 54, 0.7)',
                                 color: '#fff',
                                 fontSize: '0.8rem',
                                 padding: '4px 8px'
@@ -1158,7 +1158,7 @@ const AdminAttendancePage = () => {
                             <button
                               style={{
                                 ...styles.button,
-                                background: '#2196f3',
+                                background: 'rgba(33, 150, 243, 0.7)',
                                 color: '#fff',
                                 fontSize: '0.8rem',
                                 padding: '4px 8px'
