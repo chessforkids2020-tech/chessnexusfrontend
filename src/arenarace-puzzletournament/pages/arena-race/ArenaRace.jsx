@@ -155,6 +155,11 @@ const styles = {
     marginBottom: '15px',
     color: '#ffffff',
   },
+  leaderboardList: {
+    maxHeight: '60vh',
+    overflowY: 'auto',
+    paddingRight: '6px',
+  },
   leaderboardItem: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -1082,15 +1087,17 @@ export default function ArenaRace() {
         <div style={styles.leaderboardSection}>
           <div style={styles.leaderboard}>
             <div style={styles.leaderboardTitle}>🏆 Leaderboard</div>
-            {leaderboard.map((player, index) => (
-              <div key={`${player.username}-${index}`} style={{
-                ...styles.leaderboardItem,
-                ...(user && player.username === user.username ? styles.currentPlayer : {})
-              }}>
-                <span>#{index + 1} {player.displayName || player.username || 'Unknown'}</span>
-                <span>{player.score}</span>
-              </div>
-            ))}
+            <div style={styles.leaderboardList}>
+              {leaderboard.map((player, index) => (
+                <div key={`${player.username}-${index}`} style={{
+                  ...styles.leaderboardItem,
+                  ...(user && player.username === user.username ? styles.currentPlayer : {})
+                }}>
+                  <span>#{index + 1} {player.displayName || player.username || 'Unknown'}</span>
+                  <span>{player.score}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 

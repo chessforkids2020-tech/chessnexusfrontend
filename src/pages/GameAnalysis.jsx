@@ -16,6 +16,7 @@ import { Chess } from 'chess.js';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import GameReplay from '../components/GameReplay';
+import GameInsightsPanel from '../components/GameInsightsPanel';
 import PieceSelector from '../components/PositionEditor/PieceSelector';
 import EditableBoard from '../components/PositionEditor/EditableBoard';
 import SetupControls, { SideToMoveControl, CastlingControl, EnPassantControl } from '../components/PositionEditor/SetupControls';
@@ -1310,6 +1311,7 @@ export default function GameAnalysis() {
   const [platform, setPlatform]           = useState('chesscom');
   const [username, setUsername]           = useState('');
   const [isOwnAccount, setIsOwnAccount]   = useState(true);  // false = scout mode
+  const [timeClass, setTimeClass]         = useState('all'); // ChessNexus time-control filter
   const [loading, setLoading]             = useState(false);
   const [runningInBackground, setRunningInBackground] = useState(false); // navigated away and came back
   const [error, setError]                 = useState(null);
@@ -1506,7 +1508,8 @@ export default function GameAnalysis() {
         platform,
         username: platform === 'chessnexus' ? '' : username.trim(),
         force: true,
-        isOwnAccount: effectiveIsOwnAccount
+        isOwnAccount: effectiveIsOwnAccount,
+        ...(platform === 'chessnexus' ? { timeClass } : {})
       });
 
       const { cacheId: id, status, result: cachedResult } = res.data;
@@ -1738,9 +1741,9 @@ export default function GameAnalysis() {
               : platform === 'otb'
               ? 'Snap a photo of your over-the-board scoresheet. Chess Nexus reads the moves and analyses the game with Stockfish.'
               : platform === 'chessnexus'
-              ? 'Analyzes your last 25 Arena Tournament games played on ChessNexus.'
+              ? 'Analyzes your last 50 Arena Tournament games played on ChessNexus.'
               : isOwnAccount
-              ? 'Chess Nexus analyzes your last 25 games from chess.com or lichess and exposes exactly where you\'re losing points.'
+              ? 'Chess Nexus analyzes your last 50 games from chess.com or lichess and exposes exactly where you\'re losing points.'
               : 'Scout mode — analyzes the last 50 games of any player. No data is saved to your profile.'}
           </p>
         </div>
@@ -1860,10 +1863,29 @@ export default function GameAnalysis() {
             )
           ) : platform === 'chessnexus' ? (
             (user && user.role !== 'guest') ? (
-              <div className="ga-nexus-info">
-                <span className="ga-nexus-info-icon">🏆</span>
-                <span>Your last 25 finished Arena Tournament games on ChessNexus will be analyzed automatically.</span>
-              </div>
+              <>
+                <div className="ga-nexus-info">
+                  <span className="ga-nexus-info-icon">🏆</span>
+                  <span>Your last 50 finished Arena Tournament games on ChessNexus will be analyzed automatically.</span>
+                </div>
+                <div className="ga-nexus-tc">
+                  <span className="ga-nexus-tc-label">Time control:</span>
+                  {['all', 'bullet', 'blitz', 'rapid'].map((tc) => (
+                    <button
+                      key={tc}
+                      type="button"
+                      className={`ga-nexus-tc-chip${timeClass === tc ? ' active' : ''}`}
+                      onClick={() => setTimeClass(tc)}
+                      disabled={loading}
+                    >
+                      {tc === 'all' ? 'All' : tc.charAt(0).toUpperCase() + tc.slice(1)}
+                    </button>
+                  ))}
+                </div>
+                <p className="ga-scout-hint">
+                  💡 Bullet blunders are mostly time-scrambles — pick Rapid or Blitz to focus on mistakes worth learning from.
+                </p>
+              </>
             ) : (
               <LoginPrompt feature="ChessNexus Analysis" />
             )
@@ -2048,7 +2070,7 @@ export default function GameAnalysis() {
           </div>
           <div className="ga-progress-note">
             {isOwnAccount
-              ? <span>👋 Analysing 25 games takes 10–15 minutes. <strong>You can freely browse other pages</strong> — the analysis keeps running in the background. Come back here anytime to see your results.</span>
+              ? <span>👋 Analysing up to 50 games takes 10–15 minutes. <strong>You can freely browse other pages</strong> — the analysis keeps running in the background. Come back here anytime to see your results.</span>
               : <span>🔭 Scout mode analyses 50 games. <strong>You can freely browse other pages</strong> — come back anytime to see the results.</span>}
           </div>
         </div>
@@ -2190,6 +2212,19 @@ export default function GameAnalysis() {
 
           {/* Recommendations */}
           <Recommendations result={result} />
+
+          {/* Turn the mistakes from these games into practice — the closed loop.
+              Only for ChessNexus (Nexus Guide derives puzzles from the user's own
+              arena games). Same component as the dashboard, mounted here too. */}
+          {platform === 'chessnexus' && (
+            <>
+              <h3 className="ga-section-title">🎓 Turn Your Mistakes Into Practice</h3>
+              <p className="ga-section-desc">
+                Solve the exact moments you slipped up — then re-check to see yourself improve.
+              </p>
+              <GameInsightsPanel />
+            </>
+          )}
 
           {/* Re-analyze note */}
           <p className="ga-cache-note">

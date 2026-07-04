@@ -1781,8 +1781,8 @@ button[style*="closeButton"]:hover {
   border-radius: 20px;
   padding: 24px 26px 20px;
   margin: 20px 0;
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .mfp-header {
@@ -1878,8 +1878,8 @@ button[style*="closeButton"]:hover {
   border-radius: 14px;
   padding: 14px 12px 12px;
   text-align: center;
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .mfp-stat-card:hover {

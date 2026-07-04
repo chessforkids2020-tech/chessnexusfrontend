@@ -10,6 +10,8 @@ import CoachOnboarding from "./pages/coach/CoachOnboarding";
 import CoachDashboard from "./pages/coach/CoachDashboard";
 import CoachStudentDetail from "./pages/coach/CoachStudentDetail";
 import CoachAssignments from "./pages/coach/CoachAssignments";
+import CourseBuilder from "./pages/coach/CourseBuilder";
+import CourseProgress from "./pages/coach/CourseProgress";
 import CoachSubscription from "./pages/coach/CoachSubscription";
 import CoachAttendancePage from "./pages/coach/CoachAttendancePage";
 import PublicProfile from "./pages/PublicProfile";
@@ -56,6 +58,7 @@ import RoundScoreboard from "./pages/RoundScoreboard";
 import AdminDashboard from './pages/AdminDashboard';
 import AdminEndgamesPage from './pages/AdminEndgamesPage';
 import AdminSupporters from './pages/AdminSupporters';
+import AdminCoaches from './pages/AdminCoaches';
 import AdminUsersPage from './pages/AdminUsersPage';
 import AdminContestPage from './pages/AdminContestPage';
 import AdminMetricsPage from './pages/AdminMetricsPage';
@@ -134,6 +137,7 @@ import ClubDetailPage from './pages/ClubDetailPage';
 import Puzzles from './pages/Puzzles';
 import PuzzlesHub from './pages/PuzzlesHub';
 import Training from './pages/Training';
+import MyMoments from './pages/MyMoments';
 import HealthyMix from './pages/HealthyMix';
 import PuzzleDashboard from './pages/PuzzleDashboard';
 import ThemesPicker from './pages/ThemesPicker';
@@ -143,6 +147,7 @@ import SignupRequests from './pages/SignupRequests';
 import BestRacersPage from './pages/BestRacersPage';
 import Games from './pages/game/Games';
 import MasterGamesHome from './pages/masterGames/MasterGamesHome';
+import OpeningRepertoire from './pages/OpeningRepertoire';
 import MasterGamesBrowse from './pages/masterGames/MasterGamesBrowse';
 import MasterPlayer from './pages/masterGames/MasterPlayer';
 import ImmortalGames from './pages/masterGames/ImmortalGames';
@@ -521,6 +526,16 @@ export default function App() {
             <Footer />
           </div>
         } />
+        <Route path="/admin/coaches" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminCoaches />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
         <Route path="/admin/endgames" element={
           <div style={styles.container}>
             <div style={styles.content}>
@@ -892,6 +907,20 @@ export default function App() {
             </ProtectedRoute>
           </UserLayout>
         } />
+        <Route path="/coach/courses" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <CourseBuilder />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/coach/courses/:courseId/progress" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <CourseProgress />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
         <Route path="/coach/subscription" element={
           <UserLayout>
             <ProtectedRoute>
@@ -1026,6 +1055,13 @@ export default function App() {
             <MasterGamesHome />
           </UserLayout>
         } />
+        <Route path="/repertoire" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <OpeningRepertoire />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
         <Route path="/master-games/browse" element={
           <UserLayout>
             <MasterGamesBrowse />
@@ -1100,6 +1136,13 @@ export default function App() {
           <UserLayout>
             <ProtectedRoute>
               <HealthyMix />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/training/my-moments" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <MyMoments />
             </ProtectedRoute>
           </UserLayout>
         } />

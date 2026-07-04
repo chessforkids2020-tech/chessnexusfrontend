@@ -56,6 +56,19 @@
 }
 .gip-train-btn:hover { background: var(--gip-panel-hover); }
 
+/* Time-control selector (which games to analyse) */
+.gip-tc-select { display: inline-flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.gip-tc-chip {
+  background: var(--gip-panel); color: var(--gip-muted); border: 1px solid var(--gip-border);
+  padding: 8px 12px; border-radius: 10px; font-weight: 700; font-size: 12.5px; cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.gip-tc-chip:hover:not(:disabled) { background: var(--gip-panel-hover); color: var(--gip-text); }
+.gip-tc-chip-active {
+  background: rgba(6,182,212,.15); color: var(--gip-accent); border-color: var(--gip-border-strong);
+}
+.gip-tc-chip:disabled { opacity: .5; cursor: default; }
+
 /* Per-weakness training chips */
 .gip-weak-train { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .gip-weak-label { font-size: 12.5px; font-weight: 700; color: var(--gip-muted); }
@@ -65,6 +78,27 @@
   text-transform: capitalize; transition: background .15s;
 }
 .gip-weak-chip:hover { background: rgba(6,182,212,.22); }
+
+/* Monthly progress report */
+.gip-report {
+  margin-top: 16px; padding: 14px 16px; border-radius: 14px;
+  background: var(--gip-panel); border: 1px solid var(--gip-border);
+}
+.gip-report-head { font-weight: 800; font-size: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.gip-report-months { font-weight: 600; font-size: 12px; color: var(--gip-muted); }
+.gip-report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 12px; }
+.gip-report-stat {
+  background: var(--gip-panel-hover); border: 1px solid var(--gip-border); border-radius: 10px; padding: 10px 12px;
+}
+.gip-report-label { font-size: 11.5px; color: var(--gip-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+.gip-report-value { font-size: 20px; font-weight: 800; margin-top: 4px; }
+.gip-report-weak { font-size: 15px; text-transform: capitalize; }
+.gip-report-trend { font-size: 12px; font-weight: 700; }
+.gip-mr-good { color: var(--gip-accent-alt); }
+.gip-mr-bad { color: #f87171; }
+.gip-mr-flat { color: var(--gip-muted); }
+.gip-report-prev { font-size: 11.5px; color: var(--gip-muted); margin-top: 2px; }
+.gip-report-note { font-size: 12px; color: var(--gip-muted); margin-top: 10px; }
 
 .gip-progress { margin-top: 16px; }
 .gip-progress-bar { height: 8px; background: var(--gip-panel); border-radius: 999px; overflow: hidden; }

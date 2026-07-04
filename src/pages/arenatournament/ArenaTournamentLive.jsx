@@ -117,6 +117,16 @@ export default function ArenaTournamentLive() {
   const [whiteTimeRemaining, setWhiteTimeRemaining] = useState(null);
   const [blackTimeRemaining, setBlackTimeRemaining] = useState(null);
   const [lastMove, setLastMove] = useState(null);
+  // Move review: null = following the live position; a number = viewing that ply
+  // (half-move index) of the moves already played. Purely local — never affects
+  // the live game. Any new live move auto-returns to the live position.
+  const [reviewPly, setReviewPly] = useState(null);
+  // Tracked move history of the CURRENT game: [{ san, fen, from, to }], one per
+  // half-move. Rebuilt by diffing each new gameState against the last (chessRef
+  // uses .load() which wipes chess.js history, so we can't use it here).
+  // startFen is index 0's "before" position.
+  const [moveHistory, setMoveHistory] = useState([]);
+  const historyStartFenRef = useRef(null); // FEN before move 1 of this game
   
   const [showLeaderboard, setShowLeaderboard] = useState(true);
   const [teamLeaderboard, setTeamLeaderboard] = useState([]);
@@ -876,21 +886,31 @@ export default function ArenaTournamentLive() {
         }
         chessRef.current.load(gameData.fen);
         setGameState(gameData.fen);
-        
-        // Set last move from game history if available
-        if (gameData.moves && gameData.moves.length > 0) {
-          // Use chess960 starting FEN if available, otherwise standard start
-          const tempChess = new Chess(gameData.startFen || undefined);
-          for (let i = 0; i < gameData.moves.length - 1; i++) {
-            tempChess.move(gameData.moves[i]);
+
+        // Seed the review move-history for THIS game (start FEN + all played moves),
+        // so back/forward works immediately — incl. after a mid-game reconnect.
+        {
+          const seedStart = gameData.startFen || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+          historyStartFenRef.current = seedStart;
+          const seeded = [];
+          if (gameData.moves && gameData.moves.length > 0) {
+            const tempChess = new Chess(gameData.startFen || undefined);
+            for (const san of gameData.moves) {
+              const r = tempChess.move(san, { sloppy: true });
+              if (!r) break;
+              seeded.push({ san: r.san, fen: tempChess.fen(), from: r.from, to: r.to });
+            }
+            const last = seeded[seeded.length - 1];
+            if (last) setLastMove({ from: last.from, to: last.to });
           }
-          const lastMoveResult = tempChess.move(gameData.moves[gameData.moves.length - 1]);
-          if (lastMoveResult) {
-            setLastMove({ from: lastMoveResult.from, to: lastMoveResult.to });
-          }
+          setMoveHistory(seeded);
+          setReviewPly(null);
         }
       } else {
         chessRef.current = new Chess();
+        historyStartFenRef.current = chessRef.current.fen();
+        setMoveHistory([]);
+        setReviewPly(null);
         setGameState(chessRef.current.fen());
       }
 
@@ -971,6 +991,88 @@ export default function ArenaTournamentLive() {
         .map(rookSq => ({ from: kingStartSq, to: rookSq }));
     } catch { return []; }
   }, [gameState]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Move review (go back/forward through moves already played) ──────────────
+  // Keep the move history in sync by diffing each new live FEN against the last
+  // tracked one and finding the single legal move that connects them. Decoupled
+  // from chessRef (which .load()s and has no history) and from every move path.
+  useEffect(() => {
+    if (!gameState) return;
+    setMoveHistory(prev => {
+      // Determine the position we're advancing FROM.
+      const startFen = historyStartFenRef.current;
+      const lastFen = prev.length ? prev[prev.length - 1].fen : startFen;
+      if (!lastFen) {
+        // First time we see a position with no seeded start — treat it as the start.
+        historyStartFenRef.current = gameState;
+        return [];
+      }
+      if (gameState === lastFen) return prev; // no change
+      // Find the legal move from lastFen that yields gameState (1-ply advance).
+      try {
+        const c = new Chess(lastFen);
+        for (const mv of c.moves({ verbose: true })) {
+          const t = new Chess(lastFen);
+          const done = t.move({ from: mv.from, to: mv.to, promotion: mv.promotion });
+          if (done && t.fen() === gameState) {
+            return [...prev, { san: done.san, fen: gameState, from: done.from, to: done.to }];
+          }
+        }
+      } catch { /* fall through */ }
+      // Couldn't connect by a single move (e.g. a jump / new game) — resync:
+      // start a fresh history anchored at this FEN.
+      historyStartFenRef.current = gameState;
+      return [];
+    });
+  }, [gameState]);
+
+  const reviewPositions = useMemo(() => {
+    const fens = [historyStartFenRef.current || gameState];
+    const lasts = [null];
+    const sans = [];
+    for (const m of moveHistory) {
+      fens.push(m.fen);
+      lasts.push({ from: m.from, to: m.to });
+      sans.push(m.san);
+    }
+    return { fens, lasts, sans };
+  }, [moveHistory, gameState]);
+
+  const totalPlies = moveHistory.length;
+  const reviewing = reviewPly !== null;
+  // What the board actually shows: the reviewed ply, or the live position.
+  const displayFen = reviewing ? (reviewPositions.fens[reviewPly] ?? gameState) : gameState;
+  const displayLastMove = reviewing ? (reviewPositions.lasts[reviewPly] ?? null) : lastMove;
+
+  // A new live move arrived (gameState changed) → snap back to live so the player
+  // never sits on an old position while it's their turn.
+  useEffect(() => { setReviewPly(null); }, [gameState]);
+
+  // Navigation (clamped). Entering review from live starts at the previous ply.
+  const goReviewStart = () => setReviewPly(0);
+  const goReviewBack = () => setReviewPly(p => Math.max(0, (p === null ? totalPlies : p) - 1));
+  const goReviewFwd = () => setReviewPly(p => {
+    if (p === null) return null;
+    const next = p + 1;
+    return next >= totalPlies ? null : next; // reaching the end returns to live
+  });
+  const goReviewLive = () => setReviewPly(null);
+
+  // Arrow keys navigate the move history on the board (← back, → forward,
+  // ↑ first, ↓ live). Ignored while typing in an input (e.g. chat).
+  useEffect(() => {
+    const onKey = (e) => {
+      const tag = (e.target?.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target?.isContentEditable) return;
+      if (totalPlies <= 0) return;
+      if (e.key === 'ArrowLeft') { goReviewBack(); e.preventDefault(); }
+      else if (e.key === 'ArrowRight') { goReviewFwd(); e.preventDefault(); }
+      else if (e.key === 'ArrowUp') { goReviewStart(); e.preventDefault(); }
+      else if (e.key === 'ArrowDown') { goReviewLive(); e.preventDefault(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [totalPlies]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleMove = (from, to) => {
     console.log('♟️ [ArenaTournamentLive] Move attempted:', from, '→', to);
@@ -1504,16 +1606,16 @@ export default function ArenaTournamentLive() {
                 position: 'relative'
               }}>
                 <Chessboard
-                  position={gameState}
+                  position={displayFen}
                   onDrop={handleMove}
                   orientation={myColor}
-                  lastMove={lastMove}
-                  draggable={true}
+                  lastMove={displayLastMove}
+                  draggable={!reviewing}
                   boardWidth={boardWidth}
                   showCoordinates={false}
-                  allowPremove={true}
+                  allowPremove={!reviewing}
                   playerColor={myColor}
-                  extraLegalMoves={chess960ExtraMoves}
+                  extraLegalMoves={reviewing ? [] : chess960ExtraMoves}
                   onPremoveChange={(p) => { chessboardPremoveRef.current = p; }}
                   boardStyle={{
                     borderRadius: '8px',
@@ -1840,6 +1942,84 @@ export default function ArenaTournamentLive() {
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.28)'; e.currentTarget.style.boxShadow = '0 0 14px rgba(239,68,68,0.3)'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.boxShadow = 'none'; }}
                 >🏳️</button>
+              </div>
+            </div>
+          )}
+
+          {/* MOVES — notation + review controls. Purely local; stepping back/forward
+              never affects the live game (a new move snaps back to live). */}
+          {currentGame && gameState && totalPlies > 0 && (
+            <div style={{
+              marginTop: '12px', background: 'rgba(0,0,0,0.28)',
+              border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '10px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', color: '#94a3b8', textTransform: 'uppercase' }}>Moves</span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: reviewing ? '#fbbf24' : '#34d399' }}>
+                  {reviewing ? `${reviewPly}/${totalPlies}` : '● Live'}
+                </span>
+              </div>
+
+              {/* Notation — paired rows, compact, scrollable. Click a move to jump. */}
+              <div style={{ maxHeight: '132px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.5 }}>
+                {(() => {
+                  const sans = reviewPositions.sans || [];
+                  // Each ply's color from the FEN BEFORE it (fens[i] is before sans[i]).
+                  const items = sans.map((san, i) => ({
+                    san, ply: i + 1,
+                    white: (reviewPositions.fens[i] || '').split(' ')[1] !== 'b',
+                  }));
+                  const activePly = reviewing ? reviewPly : totalPlies;
+                  const cell = (it) => it == null
+                    ? <span style={{ color: '#4b5563' }}>…</span>
+                    : <span
+                        onClick={() => setReviewPly(it.ply >= totalPlies ? null : it.ply)}
+                        style={{
+                          cursor: 'pointer', padding: '1px 5px', borderRadius: '4px', fontWeight: 600,
+                          background: it.ply === activePly ? '#2563eb' : 'transparent',
+                          color: it.ply === activePly ? '#fff' : '#e2e8f0',
+                        }}
+                      >{it.san}</span>;
+                  // Group into rows keyed by move number (white then black).
+                  const rows = [];
+                  let idx = 0;
+                  while (idx < items.length) {
+                    const first = items[idx];
+                    if (first.white) {
+                      const black = items[idx + 1] && !items[idx + 1].white ? items[idx + 1] : null;
+                      rows.push({ no: rows.length + 1, w: first, b: black });
+                      idx += black ? 2 : 1;
+                    } else {
+                      // Black moved first (mid-game start) — white cell empty.
+                      rows.push({ no: rows.length + 1, w: null, b: first });
+                      idx += 1;
+                    }
+                  }
+                  return rows.map(r => (
+                    <div key={r.no} style={{ display: 'grid', gridTemplateColumns: '28px 1fr 1fr', gap: '4px', alignItems: 'center' }}>
+                      <span style={{ color: '#6b7280', fontSize: '12px' }}>{r.no}.</span>
+                      <span>{cell(r.w)}</span>
+                      <span>{cell(r.b)}</span>
+                    </div>
+                  ));
+                })()}
+              </div>
+
+              {/* Compact review controls. */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginTop: '8px' }}>
+                {(() => {
+                  const b = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#e2e8f0', borderRadius: '6px', padding: '3px 9px', cursor: 'pointer', fontSize: '13px' };
+                  const bd = { ...b, opacity: 0.35, cursor: 'default' };
+                  const atStart = reviewing && reviewPly <= 0;
+                  return (
+                    <>
+                      <button style={atStart ? bd : b} onClick={goReviewStart} disabled={atStart} title="First (↑)">⏮</button>
+                      <button style={atStart ? bd : b} onClick={goReviewBack} disabled={atStart} title="Back (←)">◀</button>
+                      <button style={!reviewing ? bd : b} onClick={goReviewFwd} disabled={!reviewing} title="Forward (→)">▶</button>
+                      <button style={!reviewing ? bd : b} onClick={goReviewLive} disabled={!reviewing} title="Live (↓)">⏭</button>
+                    </>
+                  );
+                })()}
               </div>
             </div>
           )}

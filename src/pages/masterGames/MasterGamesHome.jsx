@@ -104,6 +104,28 @@ export default function MasterGamesHome() {
         <h1 style={st.h1}>Master Games</h1>
         <p style={st.sub}>Study the famous players. Pick a champion to browse their games, or explore the whole library by opening, year and tournament.</p>
 
+        {/* ── Premium: opening repertoire trainer entry banner ── */}
+        <button
+          onClick={() => navigate('/repertoire')}
+          style={{
+            width: '100%', textAlign: 'left', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
+            margin: '0 0 16px', padding: '14px 18px', borderRadius: 14,
+            border: '1px solid rgba(245,196,81,0.4)',
+            background: 'linear-gradient(135deg, rgba(245,196,81,0.12), rgba(245,196,81,0.03))',
+            color: '#fde9b8',
+          }}
+        >
+          <span style={{ fontSize: 24 }}>⭐</span>
+          <span style={{ flex: 1, minWidth: 200 }}>
+            <span style={{ display: 'block', fontWeight: 900, fontSize: 15 }}>Build your opening repertoire</span>
+            <span style={{ display: 'block', fontSize: 12.5, color: '#cdb989' }}>
+              Save your lines, get drilled with spaced repetition, and spot where you left your prep.
+            </span>
+          </span>
+          <span style={{ fontWeight: 800, color: '#f5c451' }}>Open →</span>
+        </button>
+
         {/* ── Opening study (interactive board + engine + opening explorer) ── */}
         <OpeningStudy />
 

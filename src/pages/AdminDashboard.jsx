@@ -340,15 +340,17 @@ Object.assign(styles, roundsBackupStyles);
 
 // ─── Avatar XP Prices (admin-tunable wallet prices for cosmetic unlocks) ──────
 function AvatarXpPrices() {
-  const [prices, setPrices] = useState({ avatarCustomPhoto: 0, avatar3d: 0 });
+  const DEFAULTS = { avatarCustomPhoto: 0, avatar3d: 0, repertoireUnlock: 0, repertoireSaveLine: 0 };
+  const [prices, setPrices] = useState(DEFAULTS);
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
     api.get('/api/admin/settings')
-      .then(res => { setPrices(res.data?.xpPrices || { avatarCustomPhoto: 0, avatar3d: 0 }); setLoaded(true); })
+      .then(res => { setPrices({ ...DEFAULTS, ...(res.data?.xpPrices || {}) }); setLoaded(true); })
       .catch(() => setLoaded(true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const save = async () => {
@@ -369,26 +371,133 @@ function AvatarXpPrices() {
 
   return (
     <div style={{ ...styles.card, padding: 16, marginTop: 20, background: '#ffffff', border: '1px solid #e2e8f0' }}>
-      <h3 style={{ marginTop: 0, marginBottom: 4, color: '#0f172a' }}>👛 Avatar XP Prices</h3>
+      <h3 style={{ marginTop: 0, marginBottom: 4, color: '#0f172a' }}>👛 XP Prices</h3>
       <div style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
-        Wallet XP a user spends to unlock these avatar tiers (invite milestones still unlock them free).
+        Wallet XP a user spends to unlock these features (avatar tiers still unlock free via invite milestones).
       </div>
       {!loaded ? <div style={{ color: '#94a3b8' }}>Loading…</div> : (
-        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: '#334155' }}>
-            📸 Custom Photo (XP)
-            <input type="number" min={0} style={inputStyle} value={prices.avatarCustomPhoto}
-              onChange={e => setPrices({ ...prices, avatarCustomPhoto: Math.max(0, +e.target.value || 0) })} />
-          </label>
-          <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: '#334155' }}>
-            🌌 3D Model (XP)
-            <input type="number" min={0} style={inputStyle} value={prices.avatar3d}
-              onChange={e => setPrices({ ...prices, avatar3d: Math.max(0, +e.target.value || 0) })} />
-          </label>
-          <button onClick={save} disabled={saving} style={{ ...styles.primaryBtn, opacity: saving ? 0.6 : 1 }}>
-            {saving ? 'Saving…' : 'Save prices'}
-          </button>
-          {msg && <span style={{ fontSize: 13, color: msg.includes('fail') ? '#dc2626' : '#16a34a' }}>{msg}</span>}
+        <>
+          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: '#334155' }}>
+              📸 Custom Photo (XP)
+              <input type="number" min={0} style={inputStyle} value={prices.avatarCustomPhoto}
+                onChange={e => setPrices({ ...prices, avatarCustomPhoto: Math.max(0, +e.target.value || 0) })} />
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: '#334155' }}>
+              🌌 3D Model (XP)
+              <input type="number" min={0} style={inputStyle} value={prices.avatar3d}
+                onChange={e => setPrices({ ...prices, avatar3d: Math.max(0, +e.target.value || 0) })} />
+            </label>
+          </div>
+
+          <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #e2e8f0' }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', marginBottom: 4 }}>⭐ Opening Repertoire Trainer</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 10 }}>
+              Unlock = one-time XP to open the trainer. Save line = XP charged every time a user saves a line.
+              Set 0 for free. Admins, verified coaches & supporters always get free access and free saves.
+            </div>
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+              <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: '#334155' }}>
+                🔓 Unlock feature (XP)
+                <input type="number" min={0} style={inputStyle} value={prices.repertoireUnlock}
+                  onChange={e => setPrices({ ...prices, repertoireUnlock: Math.max(0, +e.target.value || 0) })} />
+              </label>
+              <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: '#334155' }}>
+                💾 Save a line (XP)
+                <input type="number" min={0} style={inputStyle} value={prices.repertoireSaveLine}
+                  onChange={e => setPrices({ ...prices, repertoireSaveLine: Math.max(0, +e.target.value || 0) })} />
+              </label>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 16 }}>
+            <button onClick={save} disabled={saving} style={{ ...styles.primaryBtn, opacity: saving ? 0.6 : 1 }}>
+              {saving ? 'Saving…' : 'Save prices'}
+            </button>
+            {msg && <span style={{ fontSize: 13, color: msg.includes('fail') ? '#dc2626' : '#16a34a' }}>{msg}</span>}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+// ─── Recent coffee supporters (dashboard glance) ─────────────────────────────
+// Surfaces the latest ☕ supporters right on the admin main page so a new
+// subscription is noticed immediately. Reuses GET /api/coffee/admin/list.
+function RecentSupporters() {
+  const nav = useNavigate();
+  const [rows, setRows] = useState([]);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const [recent, pending] = await Promise.all([
+          api.get('/api/coffee/admin/list?limit=6'),
+          api.get('/api/coffee/admin/list?status=pending&limit=1').catch(() => ({ data: {} })),
+        ]);
+        if (!alive) return;
+        setRows(recent.data?.supporters || []);
+        setPendingCount(pending.data?.total || 0);
+      } catch { /* ignore */ } finally {
+        if (alive) setLoaded(true);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  const money = (amt, cur) => `${cur === 'INR' ? '₹' : cur === 'USD' ? '$' : ''}${amt}`;
+  const when = (d) => { try { return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }); } catch { return ''; } };
+  const badge = (s) => s === 'active'
+    ? { bg: '#dcfce7', fg: '#166534', label: 'Active' }
+    : s === 'pending'
+      ? { bg: '#fef9c3', fg: '#854d0e', label: 'Pending' }
+      : { bg: '#fee2e2', fg: '#991b1b', label: 'Rejected' };
+
+  // Don't clutter the dashboard if nobody has ever subscribed.
+  if (loaded && rows.length === 0) return null;
+
+  return (
+    <div style={{ ...styles.card, padding: 16, marginTop: 20, background: '#ffffff', border: '1px solid #e2e8f0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <div>
+          <h3 style={{ marginTop: 0, marginBottom: 2, color: '#0f172a' }}>
+            ☕ Coffee supporters
+            {pendingCount > 0 && (
+              <span style={{ marginLeft: 8, fontSize: 12, fontWeight: 700, color: '#854d0e', background: '#fef9c3', borderRadius: 999, padding: '2px 9px' }}>
+                {pendingCount} pending
+              </span>
+            )}
+          </h3>
+          <p style={{ margin: 0, color: '#64748b', fontSize: 13 }}>Latest users who subscribed for a coffee.</p>
+        </div>
+        <button style={styles.secondaryBtn} onClick={() => nav('/admin/supporters')}>View all →</button>
+      </div>
+
+      {!loaded ? (
+        <div style={{ color: '#94a3b8', fontSize: 13 }}>Loading…</div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {rows.map(r => {
+            const u = r.userId || {};
+            const b = badge(r.status);
+            return (
+              <div key={r._id} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: 12, alignItems: 'center', padding: '8px 10px', borderRadius: 8, background: '#f8fafc', border: '1px solid #eef2f7' }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 600, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {u.displayName || u.username || 'User'}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.email || ''}</div>
+                </div>
+                <div style={{ fontWeight: 700, color: '#0f172a' }}>{money(r.amount, r.currency)}</div>
+                <div style={{ fontSize: 12, color: '#475569' }}>{r.months}mo · {when(r.paidAt)}</div>
+                <span style={{ fontSize: 11, fontWeight: 700, color: b.fg, background: b.bg, borderRadius: 999, padding: '3px 9px' }}>{b.label}</span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -419,9 +528,6 @@ function AdminDashboard() {
   // Signup & payment requests state
   const [pendingSignupCount, setPendingSignupCount] = useState(0);
   const [pendingPaymentCount, setPendingPaymentCount] = useState(0);
-  const [coachAnalytics, setCoachAnalytics] = useState(null);
-  const [coachList, setCoachList] = useState(null);
-  const [coachListLoading, setCoachListLoading] = useState(false);
   // Arena Tournaments admin state
   const [arenaTournaments, setArenaTournaments] = useState([]);
   const [loadingArenaTournaments, setLoadingArenaTournaments] = useState(false);
@@ -647,13 +753,12 @@ function AdminDashboard() {
   async function fetchAll() {
     setLoading(true);
     try {
-      const [uRes, pRes, rRes, aRes, analyticsRes, coachRes] = await Promise.all([
+      const [uRes, pRes, rRes, aRes, analyticsRes] = await Promise.all([
         api.get(`/api/admin/users`),
         api.get(`/api/admin/puzzles`),
         api.get(`/api/admin/rounds`),
         api.get(`/api/admin/activity`).catch(() => ({ data: [] })),
-        api.get(`/api/admin/analytics/trends`).catch(() => ({ data: null })),
-        api.get(`/api/admin/coach-analytics`).catch(() => ({ data: null }))
+        api.get(`/api/admin/analytics/trends`).catch(() => ({ data: null }))
       ]);
       const usersArr = Array.isArray(uRes?.data) ? uRes.data : [];
       const puzzlesArr = Array.isArray(pRes?.data) ? pRes.data : [];
@@ -667,7 +772,6 @@ function AdminDashboard() {
       setRounds(roundsArr);
       setActivity(activityArr);
       setAnalytics(analyticsData);
-      setCoachAnalytics(coachRes?.data || null);
     } catch (err) {
       if (err.response && err.response.status === 401) {
         alert("Session expired. Please login again as admin.");
@@ -677,28 +781,6 @@ function AdminDashboard() {
       }
     } finally {
       setLoading(false);
-    }
-  }
-
-  // Load the detailed coach list (lazy — when admin opens the coach section).
-  async function loadCoaches() {
-    setCoachListLoading(true);
-    try {
-      const res = await api.get('/api/admin/coaches');
-      setCoachList(res.data?.coaches || []);
-    } catch {
-      setCoachList([]);
-    } finally {
-      setCoachListLoading(false);
-    }
-  }
-
-  async function verifyCoach(id, verified) {
-    try {
-      await api.post(`/api/admin/coaches/${id}/verify`, { verified });
-      setCoachList(list => (list || []).map(c => c.id === id ? { ...c, verified } : c));
-    } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update coach');
     }
   }
 
@@ -1165,10 +1247,13 @@ function AdminDashboard() {
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/team-race')}>👥 Team Race</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/reports')}>🚩 Reports</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/supporters')}>☕ Supporters</button>
+          <button style={styles.secondaryBtn} onClick={() => nav('/admin/coaches')}>🎓 Coaches</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/chat')}>💬 Chat</button>
           <button style={styles.primaryBtn} onClick={fetchAll}>Refresh</button>
         </div>
       </div>
+
+      <RecentSupporters />
 
       <AvatarXpPrices />
 
@@ -1450,6 +1535,7 @@ function AdminDashboard() {
         </button>
       </div>
 
+
       <div style={{
         ...styles.card,
         display: "flex",
@@ -1698,176 +1784,7 @@ function AdminDashboard() {
         </button>
       </div>
 
-      {/* ── Coach Analytics Section ── */}
-      <div style={{ marginTop: 28 }}>
-        <h3 style={{ color: '#072b05', marginBottom: 16 }}>👨‍🏫 Coach Overview</h3>
-
-        {/* Stat Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 14, marginBottom: 24 }}>
-          {[
-            { label: 'Applications', value: coachAnalytics?.totalApplicants ?? '—', color: '#3b82f6' },
-            { label: 'Active Coaches', value: coachAnalytics?.totalCoaches ?? '—', color: '#10b981' },
-            { label: 'Active Subscribers', value: coachAnalytics?.activeSubscribers ?? '—', color: '#8b5cf6' },
-            { label: 'Total Students', value: coachAnalytics?.totalStudents ?? '—', color: '#f59e0b' },
-            { label: 'Paid Payments', value: coachAnalytics?.paidCount ?? '—', color: '#ef4444' },
-          ].map(({ label, value, color }) => (
-            <div key={label} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: '16px 18px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-              <div style={{ fontSize: 11, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>{label}</div>
-              <div style={{ fontSize: 28, fontWeight: 700, color }}>{value}</div>
-            </div>
-          ))}
-        </div>
-
-        {coachAnalytics && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-            {/* Plan Distribution Bar Chart */}
-            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-              <h4 style={{ margin: '0 0 14px', color: '#072b05', fontSize: 14 }}>Coaches by Plan</h4>
-              <Bar
-                data={{
-                  labels: ['Starter', 'Pro', 'Pro Plus', 'Academy', 'None'],
-                  datasets: [{
-                    label: 'Coaches',
-                    data: ['starter', 'pro', 'pro_plus', 'academy', null].map(plan =>
-                      coachAnalytics.planBreakdown.find(p => p._id === plan)?.count || 0
-                    ),
-                    backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#94a3b8'],
-                    borderRadius: 5,
-                  }]
-                }}
-                options={{
-                  responsive: true,
-                  plugins: { legend: { display: false } },
-                  scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-                }}
-              />
-            </div>
-
-            {/* Monthly Payment Trend Line Chart */}
-            <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: 20, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-              <h4 style={{ margin: '0 0 14px', color: '#072b05', fontSize: 14 }}>Monthly Payments (Last 6 Months)</h4>
-              <Line
-                data={{
-                  labels: coachAnalytics.monthlyTrend.map(m => {
-                    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-                    return `${months[m._id.month - 1]} ${m._id.year}`;
-                  }),
-                  datasets: [
-                    {
-                      label: 'Revenue (₹)',
-                      data: coachAnalytics.monthlyTrend.map(m => Math.round(m.revenue / 100)),
-                      borderColor: '#10b981',
-                      backgroundColor: 'rgba(16,185,129,0.1)',
-                      tension: 0.4,
-                      yAxisID: 'y',
-                    },
-                    {
-                      label: 'Payments',
-                      data: coachAnalytics.monthlyTrend.map(m => m.count),
-                      borderColor: '#3b82f6',
-                      backgroundColor: 'rgba(59,130,246,0.1)',
-                      tension: 0.4,
-                      yAxisID: 'y1',
-                    }
-                  ]
-                }}
-                options={{
-                  responsive: true,
-                  interaction: { mode: 'index', intersect: false },
-                  plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
-                  scales: {
-                    y: { beginAtZero: true, position: 'left', title: { display: true, text: '₹ Revenue' } },
-                    y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Count' } }
-                  }
-                }}
-              />
-            </div>
-          </div>
-        )}
-
-        {!coachAnalytics && (
-          <p style={{ color: '#94a3b8', fontSize: 13 }}>Coach analytics unavailable</p>
-        )}
-
-        {/* ── Coach list: who they are, status, payments, verify ── */}
-        <div style={{ marginTop: 24, background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10, padding: 18, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-            <h4 style={{ margin: 0, color: '#072b05', fontSize: 14 }}>Coaches &amp; Applicants</h4>
-            <button
-              onClick={loadCoaches}
-              disabled={coachListLoading}
-              style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid #10b981', background: '#10b981', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-            >
-              {coachListLoading ? 'Loading…' : (coachList ? '↻ Refresh' : 'Load coaches')}
-            </button>
-          </div>
-
-          {coachList === null ? (
-            <p style={{ color: '#94a3b8', fontSize: 13, margin: 0 }}>Click “Load coaches” to see the full list with verify controls.</p>
-          ) : coachList.length === 0 ? (
-            <p style={{ color: '#94a3b8', fontSize: 13, margin: 0 }}>No coaches or applicants yet.</p>
-          ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                <thead>
-                  <tr style={{ textAlign: 'left', color: '#6b7280', borderBottom: '2px solid #e2e8f0' }}>
-                    <th style={{ padding: '8px 10px' }}>Coach</th>
-                    <th style={{ padding: '8px 10px' }}>Type</th>
-                    <th style={{ padding: '8px 10px' }}>Plan</th>
-                    <th style={{ padding: '8px 10px' }}>Students</th>
-                    <th style={{ padding: '8px 10px' }}>Applied</th>
-                    <th style={{ padding: '8px 10px' }}>Last paid</th>
-                    <th style={{ padding: '8px 10px' }}>Total paid</th>
-                    <th style={{ padding: '8px 10px' }}>Status</th>
-                    <th style={{ padding: '8px 10px' }}>Verify</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {coachList.map(c => {
-                    const fmtDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
-                    return (
-                      <tr key={c.id} style={{ borderBottom: '1px solid #f1f5f9', color: '#1f2937' }}>
-                        <td style={{ padding: '8px 10px' }}>
-                          <div style={{ fontWeight: 700 }}>{c.coachName || c.displayName}</div>
-                          <div style={{ color: '#94a3b8', fontSize: 11 }}>@{c.username}{c.email ? ` · ${c.email}` : ''}</div>
-                        </td>
-                        <td style={{ padding: '8px 10px' }}>{c.coachType === 'academy' ? `🏫 ${c.academyName || 'Academy'}` : '👤 Individual'}</td>
-                        <td style={{ padding: '8px 10px' }}>{c.plan || '—'}{c.subStatus ? ` (${c.subStatus})` : ''}</td>
-                        <td style={{ padding: '8px 10px' }}>{c.studentsCount}</td>
-                        <td style={{ padding: '8px 10px' }}>{fmtDate(c.appliedAt)}</td>
-                        <td style={{ padding: '8px 10px' }}>{fmtDate(c.lastPaidAt)}</td>
-                        <td style={{ padding: '8px 10px' }}>{c.totalPaid ? `₹${Math.round(c.totalPaid / 100)}` : '—'}</td>
-                        <td style={{ padding: '8px 10px' }}>
-                          {c.verified
-                            ? <span style={{ color: '#10b981', fontWeight: 700 }}>✓ Verified</span>
-                            : c.isCoach
-                              ? <span style={{ color: '#f59e0b', fontWeight: 700 }}>Unverified</span>
-                              : <span style={{ color: '#94a3b8' }}>Applicant</span>}
-                        </td>
-                        <td style={{ padding: '8px 10px' }}>
-                          {c.isCoach && (
-                            <button
-                              onClick={() => verifyCoach(c.id, !c.verified)}
-                              style={{
-                                padding: '5px 12px', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                                border: `1px solid ${c.verified ? '#ef4444' : '#10b981'}`,
-                                background: c.verified ? '#fff' : '#10b981',
-                                color: c.verified ? '#ef4444' : '#fff',
-                              }}
-                            >
-                              {c.verified ? 'Unverify' : 'Verify'}
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Coach Overview (analytics + verify) now lives on the dedicated Coaches page → /admin/coaches */}
 
       {/* Rounds Backup Section */}
       <div style={styles.roundsBackupWrap}>

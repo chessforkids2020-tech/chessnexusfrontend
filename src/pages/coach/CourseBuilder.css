@@ -1,0 +1,161 @@
+/* CourseBuilder.css — self-contained styles for the Course / Curriculum Builder.
+   Uses the coach-dash page wrapper + btn-primary/btn-ghost from the shared theme;
+   everything else is scoped under cb-* so it doesn't depend on other class names. */
+
+.cb-layout { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.cb-col-left { flex: 1 1 300px; min-width: 280px; }
+.cb-col-right { flex: 2 1 460px; min-width: 320px; }
+
+.cb-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.cb-card h2 { margin: 0 0 4px; font-size: 18px; }
+.cb-card h3 { margin: 0 0 10px; font-size: 15px; }
+
+.cb-input, .cb-select, .cb-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  color: inherit;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.cb-input:focus, .cb-select:focus, .cb-textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+.cb-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.cb-row > * { flex: 1; }
+
+.cb-label { display: block; font-size: 12px; opacity: 0.75; margin-bottom: 8px; }
+.cb-label .cb-input { margin-top: 4px; }
+
+.cb-muted { opacity: 0.6; font-size: 13px; }
+.cb-error { color: #f87171; background: rgba(248, 113, 113, 0.1); padding: 8px 10px; border-radius: 8px; margin-bottom: 8px; }
+
+.cb-course-row {
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: background 0.15s;
+}
+.cb-course-row:hover { background: rgba(255, 255, 255, 0.07); }
+.cb-course-row.active { background: rgba(99, 102, 241, 0.18); }
+.cb-course-title { font-weight: 600; }
+.cb-course-meta { font-size: 12px; opacity: 0.6; margin-top: 2px; }
+
+.cb-lesson-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.cb-lesson-idx { width: 24px; text-align: center; font-weight: 700; opacity: 0.8; }
+.cb-lesson-main { flex: 1; }
+.cb-lesson-main .t { font-weight: 600; }
+.cb-lesson-main .s { font-size: 12px; opacity: 0.6; }
+
+.cb-icon-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.cb-icon-btn:disabled { opacity: 0.35; cursor: default; }
+
+.cb-subbox {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+/* ? help button next to the Courses header */
+.cb-help-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(99, 102, 241, 0.5);
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.cb-help-btn:hover { background: rgba(99, 102, 241, 0.3); }
+
+/* How-it-works help banner */
+.cb-help {
+  background: rgba(99, 102, 241, 0.10);
+  border: 1px solid rgba(99, 102, 241, 0.30);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.cb-help-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+}
+.cb-help-toggle {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: inherit;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 3px 10px;
+}
+.cb-help-steps {
+  margin: 10px 0 0;
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.6;
+  opacity: 0.9;
+}
+.cb-help-steps li { margin-bottom: 6px; }
+.cb-help-steps a { color: #a5b4fc; }
+
+/* Groups panel */
+.cb-group {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-top: 8px;
+}
+.cb-group-head { display: flex; align-items: center; gap: 8px; }
+.cb-group-name { font-weight: 600; flex: 1; }
+.cb-group-count { font-size: 12px; opacity: 0.6; }
+.cb-group-members {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  max-height: 220px;
+  overflow-y: auto;
+}
+.cb-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+.cb-check input { cursor: pointer; }

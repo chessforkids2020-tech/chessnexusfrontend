@@ -20,10 +20,10 @@ const TEST_TIME_OPTIONS = [
 
 const ASSIGNMENT_TYPES = [
   { id: 'puzzle_topic', label: '🧩 Puzzle topic', hint: 'Assign puzzles from a specific topic' },
-  { id: 'study_chapter',label: '📖 Study test', hint: 'Timed test on a chapter — time & grade based' },
   { id: 'puzzle_rush',  label: '⚡ Timed race', hint: 'Beat the clock — solve as many as possible in time' },
   { id: 'arena_tournament', label: '🏆 Play a tournament', hint: 'Play a real-game Arena Tournament — wins, losses & score' },
-  { id: 'custom',       label: '🔍 Find the blunders', hint: 'Post PGNs with blunder answers — students find them' }
+  { id: 'custom',       label: '🔍 Find the blunders', hint: 'Post PGNs with blunder answers — students find them' },
+  { id: 'fen_solution', label: '♟️ Play vs Stockfish', hint: 'Post positions (FEN) — student plays them out; Stockfish scores' }
 ];
 
 // Puzzle Rush durations (minutes), mirroring the Timed Race options.
@@ -78,7 +78,10 @@ export default function CoachAssignments() {
     dueDate: '',
     // PGN "find the blunders" (custom type)
     pgnFindTarget: 2,
-    pgnGames: [{ pgn: '', blunders: [{ move: '', betterMove: '', explanation: '' }] }]
+    pgnGames: [{ pgn: '', blunders: [{ move: '', betterMove: '', explanation: '' }] }],
+    // "Play vs Stockfish" (fen_solution type)
+    fenTolerance: 80,
+    fenPositions: [{ fen: '', solution: '', userMoveCount: 1, tag: '' }]
   });
 
   const loadAll = async () => {
@@ -148,6 +151,12 @@ export default function CoachAssignments() {
   const removeBlunder = (gi, bi) => setGames(form.pgnGames.map((g, i) => i === gi ? { ...g, blunders: g.blunders.filter((_, j) => j !== bi) } : g));
   const updateBlunder = (gi, bi, field, val) => setGames(form.pgnGames.map((g, i) => i === gi ? { ...g, blunders: g.blunders.map((b, j) => j === bi ? { ...b, [field]: val } : b) } : g));
 
+  // ── "Play vs Stockfish" (fen_solution) builder helpers ──
+  const setFenPositions = (positions) => setForm(prev => ({ ...prev, fenPositions: positions }));
+  const addFenPosition = () => setFenPositions([...form.fenPositions, { fen: '', solution: '', userMoveCount: 1, tag: '' }]);
+  const removeFenPosition = (i) => setFenPositions(form.fenPositions.filter((_, j) => j !== i));
+  const updateFenPosition = (i, field, val) => setFenPositions(form.fenPositions.map((p, j) => j === i ? { ...p, [field]: val } : p));
+
   const create = async (e) => {
     e.preventDefault();
     setCreateErr('');
@@ -172,6 +181,24 @@ export default function CoachAssignments() {
       pgnTask = { findTarget, games };
     }
 
+    // Build the FEN task payload for the "Play vs Stockfish" (fen_solution) type.
+    let fenTask;
+    if (form.assignmentType === 'fen_solution') {
+      const positions = (form.fenPositions || [])
+        .map(p => ({
+          fen: (p.fen || '').trim(),
+          solution: (p.solution || '').trim(),
+          userMoveCount: Math.max(1, Number(p.userMoveCount) || 1),
+          tag: (p.tag || '').trim()
+        }))
+        .filter(p => p.fen);
+      if (positions.length === 0) return setCreateErr('Add at least one position (FEN).');
+      // Basic FEN shape check: 8 ranks separated by "/" and a side-to-move field.
+      const bad = positions.find(p => !/^\s*([pnbrqkPNBRQK1-8]+\/){7}[pnbrqkPNBRQK1-8]+\s+[wb]\s/.test(p.fen + ' '));
+      if (bad) return setCreateErr('One of the FENs looks invalid. Paste a full FEN (e.g. "r1bqkbnr/... w KQkq - 0 1").');
+      fenTask = { engineToleranceCp: Number(form.fenTolerance) || 80, engineDepth: 12, positions };
+    }
+
     if (form.assignmentType === 'study_chapter' && (!form.studyId || !form.chapterId)) {
       return setCreateErr('Pick a study and a chapter for the test.');
     }
@@ -193,7 +220,8 @@ export default function CoachAssignments() {
         ...form,
         targetCount: Number(form.targetCount) || 10,
         rushTopicLabel,
-        pgnTask
+        pgnTask,
+        fenTask
       });
       setShowCreate(false);
       setForm({
@@ -203,7 +231,8 @@ export default function CoachAssignments() {
         rushTopic: 'mixed', rushMinutes: 5, rushTargetSolved: 0,
         arenaTournamentCode: '', targetGames: 0, targetScore: 0, targetRank: 0, targetWins: 0, targetMaxLosses: 0,
         studentIds: [], dueDate: '',
-        pgnFindTarget: 2, pgnGames: [{ pgn: '', blunders: [{ move: '', betterMove: '', explanation: '' }] }]
+        pgnFindTarget: 2, pgnGames: [{ pgn: '', blunders: [{ move: '', betterMove: '', explanation: '' }] }],
+        fenTolerance: 80, fenPositions: [{ fen: '', solution: '', userMoveCount: 1, tag: '' }]
       });
       setChapters([]);
       await loadAll();
@@ -270,6 +299,7 @@ export default function CoachAssignments() {
             const isStudyTest = a.assignmentType === 'study_chapter';
             const isRush = a.assignmentType === 'puzzle_rush';
             const isArena = a.assignmentType === 'arena_tournament';
+            const isFen = a.assignmentType === 'fen_solution';
             // Only students who have actually started/submitted have results worth showing.
             const withResults = completions.filter(c => c.status !== 'pending');
             const isOpen = !!expanded[a._id];
@@ -279,10 +309,11 @@ export default function CoachAssignments() {
                   <div>
                     <div className="ca-title">{a.title}</div>
                     <div className="ca-meta">
-                      <span className="ca-type-pill">{isStudyTest ? 'study test' : isRush ? 'timed race' : isArena ? 'tournament' : a.assignmentType.replace('_', ' ')}</span>
+                      <span className="ca-type-pill">{isStudyTest ? 'study test' : isRush ? 'timed race' : isArena ? 'tournament' : isFen ? 'play vs stockfish' : a.assignmentType.replace('_', ' ')}</span>
                       {a.topicName && <span>· {a.topicName}</span>}
                       {a.assignmentType === 'puzzle_topic' && a.targetCount > 0 && <span>· {a.targetCount} puzzles</span>}
                       {isBlunder && a.pgnTask?.findTarget && <span>· find {a.pgnTask.findTarget}</span>}
+                      {isFen && a.fenTask?.positions?.length > 0 && <span>· ♟️ {a.fenTask.positions.length} position{a.fenTask.positions.length > 1 ? 's' : ''}</span>}
                       {isStudyTest && <span>· ⏱ {fmtSecs(a.testTimeLimit || 300)}</span>}
                       {isStudyTest && a.targetGrade > 0 && <span>· goal {a.targetGrade}%</span>}
                       {isRush && <span>· {a.rushTopicLabel || a.rushTopic || 'Mixed'}</span>}
@@ -500,6 +531,36 @@ export default function CoachAssignments() {
                                   {a.targetRank > 0 && <span className="ca-muted"> / top {a.targetRank} {rankMet ? '✓' : ''}</span>}
                                 </td>
                                 <td>{c.arenaMaxStreak ? `${c.arenaMaxStreak}🔥` : '—'}</td>
+                                <td><span className={`ca-status ca-status-${c.status}`}>{statusLabel(c.status)}</span></td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    ) : isFen ? (
+                      // ── Play vs Stockfish: positions solved / accuracy per student ──
+                      <table className="ca-results-table">
+                        <thead><tr>
+                          <th>Student</th><th>Solved</th><th>Accuracy</th><th>Runs</th><th>Per position</th><th>Status</th>
+                        </tr></thead>
+                        <tbody>
+                          {withResults.map(c => {
+                            const posTotal = c.fenTotal || a.fenTask?.positions?.length || 0;
+                            return (
+                              <tr key={c.studentId}>
+                                <td>{c.studentName}</td>
+                                <td className="ca-cell-ok">{c.fenSolved || 0} / {posTotal}</td>
+                                <td>{c.fenAccuracy || 0}%</td>
+                                <td>{c.fenRuns || 1}</td>
+                                <td>
+                                  {(c.fenResults && c.fenResults.length)
+                                    ? c.fenResults.map((r, i) => (
+                                        <span key={i} className={`ca-move-chip ${r.passed ? 'ok' : 'no'}`} title={r.passed ? 'Solved' : (r.engineBestMove ? `Best: ${r.engineBestMove}` : 'Missed')}>
+                                          {i + 1}{r.passed ? '✓' : '✗'}
+                                        </span>
+                                      ))
+                                    : <span className="ca-muted">—</span>}
+                                </td>
                                 <td><span className={`ca-status ca-status-${c.status}`}>{statusLabel(c.status)}</span></td>
                               </tr>
                             );
@@ -794,6 +855,70 @@ export default function CoachAssignments() {
                     </div>
                   ))}
                   <button type="button" className="ca-link-add" onClick={addGame}>+ Add another game</button>
+                </div>
+              )}
+
+              {/* Play vs Stockfish (fen_solution) — positions + engine tolerance */}
+              {form.assignmentType === 'fen_solution' && (
+                <div className="ca-pgn-builder">
+                  <p className="ca-help" style={{ marginTop: 0 }}>
+                    The student plays each position out against Stockfish. The engine grades every move
+                    and plays a reply; a position is solved when the student plays enough good moves.
+                  </p>
+                  <label className="field" style={{ maxWidth: 260 }}>
+                    <span>Move tolerance (centipawns)</span>
+                    <select value={form.fenTolerance} onChange={e => update('fenTolerance', e.target.value)}>
+                      <option value={40}>Strict (40cp — near-best moves only)</option>
+                      <option value={80}>Normal (80cp — good moves accepted)</option>
+                      <option value={150}>Lenient (150cp — reasonable moves)</option>
+                    </select>
+                  </label>
+
+                  {form.fenPositions.map((p, i) => (
+                    <div key={i} className="ca-pgn-game">
+                      <div className="ca-pgn-game-head">
+                        <strong>Position {i + 1}</strong>
+                        {form.fenPositions.length > 1 && (
+                          <button type="button" className="ca-link-danger" onClick={() => removeFenPosition(i)}>Remove</button>
+                        )}
+                      </div>
+                      <label className="field">
+                        <span>FEN *</span>
+                        <input
+                          value={p.fen}
+                          onChange={e => updateFenPosition(i, 'fen', e.target.value)}
+                          placeholder="r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+                        />
+                      </label>
+                      <div className="ca-blunder-row">
+                        <label className="field" style={{ flex: 1 }}>
+                          <span>Good moves the student must play</span>
+                          <input
+                            type="number" min="1" max="12"
+                            value={p.userMoveCount}
+                            onChange={e => updateFenPosition(i, 'userMoveCount', e.target.value)}
+                          />
+                        </label>
+                        <label className="field" style={{ flex: 2 }}>
+                          <span>Label (optional)</span>
+                          <input
+                            value={p.tag}
+                            onChange={e => updateFenPosition(i, 'tag', e.target.value)}
+                            placeholder="e.g. Win the queen"
+                          />
+                        </label>
+                      </div>
+                      <label className="field">
+                        <span>Solution line (optional — for your reference, not shown to students)</span>
+                        <input
+                          value={p.solution}
+                          onChange={e => updateFenPosition(i, 'solution', e.target.value)}
+                          placeholder="e.g. Nxf7+ Rxf7 Qxc3"
+                        />
+                      </label>
+                    </div>
+                  ))}
+                  <button type="button" className="ca-link-add" onClick={addFenPosition}>+ Add another position</button>
                 </div>
               )}
 

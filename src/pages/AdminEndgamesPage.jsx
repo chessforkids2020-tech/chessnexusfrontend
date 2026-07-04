@@ -23,6 +23,8 @@ import { Chess } from "chess.js";
 import api from "../api";
 import Chessboard from "../components/Chessboard";
 import stockfishService from "../services/stockfishService";
+import EndgameTrainer from "../components/EndgameTrainer";
+import { useAuth } from "../contexts/AuthContext";
 
 // ── Engine analysis helpers (shared style with GameReplay's Stockfish panel) ──
 // The bundled WASM is now Stockfish 18 (public/stockfish.js — lite-single build).
@@ -276,7 +278,7 @@ const styles = {
 };
 
 // ── Board modal: replay startFen + moves[], open at endgamePly ───────────────
-function EndgameModal({ game, onClose, compact = false }) {
+function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
   // Build the list of FENs once from startFen + SAN moves.
   const fens = useMemo(() => {
     const out = [{ fen: game.startFen, san: "Start" }];
@@ -295,6 +297,13 @@ function EndgameModal({ game, onClose, compact = false }) {
 
   // Engine analysis panel toggle (Analyze button).
   const [analyzing, setAnalyzing] = useState(false);
+
+  // Admin "Add to Trainer" form — captures the CURRENTLY SHOWN board position as a
+  // premium play-out endgame pick (goal/side/title/idea/xpPrice).
+  const [showTrainerForm, setShowTrainerForm] = useState(false);
+  const [tf, setTf] = useState({ family: "rook", goal: "white_win", side: "white", title: "", idea: "", xpPrice: 0 });
+  const [tfMsg, setTfMsg] = useState("");
+  const [tfBusy, setTfBusy] = useState(false);
 
   // ── Analysis tree ──────────────────────────────────────────────────────────
   // Everything (the game's main line + the student's variations) lives in one
@@ -547,8 +556,60 @@ function EndgameModal({ game, onClose, compact = false }) {
           >
             {analyzing ? "✓ Analyzing" : "🐟 Analyze"}
           </button>
+          {isAdmin && (
+            <button
+              style={{ ...styles.analyzeBtn, color: "#f5c451", borderColor: "rgba(245,196,81,0.5)" }}
+              onClick={() => { setShowTrainerForm((v) => !v); setTfMsg(""); }}
+              title="Add the currently shown position as a premium play-out endgame (≤7 pieces)"
+            >
+              ⭐ Add to Trainer
+            </button>
+          )}
           <button style={styles.closeBtn} onClick={onClose} title="Close (Esc)">×</button>
         </div>
+
+        {/* Admin: add the currently shown position as a premium trainer pick. */}
+        {isAdmin && showTrainerForm && (() => {
+          const pieces = (shownFen.split(" ")[0].match(/[pnbrqkPNBRQK]/g) || []).length;
+          const tooBig = pieces > 7;
+          const inputStyle = { padding: "6px 8px", borderRadius: 6, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.05)", color: "#e2e8f0", fontSize: 13 };
+          const submit = async () => {
+            setTfBusy(true); setTfMsg("");
+            try {
+              await api.post("/api/endgame-trainer/picks", { fen: shownFen, ...tf, xpPrice: Number(tf.xpPrice) || 0 });
+              setTfMsg("✓ Added to the Endgame Mastery trainer.");
+            } catch (e) {
+              setTfMsg(e.response?.data?.message || "Could not add.");
+            } finally { setTfBusy(false); }
+          };
+          return (
+            <div style={{ margin: "0 0 14px", padding: 14, borderRadius: 12, border: "1px solid rgba(245,196,81,0.4)", background: "rgba(245,196,81,0.06)" }}>
+              <div style={{ fontWeight: 800, color: "#f5c451", marginBottom: 8 }}>⭐ Add this position to the Endgame Mastery trainer</div>
+              <div style={{ fontSize: 12, color: "#cbd5e1", marginBottom: 10, wordBreak: "break-all" }}>
+                FEN: {shownFen} · <strong style={{ color: tooBig ? "#f87171" : "#34d399" }}>{pieces} pieces{tooBig ? " — too many (≤7 needed)" : " ✓"}</strong>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
+                <select style={inputStyle} value={tf.family} onChange={(e) => setTf({ ...tf, family: e.target.value })}>
+                  {["pawn","knight","bishop","bishop_knight","rook","queen","queen_rook","other_mixed"].map((f) => <option key={f} value={f}>{f}</option>)}
+                </select>
+                <select style={inputStyle} value={tf.goal} onChange={(e) => setTf({ ...tf, goal: e.target.value })}>
+                  <option value="white_win">White to win</option>
+                  <option value="black_win">Black to win</option>
+                  <option value="draw">Hold the draw</option>
+                </select>
+                <select style={inputStyle} value={tf.side} onChange={(e) => setTf({ ...tf, side: e.target.value })}>
+                  <option value="white">Play White</option>
+                  <option value="black">Play Black</option>
+                </select>
+                <input style={{ ...inputStyle, minWidth: 160 }} placeholder="Title (e.g. Lucena)" value={tf.title} onChange={(e) => setTf({ ...tf, title: e.target.value })} />
+                <input style={{ ...inputStyle, minWidth: 200 }} placeholder="Teaching idea" value={tf.idea} onChange={(e) => setTf({ ...tf, idea: e.target.value })} />
+                <input style={{ ...inputStyle, width: 110 }} type="number" min={0} placeholder="XP price" value={tf.xpPrice} onChange={(e) => setTf({ ...tf, xpPrice: e.target.value })} title="0 = free for all" />
+                <button style={{ ...styles.navBtnPrimary, opacity: tooBig || tfBusy ? 0.5 : 1 }} disabled={tooBig || tfBusy} onClick={submit}>{tfBusy ? "Adding…" : "Add pick"}</button>
+              </div>
+              {tfMsg && <div style={{ marginTop: 8, fontSize: 13, color: tfMsg.startsWith("✓") ? "#34d399" : "#f87171" }}>{tfMsg}</div>}
+            </div>
+          );
+        })()}
 
         <div ref={bodyRef} style={compact ? { ...styles.modalBody, flexWrap: "nowrap", marginTop: 0, gap: 16, alignItems: "stretch" } : styles.modalBody}>
           {/* LEFT: chessboard + navigation controls */}
@@ -651,6 +712,8 @@ export default function AdminEndgamesPage({ backTo = "/admin", backLabel = "← 
   // `compact` (student view) hides the Type / Move / Event columns: students are
   // already inside a type, and event/move metadata isn't relevant for them.
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   const [index, setIndex] = useState(null);        // index.json
   const [loadingIndex, setLoadingIndex] = useState(true);
   const [error, setError] = useState("");
@@ -732,6 +795,10 @@ export default function AdminEndgamesPage({ backTo = "/admin", backLabel = "← 
 
         {error && <div style={{ color: "#b91c1c", marginBottom: 12 }}>{error}</div>}
         {loadingIndex && <div style={styles.loading}>Loading endgame types…</div>}
+
+        {/* Premium play-out trainer band — renders itself only if admin has curated
+            positions; otherwise returns null and the browse grid shows as before. */}
+        <EndgameTrainer />
 
         {index && (
           <div style={styles.cardGrid}>
@@ -863,7 +930,7 @@ export default function AdminEndgamesPage({ backTo = "/admin", backLabel = "← 
         </>
       )}
 
-      {selected && <EndgameModal game={selected} onClose={() => setSelected(null)} compact={compact} />}
+      {selected && <EndgameModal game={selected} onClose={() => setSelected(null)} compact={compact} isAdmin={isAdmin} />}
       </div>
     </div>
   );

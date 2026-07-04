@@ -60,6 +60,7 @@ export default function Training() {
   const [stats, setStats] = useState(null);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [ratingBands, setRatingBands] = useState([]);
+  const [momentsCount, setMomentsCount] = useState(null); // unsolved moments from own games
 
   useEffect(() => {
     api.get('/api/public/puzzle-stats/last7')
@@ -70,6 +71,11 @@ export default function Training() {
     api.get('/api/public/healthymix/rating-bands')
       .then(res => setRatingBands(res.data.bands || []))
       .catch(() => {});
+
+    // Unsolved "My Moments" count for the header card badge (silent if none/guest).
+    api.get('/api/game-insights/puzzles?solved=false')
+      .then(res => setMomentsCount(res.data.unsolved || 0))
+      .catch(() => setMomentsCount(null));
   }, []);
 
   // Bands are already prefetched on mount; just open the popup.
@@ -97,6 +103,18 @@ export default function Training() {
           <h1 className="pz-title">Train with Puzzles <span className="pz-puzzle-emoji">🧩</span></h1>
           <p className="pz-subtitle">Choose a mode to practice and improve your chess.</p>
         </div>
+
+        {/* Compact "My Moments" card — your own mistakes, top-right. */}
+        <Link to="/training/my-moments" className="pz-moments-card">
+          <span className="pz-moments-icon">🎯</span>
+          <span className="pz-moments-text">
+            <span className="pz-moments-title">My Moments</span>
+            <span className="pz-moments-sub">
+              {momentsCount > 0 ? `${momentsCount} to practise` : 'Mistakes from your games'}
+            </span>
+          </span>
+          {momentsCount > 0 && <span className="pz-moments-badge">{momentsCount}</span>}
+        </Link>
       </div>
 
       {/* ── Cards Grid ── */}

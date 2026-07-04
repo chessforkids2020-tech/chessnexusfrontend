@@ -2,19 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import socket from '../socket';
+import AdminCoaching from './AdminCoaching';
 
+// Dark theme — matches the rest of the admin dark UI.
 const palette = {
-  primary: "#ff69b4", // Pink
-  secondary: "#ffd700", // Gold
-  accent: "#7ed957", // Light Green
-  bg: "#fff0f6", // Light Pink Background
-  card: "#fff", // White Card
-  text: "#222", // Darker text for better contrast
-  gray: "#eee", // Light Grey
-  error: "#d32f2f", // Brighter error for better contrast
-  success: "#4caf50", // Green
-  warning: "#ff9800", // Orange
-  info: "#2196f3", // Blue
+  primary: "#a78bfa", // Violet accent
+  secondary: "rgba(255,255,255,0.06)", // subtle header fill (was gold)
+  accent: "#34d399", // Green
+  bg: "#0a0a0a", // Dark page background
+  card: "rgba(23, 23, 23, 0.7)", // Dark glass card
+  text: "#e7eaf0", // Light text
+  gray: "rgba(255,255,255,0.06)", // Dark grey fill
+  border: "rgba(255,255,255,0.08)", // Dark border
+  muted: "#9ca3af", // Muted text
+  error: "#f87171",
+  success: "#34d399",
+  warning: "#fbbf24",
+  info: "#60a5fa",
 };
 
 // Helper functions
@@ -53,16 +57,16 @@ const styles = {
     marginBottom: '10px'
   },
   subtitle: { 
-    color: '#6b7280', 
+    color: '#9ca3af', 
     fontSize: '1.1rem' 
   },
   section: { 
-    background: '#fff', 
+    background: palette.card,
     borderRadius: '12px', 
     padding: '24px', 
     marginBottom: '24px', 
     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-    border: '1px solid #e5e7eb'
+    border: '1px solid rgba(255,255,255,0.08)'
   },
   sectionTitle: { 
     color: palette.text, 
@@ -83,7 +87,7 @@ const styles = {
     background: palette.card, 
     padding: '16px', 
     borderRadius: '12px', 
-    border: '1px solid #e5e7eb',
+    border: '1px solid rgba(255,255,255,0.08)',
     textAlign: 'center',
     boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
   },
@@ -94,7 +98,7 @@ const styles = {
     display: 'block'
   },
   statLabel: { 
-    color: '#6b7280', 
+    color: '#9ca3af', 
     fontSize: '0.9rem',
     marginTop: '4px'
   },
@@ -106,7 +110,7 @@ const styles = {
   },
   tableHeader: { 
     background: palette.secondary,
-    borderBottom: '2px solid #e5e7eb'
+    borderBottom: '2px solid rgba(255,255,255,0.08)'
   },
   th: { 
     padding: '12px 16px', 
@@ -119,14 +123,14 @@ const styles = {
   },
   td: { 
     padding: '12px 16px', 
-    borderBottom: '1px solid #e5e7eb',
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
     verticalAlign: 'middle'
   },
   tableRow: { 
     transition: 'background-color 0.2s'
   },
-  tableRowHover: { 
-    backgroundColor: '#f9fafb'
+  tableRowHover: {
+    backgroundColor: 'rgba(255,255,255,0.04)'
   },
   button: { 
     padding: '8px 16px', 
@@ -148,10 +152,10 @@ const styles = {
   secondaryBtn: { 
     background: palette.gray, 
     color: palette.text,
-    border: '1px solid #d1d5db'
+    border: '1px solid rgba(255,255,255,0.15)'
   },
   secondaryBtnHover: { 
-    background: '#e5e7eb' 
+    background: 'rgba(255,255,255,0.08)' 
   },
   dangerBtn: { 
     background: '#dc2626', 
@@ -160,21 +164,25 @@ const styles = {
   dangerBtnHover: { 
     background: '#b91c1c' 
   },
-  input: { 
-    padding: '8px 12px', 
-    border: '1px solid #d1d5db', 
-    borderRadius: '6px', 
+  input: {
+    padding: '8px 12px',
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: '6px',
     fontSize: '0.9rem',
     marginRight: '8px',
-    marginBottom: '8px'
+    marginBottom: '8px',
+    background: 'rgba(255,255,255,0.05)',
+    color: palette.text
   },
-  select: { 
-    padding: '8px 12px', 
-    border: '1px solid #d1d5db', 
-    borderRadius: '6px', 
+  select: {
+    padding: '8px 12px',
+    border: '1px solid rgba(255,255,255,0.15)',
+    borderRadius: '6px',
     fontSize: '0.9rem',
     marginRight: '8px',
-    marginBottom: '8px'
+    marginBottom: '8px',
+    background: '#171717',
+    color: palette.text
   },
   formGroup: { 
     marginBottom: '16px' 
@@ -223,7 +231,7 @@ const styles = {
     border: 'none', 
     fontSize: '1.5rem', 
     cursor: 'pointer',
-    color: '#6b7280'
+    color: '#9ca3af'
   },
   grid: { 
     display: 'grid', 
@@ -231,10 +239,10 @@ const styles = {
     gap: '16px' 
   },
   card: { 
-    background: '#fff', 
+    background: palette.card,
     borderRadius: '8px', 
     padding: '16px', 
-    border: '1px solid #e5e7eb',
+    border: '1px solid rgba(255,255,255,0.08)',
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
   },
   badge: { 
@@ -265,7 +273,7 @@ const styles = {
   },
   tabs: {
     display: 'flex',
-    borderBottom: '1px solid #e5e7eb',
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
     marginBottom: '24px'
   },
   tab: {
@@ -276,7 +284,7 @@ const styles = {
     borderBottomColor: 'transparent',
     transition: 'all 0.2s',
     fontWeight: '500',
-    color: '#6b7280'
+    color: '#9ca3af'
   },
   activeTab: {
     color: palette.primary,
@@ -302,7 +310,7 @@ const styles = {
   },
   inputStyle: {
     padding: '8px',
-    border: '1px solid #d1d5db',
+    border: '1px solid rgba(255,255,255,0.15)',
     borderRadius: '4px',
     fontSize: '0.9rem'
   }
@@ -1068,7 +1076,7 @@ const AdminAttendancePage = () => {
         {/* Section 1: Mark Daily Attendance */}
         <div style={styles.section}>
           <h2 style={styles.sectionTitle}>📝 Mark Attendance</h2>
-          <h3 style={{ color: '#333', marginTop: "1rem" }}>Today's Attendance ({new Date(selectedDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })})</h3>
+          <h3 style={{ color: palette.text, marginTop: "1rem" }}>Today's Attendance ({new Date(selectedDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })})</h3>
           <div style={{marginBottom: '16px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px'}}>
             <div>
               <label style={styles.formLabel}>Select Date: </label>
@@ -1168,7 +1176,7 @@ const AdminAttendancePage = () => {
                                   <div key={att._id || idx} style={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    background: '#f8f9fa',
+                                    background: 'rgba(255,255,255,0.06)',
                                     padding: '2px 6px',
                                     borderRadius: '4px',
                                     border: '1px solid #e9ecef'
@@ -1229,7 +1237,7 @@ const AdminAttendancePage = () => {
                             )}
                           </div>
                         ) : (
-                          <span style={{color: '#6b7280', fontStyle: 'italic'}}>No entries</span>
+                          <span style={{color: '#9ca3af', fontStyle: 'italic'}}>No entries</span>
                         )}
                       </td>
                     </tr>
@@ -1311,7 +1319,7 @@ const AdminAttendancePage = () => {
               </table>
             </div>
           ) : (
-            <p style={{ color: '#6b7280' }}>No attendance recorded for {new Date(selectedDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}.</p>
+            <p style={{ color: '#9ca3af' }}>No attendance recorded for {new Date(selectedDate).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}.</p>
           )}
         </div>
       </div>
@@ -1439,7 +1447,7 @@ const AdminAttendancePage = () => {
                 </tbody>
               </table>
             ) : (
-              <p style={{color: '#6b7280', fontStyle: 'italic'}}>No payment records found.</p>
+              <p style={{color: '#9ca3af', fontStyle: 'italic'}}>No payment records found.</p>
             )}
           </div>
         </div>
@@ -1448,8 +1456,8 @@ const AdminAttendancePage = () => {
       <div style={styles.section}>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '12px'}}>
           <h2 style={{...styles.sectionTitle, margin: 0}}>💳 All Student Payments</h2>
-          <div style={{display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', padding: '10px', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0'}}>
-            <span style={{fontSize: '0.85rem', fontWeight: '600', color: '#15803d'}}>⬇️ Download Monthly Payments:</span>
+          <div style={{display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', padding: '10px', background: 'rgba(52,211,153,0.10)', borderRadius: '8px', border: '1px solid rgba(52,211,153,0.3)'}}>
+            <span style={{fontSize: '0.85rem', fontWeight: '600', color: '#34d399'}}>⬇️ Download Monthly Payments:</span>
             <select
               value={downloadPayMonth}
               onChange={(e) => setDownloadPayMonth(parseInt(e.target.value))}
@@ -1525,13 +1533,13 @@ const AdminAttendancePage = () => {
             {breakPayments.length > 0 ? (
               <ul style={{listStyle: 'none', padding: 0}}>
                 {breakPayments.map((p, idx) => (
-                  <li key={idx} style={{padding: '8px 0', borderBottom: '1px solid #e5e7eb'}}>
+                  <li key={idx} style={{padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)'}}>
                     <strong>{p.studentId.displayName || p.studentId.username}</strong>: {p.studentId?.currency === 'INR' ? '₹' : '$'}{p.amount} ({new Date(p.datePaid).toLocaleDateString()})
                   </li>
                 ))}
               </ul>
             ) : (
-              <p style={{color: '#6b7280', fontStyle: 'italic'}}>No break payments found.</p>
+              <p style={{color: '#9ca3af', fontStyle: 'italic'}}>No break payments found.</p>
             )}
           </div>
         </div>
@@ -1542,7 +1550,7 @@ const AdminAttendancePage = () => {
             {breakStudents.length > 0 ? (
               <ul style={{listStyle: 'none', padding: 0}}>
                 {breakStudents.map((s, idx) => (
-                  <li key={idx} style={{padding: '8px 0', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                  <li key={idx} style={{padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                     <span>{s.displayName || s.username}</span>
                     <button 
                       style={{...styles.primaryBtn, fontSize: '0.7rem', padding: '2px 6px'}} 
@@ -1554,7 +1562,7 @@ const AdminAttendancePage = () => {
                 ))}
               </ul>
             ) : (
-              <p style={{color: '#6b7280', fontStyle: 'italic'}}>No students on break.</p>
+              <p style={{color: '#9ca3af', fontStyle: 'italic'}}>No students on break.</p>
             )}
           </div>
         </div>
@@ -1601,7 +1609,7 @@ const AdminAttendancePage = () => {
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan="5" style={{...styles.td, textAlign: 'center', color: '#6b7280', fontStyle: 'italic'}}>
+                  <td colSpan="5" style={{...styles.td, textAlign: 'center', color: '#9ca3af', fontStyle: 'italic'}}>
                     No pending payment requests
                   </td>
                 </tr>
@@ -1700,7 +1708,7 @@ const AdminAttendancePage = () => {
                     ))}
                     {studentAttendanceHistory.length === 0 && (
                       <tr>
-                        <td colSpan="3" style={{...styles.td, textAlign: 'center', color: '#6b7280'}}>
+                        <td colSpan="3" style={{...styles.td, textAlign: 'center', color: '#9ca3af'}}>
                           No attendance records found for this student
                         </td>
                       </tr>
@@ -1761,11 +1769,17 @@ const AdminAttendancePage = () => {
         >
           📋 Requests
         </div>
-        <div 
+        <div
           style={{...styles.tab, ...(activeTab === 'history' ? styles.activeTab : {})}}
           onClick={() => setActiveTab('history')}
         >
           📚 History
+        </div>
+        <div
+          style={{...styles.tab, ...(activeTab === 'coaching' ? styles.activeTab : {})}}
+          onClick={() => setActiveTab('coaching')}
+        >
+          🎓 Coaching
         </div>
       </div>
 
@@ -1776,6 +1790,7 @@ const AdminAttendancePage = () => {
         {activeTab === 'payments' && renderPaymentsTab()}
         {activeTab === 'requests' && renderPaymentRequestsTab()}
         {activeTab === 'history' && renderHistoryTab()}
+        {activeTab === 'coaching' && <AdminCoaching />}
       </div>
 
       {/* Add Student Modal */}
@@ -1950,7 +1965,7 @@ const AdminAttendancePage = () => {
                 />
               </div>
             </div>
-            <p style={{fontSize: '0.8rem', color: '#6b7280', marginTop: '6px'}}>
+            <p style={{fontSize: '0.8rem', color: '#9ca3af', marginTop: '6px'}}>
               Coverage period determines which month will be treated as paid; the “Date Paid” field
               is informational and is ignored by the monthly summary when from/until dates are set.
             </p>

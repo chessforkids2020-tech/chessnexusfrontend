@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import api from '../api';
+import StudentAssignments from '../components/StudentAssignments';
 import './UserDashboard.css'; // Import the dashboard CSS for consistent styling
+import './MyCoachPortal.css'; // reuse the Player-card (mcp-*) styles
+
+const curSym = (c) => (c === 'USD' ? '$' : c === 'EUR' ? '€' : '₹');
+const fmtEnrollDate = (s) => s ? new Date(s).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric' }) : '—';
 
 const styles = {
   page: {
@@ -67,34 +72,32 @@ const styles = {
   },
   statsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '20px',
-    marginBottom: '30px'
+    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+    gap: '12px',
+    marginBottom: '20px'
   },
   statCard: {
     background: 'rgba(0, 0, 0, 0.3)',
-    padding: '24px',
-    borderRadius: '16px',
+    padding: '12px 14px',
+    borderRadius: '10px',
     border: '1px solid rgba(255, 255, 255, 0.05)',
     textAlign: 'center',
-    transition: 'all 0.3s ease',
-    cursor: 'pointer'
+    transition: 'all 0.2s ease',
+    cursor: 'default'
   },
   statCardHover: {
-    transform: 'translateY(-4px)',
-    borderColor: 'rgba(6, 182, 212, 0.2)',
-    boxShadow: '0 8px 32px rgba(6, 182, 212, 0.3)'
+    borderColor: 'rgba(6, 182, 212, 0.2)'
   },
   statNumber: {
-    fontSize: '32px',
+    fontSize: '20px',
     fontWeight: 'bold',
     color: '#06b6d4',
     display: 'block',
-    marginBottom: '8px'
+    marginBottom: '4px'
   },
   statLabel: {
     color: '#9ca3af',
-    fontSize: '14px',
+    fontSize: '12px',
     fontWeight: '500'
   },
   table: {
@@ -381,6 +384,8 @@ const UserAttendancePage = () => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [showPaymentForm, setShowPaymentForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [adminCoaches, setAdminCoaches] = useState([]); // admin enrollment info for the Player tab
+  const [adminAssignments, setAdminAssignments] = useState([]); // admin assignments (for Overview stats)
   const [paymentFormData, setPaymentFormData] = useState({
     kidName: '',
     paidDate: '',
@@ -418,7 +423,15 @@ const UserAttendancePage = () => {
         // Then load attendance and payment data
         await Promise.all([
           fetchAttendanceData(),
-          fetchPaymentHistory()
+          fetchPaymentHistory(),
+          // Admin coach enrollment info for the Player tab (admin coach only).
+          api.get('/api/coach-attendance/my/coaches')
+            .then(r => setAdminCoaches((r.data || []).filter(c => c.isAdmin)))
+            .catch(() => setAdminCoaches([])),
+          // Admin assignments for the Overview stats (finished/pending/accuracy).
+          api.get('/api/coach/my-assignments')
+            .then(r => setAdminAssignments((r.data?.assignments || []).filter(a => a.coachIsAdmin)))
+            .catch(() => setAdminAssignments([])),
         ]);
       } catch (error) {
         setUser(null);
@@ -531,6 +544,70 @@ const UserAttendancePage = () => {
     });
   };
 
+  // Player tab — the student's enrollment profile with the admin (their "class").
+  // Reuses the My Coach player-card layout (mcp-* classes).
+  const renderPlayerTab = () => (
+    <div>
+      {adminCoaches.length === 0 ? (
+        <div style={{ ...styles.section, textAlign: 'center', color: palette.muted }}>
+          No enrollment details yet.
+        </div>
+      ) : (
+        adminCoaches.map(c => (
+          <div key={c.linkId} className="mcp-player-card">
+            <div className="mcp-player-hero">
+              <div className="mcp-player-avatar">👨‍🏫</div>
+              <div className="mcp-player-hero-text">
+                <div className="mcp-player-coach">{c.coachName}</div>
+                <div className="mcp-player-sub">
+                  {c.studentName || 'Student'}
+                  {c.onBreak && <span className="mcp-break-tag" style={{ marginLeft: 8 }}>On Break</span>}
+                </div>
+              </div>
+              <div className="mcp-player-code">
+                <span className="mcp-player-code-label">CODE</span>
+                <span className="mcp-player-code-val">{c.coachCode || '—'}</span>
+              </div>
+            </div>
+            <div className="mcp-player-rows">
+              <div className="mcp-player-row">
+                <span className="mcp-player-row-ic">📅</span>
+                <span className="mcp-player-row-label">Classes / month</span>
+                <span className="mcp-player-row-val">{c.classesPerMonth || 0}</span>
+              </div>
+              <div className="mcp-player-row">
+                <span className="mcp-player-row-ic">💸</span>
+                <span className="mcp-player-row-label">Monthly fees</span>
+                <span className="mcp-player-row-val">{curSym(c.currency)}{c.fees || 0}</span>
+              </div>
+              <div className="mcp-player-row">
+                <span className="mcp-player-row-ic">👥</span>
+                <span className="mcp-player-row-label">Class type</span>
+                <span className="mcp-player-row-val">{c.classType || 'Private'}</span>
+              </div>
+              <div className="mcp-player-row">
+                <span className="mcp-player-row-ic">🗓️</span>
+                <span className="mcp-player-row-label">Joined</span>
+                <span className="mcp-player-row-val">{fmtEnrollDate(c.enrollmentDate)}</span>
+              </div>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  );
+
+  // Assignment stats for the Overview (finished this month / pending / accuracy).
+  const inThisMonth = (d) => {
+    if (!d) return false;
+    const dt = new Date(d);
+    return dt.getMonth() === currentMonth.getMonth() && dt.getFullYear() === currentMonth.getFullYear();
+  };
+  const finishedAssignments = adminAssignments.filter(a => a.status === 'completed' && inThisMonth(a.completedAt)).length;
+  const pendingAssignments = adminAssignments.filter(a => a.status !== 'completed').length;
+  const withAcc = adminAssignments.filter(a => (a.accuracy || 0) > 0);
+  const avgAccuracy = withAcc.length ? Math.round(withAcc.reduce((s, a) => s + (a.accuracy || 0), 0) / withAcc.length) : 0;
+
   const renderOverviewTab = () => (
     <div>
       <div style={styles.statsGrid}>
@@ -544,6 +621,21 @@ const UserAttendancePage = () => {
             number: paymentHistory.length === 0 ? 'No Payments' : (isMonthPaid(paymentHistory) ? 'Paid' : 'Pending'),
             label: 'Payment Status',
             icon: '💰'
+          },
+          {
+            number: finishedAssignments,
+            label: `Assignments Finished (${currentMonth.toLocaleDateString('en-US', { month: 'long' })})`,
+            icon: '📋'
+          },
+          {
+            number: pendingAssignments,
+            label: 'Pending Assignments',
+            icon: '⏳'
+          },
+          {
+            number: `${avgAccuracy}%`,
+            label: 'Accuracy',
+            icon: '🎯'
           }
         ].map((stat, idx) => (
           <div
@@ -560,37 +652,53 @@ const UserAttendancePage = () => {
           </div>
         ))}
       </div>
-      <div style={{fontSize: '0.8rem', color: '#6b7280', marginTop: '8px'}}>
-        (Status above refers to {currentMonth.toLocaleDateString('en-US',{month:'long',year:'numeric'})})
-      </div>
 
-      <div style={styles.grid}>
-        <div
-          style={{
-            ...styles.card,
-            ...(hoverStates.statCards[2] ? styles.cardHover : {})
-          }}
-          onClick={() => setActiveTab('attendance')}
-          onMouseEnter={() => setHoverStates(prev => ({ ...prev, statCards: { ...prev.statCards, 2: true } }))}
-          onMouseLeave={() => setHoverStates(prev => ({ ...prev, statCards: { ...prev.statCards, 2: false } }))}
-        >
-          <h3 style={{...styles.sectionTitle, fontSize: '20px', marginBottom: '12px'}}>📝 Attendance Records</h3>
-          <p style={{color: '#9ca3af', fontSize: '14px', lineHeight: '1.6'}}>View detailed class attendance records and track your participation</p>
-        </div>
-
-        <div
-          style={{
-            ...styles.card,
-            ...(hoverStates.statCards[3] ? styles.cardHover : {})
-          }}
-          onClick={() => setActiveTab('payments')}
-          onMouseEnter={() => setHoverStates(prev => ({ ...prev, statCards: { ...prev.statCards, 3: true } }))}
-          onMouseLeave={() => setHoverStates(prev => ({ ...prev, statCards: { ...prev.statCards, 3: false } }))}
-        >
-          <h3 style={{...styles.sectionTitle, fontSize: '20px', marginBottom: '12px'}}>💰 Payment Management</h3>
-          <p style={{color: '#9ca3af', fontSize: '14px', lineHeight: '1.6'}}>Manage payments, view history, and submit payment requests</p>
-        </div>
-      </div>
+      {/* New / current assignments — same card model as My Coach (mcp-*). Opens the
+          Assignments tab to launch. */}
+      {(() => {
+        const rank = (s) => (s === 'pending' ? 0 : s === 'in_progress' ? 1 : 2);
+        const top = adminAssignments
+          .filter(a => a.status !== 'completed')
+          .sort((a, b) => rank(a.status) - rank(b.status))
+          .slice(0, 3);
+        if (top.length === 0) return null;
+        return (
+          <div style={{ marginTop: 4, marginBottom: 20 }}>
+            {top.map(a => {
+              const isNew = a.status === 'pending';
+              const isPgn = a.assignmentType === 'custom' && a.pgnTask;
+              const isTest = a.assignmentType === 'study_chapter';
+              const isRush = a.assignmentType === 'puzzle_rush';
+              const isArena = a.assignmentType === 'arena_tournament';
+              const cur = isPgn ? (a.foundCount || 0) : (a.progress || 0);
+              const tot = isPgn ? (a.pgnTask.findTarget || 0) : (a.targetCount || 0);
+              const pct = tot > 0 ? Math.min(100, Math.round((cur / tot) * 100)) : 0;
+              return (
+                <div key={a._id} className={`mcp-current-assign ${isNew ? 'mcp-assign-new' : ''}`}>
+                  <div className="mcp-current-assign-label">
+                    {isNew ? '🆕 New assignment' : '📋 Current assignment'}
+                  </div>
+                  <div className="mcp-current-assign-title">{a.title}</div>
+                  <div className="mcp-current-assign-row">
+                    {isTest
+                      ? <span>Timed test{a.targetGrade > 0 ? <> · goal <strong>{a.targetGrade}%</strong></> : null}</span>
+                      : isRush
+                        ? <span>⚡ {a.rushTopicLabel || a.rushTopic || 'Mixed'} · {a.rushMinutes || 5} min{a.rushTargetSolved > 0 ? <> · goal <strong>{a.rushTargetSolved}</strong></> : null}</span>
+                        : isArena
+                          ? <span>🏆 Arena tournament{a.arenaTournamentCode ? <> · code <strong>{a.arenaTournamentCode}</strong></> : null}</span>
+                          : <span>Your progress: <strong>{cur}/{tot}{isPgn ? ' found' : ''}</strong></span>}
+                    {a.totalStudents > 0 && <span>Students done: <strong>{a.completedStudents}/{a.totalStudents}</strong></span>}
+                  </div>
+                  {!isTest && !isRush && !isArena && <div className="mcp-assign-bar" style={{ marginTop: 8 }}><div style={{ width: `${pct}%` }} /></div>}
+                  <div style={{ marginTop: 10, fontSize: '13px', color: '#9ca3af' }}>
+                    Open the <strong style={{ color: '#e7eaf0' }}>Assignments</strong> tab to do this.
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
     </div>
   );
 
@@ -781,6 +889,18 @@ const UserAttendancePage = () => {
           📊 Overview
         </div>
         <div
+          style={{...styles.tab, ...(activeTab === 'assignments' ? styles.activeTab : {})}}
+          onClick={() => setActiveTab('assignments')}
+        >
+          📋 Assignments
+        </div>
+        <div
+          style={{...styles.tab, ...(activeTab === 'player' ? styles.activeTab : {})}}
+          onClick={() => setActiveTab('player')}
+        >
+          👤 Player
+        </div>
+        <div
           style={{...styles.tab, ...(activeTab === 'attendance' ? styles.activeTab : {})}}
           onClick={() => setActiveTab('attendance')}
         >
@@ -796,6 +916,8 @@ const UserAttendancePage = () => {
 
       <div style={styles.tabContent}>
         {activeTab === 'overview' && renderOverviewTab()}
+        {activeTab === 'assignments' && <StudentAssignments only="admin" />}
+        {activeTab === 'player' && renderPlayerTab()}
         {activeTab === 'attendance' && renderAttendanceTab()}
         {activeTab === 'payments' && renderPaymentsTab()}
       </div>

@@ -28,14 +28,14 @@ const C = {
 // Final price = coffee base price × months. The ☕ badge then lives for that many
 // months. A single payment — no auto-renewal.
 const COFFEE_TIERS_INR = [
-  { id: 'simple',   emoji: '☕', name: 'Simple Coffee',     base: 100, blurb: 'A warm thank-you. Fuels one bug fix.' },
-  { id: 'espresso', emoji: '🥃', name: 'American Espresso', base: 250, blurb: 'A jolt of focus. Pays for a feature sprint.' },
+  { id: 'simple',   emoji: '☕', name: 'Black Coffee',      base: 149, blurb: 'A warm thank-you. Fuels one bug fix.' },
+  { id: 'espresso', emoji: '🥃', name: 'American Espresso', base: 250, blurb: 'A jolt of focus. Pays for a feature sprint.', elite: true },
   { id: 'latte',    emoji: '🍵', name: 'Cafe Latte',        base: 500, blurb: 'Helps cover a day of server bills.' }
 ];
 
 const COFFEE_TIERS_USD = [
-  { id: 'simple',   emoji: '☕', name: 'Simple Coffee',     base: 3,  blurb: 'A warm thank-you. Fuels one bug fix.' },
-  { id: 'espresso', emoji: '🥃', name: 'American Espresso', base: 5,  blurb: 'A jolt of focus. Pays for a feature sprint.' },
+  { id: 'simple',   emoji: '☕', name: 'Black Coffee',      base: 3,  blurb: 'A warm thank-you. Fuels one bug fix.' },
+  { id: 'espresso', emoji: '🥃', name: 'American Espresso', base: 5,  blurb: 'A jolt of focus. Pays for a feature sprint.', elite: true },
   { id: 'latte',    emoji: '🍵', name: 'Cafe Latte',        base: 10, blurb: 'Helps cover a day of server bills.' }
 ];
 
@@ -49,7 +49,7 @@ const DURATIONS = [
 ];
 
 const DEFAULT_MONTHS = 3;          // 3 months selected by default
-const MIN_BASE = { INR: 100, USD: 3 }; // minimum per-coffee base for manual entry
+const MIN_BASE = { INR: 299, USD: 3 }; // minimum per-coffee base for manual entry
 
 export default function BuyMeACoffee() {
   const navigate = useNavigate();
@@ -333,8 +333,8 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             <span style={styles.eliteSubtle}>Our little gratitude towards our supporters 💛</span>
           </div>
           <p style={styles.eliteIntro}>
-            Support ChessNexus for <strong style={{ color: '#fde68a' }}>6 months or more</strong> and unlock{' '}
-            <strong style={{ color: C.text }}>Elite Membership</strong> — creator tools and perks reserved for the
+            Support ChessNexus for <strong style={{ color: '#fde68a' }}>6 months or more</strong> and become{' '}
+            <strong style={{ color: C.text }}>an Elite member</strong> — creator tools and perks reserved for the
             people who keep ChessNexus alive.
           </p>
           <div style={styles.eliteGrid}>
@@ -342,7 +342,13 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             <Eliter icon="🏁" text="Host and run your own Team Races" />
             <Eliter icon="🏟️" text="Launch 3D Arena Tournaments" />
             <Eliter icon="🧑‍🏫" text="ChessNexus Coach free for 6 months" />
+            <Eliter icon="☁️" text="Save your opening repertoire to the cloud — free" />
+            <Eliter icon="♟️" text="Study endgames unlimited — full Endgame Mastery access" />
           </div>
+          <p style={styles.eliteNote}>
+            💛 Once you support for 6 months or more, we'll add your <strong style={{ color: '#fde68a' }}>Elite badge shortly</strong> —
+            our team reviews and enrolls Elite members personally, so it may take a little while after payment.
+          </p>
         </div>
 
         {/* Currency switch */}
@@ -398,22 +404,33 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
           {coffees.map(coffee => {
             const active = !isCustom && selectedCoffeeId === coffee.id;
             const price = coffee.base * months;
+            const isElite = !!coffee.elite;
             return (
               <button
                 key={coffee.id}
                 type="button"
-                onClick={() => pickCoffee(coffee.id)}
+                // The Elite tier is the "6 months → Elite" path — picking it also
+                // selects a 6-month duration so it actually grants Elite.
+                onClick={() => { pickCoffee(coffee.id); if (isElite && months < 6) setMonths(6); }}
                 style={{
                   ...styles.tierCard,
-                  ...(active ? styles.tierCardActive : null)
+                  ...(isElite ? styles.tierCardElite : null),
+                  ...(active ? (isElite ? styles.tierCardEliteActive : styles.tierCardActive) : null),
+                  position: 'relative',
                 }}
               >
+                {isElite && <span style={styles.tierEliteRibbon}>👑 ELITE</span>}
                 <div style={{ fontSize: 36, marginBottom: 6 }}>{coffee.emoji}</div>
-                <div style={styles.tierName}>{coffee.name}</div>
-                <div style={styles.tierAmount}>
+                <div style={{ ...styles.tierName, ...(isElite ? { color: '#fde68a' } : null) }}>{coffee.name}</div>
+                <div style={{ ...styles.tierAmount, ...(isElite ? { color: '#f5c451' } : null) }}>
                   {currency === 'INR' ? `₹${price}` : `$${price}`}
                 </div>
                 <div style={styles.tierBlurb}>{coffee.blurb}</div>
+                {isElite && (
+                  <div style={styles.tierEliteHint}>
+                    ✨ 6 months → become an Elite member
+                  </div>
+                )}
               </button>
             );
           })}
@@ -716,6 +733,12 @@ const styles = {
     fontSize: 14.5,
     lineHeight: 1.6
   },
+  eliteNote: {
+    margin: '14px 0 0',
+    color: C.textDim,
+    fontSize: 13,
+    lineHeight: 1.55
+  },
   eliteGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
@@ -821,6 +844,36 @@ const styles = {
     borderColor: C.amberBorder,
     boxShadow: '0 8px 28px rgba(245,158,11,0.18)',
     transform: 'translateY(-2px)'
+  },
+  // Elite tier (American Espresso) — distinct gold look to mark the Elite path.
+  tierCardElite: {
+    borderColor: 'rgba(245,196,81,0.45)',
+    background: 'linear-gradient(160deg, rgba(60,48,16,0.55) 0%, rgba(28,22,8,0.8) 100%)',
+    boxShadow: '0 0 0 1px rgba(245,196,81,0.18) inset',
+    paddingTop: 24,
+  },
+  tierCardEliteActive: {
+    borderColor: '#f5c451',
+    boxShadow: '0 10px 32px rgba(245,196,81,0.28), 0 0 0 1px rgba(245,196,81,0.4) inset',
+    transform: 'translateY(-2px)',
+  },
+  tierEliteRibbon: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    fontSize: 10.5,
+    fontWeight: 800,
+    letterSpacing: 0.5,
+    color: '#1a1206',
+    background: 'linear-gradient(135deg, #f5c451, #e0a92e)',
+    padding: '2px 8px',
+    borderRadius: 999,
+  },
+  tierEliteHint: {
+    marginTop: 8,
+    fontSize: 11.5,
+    fontWeight: 700,
+    color: '#f5c451',
   },
   tierName: { fontWeight: 700 },
   tierAmount: { fontSize: 22, fontWeight: 800, color: C.amber, marginTop: 4 },

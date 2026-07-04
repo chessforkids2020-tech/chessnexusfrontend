@@ -69,8 +69,30 @@ export default function CoachOnboarding() {
             <div className="coach-onboard-perks">
               <div className="perk">✅ Start with a 30-day free trial</div>
               <div className="perk">✅ No card required</div>
-              <div className="perk">✅ Up to 10 students during trial</div>
+              <div className="perk">✅ Up to 10 students during trial · 100 on the Coach plan</div>
             </div>
+
+            {/* What coaches get free while their coach plan is active. */}
+            <div className="coach-onboard-benefits">
+              <div className="coach-onboard-benefits-title">🎁 Free for active coaches</div>
+              <div className="benefit">📚 Read every Book free — full access when the Nexus book store opens</div>
+              <div className="benefit">♟️ Premium Endgame Mastery — study & play, unlocked free</div>
+              <div className="benefit">⭐ Opening Repertoire Trainer — build & drill lines free</div>
+            </div>
+
+            {/* Nexus Elite — framed as an EXTRA gift on top of the free perks above. */}
+            <div className="coach-onboard-elite">
+              <div className="coach-onboard-elite-title">👑 Our extra gift to coaches</div>
+              <div className="coach-onboard-elite-note">
+                On top of everything above, here's a little more — creator tools to shape the
+                community, as our thank-you for teaching the game:
+              </div>
+              <div className="benefit">🎯 Create your own Monthly Focus challenges</div>
+              <div className="benefit">🏁 Host and run your own Team Races</div>
+              <div className="benefit">🏟️ Launch 3D Arena Tournaments</div>
+              <div className="benefit">🧑‍🏫 ChessNexus Coach — free for 6 months</div>
+            </div>
+
             <div className="coach-onboard-actions">
               <button className="btn-primary" onClick={() => setStep('form')}>
                 Yes — I'm a coach

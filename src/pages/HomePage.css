@@ -763,6 +763,68 @@ button.hp-contest-row.hp-contest-row-btn:not(:disabled):hover {
   min-width: 0;
 }
 
+/* ── ARE YOU A COACH? CTA ──────────────────────────── */
+.hp-coach-cta {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 24px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border-color: rgba(6, 182, 212, 0.28);
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.hp-coach-cta:hover,
+.hp-coach-cta:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(6, 182, 212, 0.55);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(6, 182, 212, 0.25) inset;
+  outline: none;
+}
+
+.hp-coach-cta-icon {
+  font-size: 42px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 3px 14px rgba(6, 182, 212, 0.4));
+  line-height: 1;
+}
+
+.hp-coach-cta-text { flex: 1; min-width: 0; }
+
+.hp-coach-cta-title {
+  margin: 0 0 4px;
+  font-size: 19px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hp-coach-cta-sub {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--t2);
+}
+
+.hp-coach-cta-btn {
+  flex-shrink: 0;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #04121a;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .hp-coach-cta { flex-direction: column; text-align: center; gap: 12px; }
+  .hp-coach-cta-btn { width: 100%; text-align: center; }
+}
+
 /* ── CHESS TRAINING LAB PROMO ──────────────────────── */
 .hp-lab1-section {
   display: grid;
@@ -1480,6 +1542,10 @@ button.hp-contest-row.hp-contest-row-btn:not(:disabled):hover {
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,0.12) transparent;
 }
+/* WebKit (Chrome/Safari) scrollbar equivalent of the Firefox properties above */
+.hp-lb-table-wrap::-webkit-scrollbar { height: 8px; }
+.hp-lb-table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 8px; }
+.hp-lb-table-wrap::-webkit-scrollbar-track { background: transparent; }
 .hp-lb-table-wrap::-webkit-scrollbar {
   height: 4px;
 }

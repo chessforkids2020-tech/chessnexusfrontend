@@ -186,6 +186,38 @@
   flex-shrink: 0;
 }
 
+/* ChessNexus time-control selector */
+.ga-nexus-tc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.ga-nexus-tc-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #9ca3af;
+}
+.ga-nexus-tc-chip {
+  padding: 7px 14px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 999px;
+  color: #9ca3af;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.ga-nexus-tc-chip:hover:not(:disabled) { color: #e5e7eb; border-color: rgba(255,255,255,0.16); }
+.ga-nexus-tc-chip.active {
+  background: rgba(99, 102, 241, 0.14);
+  border-color: rgba(99, 102, 241, 0.45);
+  color: #a5b4fc;
+}
+.ga-nexus-tc-chip:disabled { opacity: .5; cursor: default; }
+
 .ga-analyze-row {
   margin-top: 4px;
   justify-content: flex-end;

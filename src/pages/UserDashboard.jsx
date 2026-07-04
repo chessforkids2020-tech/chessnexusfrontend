@@ -300,21 +300,42 @@ function MyCoachCard() {
 
   if (!coaches || coaches.length === 0) return null;
 
-  const coachNames = coaches.map(c => c.coachName).join(', ');
+  // Route by who coaches the student:
+  //   • admin coach   → Student Portal (/attendance) — admin's attendance/fees + assignments
+  //   • private coach → My Coach (/my-coach)
+  // A student with both sees both cards.
+  const adminCoaches = coaches.filter(c => c.isAdmin);
+  const privateCoaches = coaches.filter(c => !c.isAdmin);
+  const names = (list) => list.map(c => c.coachName).join(', ');
 
   return (
     <div className="attendance-section">
-      <div className="racing-mode-card attendance-card">
-        <div className="racing-mode-icon">🎓</div>
-        <h3 className="racing-mode-title">My Coach</h3>
-        <p className="racing-mode-description">
-          {coaches.length === 1 ? `Coached by ${coachNames}. ` : `Coaches: ${coachNames}. `}
-          View attendance &amp; payments your coach has recorded.
-        </p>
-        <Link to="/my-coach" style={{ textDecoration: 'none' }}>
-          <button className="watch-games-btn">View Coach Records</button>
-        </Link>
-      </div>
+      {adminCoaches.length > 0 && (
+        <div className="racing-mode-card attendance-card">
+          <div className="racing-mode-icon">🎓</div>
+          <h3 className="racing-mode-title">My Classes</h3>
+          <p className="racing-mode-description">
+            {`Coached by ${names(adminCoaches)}. `}
+            Assignments, attendance &amp; payments — all in one place.
+          </p>
+          <Link to="/attendance" style={{ textDecoration: 'none' }}>
+            <button className="watch-games-btn">Open Student Portal</button>
+          </Link>
+        </div>
+      )}
+      {privateCoaches.length > 0 && (
+        <div className="racing-mode-card attendance-card">
+          <div className="racing-mode-icon">🎓</div>
+          <h3 className="racing-mode-title">My Coach</h3>
+          <p className="racing-mode-description">
+            {privateCoaches.length === 1 ? `Coached by ${names(privateCoaches)}. ` : `Coaches: ${names(privateCoaches)}. `}
+            Assignments, attendance &amp; payments your coach has recorded.
+          </p>
+          <Link to="/my-coach" style={{ textDecoration: 'none' }}>
+            <button className="watch-games-btn">View Coach Records</button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
@@ -549,14 +570,21 @@ function TodayStrip() {
   const [minsToday, setMinsToday] = React.useState(null); // minutes practiced today
   const [puzzleDone, setPuzzleDone] = React.useState(null); // { done, count }
   const [focus, setFocus] = React.useState(null);       // { dayNumber, done } | { completed, label }
-  const [isStudent, setIsStudent] = React.useState(false); // accepted a coach request
+  const [hasAdminCoach, setHasAdminCoach] = React.useState(false);   // admin-added → Student Portal
+  const [hasPrivateCoach, setHasPrivateCoach] = React.useState(false); // private coach → My Coach
 
   React.useEffect(() => {
     let alive = true;
 
-    // Is this user an accepted student of any coach? Gates the "My Coach" chip.
-    api.get('/api/coach/my-coaches')
-      .then(res => { if (alive) setIsStudent(!!res.data?.isStudent); })
+    // Which coach types does this student have? Gates the "My Classes" (admin) and
+    // "My Coach" (private) chips. Uses the enrolled coach list which flags admins.
+    api.get('/api/coach-attendance/my/coaches')
+      .then(res => {
+        if (!alive) return;
+        const list = res.data || [];
+        setHasAdminCoach(list.some(c => c.isAdmin));
+        setHasPrivateCoach(list.some(c => !c.isAdmin));
+      })
       .catch(() => {});
 
     // Streak + minutes today
@@ -657,8 +685,18 @@ function TodayStrip() {
     </Link>
   );
 
-  // My Coach — only for users who have accepted a coach request (are a student).
-  if (isStudent) {
+  // Admin-added students → "My Classes" (Student Portal). Private-coach students →
+  // "My Coach". A student with both sees both chips.
+  if (hasAdminCoach) {
+    chips.push(
+      <Link key="myclasses" to="/attendance" className="today-chip today-chip--todo">
+        <span className="today-chip-emoji">🎓</span>
+        <span className="today-chip-text">My Classes</span>
+        <span className="today-chip-go">→</span>
+      </Link>
+    );
+  }
+  if (hasPrivateCoach) {
     chips.push(
       <Link key="mycoach" to="/my-coach" className="today-chip today-chip--todo">
         <span className="today-chip-emoji">🎓</span>
@@ -1815,27 +1853,12 @@ export default function UserDashboard() {
               </div>
             )}
 
-            {/* Tab 4 — My Coach */}
+            {/* Tab 4 — My Coach. MyCoachCard now renders the RIGHT single card:
+                admin-added students → "My Classes" (Student Portal); private-coach
+                students → "My Coach". The old standalone "Student Attendance" card
+                was redundant with this and has been removed. */}
             {visitedTabs.has('mycoach') && (
               <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'mycoach'}>
-                {(isStudent || user?.enrolled) && (
-                  <div className="attendance-section">
-                    <div
-                      ref={(el) => cardRefs.current[3] = el}
-                      data-card-index="3"
-                      className={`racing-mode-card attendance-card ${animatedCards.has(3) ? 'scroll-animated' : ''} ${hoveredCard === 3 ? 'racing-mode-card-hover' : ''}`}
-                      onMouseEnter={() => setHoveredCard(3)}
-                      onMouseLeave={() => setHoveredCard(null)}
-                    >
-                      <div className="racing-mode-icon">📋</div>
-                      <h3 className="racing-mode-title">Student Attendance</h3>
-                      <p className="racing-mode-description">View your attendance records and manage payments.</p>
-                      <Link to="/attendance" style={{ textDecoration: 'none' }}>
-                        <button className="watch-games-btn">View Attendance</button>
-                      </Link>
-                    </div>
-                  </div>
-                )}
                 {!isPublicView && <MyCoachCard />}
               </div>
             )}

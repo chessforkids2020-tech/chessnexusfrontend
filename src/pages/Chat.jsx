@@ -9,6 +9,17 @@ import './Chat.css';
 
 const API = import.meta.env.VITE_API_URL;
 
+// Format a message time as "5 Jul 2026, 2:30 PM" (date + month + time).
+const fmtMsgTime = (d) => {
+  if (!d) return '';
+  const date = new Date(d);
+  if (isNaN(date.getTime())) return '';
+  return date.toLocaleString(undefined, {
+    day: 'numeric', month: 'short', year: 'numeric',
+    hour: 'numeric', minute: '2-digit'
+  });
+};
+
 // ── Link moderation (mirrors backend utils/chatModeration.js) ─────────────────
 // Links are allowed freely in 1-on-1 and non-club group chats. In CLUB chats
 // (chat.clubId set) only chessnexus.in / 3darena.chessnexus.in links are allowed.
@@ -56,6 +67,7 @@ const Chat = () => {
   // threads the user hasn't replied to yet. Only shown to admins.
   const [chatTab, setChatTab] = useState('conversations');
   const messagesEndRef = useRef(null);
+  const messagesAreaRef = useRef(null); // scroll container; inbox-style = keep at top (newest)
 
   const isAdmin = user?.role === 'admin';
   
@@ -236,7 +248,7 @@ const Chat = () => {
       const validMessages = fetchedMessages.filter(msg => msg && msg.content);
       
       setMessages(validMessages);
-      scrollToBottom();
+      scrollToBottom(); // opening a chat: newest is at the top, keep it in view (no animation)
     } catch (error) {
       setMessages([]); // Clear messages on error
     } finally {
@@ -244,27 +256,17 @@ const Chat = () => {
     }
   };
 
+  // Inbox style: the newest message is rendered at the TOP, so "go to newest" means
+  // scroll the messages container to the top (scrollTop = 0). No animation — the
+  // latest message is simply always in view, exactly like an inbox. Kept the name
+  // scrollToBottom so the existing call sites don't need to change.
   const scrollToBottom = () => {
-    // Use multiple attempts to ensure scrolling works
-    setTimeout(() => {
-      if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'end',
-          inline: 'nearest'
-        });
-      }
-    }, 100);
-    
-    // Additional scroll attempt for reliability
-    setTimeout(() => {
-      if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ 
-          behavior: 'auto',
-          block: 'end'
-        });
-      }
-    }, 300);
+    const toTop = () => {
+      if (messagesAreaRef.current) messagesAreaRef.current.scrollTop = 0;
+    };
+    toTop();
+    requestAnimationFrame(toTop); // after layout paints
+    setTimeout(toTop, 60);        // final settle
   };
 
   const handleSendMessage = async (e) => {
@@ -578,7 +580,7 @@ const Chat = () => {
           </div>
 
         {/* Messages area: either messages, loading, or empty prompt */}
-        <div className={messagesAreaClass}>
+        <div className={messagesAreaClass} ref={messagesAreaRef}>
           <div className={`messages-inner ${shouldCenterMessagesInner ? 'centered' : ''}`}>
             {loadingMessages ? (
               <div className="loading-messages">Loading messages...</div>
@@ -587,10 +589,12 @@ const Chat = () => {
             ) : messages.length === 0 ? (
               <div className="empty-messages">No messages yet. Start the conversation!</div>
             ) : (
-              messages.map((msg, index) => (
+              // Inbox style: newest message at the TOP (reverse chronological).
+              [...messages].reverse().map((msg, index) => (
                 <div key={msg._id || index} className={`message ${isSender(msg) ? 'sent' : 'received'}`}>
                   <div className="message-sender">{!isSender(msg) && getSenderName(msg.sender)}</div>
                   <div className="message-content" title={msg.content}>{msg.content}</div>
+                  <div className="message-time">{fmtMsgTime(msg.createdAt)}</div>
                 </div>
               ))
             ))}

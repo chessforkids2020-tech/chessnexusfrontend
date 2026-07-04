@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import api from '../api';
-import BlunderAssignmentPlayer from './BlunderAssignmentPlayer';
+import StudentAssignments from '../components/StudentAssignments';
+import StudentCourses from '../components/StudentCourses';
 import './MyCoachPortal.css';
-
-// Normalize a string for loose matching: "Mate in 1" → "matein1".
-const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -13,14 +11,11 @@ function curSym(c) { return c === 'USD' ? '$' : c === 'EUR' ? '€' : '₹'; }
 
 
 export default function MyCoachPortal() {
-  const navigate = useNavigate();
   const [tab, setTab] = useState('overview');
   const [coaches, setCoaches] = useState([]);
   const [attendance, setAttendance] = useState({ records: [], stats: null });
   const [payments, setPayments] = useState([]);
   const [assignments, setAssignments] = useState([]);
-  const [themes, setThemes] = useState([]);
-  const [blunderTask, setBlunderTask] = useState(null); // active PGN-blunder assignment
   const [cursor, setCursor] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,77 +49,24 @@ export default function MyCoachPortal() {
     }
   };
 
-  const reloadAssignments = async () => {
-    try {
-      const res = await api.get('/api/coach/my-assignments');
-      setAssignments(res.data?.assignments || []);
-    } catch { /* ignore */ }
-  };
-
-  // Open an assignment. PGN "find the blunders" (custom) opens an inline player;
-  // puzzle_topic redirects into themed Healthy Mix training tagged with the id.
-  const startAssignment = (a) => {
-    if (a.assignmentType === 'custom') {
-      setBlunderTask(a);
-      return;
-    }
-    // Study Test: launch the timed test on the coach's chosen study/chapter,
-    // tagged with the assignment id and the coach-set time limit.
-    if (a.assignmentType === 'study_chapter') {
-      if (!a.studyId || !a.chapterId) return;
-      const t = a.testTimeLimit || 300;
-      navigate(`/test/play/${a.studyId}/${a.chapterId}?time=${t}&assignment=${a._id}`);
-      return;
-    }
-    // Puzzle Rush: launch the Timed Race on the coach's topic + duration.
-    if (a.assignmentType === 'puzzle_rush') {
-      const topic = a.rushTopic || 'mixed';
-      const mins = a.rushMinutes || 5;
-      navigate(`/timed-race?topic=${encodeURIComponent(topic)}&time=${mins}&assignment=${a._id}`);
-      return;
-    }
-    // Arena Tournament: send the student to the existing Join page prefilled with
-    // the coach's tournament code, tagged with the assignment id. If we know the
-    // tournament id, stash the assignment keyed by it so the leaderboard (after
-    // join → lobby → live) can show a "Submit assignment" button without
-    // threading the id through every navigation in between. The Join page also
-    // re-stashes by tournament id on join, covering code-only assignments.
-    if (a.assignmentType === 'arena_tournament') {
-      const code = (a.arenaTournamentCode || '').toUpperCase();
-      if (a.arenaTournamentId) {
-        try { sessionStorage.setItem(`assignmentForTournament:${a.arenaTournamentId}`, a._id); } catch { /* ignore */ }
-      }
-      navigate(`/arenatournament/join?code=${encodeURIComponent(code)}&assignment=${a._id}`);
-      return;
-    }
-    if (a.assignmentType !== 'puzzle_topic') return;
-    const want = norm(a.topicName);
-    const match = themes.find(t => norm(t.key) === want || norm(t.label) === want);
-    if (match) {
-      navigate(`/training/healthy-mix?theme=${encodeURIComponent(match.key)}&assignment=${a._id}`);
-    } else {
-      // No exact theme match — let the student pick the theme, still tagged to the assignment.
-      navigate(`/training/themes?assignment=${a._id}`);
-    }
-  };
-
   // Initial load: coaches + payments (don't depend on month)
   useEffect(() => {
     let alive = true;
     (async () => {
       setLoading(true);
       try {
-        const [coachesRes, paymentsRes, assignmentsRes, themesRes] = await Promise.all([
+        const [coachesRes, paymentsRes, assignmentsRes] = await Promise.all([
           api.get('/api/coach-attendance/my/coaches'),
           api.get('/api/coach-attendance/my/payments'),
           api.get('/api/coach/my-assignments'),
-          api.get('/api/public/healthymix/themes').catch(() => ({ data: { themes: [] } })),
         ]);
         if (!alive) return;
-        setCoaches(coachesRes.data || []);
+        // Exclude the ADMIN coach here — admin-added students manage their
+        // classes (attendance/fees/assignments) in the Student Portal, not here.
+        // My Coach is only for PRIVATE coaches.
+        setCoaches((coachesRes.data || []).filter(c => !c.isAdmin));
         setPayments(paymentsRes.data?.payments || []);
         setAssignments(assignmentsRes.data?.assignments || []);
-        setThemes(themesRes.data?.themes || []);
         setError(null);
       } catch {
         if (alive) setError('Could not load your coach records.');
@@ -194,14 +136,6 @@ export default function MyCoachPortal() {
     <div className="mcp-page">
       <div className="mcp-bg" />
 
-      {blunderTask && (
-        <BlunderAssignmentPlayer
-          assignment={blunderTask}
-          onClose={() => { setBlunderTask(null); reloadAssignments(); }}
-          onGraded={() => { reloadAssignments(); }}
-        />
-      )}
-
       <div className="mcp-header">
         <h1 className="mcp-title">🎓 My Coach</h1>
         <p className="mcp-subtitle">Attendance & payments recorded by your coach</p>
@@ -212,6 +146,7 @@ export default function MyCoachPortal() {
       <div className="mcp-tabs">
         {[
           { id: 'overview', label: '📊 Overview' },
+          { id: 'courses', label: '📚 My Syllabus' },
           { id: 'assignments', label: '📋 Assignments' },
           { id: 'player', label: '👤 Player' },
           { id: 'attendance', label: '📝 Attendance' },
@@ -276,84 +211,17 @@ export default function MyCoachPortal() {
         </div>
       )}
 
+      {/* ── Courses ── */}
+      {tab === 'courses' && (
+        <div className="mcp-section">
+          <StudentCourses />
+        </div>
+      )}
+
       {/* ── Assignments ── */}
       {tab === 'assignments' && (
         <div className="mcp-section">
-          {assignments.length === 0 ? (
-            <div className="mcp-empty" style={{ margin: '40px auto' }}>
-              <div className="mcp-empty-icon">📋</div>
-              <h2 className="mcp-empty-title">No assignments yet</h2>
-              <p className="mcp-empty-desc">When your coach assigns you work, it will show up here.</p>
-            </div>
-          ) : (
-            <div className="mcp-assign-list">
-              {assignments.map(a => {
-                const isPgn = a.assignmentType === 'custom' && a.pgnTask;
-                const isTest = a.assignmentType === 'study_chapter';
-                const isRush = a.assignmentType === 'puzzle_rush';
-                const isArena = a.assignmentType === 'arena_tournament';
-                const cur = isPgn ? (a.foundCount || 0) : (a.progress || 0);
-                const tot = (isTest || isRush || isArena) ? 0 : (isPgn ? (a.pgnTask.findTarget || 0) : (a.targetCount || 0));
-                const pct = tot > 0 ? Math.min(100, Math.round((cur / tot) * 100)) : 0;
-                const statusLabel = a.status === 'completed' ? 'Completed' : a.status === 'in_progress' ? 'In progress' : 'Not started';
-                const statusClass = a.status === 'completed' ? 'mcp-present' : a.status === 'in_progress' ? 'mcp-catchup' : 'mcp-absent';
-                return (
-                  <div key={a._id} className="mcp-assign-card">
-                    <div className="mcp-assign-head">
-                      <div className="mcp-assign-title">{a.title}</div>
-                      <span className={`mcp-badge ${statusClass}`}>{statusLabel}</span>
-                    </div>
-                    {a.description && <div className="mcp-assign-desc">{a.description}</div>}
-                    <div className="mcp-assign-meta">
-                      <span>👨‍🏫 {a.coachName}</span>
-                      {isPgn
-                        ? <span>· 🔍 Find {a.pgnTask.findTarget || 0} blunder{(a.pgnTask.findTarget || 0) > 1 ? 's' : ''}</span>
-                        : isTest
-                          ? <span>· ⏱ Timed test{a.targetGrade > 0 ? ` · goal ${a.targetGrade}%` : ''}</span>
-                          : isRush
-                            ? <span>· ⚡ {a.rushTopicLabel || a.rushTopic || 'Mixed'} · {a.rushMinutes || 5} min{a.rushTargetSolved > 0 ? ` · goal ${a.rushTargetSolved}` : ''}</span>
-                            : isArena
-                              ? <span>· 🏆 Arena tournament{a.arenaTournamentCode ? ` · code ${a.arenaTournamentCode}` : ''}{a.targetGames > 0 ? ` · ${a.targetGames}+ games` : ''}{a.targetScore > 0 ? ` · ${a.targetScore}+ pts` : ''}{a.targetRank > 0 ? ` · top ${a.targetRank}` : ''}{a.targetWins > 0 ? ` · ${a.targetWins}+ wins` : ''}</span>
-                              : (a.topicName && <span>· {a.topicName}</span>)}
-                      {a.dueDate && <span>· Due {fmtDate(a.dueDate)}</span>}
-                    </div>
-                    {tot > 0 && (
-                      <div className="mcp-assign-progress">
-                        <div className="mcp-assign-bar"><div style={{ width: `${pct}%` }} /></div>
-                        <span className="mcp-assign-pct">{cur}/{tot}{isPgn ? ' found' : ''}</span>
-                      </div>
-                    )}
-                    {(a.solved > 0 || a.failed > 0) && (
-                      <div className="mcp-assign-stats">
-                        ✅ {a.solved} solved · ❌ {a.failed} failed · 🔥 {a.maxStreak} best streak
-                      </div>
-                    )}
-                    {isArena && a.status === 'completed' && (a.arenaGamesPlayed > 0 || a.arenaScore > 0) && (
-                      <div className="mcp-assign-stats">
-                        🏆 {a.arenaScore} pts · {a.arenaWins}W-{a.arenaLosses}L-{a.arenaDraws}D · {a.arenaGamesPlayed} games{a.arenaRank > 0 ? ` · rank #${a.arenaRank}` : ''}
-                      </div>
-                    )}
-                    {(a.assignmentType === 'puzzle_topic' || a.assignmentType === 'custom' || a.assignmentType === 'study_chapter' || a.assignmentType === 'puzzle_rush' || isArena) && a.status !== 'completed' && (
-                      <button className="mcp-assign-btn" onClick={() => startAssignment(a)}>
-                        {a.assignmentType === 'custom'
-                          ? (a.status === 'in_progress' ? 'Continue finding →' : 'Find the blunders →')
-                          : a.assignmentType === 'study_chapter'
-                            ? (a.status === 'in_progress' ? 'Continue test →' : 'Take the test →')
-                            : a.assignmentType === 'puzzle_rush'
-                              ? (a.status === 'in_progress' ? 'Race again →' : 'Start race →')
-                              : isArena
-                                ? 'Join tournament →'
-                                : (a.status === 'in_progress' ? 'Continue assignment →' : 'Do assignment →')}
-                      </button>
-                    )}
-                    {a.status === 'completed' && (
-                      <div className="mcp-assign-done">✓ Completed{a.completedAt ? ` · ${fmtDate(a.completedAt)}` : ''}</div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
+          <StudentAssignments only="private" onLoaded={setAssignments} />
         </div>
       )}
 
@@ -434,7 +302,7 @@ export default function MyCoachPortal() {
                       </div>
                       {!isTest && !isRush && !isArena && <div className="mcp-assign-bar" style={{ marginTop: 8 }}><div style={{ width: `${pct}%` }} /></div>}
                       {canStart && (
-                        <button className="mcp-assign-btn" style={{ marginTop: 12 }} onClick={() => startAssignment(a)}>
+                        <button className="mcp-assign-btn" style={{ marginTop: 12 }} onClick={() => setTab('assignments')}>
                           {a.assignmentType === 'custom'
                             ? (a.status === 'in_progress' ? 'Continue finding →' : 'Find the blunders →')
                             : isTest

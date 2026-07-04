@@ -619,3 +619,73 @@
   box-shadow: 0 0 0 1px rgba(245,158,11,0.15);
 }
 .mcp-assign-new .mcp-current-assign-label { color: #fbbf24; }
+
+/* ── My Courses (StudentCourses) ── */
+.mcp-course-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.mcp-course-head { display: flex; justify-content: space-between; align-items: center; }
+.mcp-course-title { font-size: 17px; font-weight: 700; }
+.mcp-course-sub { font-size: 12px; opacity: 0.65; margin-top: 2px; }
+.mcp-course-desc { opacity: 0.75; font-size: 13px; margin: 8px 0; }
+
+.mcp-lesson-list { margin-top: 10px; }
+.mcp-lesson {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px; margin-bottom: 6px;
+  background: rgba(255,255,255,0.03);
+}
+.mcp-lesson-idx {
+  width: 24px; height: 24px; flex: 0 0 24px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%; font-size: 12px; font-weight: 700;
+  background: rgba(255,255,255,0.08);
+}
+.mcp-lesson-title { flex: 1; font-weight: 600; }
+.mcp-lesson-action { flex: 0 0 auto; }
+.mcp-lesson-current { background: rgba(99,102,241,0.15); box-shadow: 0 0 0 1px rgba(99,102,241,0.25); }
+.mcp-lesson-current .mcp-lesson-idx { background: #6366f1; color: #fff; }
+.mcp-lesson-locked { opacity: 0.5; }
+.mcp-lesson-done .mcp-lesson-idx { background: #22c55e; color: #06240f; }
+.mcp-lesson-done-tag { color: #22c55e; font-size: 13px; font-weight: 600; }
+.mcp-lesson-play {
+  background: #6366f1; color: #fff; border: none; border-radius: 8px;
+  padding: 6px 14px; font-weight: 600; cursor: pointer;
+}
+.mcp-lesson-play:hover { background: #4f46e5; }
+.mcp-lesson-mark {
+  margin-left: 8px;
+  background: rgba(34,197,94,0.15); color: #22c55e;
+  border: 1px solid rgba(34,197,94,0.4); border-radius: 8px;
+  padding: 6px 12px; font-weight: 600; cursor: pointer;
+}
+.mcp-lesson-mark:hover { background: rgba(34,197,94,0.25); }
+.mcp-lesson-mark:disabled { opacity: 0.5; cursor: default; }
+.mcp-lesson-review {
+  margin-right: 8px;
+  background: rgba(255,255,255,0.06); color: inherit;
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+  padding: 5px 12px; font-weight: 600; cursor: pointer;
+}
+.mcp-lesson-review:hover { background: rgba(255,255,255,0.12); }
+.mcp-video-embed {
+  flex: 1 1 100%;
+  width: 100%;
+  margin-top: 10px;
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+}
+.mcp-video-embed iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: 0;
+}

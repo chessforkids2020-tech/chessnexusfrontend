@@ -1,0 +1,97 @@
+/* My Moments — the user's own game blunders as a personal puzzle collection. */
+.mm-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  color: #fff;
+}
+
+.mm-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+.mm-header-icon {
+  width: 52px; height: 52px; border-radius: 14px; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center; font-size: 26px;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  box-shadow: 0 6px 18px rgba(6, 182, 212, 0.35);
+}
+.mm-title { margin: 0; font-size: 1.6rem; font-weight: 800; }
+.mm-subtitle { margin: 4px 0 0; color: #9ca3af; font-size: 0.9rem; line-height: 1.5; }
+.mm-subtitle strong { color: #10b981; }
+
+.mm-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.mm-tab {
+  padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 13px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); color: #9ca3af;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.mm-tab:hover { color: #e5e7eb; }
+.mm-tab.active {
+  background: rgba(6,182,212,.14); border-color: rgba(6,182,212,.4); color: #06b6d4;
+}
+
+.mm-empty {
+  text-align: center; padding: 50px 20px; color: #9ca3af;
+  background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px;
+}
+.mm-empty-sub { font-size: 0.85rem; margin-top: 4px; }
+.mm-cta {
+  margin-top: 16px; padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer;
+  font-weight: 800; color: #04121a; background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+}
+
+.mm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+.mm-card {
+  display: flex; flex-direction: column; gap: 8px; padding: 10px; cursor: pointer; text-align: left;
+  background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px;
+  transition: border-color .15s, transform .1s;
+}
+.mm-card:hover { border-color: rgba(6,182,212,.35); transform: translateY(-2px); }
+.mm-card.solved { opacity: .78; }
+.mm-card-board { border-radius: 8px; overflow: hidden; }
+.mm-card-info { display: flex; flex-direction: column; gap: 2px; }
+.mm-card-theme { font-weight: 800; font-size: 13px; }
+.mm-card-meta { font-size: 11.5px; color: #9ca3af; }
+.mm-card-cta { font-size: 12px; font-weight: 700; color: #06b6d4; margin-top: 2px; }
+
+/* Solving modal */
+.mm-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.mm-modal {
+  position: relative; background: #111827; border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px; padding: 22px; max-width: 900px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.mm-modal-close {
+  position: absolute; top: 12px; right: 12px; background: none; border: none; color: #9ca3af;
+  font-size: 20px; cursor: pointer;
+}
+.mm-modal-body { display: flex; gap: 24px; flex-wrap: wrap; }
+.mm-modal-board { flex: 0 0 auto; }
+.mm-modal-side { flex: 1; min-width: 240px; }
+.mm-modal-side h3 { margin: 0 0 4px; }
+.mm-modal-context { color: #9ca3af; font-size: 13px; margin: 0 0 12px; }
+.mm-modal-prompt { font-size: 14px; line-height: 1.6; }
+.mm-bad { color: #f87171; }
+
+.mm-fb { margin: 12px 0; padding: 10px 12px; border-radius: 10px; font-size: 13px; font-weight: 700; }
+.mm-fb-wrong { background: rgba(127,29,29,.4); color: #fca5a5; border: 1px solid rgba(248,113,113,.3); }
+.mm-fb-correct { background: rgba(6,78,59,.4); color: #6ee7b7; border: 1px solid rgba(16,185,129,.3); }
+.mm-alt { font-weight: 500; opacity: .85; }
+
+.mm-reveal, .mm-next {
+  margin-top: 12px; padding: 9px 16px; border: none; border-radius: 10px; cursor: pointer;
+  font-weight: 800; color: #04121a; background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+}
+.mm-answer { margin-top: 14px; }
+.mm-why { display: flex; gap: 10px; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+.mm-why-avatar { font-size: 22px; }
+.mm-why-text { margin: 0 0 6px; font-size: 13.5px; line-height: 1.55; }
+.mm-explain-more {
+  background: none; border: 1px solid rgba(6,182,212,.4); color: #06b6d4;
+  padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.mm-line { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+.mm-move { background: rgba(255,255,255,0.06); border-radius: 6px; padding: 3px 8px; font-weight: 700; font-size: 13px; }
+.mm-move-best { background: rgba(16,185,129,.2); color: #6ee7b7; }
+.mm-swing { color: #9ca3af; font-size: 13px; }

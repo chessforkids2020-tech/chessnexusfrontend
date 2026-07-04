@@ -25,9 +25,11 @@ export default function GameInsightsPanel() {
   const [guide, setGuide] = useState(null);       // spoken advice + weakness
   const [puzzles, setPuzzles] = useState([]);
   const [counts, setCounts] = useState({ total: 0, unsolved: 0 });
+  const [report, setReport] = useState(null);      // monthly progress report
   const [loading, setLoading] = useState(true);
   const [gen, setGen] = useState({ running: false });
   const [genError, setGenError] = useState('');
+  const [timeClass, setTimeClass] = useState('all'); // which time control's moments to study
   const pollRef = useRef(null);
 
   const [active, setActive] = useState(null);
@@ -41,13 +43,15 @@ export default function GameInsightsPanel() {
 
   const loadAll = async () => {
     try {
-      const [g, p] = await Promise.all([
+      const [g, p, r] = await Promise.all([
         api.get('/api/game-insights/guide'),
         api.get('/api/game-insights/puzzles?solved=false'),
+        api.get('/api/game-insights/monthly-report').catch(() => ({ data: null })),
       ]);
       setGuide(g.data);
       setPuzzles(p.data.puzzles || []);
       setCounts({ total: p.data.total || 0, unsolved: p.data.unsolved || 0 });
+      setReport(r.data && r.data.hasData ? r.data : null);
     } catch (e) {
       setGuide(null);
     } finally {
@@ -60,7 +64,7 @@ export default function GameInsightsPanel() {
   const startGenerate = async () => {
     setGenError('');
     try {
-      const res = await api.post('/api/game-insights/generate', { maxGames: 8 });
+      const res = await api.post('/api/game-insights/generate', { maxGames: 10, timeClass });
       if (res.data.status === 'started' || res.data.status === 'running') {
         setGen({ running: true, current: 0, total: res.data.total || 0, found: 0 });
         pollStatus();
@@ -162,6 +166,17 @@ export default function GameInsightsPanel() {
 
   const hasData = guide?.hasData;
 
+  // Month-over-month blunders/game trend arrow (lower is better).
+  const trendArrow = (cur, prev) => {
+    if (cur == null || prev == null) return null;
+    if (cur < prev) return { sym: '↓', cls: 'gip-mr-good', text: 'improving' };
+    if (cur > prev) return { sym: '↑', cls: 'gip-mr-bad', text: 'up' };
+    return { sym: '→', cls: 'gip-mr-flat', text: 'steady' };
+  };
+  const bpgTrend = report ? trendArrow(report.thisMonth.blundersPerGame, report.lastMonth.blundersPerGame) : null;
+  // Raw mistakes found — fewer is better, so a lower count is "improving".
+  const foundTrend = report ? trendArrow(report.thisMonth.momentsFound, report.lastMonth.momentsFound) : null;
+
   return (
     <div className="gip">
       {/* ── Coach persona header ── */}
@@ -175,6 +190,19 @@ export default function GameInsightsPanel() {
               : (guide?.message || "Hi! I'm your Nexus Guide. Let me look at your games and help you improve.")}
           </p>
           <div className="gip-coach-actions">
+            <div className="gip-tc-select" role="group" aria-label="Time control to analyse">
+              {['all', 'bullet', 'blitz', 'rapid'].map((tc) => (
+                <button
+                  key={tc}
+                  type="button"
+                  className={`gip-tc-chip ${timeClass === tc ? 'gip-tc-chip-active' : ''}`}
+                  onClick={() => setTimeClass(tc)}
+                  disabled={gen.running}
+                >
+                  {tc === 'all' ? 'All' : tc.charAt(0).toUpperCase() + tc.slice(1)}
+                </button>
+              ))}
+            </div>
             <button className="gip-analyze-btn" onClick={startGenerate} disabled={gen.running}>
               {gen.running ? 'Analyzing…' : (hasData ? '🔄 Re-check my games' : '🔎 Analyze my games')}
             </button>
@@ -193,6 +221,63 @@ export default function GameInsightsPanel() {
           )}
         </div>
       </div>
+
+      {/* ── Monthly progress report — rates, not raw counts ── */}
+      {report && (
+        <div className="gip-report">
+          <div className="gip-report-head">
+            📅 Monthly progress
+            <span className="gip-report-months">
+              {report.hasComparison ? `${report.lastMonth.label} → ${report.thisMonth.label}` : report.thisMonth.label}
+            </span>
+          </div>
+          <div className="gip-report-grid">
+            <div className="gip-report-stat">
+              <div className="gip-report-label">Mistakes found</div>
+              <div className="gip-report-value">
+                {report.thisMonth.momentsFound}
+                {report.hasComparison && foundTrend && (
+                  <span className={`gip-report-trend ${foundTrend.cls}`}> {foundTrend.sym} {foundTrend.text}</span>
+                )}
+              </div>
+              {report.hasComparison && (
+                <div className="gip-report-prev">{report.lastMonth.momentsFound} last month · fewer is better</div>
+              )}
+            </div>
+            <div className="gip-report-stat">
+              <div className="gip-report-label">Blunders / game</div>
+              <div className="gip-report-value">
+                {report.thisMonth.blundersPerGame ?? '—'}
+                {report.hasComparison && bpgTrend && (
+                  <span className={`gip-report-trend ${bpgTrend.cls}`}> {bpgTrend.sym} {bpgTrend.text}</span>
+                )}
+              </div>
+              {report.hasComparison && report.lastMonth.blundersPerGame != null && (
+                <div className="gip-report-prev">was {report.lastMonth.blundersPerGame} last month</div>
+              )}
+            </div>
+            <div className="gip-report-stat">
+              <div className="gip-report-label">Moments practised</div>
+              <div className="gip-report-value">{report.thisMonth.momentsPractised}</div>
+              {report.hasComparison && (
+                <div className="gip-report-prev">{report.lastMonth.momentsPractised} last month</div>
+              )}
+            </div>
+            <div className="gip-report-stat">
+              <div className="gip-report-label">Focus this month</div>
+              <div className="gip-report-value gip-report-weak">
+                {report.thisMonth.topWeakness ? report.thisMonth.topWeakness.noun : '—'}
+              </div>
+              {report.hasComparison && report.lastMonth.topWeakness && (
+                <div className="gip-report-prev">was {report.lastMonth.topWeakness.noun}</div>
+              )}
+            </div>
+          </div>
+          {!report.hasComparison && (
+            <div className="gip-report-note">Keep analysing — next month you'll see how you're improving.</div>
+          )}
+        </div>
+      )}
 
       {gen.running && (
         <div className="gip-progress">

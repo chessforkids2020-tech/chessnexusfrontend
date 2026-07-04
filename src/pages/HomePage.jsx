@@ -501,6 +501,28 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* ── ARE YOU A COACH? CTA ── */}
+        {/* Logged-in user → coach onboarding; guest/logged-out → login. */}
+        <div
+          className="hp-glass hp-coach-cta"
+          role="button"
+          tabIndex={0}
+          onClick={() => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login')}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login'); } }}
+        >
+          <div className="hp-coach-cta-icon">🎓</div>
+          <div className="hp-coach-cta-text">
+            <h3 className="hp-coach-cta-title">Are you a chess coach?</h3>
+            <p className="hp-coach-cta-sub">
+              Manage your students in one place — assignments, progress tracking & reports.
+              Start with a 30-day free trial, no card required.
+            </p>
+          </div>
+          <div className="hp-coach-cta-btn">
+            {(user && user.role !== 'guest') ? 'Start free trial →' : 'Log in to start →'}
+          </div>
+        </div>
+
         {/* ── CHESS TRAINING LAB PROMO ── */}
         <div className="hp-glass hp-lab1-section">
           <div className="hp-lab1-img-col">

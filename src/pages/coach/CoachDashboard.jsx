@@ -122,6 +122,7 @@ export default function CoachDashboard() {
   const [chartData, setChartData] = useState([]);
   const [chartDays, setChartDays] = useState(30);
   const [chartLoading, setChartLoading] = useState(false);
+  const [showActivityMenu, setShowActivityMenu] = useState(false); // Create Activity dropdown
 
   useEffect(() => {
     let cancelled = false;
@@ -225,6 +226,16 @@ export default function CoachDashboard() {
   const isTrial = !isPrivileged && !isEliteFree && plan === 'trial';
   const eliteRenewSoon = isEliteFree && access.renewalReminder;
 
+  // "Create activity" launcher. Arena race + arena tournament are open to all
+  // coaches; team race + monthly focus are elite-tier (elite or admin).
+  const isEliteCoach = isPrivileged || isEliteFree || summary?.isElite;
+  const activityOptions = [
+    { label: '🏁 Arena Race', to: '/arena/create', elite: false },
+    { label: '🏆 Arena Tournament', to: '/arenatournament/create', elite: false },
+    { label: '🏃 Team Race', to: '/elite/team-race', elite: true },
+    { label: '🎯 Monthly Focus', to: '/elite-monthly-focus', elite: true },
+  ];
+
   return (
     <div className="coach-dash">
       {/* ── Top status bar ───────────────────── */}
@@ -274,6 +285,37 @@ export default function CoachDashboard() {
         </div>
         <div className="coach-dash-quicklinks">
           <Link to="/coach/assignments" className="btn-ghost">📝 Assignments</Link>
+          <Link to="/coach/courses" className="btn-ghost">📚 Courses</Link>
+
+          {/* Create activity launcher */}
+          <div className="coach-activity-menu">
+            <button className="btn-ghost" onClick={() => setShowActivityMenu(v => !v)}>
+              ➕ Create Activity ▾
+            </button>
+            {showActivityMenu && (
+              <>
+                <div className="coach-activity-backdrop" onClick={() => setShowActivityMenu(false)} />
+                <div className="coach-activity-dropdown">
+                  {activityOptions.map(opt => {
+                    const locked = opt.elite && !isEliteCoach;
+                    return (
+                      <button
+                        key={opt.to}
+                        className={`coach-activity-item ${locked ? 'locked' : ''}`}
+                        disabled={locked}
+                        title={locked ? 'Available for Elite coaches' : ''}
+                        onClick={() => { if (!locked) { setShowActivityMenu(false); navigate(opt.to); } }}
+                      >
+                        <span>{opt.label}</span>
+                        {locked && <span className="coach-activity-lock">💎 Elite</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+
           <Link to="/coach/attendance" className="btn-ghost">📋 Attendance</Link>
         </div>
       </div>

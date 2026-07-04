@@ -20,8 +20,11 @@ function fmtTime(secs) {
   return m > 0 ? `${m}m ${s}s` : `${s}s`;
 }
 
-export default function CoachStudentDetail() {
-  const { studentLinkId } = useParams();
+// Can render as a routed page (studentLinkId from the URL) OR embedded (pass
+// `studentLinkId` + `onBack` + `embedded` props, e.g. inside the admin dashboard).
+export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, embedded = false }) {
+  const params = useParams();
+  const studentLinkId = propLinkId || params.studentLinkId;
   const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,6 +36,37 @@ export default function CoachStudentDetail() {
   const [analyzeErr, setAnalyzeErr] = useState('');
   const [analyzeProgress, setAnalyzeProgress] = useState(null); // { current, total, stage }
   const pollRef = useRef(null);
+
+  // Private coach notes for this student.
+  const [notes, setNotes] = useState('');
+  const [notesSaved, setNotesSaved] = useState('');
+  const [savingNotes, setSavingNotes] = useState(false);
+  useEffect(() => { setNotes(data?.link?.notes || ''); }, [data]);
+  const saveNotes = async () => {
+    setSavingNotes(true); setNotesSaved('');
+    try {
+      await api.patch(`/api/coach/students/${studentLinkId}/notes`, { notes });
+      setNotesSaved('✓ Saved');
+      setTimeout(() => setNotesSaved(''), 2000);
+    } catch { setNotesSaved('Could not save'); }
+    finally { setSavingNotes(false); }
+  };
+
+  // Group / batch tag for this student — editable so a coach can move a student
+  // between groups after they were added (mirrors the notes edit above).
+  const [groupTag, setGroupTag] = useState('');
+  const [editingGroup, setEditingGroup] = useState(false);
+  const [savingGroup, setSavingGroup] = useState(false);
+  useEffect(() => { setGroupTag(data?.link?.groupTag || ''); }, [data]);
+  const saveGroup = async () => {
+    setSavingGroup(true);
+    try {
+      const r = await api.patch(`/api/coach/students/${studentLinkId}/group`, { groupTag });
+      setGroupTag(r.data?.groupTag ?? groupTag);
+      setEditingGroup(false);
+    } catch { /* keep editing open on failure */ }
+    finally { setSavingGroup(false); }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -97,7 +131,7 @@ export default function CoachStudentDetail() {
   return (
     <div className="coach-dash">
       <div className="csd-back">
-        <button onClick={() => navigate(-1)} className="btn-ghost">← Back</button>
+        <button onClick={() => (embedded && onBack ? onBack() : navigate(-1))} className="btn-ghost">← Back</button>
       </div>
 
       {/* ── Header ─────────────────── */}
@@ -110,13 +144,59 @@ export default function CoachStudentDetail() {
           <p>
             {student?.username && <>@{student.username} · </>}
             {student?.country || 'Unknown country'}
-            {link?.groupTag && <span className="tag" style={{ marginLeft: 8 }}>{link.groupTag}</span>}
+            {!editingGroup && (
+              <button
+                type="button"
+                className="tag"
+                style={{ marginLeft: 8, cursor: 'pointer', border: 'none' }}
+                title="Click to change this student's group / batch"
+                onClick={() => setEditingGroup(true)}
+              >
+                {groupTag ? `🏷️ ${groupTag}` : '＋ Add group'} ✎
+              </button>
+            )}
+            {editingGroup && (
+              <span style={{ marginLeft: 8, display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                <input
+                  type="text"
+                  value={groupTag}
+                  autoFocus
+                  placeholder="e.g. Batch A"
+                  onChange={e => setGroupTag(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') saveGroup(); if (e.key === 'Escape') { setEditingGroup(false); setGroupTag(data?.link?.groupTag || ''); } }}
+                  style={{ padding: '2px 8px', borderRadius: 6 }}
+                />
+                <button type="button" className="btn-ghost" onClick={saveGroup} disabled={savingGroup}>
+                  {savingGroup ? 'Saving…' : 'Save'}
+                </button>
+                <button type="button" className="btn-ghost" onClick={() => { setEditingGroup(false); setGroupTag(data?.link?.groupTag || ''); }}>
+                  Cancel
+                </button>
+              </span>
+            )}
           </p>
         </div>
         <div className="csd-rating">
           <span>Live rating</span>
           <strong>{fmt(student?.liveRating)}</strong>
         </div>
+      </div>
+
+      {/* ── Private notes ─────────────── */}
+      <div className="coach-section" style={{ marginTop: 12 }}>
+        <div className="coach-section-head">
+          <h2>📝 Notes</h2>
+          <button className="btn-ghost" onClick={saveNotes} disabled={savingNotes}>
+            {savingNotes ? 'Saving…' : 'Save'}{notesSaved && ` · ${notesSaved}`}
+          </button>
+        </div>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          maxLength={1000}
+          placeholder="Private notes about this student (only you see these)…"
+          style={{ width: '100%', minHeight: 70, resize: 'vertical', boxSizing: 'border-box', padding: 10, borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: '#e7eaf0', fontSize: 14 }}
+        />
       </div>
 
       {/* ── Game ratings (Bullet / Blitz / Rapid / Classical) ─────── */}
@@ -365,7 +445,7 @@ export default function CoachStudentDetail() {
       <div className="coach-section">
         <div className="coach-section-head">
           <h2>Assignments</h2>
-          <Link to="/coach/assignments" className="btn-ghost">＋ New assignment</Link>
+          {!embedded && <Link to="/coach/assignments" className="btn-ghost">＋ New assignment</Link>}
         </div>
         {assignments.length === 0 ? (
           <div className="coach-empty">No assignments yet for this student.</div>

@@ -39,6 +39,44 @@
   margin: 0;
 }
 
+/* Compact "My Moments" card — top-right of the Training header. */
+.pz-moments-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.14), rgba(16, 185, 129, 0.12));
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: transform .12s, border-color .15s, background .15s;
+}
+.pz-moments-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(6, 182, 212, 0.6);
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.22), rgba(16, 185, 129, 0.18));
+}
+.pz-moments-icon { font-size: 22px; }
+.pz-moments-text { display: flex; flex-direction: column; }
+.pz-moments-title { font-size: 14px; font-weight: 800; color: #fff; }
+.pz-moments-sub { font-size: 11px; color: rgba(255, 255, 255, 0.6); }
+.pz-moments-badge {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #06b6d4;
+  color: #04121a;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+}
+
 .pz-tagline-box {
   display: flex;
   align-items: center;
