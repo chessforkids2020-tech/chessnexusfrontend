@@ -128,7 +128,15 @@ const Chat = () => {
   const chatListRef = useRef(null);
 
   // Sort: most recently active chat always at top (WhatsApp style)
-  const sortChats = (list) => [...list].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+  // The time a chat was last active — prefer the latest message's timestamp,
+  // fall back to updatedAt/createdAt. Used to keep the most-recent chat on top
+  // (WhatsApp style).
+  const chatActivityTime = (c) => {
+    const t = c?.lastMessage?.createdAt || c?.updatedAt || c?.createdAt;
+    const ms = t ? new Date(t).getTime() : 0;
+    return isNaN(ms) ? 0 : ms;
+  };
+  const sortChats = (list) => [...list].sort((a, b) => chatActivityTime(b) - chatActivityTime(a));
 
   const fetchChats = async () => {
     try {
@@ -256,17 +264,17 @@ const Chat = () => {
     }
   };
 
-  // Inbox style: the newest message is rendered at the TOP, so "go to newest" means
-  // scroll the messages container to the top (scrollTop = 0). No animation — the
-  // latest message is simply always in view, exactly like an inbox. Kept the name
-  // scrollToBottom so the existing call sites don't need to change.
+  // Standard chat: newest message is at the BOTTOM. Jump straight to the bottom
+  // with NO animation (so opening a chat lands on the latest message without
+  // visibly scrolling through the history).
   const scrollToBottom = () => {
-    const toTop = () => {
-      if (messagesAreaRef.current) messagesAreaRef.current.scrollTop = 0;
+    const toBottom = () => {
+      const el = messagesAreaRef.current;
+      if (el) el.scrollTop = el.scrollHeight;
     };
-    toTop();
-    requestAnimationFrame(toTop); // after layout paints
-    setTimeout(toTop, 60);        // final settle
+    toBottom();
+    requestAnimationFrame(toBottom); // after layout paints (messages/images sized)
+    setTimeout(toBottom, 60);        // final settle
   };
 
   const handleSendMessage = async (e) => {
@@ -512,7 +520,7 @@ const Chat = () => {
           );
         })()}
         <div className="chat-list" ref={chatListRef}>
-          {chats
+          {sortChats(chats)
             .filter(chat => {
               // Non-admins see everything (their inbox isn't cluttered by welcomes).
               if (!isAdmin) return true;
@@ -589,8 +597,8 @@ const Chat = () => {
             ) : messages.length === 0 ? (
               <div className="empty-messages">No messages yet. Start the conversation!</div>
             ) : (
-              // Inbox style: newest message at the TOP (reverse chronological).
-              [...messages].reverse().map((msg, index) => (
+              // Standard chat order: oldest at top, newest at the bottom.
+              messages.map((msg, index) => (
                 <div key={msg._id || index} className={`message ${isSender(msg) ? 'sent' : 'received'}`}>
                   <div className="message-sender">{!isSender(msg) && getSenderName(msg.sender)}</div>
                   <div className="message-content" title={msg.content}>{msg.content}</div>
