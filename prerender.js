@@ -36,6 +36,7 @@ const ROUTES = [
   '/play-chess-with-friends',
   '/masters-chess-games',
   '/analyse-my-chess-game',
+  '/improve-at-chess',
   '/3d-chess-arena-tournament',
   '/chess-study',
   '/chess-community',

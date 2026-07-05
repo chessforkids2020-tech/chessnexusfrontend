@@ -2496,3 +2496,324 @@ button.hp-contest-row.hp-contest-row-btn:not(:disabled):hover {
     font-size: 2rem;
   }
 }
+
+/* =====================================================
+   WHAT CHESS NEXUS OFFERS — 6-bucket feature showcase
+   ===================================================== */
+.hp-showcase {
+  margin: 40px 0 8px;
+}
+
+/* ── Section header ── */
+.hp-showcase-head {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 40px;
+}
+.hp-showcase-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cyan-hi);
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(6, 182, 212, 0.28);
+  background: rgba(6, 182, 212, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.hp-showcase-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cyan-hi);
+  box-shadow: 0 0 10px var(--cyan-hi);
+}
+.hp-showcase-title {
+  margin: 20px 0 14px;
+  font-size: clamp(26px, 4vw, 44px);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  background: linear-gradient(135deg, #ffffff 40%, #94a3b8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.hp-showcase-sub {
+  font-size: clamp(15px, 2vw, 17px);
+  color: var(--t2);
+  max-width: 560px;
+  margin: 0 auto 20px;
+  line-height: 1.55;
+}
+.hp-showcase-trust {
+  display: inline-flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.hp-showcase-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t1);
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.hp-showcase-pill-ic {
+  color: var(--emerald-hi);
+  font-size: 14px;
+}
+.hp-showcase-pill-free .hp-showcase-pill-ic {
+  color: var(--gold);
+}
+
+/* ── Grid ── */
+.hp-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+/* ── Bucket card ── */
+.hp-bucket {
+  --bk-accent: var(--cyan);
+  --bk-accent2: var(--cyan-hi);
+  --bk-glow: rgba(6, 182, 212, 0.18);
+  --bk-border: rgba(34, 211, 238, 0.42);
+  --bk-chip-bg: rgba(6, 182, 212, 0.09);
+  --bk-chip-bd: rgba(34, 211, 238, 0.24);
+  padding: 26px 24px 24px;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 0.4s ease, box-shadow 0.4s ease;
+}
+/* accent glow bloom on hover (uses ::after; ::before is the glass shine) */
+.hp-bucket::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 90% at 50% 0%, var(--bk-glow), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.hp-bucket:hover {
+  transform: translateY(-8px);
+  border-color: var(--bk-border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7),
+              0 0 46px var(--bk-glow),
+              inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.hp-bucket:hover::after { opacity: 1; }
+
+.hp-bucket-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.hp-bucket-icon {
+  flex: none;
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--bk-glow), rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--bk-chip-bd);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: box-shadow 0.4s ease, transform 0.4s ease;
+}
+.hp-bucket:hover .hp-bucket-icon {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 26px var(--bk-glow);
+  transform: scale(1.05) rotate(-3deg);
+}
+.hp-bucket-titles {
+  display: flex;
+  flex-direction: column;
+}
+.hp-bucket-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--t1);
+}
+.hp-bucket-tag {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--bk-accent2);
+  margin-top: 2px;
+}
+.hp-bucket-divider {
+  position: relative;
+  z-index: 2;
+  height: 1px;
+  margin: 16px 0 14px;
+  background: linear-gradient(90deg, var(--bk-chip-bd), transparent 85%);
+}
+.hp-bucket-list {
+  position: relative;
+  z-index: 2;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+}
+.hp-bucket-list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 14px;
+  color: var(--t2);
+  line-height: 1.45;
+  transition: color 0.3s ease;
+}
+.hp-bucket-list li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--bk-accent2);
+  box-shadow: 0 0 8px var(--bk-glow);
+  transform: rotate(45deg);
+}
+.hp-bucket:hover .hp-bucket-list li { color: #a7b4c4; }
+
+.hp-bucket-chips {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hp-bucket-chip {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--t1);
+  padding: 6px 11px;
+  border-radius: 9px;
+  background: var(--bk-chip-bg);
+  border: 1px solid var(--bk-chip-bd);
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+.hp-bucket-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--bk-accent2);
+}
+.hp-bucket-note {
+  position: relative;
+  z-index: 2;
+  font-size: 12.5px;
+  color: var(--t3);
+  line-height: 1.5;
+  margin-top: 12px;
+}
+
+/* Coach card + ribbon */
+.hp-bucket-coach {
+  border-color: rgba(52, 211, 153, 0.22);
+}
+.hp-bucket-ribbon {
+  position: absolute;
+  top: 16px;
+  right: -34px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--emerald), var(--cyan));
+  color: #04120e;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 40px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  z-index: 3;
+}
+
+/* ── CTA row ── */
+.hp-showcase-cta {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.hp-showcase-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 15px;
+  font-weight: 650;
+  padding: 14px 26px;
+  border-radius: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.25s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.hp-showcase-btn:focus-visible {
+  outline: 2px solid var(--cyan-hi);
+  outline-offset: 3px;
+}
+.hp-showcase-btn-primary {
+  color: #04121a;
+  background: linear-gradient(135deg, var(--cyan-hi), var(--cyan));
+  box-shadow: 0 10px 30px rgba(6, 182, 212, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.hp-showcase-btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(6, 182, 212, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.hp-showcase-btn-ghost {
+  color: var(--t1);
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.hp-showcase-btn-ghost:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-bucket,
+  .hp-bucket-icon,
+  .hp-bucket-chip,
+  .hp-showcase-btn {
+    transition: none;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .hp-showcase-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 580px) {
+  .hp-showcase-grid { grid-template-columns: 1fr; }
+  .hp-showcase-cta { flex-direction: column; }
+  .hp-showcase-btn { width: 100%; justify-content: center; }
+}

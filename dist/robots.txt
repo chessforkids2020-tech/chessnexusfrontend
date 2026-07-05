@@ -9,6 +9,7 @@ Allow: /play-chess-online
 Allow: /play-chess-with-friends
 Allow: /masters-chess-games
 Allow: /analyse-my-chess-game
+Allow: /improve-at-chess
 Allow: /3d-chess-arena-tournament
 Allow: /chess-study
 Allow: /chess-community

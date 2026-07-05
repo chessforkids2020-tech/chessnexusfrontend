@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 import UserLayout from "./components/UserLayout";
 import AnalyticsTracker from "./components/AnalyticsTracker";
 import UserDashboard from "./pages/UserDashboard";
+import StudentProgressPage from "./pages/StudentProgressPage";
 import CoachOnboarding from "./pages/coach/CoachOnboarding";
 import CoachDashboard from "./pages/coach/CoachDashboard";
 import CoachStudentDetail from "./pages/coach/CoachStudentDetail";
@@ -30,6 +31,7 @@ import PlayChessOnlinePage from "./pages/marketing/PlayChessOnlinePage";
 import PlayWithFriendsPage from "./pages/marketing/PlayWithFriendsPage";
 import MastersGamesPage from "./pages/marketing/MastersGamesPage";
 import AnalyseMyChessGamePage from "./pages/marketing/AnalyseMyChessGamePage";
+import ImproveAtChessPage from "./pages/marketing/ImproveAtChessPage";
 import ArenaTournamentPage from "./pages/marketing/ArenaTournamentPage";
 import ChessStudyPage from "./pages/marketing/ChessStudyPage";
 import ChessCommunityPage from "./pages/marketing/ChessCommunityPage";
@@ -315,6 +317,8 @@ export default function App() {
             <UserDashboard />
           </UserLayout>
         } />
+        {/* Parent/student progress report — clean, read-only, shareable link */}
+        <Route path="/progress/:displayName" element={<StudentProgressPage />} />
         {/* Public player Puzzle Dashboard — spectators can view another user's */}
         <Route path="/player/:displayName/puzzle-dashboard" element={
           <UserLayout>
@@ -423,6 +427,11 @@ export default function App() {
         <Route path="/analyse-my-chess-game" element={
           <UserLayout>
             <AnalyseMyChessGamePage />
+          </UserLayout>
+        } />
+        <Route path="/improve-at-chess" element={
+          <UserLayout>
+            <ImproveAtChessPage />
           </UserLayout>
         } />
         <Route path="/3d-chess-arena-tournament" element={

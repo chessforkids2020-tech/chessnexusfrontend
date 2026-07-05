@@ -5,7 +5,6 @@ import { useAuth } from "../contexts/AuthContext";
 import Sidebar from "../components/Sidebar";
 import HomepagePuzzle from "../components/HomepagePuzzle";
 import CoffeeCta from "../components/CoffeeCta";
-import MonthlyFocusLeaderboard from "./monthlyFocus/MonthlyFocusLeaderboard";
 import { Link, useNavigate } from "react-router-dom";
 import "./HomePage.css";
 
@@ -116,54 +115,97 @@ function readCachedContestRows() {
   }
 }
 
-const FEATURES = [
+// ── "What Chess Nexus Offers" — 6 feature buckets ────────────
+// Each bucket groups several real features so a first-time visitor grasps the
+// full depth in a few seconds. `ribbon` marks the coaching layer (paid add-on).
+const FEATURE_BUCKETS = [
   {
-    icon: "🧠",
-    label: "AI-Powered Training",
-    desc: "Your games are analyzed move-by-move to generate adaptive puzzle paths for your exact weaknesses.",
-    tag: "Adaptive",
-    accent: "#06b6d4",
-    glow: "rgba(6,182,212,0.16)",
+    key: "train",
+    icon: "🧩",
+    title: "Train",
+    tag: "Practice that targets your weaknesses",
+    accent: "#06b6d4", accent2: "#22d3ee", glow: "rgba(6,182,212,0.18)",
+    border: "rgba(34,211,238,0.42)", chipBg: "rgba(6,182,212,0.09)", chipBd: "rgba(34,211,238,0.24)",
+    items: [
+      "A puzzle dashboard that finds your weak topics from past solves",
+      "Redo the puzzles you got wrong",
+      "Daily puzzles from World Champions' blunders",
+      "Millions of Lichess-database puzzles",
+      "Fun modes: Puzzle Tic-Tac-Toe & Bingo",
+      "Monthly Focus — a themed 7-day challenge",
+    ],
   },
   {
+    key: "analyze",
+    icon: "🔬",
+    title: "Analyze",
+    tag: "Grandmaster-level analysis of your games",
+    accent: "#8b5cf6", accent2: "#a78bfa", glow: "rgba(139,92,246,0.18)",
+    border: "rgba(167,139,250,0.42)", chipBg: "rgba(139,92,246,0.09)", chipBd: "rgba(167,139,250,0.24)",
+    items: [
+      "Server-side Stockfish 18 analysis",
+      "Import games from Lichess, Chess.com & Chess Nexus",
+      "OTB scanner — digitize an over-the-board game",
+    ],
+    chips: ["Full-game report", "Blunder detection", "Best-move lines"],
+  },
+  {
+    key: "compete",
     icon: "🏆",
-    label: "Seasonal Puzzle Races",
-    desc: "Season-based competitions keep every week fresh with rankings, milestones, and rivalry momentum.",
-    tag: "Seasonal",
-    accent: "#f59e0b",
-    glow: "rgba(245,158,11,0.16)",
+    title: "Compete",
+    tag: "Live events every day",
+    accent: "#f59e0b", accent2: "#fbbf24", glow: "rgba(245,158,11,0.18)",
+    border: "rgba(251,191,36,0.42)", chipBg: "rgba(245,158,11,0.09)", chipBd: "rgba(251,191,36,0.24)",
+    items: [
+      "Arena, Team & Individual races",
+      "Arena tournaments — create & play",
+      "Play & watch in a live 3D arena",
+    ],
+    chips: ["Daily arenas", "Team battles", "Live leaderboards"],
   },
   {
-    icon: "📈",
-    label: "Skill Progression",
-    desc: "Track rating growth, unlock ranks, and clearly see how your tactical decisions improve over time.",
-    tag: "Measurable",
-    accent: "#10b981",
-    glow: "rgba(16,185,129,0.16)",
+    key: "study",
+    icon: "📚",
+    title: "Study",
+    tag: "A full chess library & tools",
+    accent: "#10b981", accent2: "#34d399", glow: "rgba(16,185,129,0.18)",
+    border: "rgba(52,211,153,0.42)", chipBg: "rgba(16,185,129,0.09)", chipBd: "rgba(52,211,153,0.24)",
+    items: [
+      "Super-GM hand-picked, categorized endgames",
+      "Masters & Super-GM game database",
+      "Opening explorer",
+      "Create & save your opening lines (with Stockfish 18)",
+      "Build studies & share them",
+      "Read Nexus books — free",
+    ],
   },
   {
-    icon: "⚔️",
-    label: "Competitive Arena",
-    desc: "Play high-pressure puzzle battles and prove your calculation speed against serious competitors.",
-    tag: "PvP",
-    accent: "#a78bfa",
-    glow: "rgba(167,139,250,0.16)",
+    key: "community",
+    icon: "👥",
+    title: "Play & Community",
+    tag: "Play and belong",
+    accent: "#ec4899", accent2: "#f472b6", glow: "rgba(236,72,153,0.18)",
+    border: "rgba(244,114,182,0.42)", chipBg: "rgba(236,72,153,0.09)", chipBd: "rgba(244,114,182,0.24)",
+    items: [
+      "Play with friends in private rooms",
+      "Clubs — create or join, chat & discuss with members",
+    ],
+    chips: ["Private rooms", "Club chat", "Members feed"],
   },
   {
-    icon: "🔥",
-    label: "Daily Mastery Streaks",
-    desc: "Build consistent habits with streak rewards that turn short daily sessions into long-term mastery.",
-    tag: "Consistency",
-    accent: "#f97316",
-    glow: "rgba(249,115,22,0.16)",
-  },
-  {
-    icon: "🎮",
-    label: "3D Arena Tournament",
-    desc: "Experience the thrill of live chess tournaments in real time — watch battles unfold on a cinematic 3D board with live standings and crowd energy.",
-    tag: "Real-Time",
-    accent: "#e879f9",
-    glow: "rgba(232,121,249,0.16)",
+    key: "coach",
+    icon: "🎓",
+    title: "Coach",
+    tag: "Run your whole academy",
+    accent: "#06b6d4", accent2: "#34d399", glow: "rgba(16,185,129,0.2)",
+    border: "rgba(52,211,153,0.45)", chipBg: "rgba(16,185,129,0.09)", chipBd: "rgba(52,211,153,0.24)",
+    ribbon: "For Coaches",
+    items: [
+      "Student roster with ratings & activity",
+      "Assign puzzles, studies & tasks in seconds",
+      "Track every student's progress & weak spots",
+    ],
+    note: "The coaching layer — a separate paid toolkit for academies & private coaches.",
   },
 ];
 
@@ -299,13 +341,11 @@ export default function HomePage() {
   const [activePlayers,     setActivePlayers]     = useState(getActivePlayers);
   const [arenaTarget]                             = useState(getArenaTarget);
   const [focusChampion,     setFocusChampion]     = useState(null);
-  const [adminFocusId,      setAdminFocusId]      = useState(null);
 
   useEffect(() => {
     fetchTopPlayers();
     fetchSchedule();
     fetchFocusChampion();
-    fetchAdminFocus();
     document.body.classList.add('no-header-padding');
     const interval = setInterval(() => setActivePlayers(getActivePlayers()), 15 * 60 * 1000);
     return () => {
@@ -340,14 +380,6 @@ export default function HomePage() {
     } catch {}
   };
 
-  const fetchAdminFocus = async () => {
-    try {
-      const { data } = await api.get('/api/public/monthly-focus/current');
-      const all = data.focuses || (data.focus ? [data.focus] : []);
-      const adminFocus = all.find(f => f.createdBy?.role === 'admin' || !f.createdBy);
-      if (adminFocus) setAdminFocusId(adminFocus._id);
-    } catch {}
-  };
 
   const CONTEST_ROUTES = {
     arena_race:       '/arena',
@@ -501,6 +533,62 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* ── WHAT CHESS NEXUS OFFERS — 6 feature buckets ── */}
+        <div className="hp-showcase">
+          <div className="hp-showcase-head">
+            <span className="hp-showcase-eyebrow"><span className="hp-showcase-dot" />Everything in one place</span>
+            <h2 className="hp-showcase-title">One platform. Everything you need to improve at chess.</h2>
+            <p className="hp-showcase-sub">Train, analyze, compete, study, and play — plus a full coaching toolkit. Deep enough for a serious academy, simple enough to start in seconds.</p>
+            <div className="hp-showcase-trust">
+              <span className="hp-showcase-pill hp-showcase-pill-free"><span className="hp-showcase-pill-ic">★</span> 100% free to start</span>
+              <span className="hp-showcase-pill"><span className="hp-showcase-pill-ic">✓</span> No ads, ever</span>
+              <span className="hp-showcase-pill"><span className="hp-showcase-pill-ic">✓</span> For beginners to advanced</span>
+            </div>
+          </div>
+
+          <div className="hp-showcase-grid">
+            {FEATURE_BUCKETS.map(b => (
+              <div
+                key={b.key}
+                className={`hp-glass hp-bucket${b.ribbon ? ' hp-bucket-coach' : ''}`}
+                style={{
+                  '--bk-accent': b.accent, '--bk-accent2': b.accent2, '--bk-glow': b.glow,
+                  '--bk-border': b.border, '--bk-chip-bg': b.chipBg, '--bk-chip-bd': b.chipBd,
+                }}
+              >
+                {b.ribbon && <span className="hp-bucket-ribbon">{b.ribbon}</span>}
+                <div className="hp-bucket-head">
+                  <span className="hp-bucket-icon" aria-hidden="true">{b.icon}</span>
+                  <div className="hp-bucket-titles">
+                    <span className="hp-bucket-title">{b.title}</span>
+                    <span className="hp-bucket-tag">{b.tag}</span>
+                  </div>
+                </div>
+                <div className="hp-bucket-divider" />
+                <ul className="hp-bucket-list">
+                  {b.items.map((it, i) => <li key={i}>{it}</li>)}
+                </ul>
+                {b.chips && (
+                  <>
+                    <div className="hp-bucket-divider" />
+                    <div className="hp-bucket-chips">
+                      {b.chips.map((c, i) => <span key={i} className="hp-bucket-chip">{c}</span>)}
+                    </div>
+                  </>
+                )}
+                {b.note && <p className="hp-bucket-note">{b.note}</p>}
+              </div>
+            ))}
+          </div>
+
+          <div className="hp-showcase-cta">
+            <Link to={user ? "/puzzles" : "/signup-request"} className="hp-showcase-btn hp-showcase-btn-primary">
+              {user ? "Start solving →" : "Start free →"}
+            </Link>
+            <Link to="/features" className="hp-showcase-btn hp-showcase-btn-ghost">See all features</Link>
+          </div>
+        </div>
+
         {/* ── ARE YOU A COACH? — rich promo card ── */}
         {/* Logged-in user → coach onboarding; guest/logged-out → login. */}
         {(() => {
@@ -568,147 +656,6 @@ export default function HomePage() {
             </div>
           );
         })()}
-
-        {/* ── CHESS TRAINING LAB PROMO ── */}
-        <div className="hp-glass hp-lab1-section">
-          <div className="hp-lab1-img-col">
-            <img src="/lab1.png" alt="Chess Training Lab" className="hp-lab1-img" />
-          </div>
-          <div className="hp-lab1-text-col">
-            <div className="hp-lab1-badges">
-              <span className="hp-lab1-eyebrow">Lab 01</span>
-              <span className="hp-lab1-free-badge">FREE CORE PLATFORM</span>
-            </div>
-            <h2 className="hp-lab1-title">Chess Training Lab</h2>
-            <table className="hp-lab1-table">
-              <tbody>
-                <tr className="hp-lab1-row">
-                  <td className="hp-lab1-icon-cell">🏆</td>
-                  <td className="hp-lab1-text-cell">Daily Arena tournaments</td>
-                </tr>
-                <tr className="hp-lab1-row">
-                  <td className="hp-lab1-icon-cell">🧩</td>
-                  <td className="hp-lab1-text-cell">Daily tactical puzzles</td>
-                </tr>
-                <tr className="hp-lab1-row">
-                  <td className="hp-lab1-icon-cell">🔥</td>
-                  <td className="hp-lab1-text-cell">Weekly contests &amp; challenges</td>
-                </tr>
-                <tr className="hp-lab1-row">
-                  <td className="hp-lab1-icon-cell">📈</td>
-                  <td className="hp-lab1-text-cell">Track rating and progress</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* ── LAB 02 ── */}
-        <div className="hp-glass hp-lab2-section">
-          <div className="hp-lab2-text-col">
-            <div className="hp-lab2-badges">
-              <span className="hp-lab2-eyebrow">Lab 02</span>
-              <span className="hp-lab2-exp-badge">3D EXPERIENCE</span>
-            </div>
-            <h2 className="hp-lab2-title">PREMIUM 3D EXPERIENCE</h2>
-            <p className="hp-lab2-subtitle">Play and watch games in a shared live chess space.</p>
-            <table className="hp-lab2-table">
-              <tbody>
-                <tr className="hp-lab2-row">
-                  <td className="hp-lab2-icon-cell">🏙️</td>
-                  <td className="hp-lab2-text-cell">Live tournament atmosphere</td>
-                </tr>
-                <tr className="hp-lab2-row">
-                  <td className="hp-lab2-icon-cell">🤝</td>
-                  <td className="hp-lab2-text-cell">Play with friends in real time</td>
-                </tr>
-                <tr className="hp-lab2-row">
-                  <td className="hp-lab2-icon-cell">♜</td>
-                  <td className="hp-lab2-text-cell">Follow games together live</td>
-                </tr>
-              </tbody>
-            </table>
-            <p className="hp-lab2-tagline">Built for interactive and social chess experiences.</p>
-          </div>
-          <div className="hp-lab2-img-col">
-            <img src="/lab2.png" alt="3D Chess Arena" className="hp-lab2-img" />
-          </div>
-        </div>
-
-        {/* ── WHY CHESS NEXUS ── */}
-        <div className="hp-features-section">
-          <div className="hp-features-heading">
-            <span className="hp-features-eyebrow">WHY PLAY HERE</span>
-            <h2 className="hp-features-title">Why Chess Nexus?</h2>
-            <p className="hp-features-subtitle">Everything you need to master chess, compete harder, and improve faster.</p>
-            <Link to="/features" className="hp-lb-view-btn" style={{ marginTop: 12, display: 'inline-block' }}>Explore all features →</Link>
-          </div>
-          <div className="hp-features-row">
-            {FEATURES.map(f => (
-              <div
-                key={f.label}
-                className="hp-feature-item"
-                style={{ '--feat-accent': f.accent, '--feat-glow': f.glow }}
-              >
-                <div className="hp-feature-top">
-                  <div className="hp-feature-icon-wrap">
-                    <span className="hp-feature-icon">{f.icon}</span>
-                  </div>
-                  <span className="hp-feature-tag">{f.tag}</span>
-                </div>
-                <div className="hp-feature-text">
-                  <span className="hp-feature-label">{f.label}</span>
-                  <span className="hp-feature-desc">{f.desc}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="hp-features-trust">
-            <div className="hp-features-trust-item">
-              <span className="hp-features-trust-value">100% Free</span>
-              <span className="hp-features-trust-label">core features</span>
-            </div>
-            <div className="hp-features-trust-divider" />
-            <div className="hp-features-trust-item">
-              <span className="hp-features-trust-value">Safe &amp; Secure</span>
-              <span className="hp-features-trust-label">your data is protected</span>
-            </div>
-            <div className="hp-features-trust-divider" />
-            <div className="hp-features-trust-item">
-              <span className="hp-features-trust-value">Global Community</span>
-              <span className="hp-features-trust-label">players from 10+ countries</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── CTA (moved up: directly below Why Chess Nexus) ── */}
-        <div className="hp-glass hp-cta">
-          <div className="hp-cta-glow" />
-          <span className="hp-cta-chess">♟</span>
-          <div className="hp-cta-text">
-            <h2 className="hp-cta-heading">Ready to Level Up Your Chess?</h2>
-            <p className="hp-cta-sub">Join Chess Nexus today and become part of a growing community of chess players and learners.</p>
-          </div>
-          <Link to={user ? "/puzzles" : "/login"} className="hp-cta-btn">
-            {user ? "Start Solving Now →" : "Login to Play →"}
-          </Link>
-        </div>
-
-        {/* ── LEADERBOARD ── */}
-        <div className="hp-glass hp-leaderboard">
-          <div className="hp-lb-topbar">
-            <div className="hp-lb-heading-row">
-              <h3 className="hp-lb-title">🏆 ChessNexus Monthly Focus — Top Players</h3>
-            </div>
-          </div>
-
-          <div className="hp-lb-table-wrap">
-            <MonthlyFocusLeaderboard compact limit={5} focusId={adminFocusId} />
-          </div>
-          <div className="hp-lb-footer">
-            <Link to="/monthly-focus/leaderboard" className="hp-lb-view-btn">View Leaderboard →</Link>
-          </div>
-        </div>
 
         {/* ── COLLABORATE / BECOME ELITE (same card as Members page) ── */}
         <div className="hp-callout">

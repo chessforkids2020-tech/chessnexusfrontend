@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+      Per-page SEO tags (title, description, keywords, canonical, robots,
+      Open Graph, Twitter) are managed at runtime by react-helmet-async via
+      src/components/SEO.jsx, and are baked into each prerendered page by
+      prerender.js. They are intentionally NOT hardcoded here — duplicating
+      them would produce two <title>/canonical/og:* tags on prerendered pages.
+      A default title (below) prevents an empty tab title before hydration.
+    -->
+    <title>Improve at Chess — Your Personal Nexus Guide | Chess Nexus</title>
+    <meta name="author" content="Chess Nexus">
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png">
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="msapplication-TileColor" content="#06b6d4">
+
+    <!-- Performance hints -->
+    <link rel="preconnect" href="https://www.chessnexus.in">
+    <link rel="dns-prefetch" href="https://www.chessnexus.in">
+
+    <!-- JSON-LD: WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Chess Nexus",
+      "url": "https://www.chessnexus.in/",
+      "description": "Free online chess platform for solving puzzles, practicing tactics, and competing in live arena races.",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires JavaScript",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "featureList": [
+        "Daily Chess Puzzles",
+        "Live Arena Races",
+        "Chess Tactics Training",
+        "Monthly Focus Challenges",
+        "Global Leaderboard",
+        "Team Race Mode",
+        "Chess Study System"
+      ],
+      "screenshot": "https://www.chessnexus.in/logo.png",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <!-- JSON-LD: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Chess Nexus",
+      "url": "https://www.chessnexus.in/",
+      "logo": "https://www.chessnexus.in/logo.png",
+      "sameAs": [],
+      "description": "Chess Nexus is a free online chess training and competition platform offering puzzles, tactics, live races, and leaderboards."
+    }
+    </script>
+
+    <!-- JSON-LD: WebSite — helps Google understand the site as a single entity -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Chess Nexus",
+      "alternateName": "ChessNexus",
+      "url": "https://www.chessnexus.in/"
+    }
+    </script>
+
+    <!-- JSON-LD: SiteNavigationElement — the strongest signal Google uses to
+         build sitelinks. Lists the primary public sections of the site. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Chess Nexus main navigation",
+      "itemListElement": [
+        { "@type": "SiteNavigationElement", "position": 1, "name": "Play Chess Online", "description": "Play live chess against people or the Stockfish engine.", "url": "https://www.chessnexus.in/play-chess-online" },
+        { "@type": "SiteNavigationElement", "position": 2, "name": "Play With Friends", "description": "Play 2-player chess with a friend in a private room.", "url": "https://www.chessnexus.in/play-chess-with-friends" },
+        { "@type": "SiteNavigationElement", "position": 3, "name": "Chess Puzzles", "description": "Solve daily chess puzzles and train tactics.", "url": "https://www.chessnexus.in/chess-puzzles" },
+        { "@type": "SiteNavigationElement", "position": 4, "name": "Arena Tournaments", "description": "Compete in live 3D arena chess tournaments.", "url": "https://www.chessnexus.in/3d-chess-arena-tournament" },
+        { "@type": "SiteNavigationElement", "position": 5, "name": "Masters Games", "description": "Play through famous grandmaster games move by move.", "url": "https://www.chessnexus.in/masters-chess-games" },
+        { "@type": "SiteNavigationElement", "position": 6, "name": "Tactics Race", "description": "Race against others to solve tactics fastest.", "url": "https://www.chessnexus.in/chess-tactics-race" },
+        { "@type": "SiteNavigationElement", "position": 7, "name": "Leaderboard", "description": "See the top players on the global leaderboard.", "url": "https://www.chessnexus.in/leaderboard" },
+        { "@type": "SiteNavigationElement", "position": 8, "name": "Analyse My Game", "description": "Analyse your chess games with accuracy scores.", "url": "https://www.chessnexus.in/analyse-my-chess-game" },
+        { "@type": "SiteNavigationElement", "position": 9, "name": "Chess Study", "description": "Learn with structured chess study lessons.", "url": "https://www.chessnexus.in/chess-study" },
+        { "@type": "SiteNavigationElement", "position": 10, "name": "Log In / Register", "description": "Sign in or create a free Chess Nexus account.", "url": "https://www.chessnexus.in/login" }
+      ]
+    }
+    </script>
+
+    <!-- JSON-LD: FAQPage for SEO rich results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Chess Nexus free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Chess Nexus is completely free. All core features including daily puzzles, tactics training, and live arena races are available at no cost."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What chess features does Chess Nexus offer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Chess Nexus offers daily chess puzzles, live arena races, team race mode, monthly focus challenges, a global leaderboard, chess study system, and tactics training."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I improve my chess rating on Chess Nexus?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Solve daily puzzles, participate in arena races, complete monthly focus challenges, and use the study system to improve your chess rating on Chess Nexus."
+          }
+        }
+      ]
+    }
+    </script>
+    <script type="module" crossorigin="" src="/assets/index-BZMfHtnm.js"></script>
+    <link rel="stylesheet" crossorigin="" href="/assets/index-B2mn-z7R.css">
+  <style data-shake-animation="true">
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(30px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes glassGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
+}
+</style><style data-responsive-styles="true">
+/* Desktop styles - Submit button to the right of chessboard */
+@media (min-width: 769px) {
+  .tournament-layout {
+    gap: 8px !important;
+  }
+  
+  .tournament-center {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 30px !important;
+  }
+  
+  .chessboard-container {
+    flex: 1 !important;
+  }
+  
+  .submit-button-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tournament-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+    align-items: center !important;
+  }
+  
+  .tournament-sidebar {
+    width: 100% !important;
+    max-width: 500px !important;
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+  
+  .tournament-center {
+    order: 2 !important;
+    width: 100% !important;
+    flex-direction: column !important;
+  }
+  
+  .tournament-timer {
+    font-size: 28px !important;
+  }
+  
+  .tournament-notation {
+    max-height: 200px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tournament-layout {
+    gap: 16px !important;
+  }
+  
+  .tournament-sidebar {
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+  
+  .tournament-timer {
+    font-size: 24px !important;
+  }
+  
+  .tournament-notation-list {
+    max-height: 150px !important;
+  }
+  
+  .tournament-action-buttons {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  .tournament-mode-button {
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+  
+  .tournament-submit-button {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+  }
+}
+</style><style data-spin-animation="true">
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style><meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" data-rh="true"><meta property="og:image" content="https://www.chessnexus.in/logo.png" data-rh="true"><meta property="og:type" content="website" data-rh="true"><meta property="og:site_name" content="Chess Nexus" data-rh="true"><meta name="twitter:card" content="summary_large_image" data-rh="true"><meta name="twitter:image" content="https://www.chessnexus.in/logo.png" data-rh="true"><link rel="canonical" href="https://www.chessnexus.in/improve-at-chess" data-rh="true"><meta name="description" content="Improve faster with the Nexus Guide: it studies your own games, finds your weak tactics, replays your mistakes and drills them for you. A free personal training buddy on Chess Nexus." data-rh="true"><meta name="keywords" content="improve at chess, how to improve at chess, get better at chess, personal chess coach, chess weakness training, chess improvement, learn from my chess games, chess training buddy" data-rh="true"><meta property="og:title" content="Improve at Chess — Your Personal Nexus Guide | Chess Nexus" data-rh="true"><meta property="og:description" content="Improve faster with the Nexus Guide: it studies your own games, finds your weak tactics, replays your mistakes and drills them for you. A free personal training buddy on Chess Nexus." data-rh="true"><meta property="og:image:alt" content="Improve at Chess — Your Personal Nexus Guide | Chess Nexus" data-rh="true"><meta property="og:url" content="https://www.chessnexus.in/improve-at-chess" data-rh="true"><meta name="twitter:title" content="Improve at Chess — Your Personal Nexus Guide | Chess Nexus" data-rh="true"><meta name="twitter:description" content="Improve faster with the Nexus Guide: it studies your own games, finds your weak tactics, replays your mistakes and drills them for you. A free personal training buddy on Chess Nexus." data-rh="true"><script type="application/ld+json" data-rh="true">{"@context":"https://schema.org","@type":"WebPage","name":"Improve at Chess — Your Personal Nexus Guide","description":"The Nexus Guide studies your own games, finds your weaknesses, replays your mistakes and drills the tactics you keep missing — a personal training buddy on Chess Nexus, free.","url":"https://www.chessnexus.in/improve-at-chess"}</script><script type="application/ld+json" data-rh="true">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I improve at chess with Chess Nexus?","acceptedAnswer":{"@type":"Answer","text":"Play games on Chess Nexus, then open your dashboard — the Nexus Guide studies those games, finds the tactics you keep missing, and gives you targeted practice on your exact weaknesses. Consistent, personalised training is the fastest proven way to raise your rating."}},{"@type":"Question","name":"What is the Nexus Guide?","acceptedAnswer":{"@type":"Answer","text":"The Nexus Guide is your personal training buddy inside Chess Nexus. It reviews your own games, points out your weaknesses, replays the exact mistakes you made, and lets you drill the themes you're weakest at — all from your real games, for free."}},{"@type":"Question","name":"Do I need to upload my games?","acceptedAnswer":{"@type":"Answer","text":"No. The Nexus Guide works automatically from the tournament games you play on Chess Nexus — bullet, blitz or rapid. Just play, then let the Guide analyse. Nothing to import or set up."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The Nexus Guide, its game analysis, weakness training and monthly progress report are all part of the free Chess Nexus platform — no ads, no paywall on improvement."}},{"@type":"Question","name":"How is this different from just analysing a game?","acceptedAnswer":{"@type":"Answer","text":"A game analysis reviews one game you choose. The Nexus Guide is ongoing: it studies many of your games, remembers your recurring weaknesses, warns you about repeat mistakes, and builds targeted practice around them over time — more like a coach than a one-off report."}}]}</script></head>
+  <body class="no-header-padding">
+    <div id="root"><div class="user-layout-container"><div class="user-content-wrapper"><style>
+          @import url('https://fonts.googleapis.com/css2?family=Oleo+Script+Swash+Caps&family=Poppins:wght@400;500;600;700&display=swap');
+          
+          @keyframes slideIn {
+            from {
+              opacity: 0;
+              transform: scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+
+          @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+          }
+
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+        </style><div style="width: 170px; background: rgba(10, 10, 10, 0.95); position: fixed; top: 0px; left: 0px; height: 100vh; box-shadow: rgba(0, 0, 0, 0.5) 2px 0px 20px; z-index: 100; display: flex; flex-direction: column; font-family: Poppins, sans-serif; border-right: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); transform: translateX(0px); opacity: 1; visibility: visible; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);"><div style="display: flex; flex-direction: column; height: 100%; padding: 20px 0px; position: relative;"><nav style="display: flex; flex-direction: column; gap: 8px; padding: 0px 10px 0px 3px; flex: 1 1 0%; overflow-y: auto;"><div title="Chess Nexus" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 25px; font-weight: 500; font-family: &quot;Oleo Script Swash Caps&quot;, cursive; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="flex: 1 1 0%; font-weight: 600;">Chess Nexus</span></div><div title="Dashboard" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏠</span><span style="flex: 1 1 0%; font-weight: 600;">Dashboard</span></div><div title="Puzzles Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏛️</span><span style="flex: 1 1 0%; font-weight: 600;">Puzzles Hub</span></div><div title="Race Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏁</span><span style="flex: 1 1 0%; font-weight: 600;">Race Hub</span></div><div title="Study" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">📚</span><span style="flex: 1 1 0%; font-weight: 600;">Study</span></div><div title="Play" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🎮</span><span style="flex: 1 1 0%; font-weight: 600;">Play</span></div><div title="3D Arena" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🎮</span><span style="flex: 1 1 0%; font-weight: 600;">3D Arena</span></div><div title="Analyse My Games" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🔍</span><span style="flex: 1 1 0%; font-weight: 600;">Analysis</span></div><div title="Social Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🌐</span><span style="flex: 1 1 0%; font-weight: 600;">Social Hub</span></div></nav><div style="margin-top: auto; padding: 0px 10px;"><div style="display: flex; align-items: center; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; margin: 10px 0px 20px; overflow: hidden;"><button title="Search Players" style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; padding: 11px 0px; background: transparent; border: none; cursor: pointer; color: rgb(148, 163, 184); transition: background 0.2s, color 0.2s;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button><div style="width: 1px; height: 20px; background: rgba(255, 255, 255, 0.13); flex-shrink: 0;"></div><button title="Login" style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; padding: 11px 0px; background: transparent; border: none; cursor: pointer; color: rgb(148, 163, 184); transition: background 0.2s, color 0.2s;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg></button></div></div></div></div><div class="user-main-content with-sidebar desktop "><div class="mkt-page"><div class="mkt-inner"><header class="mkt-hero"><div class="mkt-hero-icon">🧭</div><h1>Improve at Chess — Meet Your Nexus Guide</h1><p class="mkt-hero-sub">Most players do random puzzles and never fix what's actually losing them games. The Nexus Guide studies your own games, finds your real weaknesses, and trains you on them — your personal chess training buddy, free.</p><div class="mkt-free-badge">✅ 100% Free · No Ads, ever</div><div class="mkt-cta-row"><a class="mkt-btn mkt-btn-primary" href="/dashboard">Open your Nexus Guide</a><a class="mkt-btn mkt-btn-ghost" href="/features">Browse all features</a></div></header><section class="mkt-section"><h2>A training buddy that knows your game</h2><p class="mkt-section-lead">The Nexus Guide isn't a wall of engine lines. It talks to you about your own play, points out what to fix first, and turns it into practice — the way a good coach would.</p><div class="mkt-grid"><div class="mkt-card"><div class="mkt-card-icon">🔎</div><h3>It studies your own games</h3><p>The Nexus Guide looks through your recent tournament games — bullet, blitz or rapid — and finds the exact moments you went wrong. No setup, no uploading: it works from the games you already played on Chess Nexus.</p><a class="mkt-card-cta" href="/dashboard">Meet your Nexus Guide →</a></div><div class="mkt-card"><div class="mkt-card-icon">🎯</div><h3>It finds your real weaknesses</h3><p>Instead of random puzzles, the Guide spots the patterns you keep missing — forks, pins, skewers, hanging pieces, back-rank mates and more — and tells you which one is costing you the most games right now.</p><a class="mkt-card-cta" href="/dashboard">See your weak spots →</a></div><div class="mkt-card"><div class="mkt-card-icon">🚨</div><h3>It warns you about repeat mistakes</h3><p>When you lose to the same idea again and again, the Guide raises a clear alert — “you've lost to forks 5 times, practise this now” — so you fix the leak that's actually holding your rating back.</p><a class="mkt-card-cta" href="/dashboard">Fix your biggest leak →</a></div><div class="mkt-card"><div class="mkt-card-icon">♟️</div><h3>It replays your exact mistakes</h3><p>The Guide shows you the real position from your game — “you played Qd4 here, find the better move” — and lets you solve it yourself, with the engine's best line and a plain-English explanation of why it wins.</p><a class="mkt-card-cta" href="/dashboard">Redo your mistakes →</a></div><div class="mkt-card"><div class="mkt-card-icon">🏋️</div><h3>It drills the weakness for you</h3><p>One tap turns your weakest theme into a focused training set. You practise the exact tactic you're bad at until it sticks — the fastest way to turn a weakness into a strength.</p><a class="mkt-card-cta" href="/training/healthy-mix">Train a weakness →</a></div><div class="mkt-card"><div class="mkt-card-icon">📅</div><h3>It tracks your progress each month</h3><p>A monthly report shows your blunders per game, mistakes found and your focus area — and compares this month to last, so you can actually see yourself improving over time.</p><a class="mkt-card-cta" href="/dashboard">See your progress →</a></div></div></section><div class="mkt-callout"><div class="mkt-callout-icon">📈</div><div><h2>Fix the leak, not the symptom</h2><p>Rating stuck? It's usually the same handful of mistakes repeating. The Nexus Guide finds that pattern from your real games and drills it out of your play — so your improvement is targeted, not random.</p></div></div><section class="mkt-section"><h2>Why train with the Nexus Guide</h2><p class="mkt-section-lead">Improvement comes from working on your weaknesses, not from grinding puzzles you're already good at. The Nexus Guide makes that automatic: it studies your games, shows you exactly where you're losing points, and gives you focused practice to close the gap — all free, no ads.</p><div class="mkt-cta-row" style="justify-content: flex-start;"><a class="mkt-btn mkt-btn-primary" href="/dashboard">Open your Nexus Guide</a><a class="mkt-btn mkt-btn-ghost" href="/analyse-my-chess-game">Analyse a single game</a><a class="mkt-btn mkt-btn-ghost" href="/chess-puzzles">Train tactics</a></div></section><section class="mkt-section"><h2>Frequently asked questions</h2><div class="mkt-faq"><div class="mkt-faq-item"><h3>How do I improve at chess with Chess Nexus?</h3><p>Play games on Chess Nexus, then open your dashboard — the Nexus Guide studies those games, finds the tactics you keep missing, and gives you targeted practice on your exact weaknesses. Consistent, personalised training is the fastest proven way to raise your rating.</p></div><div class="mkt-faq-item"><h3>What is the Nexus Guide?</h3><p>The Nexus Guide is your personal training buddy inside Chess Nexus. It reviews your own games, points out your weaknesses, replays the exact mistakes you made, and lets you drill the themes you're weakest at — all from your real games, for free.</p></div><div class="mkt-faq-item"><h3>Do I need to upload my games?</h3><p>No. The Nexus Guide works automatically from the tournament games you play on Chess Nexus — bullet, blitz or rapid. Just play, then let the Guide analyse. Nothing to import or set up.</p></div><div class="mkt-faq-item"><h3>Is it really free?</h3><p>Yes. The Nexus Guide, its game analysis, weakness training and monthly progress report are all part of the free Chess Nexus platform — no ads, no paywall on improvement.</p></div><div class="mkt-faq-item"><h3>How is this different from just analysing a game?</h3><p>A game analysis reviews one game you choose. The Nexus Guide is ongoing: it studies many of your games, remembers your recurring weaknesses, warns you about repeat mistakes, and builds targeted practice around them over time — more like a coach than a one-off report.</p></div></div></section><section class="mkt-explore" aria-label="Explore more features"><h2>Explore more of Chess Nexus</h2><p class="mkt-section-lead">Every feature is free with no ads. Pick where you want to grow next.</p><div class="mkt-grid"><a class="mkt-card" href="/chess-puzzles"><div class="mkt-card-icon">🧩</div><h3>Chess Puzzles</h3><p>Daily puzzles from super-grandmaster games, the Monthly Focus challenge, TTT and Bingo. A free, fun way to train tactics.</p><span class="mkt-card-cta">Learn more →</span></a><a class="mkt-card" href="/chess-tactics-race"><div class="mkt-card-icon">🏁</div><h3>Puzzle Race</h3><p>Solve as many tactics as you can against the clock. Timed puzzle races by theme, with live leaderboards.</p><span class="mkt-card-cta">Learn more →</span></a><a class="mkt-card" href="/play-chess-online"><div class="mkt-card-icon">♟️</div><h3>Play Chess Online</h3><p>Play live games against other members or challenge the Stockfish engine — all free, no ads.</p><span class="mkt-card-cta">Learn more →</span></a><a class="mkt-card" href="/play-chess-with-friends"><div class="mkt-card-icon">🤝</div><h3>Play With Friends</h3><p>Create a private room, share a link and play 2-player chess with a friend in real time — free, no ads.</p><span class="mkt-card-cta">Learn more →</span></a><a class="mkt-card" href="/masters-chess-games"><div class="mkt-card-icon">👑</div><h3>Masters Games</h3><p>Play through famous grandmaster and World Champion games move by move, and guess the master's move — free.</p><span class="mkt-card-cta">Learn more →</span></a><a class="mkt-card" href="/analyse-my-chess-game"><div class="mkt-card-icon">🔬</div><h3>Analyse My Game</h3><p>Get a move-by-move review with a CAPS accuracy score, blunder detection, piece heatmaps and session badges.</p><span class="mkt-card-cta">Learn more →</span></a><a class="mkt-card" href="/3d-chess-arena-tournament"><div class="mkt-card-icon">🏟️</div><h3>3D Chess Arena</h3><p>Enter an immersive 3D world as an avatar — play real-time tournaments at the table and solve tactics in a 5-stage Puzzle Hall with live leaderboards and chat.</p><span class="mkt-card-cta">Learn more →</span></a><a class="mkt-card" href="/chess-study"><div class="mkt-card-icon">📚</div><h3>Chess Study</h3><p>Structured lessons and tests — basic tactics, openings, endgames and positional play — chapter by chapter.</p><span class="mkt-card-cta">Learn more →</span></a><a class="mkt-card" href="/chess-community"><div class="mkt-card-icon">🤝</div><h3>Chess Community</h3><p>Follow friends, join clubs, see live activity feeds and weekly leaderboards in the Chess Nexus social hub.</p><span class="mkt-card-cta">Learn more →</span></a></div></section></div></div></div></div><style>
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+          .site-footer {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+          }
+
+          .footer-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+          }
+
+          .footer-logo {
+            height: 32px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0.9);
+          }
+
+          .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #06b6d4;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            transition: all 0.3s ease;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          }
+
+          .contact-link:hover {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: rgba(6, 182, 212, 0.4);
+            color: #67e8f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+          }
+
+          .contact-icon {
+            font-size: 16px;
+            filter: drop-shadow(0 1px 2px rgba(6, 182, 212, 0.3));
+          }
+
+          .footer-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+
+          .footer-nav a {
+            color: #06b6d4;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.25s ease;
+          }
+
+          .footer-nav a:hover {
+            color: #67e8f9;
+            text-decoration: underline;
+          }
+
+          .footer-sep {
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 13px;
+          }
+
+          .footer-text {
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+          }
+
+          .footer-text-logo {
+            height: 22px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0.9);
+          }
+
+          /* Subtle gradient overlay effect */
+          .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+              transparent,
+              rgba(6, 182, 212, 0.3) 30%,
+              rgba(16, 185, 129, 0.3) 70%,
+              transparent
+            );
+          }
+
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            .site-footer {
+              padding: 16px;
+            }
+
+            .footer-content {
+              flex-direction: column;
+              gap: 10px;
+            }
+
+            .contact-link {
+              font-size: 13px;
+              padding: 6px 12px;
+            }
+
+            .footer-text {
+              font-size: 12px;
+            }
+          }
+        </style><footer class="site-footer"><div class="footer-content"><img src="/logo.png" alt="Chess Nexus Logo" class="footer-logo"><nav class="footer-nav"><a href="/">Home</a><span class="footer-sep">|</span><a href="/features">Features</a><span class="footer-sep">|</span><a href="/members">Members</a><span class="footer-sep">|</span><a href="/contact">Contact Us</a><span class="footer-sep">|</span><a href="/report">Report</a><span class="footer-sep">|</span><a href="/privacy-policy">Privacy Policy</a><span class="footer-sep">|</span><a href="/terms">Terms</a><span class="footer-sep">|</span><a href="/refund-policy">Refund</a></nav><p class="footer-text">© 2026 CHESS NEXUS<img src="/logo.png" alt="Chess Nexus Logo" class="footer-text-logo"></p></div></footer></div></div>
+  
+
+</body></html>

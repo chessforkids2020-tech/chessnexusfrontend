@@ -58,6 +58,14 @@ export const FEATURES = [
       "Get a move-by-move review with a CAPS accuracy score, blunder detection, piece heatmaps and session badges.",
   },
   {
+    slug: "/improve-at-chess",
+    appPath: "/dashboard",
+    icon: "🧭",
+    title: "Improve at Chess",
+    blurb:
+      "Your Nexus Guide studies your own games, finds your weaknesses, replays your mistakes and drills the tactics you keep missing — free.",
+  },
+  {
     slug: "/3d-chess-arena-tournament",
     appPath: "/3d-chess-arena-tournament",
     icon: "🏟️",

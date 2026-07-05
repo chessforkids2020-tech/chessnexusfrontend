@@ -1,11 +1,12 @@
 // src/pages/SocialHubPage.jsx
 import React, { useEffect, useState, useCallback } from 'react';
 import PlayerName from '../components/PlayerName';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
 import Chat from './Chat';
 import BestRacers from '../components/BestRacers';
+import MonthlyFocusLeaderboard from './monthlyFocus/MonthlyFocusLeaderboard';
 import AboutFeatureCTA from '../components/marketing/AboutFeatureCTA';
 import UserAvatar from '../components/UserAvatar';
 import './SocialHubPage.css';
@@ -387,6 +388,7 @@ function PlayersTab() {
   const [daily, setDaily]     = useState([]);
   const [arena, setArena]     = useState({ bullet: [], blitz: [], rapid: [], teamBullet: [], teamBlitz: [], teamRapid: [], chess960: [], marathon: [] });
   const [arenaTab, setArenaTab] = useState('standard'); // best-arena card active tab
+  const [adminFocusId, setAdminFocusId] = useState(null); // active admin Monthly Focus
   const [loading, setLoading] = useState(true);
 
   // ── Player search ──────────────────────────────────────────────────────────
@@ -426,11 +428,16 @@ function PlayersTab() {
       api.get('/api/social/most-active').then(r => r.data).catch(() => []),
       fetchDaily(),
       api.get('/api/social/arena-weekly-leaders').then(r => r.data).catch(() => ({ bullet: [], blitz: [], rapid: [], teamBullet: [], teamBlitz: [], teamRapid: [], chess960: [], marathon: [] })),
-    ]).then(([a, d, ar]) => {
+      api.get('/api/public/monthly-focus/current').then(r => r.data).catch(() => null),
+    ]).then(([a, d, ar, mf]) => {
       if (!alive) return;
       setActive(Array.isArray(a) ? a : []);
       setDaily(Array.isArray(d) ? d : []);
       setArena(ar || { bullet: [], blitz: [], rapid: [], teamBullet: [], teamBlitz: [], teamRapid: [], chess960: [], marathon: [] });
+      // Pick the admin-run Monthly Focus (same logic as the old homepage card).
+      const all = mf ? (mf.focuses || (mf.focus ? [mf.focus] : [])) : [];
+      const adminFocus = all.find(f => f.createdBy?.role === 'admin' || !f.createdBy);
+      if (adminFocus) setAdminFocusId(adminFocus._id);
     }).finally(() => { if (alive) setLoading(false); });
 
     // Refresh daily-puzzle ratings every 20s for near real-time updates
@@ -580,6 +587,19 @@ function PlayersTab() {
           <PanelHead icon="🏁" title="Best Racers" subtitle="Top scores across race formats" accent="emerald" />
           <div className="pl-racers-wrap">
             <BestRacers compact />
+          </div>
+        </section>
+
+        {/* Monthly Focus — Top Players (moved here from the homepage) */}
+        <section className="pl-panel pl-panel-amber">
+          <PanelHead icon="🏆" title="Monthly Focus — Top Players" subtitle="This month's focus-challenge leaders" accent="amber" />
+          <div className="pl-racers-wrap">
+            <MonthlyFocusLeaderboard compact limit={5} focusId={adminFocusId} />
+          </div>
+          <div style={{ textAlign: 'center', marginTop: 12 }}>
+            <Link to="/monthly-focus/leaderboard" className="pl-cta-btn" style={{ display: 'inline-block', textDecoration: 'none' }}>
+              View full leaderboard →
+            </Link>
           </div>
         </section>
 
