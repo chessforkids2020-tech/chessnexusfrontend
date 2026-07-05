@@ -270,6 +270,7 @@
 }
 .sp-month-of { font-size: 16px; font-weight: 600; color: var(--sp-t3); }
 .sp-month-label { font-size: 12px; color: var(--sp-t2); margin-top: 4px; }
+.sp-month-sub { font-size: 10.5px; color: var(--sp-t3); }
 .sp-month-note {
   margin-top: 14px;
   font-size: 13px;
@@ -300,6 +301,17 @@
 
 /* Chess-activity section title spacing */
 .sp-stats-title { margin: 6px 2px -4px; }
+
+/* Rating trend (improvement over the window) */
+.sp-trend {
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 7px;
+  vertical-align: middle;
+  -webkit-text-fill-color: currentColor;
+}
+.sp-trend-up { color: #34d399; }
+.sp-trend-down { color: #fb7185; }
 
 /* Responsive */
 @media (max-width: 620px) {

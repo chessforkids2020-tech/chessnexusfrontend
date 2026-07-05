@@ -73,10 +73,12 @@ export default function StudentProgressPage() {
   const puzzleAccuracy = pz?.accuracy ?? null;
   const puzzleStreak = pz?.streak ?? 0;
   const puzzlesSolved = pz?.solved ?? 0;
+  const puzzleAttempts = pz?.attempts ?? null;
+  const puzzleFailed = pz?.failed ?? null;
+  const puzzleTrend = pz?.trend ?? null; // rating change over the window (+/-)
 
-  // Games & tournaments.
-  const gamesPlayed = data.games?.played || 0;
-  const tournaments = data.games?.tournaments || 0;
+  // Tournaments joined in the last 30 days (the app's "games" are tournaments).
+  const tournaments30d = data.tournaments30d || 0;
 
   // This month's coaching data.
   const attendance = data.attendance || { present: 0, total: 0 };
@@ -135,7 +137,7 @@ export default function StudentProgressPage() {
               <div className="sp-month-value">
                 {assignments.completed}<span className="sp-month-of">/{assignments.total || 0}</span>
               </div>
-              <div className="sp-month-label">Assignments done</div>
+              <div className="sp-month-label">Assignments done<br /><span className="sp-month-sub">last 30 days</span></div>
             </div>
 
             {assignments.avgAccuracy != null && (
@@ -158,18 +160,25 @@ export default function StudentProgressPage() {
           </div>
           {assignments.pending > 0 && (
             <p className="sp-month-note">
-              {assignments.pending} assignment{assignments.pending === 1 ? "" : "s"} still pending this month.
+              {assignments.pending} assignment{assignments.pending === 1 ? "" : "s"} still pending (last 30 days).
             </p>
           )}
         </section>
 
-        {/* ── Chess stats ── */}
-        <div className="sp-section-title sp-stats-title">♟️ Chess activity</div>
+        {/* ── Puzzle training detail ── */}
+        <div className="sp-section-title sp-stats-title">🧩 Puzzle training</div>
         <section className="sp-stats">
           {puzzleRating != null && (
             <div className="sp-card sp-stat">
               <div className="sp-stat-icon">🧩</div>
-              <div className="sp-stat-value">{puzzleRating}</div>
+              <div className="sp-stat-value">
+                {puzzleRating}
+                {puzzleTrend != null && puzzleTrend !== 0 && (
+                  <span className={`sp-trend ${puzzleTrend > 0 ? "sp-trend-up" : "sp-trend-down"}`}>
+                    {puzzleTrend > 0 ? `▲ ${puzzleTrend}` : `▼ ${Math.abs(puzzleTrend)}`}
+                  </span>
+                )}
+              </div>
               <div className="sp-stat-label">Puzzle rating</div>
             </div>
           )}
@@ -185,27 +194,37 @@ export default function StudentProgressPage() {
             <div className="sp-stat-value">{puzzlesSolved}</div>
             <div className="sp-stat-label">Puzzles solved</div>
           </div>
-          {gamesPlayed > 0 && (
+          {puzzleAttempts != null && (
             <div className="sp-card sp-stat">
-              <div className="sp-stat-icon">♟️</div>
-              <div className="sp-stat-value">{gamesPlayed}</div>
-              <div className="sp-stat-label">Games played</div>
-            </div>
-          )}
-          {tournaments > 0 && (
-            <div className="sp-card sp-stat">
-              <div className="sp-stat-icon">🏆</div>
-              <div className="sp-stat-value">{tournaments}</div>
-              <div className="sp-stat-label">Tournaments</div>
+              <div className="sp-stat-icon">📊</div>
+              <div className="sp-stat-value">{puzzleAttempts}</div>
+              <div className="sp-stat-label">Puzzles attempted</div>
             </div>
           )}
           {puzzleStreak > 0 && (
             <div className="sp-card sp-stat">
               <div className="sp-stat-icon">🔥</div>
               <div className="sp-stat-value">{puzzleStreak}</div>
-              <div className="sp-stat-label">Solve streak</div>
+              <div className="sp-stat-label">Best solve streak</div>
             </div>
           )}
+          {puzzleFailed != null && puzzleFailed > 0 && (
+            <div className="sp-card sp-stat">
+              <div className="sp-stat-icon">❌</div>
+              <div className="sp-stat-value">{puzzleFailed}</div>
+              <div className="sp-stat-label">Puzzles missed</div>
+            </div>
+          )}
+        </section>
+
+        {/* ── Tournaments (last 30 days) ── */}
+        <div className="sp-section-title sp-stats-title">🏆 Tournaments (last 30 days)</div>
+        <section className="sp-stats">
+          <div className="sp-card sp-stat">
+            <div className="sp-stat-icon">🏆</div>
+            <div className="sp-stat-value">{tournaments30d}</div>
+            <div className="sp-stat-label">Tournaments played</div>
+          </div>
         </section>
 
         {/* Encouraging note + CTA */}
