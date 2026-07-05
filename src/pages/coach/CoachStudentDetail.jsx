@@ -176,27 +176,36 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
             )}
           </p>
 
-          {/* Share a clean, read-only progress report with this student's parent. */}
-          {(student?.displayName || student?.username) && (
-            <button
-              type="button"
-              className="csd-share-progress"
-              title="Copy a read-only progress link to send to this student's parent"
-              onClick={async (e) => {
-                const dn = student.displayName || student.username;
-                const url = `${window.location.origin}/progress/${encodeURIComponent(dn)}`;
-                const btn = e.currentTarget;
-                const prev = btn.textContent;
+          {/* Share a private, read-only progress report with this student's parent.
+              Fetches an unguessable token so the link can't be guessed from a name. */}
+          <button
+            type="button"
+            className="csd-share-progress"
+            title="Copy a private progress link to send to this student's parent"
+            onClick={async (e) => {
+              const btn = e.currentTarget;
+              const prev = btn.textContent;
+              btn.textContent = 'Generating link…';
+              btn.disabled = true;
+              try {
+                const r = await api.get(`/api/coach/students/${studentLinkId}/report-token`);
+                const url = `${window.location.origin}/progress/${r.data.token}`;
                 try {
                   await navigator.clipboard.writeText(url);
                   btn.textContent = '✓ Link copied — send it to the parent';
-                  setTimeout(() => { btn.textContent = prev; }, 2600);
-                } catch { window.prompt('Copy this progress link and send it to the parent:', url); }
-              }}
-            >
-              🔗 Send progress to parent
-            </button>
-          )}
+                } catch {
+                  window.prompt('Copy this progress link and send it to the parent:', url);
+                  btn.textContent = prev;
+                }
+              } catch {
+                btn.textContent = 'Could not generate link — try again';
+              } finally {
+                setTimeout(() => { btn.textContent = prev; btn.disabled = false; }, 2600);
+              }
+            }}
+          >
+            🔗 Send progress to parent
+          </button>
         </div>
         <div className="csd-rating">
           <span>Live rating</span>

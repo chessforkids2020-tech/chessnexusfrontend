@@ -3,21 +3,20 @@ import { useParams, Link } from "react-router-dom";
 import "./StudentProgressPage.css";
 
 /**
- * PARENT / STUDENT PROGRESS REPORT — a clean, read-only, share-friendly page.
+ * PARENT PROGRESS REPORT — clean, read-only, share-friendly.
  *
- * Built for a parent (or the coach) to open a single link and instantly see how
- * a student is doing: rating, activity streak, puzzle accuracy, this month's
- * focus and badges. Uses the SAME public endpoint as the public profile
- * (/api/public/profile/:displayName) so there is NO new backend.
+ * A coach shares /progress/:token with a parent. The token (unguessable) is
+ * resolved server-side by GET /api/public/report/:token, which returns the
+ * student's chess stats PLUS this month's coaching data (attendance, payment
+ * status, assignments). No login required — the secret token is the gate.
  *
- * Route: /progress/:displayName  (public, no login)
+ * Route: /progress/:token
  */
 export default function StudentProgressPage() {
-  const { displayName } = useParams();
+  const { token } = useParams();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -25,11 +24,9 @@ export default function StudentProgressPage() {
       setLoading(true);
       try {
         const apiBase = import.meta.env.VITE_API_URL || window.location.origin;
-        const res = await fetch(
-          `${apiBase}/api/public/profile/${encodeURIComponent(displayName)}`
-        );
+        const res = await fetch(`${apiBase}/api/public/report/${encodeURIComponent(token)}`);
         if (res.status === 404) {
-          if (alive) { setErr(`No student named "${displayName}" found.`); setLoading(false); }
+          if (alive) { setErr("This progress link is invalid or has expired."); setLoading(false); }
           return;
         }
         if (!res.ok) throw new Error("Could not load this progress report.");
@@ -42,15 +39,7 @@ export default function StudentProgressPage() {
       }
     })();
     return () => { alive = false; };
-  }, [displayName]);
-
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
-    } catch { /* clipboard blocked — ignore */ }
-  };
+  }, [token]);
 
   if (loading) {
     return (
@@ -66,7 +55,7 @@ export default function StudentProgressPage() {
       <div className="sp-root">
         <div className="sp-bg" />
         <div className="sp-error">
-          <div className="sp-error-icon">🔍</div>
+          <div className="sp-error-icon">🔒</div>
           <p>{err}</p>
           <Link to="/" className="sp-btn sp-btn-ghost">Go to Chess Nexus</Link>
         </div>
@@ -75,36 +64,33 @@ export default function StudentProgressPage() {
   }
 
   const name = data.displayName || data.username;
+  const month = data.month || "";
 
-  // Puzzle stats — the most meaningful number for a parent. Prefer the 7-day
-  // window (more representative than 24h), fall back to 24h, then live rating.
+  // Puzzle stats — prefer the 7-day window, fall back to 24h, then live rating.
   const psr = data.puzzleStatsRange || {};
   const pz = psr["7d"] || psr["24h"] || null;
   const puzzleRating = pz?.rating ?? data.liveRating ?? null;
   const puzzleAccuracy = pz?.accuracy ?? null;
   const puzzleStreak = pz?.streak ?? 0;
-  const puzzlesSolved = pz?.solved ?? (data.trainingStats?.correct || 0);
+  const puzzlesSolved = pz?.solved ?? 0;
 
-  // Games & tournaments played.
-  const arena = data.arenaSummary || {};
-  const gamesPlayed = arena.totalGamesPlayed || 0;
-  const tournaments = arena.totalTournaments || 0;
+  // Games & tournaments.
+  const gamesPlayed = data.games?.played || 0;
+  const tournaments = data.games?.tournaments || 0;
 
-  // Overall activity.
-  const activity = data.activity || {};
-  const stats = activity.stats || {};
-  const dayStreak = stats.currentStreak || 0;
-  const totalDays = stats.totalDays || 0;
-  const minutes = stats.totalMinutes || 0;
-  const hours = Math.round((minutes / 60) * 10) / 10;
-  const badges = data.badges || [];
+  // This month's coaching data.
+  const attendance = data.attendance || { present: 0, total: 0 };
+  const payment = data.payment || { status: "unknown" };
+  const assignments = data.assignments || { total: 0, completed: 0, pending: 0, avgAccuracy: null };
+
   const memberSince = data.memberSince
     ? new Date(data.memberSince).toLocaleDateString(undefined, { month: "short", year: "numeric" })
     : null;
 
-  // This month's focus challenge, if any.
-  const focuses = data.monthlyFocus?.focuses || [];
-  const focus = focuses[0] || null;
+  const paymentMeta = {
+    paid: { label: "Paid", cls: "sp-pay-paid", icon: "✓" },
+    due: { label: "Payment due", cls: "sp-pay-due", icon: "•" },
+  }[payment.status] || null; // 'na'/'unknown' → don't show the payment card
 
   return (
     <div className="sp-root">
@@ -117,16 +103,14 @@ export default function StudentProgressPage() {
             <img src="/logo.png" alt="Chess Nexus" className="sp-brand-logo" />
             <span className="sp-brand-name">Chess<span>Nexus</span></span>
           </div>
-          <button className="sp-share" onClick={copyLink}>
-            {copied ? "✓ Link copied" : "🔗 Share this report"}
-          </button>
+          {month && <span className="sp-month-pill">📅 {month}</span>}
         </header>
 
         {/* Hero — who this is about */}
         <section className="sp-hero sp-card">
           <div className="sp-hero-avatar">{(name || "?")[0].toUpperCase()}</div>
           <div>
-            <div className="sp-hero-eyebrow">Chess progress report</div>
+            <div className="sp-hero-eyebrow">Progress report{month ? ` · ${month}` : ""}</div>
             <h1 className="sp-hero-name">{name}</h1>
             <p className="sp-hero-sub">
               {memberSince ? `Training on Chess Nexus since ${memberSince}` : "Training on Chess Nexus"}
@@ -134,7 +118,53 @@ export default function StudentProgressPage() {
           </div>
         </section>
 
-        {/* Headline stats */}
+        {/* ── This month's class summary (attendance / payment / assignments) ── */}
+        <section className="sp-card sp-month">
+          <div className="sp-section-title">📋 This month's class summary</div>
+          <div className="sp-month-grid">
+            <div className="sp-month-item">
+              <div className="sp-month-icon">🗓️</div>
+              <div className="sp-month-value">
+                {attendance.present}<span className="sp-month-of">/{attendance.total || 0}</span>
+              </div>
+              <div className="sp-month-label">Classes attended</div>
+            </div>
+
+            <div className="sp-month-item">
+              <div className="sp-month-icon">📝</div>
+              <div className="sp-month-value">
+                {assignments.completed}<span className="sp-month-of">/{assignments.total || 0}</span>
+              </div>
+              <div className="sp-month-label">Assignments done</div>
+            </div>
+
+            {assignments.avgAccuracy != null && (
+              <div className="sp-month-item">
+                <div className="sp-month-icon">🎯</div>
+                <div className="sp-month-value">{assignments.avgAccuracy}%</div>
+                <div className="sp-month-label">Assignment accuracy</div>
+              </div>
+            )}
+
+            {paymentMeta && (
+              <div className="sp-month-item">
+                <div className="sp-month-icon">💳</div>
+                <div className={`sp-pay-badge ${paymentMeta.cls}`}>
+                  {paymentMeta.icon} {paymentMeta.label}
+                </div>
+                <div className="sp-month-label">Fee status</div>
+              </div>
+            )}
+          </div>
+          {assignments.pending > 0 && (
+            <p className="sp-month-note">
+              {assignments.pending} assignment{assignments.pending === 1 ? "" : "s"} still pending this month.
+            </p>
+          )}
+        </section>
+
+        {/* ── Chess stats ── */}
+        <div className="sp-section-title sp-stats-title">♟️ Chess activity</div>
         <section className="sp-stats">
           {puzzleRating != null && (
             <div className="sp-card sp-stat">
@@ -176,70 +206,22 @@ export default function StudentProgressPage() {
               <div className="sp-stat-label">Solve streak</div>
             </div>
           )}
-          <div className="sp-card sp-stat">
-            <div className="sp-stat-icon">📅</div>
-            <div className="sp-stat-value">{totalDays}</div>
-            <div className="sp-stat-label">Active days</div>
-          </div>
-          {dayStreak > 0 && (
-            <div className="sp-card sp-stat">
-              <div className="sp-stat-icon">📆</div>
-              <div className="sp-stat-value">{dayStreak}</div>
-              <div className="sp-stat-label">Day streak</div>
-            </div>
-          )}
-          {hours > 0 && (
-            <div className="sp-card sp-stat">
-              <div className="sp-stat-icon">⏱️</div>
-              <div className="sp-stat-value">{hours}h</div>
-              <div className="sp-stat-label">Time practised</div>
-            </div>
-          )}
         </section>
-
-        {/* This month's focus */}
-        {focus && (
-          <section className="sp-card sp-focus">
-            <div className="sp-section-title">🎯 This month's focus</div>
-            <p className="sp-focus-name">{focus.title || focus.name || "Monthly Focus challenge"}</p>
-            <p className="sp-focus-sub">
-              {name} is taking part in this month's guided training challenge on Chess Nexus.
-            </p>
-          </section>
-        )}
-
-        {/* Achievements */}
-        {badges.length > 0 && (
-          <section className="sp-card sp-badges">
-            <div className="sp-section-title">🏅 Achievements earned</div>
-            <div className="sp-badge-row">
-              {badges.slice(0, 12).map((b, i) => (
-                <div key={i} className="sp-badge" title={b.name || b.label || ""}>
-                  <span className="sp-badge-icon">{b.icon || b.emoji || "🏅"}</span>
-                  <span className="sp-badge-name">{b.name || b.label || "Badge"}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Encouraging note + CTA */}
         <section className="sp-card sp-note">
           <p>
-            This report is generated automatically from {name}'s activity on
-            Chess Nexus — a free platform for learning chess through puzzles,
-            games and guided practice.
+            This report is generated from {name}'s activity on Chess Nexus — a
+            platform for learning chess through puzzles, games and guided,
+            coach-led practice.
           </p>
           <div className="sp-note-actions">
-            <Link to={`/player/${encodeURIComponent(name)}`} className="sp-btn sp-btn-primary">
-              View full profile →
-            </Link>
-            <Link to="/" className="sp-btn sp-btn-ghost">About Chess Nexus</Link>
+            <Link to="/" className="sp-btn sp-btn-primary">About Chess Nexus →</Link>
           </div>
         </section>
 
         <footer className="sp-foot">
-          Powered by <Link to="/">Chess Nexus</Link> · A read-only progress report
+          Powered by <Link to="/">Chess Nexus</Link> · A private, read-only progress report
         </footer>
       </div>
     </div>

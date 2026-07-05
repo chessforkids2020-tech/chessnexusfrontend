@@ -317,8 +317,8 @@ export default function App() {
             <UserDashboard />
           </UserLayout>
         } />
-        {/* Parent/student progress report — clean, read-only, shareable link */}
-        <Route path="/progress/:displayName" element={<StudentProgressPage />} />
+        {/* Parent progress report — tokenized, read-only, shareable link */}
+        <Route path="/progress/:token" element={<StudentProgressPage />} />
         {/* Public player Puzzle Dashboard — spectators can view another user's */}
         <Route path="/player/:displayName/puzzle-dashboard" element={
           <UserLayout>
