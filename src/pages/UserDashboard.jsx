@@ -1450,25 +1450,6 @@ export default function UserDashboard() {
                       <CountryFlag country={user.country} height={18} />
                     </span>
                   )}
-                  {/* Share a clean, read-only progress report — for parents/coaches. */}
-                  <button
-                    type="button"
-                    className="welcome-meta-pill dash-share-progress"
-                    title="Copy a read-only progress link to share with a parent or coach"
-                    onClick={async (e) => {
-                      const dn = user.displayName || user.username;
-                      const url = `${window.location.origin}/progress/${encodeURIComponent(dn)}`;
-                      try {
-                        await navigator.clipboard.writeText(url);
-                        const b = e.currentTarget;
-                        const prev = b.textContent;
-                        b.textContent = '✓ Progress link copied';
-                        setTimeout(() => { b.textContent = prev; }, 2200);
-                      } catch { window.prompt('Copy this progress link:', url); }
-                    }}
-                  >
-                    🔗 Share progress
-                  </button>
                 </p>
               )}
               {user.biography && (

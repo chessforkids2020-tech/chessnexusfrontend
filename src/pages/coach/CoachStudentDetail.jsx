@@ -175,6 +175,28 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               </span>
             )}
           </p>
+
+          {/* Share a clean, read-only progress report with this student's parent. */}
+          {(student?.displayName || student?.username) && (
+            <button
+              type="button"
+              className="csd-share-progress"
+              title="Copy a read-only progress link to send to this student's parent"
+              onClick={async (e) => {
+                const dn = student.displayName || student.username;
+                const url = `${window.location.origin}/progress/${encodeURIComponent(dn)}`;
+                const btn = e.currentTarget;
+                const prev = btn.textContent;
+                try {
+                  await navigator.clipboard.writeText(url);
+                  btn.textContent = '✓ Link copied — send it to the parent';
+                  setTimeout(() => { btn.textContent = prev; }, 2600);
+                } catch { window.prompt('Copy this progress link and send it to the parent:', url); }
+              }}
+            >
+              🔗 Send progress to parent
+            </button>
+          )}
         </div>
         <div className="csd-rating">
           <span>Live rating</span>

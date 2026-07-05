@@ -254,3 +254,30 @@
 @media (max-width: 560px) {
   .csd-phases { grid-template-columns: 1fr; }
 }
+
+/* "Send progress to parent" — coach copies a read-only report link. */
+.csd-share-progress {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #22d3ee;
+  cursor: pointer;
+  padding: 7px 13px;
+  border-radius: 9px;
+  background: rgba(6, 182, 212, 0.10);
+  border: 1px solid rgba(34, 211, 238, 0.32);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.csd-share-progress:hover {
+  background: rgba(6, 182, 212, 0.18);
+  border-color: rgba(34, 211, 238, 0.55);
+  transform: translateY(-1px);
+}
+.csd-share-progress:focus-visible {
+  outline: 2px solid #22d3ee;
+  outline-offset: 2px;
+}
