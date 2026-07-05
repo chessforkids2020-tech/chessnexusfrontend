@@ -75,17 +75,28 @@ export default function StudentProgressPage() {
   }
 
   const name = data.displayName || data.username;
-  const rating = data.liveRating || data.ratings?.rapid || data.ratings?.blitz || null;
+
+  // Puzzle stats — the most meaningful number for a parent. Prefer the 7-day
+  // window (more representative than 24h), fall back to 24h, then live rating.
+  const psr = data.puzzleStatsRange || {};
+  const pz = psr["7d"] || psr["24h"] || null;
+  const puzzleRating = pz?.rating ?? data.liveRating ?? null;
+  const puzzleAccuracy = pz?.accuracy ?? null;
+  const puzzleStreak = pz?.streak ?? 0;
+  const puzzlesSolved = pz?.solved ?? (data.trainingStats?.correct || 0);
+
+  // Games & tournaments played.
+  const arena = data.arenaSummary || {};
+  const gamesPlayed = arena.totalGamesPlayed || 0;
+  const tournaments = arena.totalTournaments || 0;
+
+  // Overall activity.
   const activity = data.activity || {};
   const stats = activity.stats || {};
-  const streak = stats.currentStreak || 0;
+  const dayStreak = stats.currentStreak || 0;
   const totalDays = stats.totalDays || 0;
   const minutes = stats.totalMinutes || 0;
   const hours = Math.round((minutes / 60) * 10) / 10;
-  const training = data.trainingStats || { correct: 0, wrong: 0 };
-  const solved = training.correct || 0;
-  const attempts = solved + (training.wrong || 0);
-  const accuracy = attempts > 0 ? Math.round((solved / attempts) * 100) : null;
   const badges = data.badges || [];
   const memberSince = data.memberSince
     ? new Date(data.memberSince).toLocaleDateString(undefined, { month: "short", year: "numeric" })
@@ -103,7 +114,7 @@ export default function StudentProgressPage() {
         {/* Header */}
         <header className="sp-head">
           <div className="sp-brand">
-            <span className="sp-brand-mark">♞</span>
+            <img src="/logo.png" alt="Chess Nexus" className="sp-brand-logo" />
             <span className="sp-brand-name">Chess<span>Nexus</span></span>
           </div>
           <button className="sp-share" onClick={copyLink}>
@@ -125,28 +136,44 @@ export default function StudentProgressPage() {
 
         {/* Headline stats */}
         <section className="sp-stats">
-          {rating != null && (
+          {puzzleRating != null && (
             <div className="sp-card sp-stat">
-              <div className="sp-stat-icon">📈</div>
-              <div className="sp-stat-value">{rating}</div>
-              <div className="sp-stat-label">Current rating</div>
+              <div className="sp-stat-icon">🧩</div>
+              <div className="sp-stat-value">{puzzleRating}</div>
+              <div className="sp-stat-label">Puzzle rating</div>
+            </div>
+          )}
+          {puzzleAccuracy != null && (
+            <div className="sp-card sp-stat">
+              <div className="sp-stat-icon">🎯</div>
+              <div className="sp-stat-value">{puzzleAccuracy}%</div>
+              <div className="sp-stat-label">Puzzle accuracy</div>
             </div>
           )}
           <div className="sp-card sp-stat">
-            <div className="sp-stat-icon">🔥</div>
-            <div className="sp-stat-value">{streak}</div>
-            <div className="sp-stat-label">Day streak</div>
-          </div>
-          <div className="sp-card sp-stat">
-            <div className="sp-stat-icon">🧩</div>
-            <div className="sp-stat-value">{solved}</div>
+            <div className="sp-stat-icon">✅</div>
+            <div className="sp-stat-value">{puzzlesSolved}</div>
             <div className="sp-stat-label">Puzzles solved</div>
           </div>
-          {accuracy != null && (
+          {gamesPlayed > 0 && (
             <div className="sp-card sp-stat">
-              <div className="sp-stat-icon">🎯</div>
-              <div className="sp-stat-value">{accuracy}%</div>
-              <div className="sp-stat-label">Puzzle accuracy</div>
+              <div className="sp-stat-icon">♟️</div>
+              <div className="sp-stat-value">{gamesPlayed}</div>
+              <div className="sp-stat-label">Games played</div>
+            </div>
+          )}
+          {tournaments > 0 && (
+            <div className="sp-card sp-stat">
+              <div className="sp-stat-icon">🏆</div>
+              <div className="sp-stat-value">{tournaments}</div>
+              <div className="sp-stat-label">Tournaments</div>
+            </div>
+          )}
+          {puzzleStreak > 0 && (
+            <div className="sp-card sp-stat">
+              <div className="sp-stat-icon">🔥</div>
+              <div className="sp-stat-value">{puzzleStreak}</div>
+              <div className="sp-stat-label">Solve streak</div>
             </div>
           )}
           <div className="sp-card sp-stat">
@@ -154,6 +181,13 @@ export default function StudentProgressPage() {
             <div className="sp-stat-value">{totalDays}</div>
             <div className="sp-stat-label">Active days</div>
           </div>
+          {dayStreak > 0 && (
+            <div className="sp-card sp-stat">
+              <div className="sp-stat-icon">📆</div>
+              <div className="sp-stat-value">{dayStreak}</div>
+              <div className="sp-stat-label">Day streak</div>
+            </div>
+          )}
           {hours > 0 && (
             <div className="sp-card sp-stat">
               <div className="sp-stat-icon">⏱️</div>
