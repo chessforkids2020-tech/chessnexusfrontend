@@ -1,5 +1,6 @@
 {
-  "buildCommand": "npx playwright install chromium && npm run build",
+  "buildCommand": "echo 'Using committed prebuilt dist/ (built + prerendered locally via `npm run build`)'",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/((?!assets/|.*\\.[a-zA-Z0-9]+$).*)",

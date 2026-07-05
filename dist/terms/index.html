@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+      Per-page SEO tags (title, description, keywords, canonical, robots,
+      Open Graph, Twitter) are managed at runtime by react-helmet-async via
+      src/components/SEO.jsx, and are baked into each prerendered page by
+      prerender.js. They are intentionally NOT hardcoded here — duplicating
+      them would produce two <title>/canonical/og:* tags on prerendered pages.
+      A default title (below) prevents an empty tab title before hydration.
+    -->
+    <title>Terms &amp; Conditions | Chess Nexus</title>
+    <meta name="author" content="Chess Nexus">
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png">
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="msapplication-TileColor" content="#06b6d4">
+
+    <!-- Performance hints -->
+    <link rel="preconnect" href="https://www.chessnexus.in">
+    <link rel="dns-prefetch" href="https://www.chessnexus.in">
+
+    <!-- JSON-LD: WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Chess Nexus",
+      "url": "https://www.chessnexus.in/",
+      "description": "Free online chess platform for solving puzzles, practicing tactics, and competing in live arena races.",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires JavaScript",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "featureList": [
+        "Daily Chess Puzzles",
+        "Live Arena Races",
+        "Chess Tactics Training",
+        "Monthly Focus Challenges",
+        "Global Leaderboard",
+        "Team Race Mode",
+        "Chess Study System"
+      ],
+      "screenshot": "https://www.chessnexus.in/logo.png",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <!-- JSON-LD: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Chess Nexus",
+      "url": "https://www.chessnexus.in/",
+      "logo": "https://www.chessnexus.in/logo.png",
+      "sameAs": [],
+      "description": "Chess Nexus is a free online chess training and competition platform offering puzzles, tactics, live races, and leaderboards."
+    }
+    </script>
+
+    <!-- JSON-LD: WebSite — helps Google understand the site as a single entity -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Chess Nexus",
+      "alternateName": "ChessNexus",
+      "url": "https://www.chessnexus.in/"
+    }
+    </script>
+
+    <!-- JSON-LD: SiteNavigationElement — the strongest signal Google uses to
+         build sitelinks. Lists the primary public sections of the site. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Chess Nexus main navigation",
+      "itemListElement": [
+        { "@type": "SiteNavigationElement", "position": 1, "name": "Play Chess Online", "description": "Play live chess against people or the Stockfish engine.", "url": "https://www.chessnexus.in/play-chess-online" },
+        { "@type": "SiteNavigationElement", "position": 2, "name": "Play With Friends", "description": "Play 2-player chess with a friend in a private room.", "url": "https://www.chessnexus.in/play-chess-with-friends" },
+        { "@type": "SiteNavigationElement", "position": 3, "name": "Chess Puzzles", "description": "Solve daily chess puzzles and train tactics.", "url": "https://www.chessnexus.in/chess-puzzles" },
+        { "@type": "SiteNavigationElement", "position": 4, "name": "Arena Tournaments", "description": "Compete in live 3D arena chess tournaments.", "url": "https://www.chessnexus.in/3d-chess-arena-tournament" },
+        { "@type": "SiteNavigationElement", "position": 5, "name": "Masters Games", "description": "Play through famous grandmaster games move by move.", "url": "https://www.chessnexus.in/masters-chess-games" },
+        { "@type": "SiteNavigationElement", "position": 6, "name": "Tactics Race", "description": "Race against others to solve tactics fastest.", "url": "https://www.chessnexus.in/chess-tactics-race" },
+        { "@type": "SiteNavigationElement", "position": 7, "name": "Leaderboard", "description": "See the top players on the global leaderboard.", "url": "https://www.chessnexus.in/leaderboard" },
+        { "@type": "SiteNavigationElement", "position": 8, "name": "Analyse My Game", "description": "Analyse your chess games with accuracy scores.", "url": "https://www.chessnexus.in/analyse-my-chess-game" },
+        { "@type": "SiteNavigationElement", "position": 9, "name": "Chess Study", "description": "Learn with structured chess study lessons.", "url": "https://www.chessnexus.in/chess-study" },
+        { "@type": "SiteNavigationElement", "position": 10, "name": "Log In / Register", "description": "Sign in or create a free Chess Nexus account.", "url": "https://www.chessnexus.in/login" }
+      ]
+    }
+    </script>
+
+    <!-- JSON-LD: FAQPage for SEO rich results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Chess Nexus free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Chess Nexus is completely free. All core features including daily puzzles, tactics training, and live arena races are available at no cost."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What chess features does Chess Nexus offer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Chess Nexus offers daily chess puzzles, live arena races, team race mode, monthly focus challenges, a global leaderboard, chess study system, and tactics training."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I improve my chess rating on Chess Nexus?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Solve daily puzzles, participate in arena races, complete monthly focus challenges, and use the study system to improve your chess rating on Chess Nexus."
+          }
+        }
+      ]
+    }
+    </script>
+    <script type="module" crossorigin="" src="/assets/index-BDgrhIzl.js"></script>
+    <link rel="stylesheet" crossorigin="" href="/assets/index-BM1PYMVi.css">
+  <style data-shake-animation="true">
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(30px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes glassGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
+}
+</style><style data-responsive-styles="true">
+/* Desktop styles - Submit button to the right of chessboard */
+@media (min-width: 769px) {
+  .tournament-layout {
+    gap: 8px !important;
+  }
+  
+  .tournament-center {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 30px !important;
+  }
+  
+  .chessboard-container {
+    flex: 1 !important;
+  }
+  
+  .submit-button-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tournament-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+    align-items: center !important;
+  }
+  
+  .tournament-sidebar {
+    width: 100% !important;
+    max-width: 500px !important;
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+  
+  .tournament-center {
+    order: 2 !important;
+    width: 100% !important;
+    flex-direction: column !important;
+  }
+  
+  .tournament-timer {
+    font-size: 28px !important;
+  }
+  
+  .tournament-notation {
+    max-height: 200px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tournament-layout {
+    gap: 16px !important;
+  }
+  
+  .tournament-sidebar {
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+  
+  .tournament-timer {
+    font-size: 24px !important;
+  }
+  
+  .tournament-notation-list {
+    max-height: 150px !important;
+  }
+  
+  .tournament-action-buttons {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  .tournament-mode-button {
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+  
+  .tournament-submit-button {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+  }
+}
+</style><style data-spin-animation="true">
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style><meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" data-rh="true"><meta property="og:image" content="https://www.chessnexus.in/logo.png" data-rh="true"><meta property="og:type" content="website" data-rh="true"><meta property="og:site_name" content="Chess Nexus" data-rh="true"><meta name="twitter:card" content="summary_large_image" data-rh="true"><meta name="twitter:image" content="https://www.chessnexus.in/logo.png" data-rh="true"><link rel="canonical" href="https://www.chessnexus.in/terms" data-rh="true"><meta name="description" content="The terms that govern your use of Chess Nexus — accounts, acceptable use, coach subscriptions, payments, donations, content and your responsibilities." data-rh="true"><meta name="keywords" content="chess nexus terms and conditions, terms of service, user agreement" data-rh="true"><meta property="og:title" content="Terms &amp; Conditions | Chess Nexus" data-rh="true"><meta property="og:description" content="The terms that govern your use of Chess Nexus — accounts, acceptable use, coach subscriptions, payments, donations, content and your responsibilities." data-rh="true"><meta property="og:image:alt" content="Terms &amp; Conditions | Chess Nexus" data-rh="true"><meta property="og:url" content="https://www.chessnexus.in/terms" data-rh="true"><meta name="twitter:title" content="Terms &amp; Conditions | Chess Nexus" data-rh="true"><meta name="twitter:description" content="The terms that govern your use of Chess Nexus — accounts, acceptable use, coach subscriptions, payments, donations, content and your responsibilities." data-rh="true"><script type="application/ld+json" data-rh="true">{"@context":"https://schema.org","@type":"WebPage","name":"Chess Nexus Terms & Conditions","description":"The terms that govern your use of Chess Nexus — accounts, acceptable use, coach subscriptions, payments, donations, content and liability.","url":"https://chessnexus.in/terms"}</script></head>
+  <body class="no-header-padding">
+    <div id="root"><div class="user-layout-container"><div class="user-content-wrapper"><style>
+          @import url('https://fonts.googleapis.com/css2?family=Oleo+Script+Swash+Caps&family=Poppins:wght@400;500;600;700&display=swap');
+          
+          @keyframes slideIn {
+            from {
+              opacity: 0;
+              transform: scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+
+          @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+          }
+
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+        </style><div style="width: 170px; background: rgba(10, 10, 10, 0.95); position: fixed; top: 0px; left: 0px; height: 100vh; box-shadow: rgba(0, 0, 0, 0.5) 2px 0px 20px; z-index: 100; display: flex; flex-direction: column; font-family: Poppins, sans-serif; border-right: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); transform: translateX(0px); opacity: 1; visibility: visible; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);"><div style="display: flex; flex-direction: column; height: 100%; padding: 20px 0px; position: relative;"><nav style="display: flex; flex-direction: column; gap: 8px; padding: 0px 10px 0px 3px; flex: 1 1 0%; overflow-y: auto;"><div title="Chess Nexus" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 25px; font-weight: 500; font-family: &quot;Oleo Script Swash Caps&quot;, cursive; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="flex: 1 1 0%; font-weight: 600;">Chess Nexus</span></div><div title="Dashboard" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏠</span><span style="flex: 1 1 0%; font-weight: 600;">Dashboard</span></div><div title="Puzzles Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏛️</span><span style="flex: 1 1 0%; font-weight: 600;">Puzzles Hub</span></div><div title="Race Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏁</span><span style="flex: 1 1 0%; font-weight: 600;">Race Hub</span></div><div title="Study" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">📚</span><span style="flex: 1 1 0%; font-weight: 600;">Study</span></div><div title="Play" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🎮</span><span style="flex: 1 1 0%; font-weight: 600;">Play</span></div><div title="3D Arena" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🎮</span><span style="flex: 1 1 0%; font-weight: 600;">3D Arena</span></div><div title="Analyse My Games" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🔍</span><span style="flex: 1 1 0%; font-weight: 600;">Analysis</span></div><div title="Social Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🌐</span><span style="flex: 1 1 0%; font-weight: 600;">Social Hub</span></div></nav><div style="margin-top: auto; padding: 0px 10px;"><div style="display: flex; align-items: center; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; margin: 10px 0px 20px; overflow: hidden;"><button title="Search Players" style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; padding: 11px 0px; background: transparent; border: none; cursor: pointer; color: rgb(148, 163, 184); transition: background 0.2s, color 0.2s;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button><div style="width: 1px; height: 20px; background: rgba(255, 255, 255, 0.13); flex-shrink: 0;"></div><button title="Login" style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; padding: 11px 0px; background: transparent; border: none; cursor: pointer; color: rgb(148, 163, 184); transition: background 0.2s, color 0.2s;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg></button></div></div></div></div><div class="user-main-content with-sidebar desktop "><div class="mkt-page"><div class="mkt-inner"><header class="mkt-hero"><img src="/logo.png" alt="Chess Nexus logo" class="mkt-hero-logo"><h1>Terms &amp; Conditions</h1><p class="mkt-hero-sub">These terms are the agreement between you and Chess Nexus. Please read them carefully — by using the service you agree to them.</p><p style="color: rgb(148, 163, 184); font-size: 14px; margin-top: 8px;">Effective date: June 12, 2026</p></header><article class="mkt-legal"><section><h2>1. Acceptance of these terms</h2><p>These Terms &amp; Conditions (“Terms”) govern your access to and use of the Chess Nexus website and application at <strong>chessnexus.in</strong> and all related features (the “Service”), operated by Chess Nexus (“we”, “us”, “our”). By creating an account or using the Service, you agree to these Terms and to our <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, please do not use the Service.</p></section><section><h2>2. Eligibility</h2><p>The Service is a general-audience platform and is not directed to children under 13 (or the minimum age required in your country). By using the Service you confirm that you meet the minimum age and are able to enter into these Terms. If you use the Service on behalf of an organisation, you confirm you are authorised to bind it to these Terms.</p></section><section><h2>3. Your account</h2><ul><li>You must provide accurate information when you register and keep it up to date.</li><li>You are responsible for keeping your password secure and for all activity that happens under your account. Tell us promptly if you suspect unauthorised use.</li><li>One person should not maintain multiple accounts to gain an unfair advantage (for example, in ratings, races or tournaments).</li><li>You may close your account at any time. We may suspend or terminate accounts that breach these Terms (see “Suspension and termination”).</li></ul></section><section><h2>4. Acceptable use</h2><p>You agree not to:</p><ul><li>Cheat or manipulate gameplay — for example using chess engines or outside assistance where not allowed, colluding, or abusing bugs to affect ratings, puzzles, races, tournaments or leaderboards.</li><li>Harass, threaten, bully, impersonate or abuse other users, or post unlawful, hateful, sexual, or otherwise harmful content.</li><li>Choose usernames, display names, avatars, or content that are offensive, deceptive, infringing, or impersonate others.</li><li>Attempt to disrupt, overload, reverse-engineer, scrape, or gain unauthorised access to the Service or other users’ accounts or data.</li><li>Use the Service for any unlawful purpose.</li></ul></section><section><h2>5. The Service is free for players</h2><p>The core Chess Nexus experience — puzzles, tactics races, online games, analysis, tournaments, study tools and the community — is provided to players free of charge. We may add, change, or remove features over time, and we may run, pause, or modify free features at our discretion.</p></section><section><h2>6. Coaches and subscriptions</h2><ul><li>Coaching tools are offered on a paid subscription, with tiers based on the number of students a coach manages. Prices and plan features are shown at the point of purchase and may change for future billing periods.</li><li>Subscriptions renew for the billing cycle you select (for example monthly or yearly) unless cancelled before the renewal date. You can cancel at any time; cancellation stops future renewals and your plan remains active until the end of the current paid period.</li><li>If you use the Service as a coach, you are responsible for the students you add and for having any consent required to handle their information, and you must use the coaching tools lawfully and only for legitimate coaching. Our handling of coach and student data is described in the <a href="/privacy-policy">Privacy Policy</a>.</li><li>We may change subscription pricing or plan limits; where required, we will give reasonable notice before changes affect you.</li></ul></section><section><h2>7. Payments, donations and refunds</h2><ul><li>Payments (coach subscriptions and any optional “Buy Me a Coffee” donations) are processed by our third-party payment provider, <strong>Razorpay</strong>. We do not collect or store your full card number, banking or other sensitive payment credentials — those are handled by Razorpay.</li><li>You must use a valid payment method that you are authorised to use. Applicable taxes may be added.</li><li>Donations are voluntary, are not required to use the Service, and are generally <strong>non-refundable</strong>.</li><li>Subscription payments are non-refundable except where required by law or expressly stated by us. If you believe you were charged in error, <a href="/contact">contact us</a> and we will review it in good faith. See our <a href="/refund-policy">Refund &amp; Cancellation Policy</a> for full details.</li></ul></section><section><h2>8. User content</h2><ul><li>“User content” means anything you submit — studies, positions, puzzles, messages, posts, profile details and similar. You keep ownership of your content.</li><li>You grant us a non-exclusive, worldwide, royalty-free licence to host, store, display and use your content as needed to operate and provide the Service (for example, showing your moves, profile or community posts to others).</li><li>You are responsible for your content and confirm you have the rights to share it and that it does not break these Terms or the law.</li><li>We may remove content that violates these Terms or that we reasonably consider harmful, unlawful or inappropriate.</li></ul></section><section><h2>9. Our intellectual property</h2><p>The Service, including its software, design, logos, text and graphics (excluding your user content and third-party materials), belongs to us or our licensors and is protected by law. We grant you a personal, limited, non-transferable, revocable licence to use the Service for its intended purpose. You may not copy, resell, or create derivative works from the Service except as allowed by law or with our permission.</p></section><section><h2>10. Third-party services</h2><p>The Service may link to or integrate third-party services (for example Chess.com, Lichess, or payment providers). We are not responsible for third-party services, and your use of them is subject to their own terms and privacy policies.</p></section><section><h2>11. Suspension and termination</h2><p>We may suspend or terminate your access to the Service, with or without notice, if you breach these Terms, if your use harms other users or the Service, or as required by law. You may stop using the Service and close your account at any time. Sections that by their nature should survive termination (such as content licences already granted, and the disclaimers and limitations below) will continue to apply.</p></section><section><h2>12. Disclaimers</h2><p>The Service is provided “as is” and “as available”, without warranties of any kind, whether express or implied, to the maximum extent permitted by law. We do not guarantee that the Service will be uninterrupted, error-free, or secure, or that ratings, results or content will always be accurate.</p></section><section><h2>13. Limitation of liability</h2><p>To the maximum extent permitted by law, we will not be liable for any indirect, incidental, special, consequential or punitive damages, or for loss of data, profits, or goodwill, arising from your use of (or inability to use) the Service. Nothing in these Terms excludes liability that cannot be excluded under applicable law.</p></section><section><h2>14. Changes to the Service and these Terms</h2><p>We may update these Terms from time to time. When we make material changes, we will update the effective date above and, where appropriate, notify you within the Service. Your continued use of the Service after an update means you accept the revised Terms. We may also change, suspend or discontinue parts of the Service.</p></section><section><h2>15. Governing law</h2><p>These Terms are governed by the laws of India, without regard to conflict-of-law rules, and the courts located in India will have jurisdiction over any disputes, except where applicable law gives you the right to bring a claim elsewhere.</p></section><section><h2>16. Contact us</h2><p>Questions about these Terms? Reach us through our <a href="/contact">Contact Us</a> page.</p></section><p class="mkt-legal-back"><a href="/">← Back to Chess Nexus</a></p></article></div></div></div></div><style>
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+          .site-footer {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+          }
+
+          .footer-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+          }
+
+          .footer-logo {
+            height: 32px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0.9);
+          }
+
+          .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #06b6d4;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            transition: all 0.3s ease;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          }
+
+          .contact-link:hover {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: rgba(6, 182, 212, 0.4);
+            color: #67e8f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+          }
+
+          .contact-icon {
+            font-size: 16px;
+            filter: drop-shadow(0 1px 2px rgba(6, 182, 212, 0.3));
+          }
+
+          .footer-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+
+          .footer-nav a {
+            color: #06b6d4;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.25s ease;
+          }
+
+          .footer-nav a:hover {
+            color: #67e8f9;
+            text-decoration: underline;
+          }
+
+          .footer-sep {
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 13px;
+          }
+
+          .footer-text {
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+          }
+
+          .footer-text-logo {
+            height: 22px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0.9);
+          }
+
+          /* Subtle gradient overlay effect */
+          .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+              transparent,
+              rgba(6, 182, 212, 0.3) 30%,
+              rgba(16, 185, 129, 0.3) 70%,
+              transparent
+            );
+          }
+
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            .site-footer {
+              padding: 16px;
+            }
+
+            .footer-content {
+              flex-direction: column;
+              gap: 10px;
+            }
+
+            .contact-link {
+              font-size: 13px;
+              padding: 6px 12px;
+            }
+
+            .footer-text {
+              font-size: 12px;
+            }
+          }
+        </style><footer class="site-footer"><div class="footer-content"><img src="/logo.png" alt="Chess Nexus Logo" class="footer-logo"><nav class="footer-nav"><a href="/">Home</a><span class="footer-sep">|</span><a href="/features">Features</a><span class="footer-sep">|</span><a href="/members">Members</a><span class="footer-sep">|</span><a href="/contact">Contact Us</a><span class="footer-sep">|</span><a href="/report">Report</a><span class="footer-sep">|</span><a href="/privacy-policy">Privacy Policy</a><span class="footer-sep">|</span><a href="/terms">Terms</a><span class="footer-sep">|</span><a href="/refund-policy">Refund</a></nav><p class="footer-text">© 2026 CHESS NEXUS<img src="/logo.png" alt="Chess Nexus Logo" class="footer-text-logo"></p></div></footer></div></div>
+  
+
+</body></html>

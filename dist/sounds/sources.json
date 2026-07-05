@@ -1,0 +1,107 @@
+{
+  "soundFiles": {
+    "chess-move": {
+      "description": "Chess piece move sound",
+      "sources": [
+        {
+          "name": "Lichess (Open Source)",
+          "url": "https://github.com/lichess-org/lila/raw/master/public/sound/standard/Move.mp3",
+          "license": "GPL-3.0"
+        },
+        {
+          "name": "Pixabay",
+          "searchUrl": "https://pixabay.com/sound-effects/search/chess%20move/",
+          "license": "Free for commercial use"
+        }
+      ]
+    },
+    "capture": {
+      "description": "Chess piece capture sound",
+      "sources": [
+        {
+          "name": "Lichess (Open Source)",
+          "url": "https://github.com/lichess-org/lila/raw/master/public/sound/standard/Capture.mp3",
+          "license": "GPL-3.0"
+        },
+        {
+          "name": "Pixabay",
+          "searchUrl": "https://pixabay.com/sound-effects/search/chess%20capture/",
+          "license": "Free for commercial use"
+        }
+      ]
+    },
+    "correct": {
+      "description": "Correct answer sound",
+      "sources": [
+        {
+          "name": "Pixabay - Success",
+          "searchUrl": "https://pixabay.com/sound-effects/search/success%20short/",
+          "license": "Free for commercial use"
+        },
+        {
+          "name": "Mixkit",
+          "searchUrl": "https://mixkit.co/free-sound-effects/correct/",
+          "license": "Free"
+        }
+      ]
+    },
+    "error-buzz": {
+      "description": "Wrong answer sound",
+      "sources": [
+        {
+          "name": "Pixabay - Error",
+          "searchUrl": "https://pixabay.com/sound-effects/search/error%20short/",
+          "license": "Free for commercial use"
+        },
+        {
+          "name": "Mixkit",
+          "searchUrl": "https://mixkit.co/free-sound-effects/error/",
+          "license": "Free"
+        }
+      ]
+    },
+    "success-chime": {
+      "description": "Puzzle completed sound",
+      "sources": [
+        {
+          "name": "Pixabay - Victory",
+          "searchUrl": "https://pixabay.com/sound-effects/search/victory%20short/",
+          "license": "Free for commercial use"
+        },
+        {
+          "name": "Mixkit",
+          "searchUrl": "https://mixkit.co/free-sound-effects/win/",
+          "license": "Free"
+        }
+      ]
+    },
+    "chat-notification": {
+      "description": "Chat notification sound",
+      "sources": [
+        {
+          "name": "Pixabay - Notification",
+          "searchUrl": "https://pixabay.com/sound-effects/search/notification%20ping/",
+          "license": "Free for commercial use"
+        },
+        {
+          "name": "Mixkit",
+          "searchUrl": "https://mixkit.co/free-sound-effects/notification/",
+          "license": "Free"
+        }
+      ]
+    }
+  },
+  "quickCommands": {
+    "downloadLichessSounds": [
+      "cd frontend/public/sounds",
+      "curl -L -o chess-move.mp3 'https://github.com/lichess-org/lila/raw/master/public/sound/standard/Move.mp3'",
+      "curl -L -o capture.mp3 'https://github.com/lichess-org/lila/raw/master/public/sound/standard/Capture.mp3'"
+    ]
+  },
+  "notes": [
+    "The application will use Web Audio API fallback if sound files are missing",
+    "Recommended format: MP3, 44.1kHz, 128kbps or higher",
+    "Keep files small (< 50KB each) for faster loading",
+    "Test sounds after adding by playing chess moves and solving puzzles"
+  ]
+}

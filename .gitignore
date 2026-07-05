@@ -8,7 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
+# dist/ is committed on purpose: Vercel serves this prebuilt, prerendered
+# output directly (see vercel.json) instead of building Chromium in CI.
+# Rebuild with `npm run build` and commit dist/ before deploying.
 dist-ssr
 *.local
 

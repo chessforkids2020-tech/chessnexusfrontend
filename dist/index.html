@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+      Per-page SEO tags (title, description, keywords, canonical, robots,
+      Open Graph, Twitter) are managed at runtime by react-helmet-async via
+      src/components/SEO.jsx, and are baked into each prerendered page by
+      prerender.js. They are intentionally NOT hardcoded here — duplicating
+      them would produce two <title>/canonical/og:* tags on prerendered pages.
+      A default title (below) prevents an empty tab title before hydration.
+    -->
+    <title>Coach-Led Chess Training for Players &amp; Academies | Chess Nexus</title>
+    <meta name="author" content="Chess Nexus">
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png">
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="msapplication-TileColor" content="#06b6d4">
+
+    <!-- Performance hints -->
+    <link rel="preconnect" href="https://www.chessnexus.in">
+    <link rel="dns-prefetch" href="https://www.chessnexus.in">
+
+    <!-- JSON-LD: WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Chess Nexus",
+      "url": "https://www.chessnexus.in/",
+      "description": "Free online chess platform for solving puzzles, practicing tactics, and competing in live arena races.",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires JavaScript",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "featureList": [
+        "Daily Chess Puzzles",
+        "Live Arena Races",
+        "Chess Tactics Training",
+        "Monthly Focus Challenges",
+        "Global Leaderboard",
+        "Team Race Mode",
+        "Chess Study System"
+      ],
+      "screenshot": "https://www.chessnexus.in/logo.png",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <!-- JSON-LD: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Chess Nexus",
+      "url": "https://www.chessnexus.in/",
+      "logo": "https://www.chessnexus.in/logo.png",
+      "sameAs": [],
+      "description": "Chess Nexus is a free online chess training and competition platform offering puzzles, tactics, live races, and leaderboards."
+    }
+    </script>
+
+    <!-- JSON-LD: WebSite — helps Google understand the site as a single entity -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Chess Nexus",
+      "alternateName": "ChessNexus",
+      "url": "https://www.chessnexus.in/"
+    }
+    </script>
+
+    <!-- JSON-LD: SiteNavigationElement — the strongest signal Google uses to
+         build sitelinks. Lists the primary public sections of the site. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Chess Nexus main navigation",
+      "itemListElement": [
+        { "@type": "SiteNavigationElement", "position": 1, "name": "Play Chess Online", "description": "Play live chess against people or the Stockfish engine.", "url": "https://www.chessnexus.in/play-chess-online" },
+        { "@type": "SiteNavigationElement", "position": 2, "name": "Play With Friends", "description": "Play 2-player chess with a friend in a private room.", "url": "https://www.chessnexus.in/play-chess-with-friends" },
+        { "@type": "SiteNavigationElement", "position": 3, "name": "Chess Puzzles", "description": "Solve daily chess puzzles and train tactics.", "url": "https://www.chessnexus.in/chess-puzzles" },
+        { "@type": "SiteNavigationElement", "position": 4, "name": "Arena Tournaments", "description": "Compete in live 3D arena chess tournaments.", "url": "https://www.chessnexus.in/3d-chess-arena-tournament" },
+        { "@type": "SiteNavigationElement", "position": 5, "name": "Masters Games", "description": "Play through famous grandmaster games move by move.", "url": "https://www.chessnexus.in/masters-chess-games" },
+        { "@type": "SiteNavigationElement", "position": 6, "name": "Tactics Race", "description": "Race against others to solve tactics fastest.", "url": "https://www.chessnexus.in/chess-tactics-race" },
+        { "@type": "SiteNavigationElement", "position": 7, "name": "Leaderboard", "description": "See the top players on the global leaderboard.", "url": "https://www.chessnexus.in/leaderboard" },
+        { "@type": "SiteNavigationElement", "position": 8, "name": "Analyse My Game", "description": "Analyse your chess games with accuracy scores.", "url": "https://www.chessnexus.in/analyse-my-chess-game" },
+        { "@type": "SiteNavigationElement", "position": 9, "name": "Chess Study", "description": "Learn with structured chess study lessons.", "url": "https://www.chessnexus.in/chess-study" },
+        { "@type": "SiteNavigationElement", "position": 10, "name": "Log In / Register", "description": "Sign in or create a free Chess Nexus account.", "url": "https://www.chessnexus.in/login" }
+      ]
+    }
+    </script>
+
+    <!-- JSON-LD: FAQPage for SEO rich results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Chess Nexus free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Chess Nexus is completely free. All core features including daily puzzles, tactics training, and live arena races are available at no cost."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What chess features does Chess Nexus offer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Chess Nexus offers daily chess puzzles, live arena races, team race mode, monthly focus challenges, a global leaderboard, chess study system, and tactics training."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I improve my chess rating on Chess Nexus?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Solve daily puzzles, participate in arena races, complete monthly focus challenges, and use the study system to improve your chess rating on Chess Nexus."
+          }
+        }
+      ]
+    }
+    </script>
+    <script type="module" crossorigin="" src="/assets/index-BDgrhIzl.js"></script>
+    <link rel="stylesheet" crossorigin="" href="/assets/index-BM1PYMVi.css">
+  <style data-shake-animation="true">
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(30px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes glassGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
+}
+</style><style data-responsive-styles="true">
+/* Desktop styles - Submit button to the right of chessboard */
+@media (min-width: 769px) {
+  .tournament-layout {
+    gap: 8px !important;
+  }
+  
+  .tournament-center {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 30px !important;
+  }
+  
+  .chessboard-container {
+    flex: 1 !important;
+  }
+  
+  .submit-button-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tournament-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+    align-items: center !important;
+  }
+  
+  .tournament-sidebar {
+    width: 100% !important;
+    max-width: 500px !important;
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+  
+  .tournament-center {
+    order: 2 !important;
+    width: 100% !important;
+    flex-direction: column !important;
+  }
+  
+  .tournament-timer {
+    font-size: 28px !important;
+  }
+  
+  .tournament-notation {
+    max-height: 200px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tournament-layout {
+    gap: 16px !important;
+  }
+  
+  .tournament-sidebar {
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+  
+  .tournament-timer {
+    font-size: 24px !important;
+  }
+  
+  .tournament-notation-list {
+    max-height: 150px !important;
+  }
+  
+  .tournament-action-buttons {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  .tournament-mode-button {
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+  
+  .tournament-submit-button {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+  }
+}
+</style><style data-spin-animation="true">
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style><link rel="canonical" href="https://www.chessnexus.in/" data-rh="true"><meta name="description" content="Train with puzzles, endgames, courses &amp; live team races — or learn from real coaches. Coaches assign lessons, track student progress, and run their academy, all in one free platform." data-rh="true"><meta name="keywords" content="chess coaching, online chess academy, chess training platform, coach-led chess, chess for clubs, endgame training, chess courses, team races, track student progress" data-rh="true"><meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" data-rh="true"><meta property="og:title" content="Coach-Led Chess Training for Players &amp; Academies | Chess Nexus" data-rh="true"><meta property="og:description" content="Train with puzzles, endgames, courses &amp; live team races — or learn from real coaches. Coaches assign lessons, track student progress, and run their academy, all in one free platform." data-rh="true"><meta property="og:image" content="https://www.chessnexus.in/logo.png" data-rh="true"><meta property="og:image:alt" content="Coach-Led Chess Training for Players &amp; Academies | Chess Nexus" data-rh="true"><meta property="og:url" content="https://www.chessnexus.in/" data-rh="true"><meta property="og:type" content="website" data-rh="true"><meta property="og:site_name" content="Chess Nexus" data-rh="true"><meta name="twitter:card" content="summary_large_image" data-rh="true"><meta name="twitter:title" content="Coach-Led Chess Training for Players &amp; Academies | Chess Nexus" data-rh="true"><meta name="twitter:description" content="Train with puzzles, endgames, courses &amp; live team races — or learn from real coaches. Coaches assign lessons, track student progress, and run their academy, all in one free platform." data-rh="true"><meta name="twitter:image" content="https://www.chessnexus.in/logo.png" data-rh="true"></head>
+  <body class="no-header-padding">
+    <div id="root"><style>
+        @keyframes sfbPulse { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)} 70%{box-shadow:0 0 0 10px rgba(34,197,94,0)} }
+        @keyframes sfbLiveDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
+      </style><div style="position: fixed; bottom: 24px; right: 24px; z-index: 9998; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;"><button style="display: flex; align-items: center; gap: 8px; background: rgb(26, 26, 46); border: 2px solid rgb(6, 182, 212); border-radius: 28px; padding: 10px 18px; cursor: pointer; color: rgb(6, 182, 212); font-weight: 700; font-size: 14px; font-family: Poppins, sans-serif; box-shadow: rgba(0, 0, 0, 0.4) 0px 4px 14px; animation: auto ease 0s 1 normal none running none; transition: transform 0.15s, background 0.2s;"><span style="font-size: 16px;">📅</span><span>Schedule</span></button></div><div style="min-height: 100vh; display: flex; flex-direction: column; background-color: rgb(245, 245, 220); font-family: Poppins, sans-serif;"><div style="flex: 1 1 0%; padding: 0px; margin: 0px;"><div class="hp-root"><div class="hp-bg-layer"></div><style>
+          @import url('https://fonts.googleapis.com/css2?family=Oleo+Script+Swash+Caps&family=Poppins:wght@400;500;600;700&display=swap');
+          
+          @keyframes slideIn {
+            from {
+              opacity: 0;
+              transform: scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+
+          @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+          }
+
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+        </style><div style="width: 170px; background: rgba(10, 10, 10, 0.95); position: fixed; top: 0px; left: 0px; height: 100vh; box-shadow: rgba(0, 0, 0, 0.5) 2px 0px 20px; z-index: 100; display: flex; flex-direction: column; font-family: Poppins, sans-serif; border-right: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); transform: translateX(0px); opacity: 1; visibility: visible; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);"><div style="display: flex; flex-direction: column; height: 100%; padding: 20px 0px; position: relative;"><nav style="display: flex; flex-direction: column; gap: 8px; padding: 0px 10px 0px 3px; flex: 1 1 0%; overflow-y: auto;"><div title="Chess Nexus" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 25px; font-weight: 500; font-family: &quot;Oleo Script Swash Caps&quot;, cursive; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="flex: 1 1 0%; font-weight: 600;">Chess Nexus</span></div><div title="Dashboard" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏠</span><span style="flex: 1 1 0%; font-weight: 600;">Dashboard</span></div><div title="Puzzles Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏛️</span><span style="flex: 1 1 0%; font-weight: 600;">Puzzles Hub</span></div><div title="Race Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏁</span><span style="flex: 1 1 0%; font-weight: 600;">Race Hub</span></div><div title="Study" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">📚</span><span style="flex: 1 1 0%; font-weight: 600;">Study</span></div><div title="Play" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🎮</span><span style="flex: 1 1 0%; font-weight: 600;">Play</span></div><div title="3D Arena" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🎮</span><span style="flex: 1 1 0%; font-weight: 600;">3D Arena</span></div><div title="Analyse My Games" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🔍</span><span style="flex: 1 1 0%; font-weight: 600;">Analysis</span></div><div title="Social Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🌐</span><span style="flex: 1 1 0%; font-weight: 600;">Social Hub</span></div></nav><div style="margin-top: auto; padding: 0px 10px;"><div style="display: flex; align-items: center; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; margin: 10px 0px 20px; overflow: hidden;"><button title="Search Players" style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; padding: 11px 0px; background: transparent; border: none; cursor: pointer; color: rgb(148, 163, 184); transition: background 0.2s, color 0.2s;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button><div style="width: 1px; height: 20px; background: rgba(255, 255, 255, 0.13); flex-shrink: 0;"></div><button title="Login" style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; padding: 11px 0px; background: transparent; border: none; cursor: pointer; color: rgb(148, 163, 184); transition: background 0.2s, color 0.2s;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg></button></div></div></div></div><div class="hp-content"><div class="hp-glass hp-header"><div><h1 class="hp-greeting">Good Night, Player! 👋</h1><p class="hp-subgreeting">Keep solving, keep improving.</p></div><div style="flex: 1 1 0%; display: flex; justify-content: center;"></div><button type="button" style="cursor: pointer; border: 1px solid rgba(245, 158, 11, 0.45); background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(217, 119, 6, 0.18)); color: rgb(253, 230, 138); font-family: Poppins, sans-serif; font-weight: 600; box-shadow: rgba(245, 158, 11, 0.15) 0px 8px 20px; transition: transform 0.15s, box-shadow 0.15s, background 0.15s; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; font-size: 12px;"><span aria-hidden="true" style="font-size: 18px; filter: drop-shadow(rgba(245, 158, 11, 0.55) 0px 0px 6px);">☕</span><span style="display: inline-flex; flex-direction: column; align-items: flex-start; line-height: 1.15;"><span>Buy us a coffee</span></span></button></div><div class="hp-top-row"><div class="hp-glass hp-potd"><div class="hp-potd-header"><div class="hp-section-label"><span class="hp-section-label-bar"></span>Try a Puzzle Now — No Signup Required</div></div><div class="hp-potd-board"><div class="homepage-puzzle-container"><div class="puzzle-board-container" style="margin-top: 1px; width: 100%; position: relative;"><div style="position: absolute; inset: 0px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(10, 10, 20, 0.82); backdrop-filter: blur(6px); border-radius: 8px; z-index: 10; gap: 10px;"><span style="font-size: 48px; line-height: 1;">😞</span><p style="color: rgb(255, 255, 255); font-weight: 700; font-size: 15px; margin: 0px;">Puzzle unavailable</p><p style="color: rgba(255, 255, 255, 0.55); font-size: 12px; margin: 0px;">Try again later</p></div><div tabindex="0" style="position: relative; width: 380px; height: 380px; display: flex; align-items: center; justify-content: center; border-radius: 20px; overflow: hidden; outline: none;"><div style="display: grid; grid-template-columns: repeat(8, 47px); grid-template-rows: repeat(8, 47px); border: 2px solid rgb(139, 69, 19); border-radius: 20px; overflow: hidden; position: relative; width: 376px; height: 376px; touch-action: none;"><div data-square="a8" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bR.svg" alt="r piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="b8" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bN.svg" alt="n piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="c8" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bB.svg" alt="b piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="d8" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bQ.svg" alt="q piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="e8" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bK.svg" alt="k piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="f8" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bB.svg" alt="b piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="g8" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bN.svg" alt="n piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="h8" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bR.svg" alt="r piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="a7" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bP.svg" alt="p piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="b7" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bP.svg" alt="p piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="c7" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bP.svg" alt="p piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="d7" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bP.svg" alt="p piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="e7" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bP.svg" alt="p piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="f7" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bP.svg" alt="p piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="g7" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bP.svg" alt="p piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="h7" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/bP.svg" alt="p piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="a6" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="b6" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="c6" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="d6" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="e6" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="f6" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="g6" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="h6" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="a5" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="b5" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="c5" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="d5" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="e5" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="f5" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="g5" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="h5" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="a4" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="b4" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="c4" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="d4" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="e4" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="f4" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="g4" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="h4" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="a3" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="b3" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="c3" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="d3" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="e3" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="f3" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="g3" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="h3" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: default; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"></div><div data-square="a2" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wP.svg" alt="P piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="b2" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wP.svg" alt="P piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="c2" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wP.svg" alt="P piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="d2" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wP.svg" alt="P piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="e2" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wP.svg" alt="P piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="f2" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wP.svg" alt="P piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="g2" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wP.svg" alt="P piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="h2" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wP.svg" alt="P piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="a1" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wR.svg" alt="R piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="b1" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wN.svg" alt="N piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="c1" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wB.svg" alt="B piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="d1" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wQ.svg" alt="Q piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="e1" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wK.svg" alt="K piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="f1" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wB.svg" alt="B piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="g1" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(118, 150, 86); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wN.svg" alt="N piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div><div data-square="h1" style="width: 47px; height: 47px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; position: relative; border: none; box-shadow: none; background: rgb(238, 238, 210); transition: background 80ms, border 80ms, box-shadow 80ms; z-index: auto;"><div style="width: 37.6px; height: 37.6px; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: transform 400ms cubic-bezier(0.33, 1, 0.68, 1); user-select: none; opacity: 1;"><img src="/mpchess-pieces-main/svg/wR.svg" alt="R piece" draggable="false" style="width: 100%; height: 100%; object-fit: contain; pointer-events: none; user-select: none;"></div></div></div><svg style="position: absolute; top: 0px; left: 0px; width: 376px; height: 376px; pointer-events: none; z-index: 20;"></svg></div></div></div></div><p class="hp-potd-tagline">Get a feel of Chess Nexus. Track your progress after sign up!</p></div><div class="hp-right-col"><div class="hp-glass hp-contests"><div class="hp-section-label"><span class="hp-section-label-bar"></span>🔥 Live Contests</div><button type="button" disabled="" class="hp-contest-row hp-contest-row-btn" style="cursor: default;"><div class="hp-contest-icon-wrap">🧩</div><div class="hp-contest-body"><div class="hp-contest-name-row"><span class="hp-contest-title">Arena Race</span></div><div class="hp-contest-desc">Fast-paced puzzle race</div></div><span class="hp-contest-ended">No schedule</span></button><div class="hp-contest-divider"></div><button type="button" disabled="" class="hp-contest-row hp-contest-row-btn" style="cursor: default;"><div class="hp-contest-icon-wrap">👥</div><div class="hp-contest-body"><div class="hp-contest-name-row"><span class="hp-contest-title">Team Race</span></div><div class="hp-contest-desc">Race together with your team</div></div><span class="hp-contest-ended">No schedule</span></button><div class="hp-contest-divider"></div><button type="button" disabled="" class="hp-contest-row hp-contest-row-btn" style="cursor: default;"><div class="hp-contest-icon-wrap">🎯</div><div class="hp-contest-body"><div class="hp-contest-name-row"><span class="hp-contest-title">Monthly Focus</span></div><div class="hp-contest-desc">Daily focus tasks all month</div></div><span class="hp-contest-ended">No schedule</span></button><div class="hp-contest-divider"></div><button type="button" disabled="" class="hp-contest-row hp-contest-row-btn hp-contest-row-lg" style="cursor: default;"><div class="hp-contest-icon-wrap">🏆</div><div class="hp-contest-body"><div class="hp-contest-name-row"><span class="hp-contest-title">Arena Tournament</span></div><div class="hp-contest-desc">Full competitive tournament</div></div><span class="hp-contest-ended">No schedule</span></button><div class="hp-contest-divider"></div><button type="button" disabled="" class="hp-contest-row hp-contest-row-btn" style="cursor: default;"><div class="hp-contest-icon-wrap">🎮</div><div class="hp-contest-body"><div class="hp-contest-name-row"><span class="hp-contest-title">3D Arena Tournament</span></div><div class="hp-contest-desc">Live chess in 3D — feel real!</div></div><span class="hp-contest-ended">No schedule</span></button></div></div></div><div class="hp-stats-bar"><div class="hp-stat-item"><span class="hp-stat-icon">🧑‍🤝‍🧑</span><div class="hp-stat-text"><span class="hp-stat-value">250</span><span class="hp-stat-label">Active Players</span></div></div><div class="hp-stat-divider"></div><div class="hp-stat-item"><span class="hp-stat-icon">🧩</span><div class="hp-stat-text"><span class="hp-stat-value">1K+</span><span class="hp-stat-label">Puzzles Solved</span></div></div><div class="hp-stat-divider"></div><div class="hp-stat-item"><span class="hp-stat-icon">🏆</span><div class="hp-stat-text"><span class="hp-stat-value">50+</span><span class="hp-stat-label">Tournaments Held</span></div></div><div class="hp-stat-divider"></div><div class="hp-stat-item"><span class="hp-stat-icon">⚡</span><div class="hp-stat-text"><span class="hp-stat-value">24/7</span><span class="hp-stat-label">Live Events</span></div></div></div><div class="hp-coachpromo"><div class="hp-coachpromo-glow hp-coachpromo-glow-1" aria-hidden="true"></div><div class="hp-coachpromo-glow hp-coachpromo-glow-2" aria-hidden="true"></div><div class="hp-coachpromo-hero" aria-hidden="true">🎓</div><div class="hp-coachpromo-inner"><div class="hp-coachpromo-head"><div class="hp-coachpromo-badges"><span class="hp-coachpromo-eyebrow">🎓 For Coaches</span><span class="hp-coachpromo-trial-badge">✦ 30-DAY FREE TRIAL</span></div><h2 class="hp-coachpromo-title">Run your entire coaching<br>practice in one place</h2><p class="hp-coachpromo-sub">Manage students, hand out assignments, and track every player’s progress — a complete toolkit built for chess coaches.</p></div><div class="hp-coachpromo-grid"><div class="hp-coachpromo-benefit" style="--cp-accent: #06b6d4; --cp-glow: rgba(6,182,212,0.30); --cp-bd30: rgba(6,182,212,0.30); --cp-bd60: rgba(6,182,212,0.60); --cp-chip-bg: rgba(6,182,212,0.18); --cp-chip-bd: rgba(6,182,212,0.40);"><span class="hp-coachpromo-benefit-icon">🧑‍🎓</span><div><div class="hp-coachpromo-benefit-title">Your students, organized</div><div class="hp-coachpromo-benefit-desc">One roster with ratings, activity &amp; attendance at a glance.</div></div></div><div class="hp-coachpromo-benefit" style="--cp-accent: #f59e0b; --cp-glow: rgba(245,158,11,0.30); --cp-bd30: rgba(245,158,11,0.30); --cp-bd60: rgba(245,158,11,0.60); --cp-chip-bg: rgba(245,158,11,0.18); --cp-chip-bd: rgba(245,158,11,0.40);"><span class="hp-coachpromo-benefit-icon">⚡</span><div><div class="hp-coachpromo-benefit-title">Assign in seconds</div><div class="hp-coachpromo-benefit-desc">Push puzzles, studies &amp; custom tasks to individuals or the whole group.</div></div></div><div class="hp-coachpromo-benefit" style="--cp-accent: #10b981; --cp-glow: rgba(16,185,129,0.30); --cp-bd30: rgba(16,185,129,0.30); --cp-bd60: rgba(16,185,129,0.60); --cp-chip-bg: rgba(16,185,129,0.18); --cp-chip-bd: rgba(16,185,129,0.40);"><span class="hp-coachpromo-benefit-icon">📈</span><div><div class="hp-coachpromo-benefit-title">See real progress</div><div class="hp-coachpromo-benefit-desc">Track every student’s growth, streaks and weak spots over time.</div></div></div><div class="hp-coachpromo-benefit" style="--cp-accent: #a78bfa; --cp-glow: rgba(167,139,250,0.30); --cp-bd30: rgba(167,139,250,0.30); --cp-bd60: rgba(167,139,250,0.60); --cp-chip-bg: rgba(167,139,250,0.18); --cp-chip-bd: rgba(167,139,250,0.40);"><span class="hp-coachpromo-benefit-icon">📊</span><div><div class="hp-coachpromo-benefit-title">Reports parents love</div><div class="hp-coachpromo-benefit-desc">Shareable progress reports that make your coaching value obvious.</div></div></div></div><div class="hp-coachpromo-foot"><div class="hp-coachpromo-trust"><span>✓ 30-day free trial</span><span class="hp-coachpromo-trust-dot">•</span><span>✓ No card required</span><span class="hp-coachpromo-trust-dot">•</span><span>✓ Cancel anytime</span></div><button type="button" class="hp-coachpromo-btn">Log in to start →</button></div></div></div><div class="hp-glass hp-lab1-section"><div class="hp-lab1-img-col"><img src="/lab1.png" alt="Chess Training Lab" class="hp-lab1-img"></div><div class="hp-lab1-text-col"><div class="hp-lab1-badges"><span class="hp-lab1-eyebrow">Lab 01</span><span class="hp-lab1-free-badge">FREE CORE PLATFORM</span></div><h2 class="hp-lab1-title">Chess Training Lab</h2><table class="hp-lab1-table"><tbody><tr class="hp-lab1-row"><td class="hp-lab1-icon-cell">🏆</td><td class="hp-lab1-text-cell">Daily Arena tournaments</td></tr><tr class="hp-lab1-row"><td class="hp-lab1-icon-cell">🧩</td><td class="hp-lab1-text-cell">Daily tactical puzzles</td></tr><tr class="hp-lab1-row"><td class="hp-lab1-icon-cell">🔥</td><td class="hp-lab1-text-cell">Weekly contests &amp; challenges</td></tr><tr class="hp-lab1-row"><td class="hp-lab1-icon-cell">📈</td><td class="hp-lab1-text-cell">Track rating and progress</td></tr></tbody></table></div></div><div class="hp-glass hp-lab2-section"><div class="hp-lab2-text-col"><div class="hp-lab2-badges"><span class="hp-lab2-eyebrow">Lab 02</span><span class="hp-lab2-exp-badge">3D EXPERIENCE</span></div><h2 class="hp-lab2-title">PREMIUM 3D EXPERIENCE</h2><p class="hp-lab2-subtitle">Play and watch games in a shared live chess space.</p><table class="hp-lab2-table"><tbody><tr class="hp-lab2-row"><td class="hp-lab2-icon-cell">🏙️</td><td class="hp-lab2-text-cell">Live tournament atmosphere</td></tr><tr class="hp-lab2-row"><td class="hp-lab2-icon-cell">🤝</td><td class="hp-lab2-text-cell">Play with friends in real time</td></tr><tr class="hp-lab2-row"><td class="hp-lab2-icon-cell">♜</td><td class="hp-lab2-text-cell">Follow games together live</td></tr></tbody></table><p class="hp-lab2-tagline">Built for interactive and social chess experiences.</p></div><div class="hp-lab2-img-col"><img src="/lab2.png" alt="3D Chess Arena" class="hp-lab2-img"></div></div><div class="hp-features-section"><div class="hp-features-heading"><span class="hp-features-eyebrow">WHY PLAY HERE</span><h2 class="hp-features-title">Why Chess Nexus?</h2><p class="hp-features-subtitle">Everything you need to master chess, compete harder, and improve faster.</p><a class="hp-lb-view-btn" href="/features" style="margin-top: 12px; display: inline-block;">Explore all features →</a></div><div class="hp-features-row"><div class="hp-feature-item" style="--feat-accent: #06b6d4; --feat-glow: rgba(6,182,212,0.16);"><div class="hp-feature-top"><div class="hp-feature-icon-wrap"><span class="hp-feature-icon">🧠</span></div><span class="hp-feature-tag">Adaptive</span></div><div class="hp-feature-text"><span class="hp-feature-label">AI-Powered Training</span><span class="hp-feature-desc">Your games are analyzed move-by-move to generate adaptive puzzle paths for your exact weaknesses.</span></div></div><div class="hp-feature-item" style="--feat-accent: #f59e0b; --feat-glow: rgba(245,158,11,0.16);"><div class="hp-feature-top"><div class="hp-feature-icon-wrap"><span class="hp-feature-icon">🏆</span></div><span class="hp-feature-tag">Seasonal</span></div><div class="hp-feature-text"><span class="hp-feature-label">Seasonal Puzzle Races</span><span class="hp-feature-desc">Season-based competitions keep every week fresh with rankings, milestones, and rivalry momentum.</span></div></div><div class="hp-feature-item" style="--feat-accent: #10b981; --feat-glow: rgba(16,185,129,0.16);"><div class="hp-feature-top"><div class="hp-feature-icon-wrap"><span class="hp-feature-icon">📈</span></div><span class="hp-feature-tag">Measurable</span></div><div class="hp-feature-text"><span class="hp-feature-label">Skill Progression</span><span class="hp-feature-desc">Track rating growth, unlock ranks, and clearly see how your tactical decisions improve over time.</span></div></div><div class="hp-feature-item" style="--feat-accent: #a78bfa; --feat-glow: rgba(167,139,250,0.16);"><div class="hp-feature-top"><div class="hp-feature-icon-wrap"><span class="hp-feature-icon">⚔️</span></div><span class="hp-feature-tag">PvP</span></div><div class="hp-feature-text"><span class="hp-feature-label">Competitive Arena</span><span class="hp-feature-desc">Play high-pressure puzzle battles and prove your calculation speed against serious competitors.</span></div></div><div class="hp-feature-item" style="--feat-accent: #f97316; --feat-glow: rgba(249,115,22,0.16);"><div class="hp-feature-top"><div class="hp-feature-icon-wrap"><span class="hp-feature-icon">🔥</span></div><span class="hp-feature-tag">Consistency</span></div><div class="hp-feature-text"><span class="hp-feature-label">Daily Mastery Streaks</span><span class="hp-feature-desc">Build consistent habits with streak rewards that turn short daily sessions into long-term mastery.</span></div></div><div class="hp-feature-item" style="--feat-accent: #e879f9; --feat-glow: rgba(232,121,249,0.16);"><div class="hp-feature-top"><div class="hp-feature-icon-wrap"><span class="hp-feature-icon">🎮</span></div><span class="hp-feature-tag">Real-Time</span></div><div class="hp-feature-text"><span class="hp-feature-label">3D Arena Tournament</span><span class="hp-feature-desc">Experience the thrill of live chess tournaments in real time — watch battles unfold on a cinematic 3D board with live standings and crowd energy.</span></div></div></div><div class="hp-features-trust"><div class="hp-features-trust-item"><span class="hp-features-trust-value">100% Free</span><span class="hp-features-trust-label">core features</span></div><div class="hp-features-trust-divider"></div><div class="hp-features-trust-item"><span class="hp-features-trust-value">Safe &amp; Secure</span><span class="hp-features-trust-label">your data is protected</span></div><div class="hp-features-trust-divider"></div><div class="hp-features-trust-item"><span class="hp-features-trust-value">Global Community</span><span class="hp-features-trust-label">players from 10+ countries</span></div></div></div><div class="hp-glass hp-cta"><div class="hp-cta-glow"></div><span class="hp-cta-chess">♟</span><div class="hp-cta-text"><h2 class="hp-cta-heading">Ready to Level Up Your Chess?</h2><p class="hp-cta-sub">Join Chess Nexus today and become part of a growing community of chess players and learners.</p></div><a class="hp-cta-btn" href="/login">Login to Play →</a></div><div class="hp-glass hp-leaderboard"><div class="hp-lb-topbar"><div class="hp-lb-heading-row"><h3 class="hp-lb-title">🏆 ChessNexus Monthly Focus — Top Players</h3></div></div><div class="hp-lb-table-wrap"><p style="color: rgb(136, 153, 170); text-align: center; padding: 20px;">No data yet for this month.</p></div><div class="hp-lb-footer"><a class="hp-lb-view-btn" href="/monthly-focus/leaderboard">View Leaderboard →</a></div></div><div class="hp-callout"><span class="hp-callout-icon">🤝</span><div><h2>Want to collaborate or become an Elite member?</h2><p>Interested in coaching on Chess Nexus, hosting tournaments, or partnering with us? Reach out — we'd love to work with you and help you become an Elite member.</p><div class="hp-callout-row"><a class="hp-callout-btn hp-callout-btn-primary" href="/contact">Contact us to collaborate</a><a class="hp-callout-btn hp-callout-btn-ghost" href="/features">See all features</a></div></div></div></div></div></div><style>
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+          .site-footer {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+          }
+
+          .footer-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+          }
+
+          .footer-logo {
+            height: 32px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0.9);
+          }
+
+          .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #06b6d4;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            transition: all 0.3s ease;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          }
+
+          .contact-link:hover {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: rgba(6, 182, 212, 0.4);
+            color: #67e8f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+          }
+
+          .contact-icon {
+            font-size: 16px;
+            filter: drop-shadow(0 1px 2px rgba(6, 182, 212, 0.3));
+          }
+
+          .footer-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+
+          .footer-nav a {
+            color: #06b6d4;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.25s ease;
+          }
+
+          .footer-nav a:hover {
+            color: #67e8f9;
+            text-decoration: underline;
+          }
+
+          .footer-sep {
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 13px;
+          }
+
+          .footer-text {
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+          }
+
+          .footer-text-logo {
+            height: 22px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0.9);
+          }
+
+          /* Subtle gradient overlay effect */
+          .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+              transparent,
+              rgba(6, 182, 212, 0.3) 30%,
+              rgba(16, 185, 129, 0.3) 70%,
+              transparent
+            );
+          }
+
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            .site-footer {
+              padding: 16px;
+            }
+
+            .footer-content {
+              flex-direction: column;
+              gap: 10px;
+            }
+
+            .contact-link {
+              font-size: 13px;
+              padding: 6px 12px;
+            }
+
+            .footer-text {
+              font-size: 12px;
+            }
+          }
+        </style><footer class="site-footer"><div class="footer-content"><img src="/logo.png" alt="Chess Nexus Logo" class="footer-logo"><nav class="footer-nav"><a href="/">Home</a><span class="footer-sep">|</span><a href="/features">Features</a><span class="footer-sep">|</span><a href="/members">Members</a><span class="footer-sep">|</span><a href="/contact">Contact Us</a><span class="footer-sep">|</span><a href="/report">Report</a><span class="footer-sep">|</span><a href="/privacy-policy">Privacy Policy</a><span class="footer-sep">|</span><a href="/terms">Terms</a><span class="footer-sep">|</span><a href="/refund-policy">Refund</a></nav><p class="footer-text">© 2026 CHESS NEXUS<img src="/logo.png" alt="Chess Nexus Logo" class="footer-text-logo"></p></div></footer></div></div>
+  
+
+</body></html>
