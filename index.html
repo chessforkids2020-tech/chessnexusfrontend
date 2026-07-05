@@ -4,13 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Primary SEO -->
-    <title>Chess Nexus — Online Chess Puzzles, Tactics & Live Races | chessnexus.in</title>
-    <meta name="description" content="Chess Nexus is a free online chess platform to solve daily puzzles, practice tactics, compete in live arena races, and improve your rating. Join 1000+ players from 10+ countries." />
-    <meta name="keywords" content="chess puzzles, chess tactics, chess online, chess arena, chess race, chess platform, free chess, improve chess rating, chess nexus, online chess india, daily chess puzzles, chess training" />
+    <!--
+      Per-page SEO tags (title, description, keywords, canonical, robots,
+      Open Graph, Twitter) are managed at runtime by react-helmet-async via
+      src/components/SEO.jsx, and are baked into each prerendered page by
+      prerender.js. They are intentionally NOT hardcoded here — duplicating
+      them would produce two <title>/canonical/og:* tags on prerendered pages.
+      A default title (below) prevents an empty tab title before hydration.
+    -->
+    <title>Chess Nexus — Online Chess Puzzles, Tactics &amp; Live Races</title>
     <meta name="author" content="Chess Nexus" />
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <link rel="canonical" href="https://chessnexus.in/" />
 
     <!-- Favicon & App Icons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/logo.png" />
@@ -18,30 +21,9 @@
     <meta name="theme-color" content="#06b6d4" />
     <meta name="msapplication-TileColor" content="#06b6d4" />
 
-    <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Chess Nexus" />
-    <meta property="og:title" content="Chess Nexus — Free Online Chess Puzzles, Tactics & Live Races" />
-    <meta property="og:description" content="Solve daily chess puzzles, compete in live arena races, practice tactics, and climb the leaderboard. Free to play. Join Chess Nexus today." />
-    <meta property="og:url" content="https://chessnexus.in/" />
-    <meta property="og:image" content="https://chessnexus.in/logo.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Chess Nexus — Online Chess Platform" />
-    <meta property="og:locale" content="en_IN" />
-
-    <!-- Twitter / X Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@ChessNexus" />
-    <meta name="twitter:creator" content="@ChessNexus" />
-    <meta name="twitter:title" content="Chess Nexus — Free Online Chess Puzzles & Live Races" />
-    <meta name="twitter:description" content="Solve daily chess puzzles, join live arena races, and improve your tactics. Free online chess platform." />
-    <meta name="twitter:image" content="https://chessnexus.in/logo.png" />
-    <meta name="twitter:image:alt" content="Chess Nexus" />
-
     <!-- Performance hints -->
-    <link rel="preconnect" href="https://chessnexus.in" />
-    <link rel="dns-prefetch" href="https://chessnexus.in" />
+    <link rel="preconnect" href="https://www.chessnexus.in" />
+    <link rel="dns-prefetch" href="https://www.chessnexus.in" />
 
     <!-- JSON-LD: WebApplication -->
     <script type="application/ld+json">
@@ -49,7 +31,7 @@
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "Chess Nexus",
-      "url": "https://chessnexus.in/",
+      "url": "https://www.chessnexus.in/",
       "description": "Free online chess platform for solving puzzles, practicing tactics, and competing in live arena races.",
       "applicationCategory": "GameApplication",
       "operatingSystem": "Web Browser",
@@ -68,7 +50,7 @@
         "Team Race Mode",
         "Chess Study System"
       ],
-      "screenshot": "https://chessnexus.in/logo.png",
+      "screenshot": "https://www.chessnexus.in/logo.png",
       "inLanguage": "en"
     }
     </script>
@@ -79,8 +61,8 @@
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Chess Nexus",
-      "url": "https://chessnexus.in/",
-      "logo": "https://chessnexus.in/logo.png",
+      "url": "https://www.chessnexus.in/",
+      "logo": "https://www.chessnexus.in/logo.png",
       "sameAs": [],
       "description": "Chess Nexus is a free online chess training and competition platform offering puzzles, tactics, live races, and leaderboards."
     }
@@ -93,7 +75,7 @@
       "@type": "WebSite",
       "name": "Chess Nexus",
       "alternateName": "ChessNexus",
-      "url": "https://chessnexus.in/"
+      "url": "https://www.chessnexus.in/"
     }
     </script>
 
@@ -105,16 +87,16 @@
       "@type": "ItemList",
       "name": "Chess Nexus main navigation",
       "itemListElement": [
-        { "@type": "SiteNavigationElement", "position": 1, "name": "Play Chess Online", "description": "Play live chess against people or the Stockfish engine.", "url": "https://chessnexus.in/play-chess-online" },
-        { "@type": "SiteNavigationElement", "position": 2, "name": "Play With Friends", "description": "Play 2-player chess with a friend in a private room.", "url": "https://chessnexus.in/play-chess-with-friends" },
-        { "@type": "SiteNavigationElement", "position": 3, "name": "Chess Puzzles", "description": "Solve daily chess puzzles and train tactics.", "url": "https://chessnexus.in/chess-puzzles" },
-        { "@type": "SiteNavigationElement", "position": 4, "name": "Arena Tournaments", "description": "Compete in live 3D arena chess tournaments.", "url": "https://chessnexus.in/3d-chess-arena-tournament" },
-        { "@type": "SiteNavigationElement", "position": 5, "name": "Masters Games", "description": "Play through famous grandmaster games move by move.", "url": "https://chessnexus.in/masters-chess-games" },
-        { "@type": "SiteNavigationElement", "position": 6, "name": "Tactics Race", "description": "Race against others to solve tactics fastest.", "url": "https://chessnexus.in/chess-tactics-race" },
-        { "@type": "SiteNavigationElement", "position": 7, "name": "Leaderboard", "description": "See the top players on the global leaderboard.", "url": "https://chessnexus.in/leaderboard" },
-        { "@type": "SiteNavigationElement", "position": 8, "name": "Analyse My Game", "description": "Analyse your chess games with accuracy scores.", "url": "https://chessnexus.in/analyse-my-chess-game" },
-        { "@type": "SiteNavigationElement", "position": 9, "name": "Chess Study", "description": "Learn with structured chess study lessons.", "url": "https://chessnexus.in/chess-study" },
-        { "@type": "SiteNavigationElement", "position": 10, "name": "Log In / Register", "description": "Sign in or create a free Chess Nexus account.", "url": "https://chessnexus.in/login" }
+        { "@type": "SiteNavigationElement", "position": 1, "name": "Play Chess Online", "description": "Play live chess against people or the Stockfish engine.", "url": "https://www.chessnexus.in/play-chess-online" },
+        { "@type": "SiteNavigationElement", "position": 2, "name": "Play With Friends", "description": "Play 2-player chess with a friend in a private room.", "url": "https://www.chessnexus.in/play-chess-with-friends" },
+        { "@type": "SiteNavigationElement", "position": 3, "name": "Chess Puzzles", "description": "Solve daily chess puzzles and train tactics.", "url": "https://www.chessnexus.in/chess-puzzles" },
+        { "@type": "SiteNavigationElement", "position": 4, "name": "Arena Tournaments", "description": "Compete in live 3D arena chess tournaments.", "url": "https://www.chessnexus.in/3d-chess-arena-tournament" },
+        { "@type": "SiteNavigationElement", "position": 5, "name": "Masters Games", "description": "Play through famous grandmaster games move by move.", "url": "https://www.chessnexus.in/masters-chess-games" },
+        { "@type": "SiteNavigationElement", "position": 6, "name": "Tactics Race", "description": "Race against others to solve tactics fastest.", "url": "https://www.chessnexus.in/chess-tactics-race" },
+        { "@type": "SiteNavigationElement", "position": 7, "name": "Leaderboard", "description": "See the top players on the global leaderboard.", "url": "https://www.chessnexus.in/leaderboard" },
+        { "@type": "SiteNavigationElement", "position": 8, "name": "Analyse My Game", "description": "Analyse your chess games with accuracy scores.", "url": "https://www.chessnexus.in/analyse-my-chess-game" },
+        { "@type": "SiteNavigationElement", "position": 9, "name": "Chess Study", "description": "Learn with structured chess study lessons.", "url": "https://www.chessnexus.in/chess-study" },
+        { "@type": "SiteNavigationElement", "position": 10, "name": "Log In / Register", "description": "Sign in or create a free Chess Nexus account.", "url": "https://www.chessnexus.in/login" }
       ]
     }
     </script>

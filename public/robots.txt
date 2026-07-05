@@ -54,5 +54,5 @@ Disallow: /team-lobby
 Disallow: /study-duel
 Disallow: /coaching-room
 
-Sitemap: https://chessnexus.in/sitemap.xml
-Host: https://chessnexus.in
+Sitemap: https://www.chessnexus.in/sitemap.xml
+Host: https://www.chessnexus.in

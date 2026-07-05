@@ -380,9 +380,9 @@ export default function HomePage() {
   return (
     <div className="hp-root">
       <SEO
-        title="Free Online Chess Puzzles, Tactics & Live Races"
-        description="Chess Nexus is a free chess platform to solve daily puzzles, compete in live arena races, practice tactics, and climb the global leaderboard. Join 1000+ players."
-        keywords="chess nexus, chess puzzles online, chess tactics, chess arena race, free chess platform, improve chess rating, daily chess puzzles"
+        title="Coach-Led Chess Training for Players & Academies"
+        description="Train with puzzles, endgames, courses & live team races — or learn from real coaches. Coaches assign lessons, track student progress, and run their academy, all in one free platform."
+        keywords="chess coaching, online chess academy, chess training platform, coach-led chess, chess for clubs, endgame training, chess courses, team races, track student progress"
         canonical="/"
       />
       <div className="hp-bg-layer" />

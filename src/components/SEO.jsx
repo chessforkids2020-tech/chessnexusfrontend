@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-const BASE_URL = 'https://chessnexus.in';
+const BASE_URL = 'https://www.chessnexus.in';
 const DEFAULT_IMAGE = `${BASE_URL}/logo.png`;
 
 export default function SEO({
