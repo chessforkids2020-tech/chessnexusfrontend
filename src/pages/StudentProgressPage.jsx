@@ -77,8 +77,14 @@ export default function StudentProgressPage() {
   const puzzleFailed = pz?.failed ?? null;
   const puzzleTrend = pz?.trend ?? null; // rating change over the window (+/-)
 
-  // Tournaments joined in the last 30 days (the app's "games" are tournaments).
-  const tournaments30d = data.tournaments30d || 0;
+  // Tournaments in the last 30 days: count, games played inside them, win rate.
+  const t30 = data.tournaments30d || {};
+  const tournamentsPlayed = t30.tournaments || 0;
+  const tournamentGames = t30.games || 0;
+  const tournamentWinRate = t30.winRate ?? null;
+
+  // Active days this month.
+  const activeDays = data.activeDays || 0;
 
   // This month's coaching data.
   const attendance = data.attendance || { present: 0, total: 0 };
@@ -124,14 +130,29 @@ export default function StudentProgressPage() {
         <section className="sp-card sp-month">
           <div className="sp-section-title">📋 This month's class summary</div>
           <div className="sp-month-grid">
+            {/* 1 — Attendance (this month) */}
             <div className="sp-month-item">
               <div className="sp-month-icon">🗓️</div>
               <div className="sp-month-value">
                 {attendance.present}<span className="sp-month-of">/{attendance.total || 0}</span>
               </div>
-              <div className="sp-month-label">Classes attended</div>
+              <div className="sp-month-label">Classes attended<br /><span className="sp-month-sub">this month</span></div>
             </div>
 
+            {/* 2 — Payment */}
+            <div className="sp-month-item">
+              <div className="sp-month-icon">💳</div>
+              {paymentMeta ? (
+                <div className={`sp-pay-badge ${paymentMeta.cls}`}>
+                  {paymentMeta.icon} {paymentMeta.label}
+                </div>
+              ) : (
+                <div className="sp-month-value sp-month-na">—</div>
+              )}
+              <div className="sp-month-label">Fee status<br /><span className="sp-month-sub">this month</span></div>
+            </div>
+
+            {/* 3 — Assignments done */}
             <div className="sp-month-item">
               <div className="sp-month-icon">📝</div>
               <div className="sp-month-value">
@@ -140,27 +161,16 @@ export default function StudentProgressPage() {
               <div className="sp-month-label">Assignments done<br /><span className="sp-month-sub">last 30 days</span></div>
             </div>
 
-            {assignments.avgAccuracy != null && (
-              <div className="sp-month-item">
-                <div className="sp-month-icon">🎯</div>
-                <div className="sp-month-value">{assignments.avgAccuracy}%</div>
-                <div className="sp-month-label">Assignment accuracy</div>
-              </div>
-            )}
-
-            {paymentMeta && (
-              <div className="sp-month-item">
-                <div className="sp-month-icon">💳</div>
-                <div className={`sp-pay-badge ${paymentMeta.cls}`}>
-                  {paymentMeta.icon} {paymentMeta.label}
-                </div>
-                <div className="sp-month-label">Fee status</div>
-              </div>
-            )}
+            {/* 4 — Assignments pending */}
+            <div className="sp-month-item">
+              <div className="sp-month-icon">⏳</div>
+              <div className="sp-month-value">{assignments.pending}</div>
+              <div className="sp-month-label">Assignments pending<br /><span className="sp-month-sub">last 30 days</span></div>
+            </div>
           </div>
-          {assignments.pending > 0 && (
+          {assignments.avgAccuracy != null && (
             <p className="sp-month-note">
-              {assignments.pending} assignment{assignments.pending === 1 ? "" : "s"} still pending (last 30 days).
+              Assignment accuracy: <strong>{assignments.avgAccuracy}%</strong> (last 30 days).
             </p>
           )}
         </section>
@@ -215,15 +225,30 @@ export default function StudentProgressPage() {
               <div className="sp-stat-label">Puzzles missed</div>
             </div>
           )}
+          <div className="sp-card sp-stat">
+            <div className="sp-stat-icon">📅</div>
+            <div className="sp-stat-value">{activeDays}</div>
+            <div className="sp-stat-label">Active days<br /><span className="sp-month-sub">this month</span></div>
+          </div>
         </section>
 
-        {/* ── Tournaments (last 30 days) ── */}
+        {/* ── Tournaments (last 30 days) — 3 cards ── */}
         <div className="sp-section-title sp-stats-title">🏆 Tournaments (last 30 days)</div>
         <section className="sp-stats">
           <div className="sp-card sp-stat">
             <div className="sp-stat-icon">🏆</div>
-            <div className="sp-stat-value">{tournaments30d}</div>
+            <div className="sp-stat-value">{tournamentsPlayed}</div>
             <div className="sp-stat-label">Tournaments played</div>
+          </div>
+          <div className="sp-card sp-stat">
+            <div className="sp-stat-icon">♟️</div>
+            <div className="sp-stat-value">{tournamentGames}</div>
+            <div className="sp-stat-label">Games played</div>
+          </div>
+          <div className="sp-card sp-stat">
+            <div className="sp-stat-icon">🎯</div>
+            <div className="sp-stat-value">{tournamentWinRate != null ? `${tournamentWinRate}%` : "—"}</div>
+            <div className="sp-stat-label">Win rate</div>
           </div>
         </section>
 
