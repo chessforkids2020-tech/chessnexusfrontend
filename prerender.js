@@ -98,11 +98,24 @@ async function run() {
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
+  // Prerendering is for static marketing HTML — it must NEVER call the live
+  // backend. Abort any API / socket / external data request so builds don't
+  // spam production (CORS errors, junk analytics) and don't hang on network.
+  await page.route('**/*', (routeReq) => {
+    const u = routeReq.request().url();
+    const isLocalAsset = u.startsWith(`http://localhost:${PORT}`);
+    const isApi = /\/api\/|\/socket\.io\/|\/studysparring/.test(u);
+    if (!isLocalAsset || isApi) {
+      return routeReq.abort();
+    }
+    return routeReq.continue();
+  });
+
   let ok = 0;
   for (const route of ROUTES) {
     const url = `http://localhost:${PORT}${route}`;
     try {
-      await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
       // Ensure React has painted real content into #root.
       await page.waitForFunction(
         () => {
