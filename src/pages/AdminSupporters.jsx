@@ -5,6 +5,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import { useAuth } from "../contexts/AuthContext";
+import { markIdsSeen } from "../utils/adminCoachSeen";
 
 const fmt = (d) =>
   d ? new Date(d).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "—";
@@ -60,6 +62,20 @@ const styles = {
 
 export default function AdminSupporters() {
   const nav = useNavigate();
+  const { user } = useAuth();
+
+  // Landing on this page = the admin is reviewing supporters, so dismiss the ☕
+  // "pending supporters" pip for the ones that currently need attention. The pip
+  // re-appears only when a brand-new pending supporter shows up.
+  useEffect(() => {
+    api.get("/api/admin/badge-counts")
+      .then(r => {
+        const ids = Array.isArray(r.data?.supporterIds) ? r.data.supporterIds : [];
+        if (ids.length) markIdsSeen('supporters', user?.id, ids);
+      })
+      .catch(() => {});
+  }, [user?.id]);
+
   const [rows, setRows] = useState([]);
   const [summary, setSummary] = useState([]);
   const [loading, setLoading] = useState(true);

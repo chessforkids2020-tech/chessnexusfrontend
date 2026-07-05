@@ -501,27 +501,73 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ── ARE YOU A COACH? CTA ── */}
+        {/* ── ARE YOU A COACH? — rich promo card ── */}
         {/* Logged-in user → coach onboarding; guest/logged-out → login. */}
-        <div
-          className="hp-glass hp-coach-cta"
-          role="button"
-          tabIndex={0}
-          onClick={() => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login')}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login'); } }}
-        >
-          <div className="hp-coach-cta-icon">🎓</div>
-          <div className="hp-coach-cta-text">
-            <h3 className="hp-coach-cta-title">Are you a chess coach?</h3>
-            <p className="hp-coach-cta-sub">
-              Manage your students in one place — assignments, progress tracking & reports.
-              Start with a 30-day free trial, no card required.
-            </p>
-          </div>
-          <div className="hp-coach-cta-btn">
-            {(user && user.role !== 'guest') ? 'Start free trial →' : 'Log in to start →'}
-          </div>
-        </div>
+        {(() => {
+          const goCoach = () => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login');
+          // Per-benefit accent colors, as explicit rgba (no color-mix — keep old-browser safe).
+          const COACH_BENEFITS = [
+            { icon: '🧑‍🎓', title: 'Your students, organized', desc: 'One roster with ratings, activity & attendance at a glance.',
+              accent: '#06b6d4', glow: 'rgba(6,182,212,0.30)', bd30: 'rgba(6,182,212,0.30)', bd60: 'rgba(6,182,212,0.60)', chipBg: 'rgba(6,182,212,0.18)', chipBd: 'rgba(6,182,212,0.40)' },
+            { icon: '⚡', title: 'Assign in seconds', desc: 'Push puzzles, studies & custom tasks to individuals or the whole group.',
+              accent: '#f59e0b', glow: 'rgba(245,158,11,0.30)', bd30: 'rgba(245,158,11,0.30)', bd60: 'rgba(245,158,11,0.60)', chipBg: 'rgba(245,158,11,0.18)', chipBd: 'rgba(245,158,11,0.40)' },
+            { icon: '📈', title: 'See real progress', desc: 'Track every student’s growth, streaks and weak spots over time.',
+              accent: '#10b981', glow: 'rgba(16,185,129,0.30)', bd30: 'rgba(16,185,129,0.30)', bd60: 'rgba(16,185,129,0.60)', chipBg: 'rgba(16,185,129,0.18)', chipBd: 'rgba(16,185,129,0.40)' },
+            { icon: '📊', title: 'Reports parents love', desc: 'Shareable progress reports that make your coaching value obvious.',
+              accent: '#a78bfa', glow: 'rgba(167,139,250,0.30)', bd30: 'rgba(167,139,250,0.30)', bd60: 'rgba(167,139,250,0.60)', chipBg: 'rgba(167,139,250,0.18)', chipBd: 'rgba(167,139,250,0.40)' },
+          ];
+          return (
+            <div className="hp-coachpromo">
+              <div className="hp-coachpromo-glow hp-coachpromo-glow-1" aria-hidden="true" />
+              <div className="hp-coachpromo-glow hp-coachpromo-glow-2" aria-hidden="true" />
+              <div className="hp-coachpromo-hero" aria-hidden="true">🎓</div>
+              <div className="hp-coachpromo-inner">
+                <div className="hp-coachpromo-head">
+                  <div className="hp-coachpromo-badges">
+                    <span className="hp-coachpromo-eyebrow">🎓 For Coaches</span>
+                    <span className="hp-coachpromo-trial-badge">✦ 30-DAY FREE TRIAL</span>
+                  </div>
+                  <h2 className="hp-coachpromo-title">
+                    Run your entire coaching<br />practice in one place
+                  </h2>
+                  <p className="hp-coachpromo-sub">
+                    Manage students, hand out assignments, and track every player’s
+                    progress — a complete toolkit built for chess coaches.
+                  </p>
+                </div>
+
+                <div className="hp-coachpromo-grid">
+                  {COACH_BENEFITS.map(b => (
+                    <div
+                      key={b.title}
+                      className="hp-coachpromo-benefit"
+                      style={{ '--cp-accent': b.accent, '--cp-glow': b.glow, '--cp-bd30': b.bd30, '--cp-bd60': b.bd60, '--cp-chip-bg': b.chipBg, '--cp-chip-bd': b.chipBd }}
+                    >
+                      <span className="hp-coachpromo-benefit-icon">{b.icon}</span>
+                      <div>
+                        <div className="hp-coachpromo-benefit-title">{b.title}</div>
+                        <div className="hp-coachpromo-benefit-desc">{b.desc}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="hp-coachpromo-foot">
+                  <div className="hp-coachpromo-trust">
+                    <span>✓ 30-day free trial</span>
+                    <span className="hp-coachpromo-trust-dot">•</span>
+                    <span>✓ No card required</span>
+                    <span className="hp-coachpromo-trust-dot">•</span>
+                    <span>✓ Cancel anytime</span>
+                  </div>
+                  <button type="button" className="hp-coachpromo-btn" onClick={goCoach}>
+                    {(user && user.role !== 'guest') ? 'Start your free trial →' : 'Log in to start →'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ── CHESS TRAINING LAB PROMO ── */}
         <div className="hp-glass hp-lab1-section">

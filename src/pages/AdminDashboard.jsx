@@ -4,6 +4,7 @@ import api from "../api";
 import socket from "../socket";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { unseenCount } from "../utils/adminCoachSeen";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
 
@@ -443,7 +444,7 @@ function renderNavBadge(count) {
 
 function AdminDashboard() {
   const nav = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [users, setUsers] = useState([]);
   // Contact messages state
   const [messages, setMessages] = useState([]);
@@ -469,21 +470,41 @@ function AdminDashboard() {
   // open reports, pending supporters, unverified coaches. Polled for a
   // near-real-time feel.
   const [badgeCounts, setBadgeCounts] = useState({ reports: 0, supporters: 0, coaches: 0 });
+  // Ids of items that "need attention" from the server; the coaches/supporters
+  // pips count only the ones this admin hasn't dismissed by viewing the list.
+  const [unverifiedCoachIds, setUnverifiedCoachIds] = useState([]);
+  const [pendingSupporterIds, setPendingSupporterIds] = useState([]);
+  const [seenTick, setSeenTick] = useState(0); // bump to recompute after a "seen" write
   useEffect(() => {
     let alive = true;
     const fetchBadges = () => {
       api.get('/api/admin/badge-counts')
-        .then(r => { if (alive && r.data) setBadgeCounts({
-          reports: r.data.reports || 0,
-          supporters: r.data.supporters || 0,
-          coaches: r.data.coaches || 0,
-        }); })
+        .then(r => { if (alive && r.data) {
+          setBadgeCounts({
+            reports: r.data.reports || 0,
+            supporters: r.data.supporters || 0,
+            coaches: r.data.coaches || 0,
+          });
+          setUnverifiedCoachIds(Array.isArray(r.data.coachIds) ? r.data.coachIds : []);
+          setPendingSupporterIds(Array.isArray(r.data.supporterIds) ? r.data.supporterIds : []);
+        } })
         .catch(() => {});
     };
     fetchBadges();
     const id = setInterval(fetchBadges, 30000); // refresh every 30s
-    return () => { alive = false; clearInterval(id); };
+    // Recompute the pips when we return to this tab (e.g. back from /admin/coaches
+    // or /admin/supporters, which just marked the current items seen).
+    const onFocus = () => setSeenTick(t => t + 1);
+    window.addEventListener('focus', onFocus);
+    return () => { alive = false; clearInterval(id); window.removeEventListener('focus', onFocus); };
   }, []);
+
+  // Pips = items this admin hasn't dismissed yet. seenTick forces recompute after
+  // a "seen" write on return to this tab.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const coachBadge = React.useMemo(() => unseenCount('coaches', user?.id, unverifiedCoachIds), [unverifiedCoachIds, user?.id, seenTick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const supporterBadge = React.useMemo(() => unseenCount('supporters', user?.id, pendingSupporterIds), [pendingSupporterIds, user?.id, seenTick]);
   // Arena Tournaments admin state
   const [arenaTournaments, setArenaTournaments] = useState([]);
   const [loadingArenaTournaments, setLoadingArenaTournaments] = useState(false);
@@ -1205,10 +1226,10 @@ function AdminDashboard() {
             🚩 Reports{renderNavBadge(badgeCounts.reports)}
           </button>
           <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/supporters')}>
-            ☕ Supporters{renderNavBadge(badgeCounts.supporters)}
+            ☕ Supporters{renderNavBadge(supporterBadge)}
           </button>
           <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/coaches')}>
-            🎓 Coaches{renderNavBadge(badgeCounts.coaches)}
+            🎓 Coaches{renderNavBadge(coachBadge)}
           </button>
           <button style={styles.secondaryBtn} onClick={() => nav('/chat')}>💬 Chat</button>
           <button style={styles.primaryBtn} onClick={fetchAll}>Refresh</button>

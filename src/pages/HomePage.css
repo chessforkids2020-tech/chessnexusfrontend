@@ -764,65 +764,260 @@ button.hp-contest-row.hp-contest-row-btn:not(:disabled):hover {
 }
 
 /* ── ARE YOU A COACH? CTA ──────────────────────────── */
-.hp-coach-cta {
+/* ── ARE YOU A COACH? — rich promo card ──────────────── */
+.hp-coachpromo {
+  position: relative;
+  margin-bottom: 28px;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(6, 182, 212, 0.45);
+  background:
+    radial-gradient(130% 150% at 0% 0%, rgba(6,182,212,0.30) 0%, transparent 46%),
+    radial-gradient(130% 150% at 100% 120%, rgba(16,185,129,0.24) 0%, transparent 44%),
+    radial-gradient(90% 120% at 92% 8%, rgba(167,139,250,0.16) 0%, transparent 40%),
+    linear-gradient(135deg, rgba(11,17,32,0.97) 0%, rgba(7,7,16,0.98) 100%);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.55),
+    0 0 60px rgba(6,182,212,0.14),
+    0 1px 0 rgba(255,255,255,0.06) inset;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hp-coachpromo:hover {
+  transform: translateY(-3px);
+  border-color: rgba(6, 182, 212, 0.75);
+  box-shadow:
+    0 28px 74px rgba(0,0,0,0.6),
+    0 0 80px rgba(6,182,212,0.28),
+    0 0 0 1px rgba(6,182,212,0.3) inset;
+}
+
+/* drifting glow accents behind the card */
+.hp-coachpromo-glow {
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  filter: blur(24px);
+  pointer-events: none;
+  z-index: 0;
+}
+.hp-coachpromo-glow-1 {
+  top: -50%; right: -8%;
+  background: radial-gradient(circle, rgba(6,182,212,0.34) 0%, transparent 62%);
+  animation: hp-coachpromo-float 9s ease-in-out infinite alternate;
+}
+.hp-coachpromo-glow-2 {
+  bottom: -60%; left: -6%;
+  background: radial-gradient(circle, rgba(16,185,129,0.28) 0%, transparent 64%);
+  animation: hp-coachpromo-float 11s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes hp-coachpromo-float {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-30px, 30px) scale(1.12); }
+}
+
+/* oversized floating graduation cap watermark */
+.hp-coachpromo-hero {
+  position: absolute;
+  top: 50%;
+  right: 38px;
+  transform: translateY(-50%);
+  font-size: 190px;
+  line-height: 1;
+  opacity: 0.10;
+  pointer-events: none;
+  z-index: 0;
+  filter: drop-shadow(0 0 40px rgba(6,182,212,0.5));
+  animation: hp-coachpromo-hero 5s ease-in-out infinite;
+}
+
+@keyframes hp-coachpromo-hero {
+  0%, 100% { transform: translateY(-50%) rotate(-5deg); }
+  50%      { transform: translateY(-58%) rotate(5deg); }
+}
+
+.hp-coachpromo-inner {
+  position: relative;
+  z-index: 1;
+  padding: 36px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.hp-coachpromo-badges {
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding: 18px 24px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  border-color: rgba(6, 182, 212, 0.28);
-  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
 }
 
-.hp-coach-cta:hover,
-.hp-coach-cta:focus-visible {
-  transform: translateY(-2px);
-  border-color: rgba(6, 182, 212, 0.55);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(6, 182, 212, 0.25) inset;
-  outline: none;
-}
-
-.hp-coach-cta-icon {
-  font-size: 42px;
-  flex-shrink: 0;
-  filter: drop-shadow(0 3px 14px rgba(6, 182, 212, 0.4));
-  line-height: 1;
-}
-
-.hp-coach-cta-text { flex: 1; min-width: 0; }
-
-.hp-coach-cta-title {
-  margin: 0 0 4px;
-  font-size: 19px;
+.hp-coachpromo-eyebrow {
+  font-size: 11px;
   font-weight: 800;
-  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: #061016;
+  background: linear-gradient(135deg, var(--cyan-hi), var(--cyan));
+  border: 1px solid rgba(6,182,212,0.5);
+  padding: 6px 13px;
+  border-radius: 999px;
+  box-shadow: 0 4px 16px rgba(6,182,212,0.4);
+}
+
+.hp-coachpromo-trial-badge {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--emerald-hi);
+  background: rgba(16,185,129,0.14);
+  border: 1px solid rgba(16,185,129,0.4);
+  padding: 6px 13px;
+  border-radius: 999px;
+  animation: hp-coachpromo-pulse 2.6s ease-in-out infinite;
+}
+
+@keyframes hp-coachpromo-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.0); }
+  50%      { box-shadow: 0 0 0 4px rgba(16,185,129,0.14); }
+}
+
+.hp-coachpromo-title {
+  margin: 0 0 10px;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  line-height: 1.1;
+  background: linear-gradient(100deg, #ffffff 0%, #d6f4fb 30%, var(--cyan-hi) 55%, var(--emerald-hi) 100%);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: hp-coachpromo-shine 6s linear infinite;
 }
 
-.hp-coach-cta-sub {
+@keyframes hp-coachpromo-shine {
+  to { background-position: 200% center; }
+}
+
+.hp-coachpromo-sub {
   margin: 0;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--t2);
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: #c3d0e0;
+  max-width: 560px;
 }
 
-.hp-coach-cta-btn {
+.hp-coachpromo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 18px;
+}
+
+.hp-coachpromo-benefit {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 15px;
+  background:
+    linear-gradient(135deg, var(--cp-glow) 0%, transparent 60%),
+    rgba(255,255,255,0.035);
+  border: 1px solid var(--cp-bd30);
+  transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.hp-coachpromo-benefit:hover {
+  transform: translateY(-3px);
+  border-color: var(--cp-bd60);
+  box-shadow: 0 12px 30px var(--cp-glow);
+}
+
+.hp-coachpromo-benefit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
   flex-shrink: 0;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #04121a;
-  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
-  white-space: nowrap;
+  font-size: 24px;
+  line-height: 1;
+  border-radius: 13px;
+  background: var(--cp-chip-bg);
+  border: 1px solid var(--cp-chip-bd);
+  box-shadow: 0 4px 16px var(--cp-glow);
 }
 
-@media (max-width: 640px) {
-  .hp-coach-cta { flex-direction: column; text-align: center; gap: 12px; }
-  .hp-coach-cta-btn { width: 100%; text-align: center; }
+.hp-coachpromo-benefit-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #f4f8ff;
+  margin-bottom: 3px;
+}
+
+.hp-coachpromo-benefit-desc {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #9fb0c4;
+}
+
+.hp-coachpromo-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.hp-coachpromo-trust {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--emerald-hi);
+}
+
+.hp-coachpromo-trust-dot { color: var(--t3); }
+
+.hp-coachpromo-btn {
+  flex-shrink: 0;
+  padding: 15px 32px;
+  border: none;
+  border-radius: 13px;
+  font-size: 15.5px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #04121a;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--cyan-hi) 0%, var(--emerald) 100%);
+  box-shadow:
+    0 10px 34px rgba(6,182,212,0.48),
+    0 1px 0 rgba(255,255,255,0.25) inset;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.hp-coachpromo-btn:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.08);
+  box-shadow:
+    0 18px 48px rgba(6,182,212,0.62),
+    0 1px 0 rgba(255,255,255,0.3) inset;
+}
+
+@media (max-width: 860px) {
+  .hp-coachpromo-inner { padding: 28px 22px; gap: 22px; }
+  .hp-coachpromo-title { font-size: 26px; }
+  .hp-coachpromo-title br { display: none; }
+  .hp-coachpromo-hero { font-size: 130px; right: 10px; opacity: 0.07; }
+  .hp-coachpromo-grid { grid-template-columns: 1fr; }
+  .hp-coachpromo-foot { flex-direction: column; align-items: stretch; }
+  .hp-coachpromo-btn { width: 100%; text-align: center; }
 }
 
 /* ── CHESS TRAINING LAB PROMO ──────────────────────── */

@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
 import api from "../api";
+import { useAuth } from "../contexts/AuthContext";
+import { markIdsSeen } from "../utils/adminCoachSeen";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
@@ -64,6 +66,19 @@ const styles = {
 
 export default function AdminCoaches() {
   const nav = useNavigate();
+  const { user } = useAuth();
+
+  // Landing on this page = the admin is reviewing coaches, so dismiss the 🎓
+  // "unverified coaches" pip for the ones that currently need attention. The pip
+  // re-appears only when a brand-new unverified coach signs up.
+  useEffect(() => {
+    api.get("/api/admin/badge-counts")
+      .then(r => {
+        const ids = Array.isArray(r.data?.coachIds) ? r.data.coachIds : [];
+        if (ids.length) markIdsSeen('coaches', user?.id, ids);
+      })
+      .catch(() => {});
+  }, [user?.id]);
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("all");
