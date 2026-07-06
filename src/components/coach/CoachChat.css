@@ -1,0 +1,284 @@
+/* Dedicated coach ↔ student chat surface. Self-contained; dark-themed to match
+   the coach dashboard / student portal. */
+
+.cchat {
+  display: flex;
+  height: 600px;
+  max-height: 70vh;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(15, 15, 15, 0.6);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* ── Thread list ─────────────────────────────────────────────────────── */
+.cchat-list {
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  overflow-y: auto;
+  min-height: 0;
+}
+.cchat-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 12px 14px;
+  font-weight: 700;
+  color: #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  position: sticky;
+  top: 0;
+  background: #141414;
+  z-index: 2;
+  flex-shrink: 0;
+}
+.cchat-actions { display: flex; gap: 6px; }
+.cchat-newbtn {
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 8px;
+  color: #34d399;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 4px 9px;
+  line-height: 1;
+}
+.cchat-newbtn:hover { background: rgba(52, 211, 153, 0.22); }
+
+.cchat-empty-list {
+  padding: 20px 16px;
+  color: #9ca3af;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.cchat-thread {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  text-align: left;
+  color: #e5e7eb;
+  transition: background 0.15s;
+}
+.cchat-thread:hover { background: rgba(255, 255, 255, 0.04); }
+/* Selected chat — clearly highlighted so the coach knows which thread is open
+   (the pane no longer shows a name header, so this is the only indicator). */
+.cchat-thread.active {
+  background: rgba(16, 185, 129, 0.18);
+  border-left: 3px solid #10b981;
+  padding-left: 11px; /* 14 - 3 border, keeps text aligned */
+}
+.cchat-thread.active .cchat-thread-name { color: #34d399; }
+.cchat-thread-icon { font-size: 20px; flex-shrink: 0; }
+.cchat-thread-body { flex: 1; min-width: 0; }
+.cchat-thread-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cchat-thread-last { font-size: 12px; color: #9ca3af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cchat-badge {
+  flex-shrink: 0;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+/* ── Message pane ────────────────────────────────────────────────────── */
+/* min-height:0 is required so the scrolling messages child stays contained
+   instead of overflowing up over the header (which hides the student name). */
+.cchat-pane { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.cchat-empty-pane {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-style: italic;
+}
+.cchat-pane-head {
+  min-height: 52px;
+  box-sizing: border-box;
+  padding: 14px 52px 14px 18px; /* right padding clears the floating ✕ */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #141414;
+  flex-shrink: 0;
+  z-index: 1;
+}
+.cchat-pane-title { font-weight: 700; color: #e5e7eb; }
+.cchat-pane-sub { font-size: 12px; color: #9ca3af; }
+
+.cchat-messages {
+  flex: 1 1 0;
+  min-height: 0; /* allow shrink so the compose bar below always stays visible */
+  overflow-y: auto;
+  padding: 16px;
+  padding-top: 20px; /* clear the floating ✕ at the popup's top-right */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cchat-loading { color: #9ca3af; text-align: center; margin: auto; font-size: 14px; }
+
+.cchat-msg { display: flex; flex-direction: column; max-width: 72%; align-self: flex-start; }
+.cchat-msg.mine { align-self: flex-end; align-items: flex-end; }
+.cchat-msg-sender { font-size: 11px; color: #9ca3af; margin: 0 0 2px 6px; }
+.cchat-bubble {
+  background: rgba(255, 255, 255, 0.07);
+  color: #e5e7eb;
+  padding: 8px 13px;
+  border-radius: 14px;
+  border-top-left-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+.cchat-msg.mine .cchat-bubble {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff;
+  border-top-left-radius: 14px;
+  border-top-right-radius: 4px;
+}
+.cchat-msg-time {
+  font-size: 10.5px;
+  color: #6b7280;
+  margin: 3px 6px 0;
+}
+.cchat-msg.mine .cchat-msg-time { text-align: right; }
+
+.cchat-err {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.12);
+  border-top: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+.cchat-compose {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0; /* never collapse — always visible at the bottom */
+  background: #0f0f0f;
+}
+.cchat-compose input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 14px;
+  outline: none;
+}
+.cchat-compose button {
+  background: linear-gradient(135deg, #059669, #10b981);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 700;
+  padding: 0 22px;
+  cursor: pointer;
+}
+.cchat-compose button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Modals (coach only) ─────────────────────────────────────────────── */
+.cchat-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+  padding: 16px;
+}
+.cchat-modal {
+  background: #111827;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.cchat-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  font-weight: 700;
+  color: #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.cchat-modal-head button {
+  background: none; border: none; color: #9ca3af; font-size: 18px; cursor: pointer;
+}
+.cchat-modal-list { overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+.cchat-pick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  color: #e5e7eb;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+}
+.cchat-pick:hover { background: rgba(255, 255, 255, 0.07); }
+.cchat-pick:disabled { opacity: 0.5; cursor: not-allowed; }
+.cchat-pick.selectable { cursor: pointer; }
+.cchat-pick.picked { background: rgba(52, 211, 153, 0.14); border-color: rgba(52, 211, 153, 0.4); }
+.cchat-group-name {
+  margin: 12px 16px 4px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 14px;
+  outline: none;
+}
+.cchat-create {
+  margin: 12px 16px 16px;
+  background: linear-gradient(135deg, #059669, #10b981);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 700;
+  padding: 11px;
+  cursor: pointer;
+}
+.cchat-create:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .cchat { flex-direction: column; height: auto; max-height: none; }
+  .cchat-list { flex: none; max-height: 220px; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+  .cchat-pane { min-height: 420px; }
+}

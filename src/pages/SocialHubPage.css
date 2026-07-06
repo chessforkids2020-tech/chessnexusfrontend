@@ -1989,6 +1989,7 @@
 .pl-panel-cyan::before    { background: linear-gradient(90deg, transparent, #06b6d4, transparent); }
 .pl-panel-emerald::before { background: linear-gradient(90deg, transparent, #10b981, transparent); }
 .pl-panel-violet::before  { background: linear-gradient(90deg, transparent, #a855f7, transparent); }
+.pl-panel-amber::before   { background: linear-gradient(90deg, transparent, #fbbf24, transparent); }
 
 .pl-active {
   position: sticky;

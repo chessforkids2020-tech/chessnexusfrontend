@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../api';
 import StudentAssignments from '../components/StudentAssignments';
 import StudentCourses from '../components/StudentCourses';
+import CoachChat from '../components/coach/CoachChat';
 import './MyCoachPortal.css';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -19,6 +20,8 @@ export default function MyCoachPortal() {
   const [cursor, setCursor] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // Unread coach messages — badged on the Messages tab so the student notices.
+  const [msgUnread, setMsgUnread] = useState(0);
 
   // Class Payment request form (targets the student's coach via the link).
   const [payForm, setPayForm] = useState({ paidDate: '', fromDate: '', untilDate: '', amount: '' });
@@ -76,6 +79,25 @@ export default function MyCoachPortal() {
     })();
     return () => { alive = false; };
   }, []);
+
+  // Poll unread coach-message count for the Messages tab badge.
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      try {
+        const res = await api.get('/api/chat/coach/unread-count');
+        if (alive) setMsgUnread(res.data?.count || 0);
+      } catch { /* ignore */ }
+    };
+    load();
+    const id = setInterval(load, 30000);
+    return () => { alive = false; clearInterval(id); };
+  }, []);
+
+  // Opening the Messages tab marks threads read → clear the badge.
+  useEffect(() => {
+    if (tab === 'messages') setMsgUnread(0);
+  }, [tab]);
 
   // Attendance reloads whenever the month cursor changes
   useEffect(() => {
@@ -146,6 +168,7 @@ export default function MyCoachPortal() {
       <div className="mcp-tabs">
         {[
           { id: 'overview', label: '📊 Overview' },
+          { id: 'messages', label: '💬 Messages' },
           { id: 'courses', label: '📚 My Syllabus' },
           { id: 'assignments', label: '📋 Assignments' },
           { id: 'player', label: '👤 Player' },
@@ -158,9 +181,19 @@ export default function MyCoachPortal() {
             onClick={() => setTab(t.id)}
           >
             {t.label}
+            {t.id === 'messages' && msgUnread > 0 && (
+              <span className="mcp-tab-badge">{msgUnread > 99 ? '99+' : msgUnread}</span>
+            )}
           </button>
         ))}
       </div>
+
+      {/* ── Messages (coach ↔ student chat, read + reply only) ── */}
+      {tab === 'messages' && (
+        <div className="mcp-section">
+          <CoachChat mode="student" />
+        </div>
+      )}
 
       {/* ── Player (enrollment profile) ── */}
       {tab === 'player' && (

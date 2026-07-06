@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
+import CoachChatFab from '../../components/coach/CoachChatFab';
 import './CoachDashboard.css';
 import './CoachOnboarding.css'; // shared button styles
 
@@ -528,6 +529,9 @@ export default function CoachDashboard() {
           </div>
         </div>
       )}
+
+      {/* Floating message button (opens coach chat popup). */}
+      <CoachChatFab />
 
       {/* ── Add Student Modal ───────────────── */}
       {showAdd && (

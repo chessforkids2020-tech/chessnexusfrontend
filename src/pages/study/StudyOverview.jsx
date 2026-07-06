@@ -10,6 +10,9 @@ const StudyOverview = () => {
     basic: { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Beginner' },
     positional: { studies: 0, chapters: 0, puzzles: 0, difficulty: 'Advanced' }
   });
+  // Whether the admin has published any public books. The Books card only shows
+  // when at least one published book exists (GET /api/books returns published only).
+  const [hasBooks, setHasBooks] = useState(false);
 
   // Fetch real statistics from your backend API
   useEffect(() => {
@@ -30,6 +33,17 @@ const StudyOverview = () => {
     };
 
     fetchStudyStats();
+
+    // Only surface the Books card if the admin has published at least one book.
+    const fetchBooks = async () => {
+      try {
+        const res = await api.get('/api/books');
+        setHasBooks(Array.isArray(res.data) && res.data.length > 0);
+      } catch (error) {
+        setHasBooks(false);
+      }
+    };
+    fetchBooks();
   }, []);
 
   // Single unified "Study" card. Stats combine basic + positional so existing
@@ -373,6 +387,19 @@ const StudyOverview = () => {
             <div style={{ fontSize: 17, fontWeight: 800, color: '#fbbf24', marginBottom: 6 }}>Public Studies</div>
             <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Browse community-created studies with chapters and positions. Create your own and share your knowledge.</div>
           </motion.div>
+
+          {/* Books card — only shown when the admin has published at least one book. */}
+          {hasBooks && (
+            <motion.div
+              style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+              whileHover={{ scale: 1.03, background: 'rgba(16,185,129,0.1)', boxShadow: '0 12px 40px rgba(16,185,129,0.12)' }}
+              onClick={() => navigate('/study/books')}
+            >
+              <div style={{ fontSize: 32, marginBottom: 10 }}>📖</div>
+              <div style={{ fontSize: 17, fontWeight: 800, color: '#10b981', marginBottom: 6 }}>Books</div>
+              <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Read chess books chapter by chapter. Chapter 1 is free for everyone; unlock the rest with your XP.</div>
+            </motion.div>
+          )}
 
           <motion.div
             style={{ background: 'rgba(34,211,238,0.06)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}

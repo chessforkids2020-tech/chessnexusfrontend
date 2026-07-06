@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api';
+import CoachChatFab from '../../components/coach/CoachChatFab';
 import './CoachDashboard.css';
 import './CoachOnboarding.css';
 import './CoachStudentDetail.css';
@@ -982,6 +983,9 @@ export default function CoachAssignments() {
           </div>
         </div>
       )}
+
+      {/* Floating message button (opens coach chat popup). */}
+      <CoachChatFab />
     </div>
   );
 }

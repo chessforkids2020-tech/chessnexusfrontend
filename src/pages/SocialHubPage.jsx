@@ -590,25 +590,25 @@ function PlayersTab() {
           </div>
         </section>
 
-        {/* Monthly Focus — Top Players (moved here from the homepage) */}
-        <section className="pl-panel pl-panel-amber">
-          <PanelHead icon="🏆" title="Monthly Focus — Top Players" subtitle="This month's focus-challenge leaders" accent="amber" />
-          <div className="pl-racers-wrap">
-            <MonthlyFocusLeaderboard compact limit={5} focusId={adminFocusId} />
-          </div>
-          <div style={{ textAlign: 'center', marginTop: 12 }}>
-            <Link to="/monthly-focus/leaderboard" className="pl-cta-btn" style={{ display: 'inline-block', textDecoration: 'none' }}>
-              View full leaderboard →
-            </Link>
-          </div>
-        </section>
-
         <div className="pl-cta">
           <button className="pl-cta-btn" onClick={() => navigate('/arenatournament')}>🏆 Browse Tournaments</button>
           <button className="pl-cta-btn" onClick={() => navigate('/race')}>⚡ Start a Race</button>
         </div>
 
       </main>
+
+      {/* Monthly Focus — Top Players (full width) */}
+      <section className="pl-panel pl-panel-amber pl-fullspan">
+        <PanelHead icon="🏆" title="Monthly Focus — Top Players" subtitle="This month's focus-challenge leaders" accent="amber" />
+        <div className="pl-racers-wrap">
+          <MonthlyFocusLeaderboard compact limit={5} focusId={adminFocusId} />
+        </div>
+        <div style={{ textAlign: 'center', marginTop: 12 }}>
+          <Link to="/monthly-focus/leaderboard" className="pl-cta-btn" style={{ display: 'inline-block', textDecoration: 'none' }}>
+            View full leaderboard →
+          </Link>
+        </div>
+      </section>
 
       {/* Best Arena Players This Week — full width, 4 tabs */}
       <section className="pl-panel pl-panel-violet pl-fullspan">

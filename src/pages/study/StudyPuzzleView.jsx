@@ -95,13 +95,13 @@ const StudyPuzzleView = () => {
     const updateBoardSize = () => {
       const width = window.innerWidth;
       if (width <= 480) {
-        setBoardWidth(Math.min(340, width - 40));
+        setBoardWidth(Math.min(340, width - 32));
       } else if (width <= 768) {
-        setBoardWidth(Math.min(420, width - 60));
+        setBoardWidth(Math.min(440, width - 48));
       } else if (width <= 1024) {
-        setBoardWidth(Math.min(460, Math.floor(width * 0.36)));
+        setBoardWidth(Math.min(520, Math.floor(width * 0.40)));
       } else {
-        setBoardWidth(Math.min(560, Math.floor(width * 0.36)));
+        setBoardWidth(Math.min(600, Math.floor(width * 0.40)));
       }
     };
     
@@ -563,7 +563,7 @@ const StudyPuzzleView = () => {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: 'flex-start',
       padding: isMobile ? '0' : '0 0 0 20px',
       order: isMobile ? -1 : 0,
     },
@@ -573,7 +573,7 @@ const StudyPuzzleView = () => {
       border: '1px solid rgba(255, 255, 255, 0.08)',
       borderRadius: '20px',
       backdropFilter: 'blur(20px)',
-      padding: '2px 10px 10px 10px',
+      padding: '0px 10px 10px 10px',
     },
     controlButtons: {
       display: 'flex',
@@ -891,6 +891,10 @@ const StudyPuzzleView = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 maxWidth: '100%',
+                // The shared Chessboard reserves coordinate-label space on all 4
+                // sides but we only show bottom+left here — pull the board up over
+                // the empty top reservation (matches component's coordinateSize).
+                marginTop: `-${boardWidth < 400 ? 20 : 32}px`,
               }}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}

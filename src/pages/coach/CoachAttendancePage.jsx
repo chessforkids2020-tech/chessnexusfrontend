@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../../api';
+import CoachChatFab from '../../components/coach/CoachChatFab';
 import './CoachAttendancePage.css';
 
 // ─── IST helpers ────────────────────────────────────────────────────────────
@@ -51,6 +52,9 @@ export default function CoachAttendancePage() {
         {tab === 'requests'   && <TabRequests />}
         {tab === 'history'    && <TabHistory />}
       </div>
+
+      {/* Floating message button (opens coach chat popup). */}
+      <CoachChatFab />
     </div>
   );
 }
