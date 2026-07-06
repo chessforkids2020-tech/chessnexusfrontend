@@ -27,8 +27,13 @@ const DIST = join(__dirname, 'dist');
 const PORT = 5055;
 
 // Public routes worth prerendering. No auth, no :params, content-stable.
+// NOTE: '/' is intentionally NOT prerendered — the homepage renders the dynamic,
+// data-driven app dashboard (live contests, a puzzle widget, "Good Afternoon…"),
+// none of which is available at build time (prerender aborts all API calls). The
+// snapshot only captured the floating button, so real clients hydrated against a
+// near-empty #root and threw React hydration errors #418/#423/#425. Shipping an
+// empty #root for '/' makes main.jsx do a clean client render instead.
 const ROUTES = [
-  '/',
   '/features',
   '/chess-puzzles',
   '/chess-tactics-race',
