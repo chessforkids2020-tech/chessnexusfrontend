@@ -706,3 +706,162 @@
   width: 100%; height: 100%;
   border: 0;
 }
+
+/* ── Class schedule tab ── */
+.mcp-nextclass {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, rgba(139,92,246,0.16), rgba(6,182,212,0.10));
+  border: 1px solid rgba(139,92,246,0.4);
+  border-radius: 14px; padding: 16px 20px;
+}
+.mcp-nextclass-label {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.4px;
+  color: #c4b5fd; text-transform: uppercase;
+}
+.mcp-nextclass-when { font-size: 16px; font-weight: 600; color: #f1f5f9; margin-top: 3px; }
+.mcp-join-btn {
+  display: inline-block; text-decoration: none; cursor: pointer;
+  background: linear-gradient(135deg, #06b6d4, #10b981); color: #0a0a0a;
+  font-weight: 700; font-size: 13px; padding: 9px 18px; border: none; border-radius: 10px;
+}
+.mcp-class-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px;
+  margin-top: 18px;
+}
+.mcp-class-card {
+  background: rgba(20,20,28,0.7); border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 14px; padding: 16px;
+}
+.mcp-class-title { font-size: 16px; font-weight: 700; color: #f1f5f9; }
+.mcp-class-coach { font-size: 12.5px; color: rgba(226,232,240,0.6); margin-top: 2px; }
+.mcp-class-days { display: flex; gap: 5px; flex-wrap: wrap; margin: 10px 0; }
+.mcp-class-daychip {
+  font-size: 11px; font-weight: 700; color: #c4b5fd;
+  background: rgba(139,92,246,0.18); border-radius: 6px; padding: 3px 8px;
+}
+.mcp-class-time { font-size: 13.5px; color: #e2e8f0; }
+.mcp-class-tz { font-size: 11px; color: rgba(226,232,240,0.5); }
+.mcp-class-dur { color: rgba(226,232,240,0.6); }
+.mcp-class-nolink { font-size: 12px; color: rgba(226,232,240,0.45); margin-top: 10px; font-style: italic; }
+.mcp-class-foot { font-size: 12px; color: rgba(226,232,240,0.45); margin-top: 16px; text-align: center; }
+
+/* ── Schedule monthly calendar ── */
+.mcp-cal {
+  background: rgba(15, 15, 22, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 16px; padding: 16px; margin: 18px 0 22px;
+}
+.mcp-cal-head {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+}
+.mcp-cal-title { font-size: 16px; font-weight: 700; color: #f1f5f9; }
+.mcp-cal-nav {
+  background: rgba(139, 92, 246, 0.14); border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #c4b5fd; width: 34px; height: 34px; border-radius: 9px; cursor: pointer;
+  font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;
+}
+.mcp-cal-nav:hover { background: rgba(139, 92, 246, 0.26); }
+.mcp-cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+}
+.mcp-cal-dow {
+  text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  color: rgba(226, 232, 240, 0.5); text-transform: uppercase; padding-bottom: 4px;
+}
+.mcp-cal-cell {
+  min-height: 62px; border-radius: 10px; padding: 5px 6px;
+  /* Empty days: dim, low-contrast */
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.mcp-cal-empty { background: transparent; border-color: transparent; }
+.mcp-cal-date { font-size: 12px; font-weight: 600; color: rgba(226, 232, 240, 0.55); }
+/* Class days: noticeably brighter than empty days */
+.mcp-cal-has {
+  background: linear-gradient(150deg, rgba(139, 92, 246, 0.30), rgba(6, 182, 212, 0.18));
+  border: 1px solid rgba(139, 92, 246, 0.55);
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.12), 0 4px 14px rgba(139, 92, 246, 0.14);
+}
+.mcp-cal-has .mcp-cal-date { color: #f1f5f9; }
+.mcp-cal-today { outline: 2px solid rgba(16, 185, 129, 0.7); outline-offset: -2px; }
+.mcp-cal-class {
+  margin-top: 3px; font-size: 10.5px; font-weight: 700; color: #e9d5ff;
+  background: rgba(0, 0, 0, 0.25); border-radius: 5px; padding: 1px 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.mcp-cal-more { font-size: 10px; color: #c4b5fd; margin-top: 2px; }
+
+@media (max-width: 560px) {
+  .mcp-cal-cell { min-height: 50px; padding: 4px 3px; }
+  .mcp-cal-class { font-size: 9.5px; }
+}
+
+/* ── Calendar: holiday cells + legend ── */
+.mcp-cal-holiday {
+  background: linear-gradient(150deg, rgba(251,146,60,0.28), rgba(244,63,94,0.16));
+  border: 1px solid rgba(251,146,60,0.55);
+}
+.mcp-cal-holiday .mcp-cal-date { color: #fed7aa; }
+.mcp-cal-holtag {
+  margin-top: 3px; font-size: 9.5px; font-weight: 800; letter-spacing: 0.2px;
+  color: #fdba74; text-transform: uppercase; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.mcp-cal-legend {
+  display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px;
+  font-size: 12px; color: rgba(226,232,240,0.6);
+}
+.mcp-cal-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.mcp-cal-swatch { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+.mcp-cal-swatch-class {
+  background: linear-gradient(150deg, rgba(139,92,246,0.6), rgba(6,182,212,0.4));
+  border: 1px solid rgba(139,92,246,0.7);
+}
+.mcp-cal-swatch-holiday {
+  background: linear-gradient(150deg, rgba(251,146,60,0.6), rgba(244,63,94,0.4));
+  border: 1px solid rgba(251,146,60,0.7);
+}
+
+/* ── Calendar clickable cells + day popover ── */
+button.mcp-cal-cell {
+  font: inherit; text-align: left; cursor: pointer; width: 100%;
+  color: inherit; appearance: none;
+}
+.mcp-cal-clickable { transition: transform 0.12s ease, filter 0.12s ease; }
+.mcp-cal-clickable:hover { transform: translateY(-1px); filter: brightness(1.12); }
+.mcp-cal-clickable:focus-visible { outline: 2px solid rgba(139,92,246,0.9); outline-offset: 1px; }
+
+.mcp-daypop-overlay {
+  position: fixed; inset: 0; z-index: 60;
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.mcp-daypop {
+  width: 100%; max-width: 420px;
+  background: #14141c; border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 16px; padding: 18px; box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+}
+.mcp-daypop-head {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+}
+.mcp-daypop-date { font-size: 17px; font-weight: 700; color: #f1f5f9; }
+.mcp-daypop-x {
+  background: none; border: none; color: rgba(226,232,240,0.6);
+  font-size: 18px; cursor: pointer; line-height: 1; padding: 4px;
+}
+.mcp-daypop-x:hover { color: #f87171; }
+.mcp-daypop-list { display: flex; flex-direction: column; gap: 10px; }
+.mcp-daypop-class {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: rgba(139, 92, 246, 0.10); border: 1px solid rgba(139, 92, 246, 0.28);
+  border-radius: 12px; padding: 12px 14px;
+}
+.mcp-daypop-class-title { font-size: 15px; font-weight: 700; color: #f1f5f9; }
+.mcp-daypop-class-meta { font-size: 12.5px; color: rgba(226, 232, 240, 0.65); margin-top: 3px; }
+.mcp-daypop-nolink { font-size: 12px; color: rgba(226, 232, 240, 0.45); font-style: italic; white-space: nowrap; }
+.mcp-daypop-holiday { text-align: center; padding: 14px 8px 8px; }
+.mcp-daypop-holicon { font-size: 40px; }
+.mcp-daypop-holtitle { font-size: 17px; font-weight: 700; color: #fdba74; margin-top: 6px; }
+.mcp-daypop-hollabels { margin-top: 8px; font-size: 13px; color: rgba(226, 232, 240, 0.7); line-height: 1.6; }

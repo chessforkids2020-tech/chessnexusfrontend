@@ -5,44 +5,6 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 
 const CANONICAL = "/3d-chess-arena-tournament";
 
-const MODES = [
-  {
-    icon: "🚶",
-    title: "Walk Into the Tournament Hall",
-    body:
-      "Enter the 3D arena as your own avatar and stroll into the tournament hall, just like walking into a real chess club. Check the notice board for live events and pick the one you want to join.",
-    cta: "Enter the arena",
-  },
-  {
-    icon: "♟️",
-    title: "Real-Time Pairing at the Table",
-    body:
-      "When the tournament starts you're paired instantly. Your avatar walks to its assigned table, takes a seat and plays a live, real-time game against your opponent — the closest thing to over-the-board chess online.",
-    cta: "Join a tournament",
-  },
-  {
-    icon: "🧩",
-    title: "Puzzle Hall — 5 Stages",
-    body:
-      "The arena also has a Puzzle Hall with five stages, climbing from basic to advanced. Walk in alongside other players and work through tactics designed to level up your game, stage by stage.",
-    cta: "Visit the Puzzle Hall",
-  },
-  {
-    icon: "📊",
-    title: "Live Submissions & Leaderboard",
-    body:
-      "In the Puzzle Hall every solve is submitted live and the leaderboard updates in real time, so you can see exactly where you stand against everyone in the room as you go.",
-    cta: "See it live",
-  },
-  {
-    icon: "💬",
-    title: "Chat While You Play",
-    body:
-      "Talk to friends and other players in real time while you solve puzzles or wait for your next round. It brings back the social buzz of a real chess event — online and in 3D.",
-    cta: "Play with friends",
-  },
-];
-
 const FAQ = [
   {
     q: "What is the 3D Chess Arena?",
@@ -108,22 +70,35 @@ export default function ArenaTournamentPage() {
       }}
     >
       <section className="mkt-section">
-        <h2>Inside the 3D Arena</h2>
-        <p className="mkt-section-lead">
-          It's not just a board on a screen — it's a place you walk into, play and
-          solve in, alongside real people in real time.
-        </p>
-        <div className="mkt-grid">
-          {MODES.map((m) => (
-            <div className="mkt-card" key={m.title}>
-              <div className="mkt-card-icon">{m.icon}</div>
-              <h3>{m.title}</h3>
-              <p>{m.body}</p>
-              <button type="button" className="mkt-card-cta" onClick={enterArena}>
-                {m.cta} →
-              </button>
-            </div>
-          ))}
+        <div className="mkt-split mkt-split-reverse">
+          <div className="mkt-split-media">
+            <img src="/features/3darena.png" alt="3D Chess Arena — immersive real-time tournaments and puzzle hall" loading="lazy" width="220" height="220" />
+          </div>
+          <div className="mkt-split-text">
+            <h2>Inside the 3D Arena</h2>
+            <p>
+              It's not just a board on a screen — it's a place you walk into, play and
+              solve in, alongside real people in real time.
+            </p>
+            <p>
+              Enter the 3D arena as your own avatar and stroll into the
+              tournament hall, just like walking into a real chess club —
+              check the notice board for live events and pick the one you
+              want to join. When a tournament starts you're paired instantly:
+              your avatar walks to its assigned table, takes a seat and plays
+              a live, real-time game against your opponent, the closest thing
+              to over-the-board chess online. The arena also has a Puzzle
+              Hall with five stages climbing from basic to advanced, where
+              every solve is submitted live and the leaderboard updates in
+              real time so you can see exactly where you stand. Throughout
+              it all you can chat with friends and other players in real
+              time, bringing back the social buzz of a real chess event —
+              online and in 3D.
+            </p>
+            <button type="button" className="mkt-card-cta" onClick={enterArena}>
+              Enter the arena →
+            </button>
+          </div>
         </div>
       </section>
 

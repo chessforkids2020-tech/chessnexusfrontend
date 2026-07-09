@@ -42,6 +42,7 @@ const ROUTES = [
   '/masters-chess-games',
   '/analyse-my-chess-game',
   '/improve-at-chess',
+  '/chess-coaching',
   '/3d-chess-arena-tournament',
   '/chess-study',
   '/chess-community',
@@ -103,6 +104,14 @@ async function run() {
   const server = await startServer();
   const browser = await chromium.launch();
   const page = await browser.newPage();
+
+  // Mark this as the prerender environment BEFORE any app script runs. Layouts
+  // that upgrade to interactive chrome after mount (e.g. MarketingLayout adding
+  // the auth/viewport-dependent sidebar) read this flag and skip that upgrade,
+  // so the snapshot captures the deterministic PRE-mount markup. That markup
+  // matches every real client's first render, so hydration never mismatches
+  // (previously caused React #418/#423/#425 on the public pages).
+  await page.addInitScript(() => { window.__PRERENDER__ = true; });
 
   // Prerendering is for static marketing HTML — it must NEVER call the live
   // backend. Abort any API / socket / external data request so builds don't

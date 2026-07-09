@@ -119,9 +119,9 @@ export default function RefundPolicyPage() {
                 to subscribe or renew.
               </li>
               <li>
-                A <strong>free trial</strong> is available so you can evaluate the
-                coaching tools before paying. We encourage you to use the trial to make
-                sure the Service fits your needs.
+                A <strong>free plan</strong> is available with no time limit so you can
+                use the coaching tools before paying. We encourage you to use the free
+                plan to make sure the Service fits your needs.
               </li>
               <li>
                 You may cancel your subscription at any time. Cancellation stops future

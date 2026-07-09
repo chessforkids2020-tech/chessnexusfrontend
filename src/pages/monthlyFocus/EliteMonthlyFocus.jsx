@@ -74,6 +74,7 @@ export default function EliteMonthlyFocus() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [canCreate, setCanCreate] = useState(true);
+  const [createInfo, setCreateInfo] = useState(null); // { reason, isTrial, message }
   const [nextAllowedDate, setNextAllowedDate] = useState(null);
 
   // Modals
@@ -122,6 +123,7 @@ export default function EliteMonthlyFocus() {
     try {
       const res = await api.get('/api/elite/monthly-focus/can-create');
       setCanCreate(res.data.canCreate);
+      setCreateInfo(res.data || null);
       setNextAllowedDate(res.data.nextAllowedDate ? new Date(res.data.nextAllowedDate) : null);
     } catch (_) { /* silent */ }
   }, []);
@@ -437,12 +439,23 @@ export default function EliteMonthlyFocus() {
           {/* Can create banner */}
           {canCreate ? (
             <div style={styles.canCreateBanner}>
-              ✅ You can create 1 challenge this month
+              {createInfo?.isTrial
+                ? '✨ You can create your ONE free Monthly Focus. After this, it becomes an Elite feature.'
+                : '✅ You can create 1 challenge this month'}
             </div>
-          ) : (
+          ) : createInfo?.reason === 'coach_trial_used' ? (
+            <div style={styles.cannotCreateBanner}>
+              💎 You've used your free Monthly Focus.<br />
+              Creating more is an <strong>Elite</strong> feature.
+            </div>
+          ) : createInfo?.reason === 'month_used' ? (
             <div style={styles.cannotCreateBanner}>
               ⏳ Already created this month.<br />
               Next allowed: <strong>{nextAllowedDate ? nextAllowedDate.toDateString() : '1st of next month'}</strong>
+            </div>
+          ) : (
+            <div style={styles.cannotCreateBanner}>
+              💎 Monthly Focus creation is an <strong>Elite</strong> feature.
             </div>
           )}
 

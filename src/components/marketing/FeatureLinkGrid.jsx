@@ -66,6 +66,14 @@ export const FEATURES = [
       "Your Nexus Guide studies your own games, finds your weaknesses, replays your mistakes and drills the tactics you keep missing — free.",
   },
   {
+    slug: "/chess-coaching",
+    appPath: "/coach/onboarding",
+    icon: "🎓",
+    title: "Chess Coaching Platform",
+    blurb:
+      "A free toolkit for chess coaches and academies — student roster & batches, assignments, course builder, private class races and parent reports.",
+  },
+  {
     slug: "/3d-chess-arena-tournament",
     appPath: "/3d-chess-arena-tournament",
     icon: "🏟️",

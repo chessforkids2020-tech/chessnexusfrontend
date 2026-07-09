@@ -6,6 +6,7 @@ import socket from '../socket-jwt';
 import api from '../api';
 import UserAvatar from '../components/UserAvatar';
 import PlayerName from '../components/PlayerName';
+import { linkify } from '../utils/linkify';
 import './SocialHubPage.css';
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -167,7 +168,7 @@ function ClubChat({ chatId, currentUser }) {
                 <div className="sh-msg-bubble-wrap">
                   {showName && <div className="sh-msg-name">{senderName}</div>}
                   <div className={`sh-msg-bubble${isMe ? ' sh-msg-bubble-me' : ''}`}>
-                    {msg.content}
+                    {linkify(msg.content)}
                   </div>
                   <div className={`sh-msg-time${isMe ? ' sh-msg-time-me' : ''}`}>
                     {fmtTime(msg.createdAt)}

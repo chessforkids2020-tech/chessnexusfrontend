@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import Footer from "./components/Footer";
 import UserLayout from "./components/UserLayout";
+import MarketingLayout from "./components/MarketingLayout";
 import AnalyticsTracker from "./components/AnalyticsTracker";
 import UserDashboard from "./pages/UserDashboard";
 import StudentProgressPage from "./pages/StudentProgressPage";
@@ -12,9 +13,15 @@ import CoachDashboard from "./pages/coach/CoachDashboard";
 import CoachStudentDetail from "./pages/coach/CoachStudentDetail";
 import CoachAssignments from "./pages/coach/CoachAssignments";
 import CourseBuilder from "./pages/coach/CourseBuilder";
+import CoachLibrary from "./pages/coach/CoachLibrary";
 import CourseProgress from "./pages/coach/CourseProgress";
 import CoachSubscription from "./pages/coach/CoachSubscription";
 import CoachAttendancePage from "./pages/coach/CoachAttendancePage";
+import CoachSchedulePage from "./pages/coach/CoachSchedulePage";
+import CoachActivities from "./pages/coach/CoachActivities";
+import CoachBatches from "./pages/coach/CoachBatches";
+import CoachArenaLive from "./pages/coach/CoachArenaLive";
+import CoachArenaTournamentLive from "./pages/coach/CoachArenaTournamentLive";
 import PublicProfile from "./pages/PublicProfile";
 import UserAttendancePage from "./pages/UserAttendancePage";
 import MyCoachPortal from "./pages/MyCoachPortal";
@@ -32,6 +39,7 @@ import PlayWithFriendsPage from "./pages/marketing/PlayWithFriendsPage";
 import MastersGamesPage from "./pages/marketing/MastersGamesPage";
 import AnalyseMyChessGamePage from "./pages/marketing/AnalyseMyChessGamePage";
 import ImproveAtChessPage from "./pages/marketing/ImproveAtChessPage";
+import ChessCoachingPage from "./pages/marketing/ChessCoachingPage";
 import ArenaTournamentPage from "./pages/marketing/ArenaTournamentPage";
 import ChessStudyPage from "./pages/marketing/ChessStudyPage";
 import ChessCommunityPage from "./pages/marketing/ChessCommunityPage";
@@ -66,6 +74,7 @@ import AdminContestPage from './pages/AdminContestPage';
 import AdminMetricsPage from './pages/AdminMetricsPage';
 import AdminAnalyticsPage from './pages/AdminAnalyticsPage';
 import AdminMonthlyFocus from './pages/monthlyFocus/AdminMonthlyFocus';
+import AdminBlunderLibrary from './pages/AdminBlunderLibrary';
 import StockfishTest from './pages/StockfishTest';
 import IndividualResults from './pages/IndividualResults';
 import Leaderboard from './pages/Leaderboard';
@@ -185,7 +194,7 @@ import SchedulePage from './pages/SchedulePage';
 import AdminSchedulePage from './pages/AdminSchedulePage';
 
 // Protected Route Component
-function ProtectedRoute({ children, requiredRole, noGuest }) {
+function ProtectedRoute({ children, requiredRole, noGuest, allowCoach }) {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -220,7 +229,10 @@ function ProtectedRoute({ children, requiredRole, noGuest }) {
 
   if (requiredRole) {
     const allowed = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
-    if (!allowed.includes(user.role)) {
+    // allowCoach lets any coach through a role-gated route (e.g. Monthly Focus,
+    // where a free coach gets a one-time create — the backend enforces the rule).
+    const coachOk = allowCoach && user.isCoach;
+    if (!allowed.includes(user.role) && !coachOk) {
       return <Navigate to="/" replace />;
     }
   }
@@ -340,9 +352,9 @@ export default function App() {
           </div>
         } />
         <Route path="/contact" element={
-          <UserLayout>
+          <MarketingLayout>
             <ContactPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         {/* Reports / complaints */}
         <Route path="/report" element={
@@ -375,9 +387,9 @@ export default function App() {
         } />
         {/* Public SEO feature/about pages */}
         <Route path="/features" element={
-          <UserLayout>
+          <MarketingLayout>
             <FeaturesPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/members" element={
           <UserLayout>
@@ -385,69 +397,74 @@ export default function App() {
           </UserLayout>
         } />
         <Route path="/privacy-policy" element={
-          <UserLayout>
+          <MarketingLayout>
             <PrivacyPolicyPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/terms" element={
-          <UserLayout>
+          <MarketingLayout>
             <TermsPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/refund-policy" element={
-          <UserLayout>
+          <MarketingLayout>
             <RefundPolicyPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/chess-puzzles" element={
-          <UserLayout>
+          <MarketingLayout>
             <ChessPuzzlesPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/chess-tactics-race" element={
-          <UserLayout>
+          <MarketingLayout>
             <ChessTacticsRacePage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/play-chess-online" element={
-          <UserLayout>
+          <MarketingLayout>
             <PlayChessOnlinePage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/play-chess-with-friends" element={
-          <UserLayout>
+          <MarketingLayout>
             <PlayWithFriendsPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/masters-chess-games" element={
-          <UserLayout>
+          <MarketingLayout>
             <MastersGamesPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/analyse-my-chess-game" element={
-          <UserLayout>
+          <MarketingLayout>
             <AnalyseMyChessGamePage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/improve-at-chess" element={
-          <UserLayout>
+          <MarketingLayout>
             <ImproveAtChessPage />
-          </UserLayout>
+          </MarketingLayout>
+        } />
+        <Route path="/chess-coaching" element={
+          <MarketingLayout>
+            <ChessCoachingPage />
+          </MarketingLayout>
         } />
         <Route path="/3d-chess-arena-tournament" element={
-          <UserLayout>
+          <MarketingLayout>
             <ArenaTournamentPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/chess-study" element={
-          <UserLayout>
+          <MarketingLayout>
             <ChessStudyPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/chess-community" element={
-          <UserLayout>
+          <MarketingLayout>
             <ChessCommunityPage />
-          </UserLayout>
+          </MarketingLayout>
         } />
         <Route path="/settings" element={
           <UserLayout>
@@ -590,6 +607,16 @@ export default function App() {
             <div style={styles.content}>
               <ProtectedRoute requiredRole="admin">
                 <AdminMonthlyFocus />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
+        <Route path="/admin/blunder-library" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminBlunderLibrary />
               </ProtectedRoute>
             </div>
             <Footer />
@@ -923,6 +950,13 @@ export default function App() {
             </ProtectedRoute>
           </UserLayout>
         } />
+        <Route path="/coach/library" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <CoachLibrary />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
         <Route path="/coach/courses/:courseId/progress" element={
           <UserLayout>
             <ProtectedRoute>
@@ -944,7 +978,42 @@ export default function App() {
             </ProtectedRoute>
           </UserLayout>
         } />
-        
+        <Route path="/coach/schedule" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <CoachSchedulePage />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/coach/activities" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <CoachActivities />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/coach/batches" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <CoachBatches />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/coach/arena/:roomId" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <CoachArenaLive />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/coach/arena-tournament/:id" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <CoachArenaTournamentLive />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+
         {/* Monthly Focus Routes */}
         <Route path="/monthly-focus" element={
           <UserLayout>
@@ -977,7 +1046,7 @@ export default function App() {
         {/* Elite Monthly Focus — create & manage challenges (elite + admin only) */}
         <Route path="/elite-monthly-focus" element={
           <UserLayout>
-            <ProtectedRoute requiredRole={['elite', 'admin']}>
+            <ProtectedRoute requiredRole={['elite', 'admin']} allowCoach>
               <EliteMonthlyFocus />
             </ProtectedRoute>
           </UserLayout>

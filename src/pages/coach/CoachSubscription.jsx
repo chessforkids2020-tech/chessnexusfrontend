@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import './CoachDashboard.css';
 import './CoachOnboarding.css';
@@ -18,8 +18,6 @@ function loadRazorpayScript() {
 
 export default function CoachSubscription() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const expired = new URLSearchParams(location.search).get('expired') === '1';
 
   const [plans, setPlans] = useState([]);
   const [currencies, setCurrencies] = useState([]);   // [{ code, symbol, label }]
@@ -42,7 +40,13 @@ export default function CoachSubscription() {
         api.get('/api/coach-subscription/history').catch(() => ({ data: { payments: [] } }))
       ]);
       const raw = p.data?.plans || {};
-      const arr = Array.isArray(raw) ? raw : Object.values(raw);
+      let arr = Array.isArray(raw) ? raw : Object.values(raw);
+      // Order tiers Free → Pro → Coach (server-provided order).
+      const order = p.data?.planOrder;
+      if (Array.isArray(order) && order.length) {
+        const rank = new Map(order.map((id, i) => [id, i]));
+        arr = [...arr].sort((a, b) => (rank.get(a.id) ?? 99) - (rank.get(b.id) ?? 99));
+      }
       setPlans(arr);
       const curs = p.data?.currencies || [];
       setCurrencies(curs);
@@ -144,10 +148,21 @@ export default function CoachSubscription() {
   const totalFor = (p) => fmt(monthlyMinor(p) * months);
   const perMonthFor = (p) => fmt(monthlyMinor(p));
 
+  // Per-tier presentation: a ribbon badge + a one-line tagline of the offer.
+  const TIER = {
+    free:  { tagline: 'Start free, forever', badge: '' },
+    pro:   { tagline: 'More students, same tools', badge: 'Best value' },
+    coach: { tagline: 'All-in-one · everything unlocked', badge: '💎 Elite Coach' },
+  };
+
   if (loading) return <div className="coach-loading">Loading plans…</div>;
 
   const currentPlan = status?.coachSubscription?.plan;
   const access = status?.access || {};
+  // 'trial' is the legacy id for what is now the free-forever plan.
+  const isOnFreePlan = currentPlan === 'free' || currentPlan === 'trial';
+  const periodEnd = status?.coachSubscription?.currentPeriodEnd;
+  const periodEndDate = periodEnd ? new Date(periodEnd).toLocaleDateString() : '';
   const isElite = status?.isElite;
   // Admins get unlimited free coach access. Elite is handled separately (6-month
   // free window with manual renewal), so it is NOT treated as unlimited here.
@@ -178,15 +193,14 @@ export default function CoachSubscription() {
     );
   }
 
-  // Elite members — 6 months free, then renew by contacting the Nexus team.
+  // Elite members — coach access is included free with their membership.
   if (isEliteFree) {
-    const eliteExpired = !access.active;
     return (
       <div className="coach-dash">
         <div className="coach-dash-header">
           <div>
             <h1>💎 Coach Subscription</h1>
-            <p className="coach-dash-sub">Elite Coach access — 6 months free.</p>
+            <p className="coach-dash-sub">Elite Coach access — included free.</p>
           </div>
           <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
         </div>
@@ -194,19 +208,11 @@ export default function CoachSubscription() {
           <div>
             <div className="cs-current-label" style={{ color: '#fbbf24' }}>💎 Elite Member</div>
             <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 22 }}>
-              {eliteExpired ? 'Your 6 months of free coach access has ended' : 'Coach access — free for 6 months'}
+              Coach access included — free
             </div>
             <div className="cs-current-meta" style={{ marginTop: 8, lineHeight: 1.6 }}>
-              {eliteExpired ? (
-                <>To continue your coach membership, please contact the Nexus team on the Contact Us page.</>
-              ) : (
-                <><strong>{access.daysRemaining}</strong> day{access.daysRemaining === 1 ? '' : 's'} remaining.
-                  When it's about to finish, renew by contacting the Nexus team on the Contact Us page.</>
-              )}
+              Coach access is included free with your Elite membership — up to 100 students, no expiry.
             </div>
-            <button className="btn-primary" style={{ marginTop: 16 }} onClick={() => navigate('/contact')}>
-              Contact Nexus team
-            </button>
           </div>
         </div>
       </div>
@@ -217,17 +223,12 @@ export default function CoachSubscription() {
     <div className="coach-dash">
       <div className="coach-dash-header">
         <div>
-          <h1>💎 Coach Subscription</h1>
-          <p className="coach-dash-sub">Pick the plan that fits your coaching practice.</p>
+          <h1>💎 Coach Plans</h1>
+          <p className="coach-dash-sub">Free forever, or upgrade for more students and tools. Cancel anytime.</p>
         </div>
         <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
       </div>
 
-      {expired && (
-        <div className="cs-warn">
-          ⚠️ Your free trial has ended. Pick a plan below to continue coaching.
-        </div>
-      )}
       {msg && <div className="cs-ok">{msg}</div>}
       {err && <div className="cs-err">{err}</div>}
 
@@ -235,15 +236,19 @@ export default function CoachSubscription() {
         <div className="cs-current">
           <div>
             <div className="cs-current-label">Current plan</div>
-            <div className="cs-current-name">{currentPlan.toUpperCase()}</div>
+            <div className="cs-current-name">{isOnFreePlan ? 'FREE' : currentPlan.toUpperCase()}</div>
             <div className="cs-current-meta">
-              Status: {status?.coachSubscription?.status} ·
-              {access.active
-                ? ` ${access.daysRemaining} day${access.daysRemaining === 1 ? '' : 's'} remaining`
-                : ' expired'}
+              {access.downgraded ? (
+                <>Your Coach plan ended{periodEndDate ? ` on ${periodEndDate}` : ''} — you're on the Free plan now
+                  (up to {access.maxStudents} students). Your existing students are unaffected.</>
+              ) : isOnFreePlan ? (
+                <>Free forever · up to {access.maxStudents} students · no card required</>
+              ) : (
+                <>Status: {status?.coachSubscription?.status} · {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'} remaining</>
+              )}
             </div>
           </div>
-          {status?.coachSubscription?.status === 'active' && currentPlan !== 'trial' && (
+          {status?.coachSubscription?.status === 'active' && !isOnFreePlan && !access.downgraded && (
             <button className="btn-danger" onClick={cancelPlan}>Cancel subscription</button>
           )}
         </div>
@@ -283,33 +288,56 @@ export default function CoachSubscription() {
       </div>
 
       <div className="cs-plans">
-        {plans.filter(p => p.id !== 'trial').map(p => {
-          const isCurrent = p.id === currentPlan;
+        {/* Free card + purchasable plans (elite_free is granted, never bought). */}
+        {plans.filter(p => p.id === 'free' || p.monthlyPrices).map(p => {
+          const isFreeCard = p.id === 'free';
+          const isCurrent = isFreeCard
+            ? (isOnFreePlan || access.downgraded)
+            : (p.id === currentPlan && !access.downgraded);
 
+          const tier = TIER[p.id] || {};
+          const highlight = p.id === 'coach'; // visually feature the full-unlock tier
           return (
-            <div key={p.id} className={`cs-plan ${isCurrent ? 'is-current' : ''}`}>
+            <div key={p.id} className={`cs-plan ${isCurrent ? 'is-current' : ''} ${highlight ? 'is-featured' : ''}`}>
+              {tier.badge && <div className="cs-plan-badge">{tier.badge}</div>}
               <div className="cs-plan-name">{p.name}</div>
-              <div className="cs-plan-price">
-                <span className="currency">{curSymbol}</span>
-                <span className="amount">{totalFor(p)}</span>
-                <span className="cycle">for {months} month{months === 1 ? '' : 's'}</span>
-              </div>
-              {months > 1 && (
-                <div className="cs-plan-permonth">{curSymbol}{perMonthFor(p)} / month</div>
+              {tier.tagline && <div className="cs-plan-tagline">{tier.tagline}</div>}
+              {isFreeCard ? (
+                <div className="cs-plan-price">
+                  <span className="amount">{curSymbol}0</span>
+                  <span className="cycle">forever</span>
+                </div>
+              ) : (
+                <>
+                  <div className="cs-plan-price">
+                    <span className="currency">{curSymbol}</span>
+                    <span className="amount">{totalFor(p)}</span>
+                    <span className="cycle">for {months} month{months === 1 ? '' : 's'}</span>
+                  </div>
+                  {months > 1 && (
+                    <div className="cs-plan-permonth">{curSymbol}{perMonthFor(p)} / month</div>
+                  )}
+                </>
               )}
-              <div className="cs-plan-students">Up to {p.maxStudents.toLocaleString()} students</div>
+              <div className="cs-plan-students"><strong>{p.maxStudents.toLocaleString()}</strong> students</div>
               <ul className="cs-plan-features">
                 {(p.features || []).map(f => <li key={f}>✓ {f}</li>)}
               </ul>
-              <button
-                className={isCurrent ? 'btn-ghost' : 'btn-primary'}
-                disabled={isCurrent || activating === p.id}
-                onClick={() => subscribe(p.id)}
-              >
-                {isCurrent ? 'Current plan' :
-                  activating === p.id ? 'Starting…' :
-                    currentPlan && currentPlan !== 'trial' ? 'Switch plan' : 'Choose plan'}
-              </button>
+              {isFreeCard ? (
+                <button className="btn-ghost" disabled>
+                  {isCurrent ? 'Current plan' : 'Included free'}
+                </button>
+              ) : (
+                <button
+                  className={isCurrent ? 'btn-ghost' : 'btn-primary'}
+                  disabled={isCurrent || activating === p.id}
+                  onClick={() => subscribe(p.id)}
+                >
+                  {isCurrent ? 'Current plan' :
+                    activating === p.id ? 'Starting…' :
+                      access.downgraded ? 'Renew plan' : 'Upgrade'}
+                </button>
+              )}
             </div>
           );
         })}

@@ -235,6 +235,66 @@ a.mkt-card:hover {
   color: #67e8f9;
 }
 
+/* ---------- Image / text split (feature showcase, alternating sides) ---------- */
+.mkt-split {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  margin-top: 22px;
+}
+
+.mkt-split-reverse {
+  flex-direction: row-reverse;
+}
+
+.mkt-split-media {
+  flex: 0 0 auto;
+  width: min(38%, 260px);
+  display: flex;
+  justify-content: center;
+}
+
+.mkt-split-media img {
+  width: 100%;
+  height: auto;
+  max-width: 220px;
+  filter: drop-shadow(0 12px 32px rgba(6, 182, 212, 0.25));
+}
+
+.mkt-split-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.mkt-split-text h3 {
+  font-weight: 700;
+  font-size: 20px;
+  margin: 0 0 10px;
+  color: #ffffff;
+}
+
+.mkt-split-text p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.mkt-split-text .mkt-card-cta {
+  display: inline-block;
+  margin-top: 14px;
+}
+
+@media (max-width: 640px) {
+  .mkt-split,
+  .mkt-split-reverse {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+  .mkt-split-media { width: 60%; }
+}
+
 /* ---------- Schedule / recurring-event callout ---------- */
 .mkt-callout {
   margin-top: 52px;

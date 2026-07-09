@@ -15,6 +15,74 @@ const StatusBadge = ({ s }) => {
   return <span className={`cap-badge ${cls}`}>{s}</span>;
 };
 
+// ─── Download bar (attendance + payments CSV) ─────────────────────────────────
+function DownloadBar() {
+  const [players, setPlayers] = useState([]);
+  const [range, setRange]     = useState('1');   // '1' = this month, '6' = past 6 months
+  const [student, setStudent] = useState('all'); // 'all' or a studentId
+  const [busy, setBusy]       = useState('');
+
+  useEffect(() => {
+    api.get('/api/coach-attendance/players')
+      .then(r => setPlayers((r.data || []).filter(p => p.studentId)))
+      .catch(() => setPlayers([]));
+  }, []);
+
+  // Download a CSV through axios so the auth token is sent (a plain link can't).
+  const download = async (kind) => {
+    setBusy(kind);
+    try {
+      const url = `/api/coach-attendance/${kind}/export.csv?months=${range}&studentId=${student}`;
+      const res = await api.get(url, { responseType: 'blob' });
+      const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8;' });
+      const href = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = href;
+      a.download = `${kind}-${range}mo.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(href);
+    } catch {
+      alert('Could not download. Try again.');
+    } finally {
+      setBusy('');
+    }
+  };
+
+  return (
+    <div className="cap-card" style={{ marginBottom: 20 }}>
+      <div className="cap-card-hdr" style={{ justifyContent: 'flex-start', gap: 10, flexWrap: 'wrap' }}>
+        <h3 style={{ margin: 0 }}>⬇️ Download reports</h3>
+      </div>
+      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+        <div>
+          <label className="cap-label">Period</label>
+          <select className="cap-input" value={range} onChange={e => setRange(e.target.value)}>
+            <option value="1">This month</option>
+            <option value="6">Past 6 months</option>
+          </select>
+        </div>
+        <div>
+          <label className="cap-label">Student</label>
+          <select className="cap-input" value={student} onChange={e => setStudent(e.target.value)}>
+            <option value="all">All students</option>
+            {players.map(p => (
+              <option key={p._id} value={p.studentId}>{p.studentName}</option>
+            ))}
+          </select>
+        </div>
+        <button className="cap-btn cap-btn-cyan" disabled={busy === 'attendance'} onClick={() => download('attendance')}>
+          {busy === 'attendance' ? 'Preparing…' : '📝 Attendance CSV'}
+        </button>
+        <button className="cap-btn cap-btn-green" disabled={busy === 'payments'} onClick={() => download('payments')}>
+          {busy === 'payments' ? 'Preparing…' : '💰 Payments CSV'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ──────────────────────────────────────────────────────────
 export default function CoachAttendancePage() {
   const [tab, setTab] = useState('dashboard');
@@ -68,6 +136,43 @@ function TabDashboard() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [data, setData]   = useState(null);
   const [loading, setLoading] = useState(true);
+  // Sortable monthly summary: key + direction.
+  const [sort, setSort] = useState({ key: 'name', dir: 'asc' });
+
+  // Derived per-row values (attended = present + catch-up; % of monthly quota).
+  const rowVals = (s) => {
+    const attended = (s.present || 0) + (s.catchUp || 0);
+    const pct = s.classesPerMonth > 0 ? Math.round((attended / s.classesPerMonth) * 100) : null;
+    return { attended, pct };
+  };
+
+  const toggleSort = (key) =>
+    setSort(prev => prev.key === key ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'asc' });
+
+  const sortedSummary = (() => {
+    const rows = [...(data?.summary || [])];
+    const { key, dir } = sort;
+    const val = (s) => {
+      const { attended, pct } = rowVals(s);
+      switch (key) {
+        case 'name':      return (s.studentName || '').toLowerCase();
+        case 'attended':  return attended;
+        case 'remaining': return s.remaining || 0;
+        case 'paid':      return s.paid ? 1 : 0;
+        case 'pct':       return pct == null ? -1 : pct;
+        default:          return 0;
+      }
+    };
+    rows.sort((a, b) => {
+      const va = val(a), vb = val(b);
+      if (va < vb) return dir === 'asc' ? -1 : 1;
+      if (va > vb) return dir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return rows;
+  })();
+
+  const sortArrow = (key) => sort.key === key ? (sort.dir === 'asc' ? ' ▲' : ' ▼') : '';
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -100,6 +205,7 @@ function TabDashboard() {
 
   return (
     <div>
+      <DownloadBar />
       {stats && (
         <div className="cap-stat-row">
           <div className="cap-stat-card cap-stat-cyan">
@@ -132,36 +238,32 @@ function TabDashboard() {
           <div className="cap-table-wrap">
             <table className="cap-table">
               <thead><tr>
-                <th>Player</th>
-                <th>Classes/Mo</th>
-                <th>Present</th>
-                <th>Absent</th>
-                <th>Catch-up</th>
-                <th>Remaining</th>
-                <th>Fee</th>
-                <th>Paid</th>
-                <th>Status</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('name')}>Player{sortArrow('name')}</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('attended')} title="Present + Catch-up this month">Classes{sortArrow('attended')}</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('remaining')}>Remaining{sortArrow('remaining')}</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('paid')}>Fees{sortArrow('paid')}</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('pct')} title="Attended ÷ classes per month">Attendance %{sortArrow('pct')}</th>
               </tr></thead>
               <tbody>
-                {data.summary.map(s => (
-                  <tr key={s.studentId} className={s.onBreak ? 'cap-row-break' : ''}>
-                    <td>{s.studentName} {s.onBreak && <span className="cap-break-badge">Break</span>}</td>
-                    <td>{s.classesPerMonth}</td>
-                    <td className="cap-td-present">{s.present}</td>
-                    <td className="cap-td-absent">{s.absent}</td>
-                    <td className="cap-td-catchup">{s.catchUp}</td>
-                    <td>{s.remaining}</td>
-                    <td>{s.currency} {s.fees.toLocaleString()}</td>
-                    <td>{s.paid ? '✅' : '❌'}</td>
-                    <td>
-                      {s.onBreak
-                        ? <span className="cap-badge badge-absent">On Break</span>
-                        : s.paid
+                {sortedSummary.map(s => {
+                  const { attended, pct } = rowVals(s);
+                  return (
+                    <tr key={s.studentId} className={s.onBreak ? 'cap-row-break' : ''}>
+                      <td>{s.studentName} {s.onBreak && <span className="cap-break-badge">Break</span>}</td>
+                      <td>
+                        <span className="cap-td-present">{attended}</span>
+                        <span className="cap-muted"> / {s.classesPerMonth}</span>
+                      </td>
+                      <td>{s.remaining}</td>
+                      <td>
+                        {s.paid
                           ? <span className="cap-badge badge-present">Paid</span>
                           : <span className="cap-badge badge-absent">Unpaid</span>}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td>{pct == null ? <span className="cap-muted">—</span> : `${pct}%`}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -588,6 +690,21 @@ function TabAttendance() {
   const getStatus   = (studentId, slot) => recForSlot(studentId, slot)?.status || null;
   const getRecordId = (studentId, slot) => recForSlot(studentId, slot)?._id || null;
 
+  // Map studentId → name for the confirmation log (records don't carry names).
+  const nameFor = (studentId) => {
+    const p = players.find(x => x.studentId?.toString() === studentId?.toString());
+    return p?.studentName || 'Student';
+  };
+  // Entries the coach marked for this date, newest edit first (for the log).
+  const markedLog = [...records]
+    .filter(r => r.status)
+    .sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
+  const fmtEntryTime = (r) => {
+    const t = r.updatedAt || r.createdAt;
+    if (!t) return '';
+    return new Date(t).toLocaleString('en-IN', { timeZone: IST, day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+  };
+
   const mark = async (studentId, slot, status) => {
     setSaving(`${studentId}-${slot}`);
     try {
@@ -669,6 +786,34 @@ function TabAttendance() {
             <span>Absent: <strong className="cap-td-absent">{records.filter(r => r.status === 'Absent').length}</strong></span>
             <span>Catch-up: <strong className="cap-td-catchup">{records.filter(r => r.status === 'Catch-up').length}</strong></span>
           </div>
+
+          {/* Confirmation log — what you marked for this date + when you entered it,
+              so you can double-check attendance was recorded correctly. */}
+          {markedLog.length > 0 && (
+            <div className="cap-att-log">
+              <h4 className="cap-att-log-title">✓ Marked entries for this date</h4>
+              <div className="cap-table-wrap">
+                <table className="cap-table">
+                  <thead><tr>
+                    <th>Player</th>
+                    <th>Status</th>
+                    <th>Class</th>
+                    <th>Entered</th>
+                  </tr></thead>
+                  <tbody>
+                    {markedLog.map(r => (
+                      <tr key={r._id}>
+                        <td>{nameFor(r.studentId)}</td>
+                        <td><StatusBadge s={r.status} /></td>
+                        <td>Class {r.slot || 1}</td>
+                        <td className="cap-muted">{fmtEntryTime(r)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

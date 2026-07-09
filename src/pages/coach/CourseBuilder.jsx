@@ -4,14 +4,14 @@
 // private). Enrolled students get read access to private course studies and walk
 // them in order, marking each "studied" to unlock the next. See routes/courses.js.
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import api from '../../api';
 import './CoachDashboard.css';
 import './CourseBuilder.css';
 
 export default function CourseBuilder() {
-  const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
+  const [limits, setLimits] = useState({ subscribed: true, maxCourses: null, maxLessons: null });
   const [students, setStudents] = useState([]);
   const [myStudies, setMyStudies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,25 +21,39 @@ export default function CourseBuilder() {
   const [creating, setCreating] = useState(false);
 
   const [selected, setSelected] = useState(null);
-  const [lessonMode, setLessonMode] = useState('study'); // 'study' | 'video'
+  const [lessonMode, setLessonMode] = useState('study'); // 'study' | 'video' | 'masterGame' | 'endgame'
   const [pickStudyId, setPickStudyId] = useState('');
+  const [pickChapterId, setPickChapterId] = useState(''); // '' = whole study
+  const [studySource, setStudySource] = useState('mine');  // 'mine' | 'nexus'
+  const [studySearch, setStudySearch] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [videoTitle, setVideoTitle] = useState('');
   const [addingLesson, setAddingLesson] = useState(false);
   const [lessonErr, setLessonErr] = useState('');
 
-  const [enrollGroupId, setEnrollGroupId] = useState('');
+  // Master game picker (searches the public master-games API).
+  const [mgQuery, setMgQuery] = useState('');
+  const [mgResults, setMgResults] = useState([]);
+  const [mgSearching, setMgSearching] = useState(false);
+  // Endgame picker. Source 'free' = public endgames collection; source 'premium'
+  // = admin premium endgame trainer picks (subscribed coaches only, free for their
+  // enrolled students within the course).
+  const [egSource, setEgSource] = useState('free'); // 'free' | 'premium'
+  const [egFamilies, setEgFamilies] = useState([]);   // [{key,label}]
+  const [egFamily, setEgFamily] = useState('');
+  const [egPositions, setEgPositions] = useState([]); // positions in the chosen family
+  const [egLoading, setEgLoading] = useState(false);
+  const [egPremium, setEgPremium] = useState(null); // { fam: [picks] } cache for premium picks
+
+  const [enrollGroupIds, setEnrollGroupIds] = useState([]); // batches selected to enroll
   const [enrollMsg, setEnrollMsg] = useState('');
+  const [enrolling, setEnrolling] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
-  // Real named groups (multi-group; a student can be in many).
+  // Real named batches (multi-group; a student can be in many). Created/managed
+  // on the dedicated Batches page (/coach/batches); here they're only used to
+  // enroll a whole batch into a course.
   const [groups, setGroups] = useState([]);
-  const [newGroupName, setNewGroupName] = useState('');
-  const [editingGroup, setEditingGroup] = useState(null); // group object being edited (member checklist)
-
-  // A student's user-id + display name from the roster.
-  const studentId = (s) => String(s.studentId?._id || s.studentId || '');
-  const studentLabel = (s) => s.studentName || s.studentId?.displayName || s.studentId?.username || 'Student';
 
   const loadAll = async () => {
     setLoading(true);
@@ -51,12 +65,12 @@ export default function CourseBuilder() {
         api.get('/api/coach/groups'),
       ]);
       setCourses(c.data?.courses || []);
+      if (c.data?.limits) setLimits(c.data.limits);
       setStudents(s.data?.students || []);
       setMyStudies(st.data?.studies || []);
       setGroups(g.data?.groups || []);
       setError('');
     } catch (err) {
-      if (err.response?.status === 402) { navigate('/coach/subscription?expired=1'); return; }
       setError(err.response?.data?.message || 'Failed to load courses.');
     } finally {
       setLoading(false);
@@ -65,7 +79,7 @@ export default function CourseBuilder() {
   useEffect(() => { loadAll(); }, []); // eslint-disable-line
 
   const openCourse = async (courseId) => {
-    setLessonErr(''); setEnrollMsg(''); setPickStudyId(''); setEnrollGroupId('');
+    setLessonErr(''); setEnrollMsg(''); setPickStudyId(''); setEnrollGroupIds([]);
     try {
       const r = await api.get(`/api/coach/courses/${courseId}`);
       setSelected(r.data?.course || null);
@@ -90,13 +104,25 @@ export default function CourseBuilder() {
     }
   };
 
+  // Load studies for the picker by source (mine | nexus) + optional search.
+  const loadStudies = async (source = studySource, search = studySearch) => {
+    try {
+      const r = await api.get('/api/coach/courses-my-studies', { params: { source, search } });
+      setMyStudies(r.data?.studies || []);
+    } catch { setMyStudies([]); }
+    setPickStudyId(''); setPickChapterId('');
+  };
+
   const addLesson = async () => {
     if (!pickStudyId) return;
     setLessonErr('');
     setAddingLesson(true);
     try {
-      await api.post(`/api/coach/courses/${selected._id}/lessons`, { studyId: pickStudyId });
-      setPickStudyId('');
+      await api.post(`/api/coach/courses/${selected._id}/lessons`, {
+        studyId: pickStudyId,
+        ...(pickChapterId ? { chapterId: pickChapterId } : {})
+      });
+      setPickStudyId(''); setPickChapterId('');
       await openCourse(selected._id);
       await loadAll();
     } catch (err) {
@@ -122,6 +148,102 @@ export default function CourseBuilder() {
     } finally {
       setAddingLesson(false);
     }
+  };
+
+  // ── Master game lesson ──
+  const searchMasterGames = async () => {
+    if (!mgQuery.trim()) return;
+    setMgSearching(true);
+    try {
+      const r = await api.get(`/api/master-games/?player=${encodeURIComponent(mgQuery.trim())}&limit=20`);
+      setMgResults(r.data?.games || []);
+    } catch { setMgResults([]); } finally { setMgSearching(false); }
+  };
+  const addMasterGameLesson = async (masterGameId) => {
+    setLessonErr('');
+    setAddingLesson(true);
+    try {
+      await api.post(`/api/coach/courses/${selected._id}/lessons/master-game`, { masterGameId });
+      setMgQuery(''); setMgResults([]);
+      await openCourse(selected._id);
+      await loadAll();
+    } catch (err) {
+      setLessonErr(err.response?.data?.message || 'Could not add game.');
+    } finally { setAddingLesson(false); }
+  };
+
+  // ── Free endgame lesson ──
+  const API_BASE = import.meta.env.VITE_API_URL || '';
+  // Load the FREE public endgames collection families.
+  const loadFreeEndgameFamilies = async () => {
+    try {
+      const r = await fetch(`${API_BASE}/api/public/endgames/index.json`).then(x => x.json());
+      // index.json shape: array of families or {families:[...]}. Normalize to {key,label}.
+      const fams = Array.isArray(r) ? r : (r.families || []);
+      return fams.map(f => (typeof f === 'string' ? { key: f, label: f } : { key: f.key || f.family || f.id, label: f.label || f.name || f.key || f.family }));
+    } catch { return []; }
+  };
+  // Load the PREMIUM admin endgame trainer picks (subscribed coaches only),
+  // grouped into families the same shape as the free source.
+  const loadPremiumEndgames = async () => {
+    if (egPremium) return egPremium;
+    try {
+      const r = await api.get('/api/endgame-trainer/positions');
+      const fams = r.data?.families || {};
+      setEgPremium(fams);
+      return fams;
+    } catch { setEgPremium({}); return {}; }
+  };
+  const loadEndgameFamilies = async () => {
+    if (egFamilies.length > 0) return;
+    setEgFamilies(await loadFreeEndgameFamilies());
+  };
+  // Switch source; reload the family list for that source.
+  const switchEgSource = async (src) => {
+    setEgSource(src);
+    setEgFamily('');
+    setEgPositions([]);
+    if (src === 'premium') {
+      const fams = await loadPremiumEndgames();
+      const FAM_LABEL = { pawn: 'Pawn', knight: 'Knight', bishop: 'Bishop', bishop_knight: 'Bishop + Knight', rook: 'Rook', queen: 'Queen', queen_rook: 'Queen + Rook', other_mixed: 'Mixed' };
+      setEgFamilies(Object.keys(fams).map(k => ({ key: k, label: FAM_LABEL[k] || k })));
+    } else {
+      setEgFamilies(await loadFreeEndgameFamilies());
+    }
+  };
+  const loadEndgamePositions = async (family) => {
+    setEgFamily(family);
+    setEgPositions([]);
+    if (!family) return;
+    if (egSource === 'premium') {
+      const fams = egPremium || await loadPremiumEndgames();
+      setEgPositions((fams[family] || []).filter(p => p && p.fen).slice(0, 200));
+      return;
+    }
+    setEgLoading(true);
+    try {
+      const r = await fetch(`${API_BASE}/api/public/endgames/${encodeURIComponent(family)}.json`).then(x => x.json());
+      const list = Array.isArray(r) ? r : (r.positions || r.items || []);
+      setEgPositions(list.filter(p => p && p.fen).slice(0, 200));
+    } catch { setEgPositions([]); } finally { setEgLoading(false); }
+  };
+  const addEndgameLesson = async (pos) => {
+    setLessonErr('');
+    setAddingLesson(true);
+    try {
+      const title = pos.white || pos.black
+        ? `${pos.white || 'White'} vs ${pos.black || 'Black'}${pos.year ? ` (${pos.year})` : ''}`
+        : (pos.title || 'Endgame position');
+      // Premium picks are added by id (server trusts its stored FEN + gates to paid).
+      const body = egSource === 'premium'
+        ? { pickId: pos._id, family: egFamily, title }
+        : { fen: pos.fen, family: egFamily, title };
+      await api.post(`/api/coach/courses/${selected._id}/lessons/endgame`, body);
+      await openCourse(selected._id);
+      await loadAll();
+    } catch (err) {
+      setLessonErr(err.response?.data?.message || 'Could not add position.');
+    } finally { setAddingLesson(false); }
   };
 
   const deleteLesson = async (lessonIndex) => {
@@ -150,65 +272,37 @@ export default function CourseBuilder() {
     }
   };
 
+  const toggleEnrollGroup = (id) =>
+    setEnrollGroupIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
+  // Enroll every selected batch into the course. Each batch is enrolled via the
+  // existing (idempotent) endpoint, so a course can hold students from many batches.
   const enroll = async () => {
+    if (enrollGroupIds.length === 0) return;
     setEnrollMsg('');
+    setEnrolling(true);
     try {
-      const r = await api.post(`/api/coach/courses/${selected._id}/enroll`, { groupId: enrollGroupId });
-      setEnrollMsg(`Enrolled ${r.data.enrolled} student(s) (${r.data.newlyEnrolled} new).`);
+      let totalStudents = 0, totalNew = 0, batches = 0;
+      for (const gid of enrollGroupIds) {
+        const r = await api.post(`/api/coach/courses/${selected._id}/enroll`, { groupId: gid });
+        totalStudents += r.data.enrolled || 0;
+        totalNew += r.data.newlyEnrolled || 0;
+        batches += 1;
+      }
+      setEnrollMsg(`Enrolled ${batches} batch${batches === 1 ? '' : 'es'} · ${totalStudents} student(s) (${totalNew} new).`);
+      setEnrollGroupIds([]);
       await loadAll();
     } catch (err) {
       setEnrollMsg(err.response?.data?.message || 'Could not enroll.');
+    } finally {
+      setEnrolling(false);
     }
   };
 
   // ── Group management (multi-group: a student can be in many groups) ──
-  const createGroup = async () => {
-    const name = newGroupName.trim();
-    if (!name) return;
-    try {
-      await api.post('/api/coach/groups', { name });
-      setNewGroupName('');
-      await loadAll();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not create group.');
-    }
-  };
-
-  const deleteGroup = async (groupId) => {
-    if (!window.confirm('Delete this group? (Students and their enrollments are unaffected.)')) return;
-    try {
-      await api.delete(`/api/coach/groups/${groupId}`);
-      if (editingGroup?._id === groupId) setEditingGroup(null);
-      await loadAll();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not delete group.');
-    }
-  };
-
-  // Toggle a student in the group currently being edited (optimistic local state).
-  const toggleMember = (sid) => {
-    setEditingGroup(g => {
-      const has = g.studentIds.some(x => String(x) === sid);
-      return { ...g, studentIds: has ? g.studentIds.filter(x => String(x) !== sid) : [...g.studentIds, sid] };
-    });
-  };
-
-  const saveGroupMembers = async () => {
-    try {
-      await api.patch(`/api/coach/groups/${editingGroup._id}`, { studentIds: editingGroup.studentIds.map(String) });
-      setEditingGroup(null);
-      await loadAll();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not save group.');
-    }
-  };
-
   if (loading) return <div className="coach-dash"><p>Loading…</p></div>;
 
   const sortedLessons = (selected?.lessons || []).slice().sort((a, b) => a.lessonIndex - b.lessonIndex);
-  // Studies not already in the course (so you can't add a duplicate).
-  const usedStudyIds = new Set(sortedLessons.map(l => String(l.studyId)));
-  const availableStudies = myStudies.filter(s => !usedStudyIds.has(String(s._id)));
 
   return (
     <div className="coach-dash">
@@ -237,15 +331,16 @@ export default function CourseBuilder() {
           </div>
           <ol className="cb-help-steps">
             <li>
-              <strong>Make a group.</strong> In the <strong>Groups</strong> panel below, create a group
-              (e.g. <em>Batch A</em>) and tick the students who belong to it. A student can be in
-              <strong> several groups</strong> at once.
+              <strong>Make a batch.</strong> On the <Link to="/coach/batches"><strong>Batches</strong></Link> page,
+              create a batch (e.g. <em>Batch A</em>) and tick the students who belong to it. A student can be in
+              <strong> several batches</strong> at once.
             </li>
             <li>
               <strong>Build the course</strong> — add your studies and YouTube videos as lessons, in order.
             </li>
             <li>
-              <strong>Enroll a group.</strong> Open the course → pick a group → <strong>Enroll group</strong>.
+              <strong>Enroll batches.</strong> Open the course → tick <strong>one or more batches</strong> →
+              <strong> Enroll selected batches</strong>. You can add more batches to the same course any time.
               This is what actually gives those students access.
             </li>
             <li>
@@ -259,16 +354,36 @@ export default function CourseBuilder() {
       <div className="cb-layout">
         {/* LEFT: create + course list */}
         <div className="cb-col-left">
-          <form onSubmit={createCourse} className="cb-card">
-            <h3>➕ New course</h3>
-            <input className="cb-input" placeholder="Course title (e.g. Beginner → 1200)"
-              value={newCourse.title} onChange={e => setNewCourse({ ...newCourse, title: e.target.value })} />
-            <textarea className="cb-textarea" placeholder="Description (optional)" rows={2}
-              value={newCourse.description} onChange={e => setNewCourse({ ...newCourse, description: e.target.value })} />
-            <button className="btn-primary" disabled={creating || !newCourse.title.trim()}>
-              {creating ? 'Creating…' : 'Create course'}
-            </button>
-          </form>
+          {(() => {
+            const atCourseCap = limits.maxCourses != null && courses.length >= limits.maxCourses;
+            return (
+              <form onSubmit={createCourse} className="cb-card">
+                <h3>➕ New course
+                  {limits.maxCourses != null && (
+                    <span className="cb-muted" style={{ fontSize: 12, fontWeight: 400, marginLeft: 8 }}>
+                      {courses.length}/{limits.maxCourses}
+                    </span>
+                  )}
+                </h3>
+                {atCourseCap ? (
+                  <p className="cb-muted" style={{ margin: 0 }}>
+                    You've reached the free limit of {limits.maxCourses} courses.{' '}
+                    <Link to="/coach/subscription">Subscribe</Link> for unlimited courses.
+                  </p>
+                ) : (
+                  <>
+                    <input className="cb-input" placeholder="Course title (e.g. Beginner → 1200)"
+                      value={newCourse.title} onChange={e => setNewCourse({ ...newCourse, title: e.target.value })} />
+                    <textarea className="cb-textarea" placeholder="Description (optional)" rows={2}
+                      value={newCourse.description} onChange={e => setNewCourse({ ...newCourse, description: e.target.value })} />
+                    <button className="btn-primary" disabled={creating || !newCourse.title.trim()}>
+                      {creating ? 'Creating…' : 'Create course'}
+                    </button>
+                  </>
+                )}
+              </form>
+            );
+          })()}
 
           <div className="cb-card">
             <h3>Your courses</h3>
@@ -285,48 +400,6 @@ export default function CourseBuilder() {
             ))}
           </div>
 
-          {/* Groups panel — create groups + manage members (a student can be in many) */}
-          <div className="cb-card">
-            <h3>👥 Groups</h3>
-            <div className="cb-row" style={{ alignItems: 'center' }}>
-              <input className="cb-input" style={{ marginBottom: 0 }} placeholder="New group name (e.g. Batch A)"
-                value={newGroupName} onChange={e => setNewGroupName(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') createGroup(); }} />
-              <button className="btn-primary" onClick={createGroup} disabled={!newGroupName.trim()} style={{ flex: '0 0 auto' }}>Add</button>
-            </div>
-
-            {students.length === 0 && <p className="cb-muted" style={{ marginTop: 8 }}>Add students on the <Link to="/coach/dashboard">Coach Dashboard</Link> first.</p>}
-            {groups.length === 0 && <p className="cb-muted" style={{ marginTop: 8 }}>No groups yet.</p>}
-
-            {groups.map(g => (
-              <div key={g._id} className="cb-group">
-                <div className="cb-group-head">
-                  <span className="cb-group-name">{g.name}</span>
-                  <span className="cb-group-count">{g.memberCount} student{g.memberCount === 1 ? '' : 's'}</span>
-                  <button className="cb-icon-btn" onClick={() => setEditingGroup(editingGroup?._id === g._id ? null : { ...g, studentIds: (g.studentIds || []).map(String) })}>
-                    {editingGroup?._id === g._id ? 'Done' : 'Edit'}
-                  </button>
-                  <button className="cb-icon-btn" onClick={() => deleteGroup(g._id)}>✕</button>
-                </div>
-
-                {editingGroup?._id === g._id && (
-                  <div className="cb-group-members">
-                    {students.map(s => {
-                      const sid = studentId(s);
-                      const checked = editingGroup.studentIds.some(x => String(x) === sid);
-                      return (
-                        <label key={sid} className="cb-check">
-                          <input type="checkbox" checked={checked} onChange={() => toggleMember(sid)} />
-                          {studentLabel(s)}
-                        </label>
-                      );
-                    })}
-                    <button className="btn-primary" style={{ marginTop: 8 }} onClick={saveGroupMembers}>Save members</button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* RIGHT: selected course */}
@@ -340,29 +413,57 @@ export default function CourseBuilder() {
                   <Link className="btn-ghost" to={`/coach/courses/${selected._id}/progress`}>📊 Progress</Link>
                 </div>
                 {selected.description && <p className="cb-muted">{selected.description}</p>}
-                <div className="cb-row" style={{ marginTop: 8, alignItems: 'center' }}>
-                  <select className="cb-select" style={{ marginBottom: 0 }} value={enrollGroupId} onChange={e => setEnrollGroupId(e.target.value)}>
-                    <option value="">Pick a group…</option>
-                    {groups.map(g => <option key={g._id} value={g._id}>{g.name} ({g.memberCount})</option>)}
-                  </select>
-                  <button className="btn-primary" onClick={enroll} disabled={!enrollGroupId} style={{ flex: '0 0 auto' }}>Enroll group</button>
-                </div>
+                {groups.length > 0 && (
+                  <div style={{ marginTop: 10 }}>
+                    <div className="cb-muted" style={{ fontSize: 12, marginBottom: 6 }}>Enroll one or more batches into this course:</div>
+                    <div className="cb-batch-picker">
+                      {groups.map(g => (
+                        <label key={g._id} className={`cb-batch-chip ${enrollGroupIds.includes(g._id) ? 'on' : ''}`}>
+                          <input
+                            type="checkbox"
+                            checked={enrollGroupIds.includes(g._id)}
+                            onChange={() => toggleEnrollGroup(g._id)}
+                          />
+                          <span>{g.name} ({g.memberCount})</span>
+                        </label>
+                      ))}
+                    </div>
+                    <button
+                      className="btn-primary"
+                      onClick={enroll}
+                      disabled={enrollGroupIds.length === 0 || enrolling}
+                      style={{ marginTop: 8 }}
+                    >
+                      {enrolling
+                        ? 'Enrolling…'
+                        : enrollGroupIds.length <= 1
+                          ? 'Enroll selected batch'
+                          : `Enroll ${enrollGroupIds.length} selected batches`}
+                    </button>
+                  </div>
+                )}
                 {groups.length === 0 && (
                   <p className="cb-muted" style={{ marginTop: 6, fontSize: 12 }}>
-                    No groups yet — create one in the <strong>👥 Groups</strong> panel and add students, then enroll it here.
+                    No batches yet — create one on the <Link to="/coach/batches"><strong>Batches</strong></Link> page, then enroll it here.
                   </p>
                 )}
                 {enrollMsg && <p className="cb-muted" style={{ marginTop: 6 }}>{enrollMsg}</p>}
               </div>
 
               <div className="cb-card">
-                <h3>Lessons (your studies, in order)</h3>
+                <h3>Lessons (your studies, in order)
+                  {limits.maxLessons != null && (
+                    <span className="cb-muted" style={{ fontSize: 12, fontWeight: 400, marginLeft: 8 }}>
+                      {sortedLessons.length}/{limits.maxLessons}
+                    </span>
+                  )}
+                </h3>
                 {sortedLessons.length === 0 && <p className="cb-muted">No lessons yet — add a study below.</p>}
                 {sortedLessons.map((l, i) => (
                   <div key={l.lessonIndex} className="cb-lesson-row">
                     <span className="cb-lesson-idx">{l.lessonIndex}</span>
                     <div className="cb-lesson-main">
-                      <div className="t">{l.kind === 'video' ? '🎥' : '📖'} {l.title}</div>
+                      <div className="t">{l.kind === 'video' ? '🎥' : l.kind === 'masterGame' ? '♟' : l.kind === 'endgame' ? '🏁' : '📖'} {l.title}</div>
                     </div>
                     <button className="cb-icon-btn" disabled={i === 0} onClick={() => moveLesson(l.lessonIndex, -1)}>↑</button>
                     <button className="cb-icon-btn" disabled={i === sortedLessons.length - 1} onClick={() => moveLesson(l.lessonIndex, 1)}>↓</button>
@@ -371,46 +472,88 @@ export default function CourseBuilder() {
                 ))}
               </div>
 
+              {limits.maxLessons != null && sortedLessons.length >= limits.maxLessons ? (
+                <div className="cb-card">
+                  <h3>➕ Add a lesson</h3>
+                  <p className="cb-muted" style={{ margin: 0 }}>
+                    This course has reached the free limit of {limits.maxLessons} lessons.{' '}
+                    <Link to="/coach/subscription">Subscribe</Link> for unlimited lessons per course.
+                  </p>
+                </div>
+              ) : (
               <div className="cb-card">
                 <h3>➕ Add a lesson</h3>
                 {lessonErr && <div className="cb-error">{lessonErr}</div>}
 
-                {/* Study vs Video toggle */}
-                <div className="cb-row" style={{ marginBottom: 10 }}>
+                {/* Lesson type toggle */}
+                <div className="cb-row" style={{ marginBottom: 10, flexWrap: 'wrap' }}>
                   <button type="button"
                     className={lessonMode === 'study' ? 'btn-primary' : 'btn-ghost'}
                     onClick={() => { setLessonMode('study'); setLessonErr(''); }}>📖 Study</button>
                   <button type="button"
                     className={lessonMode === 'video' ? 'btn-primary' : 'btn-ghost'}
                     onClick={() => { setLessonMode('video'); setLessonErr(''); }}>🎥 Video</button>
+                  <button type="button"
+                    className={lessonMode === 'masterGame' ? 'btn-primary' : 'btn-ghost'}
+                    onClick={() => { setLessonMode('masterGame'); setLessonErr(''); }}>♟ Master Game</button>
+                  <button type="button"
+                    className={lessonMode === 'endgame' ? 'btn-primary' : 'btn-ghost'}
+                    onClick={() => { setLessonMode('endgame'); setLessonErr(''); loadEndgameFamilies(); }}>🏁 Endgame</button>
                 </div>
 
                 {lessonMode === 'study' && (
                   <>
+                    {/* Source: my studies vs the official Nexus studies */}
+                    <div className="cb-row" style={{ marginBottom: 8 }}>
+                      <button type="button"
+                        className={studySource === 'mine' ? 'btn-primary' : 'btn-ghost'}
+                        onClick={() => { setStudySource('mine'); loadStudies('mine', studySearch); }}>My studies</button>
+                      <button type="button"
+                        className={studySource === 'nexus' ? 'btn-primary' : 'btn-ghost'}
+                        onClick={() => { setStudySource('nexus'); loadStudies('nexus', studySearch); }}>✦ Nexus studies</button>
+                    </div>
+                    <input className="cb-input" placeholder="Search studies by name…"
+                      value={studySearch}
+                      onChange={e => setStudySearch(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') loadStudies(studySource, studySearch); }} />
+
                     {myStudies.length === 0 ? (
                       <p className="cb-muted">
-                        You have no studies yet. <Link to="/my-studies">Create a study</Link> first, then add it here.
+                        {studySource === 'nexus' ? 'No Nexus studies found.' : <>You have no studies yet. <Link to="/my-studies">Create a study</Link> first.</>}
                       </p>
-                    ) : availableStudies.length === 0 ? (
-                      <p className="cb-muted">All your studies are already in this course.</p>
                     ) : (
-                      <div className="cb-row" style={{ alignItems: 'center' }}>
-                        <select className="cb-select" style={{ marginBottom: 0 }} value={pickStudyId}
-                          onChange={e => setPickStudyId(e.target.value)}>
+                      <>
+                        <select className="cb-select" value={pickStudyId}
+                          onChange={e => { setPickStudyId(e.target.value); setPickChapterId(''); }}>
                           <option value="">Pick a study…</option>
-                          {availableStudies.map(s => (
+                          {myStudies.map(s => (
                             <option key={s._id} value={s._id}>
-                              {s.name}{s.isPublic ? '' : ' (private)'}
+                              {s.name}{s.isPublic ? '' : ' (private)'} · {s.chapters?.length || 0} ch.
                             </option>
                           ))}
                         </select>
-                        <button className="btn-primary" onClick={addLesson} disabled={!pickStudyId || addingLesson} style={{ flex: '0 0 auto' }}>
-                          {addingLesson ? 'Adding…' : 'Add study'}
+
+                        {/* Whole study OR a single chapter */}
+                        {pickStudyId && (() => {
+                          const st = myStudies.find(s => s._id === pickStudyId);
+                          const chs = st?.chapters || [];
+                          return (
+                            <select className="cb-select" value={pickChapterId} onChange={e => setPickChapterId(e.target.value)}>
+                              <option value="">📚 Whole study ({chs.length} chapters)</option>
+                              {chs.map(c => (
+                                <option key={c._id} value={c._id}>— {c.name} ({c.puzzleCount} positions)</option>
+                              ))}
+                            </select>
+                          );
+                        })()}
+
+                        <button className="btn-primary" onClick={addLesson} disabled={!pickStudyId || addingLesson}>
+                          {addingLesson ? 'Adding…' : pickChapterId ? 'Add chapter' : 'Add study'}
                         </button>
-                      </div>
+                      </>
                     )}
                     <p className="cb-muted" style={{ marginTop: 8, fontSize: 12 }}>
-                      Private studies you add are automatically visible to students enrolled in this course.
+                      Add a whole study or a single chapter. Your private studies become visible to enrolled students automatically.
                     </p>
                   </>
                 )}
@@ -432,7 +575,84 @@ export default function CourseBuilder() {
                     </p>
                   </>
                 )}
+
+                {lessonMode === 'masterGame' && (
+                  <>
+                    <div className="cb-row" style={{ alignItems: 'center' }}>
+                      <input className="cb-input" style={{ marginBottom: 0 }}
+                        placeholder="Search by player (e.g. Kasparov)"
+                        value={mgQuery}
+                        onChange={e => setMgQuery(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') searchMasterGames(); }} />
+                      <button className="btn-primary" onClick={searchMasterGames} disabled={!mgQuery.trim() || mgSearching} style={{ flex: '0 0 auto' }}>
+                        {mgSearching ? 'Searching…' : 'Search'}
+                      </button>
+                    </div>
+                    {mgResults.length > 0 && (
+                      <div className="cb-mg-results" style={{ marginTop: 8, maxHeight: 260, overflowY: 'auto' }}>
+                        {mgResults.map(g => (
+                          <div key={g._id} className="cb-row" style={{ alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                            <span style={{ fontSize: 13 }}>
+                              {g.white} vs {g.black}{g.year ? ` · ${g.year}` : ''}{g.result ? ` · ${g.result}` : ''}
+                            </span>
+                            <button className="btn-ghost" disabled={addingLesson} onClick={() => addMasterGameLesson(g._id)} style={{ flex: '0 0 auto' }}>Add</button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <p className="cb-muted" style={{ marginTop: 8, fontSize: 12 }}>
+                      Master games are free professional games — students replay them move by move.
+                    </p>
+                  </>
+                )}
+
+                {lessonMode === 'endgame' && (
+                  <>
+                    {/* Source: free public collection vs premium admin trainer (paid coaches) */}
+                    <div className="cb-row" style={{ marginBottom: 8 }}>
+                      <button type="button"
+                        className={egSource === 'free' ? 'btn-primary' : 'btn-ghost'}
+                        onClick={() => switchEgSource('free')}>Free collection</button>
+                      {limits.subscribed ? (
+                        <button type="button"
+                          className={egSource === 'premium' ? 'btn-primary' : 'btn-ghost'}
+                          onClick={() => switchEgSource('premium')}>⭐ Premium endgames</button>
+                      ) : (
+                        <button type="button" className="btn-ghost" disabled
+                          title="Subscribe to add premium endgames"
+                          style={{ opacity: 0.55 }}>🔒 Premium endgames</button>
+                      )}
+                    </div>
+                    <select className="cb-select" value={egFamily} onChange={e => loadEndgamePositions(e.target.value)}>
+                      <option value="">Pick an endgame type…</option>
+                      {egFamilies.map(f => <option key={f.key} value={f.key}>{f.label}</option>)}
+                    </select>
+                    {egLoading ? (
+                      <p className="cb-muted">Loading positions…</p>
+                    ) : egPositions.length > 0 ? (
+                      <div className="cb-eg-results" style={{ maxHeight: 260, overflowY: 'auto' }}>
+                        {egPositions.map((p, i) => (
+                          <div key={i} className="cb-row" style={{ alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                            <span style={{ fontSize: 13 }}>
+                              {p.white || p.black ? `${p.white || 'White'} vs ${p.black || 'Black'}` : (p.title || 'Position')}
+                              {p.year ? ` · ${p.year}` : ''}{p.result ? ` · ${p.result}` : ''}
+                            </span>
+                            <button className="btn-ghost" disabled={addingLesson} onClick={() => addEndgameLesson(p)} style={{ flex: '0 0 auto' }}>Add</button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : egFamily ? (
+                      <p className="cb-muted">No positions in this type.</p>
+                    ) : null}
+                    <p className="cb-muted" style={{ marginTop: 8, fontSize: 12 }}>
+                      {egSource === 'premium'
+                        ? 'Premium endgames from the trainer — free for your enrolled students inside this course (no XP needed).'
+                        : 'Free endgame positions from the collection — students study & replay them (no XP needed).'}
+                    </p>
+                  </>
+                )}
               </div>
+              )}
             </>
           )}
         </div>

@@ -21,3 +21,29 @@
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.5);
 }
+
+/* ── Client-side game analysis (WASM) ── */
+.upg-analyze-bar {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 40px; padding: 8px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.upg-analyze-btn {
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  color: #0a0a0a; border: none; border-radius: 10px;
+  font-weight: 700; font-size: 14px; padding: 9px 18px; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(6,182,212,0.35);
+}
+.upg-analyze-btn:hover { filter: brightness(1.08); }
+.upg-analyze-progress { display: flex; flex-direction: column; gap: 6px; width: 100%; font-size: 13px; color: #a5f3fc; }
+.upg-analyze-track { height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.upg-analyze-fill { height: 100%; background: linear-gradient(90deg, #06b6d4, #10b981); transition: width 0.2s ease; }
+.upg-analyze-tally {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+  font-size: 13px; font-weight: 700;
+}
+.upg-analyze-err { color: #f87171; font-size: 13px; }
+.upg-analyze-note {
+  font-size: 11px; color: rgba(226,232,240,0.5); text-align: center;
+  padding: 4px 10px;
+}

@@ -4,8 +4,8 @@
 // (/study/endgames). Three views driven by internal state:
 //   band  → family cards (premium gold look) with curated counts + mastered counts
 //   list  → curated picks in one family, with lock/price + mastery ticks
-//   play  → play the position out vs tablebase-perfect defense (mastery = convert
-//           without the tablebase eval ever slipping)
+//   play  → play the position out vs Stockfish (Easy/Medium/Hard); mastery =
+//           convert/hold without the engine eval ever slipping
 //
 // Everything stays on the same page. Gating mirrors Books (XP / supporter / coach).
 
@@ -16,6 +16,15 @@ import Chessboard from "./Chessboard";
 import EnginePanel from "./EnginePanel";
 import api from "../api";
 import tablebase from "../services/tablebaseService";
+import stockfish from "../services/stockfishService";
+
+// Difficulty levels for playing the endgame out vs Stockfish. Lower skill = more
+// human-like blunders; higher depth/time = stronger, more accurate defense.
+const LEVELS = {
+  easy:   { label: "Easy",   skill: 3,  depth: 6,  moveTime: 300 },
+  medium: { label: "Medium", skill: 9,  depth: 10, moveTime: 600 },
+  hard:   { label: "Hard",   skill: 18, depth: 16, moveTime: 1000 },
+};
 import { buildTreeFromGame, applyMove, fenAt, lastMoveAt, firstNode, nextNode, prevNode, lastNode, pathToNode } from "./masterGames/moveTree";
 
 const FAMILY_ICON = {
@@ -241,7 +250,7 @@ function StudyView({ pick, onPlay }) {
           <button style={{ ...S.analyzeBtn, ...(engineOn ? { background: "rgba(6,182,212,0.28)" } : {}) }} onClick={() => setEngineOn(v => !v)}>
             🐟 Stockfish {engineOn ? "on" : "off"}
           </button>
-          <button style={S.playSwitchBtn} onClick={onPlay}>▶ Play vs Tablebase</button>
+          <button style={S.playSwitchBtn} onClick={onPlay}>▶ Play vs Stockfish</button>
         </div>
 
         <div style={{ marginBottom: 10 }}>
@@ -251,7 +260,7 @@ function StudyView({ pick, onPlay }) {
         <div style={{ fontSize: 13, color: "#cbd5e1", marginBottom: 8 }}>
           Study the perfect line{goalWin ? " that converts the win" : " that holds the draw"}, or
           <strong style={{ color: "#e2e8f0" }}> play your own moves on the board</strong> to explore variations.
-          Turn on Stockfish, or hit <strong style={{ color: PREMIUM_ACCENT }}>Play vs Tablebase</strong> to try it out.
+          Turn on Stockfish, or hit <strong style={{ color: PREMIUM_ACCENT }}>Play vs Stockfish</strong> to try it out.
         </div>
 
         {engineOn && (
@@ -297,7 +306,8 @@ function PlayView({ pick, onResult, onBack }) {
   const [status, setStatus] = useState("play"); // play | thinking | done
   const [verdict, setVerdict] = useState(null);  // { kind, text }
   const [slipped, setSlipped] = useState(false);
-  const [tbInfo, setTbInfo] = useState(null);     // { category, dtz }
+  const [evalInfo, setEvalInfo] = useState(null); // { cp, mate } from trainer POV
+  const [level, setLevel] = useState("medium");   // easy | medium | hard
   const [userMoves, setUserMoves] = useState(0);
   const [busy, setBusy] = useState(false);
   // Move notation: { san, by:'you'|'bot', color:'w'|'b' } in play order.
@@ -313,14 +323,37 @@ function PlayView({ pick, onResult, onBack }) {
 
   const sideToMoveNow = () => (game.turn() === "w" ? "white" : "black");
 
-  // Show whose turn / current tablebase read on load.
+  // Ensure the shared Stockfish engine is up before we ask it to move.
+  const ensureEngine = useCallback(async () => {
+    if (!stockfish.isReady()) {
+      try { await stockfish.init(); } catch { /* handled by callers */ }
+    }
+  }, []);
+
+  // Ask Stockfish for a move at the current level, plus its eval converted to the
+  // TRAINER's point of view (positive = good for the trainee). Engine reports the
+  // score from the side-to-move's POV, so flip when it's not the trainer's turn.
+  const engineMove = useCallback(async (fenStr) => {
+    await ensureEngine();
+    const cfg = LEVELS[level] || LEVELS.medium;
+    const r = await stockfish.getBestMove(fenStr, { skill: cfg.skill, depth: cfg.depth, moveTime: cfg.moveTime });
+    const stm = fenStr.split(" ")[1] === "w" ? "white" : "black";
+    const sign = stm === trainerSide ? 1 : -1;
+    let cp = null, mate = null;
+    if (r?.evaluation) {
+      if (r.evaluation.type === "mate") mate = sign * r.evaluation.value;
+      else cp = sign * r.evaluation.value;
+    }
+    return { uci: r?.bestMove || null, cp, mate };
+  }, [ensureEngine, level, trainerSide]);
+
+  // Show the engine's read of the starting position (from the trainee's POV).
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const cat = await tablebase.categoryForSide(game.fen(), trainerSide);
-        const pc = await tablebase.positionCategory(game.fen());
-        if (alive) setTbInfo(pc ? { category: cat, dtz: pc.dtz } : null);
+        const r = await engineMove(game.fen());
+        if (alive) setEvalInfo({ cp: r.cp, mate: r.mate });
       } catch { /* ignore */ }
     })();
     return () => { alive = false; };
@@ -352,26 +385,26 @@ function PlayView({ pick, onResult, onBack }) {
   }, [game, wantWin, trainerSide, slipped, finish]);
 
   const opponentReply = useCallback(async () => {
-    // Opponent = the side NOT trained. Query tablebase for its perfect defense.
+    // Opponent = the side NOT trained. Let Stockfish pick its reply at the chosen
+    // difficulty level, then refresh the eval readout from the trainee's POV.
     setStatus("thinking");
     try {
-      const def = await tablebase.bestDefense(game.fen());
-      if (!def) { setStatus("play"); return; }
-      const bmv = game.move({ from: def.uci.slice(0, 2), to: def.uci.slice(2, 4), promotion: def.uci.length > 4 ? def.uci[4] : undefined });
+      const r = await engineMove(game.fen());
+      if (!r.uci) { setStatus("play"); return null; }
+      const bmv = game.move({ from: r.uci.slice(0, 2), to: r.uci.slice(2, 4), promotion: r.uci.length > 4 ? r.uci[4] : undefined });
       if (bmv) setHistory(h => [...h, { san: bmv.san, by: "bot", color: bmv.color }]);
       setFen(game.fen());
       const done = await checkTerminal(false);
-      if (done) return;
-      // Refresh the readout from the trainee's POV.
-      const cat = await tablebase.categoryForSide(game.fen(), trainerSide);
-      const pc = await tablebase.positionCategory(game.fen());
-      setTbInfo(pc ? { category: cat, dtz: pc.dtz } : null);
+      if (done) return null;
+      setEvalInfo({ cp: r.cp, mate: r.mate });
       setStatus("play");
+      return r; // eval (trainer POV) after the reply — reused for slip detection
     } catch {
       setStatus("play");
-      setVerdict({ kind: "slip", text: "Tablebase unavailable — check your connection and retry." });
+      setVerdict({ kind: "slip", text: "Engine unavailable — check your connection and retry." });
+      return null;
     }
-  }, [game, checkTerminal, trainerSide]);
+  }, [game, checkTerminal, engineMove]);
 
   const onUserMove = useCallback((from, to) => {
     if (status !== "play" || busy) return false;
@@ -389,18 +422,17 @@ function PlayView({ pick, onResult, onBack }) {
 
     (async () => {
       try {
-        // Did this move drop the result category (technique slip)?
-        const catAfter = await tablebase.categoryForSide(game.fen(), trainerSide);
-        if (catAfter) {
-          if (wantWin && catAfter !== "win") setSlipped(true);
-          if (!wantWin && catAfter === "loss") setSlipped(true);
-        }
-        // Winning conversion: reached a won position and promoted/simplified? We
-        // rely on checkmate for the definitive win; but if we've promoted and the
-        // eval is a decisive win with very low DTZ, we still play on to mate.
         const done = await checkTerminal(true);
         if (done) { setBusy(false); return; }
-        await opponentReply();
+        // Stockfish replies and returns its eval (trainer POV). Detect a technique
+        // slip: a would-be win no longer clearly winning, or a hold gone losing.
+        const r = await opponentReply();
+        if (r) {
+          const winning = r.mate != null ? r.mate > 0 : (r.cp != null && r.cp > 150);
+          const losing = r.mate != null ? r.mate < 0 : (r.cp != null && r.cp < -150);
+          if (wantWin && !winning) setSlipped(true);
+          if (!wantWin && losing) setSlipped(true);
+        }
       } finally {
         setBusy(false);
       }
@@ -408,8 +440,21 @@ function PlayView({ pick, onResult, onBack }) {
     return true;
   }, [status, busy, game, trainerSide, wantWin, checkTerminal, opponentReply]);
 
-  const catText = tbInfo ? (tbInfo.category === "win" ? "Winning" : tbInfo.category === "draw" ? "Drawn" : "Losing") : "…";
-  const catColor = tbInfo ? (tbInfo.category === "win" ? "#34d399" : tbInfo.category === "draw" ? "#fbbf24" : "#f87171") : "#94a3b8";
+  // Engine read of the position from the trainee's POV (positive = good for you).
+  const evalText = (() => {
+    if (!evalInfo) return "…";
+    if (evalInfo.mate != null) return `Mate in ${Math.abs(evalInfo.mate)}`;
+    if (evalInfo.cp == null) return "…";
+    const p = (evalInfo.cp / 100).toFixed(1);
+    return (evalInfo.cp > 0 ? "+" : "") + p;
+  })();
+  const evalColor = (() => {
+    if (!evalInfo) return "#94a3b8";
+    const v = evalInfo.mate != null ? (evalInfo.mate > 0 ? 9999 : -9999) : (evalInfo.cp || 0);
+    if (v > 150) return "#34d399";
+    if (v < -150) return "#f87171";
+    return "#fbbf24";
+  })();
 
   return (
     <div style={{ display: "flex", gap: 22, flexWrap: "wrap", alignItems: "flex-start" }}>
@@ -436,18 +481,36 @@ function PlayView({ pick, onResult, onBack }) {
           </div>
           <div style={{ fontSize: 13, color: "#cbd5e1", marginBottom: 8 }}>
             You play <strong style={{ color: "#fff", textTransform: "capitalize" }}>{trainerSide}</strong>.
-            {wantWin ? " Convert the win against perfect defense." : " Hold the draw against best play."}
+            {wantWin ? " Convert the win against Stockfish." : " Hold the draw against Stockfish."}
+          </div>
+          {/* Difficulty selector — changes Stockfish's strength for the next reply. */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+            {Object.entries(LEVELS).map(([key, cfg]) => (
+              <button
+                key={key}
+                onClick={() => setLevel(key)}
+                disabled={status === "thinking"}
+                style={{
+                  flex: 1, padding: "6px 8px", borderRadius: 8, cursor: status === "thinking" ? "default" : "pointer",
+                  fontSize: 12.5, fontWeight: 700,
+                  border: level === key ? "1px solid #34d399" : "1px solid rgba(255,255,255,0.14)",
+                  background: level === key ? "rgba(52,211,153,0.15)" : "rgba(0,0,0,0.25)",
+                  color: level === key ? "#6ee7b7" : "#cbd5e1",
+                }}
+              >
+                {cfg.label}
+              </button>
+            ))}
           </div>
           <div style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(0,0,0,0.3)", marginBottom: 10 }}>
-            <div style={{ fontSize: 12, color: "#94a3b8", fontWeight: 700 }}>Tablebase (your side)</div>
-            <div style={{ fontSize: 18, fontWeight: 900, color: catColor }}>
-              {status === "thinking" ? "Opponent defending…" : catText}
-              {tbInfo?.dtz != null && status !== "thinking" ? <span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>DTZ {Math.abs(tbInfo.dtz)}</span> : null}
+            <div style={{ fontSize: 12, color: "#94a3b8", fontWeight: 700 }}>Stockfish eval (your side)</div>
+            <div style={{ fontSize: 18, fontWeight: 900, color: evalColor }}>
+              {status === "thinking" ? "Stockfish thinking…" : evalText}
             </div>
           </div>
-          {/* Move notation — your moves + the tablebase's replies, in play order. */}
+          {/* Move notation — your moves + Stockfish's replies, in play order. */}
           <div style={{ fontSize: 12, color: "#94a3b8", fontWeight: 700, marginBottom: 6 }}>
-            Moves <span style={{ fontWeight: 500 }}>· you vs tablebase</span>
+            Moves <span style={{ fontWeight: 500 }}>· you vs Stockfish</span>
           </div>
           <div style={{ ...S.moveWrap, marginBottom: 10 }}>
             {history.length === 0 ? (
@@ -468,7 +531,7 @@ function PlayView({ pick, onResult, onBack }) {
                   }
                   chips.push(
                     <span key={i} style={{ ...S.moveChip(false), cursor: "default", opacity: m.by === "bot" ? 0.85 : 1 }}
-                      title={m.by === "you" ? "Your move" : "Tablebase reply"}>
+                      title={m.by === "you" ? "Your move" : "Stockfish reply"}>
                       {m.san}{m.by === "bot" ? " ⛃" : ""}
                     </span>
                   );
@@ -568,7 +631,7 @@ export default function EndgameTrainer() {
           <button style={S.backBtn} onClick={() => setFamily(null)}>← Endgame Mastery</button>
           <h2 style={{ ...S.bandTitle, marginLeft: 6 }}>{FAMILY_ICON[family]} {FAMILY_LABEL[family]} endgames</h2>
         </div>
-        <p style={S.bandSub}>Study the perfect technique for each — then play it out vs tablebase-perfect defense. Master = convert without the eval ever slipping.</p>
+        <p style={S.bandSub}>Study the perfect technique for each — then play it out vs Stockfish at Easy, Medium or Hard. Master = convert without the eval ever slipping.</p>
         {error && <div style={{ color: "#f87171", marginBottom: 10, fontSize: 13 }}>{error}</div>}
         <div style={{ marginBottom: 6 }}>
           {picks.map((p) => {
@@ -615,6 +678,19 @@ export default function EndgameTrainer() {
         <h2 style={S.bandTitle}>Endgame Mastery — Study the Best Positions</h2>
       </div>
       <p style={S.bandSub}>Hand-picked positions worth knowing. Study the perfect line, explore with Stockfish, then play it out vs perfect defense.</p>
+      {data.coach && !data.coach.subscribed && data.coach.free && (
+        <div style={{
+          margin: "0 0 12px", padding: "9px 13px", borderRadius: 10,
+          background: "rgba(250,204,21,0.10)", border: "1px solid rgba(250,204,21,0.35)",
+          color: "#fde9b8", fontSize: 13, lineHeight: 1.5,
+        }}>
+          🎁 <strong>Coach free trial</strong> — premium endgames are free for you for
+          {" "}<strong>{data.coach.daysLeft} more day{data.coach.daysLeft === 1 ? "" : "s"}</strong>.
+          After that you can still open them by spending XP, or{" "}
+          <a href="/coach/subscription" style={{ color: "#fbbf24", fontWeight: 700 }}>subscribe</a>{" "}
+          to keep them free forever.
+        </div>
+      )}
       <div style={S.grid}>
         {familyKeys.map((fam) => {
           const picks = data.families[fam] || [];

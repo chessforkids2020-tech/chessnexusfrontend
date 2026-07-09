@@ -9,6 +9,8 @@ export default function ArenaCreate() {
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const clubId = searchParams.get('clubId') || '';
+  // Coach mode: a private race for the coach's own students only.
+  const coachMode = searchParams.get('coach') === '1';
   const [linkToClub, setLinkToClub] = useState(Boolean(clubId));
   
   // Form state
@@ -72,12 +74,15 @@ export default function ArenaCreate() {
         maxPlayers,
         startMode,
         plannedStartTime: plannedStart.toISOString(),
-        ...(clubId && linkToClub ? { clubId } : {})
+        ...(coachMode ? { coachPrivate: true } : {}),
+        ...(!coachMode && clubId && linkToClub ? { clubId } : {})
       });
 
       if (response.data.ok) {
-        // Redirect host to waiting room
-        navigate(`/arena/waiting/${response.data.roomId}`);
+        // Coach → their live view; everyone else → the waiting room.
+        navigate(coachMode
+          ? `/coach/arena/${response.data.roomId}`
+          : `/arena/waiting/${response.data.roomId}`);
       }
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create race');
@@ -314,8 +319,12 @@ export default function ArenaCreate() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 style={styles.title}>🏁 Create Arena Race</h1>
-          <p style={styles.subtitle}>Set up your own puzzle race and challenge friends!</p>
+          <h1 style={styles.title}>🏁 {coachMode ? 'Private Class Race' : 'Create Arena Race'}</h1>
+          <p style={styles.subtitle}>
+            {coachMode
+              ? 'Only your students can join. You get a live results view.'
+              : 'Set up your own puzzle race and challenge friends!'}
+          </p>
         </motion.div>
 
         <motion.div
@@ -398,22 +407,31 @@ export default function ArenaCreate() {
               <div style={styles.hint}>Race duration (1-30 minutes)</div>
             </div>
 
-            {/* Max Players */}
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Max Players</label>
-              <div style={styles.rangeContainer}>
-                <input
-                  type="range"
-                  style={styles.rangeInput}
-                  min="2"
-                  max="20"
-                  value={maxPlayers}
-                  onChange={(e) => setMaxPlayers(parseInt(e.target.value))}
-                />
-                <div style={styles.rangeValue}>{maxPlayers}</div>
+            {/* Max Players — hidden for coach races (auto-sized to the roster) */}
+            {!coachMode && (
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Max Players</label>
+                <div style={styles.rangeContainer}>
+                  <input
+                    type="range"
+                    style={styles.rangeInput}
+                    min="2"
+                    max="20"
+                    value={maxPlayers}
+                    onChange={(e) => setMaxPlayers(parseInt(e.target.value))}
+                  />
+                  <div style={styles.rangeValue}>{maxPlayers}</div>
+                </div>
+                <div style={styles.hint}>Maximum players allowed (2-20)</div>
               </div>
-              <div style={styles.hint}>Maximum players allowed (2-20)</div>
-            </div>
+            )}
+            {coachMode && (
+              <div style={{ ...styles.scoringInfo, marginBottom: 24 }}>
+                <div style={{ color: '#67e8f9', fontSize: 14 }}>
+                  🎓 All your accepted students will be able to join this race. No join code is shared — it's private to your class.
+                </div>
+              </div>
+            )}
 
             {/* Start Delay */}
             <div style={styles.formGroup}>

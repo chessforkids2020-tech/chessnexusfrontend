@@ -83,6 +83,16 @@ export default function StudentProgressPage() {
   const tournamentGames = t30.games || 0;
   const tournamentWinRate = t30.winRate ?? null;
 
+  // Games played on linked Lichess / Chess.com accounts (last 30 days).
+  const ext = data.externalGames || null;
+  const extCount = (p) => {
+    if (!p) return null;                       // platform not linked
+    if (p.error) return p.error === "not_found" ? "—" : "—";
+    return `${p.count ?? 0}${p.capped ? "+" : ""}`;
+  };
+  const lichessGames = ext ? extCount(ext.lichess) : null;
+  const chesscomGames = ext ? extCount(ext.chesscom) : null;
+
   // Active days this month.
   const activeDays = data.activeDays || 0;
 
@@ -251,6 +261,35 @@ export default function StudentProgressPage() {
             <div className="sp-stat-label">Win rate</div>
           </div>
         </section>
+
+        {/* ── Online games on Lichess / Chess.com (last 30 days) ── */}
+        {ext && (lichessGames != null || chesscomGames != null) && (
+          <>
+            <div className="sp-section-title sp-stats-title">🌐 Online games (last 30 days)</div>
+            <section className="sp-stats">
+              {lichessGames != null && (
+                <div className="sp-card sp-stat">
+                  <div className="sp-stat-icon">♞</div>
+                  <div className="sp-stat-value">{lichessGames}</div>
+                  <div className="sp-stat-label">
+                    Lichess games
+                    {ext.lichess?.username ? <><br /><span className="sp-month-sub">@{ext.lichess.username}</span></> : null}
+                  </div>
+                </div>
+              )}
+              {chesscomGames != null && (
+                <div className="sp-card sp-stat">
+                  <div className="sp-stat-icon">♟️</div>
+                  <div className="sp-stat-value">{chesscomGames}</div>
+                  <div className="sp-stat-label">
+                    Chess.com games
+                    {ext.chesscom?.username ? <><br /><span className="sp-month-sub">@{ext.chesscom.username}</span></> : null}
+                  </div>
+                </div>
+              )}
+            </section>
+          </>
+        )}
 
         {/* Encouraging note + CTA */}
         <section className="sp-card sp-note">

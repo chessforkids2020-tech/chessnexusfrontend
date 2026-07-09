@@ -44,9 +44,11 @@ export default function CoachPromptCard() {
               You're set up as a coach
             </div>
             <div style={{ color: 'rgba(226,232,240,0.65)', fontSize: '12.5px', marginTop: '2px' }}>
-              {coachStatus.access?.active
-                ? `${coachStatus.access.daysRemaining} day(s) remaining`
-                : 'Subscription expired — renew to continue'}
+              {coachStatus.access?.downgraded
+                ? 'Coach plan ended — you\'re on the Free plan'
+                : coachStatus.access?.daysRemaining != null
+                  ? `${coachStatus.access.daysRemaining} day(s) remaining`
+                  : 'Free coach plan — no expiry'}
             </div>
           </div>
         </div>
@@ -105,7 +107,7 @@ export default function CoachPromptCard() {
         </div>
         <div style={{ color: 'rgba(226,232,240,0.7)', fontSize: '13.5px', lineHeight: 1.5 }}>
           Manage your students, give assignments, and track progress — all in one place.
-          Start with a <strong style={{ color: '#fcd34d' }}>30-day free trial</strong>. No card required.
+          <strong style={{ color: '#fcd34d' }}> Free forever</strong> for up to 30 students. No card required.
         </div>
       </div>
       <button

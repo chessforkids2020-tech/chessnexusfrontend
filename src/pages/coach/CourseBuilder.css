@@ -34,6 +34,23 @@
 .cb-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .cb-row > * { flex: 1; }
 
+/* Multi-batch enroll picker */
+.cb-batch-picker { display: flex; flex-wrap: wrap; gap: 8px; }
+.cb-batch-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  font-size: 13px; color: #cbd5e1;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: all 0.15s ease;
+}
+.cb-batch-chip:hover { border-color: rgba(99, 102, 241, 0.5); }
+.cb-batch-chip.on {
+  color: #c7d2fe; background: rgba(99, 102, 241, 0.18);
+  border-color: rgba(99, 102, 241, 0.6);
+}
+.cb-batch-chip input { accent-color: #6366f1; cursor: pointer; }
+
 .cb-label { display: block; font-size: 12px; opacity: 0.75; margin-bottom: 8px; }
 .cb-label .cb-input { margin-top: 4px; }
 

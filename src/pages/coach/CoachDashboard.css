@@ -62,6 +62,58 @@
   -webkit-text-fill-color: transparent;
 }
 
+/* Verified-coach badge (reset the h1's transparent text-fill so it's visible). */
+.coach-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 12px;
+  vertical-align: middle;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(6, 182, 212, 0.16);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  color: #67e8f9;
+  -webkit-text-fill-color: #67e8f9; /* override the gradient clip on the h1 */
+  white-space: nowrap;
+}
+
+/* One-time verified welcome popup */
+.coach-verified-modal {
+  max-width: 440px;
+  text-align: center;
+}
+.coach-verified-modal-icon {
+  font-size: 46px;
+  margin-bottom: 6px;
+  filter: drop-shadow(0 4px 16px rgba(6, 182, 212, 0.45));
+}
+.coach-verified-modal h2 {
+  margin: 0 0 10px;
+  color: #67e8f9;
+  font-size: 20px;
+}
+.coach-verified-modal p {
+  color: rgba(226, 232, 240, 0.82);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 12px;
+}
+.coach-verified-modal-note {
+  background: rgba(245, 158, 11, 0.10);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: rgba(253, 230, 138, 0.95) !important;
+  font-size: 13px !important;
+  text-align: left;
+}
+.coach-verified-modal .btn-primary {
+  margin-top: 4px;
+}
+
 .coach-dash-sub {
   margin: 0;
   color: rgba(226, 232, 240, 0.6);
@@ -579,4 +631,82 @@
 .coach-activity-lock {
   font-size: 11px; font-weight: 700; color: #c4b5fd;
   background: rgba(139, 92, 246, 0.18); border-radius: 6px; padding: 2px 8px;
+}
+
+/* ── Class schedule form ── */
+.csf-label {
+  font-size: 12px; font-weight: 700; color: #a78bfa;
+  text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px;
+}
+.csf-input {
+  width: 100%; box-sizing: border-box;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 9px; padding: 10px 12px;
+  color: #e2e8f0; font-size: 14px;
+}
+.csf-input:focus { outline: none; border-color: rgba(139, 92, 246, 0.7); }
+.csf-hint { font-size: 12px; color: rgba(226, 232, 240, 0.55); margin-top: 5px; }
+.csf-hint a { color: #a78bfa; }
+
+/* ── Holiday chips ── */
+.coach-holiday-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, rgba(251,146,60,0.16), rgba(244,63,94,0.12));
+  border: 1px solid rgba(251,146,60,0.4);
+  border-radius: 10px; padding: 7px 10px 7px 12px;
+}
+.coach-holiday-date { font-size: 13px; font-weight: 700; color: #fdba74; }
+.coach-holiday-label { font-size: 12px; color: rgba(226,232,240,0.75); }
+.coach-holiday-x {
+  background: none; border: none; color: rgba(226,232,240,0.55);
+  cursor: pointer; font-size: 13px; line-height: 1; padding: 2px 4px;
+}
+.coach-holiday-x:hover { color: #f87171; }
+
+/* ── Class overview: two side-by-side charts ── */
+.coach-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 900px) {
+  .coach-charts-grid { grid-template-columns: 1fr; }
+}
+.coach-chart-panel {
+  background: rgba(20, 20, 30, 0.6);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.coach-chart-title {
+  font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 10px;
+}
+.coach-chart-title span {
+  font-size: 12px; font-weight: 500; color: rgba(226, 232, 240, 0.45);
+}
+
+/* ── Class Activities tabs ── */
+.coach-act-tabs {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 2px;
+}
+.coach-act-tab {
+  background: transparent; border: none; cursor: pointer;
+  color: rgba(226,232,240,0.6); font-size: 14px; font-weight: 600;
+  padding: 8px 14px; border-radius: 10px 10px 0 0;
+  border-bottom: 2px solid transparent; margin-bottom: -2px;
+}
+.coach-act-tab:hover { color: #e2e8f0; }
+.coach-act-tab.active {
+  color: #06b6d4; border-bottom-color: #06b6d4;
+  background: rgba(6,182,212,0.08);
+}
+.coach-lib-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+}
+.coach-pack-block {
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+  padding: 12px; margin: 10px 0; background: rgba(255,255,255,0.02);
 }

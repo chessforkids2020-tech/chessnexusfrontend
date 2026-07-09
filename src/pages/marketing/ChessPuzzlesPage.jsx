@@ -3,50 +3,6 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 
 const CANONICAL = "/chess-puzzles";
 
-// Puzzle modes — visible content that also reads naturally for search engines.
-const MODES = [
-  {
-    icon: "⭐",
-    title: "Daily Chess Puzzles",
-    body:
-      "Every day brings a fresh puzzle drawn from real super-grandmaster and World Champion games. Instead of random positions, you train on the exact tactics the masters found over the board — sharpening pattern recognition the way the best players did.",
-    appPath: "/puzzles-hub",
-    cta: "Solve today's puzzle",
-  },
-  {
-    icon: "🎯",
-    title: "Monthly Focus Challenge",
-    body:
-      "A 7-day guided tactics program with a brand-new themed challenge each day. Earn XP, unlock achievements and climb the monthly leaderboard while you build a daily training habit that actually sticks.",
-    appPath: "/monthly-focus",
-    cta: "Start the challenge",
-  },
-  {
-    icon: "⚔️",
-    title: "TTT — Puzzle Tic-Tac-Toe",
-    body:
-      "A strategic, fun twist on tactics practice. Solve a chess puzzle to claim a square, then outmanoeuvre your opponent to complete a line first. It blends calculation with board strategy so practice never feels like a grind.",
-    appPath: "/arcade",
-    cta: "Play TTT",
-  },
-  {
-    icon: "🎰",
-    title: "Bingo — Spot the Theme",
-    body:
-      "Solve puzzles and identify the tactical theme behind each one — fork, pin, skewer, discovered attack and more — marking them off your bingo card. The fastest, most enjoyable way to learn to recognise tactical motifs.",
-    appPath: "/arcade",
-    cta: "Play Bingo",
-  },
-  {
-    icon: "💡",
-    title: "One Chess Tip Per Day",
-    body:
-      "A fresh, bite-sized chess improvement tip is published every single day and rotates automatically at midnight (IST). Little and often — a simple way to keep learning between training sessions.",
-    appPath: "/puzzles-hub",
-    cta: "See today's tip",
-  },
-];
-
 const FAQ = [
   {
     q: "Are the chess puzzles free?",
@@ -108,22 +64,35 @@ export default function ChessPuzzlesPage() {
       }}
     >
       <section className="mkt-section">
-        <h2>Everything inside the Puzzle Hub</h2>
-        <p className="mkt-section-lead">
-          One hub, five ways to train your chess tactics — pick the one that fits
-          your mood today. All free, forever.
-        </p>
-        <div className="mkt-grid">
-          {MODES.map((m) => (
-            <div className="mkt-card" key={m.title}>
-              <div className="mkt-card-icon">{m.icon}</div>
-              <h3>{m.title}</h3>
-              <p>{m.body}</p>
-              <Link to={m.appPath} className="mkt-card-cta">
-                {m.cta} →
-              </Link>
-            </div>
-          ))}
+        <div className="mkt-split mkt-split-reverse">
+          <div className="mkt-split-media">
+            <img src="/features/chessonline.png" alt="Free chess puzzles and daily tactics training" loading="lazy" width="220" height="220" />
+          </div>
+          <div className="mkt-split-text">
+            <h2>Everything inside the Puzzle Hub</h2>
+            <p>
+              One hub, five ways to train your chess tactics — pick the one that fits
+              your mood today. All free, forever.
+            </p>
+            <p>
+              Every day brings a fresh Daily Chess Puzzle drawn from real
+              super-grandmaster and World Champion games, so you train on the
+              exact tactics the masters found over the board. The Monthly
+              Focus Challenge is a 7-day guided tactics program with a
+              brand-new themed challenge each day, letting you earn XP,
+              unlock achievements and climb the monthly leaderboard while
+              building a training habit that sticks. For a change of pace,
+              TTT — Puzzle Tic-Tac-Toe — has you solve a puzzle to claim a
+              square and outmanoeuvre your opponent to complete a line, while
+              Bingo has you spot the tactical theme behind each puzzle —
+              fork, pin, skewer, discovered attack and more — to mark off
+              your card. And every day also brings a fresh, bite-sized chess
+              tip that rotates automatically at midnight IST.
+            </p>
+            <Link to="/puzzles-hub" className="mkt-card-cta">
+              Solve today's puzzle →
+            </Link>
+          </div>
         </div>
       </section>
 

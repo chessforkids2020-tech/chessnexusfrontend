@@ -1,14 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Sidebar from './Sidebar';
+import CoachSidebar from './CoachSidebar';
 import Footer from './Footer';
 import './UserLayout.css';
 
 export default function UserLayout({ children, showFooter = true }) {
   const { user } = useAuth();
+  const location = useLocation();
   const [isMobile, setIsMobile] = useState(false);
   const [isLandscape, setIsLandscape] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Inside the coaching workspace, show the dedicated coach sidebar instead of
+  // the main one. Onboarding is excluded — you're not a coach yet there.
+  const inCoachArea = location.pathname.startsWith('/coach/') &&
+    location.pathname !== '/coach/onboarding';
+  const renderSidebar = (onNavigate) =>
+    inCoachArea
+      ? <CoachSidebar onNavigate={onNavigate} />
+      : <Sidebar user={user} onNavigate={onNavigate} />;
 
   // Detect screen size changes
   useEffect(() => {
@@ -38,20 +50,17 @@ export default function UserLayout({ children, showFooter = true }) {
       <div className="user-content-wrapper">
         <>
           {/* Desktop Sidebar or Landscape Mode Sidebar (always visible) */}
-          {(!isMobile || isLandscape) && <Sidebar user={user} />}
-          
+          {(!isMobile || isLandscape) && renderSidebar()}
+
           {/* Mobile Portrait Sidebar Overlay */}
           {isMobile && !isLandscape && isSidebarOpen && (
             <>
-              <div 
+              <div
                 className="sidebar-overlay"
                 onClick={() => setIsSidebarOpen(false)}
               />
               <div className="sidebar-mobile">
-                <Sidebar 
-                  user={user} 
-                  onNavigate={() => setIsSidebarOpen(false)}
-                />
+                {renderSidebar(() => setIsSidebarOpen(false))}
               </div>
             </>
           )}

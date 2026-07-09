@@ -21,11 +21,14 @@ export default function CoachOnboarding() {
     coachCountry: user?.country || '',
     coachType: 'individual',
     academyName: '',
+    socialPlatform: 'facebook', // 'facebook' | 'instagram'
+    socialUsername: '',         // used by the Nexus team to verify the coach
     bio: '',
     specialization: ''
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [agreedTerms, setAgreedTerms] = useState(false);
 
   useEffect(() => {
     // If already a coach, jump straight to dashboard
@@ -41,11 +44,22 @@ export default function CoachOnboarding() {
     setError('');
     if (!form.coachName.trim()) return setError('Please enter your coach name.');
     if (!form.coachCountry) return setError('Please pick your country.');
-    if (form.coachType === 'academy' && !form.academyName.trim()) return setError('Academy name is required.');
+    if (!form.academyName.trim()) return setError('Please enter your academy / brand name.');
+    if (!form.socialUsername.trim()) return setError('Please add your Facebook or Instagram username — the Nexus team uses it to verify you.');
+    if (!agreedTerms) return setError('Please accept the coach terms to continue.');
+
+    // Normalise the social handle: drop a leading @ and any pasted profile URL,
+    // keep just the username the Nexus team will look up.
+    const socialUsername = form.socialUsername
+      .trim()
+      .replace(/^https?:\/\/(www\.)?(facebook|instagram|fb)\.com\//i, '')
+      .replace(/^@/, '')
+      .replace(/[/?#].*$/, '')
+      .slice(0, 80);
 
     setSubmitting(true);
     try {
-      await api.post('/api/coach/onboard', { ...form });
+      await api.post('/api/coach/onboard', { ...form, socialUsername });
       if (refreshUser) await refreshUser();
       navigate('/coach/dashboard', { replace: true });
     } catch (err) {
@@ -64,33 +78,36 @@ export default function CoachOnboarding() {
             <h1 className="coach-onboard-title">Are you a chess coach?</h1>
             <p className="coach-onboard-sub">
               Turn your students into champions. Manage them in one place — assignments,
-              progress tracking, reports, and more.
+              progress tracking, parent reports, attendance, class schedule, and more.
             </p>
             <div className="coach-onboard-perks">
-              <div className="perk">✅ Start with a 30-day free trial</div>
+              <div className="perk">✅ Free forever — no trial, no time limit</div>
               <div className="perk">✅ No card required</div>
-              <div className="perk">✅ Up to 10 students during trial · 100 on the Coach plan</div>
+              <div className="perk">✅ Up to 30 students free</div>
             </div>
 
-            {/* What coaches get free while their coach plan is active. */}
+            {/* Everything a free coach already gets. */}
             <div className="coach-onboard-benefits">
-              <div className="coach-onboard-benefits-title">🎁 Free for active coaches</div>
-              <div className="benefit">📚 Read every Book free — full access when the Nexus book store opens</div>
-              <div className="benefit">♟️ Premium Endgame Mastery — study & play, unlocked free</div>
-              <div className="benefit">⭐ Opening Repertoire Trainer — build & drill lines free</div>
+              <div className="coach-onboard-benefits-title">🎁 Included free, always</div>
+              <div className="benefit">📝 Assignments, courses & the coach library</div>
+              <div className="benefit">📊 Student progress, parent reports & game analysis</div>
+              <div className="benefit">📋 Attendance, payments & class schedule (with Zoom links)</div>
+              <div className="benefit">🏁 Run private Arena Races & Tournaments for your class</div>
+              <div className="benefit">♟️ Premium Endgame Mastery & Opening Repertoire — free for your first 90 days</div>
             </div>
 
-            {/* Nexus Elite — framed as an EXTRA gift on top of the free perks above. */}
+            {/* Paid tiers — just more room and full unlock. */}
             <div className="coach-onboard-elite">
-              <div className="coach-onboard-elite-title">👑 Our extra gift to coaches</div>
+              <div className="coach-onboard-elite-title">📈 Grow when you're ready</div>
               <div className="coach-onboard-elite-note">
-                On top of everything above, here's a little more — creator tools to shape the
-                community, as our thank-you for teaching the game:
+                Start free. Upgrade only when you need more:
               </div>
-              <div className="benefit">🎯 Create your own Monthly Focus challenges</div>
-              <div className="benefit">🏁 Host and run your own Team Races</div>
-              <div className="benefit">🏟️ Launch 3D Arena Tournaments</div>
-              <div className="benefit">🧑‍🏫 ChessNexus Coach — free for 6 months</div>
+              <div className="benefit">🚀 Pro — up to 50 students (₹144/mo)</div>
+              <div className="benefit">👑 Coach — up to 100 students + everything unlocked (₹280/mo): unlimited courses, premium tools forever, Team Races & Monthly Focus</div>
+            </div>
+
+            <div className="coach-onboard-verify-note">
+              🛡️ New coaches are verified by the Nexus team (usually within 12 hours) before adding students — this keeps the community safe for kids.
             </div>
 
             <div className="coach-onboard-actions">
@@ -147,32 +164,54 @@ export default function CoachOnboarding() {
                   <span className="radio-icon">👤</span>
                   <span className="radio-label">Individual coach</span>
                 </label>
-                <label className={`radio-card ${form.coachType === 'academy' ? 'active' : ''}`}>
+                <label className="radio-card is-disabled" title="Academy / institute accounts are coming soon">
                   <input
                     type="radio"
                     name="coachType"
                     value="academy"
-                    checked={form.coachType === 'academy'}
-                    onChange={() => update('coachType', 'academy')}
+                    disabled
                   />
                   <span className="radio-icon">🏛️</span>
                   <span className="radio-label">Academy / institute</span>
+                  <span className="radio-soon">Coming soon</span>
                 </label>
               </div>
             </div>
 
-            {form.coachType === 'academy' && (
-              <label className="field">
-                <span>Academy name *</span>
+            <label className="field">
+              <span>Academy / brand name *</span>
+              <input
+                type="text"
+                value={form.academyName}
+                onChange={e => update('academyName', e.target.value)}
+                placeholder="e.g. Saranya's Chess Academy"
+                required
+              />
+            </label>
+
+            <div className="field">
+              <span>Social profile *</span>
+              <div className="coach-onboard-social">
+                <select
+                  value={form.socialPlatform}
+                  onChange={e => update('socialPlatform', e.target.value)}
+                  className="coach-onboard-social-select"
+                >
+                  <option value="facebook">Facebook</option>
+                  <option value="instagram">Instagram</option>
+                </select>
                 <input
                   type="text"
-                  value={form.academyName}
-                  onChange={e => update('academyName', e.target.value)}
-                  placeholder="e.g. ChessNexus Academy"
+                  value={form.socialUsername}
+                  onChange={e => update('socialUsername', e.target.value)}
+                  placeholder={form.socialPlatform === 'instagram' ? 'your instagram username' : 'your facebook username'}
                   required
                 />
-              </label>
-            )}
+              </div>
+              <div className="coach-onboard-social-hint">
+                The Nexus team uses this to verify you're a real coach. Enter your username or profile handle (not a password).
+              </div>
+            </div>
 
             <label className="field">
               <span>Specialization (optional)</span>
@@ -196,14 +235,27 @@ export default function CoachOnboarding() {
               />
             </label>
 
+            <label className="coach-onboard-terms">
+              <input
+                type="checkbox"
+                checked={agreedTerms}
+                onChange={e => setAgreedTerms(e.target.checked)}
+              />
+              <span>
+                I agree to the ChessNexus coach terms. I confirm I will keep{' '}
+                <strong>only one coach account</strong>. If the Nexus team finds a coach
+                running multiple accounts, that coach may be <strong>removed</strong>.
+              </span>
+            </label>
+
             {error && <div className="form-error">{error}</div>}
 
             <div className="coach-onboard-actions">
               <button type="button" className="btn-ghost" onClick={() => setStep('prompt')} disabled={submitting}>
                 Back
               </button>
-              <button type="submit" className="btn-primary" disabled={submitting}>
-                {submitting ? 'Starting trial…' : 'Start 30-day free trial →'}
+              <button type="submit" className="btn-primary" disabled={submitting || !agreedTerms}>
+                {submitting ? 'Creating…' : 'Create my free coach account →'}
               </button>
             </div>
           </form>

@@ -8,6 +8,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import GameAnalysisModal from './masterGames/GameAnalysisModal';
 import '../pages/MyCoachPortal.css';
 
 export default function StudentCourses() {
@@ -15,6 +16,7 @@ export default function StudentCourses() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [marking, setMarking] = useState('');
+  const [openGameId, setOpenGameId] = useState(null); // master-game lesson modal
 
   const reload = useCallback(async () => {
     try {
@@ -29,7 +31,8 @@ export default function StudentCourses() {
     return () => { alive = false; };
   }, [reload]);
 
-  const openStudy = (studyId) => navigate(`/my-studies/${studyId}`);
+  const openStudy = (studyId, chapterId) =>
+    navigate(chapterId ? `/study/chapter/${studyId}/${chapterId}` : `/my-studies/${studyId}`);
 
   const markStudied = async (courseId, lessonIndex) => {
     setMarking(`${courseId}:${lessonIndex}`);
@@ -64,26 +67,36 @@ export default function StudentCourses() {
           <div className="mcp-lesson-list">
             {course.lessons.map(l => {
               const isVideo = l.kind === 'video';
+              const isMaster = l.kind === 'masterGame';
+              const isEndgame = l.kind === 'endgame';
+              const icon = isVideo ? '🎥' : isMaster ? '♟' : isEndgame ? '🏁' : '📖';
+              const markLabel = isVideo ? '✓ Mark as watched' : (isMaster || isEndgame) ? '✓ Mark as reviewed' : '✓ Mark as studied';
+              // Open the lesson content by kind.
+              const open = () => {
+                if (isMaster) setOpenGameId(l.masterGameId);
+                else if (isEndgame) navigate('/study/endgames');
+                else openStudy(l.studyId, l.chapterId);
+              };
               return (
               <div key={l.lessonIndex} className={`mcp-lesson mcp-lesson-${l.state}`} style={isVideo && (l.state === 'current' || l.state === 'done') ? { flexWrap: 'wrap' } : undefined}>
                 <span className="mcp-lesson-idx">{l.lessonIndex}</span>
-                <span className="mcp-lesson-title">{isVideo ? '🎥' : '📖'} {l.title}</span>
+                <span className="mcp-lesson-title">{icon} {l.title}</span>
                 <span className="mcp-lesson-action">
                   {l.state === 'done' && (
                     <>
                       {isVideo
                         ? <a className="mcp-lesson-review" href={`https://youtu.be/${l.videoId}`} target="_blank" rel="noreferrer">Rewatch ↗</a>
-                        : <button className="mcp-lesson-review" onClick={() => openStudy(l.studyId)}>Review</button>}
+                        : <button className="mcp-lesson-review" onClick={open}>Review</button>}
                       <span className="mcp-lesson-done-tag">✓ studied</span>
                     </>
                   )}
                   {l.state === 'current' && (
                     <>
-                      {!isVideo && <button className="mcp-lesson-play" onClick={() => openStudy(l.studyId)}>▶ Open</button>}
+                      {!isVideo && <button className="mcp-lesson-play" onClick={open}>▶ Open</button>}
                       <button className="mcp-lesson-mark"
                         disabled={marking === `${course.courseId}:${l.lessonIndex}`}
                         onClick={() => markStudied(course.courseId, l.lessonIndex)}>
-                        {marking === `${course.courseId}:${l.lessonIndex}` ? '…' : (isVideo ? '✓ Mark as watched' : '✓ Mark as studied')}
+                        {marking === `${course.courseId}:${l.lessonIndex}` ? '…' : markLabel}
                       </button>
                     </>
                   )}
@@ -107,6 +120,7 @@ export default function StudentCourses() {
           </div>
         </div>
       ))}
+      {openGameId && <GameAnalysisModal gameId={openGameId} onClose={() => setOpenGameId(null)} />}
     </>
   );
 }

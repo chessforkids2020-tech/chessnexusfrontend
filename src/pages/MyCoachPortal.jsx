@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
 import StudentAssignments from '../components/StudentAssignments';
 import StudentCourses from '../components/StudentCourses';
 import CoachChat from '../components/coach/CoachChat';
+import { DAY_NAMES, DAY_FULL, localTimeLabel, localDow, soonestClass, classesOnLocalDate } from '../utils/istSchedule';
 import './MyCoachPortal.css';
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -12,16 +13,26 @@ function curSym(c) { return c === 'USD' ? '$' : c === 'EUR' ? '€' : '₹'; }
 
 
 export default function MyCoachPortal() {
+  const navigate = useNavigate();
   const [tab, setTab] = useState('overview');
   const [coaches, setCoaches] = useState([]);
   const [attendance, setAttendance] = useState({ records: [], stats: null });
   const [payments, setPayments] = useState([]);
   const [assignments, setAssignments] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [holidays, setHolidays] = useState([]); // [{ date:"YYYY-MM-DD", labels:[] }]
   const [cursor, setCursor] = useState(new Date());
+  // Month shown in the Schedule tab calendar (independent of attendance cursor).
+  const [schedMonth, setSchedMonth] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
+  // Day whose classes/holiday are shown in the calendar popover (or null).
+  const [dayDetail, setDayDetail] = useState(null); // { dateLabel, classes:[{cls,time}], holiday }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // Unread coach messages — badged on the Messages tab so the student notices.
   const [msgUnread, setMsgUnread] = useState(0);
+  // Coach activities (private races) + unseen count for the Activities tab badge.
+  const [activities, setActivities] = useState([]);
+  const [activityUnseen, setActivityUnseen] = useState(0);
 
   // Class Payment request form (targets the student's coach via the link).
   const [payForm, setPayForm] = useState({ paidDate: '', fromDate: '', untilDate: '', amount: '' });
@@ -58,10 +69,11 @@ export default function MyCoachPortal() {
     (async () => {
       setLoading(true);
       try {
-        const [coachesRes, paymentsRes, assignmentsRes] = await Promise.all([
+        const [coachesRes, paymentsRes, assignmentsRes, scheduleRes] = await Promise.all([
           api.get('/api/coach-attendance/my/coaches'),
           api.get('/api/coach-attendance/my/payments'),
           api.get('/api/coach/my-assignments'),
+          api.get('/api/coach-schedule/my').catch(() => ({ data: { classes: [], holidays: [] } })),
         ]);
         if (!alive) return;
         // Exclude the ADMIN coach here — admin-added students manage their
@@ -70,6 +82,8 @@ export default function MyCoachPortal() {
         setCoaches((coachesRes.data || []).filter(c => !c.isAdmin));
         setPayments(paymentsRes.data?.payments || []);
         setAssignments(assignmentsRes.data?.assignments || []);
+        setClasses(scheduleRes.data?.classes || []);
+        setHolidays(scheduleRes.data?.holidays || []);
         setError(null);
       } catch {
         if (alive) setError('Could not load your coach records.');
@@ -94,10 +108,42 @@ export default function MyCoachPortal() {
     return () => { alive = false; clearInterval(id); };
   }, []);
 
+  // Poll coach activities (private races) for the Activities tab + its badge.
+  const loadActivities = async () => {
+    try {
+      const res = await api.get('/api/coach-arena/my');
+      setActivities(res.data?.activities || []);
+      setActivityUnseen(res.data?.unseen || 0);
+    } catch { /* ignore */ }
+  };
+  useEffect(() => {
+    let alive = true;
+    const run = async () => { if (alive) await loadActivities(); };
+    run();
+    const id = setInterval(run, 30000);
+    return () => { alive = false; clearInterval(id); };
+  }, []);
+
   // Opening the Messages tab marks threads read → clear the badge.
   useEffect(() => {
     if (tab === 'messages') setMsgUnread(0);
   }, [tab]);
+
+  // Opening the Activities tab marks them seen → clear the badge.
+  useEffect(() => {
+    if (tab === 'activities' && activityUnseen > 0) {
+      api.post('/api/coach-arena/my/seen').then(() => setActivityUnseen(0)).catch(() => {});
+    }
+  }, [tab]); // eslint-disable-line
+
+  // Close the calendar day popover on tab or month change, and on Escape.
+  useEffect(() => { setDayDetail(null); }, [tab, schedMonth]);
+  useEffect(() => {
+    if (!dayDetail) return;
+    const onKey = (e) => { if (e.key === 'Escape') setDayDetail(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [dayDetail]);
 
   // Attendance reloads whenever the month cursor changes
   useEffect(() => {
@@ -124,6 +170,24 @@ export default function MyCoachPortal() {
   const fmtDate = (s) => new Date(s).toLocaleDateString('en-IN', {
     timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric',
   });
+
+  // Soonest upcoming class, skipping any that land on a holiday date.
+  const holidaySet = new Set(holidays.map(h => h.date));
+  const nextClass = () => {
+    const pad = (n) => String(n).padStart(2, '0');
+    let from = Date.now();
+    // Advance past holiday-day matches (bounded to avoid an infinite loop).
+    for (let guard = 0; guard < 60; guard++) {
+      const s = soonestClass(classes, from);
+      if (!s) return null;
+      const iso = `${s.when.getFullYear()}-${pad(s.when.getMonth() + 1)}-${pad(s.when.getDate())}`;
+      if (!holidaySet.has(iso)) return s;
+      // Advance past this occurrence AND the 60s "happening now" tolerance in
+      // nextOccurrence, else we'd re-match the same instant and loop.
+      from = s.when.getTime() + 2 * 60000; // skip this occurrence, look further
+    }
+    return null;
+  };
 
   const statusClass = (st) =>
     st === 'Present' ? 'mcp-badge mcp-present'
@@ -168,6 +232,8 @@ export default function MyCoachPortal() {
       <div className="mcp-tabs">
         {[
           { id: 'overview', label: '📊 Overview' },
+          { id: 'schedule', label: '📅 Schedule' },
+          { id: 'activities', label: '🎯 Activities' },
           { id: 'messages', label: '💬 Messages' },
           { id: 'courses', label: '📚 My Syllabus' },
           { id: 'assignments', label: '📋 Assignments' },
@@ -184,9 +250,237 @@ export default function MyCoachPortal() {
             {t.id === 'messages' && msgUnread > 0 && (
               <span className="mcp-tab-badge">{msgUnread > 99 ? '99+' : msgUnread}</span>
             )}
+            {t.id === 'activities' && activityUnseen > 0 && (
+              <span className="mcp-tab-badge">{activityUnseen > 99 ? '99+' : activityUnseen}</span>
+            )}
           </button>
         ))}
       </div>
+
+      {/* ── Activities (private coach races) ── */}
+      {tab === 'activities' && (
+        <div className="mcp-section">
+          {activities.length === 0 ? (
+            <div className="mcp-empty" style={{ padding: '32px 20px' }}>
+              <div className="mcp-empty-icon">🎯</div>
+              <h2 className="mcp-empty-title">No activities right now</h2>
+              <p className="mcp-empty-desc">When your coach starts a class race, it shows up here for you to join.</p>
+            </div>
+          ) : (
+            <div className="mcp-class-grid">
+              {activities.map(a => {
+                const isTournament = a.type === 'arena_tournament';
+                const live = a.status === 'active' || a.status === 'pairing_stopped';
+                const joinTournament = async () => {
+                  try {
+                    await api.post('/api/arenatournament/join', { tournamentId: a._id });
+                    navigate(`/arenatournament/live/${a._id}`);
+                  } catch (err) {
+                    alert(err.response?.data?.error || 'Could not join this tournament.');
+                  }
+                };
+                const joinRace = async () => {
+                  try {
+                    await api.post('/api/arena/join', { roomId: a.roomId });
+                    navigate(`/arena/waiting/${a.roomId}`);
+                  } catch (err) {
+                    alert(err.response?.data?.error || 'Could not join this race.');
+                  }
+                };
+                return (
+                  <div key={a._id} className="mcp-class-card">
+                    <div className="mcp-class-title">{isTournament ? '🏆' : '🏁'} {a.name || (isTournament ? 'Class Tournament' : 'Class Race')}</div>
+                    <div className="mcp-class-coach">{isTournament ? 'Arena Tournament' : `${a.topic} · ${a.timeLimit} min`}</div>
+                    <div className="mcp-class-time" style={{ marginTop: 6 }}>
+                      {live
+                        ? <span style={{ color: '#f87171', fontWeight: 700 }}>🔴 Live now</span>
+                        : <span style={{ color: '#fcd34d', fontWeight: 700 }}>⏳ Waiting to start</span>}
+                      {!a.seen && <span className="mcp-class-daychip" style={{ marginLeft: 8 }}>NEW</span>}
+                    </div>
+                    <button
+                      className="mcp-join-btn"
+                      style={{ marginTop: 10 }}
+                      onClick={isTournament ? joinTournament : joinRace}
+                    >
+                      {live ? 'Join now' : 'Enter lobby'}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Schedule (coach's weekly class calendar) ── */}
+      {tab === 'schedule' && (
+        <div className="mcp-section">
+          {classes.length === 0 && holidays.length === 0 ? (
+            <div className="mcp-empty" style={{ padding: '32px 20px' }}>
+              <div className="mcp-empty-icon">📅</div>
+              <h2 className="mcp-empty-title">No classes scheduled yet</h2>
+              <p className="mcp-empty-desc">When your coach sets your class days and times, they'll show up here.</p>
+            </div>
+          ) : (
+            <>
+              {(() => {
+                const next = nextClass();
+                if (!next) return null;
+                const when = next.when.toLocaleString([], { weekday: 'long', hour: 'numeric', minute: '2-digit' });
+                return (
+                  <div className="mcp-nextclass">
+                    <div>
+                      <div className="mcp-nextclass-label">⏰ Next class</div>
+                      <div className="mcp-nextclass-when">{when} — {next.item.title} · {next.item.coachName}</div>
+                    </div>
+                    {next.item.meetingLink && (
+                      <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer" className="mcp-join-btn">
+                        Join
+                      </a>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* Monthly calendar — class days glow brighter; holidays are marked */}
+              {(() => {
+                const y = schedMonth.getFullYear();
+                const m = schedMonth.getMonth();
+                const first = new Date(y, m, 1);
+                const daysInMonth = new Date(y, m + 1, 0).getDate();
+                const lead = first.getDay(); // blank cells before day 1
+                const today = new Date();
+                const isToday = (d) => today.getFullYear() === y && today.getMonth() === m && today.getDate() === d;
+                const pad = (n) => String(n).padStart(2, '0');
+                const holidayMap = {};
+                for (const h of holidays) holidayMap[h.date] = h;
+                const cells = [];
+                for (let i = 0; i < lead; i++) cells.push(null);
+                for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+                return (
+                  <div className="mcp-cal">
+                    <div className="mcp-cal-head">
+                      <button className="mcp-cal-nav" onClick={() => setSchedMonth(new Date(y, m - 1, 1))} aria-label="Previous month">‹</button>
+                      <div className="mcp-cal-title">{MONTHS[m]} {y}</div>
+                      <button className="mcp-cal-nav" onClick={() => setSchedMonth(new Date(y, m + 1, 1))} aria-label="Next month">›</button>
+                    </div>
+                    <div className="mcp-cal-grid">
+                      {DAY_NAMES.map(dn => <div key={dn} className="mcp-cal-dow">{dn}</div>)}
+                      {cells.map((d, i) => {
+                        if (d === null) return <div key={`b${i}`} className="mcp-cal-cell mcp-cal-empty" />;
+                        const iso = `${y}-${pad(m + 1)}-${pad(d)}`;
+                        const holiday = holidayMap[iso];
+                        // On a holiday, the academy is closed — suppress class markers.
+                        const dayClasses = holiday ? [] : classesOnLocalDate(classes, new Date(y, m, d));
+                        const has = dayClasses.length > 0;
+                        const clickable = !!holiday || has;
+                        const cls = `mcp-cal-cell ${holiday ? 'mcp-cal-holiday' : has ? 'mcp-cal-has' : ''} ${isToday(d) ? 'mcp-cal-today' : ''} ${clickable ? 'mcp-cal-clickable' : ''}`;
+                        const dateLabel = new Date(y, m, d).toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long' });
+                        const openDetail = () => setDayDetail({ dateLabel, classes: dayClasses, holiday });
+                        const inner = (
+                          <>
+                            <div className="mcp-cal-date">{d}</div>
+                            {holiday ? (
+                              <div className="mcp-cal-holtag">🎉 Holiday</div>
+                            ) : (
+                              <>
+                                {dayClasses.slice(0, 2).map((dc, j) => (
+                                  <div key={j} className="mcp-cal-class">{dc.time}</div>
+                                ))}
+                                {dayClasses.length > 2 && <div className="mcp-cal-more">+{dayClasses.length - 2}</div>}
+                              </>
+                            )}
+                          </>
+                        );
+                        return clickable ? (
+                          <button key={d} type="button" className={cls} onClick={openDetail} aria-label={`${dateLabel}${holiday ? ' — holiday' : `, ${dayClasses.length} class${dayClasses.length === 1 ? '' : 'es'}`}`}>
+                            {inner}
+                          </button>
+                        ) : (
+                          <div key={d} className={cls}>{inner}</div>
+                        );
+                      })}
+                    </div>
+                    <div className="mcp-cal-legend">
+                      <span className="mcp-cal-legend-item"><span className="mcp-cal-swatch mcp-cal-swatch-class" /> Class day</span>
+                      <span className="mcp-cal-legend-item"><span className="mcp-cal-swatch mcp-cal-swatch-holiday" /> Holiday (no class)</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Day detail popover — opens when a class/holiday day is tapped */}
+              {dayDetail && (
+                <div className="mcp-daypop-overlay" onClick={() => setDayDetail(null)}>
+                  <div className="mcp-daypop" onClick={e => e.stopPropagation()}>
+                    <div className="mcp-daypop-head">
+                      <div className="mcp-daypop-date">{dayDetail.dateLabel}</div>
+                      <button className="mcp-daypop-x" onClick={() => setDayDetail(null)} aria-label="Close">✕</button>
+                    </div>
+                    {dayDetail.holiday ? (
+                      <div className="mcp-daypop-holiday">
+                        <div className="mcp-daypop-holicon">🎉</div>
+                        <div className="mcp-daypop-holtitle">Holiday — no class</div>
+                        {(dayDetail.holiday.labels || []).length > 0 && (
+                          <div className="mcp-daypop-hollabels">
+                            {dayDetail.holiday.labels.map((l, j) => <div key={j}>{l}</div>)}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="mcp-daypop-list">
+                        {dayDetail.classes.map((dc, j) => (
+                          <div key={j} className="mcp-daypop-class">
+                            <div className="mcp-daypop-class-main">
+                              <div className="mcp-daypop-class-title">{dc.cls.title}</div>
+                              <div className="mcp-daypop-class-meta">
+                                {dc.cls.coachName} · 🕒 {dc.time} · {dc.cls.durationMinutes} min
+                              </div>
+                            </div>
+                            {dc.cls.meetingLink ? (
+                              <a href={dc.cls.meetingLink} target="_blank" rel="noopener noreferrer" className="mcp-join-btn">
+                                Join
+                              </a>
+                            ) : (
+                              <span className="mcp-daypop-nolink">No link</span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="mcp-class-grid">
+                {classes.map(c => (
+                  <div key={c._id} className="mcp-class-card">
+                    <div className="mcp-class-title">{c.title}</div>
+                    <div className="mcp-class-coach">{c.coachName}</div>
+                    <div className="mcp-class-days">
+                      {[...new Set((c.days || []).map(d => localDow(d, c.timeUTC)))].map(ld => (
+                        <span key={ld} className="mcp-class-daychip" title={DAY_FULL[ld]}>{DAY_NAMES[ld]}</span>
+                      ))}
+                    </div>
+                    <div className="mcp-class-time">
+                      🕒 {localTimeLabel((c.days || [])[0] ?? 1, c.timeUTC)} <span className="mcp-class-tz">your time</span>
+                      <span className="mcp-class-dur"> · {c.durationMinutes} min</span>
+                    </div>
+                    {c.meetingLink ? (
+                      <a href={c.meetingLink} target="_blank" rel="noopener noreferrer" className="mcp-join-btn" style={{ marginTop: 10 }}>
+                        🔗 Join class
+                      </a>
+                    ) : (
+                      <div className="mcp-class-nolink">No meeting link yet</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <p className="mcp-class-foot">All times shown in your local timezone.</p>
+            </>
+          )}
+        </div>
+      )}
 
       {/* ── Messages (coach ↔ student chat, read + reply only) ── */}
       {tab === 'messages' && (
@@ -261,6 +555,29 @@ export default function MyCoachPortal() {
       {/* ── Overview ── */}
       {tab === 'overview' && (
         <div className="mcp-section">
+          {/* Next class hint (from the coach's schedule) */}
+          {(() => {
+            const next = nextClass();
+            if (!next) return null;
+            const when = next.when.toLocaleString([], { weekday: 'long', hour: 'numeric', minute: '2-digit' });
+            return (
+              <div className="mcp-nextclass" style={{ marginBottom: 20 }}>
+                <div>
+                  <div className="mcp-nextclass-label">⏰ Next class</div>
+                  <div className="mcp-nextclass-when">{when} — {next.item.title} · {next.item.coachName}</div>
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {next.item.meetingLink && (
+                    <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer" className="mcp-join-btn">Join</a>
+                  )}
+                  <button className="mcp-join-btn" style={{ background: 'transparent', border: '1px solid rgba(139,92,246,0.5)', color: '#c4b5fd' }} onClick={() => setTab('schedule')}>
+                    Full schedule
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Assignment stats for the selected month */}
           {(() => {
             const inCursorMonth = (d) => {

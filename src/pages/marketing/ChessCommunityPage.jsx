@@ -3,41 +3,6 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 
 const CANONICAL = "/chess-community";
 
-const MODES = [
-  {
-    icon: "🟢",
-    title: "Friends & Activity Feed",
-    body:
-      "See who's online, follow your friends and watch a live activity feed of race finishes, podium results and personal bests as they happen across the community.",
-    appPath: "/social",
-    cta: "Open the social hub",
-  },
-  {
-    icon: "🏰",
-    title: "Clubs & Communities",
-    body:
-      "Join clubs to play, learn and compete alongside players who share your interests. Build your own community or find one that fits you.",
-    appPath: "/clubs",
-    cta: "Explore clubs",
-  },
-  {
-    icon: "💬",
-    title: "Chat & Connect",
-    body:
-      "Message friends, talk chess and stay connected between games. The social hub keeps the whole community in touch.",
-    appPath: "/social/chat",
-    cta: "Start chatting",
-  },
-  {
-    icon: "🏅",
-    title: "Leaderboards & Recognition",
-    body:
-      "Climb weekly leaderboards, get recognised as a top racer or top inviter, and earn community tiers like Mentor and Ambassador as you grow.",
-    appPath: "/best-racers",
-    cta: "See the leaderboard",
-  },
-];
-
 const FAQ = [
   {
     q: "Is there a chess community I can join?",
@@ -93,22 +58,31 @@ export default function ChessCommunityPage() {
       }}
     >
       <section className="mkt-section">
-        <h2>Ways to connect</h2>
-        <p className="mkt-section-lead">
-          Friends, clubs, chat and recognition — everything that makes playing
-          here feel like a community.
-        </p>
-        <div className="mkt-grid">
-          {MODES.map((m) => (
-            <div className="mkt-card" key={m.title}>
-              <div className="mkt-card-icon">{m.icon}</div>
-              <h3>{m.title}</h3>
-              <p>{m.body}</p>
-              <Link to={m.appPath} className="mkt-card-cta">
-                {m.cta} →
-              </Link>
-            </div>
-          ))}
+        <div className="mkt-split mkt-split-reverse">
+          <div className="mkt-split-media">
+            <img src="/features/chessclub.png" alt="Chess Community — friends, clubs and leaderboards" loading="lazy" width="220" height="220" />
+          </div>
+          <div className="mkt-split-text">
+            <h2>Ways to connect</h2>
+            <p>
+              Friends, clubs, chat and recognition — everything that makes playing
+              here feel like a community.
+            </p>
+            <p>
+              See who's online, follow your friends and watch a live
+              activity feed of race finishes, podium results and personal
+              bests as they happen across the community, or join clubs to
+              play, learn and compete alongside players who share your
+              interests — build your own community or find one that fits
+              you. Message friends and talk chess between games in the
+              social hub's chat, then climb weekly leaderboards, get
+              recognised as a top racer or top inviter, and earn community
+              tiers like Mentor and Ambassador as you grow.
+            </p>
+            <Link to="/social" className="mkt-card-cta">
+              Open the social hub →
+            </Link>
+          </div>
         </div>
       </section>
 

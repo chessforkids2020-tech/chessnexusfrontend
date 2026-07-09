@@ -2,11 +2,19 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
+import { analyzeGame } from '../components/masterGames/analyzeGame';
 // Reuse the arena games CSS — all .atg-* classes live there
 import './arenatournament/ArenaTournamentLeaderboard.css';
 import './UserGamesPage.css';
 
 const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+
+// Move-classification display (matches the Master Games analysis scheme).
+const CLASS_META = {
+  blunder:    { symbol: '??', color: '#ef4444', label: 'Blunder' },
+  mistake:    { symbol: '?',  color: '#f59e0b', label: 'Mistake' },
+  inaccuracy: { symbol: '?!', color: '#eab308', label: 'Inaccuracy' },
+};
 
 const formatResult = (result) => {
   if (result === 'white_won') return 'White Won';
@@ -57,6 +65,12 @@ export default function UserGamesPage() {
   const [currentId, setCurrentId] = useState(null);
   const [boardWidth, setBoardWidth] = useState(480);
 
+  // Client-side (WASM) analysis of the open game. `classByPly` maps ply → class.
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analyzeProgress, setAnalyzeProgress] = useState(0); // 0..100
+  const [classByPly, setClassByPly] = useState(null); // Map<number, 'blunder'|...> | null
+  const [analyzeError, setAnalyzeError] = useState('');
+
   /* ── fetch ── */
   useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL || '';
@@ -95,13 +109,46 @@ export default function UserGamesPage() {
     let id = rid;
     while (ns[id]?.childIds.length > 0) id = ns[id].childIds[0];
     setCurrentId(id);
+    // Reset any previous analysis.
+    setClassByPly(null);
+    setAnalyzeProgress(0);
+    setAnalyzeError('');
+    setAnalyzing(false);
   };
   const closeGame = useCallback(() => {
     setSelectedGame(null);
     setNodes({});
     setRootId(null);
     setCurrentId(null);
+    setClassByPly(null);
+    setAnalyzing(false);
   }, []);
+
+  // Run Stockfish WASM over the open game — entirely in the browser, no server.
+  const runAnalysis = async () => {
+    if (!selectedGame || analyzing) return;
+    const moves = selectedGame.moves || [];
+    if (moves.length === 0) { setAnalyzeError('No moves to analyze.'); return; }
+    setAnalyzing(true);
+    setAnalyzeError('');
+    setAnalyzeProgress(0);
+    try {
+      const { analysis } = await analyzeGame(moves, {
+        depth: 14,
+        onProgress: (done, total) => setAnalyzeProgress(Math.round((done / total) * 100)),
+      });
+      const map = new Map();
+      for (const a of analysis) {
+        if (a.classification) map.set(a.ply, a.classification);
+      }
+      setClassByPly(map);
+    } catch (err) {
+      console.error('Game analysis failed:', err);
+      setAnalyzeError('Analysis failed. Try again.');
+    } finally {
+      setAnalyzing(false);
+    }
+  };
 
   /* ── navigation ── */
   const navStart = () => setCurrentId(rootId);
@@ -168,11 +215,15 @@ export default function UserGamesPage() {
       if (isWhite || prevHadVar) {
         elems.push(<span key={`num-${nodeId}`} className="atg-var-num">{moveNum}{isWhite ? '.' : '...'}</span>);
       }
+      const cls = (nd.mainLine && classByPly) ? classByPly.get(nd.ply) : null;
+      const meta = cls ? CLASS_META[cls] : null;
       elems.push(
         <button key={`mv-${nodeId}`} data-nid={nodeId}
           className={`atg-analysis-btn${isActive ? ' atg-analysis-btn--active' : ''}${!nd.mainLine ? ' atg-analysis-btn--var' : ''}`}
+          style={meta ? { color: meta.color, fontWeight: 700 } : undefined}
+          title={meta ? meta.label : undefined}
           onClick={() => setCurrentId(nodeId)}>
-          {nd.san}
+          {nd.san}{meta ? meta.symbol : ''}
         </button>
       );
       const vars = nd.childIds.slice(1);
@@ -348,6 +399,38 @@ export default function UserGamesPage() {
                     </svg>
                   </button>
                 </div>
+                {/* ── Client-side (WASM) analysis control + tally ── */}
+                <div className="upg-analyze-bar">
+                  {!classByPly && !analyzing && (
+                    <button type="button" className="upg-analyze-btn" onClick={runAnalysis}>
+                      ⚙ Analyze game
+                    </button>
+                  )}
+                  {analyzing && (
+                    <div className="upg-analyze-progress">
+                      <span>Analyzing… {analyzeProgress}%</span>
+                      <div className="upg-analyze-track"><div className="upg-analyze-fill" style={{ width: `${analyzeProgress}%` }} /></div>
+                    </div>
+                  )}
+                  {classByPly && !analyzing && (() => {
+                    let b = 0, m = 0, i = 0;
+                    for (const c of classByPly.values()) {
+                      if (c === 'blunder') b++; else if (c === 'mistake') m++; else if (c === 'inaccuracy') i++;
+                    }
+                    return (
+                      <div className="upg-analyze-tally">
+                        <span style={{ color: CLASS_META.blunder.color }}>?? {b} blunder{b === 1 ? '' : 's'}</span>
+                        <span style={{ color: CLASS_META.mistake.color }}>? {m} mistake{m === 1 ? '' : 's'}</span>
+                        <span style={{ color: CLASS_META.inaccuracy.color }}>?! {i} inaccurac{i === 1 ? 'y' : 'ies'}</span>
+                      </div>
+                    );
+                  })()}
+                  {analyzeError && <span className="upg-analyze-err">{analyzeError}</span>}
+                </div>
+                {classByPly && (
+                  <div className="upg-analyze-note">Analyzed in your browser (depth 14). Device-limited — catches real blunders & mistakes.</div>
+                )}
+
                 <div className="atg-notation-panel">
                   <div className="atg-notation-scroll">
                     {!rootId || !nodes[rootId]?.childIds.length ? (

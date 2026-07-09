@@ -7,6 +7,8 @@ export default function ArenaTournamentCreate() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const clubId = searchParams.get('clubId') || '';
+  // Coach mode: a private tournament for the coach's own students only.
+  const coachMode = searchParams.get('coach') === '1';
   const [linkToClub, setLinkToClub] = useState(Boolean(clubId));
   const [tournamentType, setTournamentType] = useState('standard');
   const [teamCount, setTeamCount] = useState(2);
@@ -64,7 +66,8 @@ export default function ArenaTournamentCreate() {
         description: formData.description,
         createdInTimezone: userTimezone,
         tournamentType,
-        ...(clubId && linkToClub ? { clubId } : {})
+        ...(coachMode ? { coachPrivate: true } : {}),
+        ...(!coachMode && clubId && linkToClub ? { clubId } : {})
       };
 
       if (!isMarathon) {
@@ -82,8 +85,14 @@ export default function ArenaTournamentCreate() {
       const response = await api.post('/api/arenatournament/create', payload);
 
       if (response.data.success) {
-        alert(`Tournament created! Join code: ${response.data.tournament.joinCode}`);
-        navigate('/arenatournament');
+        if (coachMode) {
+          // Coach → their own no-live-board spectator page. Students see it in
+          // their Activities tab automatically (no join code to share).
+          navigate(`/coach/arena-tournament/${response.data.tournament._id}`);
+        } else {
+          alert(`Tournament created! Join code: ${response.data.tournament.joinCode}`);
+          navigate('/arenatournament');
+        }
       }
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create tournament');

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import CoachChatFab from '../../components/coach/CoachChatFab';
+import InlineBoardEditor from '../../components/PositionEditor/InlineBoardEditor';
 import './CoachDashboard.css';
 import './CoachOnboarding.css';
 import './CoachStudentDetail.css';
@@ -36,9 +37,21 @@ const RUSH_TIME_OPTIONS = [
 ];
 
 export default function CoachAssignments() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [assignments, setAssignments] = useState([]);
   const [students, setStudents] = useState([]);
+  const [groups, setGroups] = useState([]); // named batches, for one-click assign
+  const [templates, setTemplates] = useState([]); // coach's saved reusable templates
+  const [templateMax, setTemplateMax] = useState(10);
+  const [subscribed, setSubscribed] = useState(true); // subscribed coaches skip free-tier caps
+  const FREE_MAX_BLUNDER_GAMES = 3;
+  // Premium endgame picker (fen_solution assignments; subscribed coaches only).
+  const [egPremium, setEgPremium] = useState(null); // { fam: [picks] }
+  const [egFam, setEgFam] = useState('');
+  const [library, setLibrary] = useState([]);     // admin blunder library (read-only)
+  const [savingTpl, setSavingTpl] = useState(false);
+  const [tplMsg, setTplMsg] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -88,22 +101,28 @@ export default function CoachAssignments() {
   const loadAll = async () => {
     setLoading(true);
     try {
-      const [a, s, st, rt] = await Promise.all([
+      const [a, s, st, rt, g, tpl, lib, status] = await Promise.all([
         api.get('/api/coach/assignments'),
         api.get('/api/coach/students'),
         api.get('/api/testpuzzle/studies'),
-        api.get('/api/public/racer/topics').catch(() => ({ data: [] }))
+        api.get('/api/public/racer/topics').catch(() => ({ data: [] })),
+        api.get('/api/coach/groups').catch(() => ({ data: { groups: [] } })),
+        api.get('/api/coach/assignment-templates').catch(() => ({ data: { templates: [] } })),
+        api.get('/api/coach/blunder-library').catch(() => ({ data: { library: [] } })),
+        api.get('/api/coach/status').catch(() => ({ data: {} }))
       ]);
       setAssignments(a.data?.assignments || []);
       setStudents(s.data?.students || []);
       setStudies(Array.isArray(st.data) ? st.data : []);
       setRushTopics(Array.isArray(rt.data) ? rt.data : []);
+      setGroups(g.data?.groups || []);
+      setTemplates(tpl.data?.templates || []);
+      setTemplateMax(tpl.data?.max || 10);
+      setLibrary(lib.data?.library || []);
+      const reason = status.data?.access?.reason;
+      setSubscribed(!!status.data?.isElite || reason === 'paid' || reason === 'privileged' || reason === 'elite_free');
       setError('');
     } catch (err) {
-      if (err.response?.status === 402) {
-        navigate('/coach/subscription?expired=1');
-        return;
-      }
       setError(err.response?.data?.message || 'Failed to load assignments.');
     } finally {
       setLoading(false);
@@ -142,6 +161,146 @@ export default function CoachAssignments() {
     setForm(prev => ({ ...prev, studentIds: students.map(s => s.studentId?._id).filter(Boolean) }));
   };
   const clearStudents = () => setForm(prev => ({ ...prev, studentIds: [] }));
+  // Add a whole batch to the current selection (union). Intersect with the
+  // visible roster so a since-removed group member never shows as "selected".
+  const applyBatch = (groupId) => {
+    if (!groupId) return;
+    const g = groups.find(x => String(x._id) === String(groupId));
+    if (!g) return;
+    const roster = new Set(students.map(s => String(s.studentId?._id)).filter(Boolean));
+    const ids = (g.studentIds || []).map(String).filter(id => roster.has(id));
+    setForm(prev => ({ ...prev, studentIds: [...new Set([...prev.studentIds, ...ids])] }));
+  };
+
+  // Build the pgnTask/fenTask from the CURRENT form (same as the create flow),
+  // for saving as a template. Returns {pgnTask} or {fenTask} or {error}.
+  const buildTaskFromForm = () => {
+    if (form.assignmentType === 'custom') {
+      const games = (form.pgnGames || []).map(g => ({
+        pgn: g.pgn.trim(),
+        blunders: (g.blunders || []).filter(b => b.move.trim()).map(b => ({
+          move: b.move.trim(), betterMove: b.betterMove.trim(), explanation: b.explanation.trim()
+        }))
+      })).filter(g => g.pgn && g.blunders.length > 0);
+      if (games.length === 0) return { error: 'Add at least one PGN with a blunder answer first.' };
+      return { pgnTask: { findTarget: Number(form.pgnFindTarget) || 1, games } };
+    }
+    if (form.assignmentType === 'fen_solution') {
+      const positions = (form.fenPositions || []).map(p => ({
+        fen: (p.fen || '').trim(), solution: (p.solution || '').trim(),
+        userMoveCount: Math.max(1, Number(p.userMoveCount) || 1), tag: (p.tag || '').trim()
+      })).filter(p => p.fen);
+      if (positions.length === 0) return { error: 'Add at least one position first.' };
+      return { fenTask: { engineToleranceCp: Number(form.fenTolerance) || 80, engineDepth: 12, positions } };
+    }
+    return { error: 'This assignment type cannot be saved.' };
+  };
+
+  const saveAsTemplate = async () => {
+    setTplMsg('');
+    if (!form.title.trim()) { setCreateErr('Give the assignment a title before saving it as a template.'); return; }
+    const built = buildTaskFromForm();
+    if (built.error) { setCreateErr(built.error); return; }
+    setSavingTpl(true);
+    try {
+      await api.post('/api/coach/assignment-templates', {
+        assignmentType: form.assignmentType,
+        title: form.title, description: form.description,
+        ...built
+      });
+      setTplMsg('Saved to your templates.');
+      const r = await api.get('/api/coach/assignment-templates');
+      setTemplates(r.data?.templates || []);
+    } catch (err) {
+      setCreateErr(err.response?.data?.message || 'Could not save template.');
+    } finally {
+      setSavingTpl(false);
+    }
+  };
+
+  const deleteTemplate = async (id) => {
+    try {
+      await api.delete(`/api/coach/assignment-templates/${id}`);
+      setTemplates(prev => prev.filter(t => t._id !== id));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Could not delete template.');
+    }
+  };
+
+  // Load a saved template into the form (coach then picks batch + due date).
+  const applyTemplate = (tpl) => {
+    if (!tpl) return;
+    if (tpl.assignmentType === 'custom') {
+      setForm(prev => ({
+        ...prev,
+        assignmentType: 'custom',
+        title: tpl.title || prev.title,
+        description: tpl.description || '',
+        pgnFindTarget: tpl.pgnTask?.findTarget || 1,
+        pgnGames: (tpl.pgnTask?.games || []).map(g => ({
+          pgn: g.pgn || '',
+          blunders: (g.blunders || []).map(b => ({ move: b.move || '', betterMove: b.betterMove || '', explanation: b.explanation || '' }))
+        }))
+      }));
+    } else if (tpl.assignmentType === 'fen_solution') {
+      setForm(prev => ({
+        ...prev,
+        assignmentType: 'fen_solution',
+        title: tpl.title || prev.title,
+        description: tpl.description || '',
+        fenTolerance: tpl.fenTask?.engineToleranceCp || 80,
+        fenPositions: (tpl.fenTask?.positions || []).map(p => ({
+          fen: p.fen || '', solution: p.solution || '', userMoveCount: p.userMoveCount || 1, tag: p.tag || ''
+        }))
+      }));
+    }
+    setCreateErr('');
+  };
+
+  // Load an admin blunder-library SET (multiple games) into the form as a
+  // custom blunder task — one pgnGames entry per game in the set.
+  const applyLibraryItem = (item) => {
+    if (!item) return;
+    if (item.locked) { setCreateErr('That set is Premium — subscribe to use built-in premium content.'); return; }
+    const games = (item.games || []).map(g => ({
+      pgn: g.pgn || '',
+      blunders: (g.blunders || []).map(b => ({ move: b.move || '', betterMove: b.betterMove || '', explanation: b.explanation || '' }))
+    }));
+    setForm(prev => ({
+      ...prev,
+      assignmentType: 'custom',
+      title: item.title || prev.title,
+      pgnFindTarget: item.blunderCount || 1,
+      pgnGames: games.length > 0 ? games : prev.pgnGames
+    }));
+    setCreateErr('');
+  };
+
+  // Load a saved single position (fen/endgame) into the form as a fen_solution task.
+  const applySavedFen = (item) => {
+    if (!item?.fen) return;
+    setForm(prev => ({
+      ...prev,
+      assignmentType: 'fen_solution',
+      title: item.title || prev.title,
+      fenTolerance: 80,
+      fenPositions: [{ fen: item.fen, solution: item.solution || '', userMoveCount: item.userMoveCount || 1, tag: item.tag || '' }],
+    }));
+    setCreateErr('');
+  };
+
+  // Handle a "Reuse" hand-off from the Library page (router state). Prefill the
+  // form, open the create modal, then clear the state so a refresh doesn't repeat.
+  useEffect(() => {
+    const reuse = location.state?.reuse;
+    if (!reuse) return;
+    if (reuse.kind === 'template') applyTemplate(reuse.template);
+    else if (reuse.kind === 'library') applyLibraryItem(reuse.item);
+    else if (reuse.kind === 'savedFen') applySavedFen(reuse.item);
+    setShowCreate(true);
+    navigate(location.pathname, { replace: true, state: {} });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state]);
 
   // ── PGN "find the blunders" builder helpers ──
   const setGames = (games) => setForm(prev => ({ ...prev, pgnGames: games }));
@@ -153,7 +312,26 @@ export default function CoachAssignments() {
   const updateBlunder = (gi, bi, field, val) => setGames(form.pgnGames.map((g, i) => i === gi ? { ...g, blunders: g.blunders.map((b, j) => j === bi ? { ...b, [field]: val } : b) } : g));
 
   // ── "Play vs Stockfish" (fen_solution) builder helpers ──
+  // Index of the position whose visual board editor is open (null = none).
+  const [fenEditorOpen, setFenEditorOpen] = useState(null);
   const setFenPositions = (positions) => setForm(prev => ({ ...prev, fenPositions: positions }));
+  // Load admin premium endgame picks (subscribed coaches only), grouped by family.
+  const loadPremiumEndgames = async () => {
+    if (egPremium) return egPremium;
+    try {
+      const r = await api.get('/api/endgame-trainer/positions');
+      const fams = r.data?.families || {};
+      setEgPremium(fams);
+      return fams;
+    } catch { setEgPremium({}); return {}; }
+  };
+  // Append a premium endgame position (by FEN) as a new fen_solution position.
+  const addPremiumFen = (pick) => {
+    if (!pick?.fen) return;
+    const label = pick.title || (pick.white || pick.black ? `${pick.white || 'White'} vs ${pick.black || 'Black'}` : 'Premium endgame');
+    const positions = form.fenPositions.filter(p => String(p.fen || '').trim());
+    setFenPositions([...positions, { fen: pick.fen, solution: '', userMoveCount: 1, tag: label.slice(0, 80) }]);
+  };
   const addFenPosition = () => setFenPositions([...form.fenPositions, { fen: '', solution: '', userMoveCount: 1, tag: '' }]);
   const removeFenPosition = (i) => setFenPositions(form.fenPositions.filter((_, j) => j !== i));
   const updateFenPosition = (i, field, val) => setFenPositions(form.fenPositions.map((p, j) => j === i ? { ...p, [field]: val } : p));
@@ -812,6 +990,67 @@ export default function CoachAssignments() {
                 </div>
               )}
 
+              {/* ── Reuse bar: load a saved template or the admin blunder library,
+                     and save the current task as a template (custom/fen only) ── */}
+              {(form.assignmentType === 'custom' || form.assignmentType === 'fen_solution') && (
+                <div className="ca-reuse-bar">
+                  <div className="ca-reuse-row">
+                    <label className="field" style={{ flex: 1, minWidth: 200 }}>
+                      <span>Start from a saved template or the built-in library</span>
+                      <select
+                        value=""
+                        onChange={e => {
+                          const [kind, id] = e.target.value.split(':');
+                          if (kind === 'tpl') applyTemplate(templates.find(t => t._id === id));
+                          else if (kind === 'lib') applyLibraryItem(library.find(l => l._id === id));
+                          e.target.value = '';
+                        }}
+                      >
+                        <option value="">＋ Load a template or library game…</option>
+                        {templates.length > 0 && (
+                          <optgroup label="My templates">
+                            {templates.map(t => (
+                              <option key={t._id} value={`tpl:${t._id}`}>
+                                {t.assignmentType === 'custom' ? '🔎' : '♟'} {t.title}
+                              </option>
+                            ))}
+                          </optgroup>
+                        )}
+                        {library.length > 0 && (
+                          <optgroup label="Blunder library (built-in)">
+                            {library.map(l => (
+                              <option key={l._id} value={`lib:${l._id}`} disabled={l.locked}>
+                                {l.locked ? '🔒' : '🔎'} {l.title}{l.premium ? ' 💎' : ''} · {l.gameCount} game{l.gameCount === 1 ? '' : 's'}, {l.blunderCount} blunder{l.blunderCount === 1 ? '' : 's'}{l.locked ? ' — Subscribe to use' : ''}
+                              </option>
+                            ))}
+                          </optgroup>
+                        )}
+                      </select>
+                    </label>
+                    <button
+                      type="button"
+                      className="btn-ghost"
+                      onClick={saveAsTemplate}
+                      disabled={savingTpl || templates.length >= templateMax}
+                      title={templates.length >= templateMax ? `Template limit reached (${templateMax})` : 'Save this task to reuse later'}
+                    >
+                      {savingTpl ? 'Saving…' : `💾 Save as template (${templates.length}/${templateMax})`}
+                    </button>
+                  </div>
+                  {tplMsg && <div className="ca-reuse-msg">✅ {tplMsg}</div>}
+                  {templates.length > 0 && (
+                    <div className="ca-reuse-list">
+                      {templates.map(t => (
+                        <span key={t._id} className="ca-reuse-chip">
+                          {t.assignmentType === 'custom' ? '🔎' : '♟'} {t.title}
+                          <button type="button" onClick={() => deleteTemplate(t._id)} title="Delete template">✕</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Find the blunders (custom) — PGN games + blunder answers */}
               {form.assignmentType === 'custom' && (
                 <div className="ca-pgn-builder">
@@ -855,7 +1094,14 @@ export default function CoachAssignments() {
                       <button type="button" className="ca-link-add" onClick={() => addBlunder(gi)}>+ Add blunder</button>
                     </div>
                   ))}
-                  <button type="button" className="ca-link-add" onClick={addGame}>+ Add another game</button>
+                  {subscribed || form.pgnGames.length < FREE_MAX_BLUNDER_GAMES ? (
+                    <button type="button" className="ca-link-add" onClick={addGame}>+ Add another game</button>
+                  ) : (
+                    <p className="ca-muted" style={{ margin: '6px 0 0', fontSize: 12 }}>
+                      Free plan allows up to {FREE_MAX_BLUNDER_GAMES} games per blunder assignment.{' '}
+                      <a href="/coach/subscription">Subscribe</a> to add more.
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -885,12 +1131,40 @@ export default function CoachAssignments() {
                       </div>
                       <label className="field">
                         <span>FEN *</span>
-                        <input
-                          value={p.fen}
-                          onChange={e => updateFenPosition(i, 'fen', e.target.value)}
-                          placeholder="r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
-                        />
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
+                          <input
+                            style={{ flex: 1 }}
+                            value={p.fen}
+                            onChange={e => updateFenPosition(i, 'fen', e.target.value)}
+                            placeholder="r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setFenEditorOpen(fenEditorOpen === i ? null : i)}
+                            title="Set up the position on a board instead of typing a FEN"
+                            style={{
+                              whiteSpace: 'nowrap',
+                              padding: '0 14px',
+                              borderRadius: 8,
+                              cursor: 'pointer',
+                              fontSize: 13,
+                              fontWeight: 600,
+                              background: fenEditorOpen === i ? 'rgba(239,68,68,0.12)' : 'rgba(99,102,241,0.15)',
+                              border: `1px solid ${fenEditorOpen === i ? 'rgba(239,68,68,0.4)' : 'rgba(99,102,241,0.4)'}`,
+                              color: fenEditorOpen === i ? '#f87171' : '#a5b4fc',
+                            }}
+                          >
+                            {fenEditorOpen === i ? '✕ Close editor' : '🎨 Board editor'}
+                          </button>
+                        </div>
                       </label>
+                      {fenEditorOpen === i && (
+                        <InlineBoardEditor
+                          initialFen={p.fen}
+                          onApply={fen => { updateFenPosition(i, 'fen', fen); setFenEditorOpen(null); }}
+                          onCancel={() => setFenEditorOpen(null)}
+                        />
+                      )}
                       <div className="ca-blunder-row">
                         <label className="field" style={{ flex: 1 }}>
                           <span>Good moves the student must play</span>
@@ -920,6 +1194,39 @@ export default function CoachAssignments() {
                     </div>
                   ))}
                   <button type="button" className="ca-link-add" onClick={addFenPosition}>+ Add another position</button>
+
+                  {/* Premium endgame picker — paid coaches pull admin trainer positions. */}
+                  {subscribed ? (
+                    <div className="ca-eg-premium" style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>⭐ Add from premium endgames</div>
+                      <select
+                        value={egFam}
+                        onChange={async e => { const f = e.target.value; setEgFam(f); await loadPremiumEndgames(); }}
+                        style={{ maxWidth: 280 }}
+                      >
+                        <option value="">Pick an endgame type…</option>
+                        {['pawn','knight','bishop','bishop_knight','rook','queen','queen_rook','other_mixed'].map(k => (
+                          <option key={k} value={k}>{k.replace('_', ' + ')}</option>
+                        ))}
+                      </select>
+                      {egFam && egPremium && (
+                        (egPremium[egFam] || []).length > 0 ? (
+                          <div style={{ maxHeight: 200, overflowY: 'auto', marginTop: 6 }}>
+                            {(egPremium[egFam] || []).map((p) => (
+                              <div key={p._id} className="ca-blunder-row" style={{ alignItems: 'center', justifyContent: 'space-between', padding: '4px 0' }}>
+                                <span style={{ fontSize: 12.5 }}>{p.title || (p.white || p.black ? `${p.white || 'White'} vs ${p.black || 'Black'}` : 'Position')}</span>
+                                <button type="button" className="ca-link-add" onClick={() => addPremiumFen(p)}>+ Add</button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : <p className="ca-muted" style={{ fontSize: 12, marginTop: 6 }}>No premium positions in this type.</p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="ca-muted" style={{ fontSize: 12, marginTop: 10 }}>
+                      ⭐ <a href="/coach/subscription">Subscribe</a> to add positions from the premium endgame library.
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -948,6 +1255,19 @@ export default function CoachAssignments() {
                 <div className="ca-student-controls">
                   <button type="button" className="btn-ghost" onClick={selectAllStudents}>Select all</button>
                   <button type="button" className="btn-ghost" onClick={clearStudents}>Clear</button>
+                  {groups.length > 0 && (
+                    <select
+                      className="btn-ghost"
+                      value=""
+                      onChange={e => { applyBatch(e.target.value); e.target.value = ''; }}
+                      title="Add all students in a batch"
+                    >
+                      <option value="">＋ Add a batch…</option>
+                      {groups.map(g => (
+                        <option key={g._id} value={g._id}>{g.name} ({g.memberCount})</option>
+                      ))}
+                    </select>
+                  )}
                   <span className="ca-selected-count">{form.studentIds.length} selected</span>
                 </div>
                 <div className="ca-student-list">

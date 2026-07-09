@@ -1221,6 +1221,7 @@ function AdminDashboard() {
           <button style={styles.secondaryBtn} onClick={openArenaCreateModal}>🏆 New Arena Tournament</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/studies')}>📚 Study Management</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/monthly-focus')}>🎯 Monthly Focus</button>
+          <button style={styles.secondaryBtn} onClick={() => nav('/admin/blunder-library')}>🔎 Blunder Library</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/team-race')}>👥 Team Race</button>
           <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/reports')}>
             🚩 Reports{renderNavBadge(badgeCounts.reports)}

@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
 import socket from '../socket';
 import soundManager from '../utils/soundManager';
+import { linkify } from '../utils/linkify';
 import './Chat.css';
 
 const API = import.meta.env.VITE_API_URL;
@@ -601,7 +602,7 @@ const Chat = () => {
               messages.map((msg, index) => (
                 <div key={msg._id || index} className={`message ${isSender(msg) ? 'sent' : 'received'}`}>
                   <div className="message-sender">{!isSender(msg) && getSenderName(msg.sender)}</div>
-                  <div className="message-content" title={msg.content}>{msg.content}</div>
+                  <div className="message-content" title={msg.content}>{linkify(msg.content)}</div>
                   <div className="message-time">{fmtMsgTime(msg.createdAt)}</div>
                 </div>
               ))

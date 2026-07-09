@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import api from '../../api';
 import socket from '../../socket';
 import { useAuth } from '../../contexts/AuthContext';
+import { linkify } from '../../utils/linkify';
 import './CoachChat.css';
 
 // Format a message time as "5 Jul 2026, 2:30 PM" (date + month + year + time).
@@ -279,7 +280,7 @@ export default function CoachChat({ mode = 'student' }) {
                     {!mine && selected.type === 'group' && (
                       <div className="cchat-msg-sender">{m.sender?.displayName || m.sender?.username || ''}</div>
                     )}
-                    <div className="cchat-bubble">{m.content}</div>
+                    <div className="cchat-bubble">{linkify(m.content)}</div>
                     <div className="cchat-msg-time">{fmtMsgTime(m.createdAt)}</div>
                   </div>
                 );

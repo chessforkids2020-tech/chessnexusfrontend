@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import GameReplay from '../../components/GameReplay';
+import UserAvatar from '../../components/UserAvatar';
+import ArenaGameReplayModal from '../../components/ArenaGameReplayModal';
 // Reuse the SAME detailed report cards the student's "Analyze My Games" page
 // renders, so the coach sees an identical deep report (no drift).
 import {
@@ -13,6 +15,8 @@ import './CoachOnboarding.css';
 import './CoachStudentDetail.css';
 
 function fmt(n) { return n != null ? Number(n).toLocaleString() : '—'; }
+// Chess ratings are plain numbers — never thousands-separated (1200, not 1,200).
+function fmtRating(n) { return n != null ? String(Math.round(Number(n))) : '—'; }
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—'; }
 function fmtTime(secs) {
   if (!secs) return '—';
@@ -29,6 +33,8 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [arenaGamePopup, setArenaGamePopup] = useState(null); // clicked arena game to replay
+  const [activityTab, setActivityTab] = useState('races'); // races | arena | studies | assignments
 
   // ── Game analysis (deep Stockfish report on the student's last 25 games) ──
   const [analysis, setAnalysis] = useState(null);      // result object when done
@@ -42,6 +48,44 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
   const [notesSaved, setNotesSaved] = useState('');
   const [savingNotes, setSavingNotes] = useState(false);
   useEffect(() => { setNotes(data?.link?.notes || ''); }, [data]);
+
+  // Parent progress report sharing (copy the private link / open it in a new tab).
+  const [shareMsg, setShareMsg] = useState('');
+  const resolveReportUrl = async () => {
+    const r = await api.get(`/api/coach/students/${studentLinkId}/report-token`);
+    return `${window.location.origin}/progress/${r.data.token}`;
+  };
+  const copyReportLink = async () => {
+    setShareMsg('Generating link…');
+    try {
+      const url = await resolveReportUrl();
+      try {
+        await navigator.clipboard.writeText(url);
+        setShareMsg('✓ Link copied — send it to the parent');
+      } catch {
+        window.prompt('Copy this progress link and send it to the parent:', url);
+        setShareMsg('');
+      }
+    } catch {
+      setShareMsg('Could not generate link — try again');
+    } finally {
+      setTimeout(() => setShareMsg(''), 2600);
+    }
+  };
+  const openReport = async () => {
+    setShareMsg('Opening report…');
+    // Open the tab synchronously (before the await) so popup blockers don't stop it.
+    const tab = window.open('', '_blank');
+    try {
+      const url = await resolveReportUrl();
+      if (tab) tab.location = url; else window.open(url, '_blank', 'noopener');
+      setShareMsg('');
+    } catch {
+      if (tab) tab.close();
+      setShareMsg('Could not open report — try again');
+      setTimeout(() => setShareMsg(''), 2600);
+    }
+  };
   const saveNotes = async () => {
     setSavingNotes(true); setNotesSaved('');
     try {
@@ -136,9 +180,12 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
 
       {/* ── Header ─────────────────── */}
       <div className="csd-header">
-        <div className="csd-avatar">
-          {(link?.studentName || student?.displayName || student?.username || '?').charAt(0).toUpperCase()}
-        </div>
+        <UserAvatar
+          user={student}
+          displayName={link?.studentName || student?.displayName || student?.username}
+          size={64}
+          className="csd-avatar"
+        />
         <div className="csd-meta">
           <h1>{link?.studentName || student?.displayName || student?.username || 'Unnamed student'}</h1>
           <p>
@@ -177,39 +224,31 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           </p>
 
           {/* Share a private, read-only progress report with this student's parent.
-              Fetches an unguessable token so the link can't be guessed from a name. */}
-          <button
-            type="button"
-            className="csd-share-progress"
-            title="Copy a private progress link to send to this student's parent"
-            onClick={async (e) => {
-              const btn = e.currentTarget;
-              const prev = btn.textContent;
-              btn.textContent = 'Generating link…';
-              btn.disabled = true;
-              try {
-                const r = await api.get(`/api/coach/students/${studentLinkId}/report-token`);
-                const url = `${window.location.origin}/progress/${r.data.token}`;
-                try {
-                  await navigator.clipboard.writeText(url);
-                  btn.textContent = '✓ Link copied — send it to the parent';
-                } catch {
-                  window.prompt('Copy this progress link and send it to the parent:', url);
-                  btn.textContent = prev;
-                }
-              } catch {
-                btn.textContent = 'Could not generate link — try again';
-              } finally {
-                setTimeout(() => { btn.textContent = prev; btn.disabled = false; }, 2600);
-              }
-            }}
-          >
-            🔗 Send progress to parent
-          </button>
+              Two actions: copy the private link, or open the report in a new tab.
+              The token is unguessable so the link can't be derived from a name. */}
+          <div className="csd-share-row">
+            <button
+              type="button"
+              className="csd-share-progress"
+              title="Copy a private progress link to send to this student's parent"
+              onClick={copyReportLink}
+            >
+              📋 Copy progress link
+            </button>
+            <button
+              type="button"
+              className="csd-share-progress csd-share-open"
+              title="Open the parent's progress report in a new tab"
+              onClick={openReport}
+            >
+              ↗ Open report
+            </button>
+          </div>
+          {shareMsg && <div className="csd-share-msg">{shareMsg}</div>}
         </div>
         <div className="csd-rating">
-          <span>Live rating</span>
-          <strong>{fmt(student?.liveRating)}</strong>
+          <span>Puzzle rating</span>
+          <strong>{fmtRating(student?.liveRating)}</strong>
         </div>
       </div>
 
@@ -235,19 +274,19 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
         <div className="coach-stat-row">
           <div className="coach-stat-card">
             <div className="stat-label">♟ Bullet</div>
-            <div className="stat-value">{fmt(gameRatings.bullet)}</div>
+            <div className="stat-value">{fmtRating(gameRatings.bullet)}</div>
           </div>
           <div className="coach-stat-card">
             <div className="stat-label">⚡ Blitz</div>
-            <div className="stat-value">{fmt(gameRatings.blitz)}</div>
+            <div className="stat-value">{fmtRating(gameRatings.blitz)}</div>
           </div>
           <div className="coach-stat-card">
             <div className="stat-label">⏱ Rapid</div>
-            <div className="stat-value">{fmt(gameRatings.rapid)}</div>
+            <div className="stat-value">{fmtRating(gameRatings.rapid)}</div>
           </div>
           <div className="coach-stat-card">
             <div className="stat-label">♚ Classical</div>
-            <div className="stat-value">{fmt(gameRatings.classical)}</div>
+            <div className="stat-value">{fmtRating(gameRatings.classical)}</div>
           </div>
         </div>
       )}
@@ -271,6 +310,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           <div className="stat-value">{fmt(student?.highestArenaRaceScore)}</div>
         </div>
       </div>
+
 
       {/* ── Game analysis (deep Stockfish report) ───── */}
       <div className="coach-section">
@@ -317,28 +357,77 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
 
       {/* ── Daily activity chart ───── */}
       <div className="coach-section">
-        <div className="coach-section-head"><h2>Daily activity (last 30 days)</h2></div>
+        <div className="coach-section-head">
+          <h2>⏱️ Time on app (last 30 days)</h2>
+        </div>
+        <p className="csd-chart-desc">Minutes {student?.displayName || student?.username || 'the student'} spent practising each day. Taller bar = more time that day.</p>
         {activity.length === 0 ? (
           <div className="coach-empty">No activity recorded yet.</div>
-        ) : (
-          <div className="csd-chart">
-            {activity.map((a, i) => {
-              const h = Math.max(4, ((a.totalSeconds || 0) / maxSeconds) * 100);
-              const mins = Math.round((a.totalSeconds || 0) / 60);
-              return (
-                <div className="csd-bar-wrap" key={i} title={`${fmtDate(a.date)}: ${mins} min`}>
-                  <div className="csd-bar" style={{ height: `${h}%` }} />
+        ) : (() => {
+          const totalMins = Math.round(activity.reduce((s, a) => s + (a.totalSeconds || 0), 0) / 60);
+          const activeDays = activity.filter(a => (a.totalSeconds || 0) > 0).length;
+          const peakMins = Math.round(maxSeconds / 60);
+          const first = activity[0]?.date;
+          const mid = activity[Math.floor(activity.length / 2)]?.date;
+          const last = activity[activity.length - 1]?.date;
+          return (
+            <>
+              <div className="csd-chart-summary">
+                <span><strong>{totalMins}</strong> min total</span>
+                <span><strong>{activeDays}</strong> active day{activeDays === 1 ? '' : 's'}</span>
+                <span>Best day: <strong>{peakMins}</strong> min</span>
+              </div>
+              <div className="csd-chart-plot">
+                {/* Y-axis: peak value at top, 0 at bottom */}
+                <div className="csd-chart-yaxis">
+                  <span>{peakMins}m</span>
+                  <span>0</span>
                 </div>
-              );
-            })}
-          </div>
-        )}
+                <div className="csd-chart">
+                  {activity.map((a, i) => {
+                    const mins = Math.round((a.totalSeconds || 0) / 60);
+                    const h = Math.max(mins > 0 ? 6 : 2, ((a.totalSeconds || 0) / maxSeconds) * 100);
+                    return (
+                      <div className="csd-bar-wrap" key={i} title={`${fmtDate(a.date)} · ${mins} min`}>
+                        <div className="csd-bar" style={{ height: `${h}%`, opacity: mins > 0 ? 1 : 0.35 }} />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              {/* X-axis: date range */}
+              <div className="csd-chart-xaxis">
+                <span>{fmtDate(first)}</span>
+                {activity.length > 4 && <span>{fmtDate(mid)}</span>}
+                <span>{fmtDate(last)}</span>
+              </div>
+            </>
+          );
+        })()}
       </div>
 
-      {/* ── Race results ──────────── */}
+      {/* ── Activity (races / arena / studies / assignments) in TABS ── */}
       <div className="coach-section">
-        <div className="coach-section-head"><h2>🏁 Recent races (30 days)</h2></div>
-        {raceResults.length === 0 ? (
+        <div className="csd-tabs">
+          {[
+            { id: 'races', label: '🏁 Races', n: raceResults.length },
+            { id: 'arena', label: '♟ Arena games', n: arenaGames.length },
+            { id: 'studies', label: '📚 Studies', n: testResults.length },
+            { id: 'assignments', label: '📝 Assignments', n: assignments.length },
+          ].map(t => (
+            <button
+              key={t.id}
+              className={`csd-tab ${activityTab === t.id ? 'active' : ''}`}
+              onClick={() => setActivityTab(t.id)}
+            >
+              {t.label}{t.n ? <span className="csd-tab-count">{t.n}</span> : null}
+            </button>
+          ))}
+        </div>
+
+        {/* ── Race results ──────────── */}
+        {activityTab === 'races' && (
+          raceResults.length === 0 ? (
           <div className="coach-empty">No race results in the last 30 days.</div>
         ) : (
           <div className="csd-table-wrap">
@@ -375,13 +464,14 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+        ))}
 
-      {/* ── Arena tournament games ─── */}
-      <div className="coach-section">
-        <div className="coach-section-head"><h2>♟ Arena tournament games (30 days)</h2></div>
-        {arenaGames.length === 0 ? (
+        {/* ── Arena tournament games ─── */}
+        {activityTab === 'arena' && (<>
+          {arenaGames.length > 0 && (
+            <div className="csd-tab-hint">Tap ▶ Watch to replay a game</div>
+          )}
+          {arenaGames.length === 0 ? (
           <div className="coach-empty">No arena games in the last 30 days.</div>
         ) : (
           <div className="csd-table-wrap">
@@ -394,6 +484,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                   <th>Opponent</th>
                   <th>Result</th>
                   <th>Time ctrl</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -409,6 +500,15 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                   else if (g.result === 'black_won') { resultLabel = isWhite ? 'Loss' : 'Win'; resultClass = isWhite ? 'cell-bad' : 'cell-good'; }
                   else if (g.result === 'draw') { resultLabel = 'Draw'; }
                   const tc = g.timeControl ? `${g.timeControl.minutes}+${g.timeControl.increment ?? 0}` : '—';
+                  const watchGame = () => setArenaGamePopup({
+                    moves: Array.isArray(g.moves) ? g.moves : [],
+                    startFen: g.startFen,
+                    finalFen: g.fen,
+                    white: g.whitePlayerDisplayName || g.whitePlayerUsername || 'White',
+                    black: g.blackPlayerDisplayName || g.blackPlayerUsername || 'Black',
+                    result: g.result,
+                    orientation: isWhite ? 'white' : 'black',
+                  });
                   return (
                     <tr key={i}>
                       <td>{fmtDate(g.finishedAt)}</td>
@@ -417,6 +517,11 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                       <td>{opponent}</td>
                       <td className={resultClass}>{resultLabel}</td>
                       <td>{tc}</td>
+                      <td>
+                        <button className="csd-watch-btn" onClick={watchGame} title="Replay this game">
+                          ▶ Watch
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -424,13 +529,12 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
             </table>
           </div>
         )}
-      </div>
+        </>)}
 
-      {/* ── Study / Test results ───── */}
-      <div className="coach-section">
-        <div className="coach-section-head"><h2>📚 Recent study tests (30 days)</h2></div>
-        {testResults.length === 0 ? (
-          <div className="coach-empty">No study tests in the last 30 days.</div>
+        {/* ── Study / Test results ───── */}
+        {activityTab === 'studies' && (
+          testResults.length === 0 ? (
+          <div className="coach-empty">No studies in the last 30 days.</div>
         ) : (
           <div className="csd-table-wrap">
             <table className="csd-table">
@@ -469,16 +573,16 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+        ))}
 
-      {/* ── Assignments ────────────── */}
-      <div className="coach-section">
-        <div className="coach-section-head">
-          <h2>Assignments</h2>
-          {!embedded && <Link to="/coach/assignments" className="btn-ghost">＋ New assignment</Link>}
-        </div>
-        {assignments.length === 0 ? (
+        {/* ── Assignments ────────────── */}
+        {activityTab === 'assignments' && (<>
+          {!embedded && (
+            <div className="csd-tab-hint">
+              <Link to="/coach/assignments" className="btn-ghost">＋ New assignment</Link>
+            </div>
+          )}
+          {assignments.length === 0 ? (
           <div className="coach-empty">No assignments yet for this student.</div>
         ) : (
           <div className="coach-assignment-list">
@@ -505,7 +609,21 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
             })}
           </div>
         )}
+        </>)}
       </div>
+
+      {arenaGamePopup && (
+        <ArenaGameReplayModal
+          moves={arenaGamePopup.moves}
+          startFen={arenaGamePopup.startFen}
+          finalFen={arenaGamePopup.finalFen}
+          white={arenaGamePopup.white}
+          black={arenaGamePopup.black}
+          result={arenaGamePopup.result}
+          orientation={arenaGamePopup.orientation}
+          onClose={() => setArenaGamePopup(null)}
+        />
+      )}
     </div>
   );
 }

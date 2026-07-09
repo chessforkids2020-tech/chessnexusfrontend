@@ -3,41 +3,6 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 
 const CANONICAL = "/chess-tactics-race";
 
-const MODES = [
-  {
-    icon: "⏱️",
-    title: "Timed Puzzle Race",
-    body:
-      "Race against the clock and solve as many chess puzzles as you can before time runs out. Pick a duration — 5, 10 or 15 minutes — and a theme, then chase your best score, streak and accuracy.",
-    appPath: "/arena-race",
-    cta: "Start a race",
-  },
-  {
-    icon: "🎯",
-    title: "Race by Theme",
-    body:
-      "Want to drill a specific tactic? Choose a topic — forks, pins, mating nets and more — and race through a tailored set of puzzles to sharpen exactly the pattern you're working on.",
-    appPath: "/choose-topic",
-    cta: "Pick a theme",
-  },
-  {
-    icon: "🤝",
-    title: "Team Race",
-    body:
-      "Team up and compete together. Team races turn solo tactics practice into a shared challenge where every solve adds to your side's score.",
-    appPath: "/team-race",
-    cta: "Join a team race",
-  },
-  {
-    icon: "🏆",
-    title: "Live Leaderboards",
-    body:
-      "Every race feeds live leaderboards. See how you stack up against other racers this week, track the best racers of all time and climb the rankings.",
-    appPath: "/best-racers",
-    cta: "View best racers",
-  },
-];
-
 const FAQ = [
   {
     q: "What is a chess puzzle race?",
@@ -93,22 +58,31 @@ export default function ChessTacticsRacePage() {
       }}
     >
       <section className="mkt-section">
-        <h2>Ways to race</h2>
-        <p className="mkt-section-lead">
-          Solo sprints, themed drills or team battles — pick your race and get
-          solving.
-        </p>
-        <div className="mkt-grid">
-          {MODES.map((m) => (
-            <div className="mkt-card" key={m.title}>
-              <div className="mkt-card-icon">{m.icon}</div>
-              <h3>{m.title}</h3>
-              <p>{m.body}</p>
-              <Link to={m.appPath} className="mkt-card-cta">
-                {m.cta} →
-              </Link>
-            </div>
-          ))}
+        <div className="mkt-split">
+          <div className="mkt-split-media">
+            <img src="/features/puzzlerace.png" alt="Chess Puzzle Race — timed tactics training" loading="lazy" width="220" height="220" />
+          </div>
+          <div className="mkt-split-text">
+            <h2>Ways to race</h2>
+            <p>
+              Solo sprints, themed drills or team battles — pick your race and get
+              solving.
+            </p>
+            <p>
+              In a Timed Puzzle Race you pick a duration — 5, 10 or 15
+              minutes — and chase your best score, streak and accuracy
+              before the clock runs out. Want to drill a specific pattern
+              instead? Race by theme, choosing a topic like forks, pins or
+              mating nets for a tailored set of puzzles. Team up with a Team
+              Race, where every solve adds to your side's score, turning solo
+              practice into a shared challenge. Every race — solo or team —
+              feeds live leaderboards, so you can see how you stack up this
+              week and track the best racers of all time.
+            </p>
+            <Link to="/arena-race" className="mkt-card-cta">
+              Start a race →
+            </Link>
+          </div>
         </div>
       </section>
 

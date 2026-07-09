@@ -102,7 +102,7 @@ class StockfishService {
   }
 
   async getBestMove(fen, options = {}) {
-    const { depth = 15, moveTime = 1000, multipv = 1 } = options;
+    const { depth = 15, moveTime = 1000, multipv = 1, skill = null } = options;
     
     return new Promise((resolve, reject) => {
       if (!this.ready) {
@@ -188,6 +188,12 @@ class StockfishService {
       // Set position and start analysis
       this.sendCommand('stop'); // Stop any previous
       this.sendCommand(`setoption name MultiPV value ${multipv}`);
+      // Weakening for "play vs Stockfish" difficulty levels. Skill Level 0–20
+      // (lower = weaker / more human blunders). We ALWAYS set it — 20 (full
+      // strength) when skill is null — because the option persists on the shared
+      // worker, so other callers (e.g. game analysis) must not inherit a weak level.
+      const lvl = skill != null ? Math.max(0, Math.min(20, Math.round(skill))) : 20;
+      this.sendCommand(`setoption name Skill Level value ${lvl}`);
       this.sendCommand(`position fen ${fen}`);
       this.sendCommand(`go depth ${depth} movetime ${moveTime}`);
 

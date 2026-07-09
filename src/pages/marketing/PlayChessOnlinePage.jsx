@@ -3,41 +3,6 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 
 const CANONICAL = "/play-chess-online";
 
-const MODES = [
-  {
-    icon: "🌐",
-    title: "Play Live Against People",
-    body:
-      "Challenge other Chess Nexus members to live games and play in real time. Find an opponent, sit down at the board and test your skills against a real person.",
-    appPath: "/play",
-    cta: "Play a live game",
-  },
-  {
-    icon: "🤖",
-    title: "Play vs the Computer",
-    body:
-      "Sharpen up against the Stockfish engine — one of the strongest chess engines in the world. Practise openings, endgames and full games at a level that pushes you.",
-    appPath: "/play/ai",
-    cta: "Play vs Stockfish",
-  },
-  {
-    icon: "📺",
-    title: "Watch Live Games",
-    body:
-      "Spectate live games as they happen, follow the action move by move and learn from how other players handle key positions.",
-    appPath: "/games",
-    cta: "Browse live games",
-  },
-  {
-    icon: "🗂️",
-    title: "Review Your Games",
-    body:
-      "Every game you play is saved to your history. Revisit past games, replay the moves and feed them straight into the analysis tool to learn from your wins and losses.",
-    appPath: "/game-analysis",
-    cta: "Analyse your games",
-  },
-];
-
 const FAQ = [
   {
     q: "Can I play chess online for free?",
@@ -101,21 +66,31 @@ export default function PlayChessOnlinePage() {
       }}
     >
       <section className="mkt-section">
-        <h2>Ways to play</h2>
-        <p className="mkt-section-lead">
-          People or engine, playing or watching — chess your way.
-        </p>
-        <div className="mkt-grid">
-          {MODES.map((m) => (
-            <div className="mkt-card" key={m.title}>
-              <div className="mkt-card-icon">{m.icon}</div>
-              <h3>{m.title}</h3>
-              <p>{m.body}</p>
-              <Link to={m.appPath} className="mkt-card-cta">
-                {m.cta} →
-              </Link>
-            </div>
-          ))}
+        <div className="mkt-split">
+          <div className="mkt-split-media">
+            <img src="/features/playchessonline.png" alt="Play Chess Online — free live games and vs computer" loading="lazy" width="220" height="220" />
+          </div>
+          <div className="mkt-split-text">
+            <h2>Ways to play</h2>
+            <p>
+              People or engine, playing or watching — chess your way.
+            </p>
+            <p>
+              Challenge other Chess Nexus members to live games and test your
+              skills against a real person in real time, or sharpen up
+              against the Stockfish engine — one of the strongest chess
+              engines in the world — to practise openings, endgames and full
+              games at a level that pushes you. Prefer to watch? Spectate
+              live games as they happen and learn from how other players
+              handle key positions. Every game you play is saved to your
+              history too, so you can revisit past games, replay the moves
+              and feed them straight into the analysis tool to learn from
+              your wins and losses.
+            </p>
+            <Link to="/play" className="mkt-card-cta">
+              Play a live game →
+            </Link>
+          </div>
         </div>
       </section>
 

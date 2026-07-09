@@ -3,58 +3,6 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 
 const CANONICAL = "/improve-at-chess";
 
-// What the Nexus Guide actually does — described from the real feature, no hype.
-const MODES = [
-  {
-    icon: "🔎",
-    title: "It studies your own games",
-    body:
-      "The Nexus Guide looks through your recent tournament games — bullet, blitz or rapid — and finds the exact moments you went wrong. No setup, no uploading: it works from the games you already played on Chess Nexus.",
-    appPath: "/dashboard",
-    cta: "Meet your Nexus Guide",
-  },
-  {
-    icon: "🎯",
-    title: "It finds your real weaknesses",
-    body:
-      "Instead of random puzzles, the Guide spots the patterns you keep missing — forks, pins, skewers, hanging pieces, back-rank mates and more — and tells you which one is costing you the most games right now.",
-    appPath: "/dashboard",
-    cta: "See your weak spots",
-  },
-  {
-    icon: "🚨",
-    title: "It warns you about repeat mistakes",
-    body:
-      "When you lose to the same idea again and again, the Guide raises a clear alert — “you've lost to forks 5 times, practise this now” — so you fix the leak that's actually holding your rating back.",
-    appPath: "/dashboard",
-    cta: "Fix your biggest leak",
-  },
-  {
-    icon: "♟️",
-    title: "It replays your exact mistakes",
-    body:
-      "The Guide shows you the real position from your game — “you played Qd4 here, find the better move” — and lets you solve it yourself, with the engine's best line and a plain-English explanation of why it wins.",
-    appPath: "/dashboard",
-    cta: "Redo your mistakes",
-  },
-  {
-    icon: "🏋️",
-    title: "It drills the weakness for you",
-    body:
-      "One tap turns your weakest theme into a focused training set. You practise the exact tactic you're bad at until it sticks — the fastest way to turn a weakness into a strength.",
-    appPath: "/training/healthy-mix",
-    cta: "Train a weakness",
-  },
-  {
-    icon: "📅",
-    title: "It tracks your progress each month",
-    body:
-      "A monthly report shows your blunders per game, mistakes found and your focus area — and compares this month to last, so you can actually see yourself improving over time.",
-    appPath: "/dashboard",
-    cta: "See your progress",
-  },
-];
-
 const FAQ = [
   {
     q: "How do I improve at chess with Chess Nexus?",
@@ -119,23 +67,25 @@ export default function ImproveAtChessPage() {
       }}
     >
       <section className="mkt-section">
-        <h2>A training buddy that knows your game</h2>
-        <p className="mkt-section-lead">
-          The Nexus Guide isn't a wall of engine lines. It talks to you about
-          your own play, points out what to fix first, and turns it into
-          practice — the way a good coach would.
-        </p>
-        <div className="mkt-grid">
-          {MODES.map((m) => (
-            <div className="mkt-card" key={m.title}>
-              <div className="mkt-card-icon">{m.icon}</div>
-              <h3>{m.title}</h3>
-              <p>{m.body}</p>
-              <Link to={m.appPath} className="mkt-card-cta">
-                {m.cta} →
-              </Link>
-            </div>
-          ))}
+        <div className="mkt-split">
+          <div className="mkt-split-media">
+            <img src="/features/improveatchess.png" alt="Improve at Chess — Nexus Guide" loading="lazy" width="220" height="220" />
+          </div>
+          <div className="mkt-split-text">
+            <h2>A training buddy that knows your game</h2>
+            <p>
+              The Nexus Guide isn't a wall of engine lines. It studies your
+              recent games, spots the patterns you keep missing — forks, pins,
+              skewers, hanging pieces, back-rank mates and more — and warns you
+              when you lose to the same idea again and again. It replays your
+              exact mistakes, lets you solve them yourself, drills your
+              weakest theme into a focused practice set, and tracks your
+              progress every month — the way a good coach would.
+            </p>
+            <Link to="/dashboard" className="mkt-card-cta">
+              Meet your Nexus Guide →
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -29,7 +29,7 @@ const totalsLabel = (byCurrency) => {
 };
 
 const PLAN_LABEL = {
-  trial: "Trial", elite_free: "Elite (free)", coach: "Coach",
+  free: "Free", trial: "Trial (legacy)", elite_free: "Elite (free)", coach: "Coach",
   starter: "Starter", pro: "Pro", pro_plus: "Pro+", academy: "Academy",
 };
 
@@ -332,7 +332,8 @@ export default function AdminCoaches() {
         </select>
         <select style={styles.select} value={plan} onChange={(e) => setPlan(e.target.value)}>
           <option value="all">All plans</option>
-          <option value="trial">Trial</option>
+          <option value="free">Free</option>
+          <option value="trial">Trial (legacy)</option>
           <option value="coach">Coach (paid)</option>
           <option value="elite_free">Elite (free)</option>
         </select>
@@ -377,7 +378,7 @@ export default function AdminCoaches() {
                       ? <span style={{ ...styles.tag, color: "#047857", background: "rgba(16,185,129,0.14)" }}>Paid</span>
                       : r.plan === "elite_free"
                         ? <span style={styles.muted}>Free (Elite)</span>
-                        : <span style={styles.muted}>{r.plan === "trial" ? "Trial" : "No"}</span>}
+                        : <span style={styles.muted}>{(r.plan === "trial" || r.plan === "free") ? "Free" : "No"}</span>}
                   </td>
                   <td style={styles.td}>
                     {lp ? <><strong>{money(lp.amount, lp.currency)}</strong><div style={styles.muted}>{fmtDate(lp.paidAt)}</div></> : "—"}

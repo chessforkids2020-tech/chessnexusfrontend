@@ -193,7 +193,36 @@
   color: #f1f5f9;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+/* Per-tier ribbon (Best value / Most popular / All-in-one) + tagline */
+.cs-plan-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  color: #0a0a0a;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.cs-plan-tagline {
+  font-size: 12.5px;
+  color: rgba(226,232,240,0.6);
   margin-bottom: 12px;
+}
+/* Featured tier (Coach = full unlock) gets a stronger frame. */
+.cs-plan.is-featured {
+  border-color: rgba(6,182,212,0.55);
+  box-shadow: 0 12px 40px rgba(6,182,212,0.18);
+}
+.cs-plan.is-featured .cs-plan-badge {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
 }
 
 .cs-plan-price {
@@ -233,7 +262,6 @@
   list-style: none;
   padding: 0;
   margin: 0 0 18px;
-  flex: 1;
 }
 
 .cs-plan-features li {
@@ -249,8 +277,16 @@
 .cs-plan .btn-ghost {
   width: 100%;
   text-align: center;
-  padding: 7px 16px;
+  padding: 0 16px;
   font-size: 13px;
+  /* Pin every plan's button to the bottom at a fixed height so cards with
+     fewer feature lines (e.g. Pro) don't get a giant stretched button. */
+  margin-top: auto;
+  height: 44px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* History */

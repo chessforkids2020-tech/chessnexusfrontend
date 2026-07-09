@@ -3,49 +3,6 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 
 const CANONICAL = "/analyse-my-chess-game";
 
-const MODES = [
-  {
-    icon: "🎯",
-    title: "CAPS Accuracy Score",
-    body:
-      "See how good your moves really were. The CAPS score measures your average centipawn loss per move and grades your play with clear, colour-coded bands — so you instantly know whether a game was clean or full of missed chances.",
-    appPath: "/game-analysis",
-    cta: "Score a game",
-  },
-  {
-    icon: "🚨",
-    title: "Blunder & Mistake Detection",
-    body:
-      "Every blunder, mistake and inaccuracy is flagged move by move, with the better move shown. Stop repeating the same errors by seeing exactly where each game slipped.",
-    appPath: "/game-analysis",
-    cta: "Find your blunders",
-  },
-  {
-    icon: "🔥",
-    title: "Piece Heatmap",
-    body:
-      "A visual breakdown of which pieces cost you the most — pawn, knight, bishop, rook or queen. Discover your weak spots and target them in training.",
-    appPath: "/game-analysis",
-    cta: "View your heatmap",
-  },
-  {
-    icon: "⏳",
-    title: "Time-Pressure Analysis",
-    body:
-      "Compare your accuracy at normal speed versus when the clock is low. If your play falls apart under pressure, you'll see it here — and know what to practise.",
-    appPath: "/game-analysis",
-    cta: "Check time pressure",
-  },
-  {
-    icon: "🏅",
-    title: "Session Badges",
-    body:
-      "Earn badges as you improve — Blunder Buster for a clean game, Endgame Apprentice, Opening Scholar and Precision Master. A fun way to track real progress between sessions.",
-    appPath: "/game-analysis",
-    cta: "Earn badges",
-  },
-];
-
 const FAQ = [
   {
     q: "How can I analyse my chess game for free?",
@@ -101,21 +58,32 @@ export default function AnalyseMyChessGamePage() {
       }}
     >
       <section className="mkt-section">
-        <h2>What your game review shows</h2>
-        <p className="mkt-section-lead">
-          Five clear views of your play, so you know exactly what to work on next.
-        </p>
-        <div className="mkt-grid">
-          {MODES.map((m) => (
-            <div className="mkt-card" key={m.title}>
-              <div className="mkt-card-icon">{m.icon}</div>
-              <h3>{m.title}</h3>
-              <p>{m.body}</p>
-              <Link to={m.appPath} className="mkt-card-cta">
-                {m.cta} →
-              </Link>
-            </div>
-          ))}
+        <div className="mkt-split mkt-split-reverse">
+          <div className="mkt-split-media">
+            <img src="/features/analysis.png" alt="Analyse My Chess Game — free game review" loading="lazy" width="220" height="220" />
+          </div>
+          <div className="mkt-split-text">
+            <h2>What your game review shows</h2>
+            <p>
+              Five clear views of your play, so you know exactly what to work on next.
+            </p>
+            <p>
+              The CAPS accuracy score measures your average centipawn loss per
+              move and grades the game with clear, colour-coded bands, while
+              every blunder, mistake and inaccuracy is flagged move by move
+              with the better move shown, so you stop repeating the same
+              errors. A piece heatmap reveals which pieces — pawn, knight,
+              bishop, rook or queen — cost you the most, and a time-pressure
+              breakdown compares your accuracy at normal speed versus when
+              the clock is low, so you know if you fall apart under
+              pressure. Along the way you earn session badges like Blunder
+              Buster, Endgame Apprentice, Opening Scholar and Precision
+              Master, turning progress tracking into something genuinely fun.
+            </p>
+            <Link to="/game-analysis" className="mkt-card-cta">
+              Score a game →
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -366,3 +366,11 @@
   .cap-tab  { padding: 8px 10px; font-size: 12px; }
   .cap-stat-num { font-size: 24px; }
 }
+
+/* Sortable monthly-summary headers */
+.cap-th-sort { cursor: pointer; user-select: none; white-space: nowrap; }
+.cap-th-sort:hover { color: #06b6d4; }
+
+/* Attendance confirmation log */
+.cap-att-log { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+.cap-att-log-title { margin: 0 0 10px; font-size: 14px; color: #6ee7b7; }

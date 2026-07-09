@@ -91,17 +91,47 @@ function buildChartOptions(data, days) {
   };
 }
 
-function planLabel(plan) {
-  return ({
-    trial: 'Free Trial',
-    elite_free: 'Elite Coach (6 months free)',
-    coach: 'Coach',
-    // Legacy plan ids (still shown correctly for any pre-existing subscribers).
-    starter: 'Starter',
-    pro: 'Pro',
-    pro_plus: 'Pro+',
-    academy: 'Academy'
-  })[plan] || plan;
+// ── Engagement chart: distinct students/day per category ──────────────
+function buildEngagementData(data) {
+  const labels = data.map(d => {
+    const dt = new Date(d.date + 'T00:00:00');
+    return dt.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+  });
+  const cat = (label, key, color) => ({
+    type: 'bar', label, data: data.map(d => d[key] || 0),
+    backgroundColor: color, borderWidth: 0, stack: 'eng', order: 2,
+  });
+  return {
+    labels,
+    datasets: [
+      cat('🧩 Puzzles', 'puzzles', 'rgba(6,182,212,0.8)'),
+      cat('♟ Games', 'games', 'rgba(139,92,246,0.8)'),
+      cat('📚 Studies', 'studies', 'rgba(16,185,129,0.8)'),
+      cat('📝 Assignments', 'assignments', 'rgba(245,158,11,0.8)'),
+    ],
+  };
+}
+
+function buildEngagementOptions(data, days) {
+  return {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { labels: { color: 'rgba(226,232,240,0.65)', font: { size: 11 }, boxWidth: 12 } },
+      tooltip: {
+        backgroundColor: 'rgba(12,12,20,0.95)', titleColor: '#f1f5f9',
+        bodyColor: 'rgba(226,232,240,0.8)', borderColor: 'rgba(255,255,255,0.08)', borderWidth: 1
+      }
+    },
+    scales: {
+      x: { stacked: true, grid: { color: 'rgba(255,255,255,0.04)' },
+        ticks: { color: 'rgba(226,232,240,0.45)', font: { size: 10 }, maxTicksLimit: days <= 7 ? 7 : 10 } },
+      y: { stacked: true, grid: { color: 'rgba(255,255,255,0.06)' },
+        ticks: { color: 'rgba(226,232,240,0.45)', font: { size: 10 }, stepSize: 1 },
+        title: { display: true, text: 'Students', color: 'rgba(226,232,240,0.35)', font: { size: 10 } },
+        beginAtZero: true }
+    }
+  };
 }
 
 export default function CoachDashboard() {
@@ -111,27 +141,33 @@ export default function CoachDashboard() {
   const [students, setStudents] = useState([]);
   const [pending, setPending] = useState([]);
   const [error, setError] = useState('');
+  const [showVerifiedPopup, setShowVerifiedPopup] = useState(false); // one-time verified welcome
 
   // Add student modal
   const [showAdd, setShowAdd] = useState(false);
   const [addForm, setAddForm] = useState({ studentUsername: '', studentName: '', studentEmail: '', groupTag: '', notes: '' });
   const [adding, setAdding] = useState(false);
   const [addError, setAddError] = useState('');
+  const [addErrorUpgrade, setAddErrorUpgrade] = useState(false); // 402: student cap hit — offer plans link
   const [addNotice, setAddNotice] = useState(''); // "request sent" confirmation
 
-  // Activity chart
+  // Activity + engagement charts (share the day-range toggle).
   const [chartData, setChartData] = useState([]);
+  const [engData, setEngData] = useState([]);
   const [chartDays, setChartDays] = useState(30);
   const [chartLoading, setChartLoading] = useState(false);
-  const [showActivityMenu, setShowActivityMenu] = useState(false); // Create Activity dropdown
 
   useEffect(() => {
     let cancelled = false;
     setChartLoading(true);
-    api.get(`/api/coach/activity-chart?days=${chartDays}`)
-      .then(r => { if (!cancelled) setChartData(r.data); })
-      .catch(() => { if (!cancelled) setChartData([]); })
-      .finally(() => { if (!cancelled) setChartLoading(false); });
+    Promise.all([
+      api.get(`/api/coach/activity-chart?days=${chartDays}`).then(r => r.data).catch(() => []),
+      api.get(`/api/coach/engagement-chart?days=${chartDays}`).then(r => r.data).catch(() => []),
+    ]).then(([act, eng]) => {
+      if (cancelled) return;
+      setChartData(act);
+      setEngData(eng);
+    }).finally(() => { if (!cancelled) setChartLoading(false); });
     return () => { cancelled = true; };
   }, [chartDays]); // eslint-disable-line
 
@@ -143,11 +179,9 @@ export default function CoachDashboard() {
         navigate('/coach/onboarding', { replace: true });
         return;
       }
-      if (!status.data?.access?.active) {
-        // Expired — push to subscription page
-        navigate('/coach/subscription?expired=1', { replace: true });
-        return;
-      }
+      // One-time "you're a verified coach" welcome — verified but not yet seen.
+      const cp = status.data?.coachProfile;
+      if (cp?.verified && !cp?.verifiedNoticeSeenAt) setShowVerifiedPopup(true);
       const [dash, studs, pend] = await Promise.all([
         api.get('/api/coach/dashboard'),
         api.get('/api/coach/students'),
@@ -166,9 +200,15 @@ export default function CoachDashboard() {
 
   useEffect(() => { loadAll(); }, []); // eslint-disable-line
 
+  const dismissVerifiedPopup = async () => {
+    setShowVerifiedPopup(false);
+    try { await api.post('/api/coach/verified-notice-seen'); } catch { /* best-effort */ }
+  };
+
   const addStudent = async (e) => {
     e.preventDefault();
     setAddError('');
+    setAddErrorUpgrade(false);
     if (!addForm.studentUsername && !addForm.studentName) {
       setAddError('Enter the student\'s username (preferred) or their name.');
       return;
@@ -182,6 +222,7 @@ export default function CoachDashboard() {
       await loadAll();
     } catch (err) {
       setAddError(err.response?.data?.message || 'Could not add student.');
+      setAddErrorUpgrade(err.response?.status === 402 && !!err.response?.data?.requiresUpgrade);
     } finally {
       setAdding(false);
     }
@@ -215,109 +256,25 @@ export default function CoachDashboard() {
     return <div className="coach-error">⚠️ {error}</div>;
   }
 
-  const access = summary?.access || {};
-  const plan = summary?.plan || 'trial';
   const max = summary?.maxStudents || 0;
   const count = students.length;
   const remaining = Math.max(0, max - count);
-  // Elite/admin users get coaching free for as long as they hold that role —
-  // no trial countdown and no upgrade prompt.
-  const isPrivileged = access.reason === 'privileged';
-  const isEliteFree = access.reason === 'elite_free';
-  const isTrial = !isPrivileged && !isEliteFree && plan === 'trial';
-  const eliteRenewSoon = isEliteFree && access.renewalReminder;
-
-  // "Create activity" launcher. Arena race + arena tournament are open to all
-  // coaches; team race + monthly focus are elite-tier (elite or admin).
-  const isEliteCoach = isPrivileged || isEliteFree || summary?.isElite;
-  const activityOptions = [
-    { label: '🏁 Arena Race', to: '/arena/create', elite: false },
-    { label: '🏆 Arena Tournament', to: '/arenatournament/create', elite: false },
-    { label: '🏃 Team Race', to: '/elite/team-race', elite: true },
-    { label: '🎯 Monthly Focus', to: '/elite-monthly-focus', elite: true },
-  ];
 
   return (
     <div className="coach-dash">
-      {/* ── Top status bar ───────────────────── */}
-      {isEliteFree ? (
-        <div className={`coach-trial-banner ${eliteRenewSoon ? 'trial' : 'paid'}`}>
-          <div>
-            <strong>💎 Elite Coach Access — Free for 6 months</strong>
-            {eliteRenewSoon ? (
-              <> · ⚠️ Your coach membership is about to finish ({access.daysRemaining} day
-                {access.daysRemaining === 1 ? '' : 's'} left). To continue, contact the Nexus team on the Contact Us page.</>
-            ) : (
-              <> · {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'} remaining</>
-            )}
-          </div>
-          {eliteRenewSoon && (
-            <button className="btn-primary" onClick={() => navigate('/contact')}>
-              Contact Nexus team
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className={`coach-trial-banner ${isPrivileged ? 'paid' : isTrial ? 'trial' : 'paid'}`}>
-          <div>
-            <strong>{isPrivileged ? 'Free Coach Access' : planLabel(plan)}</strong>
-            {isPrivileged
-              ? <> · included with your {summary?.isElite ? 'Elite' : 'Admin'} membership</>
-              : isTrial
-                ? <> · {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'} left in your free trial</>
-                : <> · renews in {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'}</>}
-          </div>
-          {!isPrivileged && (
-            <button className="btn-primary" onClick={() => navigate('/coach/subscription')}>
-              {isTrial ? 'Upgrade now' : 'Manage plan'}
-            </button>
-          )}
-        </div>
-      )}
-
       <div className="coach-dash-header">
         <div>
-          <h1>Welcome back, {summary?.coachProfile?.coachName || 'Coach'} 👋</h1>
+          <h1>
+            Welcome Coach, {summary?.coachProfile?.coachName || 'Coach'} 👋
+            {summary?.coachProfile?.verified && (
+              <span className="coach-verified-badge" title="Verified by the Nexus team">🎓 Verified Coach</span>
+            )}
+          </h1>
           <p className="coach-dash-sub">
             {summary?.coachProfile?.coachType === 'academy'
               ? summary?.coachProfile?.academyName
               : `Individual coach · ${summary?.coachProfile?.coachCountry || ''}`}
           </p>
-        </div>
-        <div className="coach-dash-quicklinks">
-          <Link to="/coach/assignments" className="btn-ghost">📝 Assignments</Link>
-          <Link to="/coach/courses" className="btn-ghost">📚 Courses</Link>
-
-          {/* Create activity launcher */}
-          <div className="coach-activity-menu">
-            <button className="btn-ghost" onClick={() => setShowActivityMenu(v => !v)}>
-              ➕ Create Activity ▾
-            </button>
-            {showActivityMenu && (
-              <>
-                <div className="coach-activity-backdrop" onClick={() => setShowActivityMenu(false)} />
-                <div className="coach-activity-dropdown">
-                  {activityOptions.map(opt => {
-                    const locked = opt.elite && !isEliteCoach;
-                    return (
-                      <button
-                        key={opt.to}
-                        className={`coach-activity-item ${locked ? 'locked' : ''}`}
-                        disabled={locked}
-                        title={locked ? 'Available for Elite coaches' : ''}
-                        onClick={() => { if (!locked) { setShowActivityMenu(false); navigate(opt.to); } }}
-                      >
-                        <span>{opt.label}</span>
-                        {locked && <span className="coach-activity-lock">💎 Elite</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              </>
-            )}
-          </div>
-
-          <Link to="/coach/attendance" className="btn-ghost">📋 Attendance</Link>
         </div>
       </div>
 
@@ -335,18 +292,23 @@ export default function CoachDashboard() {
           <Link to="/coach/assignments" className="stat-link">View all →</Link>
         </div>
         <div className="coach-stat-card">
-          <div className="stat-label">Specialization</div>
-          <div className="stat-value" style={{ fontSize: '20px' }}>
-            {summary?.coachProfile?.specialization || 'General'}
+          <div className="stat-label">Activities</div>
+          <div className="stat-value">{summary?.activitiesCount || 0}</div>
+          <Link to="/coach/activities" className="stat-link">View all →</Link>
+        </div>
+        <div className="coach-stat-card">
+          <div className="stat-label">Active students</div>
+          <div className="stat-value">
+            {summary?.activeStudents || 0} <span className="stat-cap">/ {count}</span>
           </div>
-          <div className="stat-foot">{summary?.coachProfile?.coachType === 'academy' ? 'Academy' : 'Individual coach'}</div>
+          <div className="stat-foot">active in the last 7 days</div>
         </div>
       </div>
 
-      {/* ── Activity chart ──────────────────────────── */}
+      {/* ── Class overview: two charts side by side ─────────────── */}
       <div className="coach-section">
         <div className="coach-section-head">
-          <h2>Student activity</h2>
+          <h2>Class overview</h2>
           <div style={{ display: 'flex', gap: 6 }}>
             {[7, 30, 90].map(d => (
               <button
@@ -360,17 +322,39 @@ export default function CoachDashboard() {
             ))}
           </div>
         </div>
-        <div className="coach-chart-wrap">
-          {chartLoading ? (
-            <p className="coach-chart-placeholder">Loading activity data…</p>
-          ) : chartData.every(d => d.present === 0 && d.absent === 0 && d.catchup === 0 && d.studyMins === 0) ? (
-            <p className="coach-chart-placeholder">
-              No activity recorded yet — start marking attendance in the{' '}
-              <Link to="/coach/attendance">Attendance</Link> tab to see trends here.
-            </p>
-          ) : (
-            <Bar data={buildChartData(chartData)} options={buildChartOptions(chartData, chartDays)} />
-          )}
+
+        <div className="coach-charts-grid">
+          {/* Engagement: how many students did each activity */}
+          <div className="coach-chart-panel">
+            <div className="coach-chart-title">🔥 Student engagement <span>· students active per day</span></div>
+            <div className="coach-chart-wrap">
+              {chartLoading ? (
+                <p className="coach-chart-placeholder">Loading…</p>
+              ) : engData.every(d => !d.puzzles && !d.games && !d.studies && !d.assignments) ? (
+                <p className="coach-chart-placeholder">
+                  No student activity yet — puzzles, games, studies and completed assignments will show here.
+                </p>
+              ) : (
+                <Bar data={buildEngagementData(engData)} options={buildEngagementOptions(engData, chartDays)} />
+              )}
+            </div>
+          </div>
+
+          {/* Attendance: present / catch-up / absent */}
+          <div className="coach-chart-panel">
+            <div className="coach-chart-title">📋 Attendance <span>· present · catch-up · absent</span></div>
+            <div className="coach-chart-wrap">
+              {chartLoading ? (
+                <p className="coach-chart-placeholder">Loading…</p>
+              ) : chartData.every(d => d.present === 0 && d.absent === 0 && d.catchup === 0 && d.studyMins === 0) ? (
+                <p className="coach-chart-placeholder">
+                  No attendance yet — mark it in the <Link to="/coach/attendance">Attendance</Link> tab.
+                </p>
+              ) : (
+                <Bar data={buildChartData(chartData)} options={buildChartOptions(chartData, chartDays)} />
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -590,7 +574,12 @@ export default function CoachDashboard() {
                 />
               </label>
 
-              {addError && <div className="form-error">{addError}</div>}
+              {addError && (
+                <div className="form-error">
+                  {addError}
+                  {addErrorUpgrade && <> <Link to="/coach/subscription">View plans →</Link></>}
+                </div>
+              )}
 
               <div className="modal-actions">
                 <button type="button" className="btn-ghost" onClick={() => setShowAdd(false)} disabled={adding}>
@@ -601,6 +590,28 @@ export default function CoachDashboard() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* One-time "you're a verified coach" welcome popup */}
+      {showVerifiedPopup && (
+        <div className="coach-modal-overlay" onClick={dismissVerifiedPopup}>
+          <div className="coach-modal coach-verified-modal" onClick={e => e.stopPropagation()}>
+            <div className="coach-verified-modal-icon">🎓</div>
+            <h2>You're a verified coach!</h2>
+            <p>
+              The Nexus team has verified your account — welcome aboard. You now carry the
+              <strong> 🎓 Verified Coach</strong> badge.
+            </p>
+            <p className="coach-verified-modal-note">
+              ChessNexus is <strong>free for coaches</strong>. To keep it fair for everyone,
+              please make sure you use <strong>only one coach account</strong>. Duplicate
+              coach accounts may be removed.
+            </p>
+            <button className="btn-primary" onClick={dismissVerifiedPopup}>
+              Got it — let's coach ♟️
+            </button>
           </div>
         </div>
       )}

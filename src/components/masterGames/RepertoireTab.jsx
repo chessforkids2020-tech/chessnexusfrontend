@@ -222,13 +222,26 @@ export default function RepertoireTab() {
           🔓 Unlock ({access.xpPrice} XP)
         </button>
         {err && <div style={{ color: C.bad, marginTop: 10, fontSize: 13 }}>{err}</div>}
-        <div style={{ color: C.textFaint, fontSize: 12, marginTop: 10 }}>Supporters and coaches have free access.</div>
+        <div style={{ color: C.textFaint, fontSize: 12, marginTop: 10 }}>Supporters and subscribed coaches have free access. Free coaches get it free for their first 3 months.</div>
       </div>
     );
   }
 
   return (
     <div>
+      {access.coach && !access.coach.subscribed && access.coach.free && (
+        <div style={{
+          margin: '0 0 12px', padding: '9px 13px', borderRadius: 10,
+          background: 'rgba(250,204,21,0.10)', border: '1px solid rgba(250,204,21,0.35)',
+          color: C.text, fontSize: 13, lineHeight: 1.5,
+        }}>
+          🎁 <strong>Coach free trial</strong> — the Repertoire Trainer is free for you for{' '}
+          <strong>{access.coach.daysLeft} more day{access.coach.daysLeft === 1 ? '' : 's'}</strong>.
+          After that, unlocking and saving lines costs XP — or{' '}
+          <a href="/coach/subscription" style={{ color: C.gold, fontWeight: 700 }}>subscribe</a>{' '}
+          to keep it free forever.
+        </div>
+      )}
       <div style={st.modeBar}>
         {[['build', '➕ Build'], ['train', '🎯 Train'], ['check', '🔍 Check my games']].map(([m, label]) => (
           <button key={m} style={{ ...st.mode, ...(mode === m ? st.modeOn : {}) }} onClick={() => setMode(m)}>{label}</button>

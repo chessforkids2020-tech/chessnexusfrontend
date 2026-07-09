@@ -3,7 +3,7 @@
 // student's position through the syllabus (✓ done · ● current · 🔒 locked).
 // Data from GET /api/coach/courses/:courseId/progress.
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import api from '../../api';
 import './CoachDashboard.css';
 import './CourseBuilder.css';
@@ -16,7 +16,6 @@ const CELL = {
 
 export default function CourseProgress() {
   const { courseId } = useParams();
-  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,13 +26,12 @@ export default function CourseProgress() {
         const r = await api.get(`/api/coach/courses/${courseId}/progress`);
         setData(r.data);
       } catch (err) {
-        if (err.response?.status === 402) { navigate('/coach/subscription?expired=1'); return; }
         setError(err.response?.data?.message || 'Could not load progress.');
       } finally {
         setLoading(false);
       }
     })();
-  }, [courseId, navigate]);
+  }, [courseId]);
 
   if (loading) return <div className="coach-dash"><p>Loading…</p></div>;
   if (error) return <div className="coach-dash"><div className="cb-error">{error}</div></div>;

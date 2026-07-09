@@ -3,41 +3,6 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 
 const CANONICAL = "/chess-study";
 
-const MODES = [
-  {
-    icon: "♟️",
-    title: "Basic Study",
-    body:
-      "Master the fundamentals — basic tactics, opening principles, endgame patterns and essential strategies. The perfect starting track for beginners building a solid foundation.",
-    appPath: "/study",
-    cta: "Start Basic Study",
-  },
-  {
-    icon: "⚡",
-    title: "Positional Study",
-    body:
-      "Go deeper into strategy — piece activity, weak squares, pawn structures, outposts and exchanges. An advanced track for players ready to think positionally.",
-    appPath: "/study",
-    cta: "Start Positional Study",
-  },
-  {
-    icon: "📖",
-    title: "Chapter-by-Chapter Lessons",
-    body:
-      "Each study is organised into clear chapters and worked puzzles, so you progress step by step and actually retain what you learn instead of jumping around.",
-    appPath: "/study/learn",
-    cta: "Browse chapters",
-  },
-  {
-    icon: "📝",
-    title: "Timed Tests",
-    body:
-      "Check that it's sticking. Take timed tests on what you've studied, see your results and find out which ideas you've truly mastered and which need another pass.",
-    appPath: "/study/test",
-    cta: "Take a test",
-  },
-];
-
 const FAQ = [
   {
     q: "Can I learn chess for free here?",
@@ -93,22 +58,33 @@ export default function ChessStudyPage() {
       }}
     >
       <section className="mkt-section">
-        <h2>Your study tracks</h2>
-        <p className="mkt-section-lead">
-          Two guided tracks plus structured chapters and tests — learn in the order
-          that builds lasting skill.
-        </p>
-        <div className="mkt-grid">
-          {MODES.map((m) => (
-            <div className="mkt-card" key={m.title}>
-              <div className="mkt-card-icon">{m.icon}</div>
-              <h3>{m.title}</h3>
-              <p>{m.body}</p>
-              <Link to={m.appPath} className="mkt-card-cta">
-                {m.cta} →
-              </Link>
-            </div>
-          ))}
+        <div className="mkt-split">
+          <div className="mkt-split-media">
+            <img src="/features/study.png" alt="Chess Study — free structured chess lessons" loading="lazy" width="220" height="220" />
+          </div>
+          <div className="mkt-split-text">
+            <h2>Your study tracks</h2>
+            <p>
+              Two guided tracks plus structured chapters and tests — learn in the order
+              that builds lasting skill.
+            </p>
+            <p>
+              Basic Study covers the fundamentals — basic tactics, opening
+              principles, endgame patterns and essential strategies — the
+              perfect starting track for beginners building a solid
+              foundation, while Positional Study goes deeper into strategy,
+              covering piece activity, weak squares, pawn structures,
+              outposts and exchanges for players ready to think
+              positionally. Every study is organised into clear chapters and
+              worked puzzles so you progress step by step and actually
+              retain what you learn, and timed tests let you check that it's
+              sticking, showing you which ideas you've truly mastered and
+              which need another pass.
+            </p>
+            <Link to="/study" className="mkt-card-cta">
+              Start Basic Study →
+            </Link>
+          </div>
         </div>
       </section>
 

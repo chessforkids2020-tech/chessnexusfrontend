@@ -613,7 +613,7 @@ export default function HomePage() {
                 <div className="hp-coachpromo-head">
                   <div className="hp-coachpromo-badges">
                     <span className="hp-coachpromo-eyebrow">🎓 For Coaches</span>
-                    <span className="hp-coachpromo-trial-badge">✦ 30-DAY FREE TRIAL</span>
+                    <span className="hp-coachpromo-trial-badge">✦ FREE FOREVER</span>
                   </div>
                   <h2 className="hp-coachpromo-title">
                     Run your entire coaching<br />practice in one place
@@ -642,14 +642,14 @@ export default function HomePage() {
 
                 <div className="hp-coachpromo-foot">
                   <div className="hp-coachpromo-trust">
-                    <span>✓ 30-day free trial</span>
+                    <span>✓ Free — up to 30 students</span>
                     <span className="hp-coachpromo-trust-dot">•</span>
                     <span>✓ No card required</span>
                     <span className="hp-coachpromo-trust-dot">•</span>
-                    <span>✓ Cancel anytime</span>
+                    <span>✓ No time limit</span>
                   </div>
                   <button type="button" className="hp-coachpromo-btn" onClick={goCoach}>
-                    {(user && user.role !== 'guest') ? 'Start your free trial →' : 'Log in to start →'}
+                    {(user && user.role !== 'guest') ? 'Start coaching free →' : 'Log in to start →'}
                   </button>
                 </div>
               </div>

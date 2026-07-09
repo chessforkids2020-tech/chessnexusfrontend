@@ -529,7 +529,7 @@ const StudyOverview = () => {
                     <div style={{ ...styles.statBoxValue, color: studyType.color }}>
                       {studyType.stats.puzzles}
                     </div>
-                    <div style={styles.statBoxLabel}>Puzzles</div>
+                    <div style={styles.statBoxLabel}>Positions</div>
                   </motion.div>
                 </div>
 
