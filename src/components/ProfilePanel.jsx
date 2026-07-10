@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import CoachPromptCard from './CoachPromptCard';
+import FideTitleCard from './FideTitleCard';
 
 // ── Country helpers (image flags render on Windows; Unicode flags don't) ──────
 function getCountryCode(country) {
@@ -441,6 +442,9 @@ export default function ProfilePanel() {
         </div>
       </div>
     </section>
+
+    {/* FIDE title claim — sits directly above the coach card */}
+    <FideTitleCard />
 
     {/* "Are you a chess coach?" prompt — at the very bottom of the Profile tab */}
     <CoachPromptCard />

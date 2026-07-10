@@ -44,6 +44,21 @@
   padding: var(--space-sm);
 }
 
+/* Pages using the slim 60px icon rail (StudyPuzzleSidebar) instead of the 170px
+   main sidebar — e.g. /my-coach, which needs the horizontal room for its tabs.
+   Higher specificity than the rules above, so these win regardless of order. */
+.user-main-content.with-sidebar.narrow-sidebar.desktop,
+.user-main-content.with-sidebar.narrow-sidebar.mobile.landscape {
+  margin-left: 60px;
+  width: calc(100% - 60px);
+}
+
+/* Mobile portrait: the rail collapses to a hamburger only — no offset. */
+.user-main-content.with-sidebar.narrow-sidebar.mobile {
+  margin-left: 0;
+  width: 100%;
+}
+
 /* No sidebar */
 .user-main-content.no-sidebar {
   margin-left: 0;

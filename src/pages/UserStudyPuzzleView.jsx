@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
 import Chessboard from '../components/Chessboard';
+import FenCopyBar from '../components/FenCopyBar';
 import { Chess } from 'chess.js';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,6 +13,34 @@ import FenBar from '../components/PositionEditor/FenBar';
 import { useAnalysisTree } from '../hooks/useAnalysisTree';
 import AnalysisMoveTree from '../components/AnalysisMoveTree';
 import SolutionText from '../components/SolutionText';
+
+// Shared look for the inline "annotate this position" editor (creator only).
+const metaInputStyle = {
+  width: '100%',
+  boxSizing: 'border-box',
+  background: 'rgba(0,0,0,0.35)',
+  border: '1px solid rgba(255,255,255,0.15)',
+  borderRadius: 8,
+  color: '#e2e8f0',
+  padding: '10px 12px',
+  fontSize: 13,
+  lineHeight: 1.6,
+  outline: 'none',
+  resize: 'vertical',
+  fontFamily: 'inherit',
+};
+
+const metaBtnStyle = (primary, busy) => ({
+  padding: '8px 16px',
+  borderRadius: 8,
+  fontSize: 13,
+  fontWeight: 600,
+  cursor: busy ? 'default' : 'pointer',
+  opacity: busy ? 0.6 : 1,
+  border: primary ? 'none' : '1px solid rgba(255,255,255,0.18)',
+  background: primary ? 'linear-gradient(135deg,#059669,#047857)' : 'rgba(255,255,255,0.06)',
+  color: primary ? '#fff' : '#cbd5e1',
+});
 
 const UserStudyPuzzleView = () => {
   const { id, chapterId } = useParams();
@@ -53,6 +82,14 @@ const UserStudyPuzzleView = () => {
   const [posSolution, setPosSolution] = useState('');
   const [posCreating, setPosCreating] = useState(false);
   const [posError, setPosError] = useState('');
+
+  // Inline annotate: the creator edits THIS position's solution/description
+  // without leaving the study view (previously only possible at create time).
+  const [editingMeta, setEditingMeta] = useState(false);
+  const [metaDesc, setMetaDesc] = useState('');
+  const [metaSolution, setMetaSolution] = useState('');
+  const [metaSaving, setMetaSaving] = useState(false);
+  const [metaError, setMetaError] = useState('');
 
   // Stockfish mode
   const [sfMode, setSfMode] = useState(false);
@@ -164,6 +201,10 @@ const UserStudyPuzzleView = () => {
   const selectPuzzle = (index) => {
     setCurrentPuzzleIndex(index);
     loadPuzzle(puzzles[index]);
+    // Leave edit mode — otherwise the previous position's text would sit in the
+    // form and could be saved onto this one.
+    setEditingMeta(false);
+    setMetaError('');
     if (isMobile) setShowPuzzleList(false);
   };
 
@@ -377,6 +418,46 @@ const UserStudyPuzzleView = () => {
       loadPuzzle(list[newIdx]);
     } catch (err) {
       alert(err.response?.data?.error || 'Failed to delete position.');
+    }
+  };
+
+  /* ── inline annotate (creator only) ───────────────── */
+  const startEditMeta = () => {
+    const p = puzzles[currentPuzzleIndex];
+    setMetaDesc(p?.description || '');
+    setMetaSolution(p?.solution || '');
+    setMetaError('');
+    setEditingMeta(true);
+  };
+
+  const cancelEditMeta = () => {
+    setEditingMeta(false);
+    setMetaError('');
+  };
+
+  const saveMeta = async () => {
+    const p = puzzles[currentPuzzleIndex];
+    if (!p?._id) return;
+    setMetaSaving(true);
+    setMetaError('');
+    try {
+      const res = await api.patch(
+        `/api/user-studies/${id}/chapters/${chapterId}/puzzles/${p._id}`,
+        { description: metaDesc, solution: metaSolution }
+      );
+      const saved = res.data?.puzzle;
+      // Patch in place rather than refetching + loadPuzzle: reloading would
+      // reset the board and throw away whatever line the user was exploring.
+      setPuzzles(prev => prev.map((q, i) => (
+        i === currentPuzzleIndex
+          ? { ...q, description: saved?.description ?? metaDesc, solution: saved?.solution ?? metaSolution }
+          : q
+      )));
+      setEditingMeta(false);
+    } catch (err) {
+      setMetaError(err.response?.data?.error || 'Failed to save. Please try again.');
+    } finally {
+      setMetaSaving(false);
     }
   };
 
@@ -676,6 +757,8 @@ const UserStudyPuzzleView = () => {
               />
             </motion.div>
 
+            {/* Current position FEN — copy it straight into an analysis board. */}
+            <FenCopyBar fen={currentNode.fen} style={{ maxWidth: boardWidth }} />
 
             <div style={st.controlButtons}>
               {(() => {
@@ -747,22 +830,36 @@ const UserStudyPuzzleView = () => {
 
             {activeTab === 'solution' && (
               <div style={st.solutionContainer}>
-                <div style={{ fontSize: 14, color: '#cbd5e1', lineHeight: 1.9, letterSpacing: 0.2 }}>
-                  {puzzles[currentPuzzleIndex]?.solution ? (
-                    <SolutionText
-                      text={puzzles[currentPuzzleIndex].solution}
-                      startFen={puzzles[currentPuzzleIndex].fen}
-                      accentColor={currentColor.color}
-                      onPlayLine={(seq) => { analysis.playLine(seq); setActiveTab('moves'); }}
-                    />
-                  ) : (
-                    <span style={{ color: '#64748b', fontStyle: 'italic' }}>No solution provided by creator</span>
-                  )}
-                </div>
-                {puzzles[currentPuzzleIndex]?.solution && (
-                  <div style={{ fontSize: 10.5, color: '#475569', marginTop: 10 }}>
-                    💡 Click any highlighted move to play that line on the board.
-                  </div>
+                {editingMeta ? (
+                  <textarea
+                    value={metaSolution}
+                    onChange={(e) => setMetaSolution(e.target.value)}
+                    placeholder="e.g. 1. Nf6+ gxf6 2. Bxf7# — moves you write here become clickable for students."
+                    rows={6}
+                    style={metaInputStyle}
+                  />
+                ) : (
+                  <>
+                    <div style={{ fontSize: 14, color: '#cbd5e1', lineHeight: 1.9, letterSpacing: 0.2 }}>
+                      {puzzles[currentPuzzleIndex]?.solution ? (
+                        <SolutionText
+                          text={puzzles[currentPuzzleIndex].solution}
+                          startFen={puzzles[currentPuzzleIndex].fen}
+                          accentColor={currentColor.color}
+                          onPlayLine={(seq) => { analysis.playLine(seq); setActiveTab('moves'); }}
+                        />
+                      ) : (
+                        <span style={{ color: '#64748b', fontStyle: 'italic' }}>
+                          {isCreator ? 'No solution yet — click Annotate to add one.' : 'No solution provided by creator'}
+                        </span>
+                      )}
+                    </div>
+                    {puzzles[currentPuzzleIndex]?.solution && (
+                      <div style={{ fontSize: 10.5, color: '#475569', marginTop: 10 }}>
+                        💡 Click any highlighted move to play that line on the board.
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -788,12 +885,47 @@ const UserStudyPuzzleView = () => {
             {/* Description */}
             <div style={st.descContainer}>
               <h3 style={st.sectionTitle}>Description</h3>
-              <div style={st.descText}>
-                {currentPuzzle?.description || (
-                  <span style={{ color: '#64748b', fontStyle: 'italic' }}>No description available. Try to find the best move!</span>
+              {editingMeta ? (
+                <textarea
+                  value={metaDesc}
+                  onChange={(e) => setMetaDesc(e.target.value)}
+                  placeholder="What should the student notice about this position?"
+                  rows={3}
+                  style={metaInputStyle}
+                />
+              ) : (
+                <div style={st.descText}>
+                  {currentPuzzle?.description || (
+                    <span style={{ color: '#64748b', fontStyle: 'italic' }}>
+                      {isCreator ? 'No description yet — click Annotate to add one.' : 'No description available. Try to find the best move!'}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Creator-only: annotate this position in place */}
+            {isCreator && currentPuzzle?._id && (
+              <div style={{ marginTop: 12 }}>
+                {metaError && (
+                  <div style={{ color: '#fca5a5', fontSize: 12.5, marginBottom: 8 }}>{metaError}</div>
+                )}
+                {editingMeta ? (
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button onClick={saveMeta} disabled={metaSaving} style={metaBtnStyle(true, metaSaving)}>
+                      {metaSaving ? 'Saving…' : '✓ Save'}
+                    </button>
+                    <button onClick={cancelEditMeta} disabled={metaSaving} style={metaBtnStyle(false, metaSaving)}>
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={startEditMeta} style={metaBtnStyle(false, false)}>
+                    ✏️ Annotate this position
+                  </button>
                 )}
               </div>
-            </div>
+            )}
 
             {/* Prev / Next puzzle */}
             <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>

@@ -2,6 +2,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import Chessboard from '../../components/Chessboard';
+import FenCopyBar from '../../components/FenCopyBar';
 
 import { Chess } from 'chess.js';
 import { motion } from 'framer-motion';
@@ -930,7 +931,10 @@ const StudyPuzzleView = () => {
                 title="Drag to resize chessboard"
               />
             </motion.div>
-            
+
+            {/* Current position FEN — copy it straight into an analysis board. */}
+            <FenCopyBar fen={chess.fen()} style={{ maxWidth: boardWidth }} />
+
             <div style={styles.controlButtons}>
               <motion.button
                 style={{

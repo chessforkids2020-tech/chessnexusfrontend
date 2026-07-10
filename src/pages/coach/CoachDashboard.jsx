@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
+import socket from '../../socket';
 import CoachChatFab from '../../components/coach/CoachChatFab';
+import CoachNotificationBell from '../../components/coach/CoachNotificationBell';
 import './CoachDashboard.css';
 import './CoachOnboarding.css'; // shared button styles
 
@@ -142,6 +144,7 @@ export default function CoachDashboard() {
   const [pending, setPending] = useState([]);
   const [error, setError] = useState('');
   const [showVerifiedPopup, setShowVerifiedPopup] = useState(false); // one-time verified welcome
+  const [toast, setToast] = useState('');   // transient live-update notice
 
   // Add student modal
   const [showAdd, setShowAdd] = useState(false);
@@ -199,6 +202,36 @@ export default function CoachDashboard() {
   };
 
   useEffect(() => { loadAll(); }, []); // eslint-disable-line
+
+  // Live updates — a student approving/declining your request refreshes the
+  // roster in place, no reload. The server emits to this coach's `user-<id>`
+  // room only, so one coach never sees another's events.
+  useEffect(() => {
+    if (!socket.connected) socket.connect();
+
+    const onApproved = (d) => {
+      setToast(`✓ ${d?.studentName || 'A student'} joined your roster`);
+      loadAll();
+    };
+    const onDeclined = (d) => {
+      setToast(`${d?.studentName || 'A student'} declined your request`);
+      loadAll();
+    };
+
+    socket.on('coach:studentApproved', onApproved);
+    socket.on('coach:studentDeclined', onDeclined);
+    return () => {
+      socket.off('coach:studentApproved', onApproved);
+      socket.off('coach:studentDeclined', onDeclined);
+    };
+  }, []); // eslint-disable-line
+
+  // Auto-dismiss the live toast.
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(''), 4000);
+    return () => clearTimeout(id);
+  }, [toast]);
 
   const dismissVerifiedPopup = async () => {
     setShowVerifiedPopup(false);
@@ -262,6 +295,18 @@ export default function CoachDashboard() {
 
   return (
     <div className="coach-dash">
+      {/* Live update notice — appears without a reload, fades after 4s. */}
+      {toast && (
+        <div style={{
+          position: 'fixed', top: 20, right: 20, zIndex: 100,
+          background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.4)',
+          color: '#67e8f9', borderRadius: 10, padding: '11px 16px',
+          fontSize: 14, fontWeight: 600, backdropFilter: 'blur(10px)',
+          boxShadow: '0 12px 30px rgba(0,0,0,0.4)', maxWidth: '90vw',
+        }}>
+          {toast}
+        </div>
+      )}
       <div className="coach-dash-header">
         <div>
           <h1>
@@ -275,6 +320,10 @@ export default function CoachDashboard() {
               ? summary?.coachProfile?.academyName
               : `Individual coach · ${summary?.coachProfile?.coachCountry || ''}`}
           </p>
+        </div>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <CoachNotificationBell />
+          <Link to="/coach/profile" className="btn-ghost">👤 Profile</Link>
         </div>
       </div>
 

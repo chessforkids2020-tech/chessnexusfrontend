@@ -171,6 +171,18 @@ export default function MyCoachPortal() {
     timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric',
   });
 
+  // When the coach actually recorded this entry — mirrors the coach's own
+  // "Marked entries" table. `updatedAt` wins so an edited status shows the edit
+  // time. Records predate `slot`/timestamps in a few cases, hence the guards.
+  const fmtEntryTime = (r) => {
+    const t = r.updatedAt || r.createdAt;
+    if (!t) return '—';
+    return new Date(t).toLocaleString('en-IN', {
+      timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short',
+      hour: 'numeric', minute: '2-digit',
+    });
+  };
+
   // Soonest upcoming class, skipping any that land on a holiday date.
   const holidaySet = new Set(holidays.map(h => h.date));
   const nextClass = () => {
@@ -231,22 +243,23 @@ export default function MyCoachPortal() {
 
       <div className="mcp-tabs">
         {[
-          { id: 'overview', label: '📊 Overview' },
-          { id: 'schedule', label: '📅 Schedule' },
-          { id: 'activities', label: '🎯 Activities' },
-          { id: 'messages', label: '💬 Messages' },
-          { id: 'courses', label: '📚 My Syllabus' },
-          { id: 'assignments', label: '📋 Assignments' },
-          { id: 'player', label: '👤 Player' },
-          { id: 'attendance', label: '📝 Attendance' },
-          { id: 'payments', label: '💰 Payments' },
+          { id: 'overview',    icon: '📊', text: 'Overview' },
+          { id: 'schedule',    icon: '📅', text: 'Schedule' },
+          { id: 'activities',  icon: '🎯', text: 'Activities' },
+          { id: 'messages',    icon: '💬', text: 'Messages' },
+          { id: 'courses',     icon: '📚', text: 'My Syllabus' },
+          { id: 'assignments', icon: '📋', text: 'Assignments' },
+          { id: 'player',      icon: '👤', text: 'Player' },
+          { id: 'attendance',  icon: '📝', text: 'Attendance' },
+          { id: 'payments',    icon: '💰', text: 'Payments' },
         ].map(t => (
           <button
             key={t.id}
             className={`mcp-tab ${tab === t.id ? 'mcp-tab-active' : ''}`}
             onClick={() => setTab(t.id)}
           >
-            {t.label}
+            <span className="mcp-tab-icon">{t.icon}</span>
+            <span className="mcp-tab-text">{t.text}</span>
             {t.id === 'messages' && msgUnread > 0 && (
               <span className="mcp-tab-badge">{msgUnread > 99 ? '99+' : msgUnread}</span>
             )}
@@ -698,18 +711,20 @@ export default function MyCoachPortal() {
           <div className="mcp-table-wrap">
             <table className="mcp-table">
               <thead>
-                <tr><th>Date</th><th>Coach</th><th>Status</th></tr>
+                <tr><th>Date</th><th>Coach</th><th>Class</th><th>Status</th><th>Marked</th></tr>
               </thead>
               <tbody>
                 {attendance.records.map((r, i) => (
                   <tr key={r._id || i}>
                     <td>{fmtDate(r.date)}</td>
                     <td>{r.coachName}</td>
+                    <td>Class {r.slot || 1}</td>
                     <td><span className={statusClass(r.status)}>{r.status}</span></td>
+                    <td className="mcp-muted">{fmtEntryTime(r)}</td>
                   </tr>
                 ))}
                 {attendance.records.length === 0 && (
-                  <tr><td colSpan="3" className="mcp-empty-row">No attendance recorded for this month</td></tr>
+                  <tr><td colSpan="5" className="mcp-empty-row">No attendance recorded for this month</td></tr>
                 )}
               </tbody>
             </table>

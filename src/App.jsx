@@ -20,6 +20,7 @@ import CoachAttendancePage from "./pages/coach/CoachAttendancePage";
 import CoachSchedulePage from "./pages/coach/CoachSchedulePage";
 import CoachActivities from "./pages/coach/CoachActivities";
 import CoachBatches from "./pages/coach/CoachBatches";
+import CoachProfile from "./pages/coach/CoachProfile";
 import CoachArenaLive from "./pages/coach/CoachArenaLive";
 import CoachArenaTournamentLive from "./pages/coach/CoachArenaTournamentLive";
 import PublicProfile from "./pages/PublicProfile";
@@ -155,6 +156,7 @@ import ThemesPicker from './pages/ThemesPicker';
 import PiecesPicker from './pages/PiecesPicker';
 import SignupRequestForm from './pages/SignupRequestForm';
 import SignupRequests from './pages/SignupRequests';
+import AdminTitleClaims from './pages/AdminTitleClaims';
 import BestRacersPage from './pages/BestRacersPage';
 import Games from './pages/game/Games';
 import MasterGamesHome from './pages/masterGames/MasterGamesHome';
@@ -506,6 +508,16 @@ export default function App() {
             <div style={styles.content}>
               <ProtectedRoute requiredRole="admin">
                 <SignupRequests />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
+        <Route path="/admin/title-claims" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminTitleClaims />
               </ProtectedRoute>
             </div>
             <Footer />
@@ -996,6 +1008,13 @@ export default function App() {
           <UserLayout>
             <ProtectedRoute>
               <CoachBatches />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/coach/profile" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <CoachProfile />
             </ProtectedRoute>
           </UserLayout>
         } />

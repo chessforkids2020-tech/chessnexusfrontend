@@ -7,6 +7,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api';
 import socket from '../../socket';
+import RoomCodeBadge from '../../components/RoomCodeBadge';
 import './CoachDashboard.css';
 
 export default function CoachArenaLive() {
@@ -141,6 +142,9 @@ export default function CoachArenaLive() {
             {isActive && <> · <strong style={{ color: timeLeft != null && timeLeft < 60 ? '#f87171' : '#6ee7b7' }}>⏱ Ends in {fmtTime(timeLeft)}</strong></>}
             {isWaiting && !isManual && startsInSec != null && startsInSec > 0 && <> · <strong style={{ color: '#fcd34d' }}>⏱ Starts in {fmtDur(startsInSec)}</strong></>}
           </p>
+          {/* Students find this race in their Activities tab, but a coach mid-class
+              needs to be able to read the code out or paste it into chat. */}
+          {!isDone && <RoomCodeBadge code={data?.roomId || roomId} style={{ marginTop: 10 }} />}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="btn-ghost" onClick={load}>↻ Refresh</button>
@@ -175,7 +179,10 @@ export default function CoachArenaLive() {
       <div className="coach-section">
         <div className="coach-section-head"><h2>Live leaderboard</h2></div>
         {lb.length === 0 ? (
-          <div className="coach-empty">No students have joined yet. Share nothing — it opens for them automatically in their Activities tab.</div>
+          <div className="coach-empty">
+            No students have joined yet. This race appears automatically in their Activities tab —
+            or share the room code above if someone can't find it.
+          </div>
         ) : (
           <div className="coach-students-table-wrap">
             <table className="coach-students-table">

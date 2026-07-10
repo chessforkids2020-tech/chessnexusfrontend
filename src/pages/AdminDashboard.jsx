@@ -469,7 +469,7 @@ function AdminDashboard() {
   // "Needs attention" counts for the top nav badges (like chat unread pips):
   // open reports, pending supporters, unverified coaches. Polled for a
   // near-real-time feel.
-  const [badgeCounts, setBadgeCounts] = useState({ reports: 0, supporters: 0, coaches: 0 });
+  const [badgeCounts, setBadgeCounts] = useState({ reports: 0, supporters: 0, coaches: 0, titleClaims: 0 });
   // Ids of items that "need attention" from the server; the coaches/supporters
   // pips count only the ones this admin hasn't dismissed by viewing the list.
   const [unverifiedCoachIds, setUnverifiedCoachIds] = useState([]);
@@ -484,6 +484,7 @@ function AdminDashboard() {
             reports: r.data.reports || 0,
             supporters: r.data.supporters || 0,
             coaches: r.data.coaches || 0,
+            titleClaims: r.data.titleClaims || 0,
           });
           setUnverifiedCoachIds(Array.isArray(r.data.coachIds) ? r.data.coachIds : []);
           setPendingSupporterIds(Array.isArray(r.data.supporterIds) ? r.data.supporterIds : []);
@@ -1219,9 +1220,7 @@ function AdminDashboard() {
           <button style={styles.secondaryBtn} onClick={async () => { await logout(); nav('/', { replace: true }); }}>Logout</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/arena')}>🏁 Race Arena</button>
           <button style={styles.secondaryBtn} onClick={openArenaCreateModal}>🏆 New Arena Tournament</button>
-          <button style={styles.secondaryBtn} onClick={() => nav('/admin/studies')}>📚 Study Management</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/monthly-focus')}>🎯 Monthly Focus</button>
-          <button style={styles.secondaryBtn} onClick={() => nav('/admin/blunder-library')}>🔎 Blunder Library</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/team-race')}>👥 Team Race</button>
           <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/reports')}>
             🚩 Reports{renderNavBadge(badgeCounts.reports)}
@@ -1231,6 +1230,9 @@ function AdminDashboard() {
           </button>
           <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/coaches')}>
             🎓 Coaches{renderNavBadge(coachBadge)}
+          </button>
+          <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/title-claims')}>
+            🏅 Title Claims{renderNavBadge(badgeCounts.titleClaims)}
           </button>
           <button style={styles.secondaryBtn} onClick={() => nav('/chat')}>💬 Chat</button>
           <button style={styles.primaryBtn} onClick={fetchAll}>Refresh</button>
@@ -2061,6 +2063,8 @@ function AdminDashboard() {
             gap: 14,
           }}>
             {[
+              { icon: '📚', title: 'Study Management', desc: 'Manage studies & chapters', route: '/admin/studies' },
+              { icon: '🔎', title: 'Blunder Library', desc: 'Curate the shared blunder position sets', route: '/admin/blunder-library' },
               { icon: '♟', title: 'Endgames', desc: 'Manage endgame studies & positions', route: '/admin/endgames' },
               { icon: '📖', title: 'Book Management', desc: 'Manage chess books & lessons', route: '/admin/books' },
               { icon: '📅', title: 'Activity Schedule', desc: 'Manage the tournament & race calendar', route: '/admin/schedule' },

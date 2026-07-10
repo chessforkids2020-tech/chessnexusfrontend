@@ -24,7 +24,7 @@ export default function CourseBuilder() {
   const [lessonMode, setLessonMode] = useState('study'); // 'study' | 'video' | 'masterGame' | 'endgame'
   const [pickStudyId, setPickStudyId] = useState('');
   const [pickChapterId, setPickChapterId] = useState(''); // '' = whole study
-  const [studySource, setStudySource] = useState('mine');  // 'mine' | 'nexus'
+  const [studySource, setStudySource] = useState('mine');  // 'mine' | 'public' | 'nexus'
   const [studySearch, setStudySearch] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [videoTitle, setVideoTitle] = useState('');
@@ -115,11 +115,14 @@ export default function CourseBuilder() {
 
   const addLesson = async () => {
     if (!pickStudyId) return;
+    // A Nexus (official) study is always added one chapter at a time.
+    if (studySource === 'nexus' && !pickChapterId) return;
     setLessonErr('');
     setAddingLesson(true);
     try {
       await api.post(`/api/coach/courses/${selected._id}/lessons`, {
         studyId: pickStudyId,
+        source: studySource,
         ...(pickChapterId ? { chapterId: pickChapterId } : {})
       });
       setPickStudyId(''); setPickChapterId('');
@@ -303,6 +306,8 @@ export default function CourseBuilder() {
   if (loading) return <div className="coach-dash"><p>Loading…</p></div>;
 
   const sortedLessons = (selected?.lessons || []).slice().sort((a, b) => a.lessonIndex - b.lessonIndex);
+  // Nexus (official) studies must be added one chapter at a time — no "whole study".
+  const isNexus = studySource === 'nexus';
 
   return (
     <div className="coach-dash">
@@ -503,11 +508,14 @@ export default function CourseBuilder() {
 
                 {lessonMode === 'study' && (
                   <>
-                    {/* Source: my studies vs the official Nexus studies */}
+                    {/* Source: my studies · any public study · the official Nexus studies */}
                     <div className="cb-row" style={{ marginBottom: 8 }}>
                       <button type="button"
                         className={studySource === 'mine' ? 'btn-primary' : 'btn-ghost'}
                         onClick={() => { setStudySource('mine'); loadStudies('mine', studySearch); }}>My studies</button>
+                      <button type="button"
+                        className={studySource === 'public' ? 'btn-primary' : 'btn-ghost'}
+                        onClick={() => { setStudySource('public'); loadStudies('public', studySearch); }}>🌐 Public studies</button>
                       <button type="button"
                         className={studySource === 'nexus' ? 'btn-primary' : 'btn-ghost'}
                         onClick={() => { setStudySource('nexus'); loadStudies('nexus', studySearch); }}>✦ Nexus studies</button>
@@ -519,7 +527,9 @@ export default function CourseBuilder() {
 
                     {myStudies.length === 0 ? (
                       <p className="cb-muted">
-                        {studySource === 'nexus' ? 'No Nexus studies found.' : <>You have no studies yet. <Link to="/my-studies">Create a study</Link> first.</>}
+                        {studySource === 'nexus' ? 'No Nexus studies found.'
+                          : studySource === 'public' ? 'No public studies found.'
+                          : <>You have no studies yet. <Link to="/my-studies">Create a study</Link> first.</>}
                       </p>
                     ) : (
                       <>
@@ -528,26 +538,39 @@ export default function CourseBuilder() {
                           <option value="">Pick a study…</option>
                           {myStudies.map(s => (
                             <option key={s._id} value={s._id}>
-                              {s.name}{s.isPublic ? '' : ' (private)'} · {s.chapters?.length || 0} ch.
+                              {s.name}{s.isPublic ? '' : ' (private)'}
+                              {studySource === 'public' && s.username ? ` · by ${s.username}` : ''}
+                              {' · '}{s.chapters?.length || 0} ch.
                             </option>
                           ))}
                         </select>
 
-                        {/* Whole study OR a single chapter */}
+                        {/* Whole study OR a single chapter. Nexus studies are always
+                            one chapter — their puzzles live on the Chapter doc. */}
                         {pickStudyId && (() => {
                           const st = myStudies.find(s => s._id === pickStudyId);
                           const chs = st?.chapters || [];
                           return (
                             <select className="cb-select" value={pickChapterId} onChange={e => setPickChapterId(e.target.value)}>
-                              <option value="">📚 Whole study ({chs.length} chapters)</option>
+                              <option value="">
+                                {isNexus ? '— Pick a chapter —' : `📚 Whole study (${chs.length} chapters)`}
+                              </option>
                               {chs.map(c => (
-                                <option key={c._id} value={c._id}>— {c.name} ({c.puzzleCount} positions)</option>
+                                <option key={c._id} value={c._id}>
+                                  — {c.name}{c.puzzleCount != null ? ` (${c.puzzleCount} positions)` : ''}
+                                </option>
                               ))}
                             </select>
                           );
                         })()}
 
-                        <button className="btn-primary" onClick={addLesson} disabled={!pickStudyId || addingLesson}>
+                        {isNexus && pickStudyId && !pickChapterId && (
+                          <p className="cb-muted">Pick a chapter to add it as a lesson.</p>
+                        )}
+
+                        <button className="btn-primary"
+                          onClick={addLesson}
+                          disabled={!pickStudyId || (isNexus && !pickChapterId) || addingLesson}>
                           {addingLesson ? 'Adding…' : pickChapterId ? 'Add chapter' : 'Add study'}
                         </button>
                       </>

@@ -3,8 +3,13 @@ import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Sidebar from './Sidebar';
 import CoachSidebar from './CoachSidebar';
+import StudyPuzzleSidebar from './StudyPuzzleSidebar';
 import Footer from './Footer';
 import './UserLayout.css';
+
+// Pages that use the slim 60px icon rail instead of the 170px main sidebar,
+// because they need the horizontal room (e.g. My Coach's nine tabs).
+const NARROW_SIDEBAR_PATHS = ['/my-coach'];
 
 export default function UserLayout({ children, showFooter = true }) {
   const { user } = useAuth();
@@ -17,10 +22,17 @@ export default function UserLayout({ children, showFooter = true }) {
   // the main one. Onboarding is excluded — you're not a coach yet there.
   const inCoachArea = location.pathname.startsWith('/coach/') &&
     location.pathname !== '/coach/onboarding';
+
+  // Slim icon rail on cramped pages. It renders its own fixed 60px bar (and its
+  // own hamburger on mobile portrait), so it needs no onNavigate.
+  const useNarrowSidebar = NARROW_SIDEBAR_PATHS.includes(location.pathname);
+
   const renderSidebar = (onNavigate) =>
-    inCoachArea
-      ? <CoachSidebar onNavigate={onNavigate} />
-      : <Sidebar user={user} onNavigate={onNavigate} />;
+    useNarrowSidebar
+      ? <StudyPuzzleSidebar />
+      : inCoachArea
+        ? <CoachSidebar onNavigate={onNavigate} />
+        : <Sidebar user={user} onNavigate={onNavigate} />;
 
   // Detect screen size changes
   useEffect(() => {
@@ -49,30 +61,37 @@ export default function UserLayout({ children, showFooter = true }) {
     <div className="user-layout-container">
       <div className="user-content-wrapper">
         <>
-          {/* Desktop Sidebar or Landscape Mode Sidebar (always visible) */}
-          {(!isMobile || isLandscape) && renderSidebar()}
-
-          {/* Mobile Portrait Sidebar Overlay */}
-          {isMobile && !isLandscape && isSidebarOpen && (
+          {/* The narrow rail renders itself at every size — including its own
+              hamburger + overlay on mobile portrait — so it opts out of the
+              layout's mobile chrome below. */}
+          {useNarrowSidebar ? renderSidebar() : (
             <>
-              <div
-                className="sidebar-overlay"
-                onClick={() => setIsSidebarOpen(false)}
-              />
-              <div className="sidebar-mobile">
-                {renderSidebar(() => setIsSidebarOpen(false))}
-              </div>
+              {/* Desktop Sidebar or Landscape Mode Sidebar (always visible) */}
+              {(!isMobile || isLandscape) && renderSidebar()}
+
+              {/* Mobile Portrait Sidebar Overlay */}
+              {isMobile && !isLandscape && isSidebarOpen && (
+                <>
+                  <div
+                    className="sidebar-overlay"
+                    onClick={() => setIsSidebarOpen(false)}
+                  />
+                  <div className="sidebar-mobile">
+                    {renderSidebar(() => setIsSidebarOpen(false))}
+                  </div>
+                </>
+              )}
+
+              {/* Floating Hamburger Button - Only show when sidebar is closed */}
+              {isMobile && !isLandscape && !isSidebarOpen && (
+                <button className="floating-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+                  ☰
+                </button>
+              )}
             </>
           )}
-          
-          {/* Floating Hamburger Button - Only show when sidebar is closed */}
-          {isMobile && !isLandscape && !isSidebarOpen && (
-            <button className="floating-menu-btn" onClick={() => setIsSidebarOpen(true)}>
-              ☰
-            </button>
-          )}
-          
-          <div className={`user-main-content with-sidebar ${isMobile ? 'mobile' : 'desktop'} ${isLandscape ? 'landscape' : ''}`}>
+
+          <div className={`user-main-content with-sidebar ${useNarrowSidebar ? 'narrow-sidebar' : ''} ${isMobile ? 'mobile' : 'desktop'} ${isLandscape ? 'landscape' : ''}`}>
             {children}
           </div>
         </>

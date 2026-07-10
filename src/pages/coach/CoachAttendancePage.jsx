@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Fragment } from 'react';
 import api from '../../api';
 import CoachChatFab from '../../components/coach/CoachChatFab';
 import './CoachAttendancePage.css';
@@ -250,15 +250,12 @@ function TabDashboard() {
                   return (
                     <tr key={s.studentId} className={s.onBreak ? 'cap-row-break' : ''}>
                       <td>{s.studentName} {s.onBreak && <span className="cap-break-badge">Break</span>}</td>
-                      <td>
-                        <span className="cap-td-present">{attended}</span>
-                        <span className="cap-muted"> / {s.classesPerMonth}</span>
-                      </td>
+                      <td><span className="cap-td-present">{attended}</span></td>
                       <td>{s.remaining}</td>
                       <td>
-                        {s.paid
-                          ? <span className="cap-badge badge-present">Paid</span>
-                          : <span className="cap-badge badge-absent">Unpaid</span>}
+                        <span className={s.paid ? 'cap-fee-paid' : 'cap-fee-unpaid'}>
+                          {s.paid ? 'Paid' : 'Unpaid'}
+                        </span>
                       </td>
                       <td>{pct == null ? <span className="cap-muted">—</span> : `${pct}%`}</td>
                     </tr>
@@ -327,19 +324,43 @@ function TabPlayers() {
     }
   };
 
-  const setBreak = async (linkId, brk) => {
-    const action = brk ? 'break' : 'rejoin';
+  // Put a player on break. They drop out of this tab (and out of Mark Attendance)
+  // and appear in the Payments tab, which is where Rejoin lives.
+  const putOnBreak = async (linkId) => {
     try {
-      await api.put(`/api/coach-attendance/players/${linkId}/${action}`);
+      await api.put(`/api/coach-attendance/players/${linkId}/break`);
       await load();
     } catch (e) {
       alert(e?.response?.data?.error || 'Error');
     }
   };
 
+  // Remove a player from the roster. This is the SOFT delete on the coach-student
+  // link (active:false + archivedAt) — attendance and payment history are kept,
+  // and the coach's student count is decremented. It is not a data wipe.
+  const removePlayer = async (p) => {
+    const name = p.studentName || 'this player';
+    if (!window.confirm(
+      `Remove ${name} from your roster?\n\n` +
+      `Their past attendance and payments are kept, but they will no longer ` +
+      `appear here and you can't mark them present.`
+    )) return;
+    try {
+      await api.delete(`/api/coach/students/${p._id}`);
+      if (editing === p._id) setEditing(null);
+      await load();
+    } catch (e) {
+      alert(e?.response?.data?.message || e?.response?.data?.error || 'Could not remove player');
+    }
+  };
+
+  // Students on break live in the Payments tab (with a Rejoin button), not here.
+  const onBreakCount = players.filter(p => p.onBreak).length;
   const filtered = players.filter(p =>
-    p.studentName.toLowerCase().includes(search.toLowerCase()) ||
-    (p.studentUsername || '').toLowerCase().includes(search.toLowerCase())
+    !p.onBreak && (
+      p.studentName.toLowerCase().includes(search.toLowerCase()) ||
+      (p.studentUsername || '').toLowerCase().includes(search.toLowerCase())
+    )
   );
 
   if (loading) return <p className="cap-muted">Loading players…</p>;
@@ -349,9 +370,18 @@ function TabPlayers() {
       <div style={{ marginBottom: 16, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
         <input className="cap-input" placeholder="Search players…" value={search}
           onChange={e => setSearch(e.target.value)} style={{ maxWidth: 260 }} />
-        <span className="cap-muted" style={{ fontSize: 13 }}>{players.filter(p => p.enrolled).length} enrolled, {players.length} total</span>
+        <span className="cap-muted" style={{ fontSize: 13 }}>
+          {players.filter(p => p.enrolled && !p.onBreak).length} active
+          {onBreakCount > 0 && `, ${onBreakCount} on break`}
+        </span>
         <button className="cap-btn cap-btn-ghost" onClick={load} style={{ fontSize: 12 }}>↻ Refresh</button>
       </div>
+
+      {onBreakCount > 0 && (
+        <p className="cap-muted" style={{ fontSize: 13, marginTop: -4, marginBottom: 16 }}>
+          ⏸ {onBreakCount} student{onBreakCount === 1 ? '' : 's'} on break — rejoin them from the <strong>Payments</strong> tab.
+        </p>
+      )}
 
       {error && (
         <div style={{ marginBottom: 16, padding: '10px 14px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 8, color: '#fca5a5', fontSize: 13 }}>
@@ -361,80 +391,99 @@ function TabPlayers() {
 
       {!error && !filtered.length && <p className="cap-muted">No players found. Add students via the main Coach Dashboard first.</p>}
 
-      <div className="cap-player-list">
-        {filtered.map(p => (
-          <div key={p._id} className={`cap-player-card${p.onBreak ? ' cap-player-break' : ''}`}>
-            <div className="cap-player-top">
-              <div className="cap-player-avatar">{(p.studentName || '?')[0].toUpperCase()}</div>
-              <div className="cap-player-info">
-                <div className="cap-player-name">{p.studentName}</div>
-                <div className="cap-player-meta">
-                  @{p.studentUsername || '—'} · {p.classType || 'Private'}
-                  {p.enrolled && <span className="cap-badge badge-present" style={{ marginLeft: 6 }}>Enrolled</span>}
-                  {p.onBreak  && <span className="cap-badge badge-absent"  style={{ marginLeft: 6 }}>On Break</span>}
-                </div>
-              </div>
-              <div className="cap-player-actions">
-                {p.enrolled && !p.onBreak && (
-                  <button className="cap-btn cap-btn-warn" onClick={() => setBreak(p._id, true)}>Break</button>
-                )}
-                {p.enrolled && p.onBreak && (
-                  <button className="cap-btn cap-btn-green" onClick={() => setBreak(p._id, false)}>Rejoin</button>
-                )}
-                <button className="cap-btn cap-btn-ghost" onClick={() => editing === p._id ? setEditing(null) : startEdit(p)}>
-                  {editing === p._id ? 'Cancel' : p.enrolled ? 'Edit' : 'Enroll'}
-                </button>
-              </div>
-            </div>
+      {!!filtered.length && (
+        <div className="cap-table-wrap">
+          <table className="cap-table">
+            <thead><tr>
+              <th>Player</th>
+              <th>Status</th>
+              <th>Classes/mo</th>
+              <th>Fee</th>
+              <th>Type</th>
+              <th>Since</th>
+              <th style={{ textAlign: 'right' }}>Actions</th>
+            </tr></thead>
+            <tbody>
+              {filtered.map(p => (
+                <Fragment key={p._id}>
+                  <tr>
+                    <td>
+                      <div className="cap-td-player">{p.studentName}</div>
+                      <div className="cap-muted" style={{ fontSize: 12 }}>@{p.studentUsername || '—'}</div>
+                    </td>
+                    <td>
+                      {p.enrolled
+                        ? <span className="cap-fee-paid">Enrolled</span>
+                        : <span className="cap-muted">Not enrolled</span>}
+                    </td>
+                    <td>{p.enrolled ? p.classesPerMonth : <span className="cap-muted">—</span>}</td>
+                    <td>{p.enrolled ? `${p.currency} ${(p.fees || 0).toLocaleString()}` : <span className="cap-muted">—</span>}</td>
+                    <td>{p.classType || 'Private'}</td>
+                    <td>{p.enrollmentDate ? fmtIST(p.enrollmentDate) : <span className="cap-muted">—</span>}</td>
+                    <td>
+                      <div className="cap-row-actions">
+                        <button className="cap-btn cap-btn-ghost"
+                          onClick={() => editing === p._id ? setEditing(null) : startEdit(p)}>
+                          {editing === p._id ? 'Cancel' : p.enrolled ? 'Edit' : 'Enroll'}
+                        </button>
+                        {/* Break moves the player to the Payments tab, where Rejoin lives. */}
+                        {p.enrolled && (
+                          <button className="cap-btn cap-btn-warn" onClick={() => putOnBreak(p._id)}>Break</button>
+                        )}
+                        <button className="cap-btn cap-btn-danger" onClick={() => removePlayer(p)}>Delete</button>
+                      </div>
+                    </td>
+                  </tr>
 
-            {p.enrolled && editing !== p._id && (
-              <div className="cap-player-enroll-summary">
-                {p.classesPerMonth} classes/mo · {p.currency} {p.fees.toLocaleString()}/mo · {p.classType}
-                {p.enrollmentDate && ` · Since ${fmtIST(p.enrollmentDate)}`}
-              </div>
-            )}
-
-            {editing === p._id && (
-              <div className="cap-enroll-form">
-                <div className="cap-form-row">
-                  <label>Classes / Month</label>
-                  <input type="number" className="cap-input" min="0" value={form.classesPerMonth}
-                    onChange={e => setForm(f => ({ ...f, classesPerMonth: e.target.value }))} />
-                </div>
-                <div className="cap-form-row">
-                  <label>Monthly Fee</label>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <select className="cap-input" style={{ width: 80 }} value={form.currency}
-                      onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}>
-                      <option>INR</option><option>USD</option><option>EUR</option><option>GBP</option>
-                    </select>
-                    <input type="number" className="cap-input" min="0" value={form.fees}
-                      onChange={e => setForm(f => ({ ...f, fees: e.target.value }))} />
-                  </div>
-                </div>
-                <div className="cap-form-row">
-                  <label>Class Type</label>
-                  <select className="cap-input" value={form.classType}
-                    onChange={e => setForm(f => ({ ...f, classType: e.target.value }))}>
-                    <option>Private</option><option>Group</option><option>Online</option>
-                  </select>
-                </div>
-                <div className="cap-form-row">
-                  <label>Enrollment Date</label>
-                  <input type="date" className="cap-input" value={form.enrollmentDate}
-                    onChange={e => setForm(f => ({ ...f, enrollmentDate: e.target.value }))} />
-                </div>
-                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
-                  <button className="cap-btn cap-btn-cyan" disabled={saving} onClick={() => saveEnroll(p._id)}>
-                    {saving ? 'Saving…' : 'Save Enrollment'}
-                  </button>
-                  {msg && <span style={{ color: msg === 'Saved!' ? '#10b981' : '#fca5a5', fontSize: 13 }}>{msg}</span>}
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+                  {/* Inline enrollment editor, expanded under the player's row. */}
+                  {editing === p._id && (
+                    <tr className="cap-row-edit">
+                      <td colSpan={7}>
+                        <div className="cap-enroll-form">
+                          <div className="cap-form-row">
+                            <label>Classes / Month</label>
+                            <input type="number" className="cap-input" min="0" value={form.classesPerMonth}
+                              onChange={e => setForm(f => ({ ...f, classesPerMonth: e.target.value }))} />
+                          </div>
+                          <div className="cap-form-row">
+                            <label>Monthly Fee</label>
+                            <div style={{ display: 'flex', gap: 8 }}>
+                              <select className="cap-input" style={{ width: 80 }} value={form.currency}
+                                onChange={e => setForm(f => ({ ...f, currency: e.target.value }))}>
+                                <option>INR</option><option>USD</option><option>EUR</option><option>GBP</option>
+                              </select>
+                              <input type="number" className="cap-input" min="0" value={form.fees}
+                                onChange={e => setForm(f => ({ ...f, fees: e.target.value }))} />
+                            </div>
+                          </div>
+                          <div className="cap-form-row">
+                            <label>Class Type</label>
+                            <select className="cap-input" value={form.classType}
+                              onChange={e => setForm(f => ({ ...f, classType: e.target.value }))}>
+                              <option>Private</option><option>Group</option><option>Online</option>
+                            </select>
+                          </div>
+                          <div className="cap-form-row">
+                            <label>Enrollment Date</label>
+                            <input type="date" className="cap-input" value={form.enrollmentDate}
+                              onChange={e => setForm(f => ({ ...f, enrollmentDate: e.target.value }))} />
+                          </div>
+                          <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 8 }}>
+                            <button className="cap-btn cap-btn-cyan" disabled={saving} onClick={() => saveEnroll(p._id)}>
+                              {saving ? 'Saving…' : 'Save Enrollment'}
+                            </button>
+                            {msg && <span style={{ color: msg === 'Saved!' ? '#10b981' : '#fca5a5', fontSize: 13 }}>{msg}</span>}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
@@ -682,13 +731,13 @@ function TabAttendance() {
   useEffect(() => { loadPlayers(); }, [loadPlayers]);
   useEffect(() => { loadRecords(); }, [loadRecords]);
 
-  // Records may not carry a slot (older data) — treat a missing slot as slot 1.
-  const recForSlot = (studentId, slot) =>
-    records.find(r =>
-      r.studentId.toString() === studentId.toString() && (r.slot || 1) === slot
-    );
-  const getStatus   = (studentId, slot) => recForSlot(studentId, slot)?.status || null;
-  const getRecordId = (studentId, slot) => recForSlot(studentId, slot)?._id || null;
+  // Every entry this student has on the selected day, oldest first. A student can
+  // have any number (second class, make-up lesson) — same as the admin's Teacher
+  // Attendance. Records written before `slot` existed are treated as slot 1.
+  const entriesFor = (studentId) =>
+    records
+      .filter(r => r.studentId.toString() === studentId.toString())
+      .sort((a, b) => (a.slot || 1) - (b.slot || 1));
 
   // Map studentId → name for the confirmation log (records don't carry names).
   const nameFor = (studentId) => {
@@ -705,20 +754,29 @@ function TabAttendance() {
     return new Date(t).toLocaleString('en-IN', { timeZone: IST, day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
   };
 
-  const mark = async (studentId, slot, status) => {
-    setSaving(`${studentId}-${slot}`);
+  // Add another entry for this student today. Omitting `slot` tells the server to
+  // append the next one, so pressing "+ Present" twice logs two classes rather
+  // than overwriting the first — exactly how the admin's Teacher Attendance works.
+  const addEntry = async (studentId, status) => {
+    setSaving(`${studentId}-add`);
     try {
-      const cur = getStatus(studentId, slot);
-      if (cur === status) {
-        // Toggle off — delete this slot's record
-        const rid = getRecordId(studentId, slot);
-        if (rid) await api.delete(`/api/coach-attendance/attendance/${rid}`);
-      } else {
-        await api.post('/api/coach-attendance/attendance/mark', { studentId, date: selDate, status, slot });
-      }
+      await api.post('/api/coach-attendance/attendance/mark', { studentId, date: selDate, status });
       await loadRecords();
     } catch (e) {
       alert(e?.response?.data?.error || 'Error marking attendance');
+    } finally {
+      setSaving('');
+    }
+  };
+
+  // Remove one entry (the × on a chip).
+  const removeEntry = async (studentId, recordId) => {
+    setSaving(`${studentId}-del`);
+    try {
+      await api.delete(`/api/coach-attendance/attendance/${recordId}`);
+      await loadRecords();
+    } catch (e) {
+      alert(e?.response?.data?.error || 'Error removing entry');
     } finally {
       setSaving('');
     }
@@ -752,34 +810,49 @@ function TabAttendance() {
         <div className="cap-card">
           <h3 className="cap-card-title">Mark Attendance — {new Date(selDate + 'T00:00:00').toLocaleDateString('en-IN', { dateStyle: 'full' })}</h3>
           <div className="cap-att-list">
-            {players.map(p => (
-              <div key={p._id} className="cap-att-row">
-                <div className="cap-att-avatar">{(p.studentName || '?')[0].toUpperCase()}</div>
-                <div className="cap-att-name">{p.studentName}</div>
-                <div className="cap-att-slots">
-                  {[1, 2].map(slot => {
-                    const status = getStatus(p.studentId, slot);
-                    const busy   = saving === `${p.studentId}-${slot}`;
-                    return (
-                      <div key={slot} className="cap-att-slot">
-                        <span className="cap-att-slot-lbl">Class {slot}</span>
-                        <div className="cap-att-btns">
-                          {['Present', 'Absent', 'Catch-up'].map(s => (
-                            <button key={s} disabled={busy}
-                              className={`cap-att-btn${status === s ? ` cap-att-btn-${s.toLowerCase().replace('-up','up')}` : ''}`}
-                              onClick={() => mark(p.studentId, slot, s)}>
-                              {s === 'Present' ? '✓ Present' : s === 'Absent' ? '✗ Absent' : '↺ Catch-up'}
-                            </button>
-                          ))}
-                          {status && <StatusBadge s={status} />}
-                          {busy && <span className="cap-muted" style={{ fontSize: 12 }}>…</span>}
-                        </div>
+            {players.filter(p => !p.onBreak).map(p => {
+              const entries = entriesFor(p.studentId);
+              const busy = saving.startsWith(`${p.studentId}-`);
+              return (
+                <div key={p._id} className="cap-att-row">
+                  <div className="cap-att-avatar">{(p.studentName || '?')[0].toUpperCase()}</div>
+                  <div className="cap-att-name">{p.studentName}</div>
+
+                  <div className="cap-att-mark">
+                    {/* One set of buttons. Each press ADDS an entry for today. */}
+                    <div className="cap-att-btns">
+                      {['Present', 'Absent', 'Catch-up'].map(s => (
+                        <button key={s} disabled={busy}
+                          className={`cap-att-btn cap-att-add-${s.toLowerCase().replace('-up', 'up')}`}
+                          onClick={() => addEntry(p.studentId, s)}>
+                          + {s}
+                        </button>
+                      ))}
+                      {busy && <span className="cap-muted" style={{ fontSize: 12 }}>…</span>}
+                    </div>
+
+                    {/* Today's entries — a chip per class, with a × to remove it. */}
+                    {entries.length > 0 && (
+                      <div className="cap-att-entries">
+                        {entries.map(r => (
+                          <span key={r._id} className="cap-att-chip">
+                            <StatusBadge s={r.status} />
+                            <span className="cap-att-chip-time">
+                              {new Date(r.createdAt || r.date).toLocaleTimeString('en-IN', {
+                                timeZone: IST, hour: '2-digit', minute: '2-digit',
+                              })}
+                            </span>
+                            <button className="cap-att-chip-x" title="Remove this entry"
+                              disabled={busy}
+                              onClick={() => removeEntry(p.studentId, r._id)}>×</button>
+                          </span>
+                        ))}
                       </div>
-                    );
-                  })}
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="cap-att-summary">
             <span>Present: <strong className="cap-td-present">{records.filter(r => r.status === 'Present').length}</strong></span>
@@ -845,6 +918,9 @@ function TabPayments() {
         api.get('/api/coach-attendance/players')
       ]);
       setPayments(pr.data);
+      // Every enrolled player, on break or not — going on break sets `onBreak`
+      // but leaves `enrolled` true, so break students stay in this list and
+      // playerName() can still resolve them for the break payments table.
       setPlayers(pl.data.filter(p => p.enrolled));
     } catch {
       setPayments([]);
@@ -854,9 +930,26 @@ function TabPayments() {
   };
   useEffect(() => { load(); }, []);
 
+  // Active roster drives the "Add payment" form and the filter dropdown — you
+  // don't normally record a new payment against a student who's on break.
+  const activePlayers = players.filter(p => !p.onBreak);
+  const breakPlayers  = players.filter(p => p.onBreak);
+  const breakIds = new Set(breakPlayers.map(p => p.studentId.toString()));
+
   const playerName = (id) => {
     const p = players.find(x => x.studentId.toString() === id.toString());
     return p ? p.studentName : id;
+  };
+
+  // Bring a student back from break. They reappear in the Players tab and can be
+  // marked present again. Lives here because break students are only listed here.
+  const rejoin = async (linkId) => {
+    try {
+      await api.put(`/api/coach-attendance/players/${linkId}/rejoin`);
+      await load();
+    } catch (e) {
+      alert(e?.response?.data?.error || 'Could not rejoin player');
+    }
   };
 
   const handleAdd = async () => {
@@ -891,6 +984,10 @@ function TabPayments() {
     ? payments.filter(p => p.studentId.toString() === filterP)
     : payments;
 
+  // Split so a student on break doesn't muddle the active roster's history.
+  const activePayments = filtered.filter(p => !breakIds.has(p.studentId.toString()));
+  const breakPayments  = filtered.filter(p =>  breakIds.has(p.studentId.toString()));
+
   return (
     <div>
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -900,7 +997,11 @@ function TabPayments() {
         <select className="cap-input" style={{ maxWidth: 220 }} value={filterP}
           onChange={e => setFilterP(e.target.value)}>
           <option value="">All Players</option>
-          {players.map(p => <option key={p._id} value={p.studentId}>{p.studentName}</option>)}
+          {players.map(p => (
+            <option key={p._id} value={p.studentId}>
+              {p.studentName}{p.onBreak ? ' (on break)' : ''}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -916,7 +1017,7 @@ function TabPayments() {
                   setForm(f => ({ ...f, studentId: e.target.value, currency: p?.currency || f.currency, amount: p?.fees || f.amount }));
                 }}>
                 <option value="">Select player…</option>
-                {players.map(p => <option key={p._id} value={p.studentId}>{p.studentName}</option>)}
+                {activePlayers.map(p => <option key={p._id} value={p.studentId}>{p.studentName}</option>)}
               </select>
             </div>
             <div className="cap-form-row">
@@ -960,36 +1061,86 @@ function TabPayments() {
         </div>
       )}
 
+      {/* All payments from the active roster. */}
       <div className="cap-card">
         <h3 className="cap-card-title">Payment History</h3>
-        {loading ? <p className="cap-muted">Loading…</p> : !filtered.length ? (
+        {loading ? <p className="cap-muted">Loading…</p> : !activePayments.length ? (
           <p className="cap-muted">No payment records found.</p>
         ) : (
-          <div className="cap-table-wrap">
+          <PaymentTable rows={activePayments} playerName={playerName} onDelete={del} />
+        )}
+      </div>
+
+      {/* Students on break, and any payments they made. Kept separate so the
+          active roster's history stays clean. */}
+      {!loading && breakPlayers.length > 0 && (
+        <div className="cap-card" style={{ marginTop: 20 }}>
+          <h3 className="cap-card-title">⏸ Students on break</h3>
+
+          <div className="cap-table-wrap" style={{ marginBottom: 18 }}>
             <table className="cap-table">
               <thead><tr>
-                <th>Player</th><th>Amount</th><th>Date Paid</th>
-                <th>Covers From</th><th>Covers Until</th><th>Notes</th><th></th>
+                <th>Player</th><th>Classes/mo</th><th>Fee</th><th>Type</th><th>Since</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr></thead>
               <tbody>
-                {filtered.map(p => (
+                {breakPlayers.map(p => (
                   <tr key={p._id}>
-                    <td>{playerName(p.studentId)}</td>
-                    <td>{p.currency} {p.amount.toLocaleString()}</td>
-                    <td>{fmtIST(p.datePaid)}</td>
-                    <td>{fmtIST(p.fromDate)}</td>
-                    <td>{fmtIST(p.untilDate)}</td>
-                    <td>{p.notes || '—'}</td>
+                    <td><span className="cap-td-player">{p.studentName}</span></td>
+                    <td>{p.classesPerMonth}</td>
+                    <td>{p.currency} {(p.fees || 0).toLocaleString()}</td>
+                    <td>{p.classType || 'Private'}</td>
+                    <td>{p.enrollmentDate ? fmtIST(p.enrollmentDate) : <span className="cap-muted">—</span>}</td>
                     <td>
-                      <button className="cap-btn cap-btn-danger" onClick={() => del(p._id)}>Del</button>
+                      <div className="cap-row-actions">
+                        <button className="cap-btn cap-btn-green" onClick={() => rejoin(p._id)}>Rejoin</button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        )}
-      </div>
+
+          <h4 style={{ color: '#94a3b8', fontSize: 13, margin: '0 0 10px' }}>
+            Payments from students on break
+          </h4>
+          {!breakPayments.length ? (
+            <p className="cap-muted">No payments recorded for students on break.</p>
+          ) : (
+            <PaymentTable rows={breakPayments} playerName={playerName} onDelete={del} />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Shared payment table — used for both the active roster and students on break.
+function PaymentTable({ rows, playerName, onDelete }) {
+  return (
+    <div className="cap-table-wrap">
+      <table className="cap-table">
+        <thead><tr>
+          <th>Player</th><th>Amount</th><th>Date Paid</th>
+          <th>Covers From</th><th>Covers Until</th><th>Notes</th><th></th>
+        </tr></thead>
+        <tbody>
+          {rows.map(p => (
+            <tr key={p._id}>
+              <td>{playerName(p.studentId)}</td>
+              <td>{p.currency} {p.amount.toLocaleString()}</td>
+              <td>{fmtIST(p.datePaid)}</td>
+              <td>{fmtIST(p.fromDate)}</td>
+              <td>{fmtIST(p.untilDate)}</td>
+              <td>{p.notes || '—'}</td>
+              <td>
+                <button className="cap-btn cap-btn-danger" onClick={() => onDelete(p._id)}>Del</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

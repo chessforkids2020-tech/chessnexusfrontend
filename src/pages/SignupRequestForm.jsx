@@ -1,6 +1,7 @@
 // src/pages/SignupRequestForm.jsx
 import React, { useState } from "react";
 import api from '../api';
+import { validateUsername, USERNAME_HINT } from '../utils/usernameRules';
 import { trackEvent } from '../lib/analytics';
 import { useNavigate, useLocation } from "react-router-dom";
 import "./SignupRequestForm.css";
@@ -54,9 +55,10 @@ function SignupRequestForm() {
     const newErrors = {};
 
     if (!formData.username.trim()) newErrors.username = "Username is required";
-    else if (formData.username.length < 3) newErrors.username = "Username must be at least 3 characters";
-    else if (formData.username.length > 20) newErrors.username = "Username must be at most 20 characters";
-    else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) newErrors.username = "Username can only contain letters, numbers, and underscores";
+    else {
+      const usernameError = validateUsername(formData.username);
+      if (usernameError) newErrors.username = usernameError;
+    }
 
     if (!formData.displayName.trim()) newErrors.displayName = "Display name is required";
 
@@ -160,7 +162,7 @@ function SignupRequestForm() {
                   className={errors.username ? "error" : ""}
                 />
                 {errors.username && <span className="error-msg">{errors.username}</span>}
-                <small>3-20 characters, letters, numbers, and underscores only</small>
+                <small>{USERNAME_HINT}</small>
               </div>
 
               <div className="form-group">
@@ -257,6 +259,7 @@ function SignupRequestForm() {
                 <option value="Beginner">Beginner</option>
                 <option value="Intermediate">Intermediate</option>
                 <option value="Advanced">Advanced</option>
+                <option value="Master">Master</option>
               </select>
             </div>
 

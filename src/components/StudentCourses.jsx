@@ -31,8 +31,16 @@ export default function StudentCourses() {
     return () => { alive = false; };
   }, [reload]);
 
+  // A UserStudy lesson. Its chapters are embedded subdocs, so a single chapter
+  // opens at /my-studies/:id/chapter/:chapterId — NOT /study/chapter/..., which
+  // reads the separate admin Study/Chapter collections (see openNexusStudy).
   const openStudy = (studyId, chapterId) =>
-    navigate(chapterId ? `/study/chapter/${studyId}/${chapterId}` : `/my-studies/${studyId}`);
+    navigate(chapterId ? `/my-studies/${studyId}/chapter/${chapterId}` : `/my-studies/${studyId}`);
+
+  // An official Nexus study (Admin → Study Management): Study + Chapter models,
+  // always one chapter, served by the existing /study/chapter viewer.
+  const openNexusStudy = (studyId, chapterId) =>
+    navigate(`/study/chapter/${studyId}/${chapterId}`);
 
   const markStudied = async (courseId, lessonIndex) => {
     setMarking(`${courseId}:${lessonIndex}`);
@@ -69,12 +77,14 @@ export default function StudentCourses() {
               const isVideo = l.kind === 'video';
               const isMaster = l.kind === 'masterGame';
               const isEndgame = l.kind === 'endgame';
-              const icon = isVideo ? '🎥' : isMaster ? '♟' : isEndgame ? '🏁' : '📖';
+              const isNexus = l.kind === 'nexusStudy';
+              const icon = isVideo ? '🎥' : isMaster ? '♟' : isEndgame ? '🏁' : isNexus ? '✦' : '📖';
               const markLabel = isVideo ? '✓ Mark as watched' : (isMaster || isEndgame) ? '✓ Mark as reviewed' : '✓ Mark as studied';
               // Open the lesson content by kind.
               const open = () => {
                 if (isMaster) setOpenGameId(l.masterGameId);
                 else if (isEndgame) navigate('/study/endgames');
+                else if (isNexus) openNexusStudy(l.nexusStudyId, l.nexusChapterId);
                 else openStudy(l.studyId, l.chapterId);
               };
               return (
