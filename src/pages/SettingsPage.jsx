@@ -3,6 +3,7 @@ import { BOARD_THEMES, useBoardTheme } from '../contexts/BoardThemeContext';
 import { PIECE_THEMES, usePieceTheme } from '../contexts/PieceThemeContext';
 import AvatarStudio from '../components/AvatarStudio';
 import ProfilePanel from '../components/ProfilePanel';
+import MemberPanel from '../components/MemberPanel';
 
 // Mini 4-square swatch to preview each board theme
 function BoardSwatch({ light, dark, size = 44 }) {
@@ -178,7 +179,15 @@ export default function SettingsPage() {
           <button style={TAB_STYLE('profile')} onClick={() => setActiveTab('profile')}>
             👤 Profile
           </button>
+          <button style={TAB_STYLE('member')} onClick={() => setActiveTab('member')}>
+            💬 Member
+          </button>
         </div>
+
+        {/* ── Member Tab ── */}
+        {activeTab === 'member' && (
+          <MemberPanel />
+        )}
 
         {/* ── Avatar Tab ── */}
         {activeTab === 'avatar' && (

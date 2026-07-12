@@ -9,6 +9,7 @@ import BestRacers from '../components/BestRacers';
 import MonthlyFocusLeaderboard from './monthlyFocus/MonthlyFocusLeaderboard';
 import AboutFeatureCTA from '../components/marketing/AboutFeatureCTA';
 import UserAvatar from '../components/UserAvatar';
+import CoffeeCta from '../components/CoffeeCta';
 import './SocialHubPage.css';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -1459,7 +1460,10 @@ export default function SocialHubPage() {
       {/* Header */}
       <div className="sh-header">
         <div>
-          <h1 className="sh-title">Social Hub</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <h1 className="sh-title" style={{ margin: 0 }}>Social Hub</h1>
+            <CoffeeCta variant="pill" style={{ padding: '5px 12px', fontSize: 12 }} />
+          </div>
           <p className="sh-subtitle">{subtitles[activeTab]}</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

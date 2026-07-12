@@ -67,19 +67,43 @@ export default function AnalyseMyChessGamePage() {
             <p>
               Five clear views of your play, so you know exactly what to work on next.
             </p>
-            <p>
-              The CAPS accuracy score measures your average centipawn loss per
-              move and grades the game with clear, colour-coded bands, while
-              every blunder, mistake and inaccuracy is flagged move by move
-              with the better move shown, so you stop repeating the same
-              errors. A piece heatmap reveals which pieces — pawn, knight,
-              bishop, rook or queen — cost you the most, and a time-pressure
-              breakdown compares your accuracy at normal speed versus when
-              the clock is low, so you know if you fall apart under
-              pressure. Along the way you earn session badges like Blunder
-              Buster, Endgame Apprentice, Opening Scholar and Precision
-              Master, turning progress tracking into something genuinely fun.
-            </p>
+            <ul className="mkt-featurelist">
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🎯</span>
+                <span className="mkt-feat-tx">
+                  <strong>CAPS accuracy score</strong>
+                  <span>Measures your average centipawn loss per move and grades the game with clear, colour-coded bands.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🚨</span>
+                <span className="mkt-feat-tx">
+                  <strong>Blunder detection</strong>
+                  <span>Every blunder, mistake and inaccuracy flagged move by move — with the better move shown — so you stop repeating them.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🔥</span>
+                <span className="mkt-feat-tx">
+                  <strong>Piece heatmap</strong>
+                  <span>Reveals which pieces — pawn, knight, bishop, rook or queen — cost you the most points.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">⏱️</span>
+                <span className="mkt-feat-tx">
+                  <strong>Time-pressure breakdown</strong>
+                  <span>Compares your accuracy at normal speed versus when the clock is low — so you know if you fall apart under pressure.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🏅</span>
+                <span className="mkt-feat-tx">
+                  <strong>Session badges</strong>
+                  <span>Earn Blunder Buster, Endgame Apprentice, Opening Scholar, Precision Master and more — progress tracking that's genuinely fun.</span>
+                </span>
+              </li>
+            </ul>
             <Link to="/game-analysis" className="mkt-card-cta">
               Score a game →
             </Link>

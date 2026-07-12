@@ -21,6 +21,9 @@ export default function CourseBuilder() {
   const [creating, setCreating] = useState(false);
 
   const [selected, setSelected] = useState(null);
+  const [editingCourse, setEditingCourse] = useState(false);   // course-header edit form
+  const [courseForm, setCourseForm] = useState({ title: '', description: '' });
+  const [savingCourse, setSavingCourse] = useState(false);
   const [lessonMode, setLessonMode] = useState('study'); // 'study' | 'video' | 'masterGame' | 'endgame'
   const [pickStudyId, setPickStudyId] = useState('');
   const [pickChapterId, setPickChapterId] = useState(''); // '' = whole study
@@ -80,11 +83,50 @@ export default function CourseBuilder() {
 
   const openCourse = async (courseId) => {
     setLessonErr(''); setEnrollMsg(''); setPickStudyId(''); setEnrollGroupIds([]);
+    setEditingCourse(false);
     try {
       const r = await api.get(`/api/coach/courses/${courseId}`);
       setSelected(r.data?.course || null);
     } catch (err) {
       setError(err.response?.data?.message || 'Could not open course.');
+    }
+  };
+
+  const startEditCourse = () => {
+    setCourseForm({ title: selected.title || '', description: selected.description || '' });
+    setEditingCourse(true);
+  };
+
+  const saveCourse = async () => {
+    if (!courseForm.title.trim()) return;
+    setSavingCourse(true);
+    try {
+      const r = await api.patch(`/api/coach/courses/${selected._id}`, {
+        title: courseForm.title.trim(),
+        description: courseForm.description,
+      });
+      setSelected(r.data?.course || selected);
+      setEditingCourse(false);
+      await loadAll();  // refresh the list so the renamed title shows there too
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not save course.');
+    } finally {
+      setSavingCourse(false);
+    }
+  };
+
+  const deleteCourse = async () => {
+    if (!window.confirm(
+      `Delete "${selected.title}"?\n\n` +
+      `It disappears from your courses and from students' syllabus. ` +
+      `Enrollment and progress records are kept.`
+    )) return;
+    try {
+      await api.delete(`/api/coach/courses/${selected._id}`);
+      setSelected(null);
+      await loadAll();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not delete course.');
     }
   };
 
@@ -413,11 +455,48 @@ export default function CourseBuilder() {
           {selected && (
             <>
               <div className="cb-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h2>{selected.title}</h2>
-                  <Link className="btn-ghost" to={`/coach/courses/${selected._id}/progress`}>📊 Progress</Link>
-                </div>
-                {selected.description && <p className="cb-muted">{selected.description}</p>}
+                {editingCourse ? (
+                  <div style={{ display: 'grid', gap: 10 }}>
+                    <input
+                      className="cb-input"
+                      value={courseForm.title}
+                      onChange={e => setCourseForm(f => ({ ...f, title: e.target.value }))}
+                      placeholder="Course title"
+                      maxLength={200}
+                    />
+                    <textarea
+                      className="cb-input"
+                      rows={3}
+                      value={courseForm.description}
+                      onChange={e => setCourseForm(f => ({ ...f, description: e.target.value }))}
+                      placeholder="Description (optional)"
+                      maxLength={2000}
+                      style={{ resize: 'vertical' }}
+                    />
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button className="btn-primary" onClick={saveCourse}
+                        disabled={savingCourse || !courseForm.title.trim()}>
+                        {savingCourse ? 'Saving…' : 'Save'}
+                      </button>
+                      <button className="btn-ghost" onClick={() => setEditingCourse(false)} disabled={savingCourse}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      <h2 style={{ margin: 0 }}>{selected.title}</h2>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <Link className="btn-ghost" to={`/coach/courses/${selected._id}/progress`}>📊 Progress</Link>
+                        <button className="btn-ghost" onClick={startEditCourse}>✏️ Edit</button>
+                        <button className="btn-ghost" onClick={deleteCourse}
+                          style={{ color: '#f87171', borderColor: 'rgba(248,113,113,0.4)' }}>🗑 Delete</button>
+                      </div>
+                    </div>
+                    {selected.description && <p className="cb-muted">{selected.description}</p>}
+                  </>
+                )}
                 {groups.length > 0 && (
                   <div style={{ marginTop: 10 }}>
                     <div className="cb-muted" style={{ fontSize: 12, marginBottom: 6 }}>Enroll one or more batches into this course:</div>

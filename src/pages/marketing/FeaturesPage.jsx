@@ -50,6 +50,57 @@ export default function FeaturesPage() {
           </div>
         </header>
 
+        <section className="mkt-section" aria-label="What you can do">
+          <h2>What you can do on Chess Nexus</h2>
+          <p className="mkt-section-lead">
+            Six ways to grow at chess, all in one place — free, no ads.
+          </p>
+          <ul className="mkt-featurelist">
+            <li>
+              <span className="mkt-feat-ic" aria-hidden="true">🧩</span>
+              <span className="mkt-feat-tx">
+                <strong>Train tactics</strong>
+                <span>Daily puzzles from World Champion games, a Nexus Guide that finds your weaknesses, plus fun modes like Puzzle Tic-Tac-Toe and Bingo.</span>
+              </span>
+            </li>
+            <li>
+              <span className="mkt-feat-ic" aria-hidden="true">🏁</span>
+              <span className="mkt-feat-tx">
+                <strong>Compete live</strong>
+                <span>Timed puzzle races, team races, and immersive 3D arena tournaments with real-time leaderboards.</span>
+              </span>
+            </li>
+            <li>
+              <span className="mkt-feat-ic" aria-hidden="true">♟️</span>
+              <span className="mkt-feat-tx">
+                <strong>Play chess</strong>
+                <span>Live games against real people or Stockfish, play with friends in private rooms, and spectate live boards.</span>
+              </span>
+            </li>
+            <li>
+              <span className="mkt-feat-ic" aria-hidden="true">🔍</span>
+              <span className="mkt-feat-tx">
+                <strong>Analyse &amp; study</strong>
+                <span>Deep game review with accuracy scores and blunder detection, master games with guess-the-move, and structured study tracks.</span>
+              </span>
+            </li>
+            <li>
+              <span className="mkt-feat-ic" aria-hidden="true">🌐</span>
+              <span className="mkt-feat-tx">
+                <strong>Belong to a community</strong>
+                <span>Friends, clubs, live activity feeds, chat and weekly leaderboards.</span>
+              </span>
+            </li>
+            <li>
+              <span className="mkt-feat-ic" aria-hidden="true">🎓</span>
+              <span className="mkt-feat-tx">
+                <strong>Coach an academy</strong>
+                <span>A full coaching toolkit — roster, batches, attendance, assignments, courses, private races and parent reports.</span>
+              </span>
+            </li>
+          </ul>
+        </section>
+
         <section className="mkt-section" aria-label="All features">
           <h2>Explore every feature</h2>
           <p className="mkt-section-lead">

@@ -1,0 +1,200 @@
+/* CoachProfile.css — visual polish for /coach/profile.
+   Reuses the coach-dashboard theme (cyan→emerald, glass cards). */
+
+/* ── Hero profile header ─────────────────────────── */
+.cp-hero {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 24px 26px;
+  margin-bottom: 26px;
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 160% at 100% 0%, rgba(6, 182, 212, 0.12), transparent 55%),
+    linear-gradient(135deg, rgba(20, 20, 30, 0.72), rgba(14, 16, 24, 0.72));
+  border: 1px solid rgba(6, 182, 212, 0.22);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 24px 60px -34px rgba(0, 0, 0, 0.75);
+  flex-wrap: wrap;
+}
+
+.cp-avatar {
+  width: 84px;
+  height: 84px;
+  flex: none;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  font-weight: 800;
+  color: #04211d;
+  letter-spacing: 0.5px;
+  background: linear-gradient(150deg, #22d3ee, #10b981);
+  box-shadow: 0 12px 28px -10px rgba(16, 185, 129, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+.cp-hero-body { flex: 1 1 260px; min-width: 0; }
+
+.cp-hero-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 4px;
+  font-size: 25px;
+  font-weight: 800;
+  color: #f1f5f9;
+  letter-spacing: -0.01em;
+}
+
+.cp-hero-meta {
+  font-size: 13.5px;
+  color: rgba(226, 232, 240, 0.6);
+  margin: 0 0 12px;
+}
+.cp-hero-meta b { color: rgba(226, 232, 240, 0.85); font-weight: 600; }
+
+.cp-hero-chips { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.cp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 999px;
+  color: rgba(226, 232, 240, 0.8);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.cp-chip.verified { color: #6ee7b7; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.4); }
+.cp-chip.pending  { color: #fcd34d; background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.4); }
+
+/* coach-code chip with copy */
+.cp-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #67e8f9;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  border-radius: 999px;
+  padding: 4px 6px 4px 12px;
+}
+.cp-code button {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: #04211d;
+  background: linear-gradient(180deg, #22d3ee, #10b981);
+  border: none;
+  border-radius: 999px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.cp-hero-actions { display: flex; gap: 8px; flex: none; }
+
+/* ── Card-wrapped section ────────────────────────── */
+.cp-card {
+  background: rgba(20, 20, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin-bottom: 22px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.cp-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.cp-card-head h2 {
+  margin: 0;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+.cp-card-ic {
+  width: 30px; height: 30px; flex: none;
+  display: grid; place-items: center;
+  border-radius: 9px;
+  font-size: 15px;
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+/* ── Detail rows ─────────────────────────────────── */
+.cp-rows { margin-top: 8px; }
+.cp-row {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.cp-row:last-child { border-bottom: none; }
+.cp-row-label {
+  color: rgba(226, 232, 240, 0.5);
+  font-size: 13px;
+  font-weight: 500;
+}
+.cp-row-value { color: #e2e8f0; font-size: 14px; line-height: 1.5; word-break: break-word; }
+.cp-not-set { color: #64748b; font-style: italic; }
+
+/* ── Edit form ───────────────────────────────────── */
+.cp-form { display: grid; gap: 16px; }
+.cp-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+.cp-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.6);
+  margin-bottom: 6px;
+}
+.cp-input,
+.cp-form textarea,
+.cp-form select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.28);
+  color: #e2e8f0;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cp-input:focus,
+.cp-form textarea:focus,
+.cp-form select:focus {
+  border-color: rgba(6, 182, 212, 0.5);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.12);
+}
+.cp-form textarea { resize: vertical; }
+.cp-form-actions { display: flex; gap: 10px; }
+
+@media (max-width: 560px) {
+  .cp-row { grid-template-columns: 1fr; gap: 2px; }
+  .cp-avatar { width: 64px; height: 64px; font-size: 24px; border-radius: 18px; }
+  .cp-hero { gap: 16px; padding: 20px; }
+  .cp-hero-actions { width: 100%; }
+  .cp-hero-actions > * { flex: 1; text-align: center; }
+}

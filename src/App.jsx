@@ -50,6 +50,7 @@ import ReportPage from "./pages/ReportPage";
 import MyReportsPage from "./pages/MyReportsPage";
 import CoachRequests from "./pages/CoachRequests";
 import AdminReports from "./pages/AdminReports";
+import AdminTestimonials from "./pages/AdminTestimonials";
 
 import ArenaTournamentDashboard from "./pages/ArenaTournamentDashboard";
 
@@ -549,6 +550,16 @@ export default function App() {
             <div style={styles.content}>
               <ProtectedRoute requiredRole="admin">
                 <AdminReports />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
+        <Route path="/admin/testimonials" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminTestimonials />
               </ProtectedRoute>
             </div>
             <Footer />

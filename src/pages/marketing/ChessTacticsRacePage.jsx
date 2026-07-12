@@ -60,7 +60,7 @@ export default function ChessTacticsRacePage() {
       <section className="mkt-section">
         <div className="mkt-split">
           <div className="mkt-split-media">
-            <img src="/features/puzzlerace.png" alt="Chess Puzzle Race — timed tactics training" loading="lazy" width="220" height="220" />
+            <img src="/features/racehub.png" alt="Chess Puzzle Race — timed tactics training" loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
             <h2>Ways to race</h2>
@@ -68,17 +68,36 @@ export default function ChessTacticsRacePage() {
               Solo sprints, themed drills or team battles — pick your race and get
               solving.
             </p>
-            <p>
-              In a Timed Puzzle Race you pick a duration — 5, 10 or 15
-              minutes — and chase your best score, streak and accuracy
-              before the clock runs out. Want to drill a specific pattern
-              instead? Race by theme, choosing a topic like forks, pins or
-              mating nets for a tailored set of puzzles. Team up with a Team
-              Race, where every solve adds to your side's score, turning solo
-              practice into a shared challenge. Every race — solo or team —
-              feeds live leaderboards, so you can see how you stack up this
-              week and track the best racers of all time.
-            </p>
+            <ul className="mkt-featurelist">
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">⏱️</span>
+                <span className="mkt-feat-tx">
+                  <strong>Timed Puzzle Race</strong>
+                  <span>Pick a duration — 5, 10 or 15 minutes — and chase your best score, streak and accuracy before the clock runs out.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🎯</span>
+                <span className="mkt-feat-tx">
+                  <strong>Race by theme</strong>
+                  <span>Drill a specific pattern — forks, pins, mating nets and more — with a tailored set of puzzles.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">👥</span>
+                <span className="mkt-feat-tx">
+                  <strong>Team Race</strong>
+                  <span>Every solve adds to your side's score — turning solo practice into a shared team challenge.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🏆</span>
+                <span className="mkt-feat-tx">
+                  <strong>Live leaderboards</strong>
+                  <span>Every race feeds live leaderboards — see how you stack up this week and track the best racers of all time.</span>
+                </span>
+              </li>
+            </ul>
             <Link to="/arena-race" className="mkt-card-cta">
               Start a race →
             </Link>

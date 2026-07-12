@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import SEO from '../components/SEO';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import CoffeeCta from '../components/CoffeeCta';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -684,24 +685,27 @@ export default function SchedulePage() {
           <img src="/logo.png" alt="Chess Nexus" style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
         </button>
 
-        {/* Right: auth action */}
-        {user ? (
-          <button
-            className="sched-nav-btn"
-            onClick={() => navigate('/dashboard')}
-            style={{ background: '#06b6d4', color: '#000', border: 'none', borderRadius: 20, padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
-          >
-            Dashboard →
-          </button>
-        ) : (
-          <button
-            className="sched-nav-btn"
-            onClick={() => navigate('/login')}
-            style={{ background: '#06b6d4', color: '#000', border: 'none', borderRadius: 20, padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
-          >
-            Login
-          </button>
-        )}
+        {/* Right: buy-us-a-coffee + auth action */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <CoffeeCta variant="pill" style={{ padding: '6px 14px', fontSize: 12 }} />
+          {user ? (
+            <button
+              className="sched-nav-btn"
+              onClick={() => navigate('/dashboard')}
+              style={{ background: '#06b6d4', color: '#000', border: 'none', borderRadius: 20, padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
+            >
+              Dashboard →
+            </button>
+          ) : (
+            <button
+              className="sched-nav-btn"
+              onClick={() => navigate('/login')}
+              style={{ background: '#06b6d4', color: '#000', border: 'none', borderRadius: 20, padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
+            >
+              Login
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Header */}

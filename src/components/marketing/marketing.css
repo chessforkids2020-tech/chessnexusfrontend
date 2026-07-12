@@ -430,3 +430,60 @@ a.mkt-card:hover {
   .mkt-legal { font-size: 14.5px; }
   .mkt-legal h2 { font-size: 19px; }
 }
+
+/* ---------- Feature list (scannable icon + title + desc rows) ---------- */
+/* Replaces dense marketing paragraphs so each capability is easy to skim. */
+.mkt-featurelist {
+  list-style: none;
+  margin: 18px 0 22px;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.mkt-featurelist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+}
+.mkt-feat-ic {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  border-radius: 11px;
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.28);
+}
+.mkt-feat-tx { min-width: 0; }
+.mkt-feat-tx strong {
+  display: block;
+  color: #f1f5f9;
+  font-size: 15.5px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.mkt-feat-tx span {
+  display: block;
+  color: rgba(226, 232, 240, 0.62);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Compact "what you get" chip row — a quick at-a-glance summary. */
+.mkt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 6px 0 18px;
+}
+.mkt-chip {
+  font-size: 13px;
+  font-weight: 600;
+  color: #67e8f9;
+  background: rgba(6, 182, 212, 0.08);
+  border: 1px solid rgba(6, 182, 212, 0.24);
+  border-radius: 999px;
+  padding: 6px 13px;
+}

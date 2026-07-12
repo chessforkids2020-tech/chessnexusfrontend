@@ -469,7 +469,7 @@ function AdminDashboard() {
   // "Needs attention" counts for the top nav badges (like chat unread pips):
   // open reports, pending supporters, unverified coaches. Polled for a
   // near-real-time feel.
-  const [badgeCounts, setBadgeCounts] = useState({ reports: 0, supporters: 0, coaches: 0, titleClaims: 0 });
+  const [badgeCounts, setBadgeCounts] = useState({ reports: 0, supporters: 0, coaches: 0, titleClaims: 0, eventSubmissions: 0 });
   // Ids of items that "need attention" from the server; the coaches/supporters
   // pips count only the ones this admin hasn't dismissed by viewing the list.
   const [unverifiedCoachIds, setUnverifiedCoachIds] = useState([]);
@@ -485,6 +485,7 @@ function AdminDashboard() {
             supporters: r.data.supporters || 0,
             coaches: r.data.coaches || 0,
             titleClaims: r.data.titleClaims || 0,
+            eventSubmissions: r.data.eventSubmissions || 0,
           });
           setUnverifiedCoachIds(Array.isArray(r.data.coachIds) ? r.data.coachIds : []);
           setPendingSupporterIds(Array.isArray(r.data.supporterIds) ? r.data.supporterIds : []);
@@ -1225,6 +1226,9 @@ function AdminDashboard() {
           <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/reports')}>
             🚩 Reports{renderNavBadge(badgeCounts.reports)}
           </button>
+          <button style={styles.secondaryBtn} onClick={() => nav('/admin/testimonials')}>
+            💬 Testimonials
+          </button>
           <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/supporters')}>
             ☕ Supporters{renderNavBadge(supporterBadge)}
           </button>
@@ -1522,21 +1526,45 @@ function AdminDashboard() {
 
       <div style={{
         ...styles.card,
+        position: "relative",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         padding: 16,
         marginTop: 12,
         background: "linear-gradient(135deg, #fff 0%, #f8fafc 100%)",
-        border: "1px solid #e6f3ea"
+        border: badgeCounts.eventSubmissions ? "1px solid #ef4444" : "1px solid #e6f3ea"
       }}>
+        {badgeCounts.eventSubmissions > 0 && (
+          <span style={{
+            position: 'absolute', top: -8, right: -8,
+            minWidth: 20, height: 20, padding: '0 6px',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 12, fontWeight: 800, lineHeight: 1,
+            color: '#fff', background: '#ef4444', borderRadius: 999,
+            boxShadow: '0 0 0 2px #fff',
+          }}>
+            {badgeCounts.eventSubmissions > 99 ? '99+' : badgeCounts.eventSubmissions}
+          </span>
+        )}
         <div>
-          <h3 style={{ marginTop: 0, marginBottom: 4, color: "#064f28" }}>📨 Event Submissions</h3>
+          <h3 style={{ marginTop: 0, marginBottom: 4, color: "#064f28", display: 'flex', alignItems: 'center', gap: 8 }}>
+            📨 Event Submissions
+            {badgeCounts.eventSubmissions > 0 && (
+              <span style={{
+                fontSize: 12, fontWeight: 700, color: '#ef4444',
+                background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+                borderRadius: 999, padding: '2px 10px',
+              }}>
+                {badgeCounts.eventSubmissions} new
+              </span>
+            )}
+          </h3>
           <p style={{ margin: 0, color: "#666", fontSize: 14 }}>
             Review events submitted by users and manage approvals
           </p>
         </div>
-        <button 
+        <button
           onClick={() => nav('/admin/event-submissions')}
           style={{
             padding: "10px 20px",

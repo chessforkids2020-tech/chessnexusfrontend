@@ -4,7 +4,7 @@ import SEO from '../components/SEO';
 import { useAuth } from "../contexts/AuthContext";
 import Sidebar from "../components/Sidebar";
 import HomepagePuzzle from "../components/HomepagePuzzle";
-import CoffeeCta from "../components/CoffeeCta";
+import BookDemoModal from "../components/BookDemoModal";
 import { Link, useNavigate } from "react-router-dom";
 import "./HomePage.css";
 
@@ -209,6 +209,34 @@ const FEATURE_BUCKETS = [
   },
 ];
 
+// ── Player feature cards (image + copy) ──────────────────────
+const PLAYER_FEATURES = [
+  { img: '/features/puzzleshub.png',     title: 'Puzzle Dashboard', desc: 'Tracks every theme a player solves and surfaces their <b>strong and weak tactics</b> — so training targets exactly what needs work.' },
+  { img: '/features/improveatchess.png', title: 'Nexus Guide',      desc: "Scans a player's games to <b>pinpoint recurring weaknesses</b> and tells them what to practise next — a personal coach in the background." },
+  { img: '/features/analysis.png',       title: 'Deep Analysis',    desc: 'Server-side <b>Stockfish 18</b> reviews every game and returns <b>clear, plain-language insights</b> — blunders, turning points and better plans.' },
+  { img: '/features/study.png',          title: 'Studies',          desc: "A library of <b>endgame studies, master games</b> and Nexus's own curated studies — structured lessons players can work through anytime." },
+  { img: '/features/3darena.png',        title: '3D Arena',         desc: 'An <b>immersive 3D board</b> that makes online play feel real — perfect for keeping younger players engaged and having fun.' },
+  { img: '/features/clubs.png',          title: 'Social Club',      desc: 'Clubs, friends and chat in a <b>safe, moderated space</b> — students compete, discuss games and belong to a community.' },
+];
+
+// Placeholder testimonials shown until an admin features real ones on the
+// homepage (Admin → Testimonials → ★ Feature on homepage).
+const FALLBACK_TESTIMONIALS = [
+  { av: 'CA', cls: '',  text: "The daily puzzles are my favourite part. I do a few every morning and I've slowly stopped hanging pieces.", name: 'chess_arjun', sub: 'Rating 1412' },
+  { av: 'PP', cls: 'v', text: "I love the tactics races with my friends after class. It doesn't even feel like practice.", name: 'puzzle_priya', sub: 'Rating 1388' },
+  { av: 'KK', cls: 'w', text: "The game analysis actually tells me what went wrong in plain words. It's like a coach is sitting with me.", name: 'knight_kai', sub: 'Rating 1465' },
+  { av: 'RR', cls: '',  text: "I used to get stuck in endgames. The endgame studies here fixed that for me.", name: 'rook_rhea', sub: 'Rating 1430' },
+  { av: 'BB', cls: 'v', text: "Everything is in one place — puzzles, play, studies. I don't jump between apps anymore.", name: 'bishop_ben', sub: 'Rating 1451' },
+];
+
+// Initials for a testimonial avatar. Rotates the accent color by index.
+const QUOTE_AV_CLASSES = ['', 'v', 'w'];
+function testimonialInitials(name) {
+  if (!name) return '★';
+  const parts = String(name).replace(/[_-]+/g, ' ').trim().split(/\s+/).slice(0, 2);
+  return parts.map(w => w[0]?.toUpperCase() || '').join('') || '★';
+}
+
 // ── Helpers ──────────────────────────────────────────────────
 function getActivePlayers() {
   const bucket = Math.floor(Date.now() / (15 * 60 * 1000));
@@ -251,14 +279,6 @@ function useCountdown(target) {
   return time;
 }
 
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "Good Morning";
-  if (h < 17) return "Good Afternoon";
-  if (h < 21) return "Good Evening";
-  return "Good Night";
-}
-
 const MEDALS = ['🥇', '🥈', '🥉'];
 const ROW_CLASS = ['hp-row-gold', 'hp-row-silver', 'hp-row-bronze'];
 
@@ -278,12 +298,8 @@ function LiveTimer({ target, color, label, inline }) {
 function ContestRow({ icon, title, desc, time, isLive, onClick, className = '' }) {
   const clickable = typeof onClick === 'function';
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={!clickable}
-      className={`hp-contest-row hp-contest-row-btn${isLive ? ' hp-contest-row-live' : ''}${className ? ' ' + className : ''}`}
-      style={clickable ? undefined : { cursor: 'default' }}
+    <div
+      className={`hp-contest-row${isLive ? ' hp-contest-row-live' : ''}${clickable ? ' hp-contest-row-active' : ''}${className ? ' ' + className : ''}`}
     >
       <div className="hp-contest-icon-wrap">{icon}</div>
       <div className="hp-contest-body">
@@ -295,9 +311,11 @@ function ContestRow({ icon, title, desc, time, isLive, onClick, className = '' }
       </div>
       {time}
       {clickable && (
-        <span className="hp-contest-join">{isLive ? 'Join Now' : 'Join'} →</span>
+        <button type="button" className="hp-contest-join" onClick={onClick}>
+          {isLive ? 'Join Now' : 'Join'} →
+        </button>
       )}
-    </button>
+    </div>
   );
 }
 
@@ -340,12 +358,16 @@ export default function HomePage() {
 
   const [activePlayers,     setActivePlayers]     = useState(getActivePlayers);
   const [arenaTarget]                             = useState(getArenaTarget);
-  const [focusChampion,     setFocusChampion]     = useState(null);
+  const [demoOpen,          setDemoOpen]          = useState(false);
+  // Admin-featured testimonials (null = still loading → use fallback).
+  const [featuredQuotes,    setFeaturedQuotes]    = useState(null);
 
   useEffect(() => {
     fetchTopPlayers();
     fetchSchedule();
-    fetchFocusChampion();
+    api.get('/api/testimonials/featured')
+      .then(r => setFeaturedQuotes(Array.isArray(r.data) ? r.data : []))
+      .catch(() => setFeaturedQuotes([]));
     document.body.classList.add('no-header-padding');
     const interval = setInterval(() => setActivePlayers(getActivePlayers()), 15 * 60 * 1000);
     return () => {
@@ -370,16 +392,6 @@ export default function HomePage() {
       setContests(buildContestRows(null));
     }
   };
-
-  const fetchFocusChampion = async () => {
-    try {
-      const { data } = await api.get('/api/public/monthly-focus/leaderboard');
-      if (data.leaderboard && data.leaderboard.length > 0) {
-        setFocusChampion(data.leaderboard[0]);
-      }
-    } catch {}
-  };
-
 
   const CONTEST_ROUTES = {
     arena_race:       '/arena',
@@ -407,7 +419,17 @@ export default function HomePage() {
       });
   };
 
-  const displayName = user?.displayName || user?.username || "Player";
+  // Show admin-featured testimonials if any exist; otherwise the placeholders.
+  const quotes = (featuredQuotes && featuredQuotes.length > 0)
+    ? featuredQuotes.map((t, i) => ({
+        av: testimonialInitials(t.displayName || t.username),
+        cls: QUOTE_AV_CLASSES[i % QUOTE_AV_CLASSES.length],
+        text: t.text,
+        name: t.displayName || t.username || 'Player',
+        sub: `★ ${t.rating}/5`,
+        raw: true, // plain text (not HTML)
+      }))
+    : FALLBACK_TESTIMONIALS;
 
   return (
     <div className="hp-root">
@@ -423,24 +445,39 @@ export default function HomePage() {
 
       <div className="hp-content">
 
-        {/* ── HEADER ── */}
-        <div className="hp-glass hp-header">
-          <div>
-            <h1 className="hp-greeting">{getGreeting()}, {displayName}! 👋</h1>
-            <p className="hp-subgreeting">Keep solving, keep improving.</p>
-          </div>
-          <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-            {focusChampion && (
-              <div className="hp-champion-badge">
-                <span className="hp-champion-crown">👑</span>
-                <div className="hp-champion-info">
-                  <span className="hp-champion-label">Champion of the Month</span>
-                  <span className="hp-champion-name">{focusChampion.displayName || focusChampion.username}</span>
-                </div>
+        {/* ── COACH HERO (image + workspace pill bar) ── */}
+        <div className="hp-glass hp-hero">
+          <div className="hp-hero-grid">
+            <div className="hp-hero-copy">
+              <span className="hp-hero-kicker"><span className="hp-hero-dot" />For chess coaches &amp; academies</span>
+              <h1 className="hp-hero-title">Run your entire coaching in <span className="hp-hero-accent">one place.</span></h1>
+              <p className="hp-hero-sub">
+                <b>Start for free</b> — board your coach account and manage students, assignments and progress, all in one place.
+              </p>
+              <div className="hp-hero-cta">
+                <button type="button" className="hp-hero-btn hp-hero-btn-primary" onClick={() => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login')}>Start free</button>
+                <button type="button" className="hp-hero-btn hp-hero-btn-ghost" onClick={() => setDemoOpen(true)}>Book free demo</button>
               </div>
-            )}
+            </div>
+            <div className="hp-hero-shot">
+              <div className="hp-hero-frame">
+                <img src="/Screenshot 2026-07-11 142338.png" alt="ChessNexus coach dashboard with students, assignments and activity charts" loading="eager" />
+              </div>
+              <div className="hp-hero-badge"><i />Live coach dashboard</div>
+            </div>
           </div>
-          <CoffeeCta variant="pill" style={{ padding: '6px 12px', fontSize: 12 }} />
+
+          <div className="hp-hero-pilllabel">Your coach workspace</div>
+          <div className="hp-hero-pillbar">
+            <span className="hp-pill">🏠 Dashboard</span>
+            <span className="hp-pill">📝 Assignments</span>
+            <span className="hp-pill">📚 Courses</span>
+            <span className="hp-pill">📖 Library</span>
+            <span className="hp-pill">👥 Batches</span>
+            <span className="hp-pill">📅 Schedule</span>
+            <span className="hp-pill">🎯 Activities</span>
+            <span className="hp-pill">📋 Attendance</span>
+          </div>
         </div>
 
         {/* ── TOP ROW: Puzzle + Right Column ── */}
@@ -511,7 +548,7 @@ export default function HomePage() {
           <div className="hp-stat-item">
             <span className="hp-stat-icon">🧩</span>
             <div className="hp-stat-text">
-              <span className="hp-stat-value">1K+</span>
+              <span className="hp-stat-value">5K+</span>
               <span className="hp-stat-label">Puzzles Solved</span>
             </div>
           </div>
@@ -519,7 +556,7 @@ export default function HomePage() {
           <div className="hp-stat-item">
             <span className="hp-stat-icon">🏆</span>
             <div className="hp-stat-text">
-              <span className="hp-stat-value">50+</span>
+              <span className="hp-stat-value">300+</span>
               <span className="hp-stat-label">Tournaments Held</span>
             </div>
           </div>
@@ -536,9 +573,9 @@ export default function HomePage() {
         {/* ── WHAT CHESS NEXUS OFFERS — 6 feature buckets ── */}
         <div className="hp-showcase">
           <div className="hp-showcase-head">
-            <span className="hp-showcase-eyebrow"><span className="hp-showcase-dot" />Everything in one place</span>
-            <h2 className="hp-showcase-title">One platform. Everything you need to improve at chess.</h2>
-            <p className="hp-showcase-sub">Train, analyze, compete, study, and play — plus a full coaching toolkit. Deep enough for a serious academy, simple enough to start in seconds.</p>
+            <span className="hp-showcase-eyebrow"><span className="hp-showcase-dot" />For your students</span>
+            <h2 className="hp-showcase-title">Everything your players get, included.</h2>
+            <p className="hp-showcase-sub">One login opens the full Chess Nexus experience — the tools that actually make players stronger.</p>
             <div className="hp-showcase-trust">
               <span className="hp-showcase-pill hp-showcase-pill-free"><span className="hp-showcase-pill-ic">★</span> 100% free to start</span>
               <span className="hp-showcase-pill"><span className="hp-showcase-pill-ic">✓</span> No ads, ever</span>
@@ -546,38 +583,15 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="hp-showcase-grid">
-            {FEATURE_BUCKETS.map(b => (
-              <div
-                key={b.key}
-                className={`hp-glass hp-bucket${b.ribbon ? ' hp-bucket-coach' : ''}`}
-                style={{
-                  '--bk-accent': b.accent, '--bk-accent2': b.accent2, '--bk-glow': b.glow,
-                  '--bk-border': b.border, '--bk-chip-bg': b.chipBg, '--bk-chip-bd': b.chipBd,
-                }}
-              >
-                {b.ribbon && <span className="hp-bucket-ribbon">{b.ribbon}</span>}
-                <div className="hp-bucket-head">
-                  <span className="hp-bucket-icon" aria-hidden="true">{b.icon}</span>
-                  <div className="hp-bucket-titles">
-                    <span className="hp-bucket-title">{b.title}</span>
-                    <span className="hp-bucket-tag">{b.tag}</span>
-                  </div>
+          <div className="hp-featgrid">
+            {PLAYER_FEATURES.map(f => (
+              <article key={f.title} className="hp-glass hp-feat">
+                <div className="hp-feat-img"><img src={f.img} alt="" loading="lazy" /></div>
+                <div className="hp-feat-tx">
+                  <h3>{f.title}</h3>
+                  <p dangerouslySetInnerHTML={{ __html: f.desc }} />
                 </div>
-                <div className="hp-bucket-divider" />
-                <ul className="hp-bucket-list">
-                  {b.items.map((it, i) => <li key={i}>{it}</li>)}
-                </ul>
-                {b.chips && (
-                  <>
-                    <div className="hp-bucket-divider" />
-                    <div className="hp-bucket-chips">
-                      {b.chips.map((c, i) => <span key={i} className="hp-bucket-chip">{c}</span>)}
-                    </div>
-                  </>
-                )}
-                {b.note && <p className="hp-bucket-note">{b.note}</p>}
-              </div>
+              </article>
             ))}
           </div>
 
@@ -589,66 +603,38 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ── ARE YOU A COACH? — rich promo card ── */}
-        {/* Logged-in user → coach onboarding; guest/logged-out → login. */}
+        {/* ── FOR COACHES — image + circular-icon feature grid ── */}
         {(() => {
           const goCoach = () => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login');
-          // Per-benefit accent colors, as explicit rgba (no color-mix — keep old-browser safe).
-          const COACH_BENEFITS = [
-            { icon: '🧑‍🎓', title: 'Your students, organized', desc: 'One roster with ratings, activity & attendance at a glance.',
-              accent: '#06b6d4', glow: 'rgba(6,182,212,0.30)', bd30: 'rgba(6,182,212,0.30)', bd60: 'rgba(6,182,212,0.60)', chipBg: 'rgba(6,182,212,0.18)', chipBd: 'rgba(6,182,212,0.40)' },
-            { icon: '⚡', title: 'Assign in seconds', desc: 'Push puzzles, studies & custom tasks to individuals or the whole group.',
-              accent: '#f59e0b', glow: 'rgba(245,158,11,0.30)', bd30: 'rgba(245,158,11,0.30)', bd60: 'rgba(245,158,11,0.60)', chipBg: 'rgba(245,158,11,0.18)', chipBd: 'rgba(245,158,11,0.40)' },
-            { icon: '📈', title: 'See real progress', desc: 'Track every student’s growth, streaks and weak spots over time.',
-              accent: '#10b981', glow: 'rgba(16,185,129,0.30)', bd30: 'rgba(16,185,129,0.30)', bd60: 'rgba(16,185,129,0.60)', chipBg: 'rgba(16,185,129,0.18)', chipBd: 'rgba(16,185,129,0.40)' },
-            { icon: '📊', title: 'Reports parents love', desc: 'Shareable progress reports that make your coaching value obvious.',
-              accent: '#a78bfa', glow: 'rgba(167,139,250,0.30)', bd30: 'rgba(167,139,250,0.30)', bd60: 'rgba(167,139,250,0.60)', chipBg: 'rgba(167,139,250,0.18)', chipBd: 'rgba(167,139,250,0.40)' },
+          const CoachIcon = ({ d }) => (
+            <svg viewBox="0 0 24 24" fill="none"><path d={d} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          );
+          const COACH_FEATS = [
+            { d: 'M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-4A3.5 3.5 0 0 0 5 18.5V20M9 11a3.25 3.25 0 1 0 0-6.5A3.25 3.25 0 0 0 9 11M19 20v-1.4a3.2 3.2 0 0 0-2.4-3.1M15.5 4.7a3.2 3.2 0 0 1 0 6.1', title: 'Roster & Batches', desc: 'Unlimited groups, private notes, students online' },
+            { d: 'M7 3v3M17 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1ZM9 13l2 2 4-4', title: 'Attendance & Fees', desc: 'Mark in a tap, request payments, CSV export' },
+            { d: 'M4 5.5A2.5 2.5 0 0 1 6.5 3H20v14H6.5A2.5 2.5 0 0 0 4 19.5V5.5ZM4 19.5A2.5 2.5 0 0 0 6.5 22H20', title: 'Assignments & Courses', desc: '7 types: templates, studies & master games' },
+            { d: 'M14 3v4a1 1 0 0 0 1 1h4M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-4-5ZM9 13h6M9 17h4', title: 'Parent Reports', desc: 'One shareable progress link per student' },
           ];
           return (
-            <div className="hp-coachpromo">
-              <div className="hp-coachpromo-glow hp-coachpromo-glow-1" aria-hidden="true" />
-              <div className="hp-coachpromo-glow hp-coachpromo-glow-2" aria-hidden="true" />
-              <div className="hp-coachpromo-hero" aria-hidden="true">🎓</div>
-              <div className="hp-coachpromo-inner">
-                <div className="hp-coachpromo-head">
-                  <div className="hp-coachpromo-badges">
-                    <span className="hp-coachpromo-eyebrow">🎓 For Coaches</span>
-                    <span className="hp-coachpromo-trial-badge">✦ FREE FOREVER</span>
-                  </div>
-                  <h2 className="hp-coachpromo-title">
-                    Run your entire coaching<br />practice in one place
-                  </h2>
-                  <p className="hp-coachpromo-sub">
-                    Manage students, hand out assignments, and track every player’s
-                    progress — a complete toolkit built for chess coaches.
-                  </p>
-                </div>
-
-                <div className="hp-coachpromo-grid">
-                  {COACH_BENEFITS.map(b => (
-                    <div
-                      key={b.title}
-                      className="hp-coachpromo-benefit"
-                      style={{ '--cp-accent': b.accent, '--cp-glow': b.glow, '--cp-bd30': b.bd30, '--cp-bd60': b.bd60, '--cp-chip-bg': b.chipBg, '--cp-chip-bd': b.chipBd }}
-                    >
-                      <span className="hp-coachpromo-benefit-icon">{b.icon}</span>
-                      <div>
-                        <div className="hp-coachpromo-benefit-title">{b.title}</div>
-                        <div className="hp-coachpromo-benefit-desc">{b.desc}</div>
-                      </div>
+            <div className="hp-glass hp-cshow">
+              <div className="hp-cshow-img">
+                <img src="/features/homecoach.png" alt="ChessNexus coach workspace on laptop and tablet with a class notebook" loading="lazy" />
+              </div>
+              <div className="hp-cshow-tx">
+                <span className="hp-cshow-eyebrow">For coaches</span>
+                <h2 className="hp-cshow-title">Built for how you <em>actually</em> coach.</h2>
+                <p className="hp-cshow-sub">Everything you juggle across five apps and a spreadsheet — unified in one workspace built for chess coaches.</p>
+                <div className="hp-cshow-grid">
+                  {COACH_FEATS.map(f => (
+                    <div key={f.title} className="hp-cshow-item">
+                      <span className="hp-cshow-ic"><CoachIcon d={f.d} /></span>
+                      <div><h3>{f.title}</h3><p>{f.desc}</p></div>
                     </div>
                   ))}
                 </div>
-
-                <div className="hp-coachpromo-foot">
-                  <div className="hp-coachpromo-trust">
-                    <span>✓ Free — up to 30 students</span>
-                    <span className="hp-coachpromo-trust-dot">•</span>
-                    <span>✓ No card required</span>
-                    <span className="hp-coachpromo-trust-dot">•</span>
-                    <span>✓ No time limit</span>
-                  </div>
-                  <button type="button" className="hp-coachpromo-btn" onClick={goCoach}>
+                <div className="hp-cshow-foot">
+                  <div className="hp-cshow-trust"><span>✓ Free — up to 30 students</span><span>•</span><span>No card required</span></div>
+                  <button type="button" className="hp-cshow-btn" onClick={goCoach}>
                     {(user && user.role !== 'guest') ? 'Start coaching free →' : 'Log in to start →'}
                   </button>
                 </div>
@@ -656,6 +642,61 @@ export default function HomePage() {
             </div>
           );
         })()}
+
+        {/* ── HOW IT WORKS — illustrated flow ── */}
+        <div className="hp-glass hp-howit">
+          <div className="hp-howit-head">
+            <span className="hp-cshow-eyebrow">Up and running in minutes</span>
+            <h2 className="hp-cshow-title">How it <em>works.</em></h2>
+          </div>
+          <div className="hp-flow">
+            <div className="hp-flow-line" aria-hidden="true" />
+            <div className="hp-flow-step">
+              <span className="hp-flow-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 20a7 7 0 0 1 12-4.9M17 14v6M20 17h-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
+              <div><div className="hp-flow-n"><i>1</i><b>Create your free account</b></div><p>Board your coach account in under a minute — no card required.</p></div>
+            </div>
+            <span className="hp-flow-arrow" aria-hidden="true">→</span>
+            <div className="hp-flow-step">
+              <span className="hp-flow-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-4A3.5 3.5 0 0 0 5 18.5V20M9 11a3.25 3.25 0 1 0 0-6.5A3.25 3.25 0 0 0 9 11M19 20v-1.4a3.2 3.2 0 0 0-2.4-3.1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
+              <div><div className="hp-flow-n"><i>2</i><b>Add students &amp; batches</b></div><p>Invite players, group them, set your schedule and fees.</p></div>
+            </div>
+            <span className="hp-flow-arrow" aria-hidden="true">→</span>
+            <div className="hp-flow-step">
+              <span className="hp-flow-ic"><svg viewBox="0 0 24 24" fill="none"><path d="M9 3h6a1 1 0 0 1 1 1v1h2a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h2V4a1 1 0 0 1 1-1ZM9 13l2 2 3.5-3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
+              <div><div className="hp-flow-n"><i>3</i><b>Assign, track &amp; report</b></div><p>Push homework, mark attendance, share parent reports.</p></div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── PLAYER TESTIMONIALS ── */}
+        <div className="hp-showcase-head" style={{ marginBottom: 20 }}>
+          <span className="hp-showcase-eyebrow"><span className="hp-showcase-dot" />Loved by players</span>
+          <h2 className="hp-showcase-title">What our players say.</h2>
+        </div>
+        <div className="hp-quotes-wrap">
+          <button type="button" className="hp-quotes-arrow" aria-label="Scroll left"
+            onClick={() => document.getElementById('hpQuotes')?.scrollBy({ left: -340, behavior: 'smooth' })}>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+          <div className="hp-quotes" id="hpQuotes">
+            {quotes.map((q, i) => (
+              <figure key={q.name + i} className="hp-glass hp-quote">
+                <div className="hp-quote-stars">★★★★★</div>
+                {q.raw
+                  ? <blockquote>{q.text}</blockquote>
+                  : <blockquote dangerouslySetInnerHTML={{ __html: q.text }} />}
+                <figcaption className="hp-quote-who">
+                  <span className={`hp-quote-av ${q.cls}`}>{q.av}</span>
+                  <span className="hp-quote-nm"><span className="n">{q.name}</span><span className="s">{q.sub}</span></span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <button type="button" className="hp-quotes-arrow next" aria-label="Scroll right"
+            onClick={() => document.getElementById('hpQuotes')?.scrollBy({ left: 340, behavior: 'smooth' })}>
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+        </div>
 
         {/* ── COLLABORATE / BECOME ELITE (same card as Members page) ── */}
         <div className="hp-callout">
@@ -679,6 +720,8 @@ export default function HomePage() {
         </div>
 
       </div>
+
+      <BookDemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
   );
 }

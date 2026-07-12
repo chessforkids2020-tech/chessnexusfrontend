@@ -66,7 +66,7 @@ export default function ChessPuzzlesPage() {
       <section className="mkt-section">
         <div className="mkt-split mkt-split-reverse">
           <div className="mkt-split-media">
-            <img src="/features/chessonline.png" alt="Free chess puzzles and daily tactics training" loading="lazy" width="220" height="220" />
+            <img src="/features/puzzleshub.png" alt="Free chess puzzles and daily tactics training" loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
             <h2>Everything inside the Puzzle Hub</h2>
@@ -74,21 +74,43 @@ export default function ChessPuzzlesPage() {
               One hub, five ways to train your chess tactics — pick the one that fits
               your mood today. All free, forever.
             </p>
-            <p>
-              Every day brings a fresh Daily Chess Puzzle drawn from real
-              super-grandmaster and World Champion games, so you train on the
-              exact tactics the masters found over the board. The Monthly
-              Focus Challenge is a 7-day guided tactics program with a
-              brand-new themed challenge each day, letting you earn XP,
-              unlock achievements and climb the monthly leaderboard while
-              building a training habit that sticks. For a change of pace,
-              TTT — Puzzle Tic-Tac-Toe — has you solve a puzzle to claim a
-              square and outmanoeuvre your opponent to complete a line, while
-              Bingo has you spot the tactical theme behind each puzzle —
-              fork, pin, skewer, discovered attack and more — to mark off
-              your card. And every day also brings a fresh, bite-sized chess
-              tip that rotates automatically at midnight IST.
-            </p>
+            <ul className="mkt-featurelist">
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🧩</span>
+                <span className="mkt-feat-tx">
+                  <strong>Daily Chess Puzzle</strong>
+                  <span>A fresh puzzle every day from real super-grandmaster and World Champion games — train the exact tactics the masters found over the board.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🎯</span>
+                <span className="mkt-feat-tx">
+                  <strong>Monthly Focus Challenge</strong>
+                  <span>A 7-day guided tactics program with a new themed challenge each day — earn XP, unlock achievements and climb the monthly leaderboard.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">⭕</span>
+                <span className="mkt-feat-tx">
+                  <strong>Puzzle Tic-Tac-Toe</strong>
+                  <span>Solve a puzzle to claim a square and outmanoeuvre your opponent to complete a line — tactics with a playful twist.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🎱</span>
+                <span className="mkt-feat-tx">
+                  <strong>Puzzle Bingo</strong>
+                  <span>Spot the tactical theme behind each puzzle — fork, pin, skewer, discovered attack and more — to mark off your card.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">💡</span>
+                <span className="mkt-feat-tx">
+                  <strong>Daily Chess Tip</strong>
+                  <span>A fresh, bite-sized lesson that rotates automatically at midnight IST — a little insight every single day.</span>
+                </span>
+              </li>
+            </ul>
             <Link to="/puzzles-hub" className="mkt-card-cta">
               Solve today's puzzle →
             </Link>

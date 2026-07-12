@@ -417,7 +417,7 @@
 }
 
 /* Sortable monthly-summary headers */
-.cap-th-sort { cursor: pointer; user-select: none; white-space: nowrap; }
+.cap-th-sort { cursor: pointer; -webkit-user-select: none; user-select: none; white-space: nowrap; }
 .cap-th-sort:hover { color: #06b6d4; }
 
 /* Attendance confirmation log */

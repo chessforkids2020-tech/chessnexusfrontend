@@ -68,33 +68,58 @@ export default function ChessCoachingPage() {
       <section className="mkt-section">
         <div className="mkt-split">
           <div className="mkt-split-media">
-            <img src="/features/chesscoaching.png" alt="Chess Coaching Platform — run your academy on Chess Nexus" loading="lazy" width="220" height="220" />
+            <img src="/features/coaching.png" alt="Chess Coaching Platform — run your academy on Chess Nexus" loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
             <h2>Everything you need to run a coaching practice</h2>
             <p>
               From your first student to a full academy — one dashboard covers
-              rosters, lessons, live class activities and parent communication.
+              rosters, lessons, live activities and parent communication.
             </p>
-            <p>
-              One dashboard shows ratings, activity and attendance for every
-              student — group them into batches by level, age or class, set
-              a weekly class schedule with day, time and Zoom link per
-              batch, and see who's online right now. Push tactics
-              assignments in seconds: Find-the-Blunder puzzles from real
-              games, or Play-vs-Stockfish positions set up on a visual board
-              editor with no FEN typing required, reusing saved templates or
-              pulling from the admin blunder library, with solve rate and
-              accuracy tracked per student. Build a structured syllabus with
-              the Course Builder from your own studies — chapters of
-              lessons, videos, master games and endgame positions — that
-              students follow per batch from a dedicated "My Syllabus" tab.
-              Run Arena Races and Tournaments that only your own students
-              can join, chat directly with students in a dedicated
-              coach-student chat separate from the general community, and
-              send parents shareable progress reports covering puzzle
-              accuracy, games played, blunder trends and monthly focus.
-            </p>
+            <ul className="mkt-featurelist">
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">👥</span>
+                <span className="mkt-feat-tx">
+                  <strong>Student roster &amp; batches</strong>
+                  <span>See ratings, activity and attendance for every student. Group them into batches by level, age or class, and see who's online right now.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">📅</span>
+                <span className="mkt-feat-tx">
+                  <strong>Class schedule &amp; attendance</strong>
+                  <span>Set a weekly schedule with day, time and Zoom link per batch, and mark attendance with catch-ups and CSV export.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">📝</span>
+                <span className="mkt-feat-tx">
+                  <strong>Assign tactics in seconds</strong>
+                  <span>Push Find-the-Blunder puzzles from real games or Play-vs-Stockfish positions — built on a visual board editor, no FEN typing. Solve rate &amp; accuracy tracked per student.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">📚</span>
+                <span className="mkt-feat-tx">
+                  <strong>Course Builder syllabus</strong>
+                  <span>Build a structured syllabus from your own studies — lessons, videos, master games and endgame positions — that students follow per batch in a "My Syllabus" tab.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🏁</span>
+                <span className="mkt-feat-tx">
+                  <strong>Private races &amp; tournaments</strong>
+                  <span>Run Arena Races and Tournaments that only your own students can join — no outsiders.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">💬</span>
+                <span className="mkt-feat-tx">
+                  <strong>Coach ↔ student chat &amp; parent reports</strong>
+                  <span>Chat with students in a dedicated space, and send parents shareable progress reports covering puzzle accuracy, games played, blunder trends and monthly focus.</span>
+                </span>
+              </li>
+            </ul>
             <Link to="/coach/onboarding" className="mkt-card-cta">
               Set up your roster →
             </Link>

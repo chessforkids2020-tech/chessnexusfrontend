@@ -80,21 +80,36 @@ export default function ArenaTournamentPage() {
               It's not just a board on a screen — it's a place you walk into, play and
               solve in, alongside real people in real time.
             </p>
-            <p>
-              Enter the 3D arena as your own avatar and stroll into the
-              tournament hall, just like walking into a real chess club —
-              check the notice board for live events and pick the one you
-              want to join. When a tournament starts you're paired instantly:
-              your avatar walks to its assigned table, takes a seat and plays
-              a live, real-time game against your opponent, the closest thing
-              to over-the-board chess online. The arena also has a Puzzle
-              Hall with five stages climbing from basic to advanced, where
-              every solve is submitted live and the leaderboard updates in
-              real time so you can see exactly where you stand. Throughout
-              it all you can chat with friends and other players in real
-              time, bringing back the social buzz of a real chess event —
-              online and in 3D.
-            </p>
+            <ul className="mkt-featurelist">
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🚪</span>
+                <span className="mkt-feat-tx">
+                  <strong>Walk into the tournament hall</strong>
+                  <span>Enter as your own avatar, just like walking into a real chess club — check the notice board for live events and pick one to join.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">♟️</span>
+                <span className="mkt-feat-tx">
+                  <strong>Play live at the table</strong>
+                  <span>When a tournament starts you're paired instantly — your avatar sits down and plays a real-time game, the closest thing to over-the-board chess online.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🧩</span>
+                <span className="mkt-feat-tx">
+                  <strong>Puzzle Hall — 5 stages</strong>
+                  <span>Climb from basic to advanced. Every solve is submitted live and the leaderboard updates in real time so you see exactly where you stand.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">💬</span>
+                <span className="mkt-feat-tx">
+                  <strong>Chat &amp; social buzz</strong>
+                  <span>Chat with friends and other players in real time — the social feel of a real chess event, online and in 3D.</span>
+                </span>
+              </li>
+            </ul>
             <button type="button" className="mkt-card-cta" onClick={enterArena}>
               Enter the arena →
             </button>

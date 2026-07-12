@@ -54,15 +54,21 @@
     }
     </script>
 
-    <!-- JSON-LD: Organization -->
+    <!-- JSON-LD: Organization — 'alternateName' + 'sameAs' help Google treat
+         "chessnexus" and "chess nexus" as the SAME brand entity and consolidate
+         search results. Fill in every official profile URL under sameAs; the more
+         verified profiles, the stronger the brand signal. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Chess Nexus",
+      "alternateName": ["ChessNexus", "Chess Nexus Academy", "chessnexus.in"],
       "url": "https://www.chessnexus.in/",
       "logo": "https://www.chessnexus.in/logo.png",
-      "sameAs": [],
+      "sameAs": [
+        "https://www.instagram.com/chessnexusacademy"
+      ],
       "description": "Chess Nexus is a free online chess training and competition platform offering puzzles, tactics, live races, and leaderboards."
     }
     </script>
@@ -79,23 +85,26 @@
     </script>
 
     <!-- JSON-LD: SiteNavigationElement — the strongest signal Google uses to
-         build sitelinks. Lists the primary public sections of the site. -->
+         build sitelinks. Order matters: Google favours the earliest items, and
+         typically shows ~4-6. The priority quick-actions (Sign up, Coach, Learn,
+         Tournaments, Analyze) are listed FIRST so they're the strongest sitelink
+         candidates. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "ItemList",
       "name": "Chess Nexus main navigation",
       "itemListElement": [
-        { "@type": "SiteNavigationElement", "position": 1, "name": "Play Chess Online", "description": "Play live chess against people or the Stockfish engine.", "url": "https://www.chessnexus.in/play-chess-online" },
-        { "@type": "SiteNavigationElement", "position": 2, "name": "Play With Friends", "description": "Play 2-player chess with a friend in a private room.", "url": "https://www.chessnexus.in/play-chess-with-friends" },
-        { "@type": "SiteNavigationElement", "position": 3, "name": "Chess Puzzles", "description": "Solve daily chess puzzles and train tactics.", "url": "https://www.chessnexus.in/chess-puzzles" },
-        { "@type": "SiteNavigationElement", "position": 4, "name": "Arena Tournaments", "description": "Compete in live 3D arena chess tournaments.", "url": "https://www.chessnexus.in/3d-chess-arena-tournament" },
-        { "@type": "SiteNavigationElement", "position": 5, "name": "Masters Games", "description": "Play through famous grandmaster games move by move.", "url": "https://www.chessnexus.in/masters-chess-games" },
-        { "@type": "SiteNavigationElement", "position": 6, "name": "Tactics Race", "description": "Race against others to solve tactics fastest.", "url": "https://www.chessnexus.in/chess-tactics-race" },
-        { "@type": "SiteNavigationElement", "position": 7, "name": "Leaderboard", "description": "See the top players on the global leaderboard.", "url": "https://www.chessnexus.in/leaderboard" },
-        { "@type": "SiteNavigationElement", "position": 8, "name": "Analyse My Game", "description": "Analyse your chess games with accuracy scores.", "url": "https://www.chessnexus.in/analyse-my-chess-game" },
+        { "@type": "SiteNavigationElement", "position": 1, "name": "Sign Up", "description": "Create a free Chess Nexus account and start training.", "url": "https://www.chessnexus.in/signup-request" },
+        { "@type": "SiteNavigationElement", "position": 2, "name": "Sign In", "description": "Log in to your Chess Nexus account.", "url": "https://www.chessnexus.in/login" },
+        { "@type": "SiteNavigationElement", "position": 3, "name": "Coach", "description": "Coach-led chess training and academy tools for coaches.", "url": "https://www.chessnexus.in/chess-coaching" },
+        { "@type": "SiteNavigationElement", "position": 4, "name": "Learn Chess", "description": "Solve puzzles, train tactics and improve at chess.", "url": "https://www.chessnexus.in/improve-at-chess" },
+        { "@type": "SiteNavigationElement", "position": 5, "name": "Live Tournaments", "description": "Compete in live 3D arena chess tournaments and races.", "url": "https://www.chessnexus.in/3d-chess-arena-tournament" },
+        { "@type": "SiteNavigationElement", "position": 6, "name": "Analyze Game", "description": "Analyse your chess games with Stockfish and accuracy scores.", "url": "https://www.chessnexus.in/analyse-my-chess-game" },
+        { "@type": "SiteNavigationElement", "position": 7, "name": "Chess Puzzles", "description": "Solve daily chess puzzles and train tactics.", "url": "https://www.chessnexus.in/chess-puzzles" },
+        { "@type": "SiteNavigationElement", "position": 8, "name": "Play Chess Online", "description": "Play live chess against people or the Stockfish engine.", "url": "https://www.chessnexus.in/play-chess-online" },
         { "@type": "SiteNavigationElement", "position": 9, "name": "Chess Study", "description": "Learn with structured chess study lessons.", "url": "https://www.chessnexus.in/chess-study" },
-        { "@type": "SiteNavigationElement", "position": 10, "name": "Log In / Register", "description": "Sign in or create a free Chess Nexus account.", "url": "https://www.chessnexus.in/login" }
+        { "@type": "SiteNavigationElement", "position": 10, "name": "Leaderboard", "description": "See the top players on the global leaderboard.", "url": "https://www.chessnexus.in/leaderboard" }
       ]
     }
     </script>
@@ -133,8 +142,8 @@
       ]
     }
     </script>
-    <script type="module" crossorigin="" src="/assets/index-BnUV6-Ou.js"></script>
-    <link rel="stylesheet" crossorigin="" href="/assets/index-BpDl56eC.css">
+    <script type="module" crossorigin="" src="/assets/index-Bq9AzIHQ.js"></script>
+    <link rel="stylesheet" crossorigin="" href="/assets/index-CNSDnNo7.css">
   <style data-shake-animation="true">
 @keyframes shake {
   0%, 100% { transform: translateX(0); }

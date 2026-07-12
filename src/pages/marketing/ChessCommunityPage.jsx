@@ -60,7 +60,7 @@ export default function ChessCommunityPage() {
       <section className="mkt-section">
         <div className="mkt-split mkt-split-reverse">
           <div className="mkt-split-media">
-            <img src="/features/chessclub.png" alt="Chess Community — friends, clubs and leaderboards" loading="lazy" width="220" height="220" />
+            <img src="/features/clubs.png" alt="Chess Community — friends, clubs and leaderboards" loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
             <h2>Ways to connect</h2>
@@ -68,17 +68,36 @@ export default function ChessCommunityPage() {
               Friends, clubs, chat and recognition — everything that makes playing
               here feel like a community.
             </p>
-            <p>
-              See who's online, follow your friends and watch a live
-              activity feed of race finishes, podium results and personal
-              bests as they happen across the community, or join clubs to
-              play, learn and compete alongside players who share your
-              interests — build your own community or find one that fits
-              you. Message friends and talk chess between games in the
-              social hub's chat, then climb weekly leaderboards, get
-              recognised as a top racer or top inviter, and earn community
-              tiers like Mentor and Ambassador as you grow.
-            </p>
+            <ul className="mkt-featurelist">
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">👋</span>
+                <span className="mkt-feat-tx">
+                  <strong>Friends &amp; live activity feed</strong>
+                  <span>See who's online, follow friends, and watch race finishes, podium results and personal bests happen live across the community.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🏛️</span>
+                <span className="mkt-feat-tx">
+                  <strong>Clubs</strong>
+                  <span>Play, learn and compete alongside players who share your interests — build your own club or find one that fits you.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">💬</span>
+                <span className="mkt-feat-tx">
+                  <strong>Social hub chat</strong>
+                  <span>Message friends and talk chess between games.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🏆</span>
+                <span className="mkt-feat-tx">
+                  <strong>Leaderboards &amp; recognition</strong>
+                  <span>Climb weekly leaderboards, get recognised as a top racer or top inviter, and earn community tiers like Mentor and Ambassador.</span>
+                </span>
+              </li>
+            </ul>
             <Link to="/social" className="mkt-card-cta">
               Open the social hub →
             </Link>

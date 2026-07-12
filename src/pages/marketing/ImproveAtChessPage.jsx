@@ -74,14 +74,39 @@ export default function ImproveAtChessPage() {
           <div className="mkt-split-text">
             <h2>A training buddy that knows your game</h2>
             <p>
-              The Nexus Guide isn't a wall of engine lines. It studies your
-              recent games, spots the patterns you keep missing — forks, pins,
-              skewers, hanging pieces, back-rank mates and more — and warns you
-              when you lose to the same idea again and again. It replays your
-              exact mistakes, lets you solve them yourself, drills your
-              weakest theme into a focused practice set, and tracks your
-              progress every month — the way a good coach would.
+              The Nexus Guide isn't a wall of engine lines — it's a coach that
+              learns from your own play. Here's how it helps:
             </p>
+            <ul className="mkt-featurelist">
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🔍</span>
+                <span className="mkt-feat-tx">
+                  <strong>Finds your real weaknesses</strong>
+                  <span>Studies your recent games and spots the patterns you keep missing — forks, pins, skewers, hanging pieces, back-rank mates and more.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">⚠️</span>
+                <span className="mkt-feat-tx">
+                  <strong>Warns you before you repeat them</strong>
+                  <span>Flags the exact ideas you lose to again and again, so the same mistake stops costing you games.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🔁</span>
+                <span className="mkt-feat-tx">
+                  <strong>Replays &amp; drills your mistakes</strong>
+                  <span>Lets you re-solve your own blunders and turns your weakest theme into a focused practice set.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">📈</span>
+                <span className="mkt-feat-tx">
+                  <strong>Tracks your progress monthly</strong>
+                  <span>Shows how your weak spots shrink over time — the way a good coach would.</span>
+                </span>
+              </li>
+            </ul>
             <Link to="/dashboard" className="mkt-card-cta">
               Meet your Nexus Guide →
             </Link>

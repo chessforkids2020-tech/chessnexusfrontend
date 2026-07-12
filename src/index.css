@@ -9,7 +9,11 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  /* App is a dark app — force dark so native controls (select popups, date
+     pickers, scrollbars) render dark regardless of the user's OS theme.
+     Previously "light dark", which made <option> lists show white on
+     light-mode systems. */
+  color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
@@ -86,15 +90,9 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Native dropdown (<select>) options — keep them dark on every OS/browser.
+   color-scheme: dark handles most cases; this is the explicit safety net. */
+option {
+  background-color: #14141e;
+  color: #e2e8f0;
 }

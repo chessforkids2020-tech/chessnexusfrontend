@@ -68,19 +68,36 @@ export default function ChessStudyPage() {
               Two guided tracks plus structured chapters and tests — learn in the order
               that builds lasting skill.
             </p>
-            <p>
-              Basic Study covers the fundamentals — basic tactics, opening
-              principles, endgame patterns and essential strategies — the
-              perfect starting track for beginners building a solid
-              foundation, while Positional Study goes deeper into strategy,
-              covering piece activity, weak squares, pawn structures,
-              outposts and exchanges for players ready to think
-              positionally. Every study is organised into clear chapters and
-              worked puzzles so you progress step by step and actually
-              retain what you learn, and timed tests let you check that it's
-              sticking, showing you which ideas you've truly mastered and
-              which need another pass.
-            </p>
+            <ul className="mkt-featurelist">
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🌱</span>
+                <span className="mkt-feat-tx">
+                  <strong>Basic Study track</strong>
+                  <span>The fundamentals — basic tactics, opening principles, endgame patterns and essential strategy. The perfect starting point for beginners.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🧠</span>
+                <span className="mkt-feat-tx">
+                  <strong>Positional Study track</strong>
+                  <span>Goes deeper into strategy — piece activity, weak squares, pawn structures, outposts and exchanges — for players ready to think positionally.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">📖</span>
+                <span className="mkt-feat-tx">
+                  <strong>Chapters &amp; worked puzzles</strong>
+                  <span>Every study is organised into clear chapters and worked puzzles, so you progress step by step and actually retain what you learn.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">✅</span>
+                <span className="mkt-feat-tx">
+                  <strong>Timed tests</strong>
+                  <span>Check that it's sticking — see which ideas you've truly mastered and which need another pass.</span>
+                </span>
+              </li>
+            </ul>
             <Link to="/study" className="mkt-card-cta">
               Start Basic Study →
             </Link>

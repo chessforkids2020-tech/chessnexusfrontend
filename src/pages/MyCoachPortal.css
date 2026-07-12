@@ -66,6 +66,10 @@
   overflow-y: hidden;
   overscroll-behavior-x: contain;      /* don't chain into the page / back-swipe */
   scroll-snap-type: x proximity;       /* settle on a tab, not mid-label */
+  /* Hide the scrollbar per engine: scrollbar-width (Firefox), the ::-webkit rule
+     below (Safari/Chrome), -ms-overflow-style (old Edge). The linter flags
+     scrollbar-width as unsupported in Safari — intentional; the webkit rule
+     covers it there. Scrolling itself works everywhere regardless. */
   scrollbar-width: none;               /* Firefox */
   -ms-overflow-style: none;            /* old Edge */
 }

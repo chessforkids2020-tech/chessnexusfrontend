@@ -68,25 +68,43 @@ export default function PlayChessOnlinePage() {
       <section className="mkt-section">
         <div className="mkt-split">
           <div className="mkt-split-media">
-            <img src="/features/playchessonline.png" alt="Play Chess Online — free live games and vs computer" loading="lazy" width="220" height="220" />
+            <img src="/features/playonline.png" alt="Play Chess Online — free live games and vs computer" loading="lazy" width="220" height="220" />
           </div>
           <div className="mkt-split-text">
             <h2>Ways to play</h2>
             <p>
               People or engine, playing or watching — chess your way.
             </p>
-            <p>
-              Challenge other Chess Nexus members to live games and test your
-              skills against a real person in real time, or sharpen up
-              against the Stockfish engine — one of the strongest chess
-              engines in the world — to practise openings, endgames and full
-              games at a level that pushes you. Prefer to watch? Spectate
-              live games as they happen and learn from how other players
-              handle key positions. Every game you play is saved to your
-              history too, so you can revisit past games, replay the moves
-              and feed them straight into the analysis tool to learn from
-              your wins and losses.
-            </p>
+            <ul className="mkt-featurelist">
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🌐</span>
+                <span className="mkt-feat-tx">
+                  <strong>Live games vs real people</strong>
+                  <span>Challenge other Chess Nexus members and test your skills against a real person in real time.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🤖</span>
+                <span className="mkt-feat-tx">
+                  <strong>Play vs Stockfish</strong>
+                  <span>Sharpen up against one of the strongest engines in the world — practise openings, endgames and full games at a level that pushes you.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">👀</span>
+                <span className="mkt-feat-tx">
+                  <strong>Spectate live games</strong>
+                  <span>Watch games as they happen and learn from how other players handle key positions.</span>
+                </span>
+              </li>
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">📼</span>
+                <span className="mkt-feat-tx">
+                  <strong>Game history &amp; analysis</strong>
+                  <span>Every game is saved — revisit past games, replay the moves and feed them straight into the analysis tool.</span>
+                </span>
+              </li>
+            </ul>
             <Link to="/play" className="mkt-card-cta">
               Play a live game →
             </Link>
