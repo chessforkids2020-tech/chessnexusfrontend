@@ -23,7 +23,7 @@ export default function CoachSubscription() {
   const [currencies, setCurrencies] = useState([]);   // [{ code, symbol, label }]
   const [currency, setCurrency] = useState('INR');     // coach-selected checkout currency
   const [durations, setDurations] = useState([1, 3, 6, 12]); // offered month options
-  const [months, setMonths] = useState(3);             // coach-selected duration (default 3)
+  const [months, setMonths] = useState(1);             // coach-selected duration (default 1)
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activating, setActivating] = useState(null); // plan id while activating
