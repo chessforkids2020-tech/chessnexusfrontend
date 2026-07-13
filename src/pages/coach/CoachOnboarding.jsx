@@ -209,7 +209,7 @@ export default function CoachOnboarding() {
                 />
               </div>
               <div className="coach-onboard-social-hint">
-                The Nexus team uses this to verify you're a real coach. Enter your username or profile handle (not a password).
+                Nexus wants to keep one account per coach. Please give us your Facebook name — only to verify and make sure accounts are created in a fair way.
               </div>
             </div>
 
