@@ -57,7 +57,8 @@ export default function PositionEditor({ initialFen = START_FEN }) {
   const [studiesLoading, setStudiesLoading] = useState(false);
   const [studyMode, setStudyMode] = useState('pick'); // 'pick' | 'new'
   const [selectedStudyId, setSelectedStudyId] = useState('');
-  const [selectedChapterId, setSelectedChapterId] = useState('');
+  const [selectedChapterId, setSelectedChapterId] = useState(''); // '' | '__new__' | chapterId
+  const [newChapterInStudy, setNewChapterInStudy] = useState(''); // name for a brand-new chapter in an existing study
   const [newStudyName, setNewStudyName] = useState('');
   const [newStudyType, setNewStudyType] = useState('basics');
   const [newChapterName, setNewChapterName] = useState('Chapter 1');
@@ -126,6 +127,7 @@ export default function PositionEditor({ initialFen = START_FEN }) {
     setSelectedCategory('');
     setSelectedStudyId('');
     setSelectedChapterId('');
+    setNewChapterInStudy('');
     setNewStudyName('');
     setNewStudyType('basics');
     setNewChapterName('Chapter 1');
@@ -200,6 +202,12 @@ export default function PositionEditor({ initialFen = START_FEN }) {
       } else {
         if (!studyId) { setModalError('Please select a study'); setModalSaving(false); return; }
         if (!chapterId) { setModalError('Please select a chapter'); setModalSaving(false); return; }
+        // Add a brand-new chapter to the chosen existing study
+        if (chapterId === '__new__') {
+          if (!newChapterInStudy.trim()) { setModalError('New chapter name is required'); setModalSaving(false); return; }
+          const chapRes = await api.post(`/api/user-studies/${studyId}/chapters`, { name: newChapterInStudy.trim() });
+          chapterId = chapRes.data.chapter._id;
+        }
       }
 
       await api.post(`/api/user-studies/${studyId}/chapters/${chapterId}/puzzles`, {
@@ -487,19 +495,27 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                             {selectedStudyId && (() => {
                               const study = filtered.find(s => s._id === selectedStudyId);
                               const chapters = study?.chapters || [];
-                              return chapters.length === 0 ? (
-                                <div style={{ fontSize: 13, color: '#64748b' }}>This study has no chapters yet.</div>
-                              ) : (
+                              return (
                                 <>
                                   <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>SELECT CHAPTER</label>
                                   <select
                                     value={selectedChapterId}
-                                    onChange={e => setSelectedChapterId(e.target.value)}
+                                    onChange={e => { setSelectedChapterId(e.target.value); if (e.target.value !== '__new__') setNewChapterInStudy(''); }}
                                     style={{ width: '100%', background: '#1e293b', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13 }}
                                   >
                                     <option value="">-- choose a chapter --</option>
                                     {chapters.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                                    <option value="__new__">➕ New chapter…</option>
                                   </select>
+                                  {selectedChapterId === '__new__' && (
+                                    <input
+                                      value={newChapterInStudy}
+                                      onChange={e => setNewChapterInStudy(e.target.value)}
+                                      placeholder={`New chapter name (e.g. Chapter ${chapters.length + 1})`}
+                                      autoFocus
+                                      style={{ width: '100%', marginTop: 8, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+                                    />
+                                  )}
                                 </>
                               );
                             })()}

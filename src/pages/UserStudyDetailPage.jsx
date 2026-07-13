@@ -25,6 +25,10 @@ const UserStudyDetailPage = () => {
   const [newName, setNewName] = useState('');
   const [saving, setSaving] = useState(false);
   const [nameError, setNameError] = useState('');
+  const [addingChapter, setAddingChapter] = useState(false);
+  const [chapterName, setChapterName] = useState('');
+  const [chapterSaving, setChapterSaving] = useState(false);
+  const [chapterError, setChapterError] = useState('');
 
   const isOwner = user && study && (user.id === study.userId || user._id === study.userId);
   const tc = typeColors[study?.studyType] || typeColors.basics;
@@ -63,6 +67,22 @@ const UserStudyDetailPage = () => {
       await api.delete(`/api/user-studies/${id}/chapters/${chapterId}`);
       setStudy(prev => ({ ...prev, chapters: prev.chapters.filter(c => c._id !== chapterId) }));
     } catch {}
+  };
+
+  const handleAddChapter = async () => {
+    if (!chapterName.trim()) { setChapterError('Chapter name is required'); return; }
+    setChapterSaving(true);
+    setChapterError('');
+    try {
+      const res = await api.post(`/api/user-studies/${id}/chapters`, { name: chapterName.trim() });
+      setStudy(prev => ({ ...prev, chapters: [...(prev.chapters || []), res.data.chapter] }));
+      setChapterName('');
+      setAddingChapter(false);
+    } catch (e) {
+      setChapterError(e.response?.data?.error || 'Failed to add chapter');
+    } finally {
+      setChapterSaving(false);
+    }
   };
 
   const handleTogglePublic = async () => {
@@ -164,9 +184,33 @@ const UserStudyDetailPage = () => {
         </div>
 
         {/* Chapter cards */}
-        <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 16 }}>
-          Select a Chapter
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Select a Chapter
+          </div>
+          {isOwner && !addingChapter && (
+            <button
+              onClick={() => { setAddingChapter(true); setChapterError(''); }}
+              style={{ ...btnBase, background: tc.bg, border: `1px solid ${tc.color}`, color: tc.color, fontWeight: 600 }}
+            >➕ Add Chapter</button>
+          )}
         </div>
+
+        {isOwner && addingChapter && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+            <input
+              value={chapterName}
+              onChange={e => { setChapterName(e.target.value); setChapterError(''); }}
+              onKeyDown={e => { if (e.key === 'Enter') handleAddChapter(); if (e.key === 'Escape') { setAddingChapter(false); setChapterName(''); setChapterError(''); } }}
+              placeholder={`New chapter name (e.g. Chapter ${(study.chapters?.length ?? 0) + 1})`}
+              autoFocus
+              style={{ flex: 1, minWidth: 220, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, padding: '8px 12px', color: '#f1f5f9', fontSize: 14, outline: 'none' }}
+            />
+            <button onClick={handleAddChapter} disabled={chapterSaving} style={{ background: '#3b82f6', border: 'none', borderRadius: 8, color: '#fff', padding: '8px 14px', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: chapterSaving ? 0.6 : 1 }}>{chapterSaving ? '...' : 'Add'}</button>
+            <button onClick={() => { setAddingChapter(false); setChapterName(''); setChapterError(''); }} style={{ ...btnBase }}>Cancel</button>
+            {chapterError && <span style={{ fontSize: 12, color: '#f87171', width: '100%' }}>{chapterError}</span>}
+          </div>
+        )}
 
         {(!study.chapters || study.chapters.length === 0) ? (
           <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748b', fontSize: 14 }}>
