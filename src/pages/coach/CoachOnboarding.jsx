@@ -103,7 +103,7 @@ export default function CoachOnboarding() {
                 Start free. Upgrade only when you need more:
               </div>
               <div className="benefit">🚀 Pro — up to 50 students (₹99/mo)</div>
-              <div className="benefit">👑 Coach — up to 100 students + everything unlocked (₹280/mo): unlimited courses, premium tools forever, Team Races & Monthly Focus</div>
+              <div className="benefit">👑 Coach — up to 100 students + everything unlocked (₹199/mo): unlimited courses, premium tools forever, Team Races & Monthly Focus</div>
             </div>
 
             <div className="coach-onboard-verify-note">
