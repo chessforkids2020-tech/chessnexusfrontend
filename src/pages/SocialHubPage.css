@@ -1136,6 +1136,55 @@
   transform: translateY(-1px);
 }
 
+/* ─ Guest sign-up banner (shown above the read-only Players view) ─────── */
+.sh-guest-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.14), rgba(6, 182, 212, 0.14));
+  border: 1px solid rgba(168, 85, 247, 0.28);
+}
+
+.sh-guest-banner-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 240px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.sh-guest-banner-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.sh-guest-banner-btn {
+  background: linear-gradient(135deg, #a855f7, #06b6d4);
+  border: none;
+  border-radius: 10px;
+  padding: 11px 20px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 18px rgba(168, 85, 247, 0.3);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.sh-guest-banner-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
 /* ─ Responsive ──────────────────────── */
 @media (max-width: 768px) {
   .sh-page, .sh-detail-page { padding: 14px 12px 40px; }

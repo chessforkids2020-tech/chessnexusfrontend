@@ -1104,11 +1104,13 @@ export default function App() {
         <Route path="/verify-email/:token" element={<VerifyEmailPage />} />
         <Route path="/resend-verification" element={<ResendVerificationPage />} />
         <Route path="/chat" element={<ChatRedirect />} />
+        {/* Social Hub landing (defaults to Players tab) is open to everyone —
+            signed-out visitors get an auto-guest session and a read-only view. */}
         <Route path="/social" element={
           <UserLayout>
-            <ProtectedRoute>
+            <GuestAllowedRoute>
               <SocialHubPage />
-            </ProtectedRoute>
+            </GuestAllowedRoute>
           </UserLayout>
         } />
         <Route path="/social/chat" element={
@@ -1118,11 +1120,14 @@ export default function App() {
             </ProtectedRoute>
           </UserLayout>
         } />
+        {/* Players tab is open to everyone (social proof). Non-signed-in
+            visitors get an auto-guest session; SocialHubPage shows a read-only
+            Players view + sign-up banner for guests. */}
         <Route path="/players" element={
           <UserLayout>
-            <ProtectedRoute>
+            <GuestAllowedRoute>
               <SocialHubPage />
-            </ProtectedRoute>
+            </GuestAllowedRoute>
           </UserLayout>
         } />
         <Route path="/invite" element={

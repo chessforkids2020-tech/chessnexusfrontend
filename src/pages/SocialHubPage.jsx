@@ -1411,45 +1411,44 @@ export default function SocialHubPage() {
     invite:  'Invite players to unlock exclusive features and earn recognition',
   };
 
+  // Guests get a read-only look at the community — the Players tab, which
+  // showcases the most active + best players (social proof). Interactive
+  // features (Invite / Friends / Clubs / Chat) stay behind a login prompt.
   if (isGuest) {
     return (
       <div className="sh-page">
+
+        {/* Header */}
         <div className="sh-header">
           <div>
-            <h1 className="sh-title">Social Hub</h1>
-            <p className="sh-subtitle">Connect, chat, and compete with friends</p>
+            <h1 className="sh-title" style={{ margin: 0 }}>Social Hub</h1>
+            <p className="sh-subtitle">See who's most active and the best players across the app</p>
           </div>
         </div>
 
-        <div className="sh-guest-lock">
-          <div className="sh-guest-lock-icon">🔒</div>
-          <h2 className="sh-guest-lock-title">Login to Access Social Hub</h2>
-          <p className="sh-guest-lock-desc">Create a free account to unlock all social features:</p>
-          <div className="sh-guest-lock-features">
-            <div className="sh-guest-lock-feature">
-              <span className="sh-guest-lock-feature-icon">📩</span>
-              <span>Invite friends &amp; earn rewards</span>
-            </div>
-            <div className="sh-guest-lock-feature">
-              <span className="sh-guest-lock-feature-icon">👥</span>
-              <span>Add friends &amp; challenge them to races</span>
-            </div>
-            <div className="sh-guest-lock-feature">
-              <span className="sh-guest-lock-feature-icon">💬</span>
-              <span>Chat with friends in real time</span>
-            </div>
-            <div className="sh-guest-lock-feature">
-              <span className="sh-guest-lock-feature-icon">🏰</span>
-              <span>Create and join clubs</span>
-            </div>
+        {/* Sign-up banner */}
+        <div className="sh-guest-banner">
+          <div className="sh-guest-banner-text">
+            <span className="sh-guest-banner-icon">👋</span>
+            <span>
+              You're browsing as a guest. Create a free account to add friends,
+              join clubs, chat, and climb these leaderboards yourself.
+            </span>
           </div>
           <button
-            className="sh-guest-lock-btn"
-            onClick={() => navigate('/login', { state: { message: 'Please log in to access Social Hub.' } })}
+            className="sh-guest-banner-btn"
+            onClick={() => navigate('/login', { state: { message: 'Create a free account to join the community.' } })}
           >
             Log In / Sign Up — It's Free
           </button>
         </div>
+
+        {/* Players (social proof) — same view logged-in users see */}
+        <PlayersTab />
+
+        <AboutFeatureCTA
+          links={[{ label: "About Social Hub", to: "/chess-community" }]}
+        />
       </div>
     );
   }
