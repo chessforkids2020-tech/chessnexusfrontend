@@ -83,7 +83,6 @@ export default function CoachOnboarding() {
             <div className="coach-onboard-perks">
               <div className="perk">✅ Free forever — no trial, no time limit</div>
               <div className="perk">✅ No card required</div>
-              <div className="perk">✅ Up to 30 students free</div>
             </div>
 
             {/* Everything a free coach already gets. */}
@@ -93,17 +92,7 @@ export default function CoachOnboarding() {
               <div className="benefit">📊 Student progress, parent reports & game analysis</div>
               <div className="benefit">📋 Attendance, payments & class schedule (with Zoom links)</div>
               <div className="benefit">🏁 Run private Arena Races & Tournaments for your class</div>
-              <div className="benefit">♟️ Premium Endgame Mastery & Opening Repertoire — free for your first 90 days</div>
-            </div>
-
-            {/* Paid tiers — just more room and full unlock. */}
-            <div className="coach-onboard-elite">
-              <div className="coach-onboard-elite-title">📈 Grow when you're ready</div>
-              <div className="coach-onboard-elite-note">
-                Start free. Upgrade only when you need more:
-              </div>
-              <div className="benefit">🚀 Pro — up to 50 students (₹99/mo)</div>
-              <div className="benefit">👑 Coach — up to 100 students + everything unlocked (₹199/mo): unlimited courses, premium tools forever, Team Races & Monthly Focus</div>
+              <div className="benefit">♟️ Premium Endgame Mastery & Opening Repertoire</div>
             </div>
 
             <div className="coach-onboard-verify-note">
