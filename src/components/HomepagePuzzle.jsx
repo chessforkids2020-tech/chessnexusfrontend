@@ -69,20 +69,25 @@ export default function HomepagePuzzle() {
 
   // ResizeObserver: recalculate boardSize whenever the container's rendered
   // width changes (handles different screen sizes, DPI scaling, window resize).
+  // NOTE: the board container is only mounted once `loading` is false, so this
+  // effect must re-run when loading flips — otherwise (with []-deps) it fires
+  // once while the loading spinner is shown, finds a null ref, bails, and the
+  // observer never attaches. The board would then stay stuck at the hardcoded
+  // initial size and overflow narrow phones/tablets (half the board hidden).
   useEffect(() => {
-    if (!boardContainerRef.current) return;
+    if (loading || !boardContainerRef.current) return;
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const containerWidth = entry.contentRect.width;
         if (containerWidth > 0) {
-          // Cap at 520px so it doesn't grow too large on ultra-wide screens
+          // Cap at 420px so it doesn't grow too large on wide screens.
           setBoardSize(Math.min(Math.floor(containerWidth), 420));
         }
       }
     });
     observer.observe(boardContainerRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [loading]);
 
   // Make bot move after delay
   const makeBotMove = useCallback((currentChess, solutionMoves, currentIndex) => {

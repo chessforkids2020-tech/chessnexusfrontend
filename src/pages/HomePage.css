@@ -372,6 +372,14 @@
   display: flex;
   flex-direction: column;
   transition: box-shadow 0.35s ease;
+  /* As a grid item, default min-width:auto lets the fixed-size chessboard
+     inside blow this card wider than its grid track — pushing half the board
+     off-screen on phones/tablets. min-width:0 + max-width:100% make the card
+     honour the track width so the board (sized by ResizeObserver against this
+     card's inner width) shrinks to fit instead of overflowing. */
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .hp-potd:hover {
@@ -412,6 +420,28 @@
   align-items: center;
   justify-content: center;
   min-height: 360px;
+  /* Allow the flex chain to shrink below the board's intrinsic pixel width so
+     the board tracks the viewport on phones/tablets instead of overflowing. */
+  min-width: 0;
+  width: 100%;
+}
+
+/* The puzzle wrapper and the board-measuring container must be allowed to
+   shrink with their parent. Without min-width:0 the fixed-pixel chessboard
+   inside forces the flex item to its intrinsic width, so the ResizeObserver
+   reads a width wider than the viewport and half the board gets cut off on
+   mobile. Keeping them full-width + shrinkable lets the observer size the
+   board to the space actually available. */
+.homepage-puzzle-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.homepage-puzzle-container .puzzle-board-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .hp-potd-tagline {
@@ -2288,7 +2318,10 @@
   .hp-champion-label { font-size: 7px; letter-spacing: 0.8px; }
   .hp-greeting { font-size: 15px; }
   .hp-subgreeting { font-size: 10px; }
-  .hp-top-row { grid-template-columns: 1fr; gap: 14px; }
+  /* minmax(0,1fr) (not plain 1fr) so the track can't expand to the fixed-size
+     chessboard's min-content width — otherwise the puzzle card grows wider than
+     the viewport and half the board is hidden on phones/tablets. */
+  .hp-top-row { grid-template-columns: minmax(0, 1fr); gap: 14px; }
   .hp-stats-bar { flex-wrap: wrap; padding: 12px 16px; }
   .hp-stat-item { flex: 0 0 50%; max-width: 50%; gap: 10px; padding: 8px 12px; }
   .hp-stat-divider { display: none; }
