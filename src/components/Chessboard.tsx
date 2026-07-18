@@ -29,6 +29,10 @@ interface ChessboardProps {
   mute?: boolean;
   allowMovePiece?: (piece: string, square: string) => boolean; // Custom piece movement validation
   arrows?: Array<{ from: string; to: string; color?: string }>;
+  /** Square highlights injected by the parent (square → color), e.g. from a synced study. */
+  highlightSquares?: Record<string, string>;
+  /** Called whenever the user draws/clears arrows or square highlights (for live sync). */
+  onDrawingChange?: (drawing: { arrows: Array<{ from: string; to: string; color: string }>; highlights: Record<string, string> }) => void;
   /** Enable premove: player can queue a move while it's opponent's turn */
   allowPremove?: boolean;
   /** Which color the local player is playing as (required for premove) */
@@ -74,6 +78,8 @@ const Chessboard: React.FC<ChessboardProps> = ({
   mute = false,
   allowMovePiece,
   arrows = [],
+  highlightSquares,
+  onDrawingChange,
   allowPremove = false,
   playerColor,
   extraLegalMoves = [],
@@ -107,6 +113,22 @@ const Chessboard: React.FC<ChessboardProps> = ({
   const arrowDragRef = useRef<{ square: string; color: string; button: number } | null>(null);
   // User-highlighted squares
   const [highlightedSquares, setHighlightedSquares] = useState<Record<string, string>>({});
+
+  // Notify the parent whenever the user draws/clears arrows or highlights, so a
+  // classroom can broadcast the coach's drawings to students in real time.
+  const onDrawingChangeRef = useRef(onDrawingChange);
+  onDrawingChangeRef.current = onDrawingChange;
+  const skipFirstDrawing = useRef(true);
+  useEffect(() => {
+    if (skipFirstDrawing.current) { skipFirstDrawing.current = false; return; }
+    onDrawingChangeRef.current?.({ arrows: localArrows, highlights: highlightedSquares });
+  }, [localArrows, highlightedSquares]);
+
+  // Apply parent-injected highlights (e.g. synced from the coach). Only overwrite
+  // when the prop is provided, so local drawing still works when it isn't.
+  useEffect(() => {
+    if (highlightSquares) setHighlightedSquares(highlightSquares);
+  }, [highlightSquares]);
   // Premove: a move queued during opponent's turn, fired automatically when it becomes player's turn
   const [premove, setPremove] = useState<{ from: string; to: string; promotion?: string } | null>(null);
   // Flag to distinguish premove promotion from normal promotion inside handlePromotion

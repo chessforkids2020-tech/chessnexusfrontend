@@ -5,6 +5,7 @@ import Sidebar from './Sidebar';
 import CoachSidebar from './CoachSidebar';
 import StudyPuzzleSidebar from './StudyPuzzleSidebar';
 import Footer from './Footer';
+import FeedbackPromptGate from './FeedbackPromptGate';
 import './UserLayout.css';
 
 // Pages that use the slim 60px icon rail instead of the 170px main sidebar,
@@ -97,6 +98,9 @@ export default function UserLayout({ children, showFooter = true }) {
         </>
       </div>
       {showFooter !== false && <Footer />}
+      {/* First-session feedback prompt for new signups (self-gating: shows once,
+          ~10 min in, members only). Mounted here so it can appear on any page. */}
+      <FeedbackPromptGate />
     </div>
   );
 }

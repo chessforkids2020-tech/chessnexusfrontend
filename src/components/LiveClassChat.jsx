@@ -1,0 +1,152 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import socket from '../socket';
+import { useAuth } from '../contexts/AuthContext';
+import { linkify } from '../utils/linkify';
+
+// Floating chat for the Live Classroom. Messages are TRANSIENT — relayed live over
+// socket only, never persisted, and gone when the meeting ends. A floating button
+// bottom-right opens the panel; unread count shows on the button while it's closed.
+export default function LiveClassChat({ sessionId, isHost }) {
+  const { user } = useAuth();
+  const myId = user && (user.id || user._id);
+  const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [unread, setUnread] = useState(0);
+  const [blocked, setBlocked] = useState(false); // host disabled student chat
+  const endRef = useRef(null);
+  const openRef = useRef(open);
+  openRef.current = open;
+
+  useEffect(() => {
+    const onMsg = (m) => {
+      setMessages(prev => [...prev, m]);
+      if (!openRef.current) setUnread(u => u + 1);
+    };
+    const onBlock = ({ blocked: b }) => setBlocked(!!b);
+    socket.on('liveclass:chat', onMsg);
+    socket.on('liveclass:chat-block', onBlock);
+    return () => { socket.off('liveclass:chat', onMsg); socket.off('liveclass:chat-block', onBlock); };
+  }, []);
+
+  useEffect(() => { if (open) { setUnread(0); endRef.current?.scrollIntoView({ block: 'end' }); } }, [open, messages]);
+
+  // Students can't post while blocked; the host always can.
+  const canPost = isHost || !blocked;
+
+  const send = useCallback((e) => {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || !sessionId) return;
+    socket.emit('liveclass:chat', { sessionId, message: text });
+    setInput('');
+  }, [input, sessionId]);
+
+  const toggleBlock = () => {
+    if (!isHost) return;
+    socket.emit('liveclass:chat-block', { sessionId, blocked: !blocked });
+  };
+
+  return (
+    <>
+      {/* Floating button — inline SVG so it renders crisply everywhere (no emoji). */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{ ...s.fab, ...(open ? s.fabOpen : {}) }}
+        title="Class chat"
+        aria-label="Class chat"
+      >
+        {open ? (
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        ) : (
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 11.5a8.38 8.38 0 0 1-8.9 8.4 9.5 9.5 0 0 1-4.2-1L3 20l1.1-4.9A8.38 8.38 0 0 1 12.6 3 8.5 8.5 0 0 1 21 11.5z" />
+          </svg>
+        )}
+        {!open && unread > 0 && <span style={s.badge}>{unread > 9 ? '9+' : unread}</span>}
+      </button>
+
+      {open && (
+        <div style={s.panel}>
+          <div style={s.head}>
+            <span>Class chat{blocked && ' 🔒'}</span>
+            {isHost && (
+              <button
+                onClick={toggleBlock}
+                style={{ ...s.blockBtn, ...(blocked ? s.blockBtnOn : {}) }}
+                title={blocked ? 'Let students chat again' : 'Block students from chatting'}
+              >{blocked ? '🔓 Unblock chat' : '🔒 Block chat'}</button>
+            )}
+          </div>
+          <div style={s.body}>
+            {messages.length === 0
+              ? <div style={s.empty}>No messages yet. Say hello! 👋</div>
+              : messages.map((m, i) => {
+                  const mine = String(m.userId) === String(myId);
+                  return (
+                    <div key={i} style={{ ...s.msg, alignSelf: mine ? 'flex-end' : 'flex-start' }}>
+                      <div style={{ ...s.bubble, ...(mine ? s.bubbleMine : {}) }}>
+                        {!mine && <div style={s.who}>{m.name || 'Student'}</div>}
+                        {/* Links (e.g. a coach's activity link) render clickable and
+                            open in a NEW TAB — so a student joining an activity keeps
+                            the live class running in this tab. */}
+                        <div>{linkify(m.message)}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+            <div ref={endRef} />
+          </div>
+          {canPost ? (
+            <form onSubmit={send} style={s.inputRow}>
+              <input
+                style={s.input}
+                value={input}
+                maxLength={300}
+                placeholder={isHost && blocked ? 'Chat is blocked for students…' : 'Type a message…'}
+                onChange={e => setInput(e.target.value)}
+              />
+              <button type="submit" disabled={!input.trim()} style={{ ...s.sendBtn, ...(input.trim() ? {} : s.sendOff) }}>Send</button>
+            </form>
+          ) : (
+            <div style={s.disabledRow}>🔒 The coach has turned off chat for now.</div>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
+
+const s = {
+  fab: { position: 'fixed', right: 20, bottom: 20, width: 56, height: 56, borderRadius: '50%',
+    border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    cursor: 'pointer', zIndex: 9000, boxShadow: '0 8px 24px rgba(0,0,0,0.5)' },
+  fabOpen: { background: 'rgba(30,41,59,0.95)', color: '#fff' },
+  badge: { position: 'absolute', top: -2, right: -2, minWidth: 20, height: 20, borderRadius: 999,
+    background: '#ef4444', color: '#fff', fontSize: 11, fontWeight: 800, display: 'grid', placeItems: 'center',
+    padding: '0 5px', border: '2px solid #0a0a0a' },
+  panel: { position: 'fixed', right: 20, bottom: 86, width: 340, maxWidth: 'calc(100vw - 40px)', height: 460, maxHeight: '70vh',
+    display: 'flex', flexDirection: 'column', background: 'rgba(15,20,28,0.98)', border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: 16, overflow: 'hidden', zIndex: 9000, boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+    fontFamily: "'Poppins',sans-serif" },
+  head: { padding: '10px 12px 10px 14px', fontWeight: 800, color: '#67e8f9',
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
+    background: 'linear-gradient(135deg,rgba(6,182,212,0.15),rgba(16,185,129,0.15))', borderBottom: '1px solid rgba(255,255,255,0.06)' },
+  blockBtn: { padding: '5px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', fontSize: 12, fontWeight: 700, cursor: 'pointer' },
+  blockBtnOn: { background: 'rgba(239,68,68,0.18)', border: '1px solid rgba(239,68,68,0.4)', color: '#fca5a5' },
+  disabledRow: { padding: '14px 12px', textAlign: 'center', color: '#9ca3af', fontSize: 13, borderTop: '1px solid rgba(255,255,255,0.06)' },
+  body: { flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 8 },
+  empty: { color: '#6b7280', fontSize: 13, textAlign: 'center', margin: 'auto' },
+  msg: { maxWidth: '85%', display: 'flex' },
+  bubble: { background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '7px 11px', borderRadius: 12, fontSize: 13.5, lineHeight: 1.4, wordBreak: 'break-word' },
+  bubbleMine: { background: 'rgba(6,182,212,0.22)', color: '#e0f7ff' },
+  who: { fontSize: 11, fontWeight: 700, color: '#67e8f9', marginBottom: 2 },
+  inputRow: { display: 'flex', gap: 8, padding: 10, borderTop: '1px solid rgba(255,255,255,0.06)' },
+  input: { flex: 1, padding: '10px 12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)',
+    background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 13.5, outline: 'none' },
+  sendBtn: { padding: '10px 16px', borderRadius: 10, border: 'none', background: 'rgba(6,182,212,0.2)', color: '#67e8f9', fontWeight: 700, cursor: 'pointer' },
+  sendOff: { opacity: 0.5, cursor: 'not-allowed' },
+};

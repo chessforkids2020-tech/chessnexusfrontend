@@ -18,6 +18,8 @@ import CourseProgress from "./pages/coach/CourseProgress";
 import CoachSubscription from "./pages/coach/CoachSubscription";
 import CoachAttendancePage from "./pages/coach/CoachAttendancePage";
 import CoachSchedulePage from "./pages/coach/CoachSchedulePage";
+import MyMeetingsPage from "./pages/coach/MyMeetingsPage";
+import LiveClassroomPage from "./pages/coach/LiveClassroomPage";
 import CoachActivities from "./pages/coach/CoachActivities";
 import CoachBatches from "./pages/coach/CoachBatches";
 import CoachProfile from "./pages/coach/CoachProfile";
@@ -51,6 +53,7 @@ import MyReportsPage from "./pages/MyReportsPage";
 import CoachRequests from "./pages/CoachRequests";
 import AdminReports from "./pages/AdminReports";
 import AdminTestimonials from "./pages/AdminTestimonials";
+import AdminFeedback from "./pages/AdminFeedback";
 
 import ArenaTournamentDashboard from "./pages/ArenaTournamentDashboard";
 
@@ -565,6 +568,16 @@ export default function App() {
             <Footer />
           </div>
         } />
+        <Route path="/admin/feedback" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminFeedback />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
         <Route path="/admin/supporters" element={
           <div style={styles.container}>
             <div style={styles.content}>
@@ -1007,6 +1020,27 @@ export default function App() {
               <CoachSchedulePage />
             </ProtectedRoute>
           </UserLayout>
+        } />
+        {/* Live Classroom — host-only meeting management + live session. Route
+            visibility is gated in the sidebar by canHostLiveClassroom; the API
+            enforces it server-side (requireLiveClassroomHost). */}
+        <Route path="/coach/live" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <MyMeetingsPage />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/coach/live/session/:sessionId" element={
+          <ProtectedRoute>
+            <LiveClassroomPage mode="host" />
+          </ProtectedRoute>
+        } />
+        {/* Student join-by-shareable-link (server checks student audience). */}
+        <Route path="/join/:joinCode" element={
+          <ProtectedRoute>
+            <LiveClassroomPage mode="join" />
+          </ProtectedRoute>
         } />
         <Route path="/coach/activities" element={
           <UserLayout>

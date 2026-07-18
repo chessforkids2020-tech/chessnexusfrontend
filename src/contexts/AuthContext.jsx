@@ -191,6 +191,9 @@ export function AuthProvider({ children }) {
     isAdmin: user?.role === 'admin',
     isElite: user?.role === 'elite',
     isGuest: user?.role === 'guest',
+    // True only for the 2 accounts allowed to create/host a live classroom
+    // (admin + the backend LIVE_CLASSROOM_HOSTS allowlist).
+    canHostLiveClassroom: !!user?.canHostLiveClassroom,
     unreadCount,
     fetchUnreadCount
   };

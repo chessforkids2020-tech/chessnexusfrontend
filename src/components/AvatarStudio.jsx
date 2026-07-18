@@ -128,9 +128,14 @@ export default function AvatarStudio() {
 
   const selectedBasicAvatar = avatarOptions.basicOptions.find(opt => opt.key === user?.activeAvatar);
   const selected3dModel = avatarOptions.model3dOptions.find(opt => opt.key === user?.active3dModel);
-  const currentAvatarTier = user?.unlockedAvatarTier || 'none';
+  // Admins & elite members get every avatar tier for free (the admin built the app —
+  // they shouldn't have to "unlock" a custom photo). Everyone else uses their
+  // earned/purchased tier.
+  const avatarPrivileged = user?.role === 'admin' || user?.role === 'elite';
+  const currentAvatarTier = avatarPrivileged ? '3d' : (user?.unlockedAvatarTier || 'none');
 
   const isTierUnlocked = (type) => {
+    if (avatarPrivileged) return true;
     if (type === 'basic') return true;
     if (type === 'customPhoto') return tierUnlocked(currentAvatarTier, 'customPhoto');
     if (type === '3d') return tierUnlocked(currentAvatarTier, '3d');

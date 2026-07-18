@@ -1,0 +1,48 @@
+/* Feedback modal — reuses BookDemoModal (.bdm-*) + EventRegistration form
+   classes; only the feedback-specific bits live here. */
+
+.fbm-textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f0f4ff;
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.fbm-textarea::placeholder { color: #6b7686; }
+.fbm-textarea:focus { outline: none; border-color: rgba(52, 211, 153, 0.5); }
+
+.fbm-optional { color: #6b7686; font-size: 12px; font-weight: 400; }
+
+.fbm-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.fbm-submit { flex: 1 1 auto; }
+
+.fbm-skip {
+  flex: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: #8899aa;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.fbm-skip:hover:not(:disabled) { background: rgba(255, 255, 255, 0.06); color: #cdd6e2; }
+.fbm-skip:disabled { opacity: 0.5; cursor: default; }
+
+@media (max-width: 480px) {
+  .fbm-actions { flex-direction: column-reverse; align-items: stretch; }
+  .fbm-skip { width: 100%; }
+}

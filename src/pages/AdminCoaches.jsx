@@ -93,6 +93,12 @@ export default function AdminCoaches() {
   const [coachAnalytics, setCoachAnalytics] = useState(null);
   const [coachList, setCoachList] = useState(null);
   const [coachListLoading, setCoachListLoading] = useState(false);
+  // Admin "Grant plan" (comp collaborators / YouTubers) modal state.
+  const [grantFor, setGrantFor] = useState(null);     // the coach row being granted
+  const [grantPlan, setGrantPlan] = useState('live3');
+  const [grantMonths, setGrantMonths] = useState('never');
+  const [grantReason, setGrantReason] = useState('');
+  const [grantBusy, setGrantBusy] = useState(false);
 
   useEffect(() => {
     api.get("/api/admin/coach-analytics").then(r => setCoachAnalytics(r.data || null)).catch(() => setCoachAnalytics(null));
@@ -116,6 +122,36 @@ export default function AdminCoaches() {
       setCoachList(list => (list || []).map(c => c.id === id ? { ...c, verified } : c));
     } catch (err) {
       alert(err.response?.data?.message || "Failed to update coach");
+    }
+  };
+
+  // ── Grant a plan free (comp collaborators / YouTubers) ──
+  const submitGrant = async () => {
+    if (!grantFor) return;
+    setGrantBusy(true);
+    try {
+      await api.post("/api/coach-subscription/admin/grant", {
+        userId: grantFor.id,
+        plan: grantPlan,
+        months: grantMonths === 'never' ? 'never' : Number(grantMonths),
+        reason: grantReason,
+      });
+      setCoachList(list => (list || []).map(c => c.id === grantFor.id
+        ? { ...c, plan: grantPlan, comped: true } : c));
+      setGrantFor(null); setGrantReason('');
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to grant plan");
+    } finally { setGrantBusy(false); }
+  };
+
+  const revokeGrant = async (c) => {
+    if (!window.confirm(`Revoke ${c.username}'s comped plan → back to Free?`)) return;
+    try {
+      await api.post("/api/coach-subscription/admin/revoke", { userId: c.id });
+      setCoachList(list => (list || []).map(x => x.id === c.id
+        ? { ...x, plan: 'free', comped: false } : x));
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to revoke");
     }
   };
 
@@ -269,7 +305,10 @@ export default function AdminCoaches() {
                         <div style={{ color: "#94a3b8", fontSize: 11 }}>@{c.username}{c.email ? ` · ${c.email}` : ""}</div>
                       </td>
                       <td style={{ padding: "8px 10px" }}>{c.coachType === "academy" ? `🏫 ${c.academyName || "Academy"}` : "👤 Individual"}</td>
-                      <td style={{ padding: "8px 10px" }}>{c.plan || "—"}{c.subStatus ? ` (${c.subStatus})` : ""}</td>
+                      <td style={{ padding: "8px 10px" }}>
+                        {c.plan || "—"}{c.subStatus ? ` (${c.subStatus})` : ""}
+                        {c.comped && <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 700, color: "#7c3aed", background: "#f3e8ff", padding: "1px 6px", borderRadius: 6 }}>🎁 Comped</span>}
+                      </td>
                       <td style={{ padding: "8px 10px" }}>{c.studentsCount}</td>
                       <td style={{ padding: "8px 10px" }}>{fmtDate(c.appliedAt)}</td>
                       <td style={{ padding: "8px 10px" }}>{fmtDate(c.lastPaidAt)}</td>
@@ -282,17 +321,29 @@ export default function AdminCoaches() {
                             : <span style={{ color: "#94a3b8" }}>Applicant</span>}
                       </td>
                       <td style={{ padding: "8px 10px" }}>
-                        {c.isCoach && (
-                          <button onClick={() => verifyCoach(c.id, !c.verified)}
-                            style={{
-                              padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer",
-                              border: `1px solid ${c.verified ? "#ef4444" : "#10b981"}`,
-                              background: c.verified ? "#fff" : "#10b981",
-                              color: c.verified ? "#ef4444" : "#fff",
-                            }}>
-                            {c.verified ? "Unverify" : "Verify"}
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          {c.isCoach && (
+                            <button onClick={() => verifyCoach(c.id, !c.verified)}
+                              style={{
+                                padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer",
+                                border: `1px solid ${c.verified ? "#ef4444" : "#10b981"}`,
+                                background: c.verified ? "#fff" : "#10b981",
+                                color: c.verified ? "#ef4444" : "#fff",
+                              }}>
+                              {c.verified ? "Unverify" : "Verify"}
+                            </button>
+                          )}
+                          <button onClick={() => { setGrantFor(c); setGrantPlan('live3'); setGrantMonths('never'); }}
+                            style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #7c3aed", background: "#fff", color: "#7c3aed" }}>
+                            🎁 Grant
                           </button>
-                        )}
+                          {c.comped && (
+                            <button onClick={() => revokeGrant(c)}
+                              style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #ef4444", background: "#fff", color: "#ef4444" }}>
+                              Revoke
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -412,6 +463,55 @@ export default function AdminCoaches() {
           <button style={styles.secondaryBtn} disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>← Prev</button>
           <span style={styles.muted}>Page {page} of {totalPages}</span>
           <button style={styles.secondaryBtn} disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next →</button>
+        </div>
+      )}
+
+      {/* ── Grant plan modal (comp collaborators / YouTubers) ── */}
+      {grantFor && (
+        <div onClick={() => setGrantFor(null)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "grid", placeItems: "center", zIndex: 2000, padding: 16 }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background: "#fff", borderRadius: 14, padding: 22, width: "min(420px, 94vw)", boxShadow: "0 24px 60px rgba(0,0,0,0.3)" }}>
+            <h3 style={{ margin: "0 0 4px", color: "#1f2937" }}>🎁 Grant a plan free</h3>
+            <p style={{ margin: "0 0 16px", color: "#6b7280", fontSize: 13 }}>
+              Give <b>@{grantFor.username}</b> free access (e.g. a collaborator / YouTuber).
+              No payment; marked as comped and revocable.
+            </p>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Plan</label>
+            <select value={grantPlan} onChange={e => setGrantPlan(e.target.value)}
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 14 }}>
+              <optgroup label="Without live classes">
+                <option value="pro">Pro — 70 students</option>
+                <option value="coach">Coach — 150 students</option>
+              </optgroup>
+              <optgroup label="With live classes">
+                <option value="live1">Live Basic — 50 students · 5 classes/day</option>
+                <option value="live2">Live Pro — 100 students · unlimited · elite</option>
+                <option value="live3">Live Coach — 150 students · unlimited · elite</option>
+              </optgroup>
+            </select>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Duration</label>
+            <select value={grantMonths} onChange={e => setGrantMonths(e.target.value)}
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 14 }}>
+              <option value="never">Never expires</option>
+              <option value="1">1 month</option>
+              <option value="3">3 months</option>
+              <option value="6">6 months</option>
+              <option value="12">12 months</option>
+            </select>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Reason (optional)</label>
+            <input value={grantReason} onChange={e => setGrantReason(e.target.value)}
+              placeholder="e.g. YouTube collaboration"
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 18, boxSizing: "border-box" }} />
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+              <button onClick={() => setGrantFor(null)} disabled={grantBusy}
+                style={{ padding: "9px 16px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontWeight: 700, cursor: "pointer" }}>Cancel</button>
+              <button onClick={submitGrant} disabled={grantBusy}
+                style={{ padding: "9px 16px", borderRadius: 8, border: "none", background: "#7c3aed", color: "#fff", fontWeight: 700, cursor: "pointer" }}>
+                {grantBusy ? "Granting…" : "Grant plan"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,0 +1,411 @@
+// hooks/useLiveKitRoom.js
+// Thin wrapper around livekit-client for the Live Classroom: connect with a
+// server-minted token, publish mic+camera (simulcast, 720p ceiling) and, for the
+// host/controller, screen-share. Exposes participants + the active speaker so the
+// page can render a Zoom-style grid with an HD pinned/active tile.
+//
+// livekit-client is loaded via dynamic import() so the app builds/runs even before
+// the package is installed. Until it's installed, connect() rejects with a clear
+// message and the rest of the classroom (waiting room, board, countdown) still works.
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createLightAppearanceProcessor, loadEffects, saveEffects } from '../lib/videoEffects';
+
+// Publish ceiling. 720p HD now; change to 360p here later if bandwidth bites.
+// Simulcast sends HD only to the pinned/active-speaker view, low-res thumbnails
+// to the grid — the Zoom trick that keeps one box cheap.
+const VIDEO_PRESET = { width: 1280, height: 720 }; // 720p ceiling
+const SIMULCAST = true;
+
+// ── Video CLARITY (the "grainy / noisy video" fix) ──────────────────────────
+// LiveKit's default 720p bitrate is ~1.7 Mbps — enough to be watchable, but the
+// encoder is bit-starved on detail/motion, which shows up as grain, blocking and
+// "mosquito noise" (the fuzz the user sees vs. Zoom). Zoom pushes ~2.5–3.5 Mbps at
+// 720p, which is why it looks clean. We raise the bitrate to ~2.6 Mbps and lock a
+// smooth 30fps so the picture is crisp instead of noisy.
+//   • If bandwidth becomes a problem for kids on weak wifi, adaptiveStream/dynacast
+//     already scale DOWN automatically — so raising the ceiling is safe.
+const VIDEO_ENCODING = {
+  maxBitrate: 2_600_000, // ~2.6 Mbps (up from LiveKit's ~1.7 Mbps default)
+  maxFramerate: 30,
+};
+
+// ── Audio quality (the Zoom-parity settings) ────────────────────────────────
+// Raw mic capture = noisy, echoey, and quiet ("someone talking from kilometres
+// away"). Zoom sounds good because it ALWAYS runs these three browser DSP filters:
+//   • noiseSuppression  — kills fan/keyboard/background hiss
+//   • echoCancellation  — stops the speaker feeding back into the mic
+//   • autoGainControl   — auto-boosts quiet/soft voices to a steady loudness
+//                         (this is the main cure for "too far away / not loud")
+// Plus a voice-tuned mono capture and a healthy publish bitrate so speech stays
+// crisp instead of thin.
+const AUDIO_CAPTURE_DEFAULTS = {
+  autoGainControl: true,
+  echoCancellation: true,
+  noiseSuppression: true,
+  channelCount: 1,          // mono — voice doesn't need stereo; more bits per channel
+  voiceIsolation: true,     // stronger speech focus where the browser supports it
+};
+// 32 kbps is a clear voice bitrate (LiveKit's speech preset). Bump to 48–64k for
+// music-grade later if needed; higher = clearer but more bandwidth.
+const AUDIO_PUBLISH_BITRATE = 32000;
+
+// ── Krisp AI noise filter — LICENSING GATE ──────────────────────────────────
+// The Krisp filter is a PROPRIETARY LiveKit component under LiveKit's commercial
+// Terms of Service (https://livekit.io/legal/terms-of-service) — it is NOT covered
+// by the free Apache-2.0 licence that the self-hosted LiveKit *server* uses.
+// For a SELF-HOSTED deployment (ours), using it in production may require a paid /
+// commercial arrangement with LiveKit. It is OFF by default until that's confirmed.
+//   → When licensing is cleared, set VITE_ENABLE_KRISP=true in the frontend env.
+//   → While OFF, the free built-in browser DSP (noiseSuppression + echoCancellation
+//     + autoGainControl, set in AUDIO_CAPTURE_DEFAULTS) still runs — audio is already
+//     a big upgrade over raw capture; Krisp is only the extra "pro" layer.
+const KRISP_ENABLED = import.meta.env?.VITE_ENABLE_KRISP === 'true';
+
+// Attach the Krisp AI noise filter to the local microphone track (when enabled).
+// Loaded lazily and wrapped in try/catch so a missing/unsupported plugin never
+// takes the mic (or the whole classroom) down — we just fall back to the browser DSP.
+async function applyKrisp(r) {
+  if (!KRISP_ENABLED) return; // licensing gate — see note above
+  try {
+    const mic = r?.localParticipant?.getTrackPublication?.('microphone');
+    const track = mic?.audioTrack || mic?.track;
+    if (!track || typeof track.setProcessor !== 'function') return;
+    const { KrispNoiseFilter, isKrispNoiseFilterSupported } = await import('@livekit/krisp-noise-filter');
+    if (typeof isKrispNoiseFilterSupported === 'function' && !isKrispNoiseFilterSupported()) return;
+    await track.setProcessor(KrispNoiseFilter());
+  } catch { /* plugin unavailable/unsupported — built-in noiseSuppression still applies */ }
+}
+
+export default function useLiveKitRoom() {
+  const [room, setRoom] = useState(null);
+  const [connected, setConnected] = useState(false);
+  const [participants, setParticipants] = useState([]); // [{ identity, name, isLocal, isSpeaking, videoTrack, audioTrack, screenTrack }]
+  const [activeSpeaker, setActiveSpeaker] = useState(null);
+  const [error, setError] = useState('');
+  const [micOn, setMicOn] = useState(true);
+  const [camOn, setCamOn] = useState(true);
+  const [screenOn, setScreenOn] = useState(false);
+  // Multi-webcam support: available cameras + the one currently publishing.
+  const [cameras, setCameras] = useState([]);
+  const [activeCameraId, setActiveCameraId] = useState('');
+  // Multi-mic support (external mic / headset): available mics + the one publishing.
+  const [mics, setMics] = useState([]);
+  const [activeMicId, setActiveMicId] = useState('');
+  // ── Video effects (Zoom-style, free) ──
+  // light/appearance settings (persisted) + background-blur toggle. The effects
+  // object is read live by the canvas processor via a ref so changing a slider
+  // updates the published video instantly without re-creating the track.
+  const [effects, setEffects] = useState(() => loadEffects());
+  const [blurOn, setBlurOn] = useState(false);
+  const effectsRef = useRef(effects);
+  effectsRef.current = effects;
+  const blurRef = useRef(false);     // desired blur on/off (read inside callbacks)
+  const lightProcRef = useRef(null); // our canvas light/appearance processor
+  const blurProcRef = useRef(null);  // @livekit/track-processors BackgroundBlur
+  const applyVideoRef = useRef(() => {}); // latest applyVideoProcessor (avoids ordering issues)
+  const roomRef = useRef(null);
+
+  const loadCameras = useCallback(async () => {
+    try {
+      const devs = await navigator.mediaDevices.enumerateDevices();
+      setCameras(devs.filter((d) => d.kind === 'videoinput'));
+      setMics(devs.filter((d) => d.kind === 'audioinput'));
+    } catch { /* permissions not granted yet */ }
+  }, []);
+
+  // Keep the camera list fresh when devices are (un)plugged.
+  useEffect(() => {
+    const onChange = () => loadCameras();
+    navigator.mediaDevices?.addEventListener?.('devicechange', onChange);
+    return () => navigator.mediaDevices?.removeEventListener?.('devicechange', onChange);
+  }, [loadCameras]);
+
+  const refresh = useCallback((r) => {
+    if (!r) return;
+    const list = [];
+    const pack = (p, isLocal) => {
+      let videoTrack = null, audioTrack = null, screenTrack = null;
+      p.trackPublications?.forEach((pub) => {
+        const isScreen = pub.source === 'screen_share' || pub.source === 'screen_share_audio';
+        // Ensure remote screen-share tracks are actually subscribed. With
+        // adaptiveStream, a remote track may stay unsubscribed until requested,
+        // so the host would never receive the student's screen. Force it.
+        if (!isLocal && isScreen && pub.isSubscribed === false && typeof pub.setSubscribed === 'function') {
+          try { pub.setSubscribed(true); } catch { /* ignore */ }
+        }
+        const t = pub.track;
+        if (!t) return;
+        if (isScreen) { if (pub.kind !== 'audio') screenTrack = t; }
+        // A muted camera counts as "no video" so the UI can show the avatar tile.
+        else if (pub.kind === 'video') videoTrack = pub.isMuted ? null : t;
+        else if (pub.kind === 'audio') audioTrack = pub.isMuted ? null : t;
+      });
+      // Token metadata carries { avatar } — the profile photo to show when the
+      // camera is off.
+      let avatar = null;
+      try { avatar = p.metadata ? (JSON.parse(p.metadata).avatar || null) : null; } catch { /* ignore */ }
+      list.push({ identity: p.identity, name: p.name || p.identity, isLocal, isSpeaking: p.isSpeaking, videoTrack, audioTrack, screenTrack, avatar });
+    };
+    if (r.localParticipant) pack(r.localParticipant, true);
+    r.remoteParticipants?.forEach((p) => pack(p, false));
+    setParticipants(list);
+  }, []);
+
+  const connect = useCallback(async ({ url, token }) => {
+    setError('');
+    let LK;
+    try {
+      LK = await import('livekit-client');
+    } catch (e) {
+      setError('Video library not installed (livekit-client).');
+      throw e;
+    }
+    const { Room, RoomEvent, Track } = LK;
+    // If we're already connected (e.g. reconnecting with a fresh token after a
+    // control change), tear down the old room first to avoid a dangling
+    // connection / duplicate participant.
+    if (roomRef.current) { try { await roomRef.current.disconnect(); } catch { /* */ } roomRef.current = null; }
+    const r = new Room({
+      adaptiveStream: true,
+      dynacast: true,
+      // Apply the Zoom-parity mic DSP (noise suppression / echo cancel / auto gain)
+      // to every mic we capture, and publish voice at a clear bitrate.
+      audioCaptureDefaults: AUDIO_CAPTURE_DEFAULTS,
+      publishDefaults: {
+        simulcast: SIMULCAST,
+        videoResolution: VIDEO_PRESET,
+        // Higher video bitrate = clean picture instead of grainy/noisy compression.
+        videoEncoding: VIDEO_ENCODING,
+        // Prefer VP9: noticeably cleaner image at the same bitrate than the older VP8
+        // default. backupCodec lets browsers that can't do VP9 fall back to VP8 so
+        // nobody fails to publish (e.g. some Safari/older devices).
+        videoCodec: 'vp9',
+        backupCodec: true,
+        audioPreset: { maxBitrate: AUDIO_PUBLISH_BITRATE },
+        // Discontinuous transmission + forward error correction: cleaner speech on
+        // lossy connections (kids on home wifi), less garble.
+        dtx: true,
+        red: true,
+      },
+    });
+    roomRef.current = r;
+
+    const onChange = () => refresh(r);
+    // Keep the mic/cam button state in sync with reality (e.g. the device being
+    // lost to another app flips the published track to muted).
+    const syncLocal = () => {
+      setMicOn(r.localParticipant.isMicrophoneEnabled);
+      setCamOn(r.localParticipant.isCameraEnabled);
+      refresh(r);
+    };
+    r.on(RoomEvent.ParticipantConnected, onChange)
+      .on(RoomEvent.ParticipantDisconnected, onChange)
+      .on(RoomEvent.TrackSubscribed, onChange)
+      .on(RoomEvent.TrackUnsubscribed, onChange)
+      // A remote track being PUBLISHED (before subscription) — needed so we notice
+      // a student's screen share and force-subscribe it.
+      .on(RoomEvent.TrackPublished, onChange)
+      .on(RoomEvent.TrackUnpublished, onChange)
+      .on(RoomEvent.TrackMuted, syncLocal)
+      .on(RoomEvent.TrackUnmuted, syncLocal)
+      .on(RoomEvent.LocalTrackPublished, syncLocal)
+      .on(RoomEvent.LocalTrackUnpublished, syncLocal)
+      .on(RoomEvent.ParticipantMetadataChanged, onChange)
+      .on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
+        setActiveSpeaker(speakers?.[0]?.identity || null);
+        onChange();
+      })
+      .on(RoomEvent.Disconnected, () => { setConnected(false); });
+
+    await r.connect(url, token);
+    // Publish mic + camera by default. Pass the audio DSP options explicitly here too
+    // (not just via audioCaptureDefaults) so noise-suppression / echo-cancel / auto-gain
+    // are guaranteed to be baked into the captured track across livekit-client versions.
+    try { await r.localParticipant.setMicrophoneEnabled(true, AUDIO_CAPTURE_DEFAULTS); } catch { /* device */ }
+    // Krisp AI noise filter — the pro (Zoom-grade) layer on top of the browser DSP.
+    // Best-effort: if the plugin fails to load or isn't supported, the built-in
+    // noiseSuppression still runs, so audio never breaks.
+    await applyKrisp(r);
+    try { await r.localParticipant.setCameraEnabled(true); } catch { /* device */ }
+    // Apply saved video effects ("set once, always used") to the fresh camera track.
+    try { await applyVideoRef.current(); } catch { /* effects optional */ }
+    setRoom(r);
+    setConnected(true);
+    refresh(r);
+    // Now that permissions are granted, device labels are available.
+    try {
+      const devs = await navigator.mediaDevices.enumerateDevices();
+      setCameras(devs.filter((d) => d.kind === 'videoinput'));
+      setMics(devs.filter((d) => d.kind === 'audioinput'));
+      if (typeof r.getActiveDevice === 'function') {
+        const activeCam = r.getActiveDevice('videoinput');
+        if (activeCam && typeof activeCam === 'string') setActiveCameraId(activeCam);
+        const activeMic = r.getActiveDevice('audioinput');
+        if (activeMic && typeof activeMic === 'string') setActiveMicId(activeMic);
+      }
+    } catch { /* ignore */ }
+    return r;
+  }, [refresh]);
+
+  // Switch which webcam is publishing (live, no reconnect).
+  const switchCamera = useCallback(async (deviceId) => {
+    const r = roomRef.current; if (!r || !deviceId) return;
+    try {
+      await r.switchActiveDevice('videoinput', deviceId);
+      setActiveCameraId(deviceId);
+      await applyVideoRef.current(); // re-apply effects to the new camera track
+      refresh(r);
+    } catch {
+      setError('Could not switch camera.');
+    }
+  }, [refresh]);
+
+  // Switch which microphone is publishing (live, no reconnect). Re-applies the
+  // Krisp filter to the new mic track so noise removal follows the device choice.
+  const switchMic = useCallback(async (deviceId) => {
+    const r = roomRef.current; if (!r || !deviceId) return;
+    try {
+      await r.switchActiveDevice('audioinput', deviceId);
+      setActiveMicId(deviceId);
+      await applyKrisp(r);
+      refresh(r);
+    } catch {
+      setError('Could not switch microphone.');
+    }
+  }, [refresh]);
+
+  // ── Video effects: light/appearance canvas OR background blur (one at a time) ──
+  // LiveKit allows a single processor per video track, so we swap between our free
+  // canvas light/appearance processor and the (also-free, Apache-2.0) background
+  // blur processor. Called whenever effects/blur change or the camera (re)starts.
+  const applyVideoProcessor = useCallback(async () => {
+    const r = roomRef.current; if (!r) return;
+    const pub = r.localParticipant.getTrackPublication?.('camera');
+    const camTrack = pub?.videoTrack || pub?.track;
+    if (!camTrack || typeof camTrack.setProcessor !== 'function') return;
+
+    const wantBlur = blurRef.current;
+    const wantLight = effectsRef.current?.enabled;
+    try {
+      if (wantBlur) {
+        // Background blur wins if enabled (mutually exclusive with light/appearance).
+        const { BackgroundBlur } = await import('@livekit/track-processors');
+        if (blurProcRef.current?.name !== 'background-blur') {
+          blurProcRef.current = BackgroundBlur(12);
+          await camTrack.setProcessor(blurProcRef.current);
+        }
+        lightProcRef.current = null;
+      } else if (wantLight) {
+        if (blurProcRef.current) { blurProcRef.current = null; }
+        if (!lightProcRef.current) {
+          lightProcRef.current = createLightAppearanceProcessor(() => effectsRef.current);
+          await camTrack.setProcessor(lightProcRef.current);
+        }
+        // Slider changes are read live via the getter — no re-attach needed.
+      } else {
+        // Nothing enabled → remove any processor (raw camera).
+        blurProcRef.current = null; lightProcRef.current = null;
+        if (typeof camTrack.stopProcessor === 'function') await camTrack.stopProcessor();
+      }
+    } catch {
+      setError('Video effect unavailable on this device — using the plain camera.');
+    }
+  }, []);
+  applyVideoRef.current = applyVideoProcessor;
+
+  // Update light/appearance settings (persisted; applied live).
+  const updateEffects = useCallback((patch) => {
+    setEffects(prev => {
+      const next = { ...prev, ...patch };
+      effectsRef.current = next;
+      saveEffects(next);
+      return next;
+    });
+    // If turning light on/off, (re)apply the processor.
+    if ('enabled' in patch) setTimeout(() => applyVideoProcessor(), 0);
+  }, [applyVideoProcessor]);
+
+  const toggleBlur = useCallback(async (on) => {
+    const next = typeof on === 'boolean' ? on : !blurRef.current;
+    blurRef.current = next;
+    setBlurOn(next);
+    await applyVideoProcessor();
+  }, [applyVideoProcessor]);
+
+  const disconnect = useCallback(async () => {
+    try { await roomRef.current?.disconnect(); } catch { /* ignore */ }
+    roomRef.current = null;
+    setRoom(null); setConnected(false); setParticipants([]); setScreenOn(false);
+  }, []);
+
+  const toggleMic = useCallback(async () => {
+    const r = roomRef.current; if (!r) return;
+    // Derive the target from the ACTUAL published state, not our cached flag —
+    // another app (or a device change) can desync the two.
+    const isOn = r.localParticipant.isMicrophoneEnabled;
+    try {
+      // Re-apply the audio DSP options when turning the mic back on.
+      await r.localParticipant.setMicrophoneEnabled(!isOn, isOn ? undefined : AUDIO_CAPTURE_DEFAULTS);
+      setMicOn(r.localParticipant.isMicrophoneEnabled);
+      // Turning ON creates a fresh track — re-attach the Krisp filter to it.
+      if (!isOn) await applyKrisp(r);
+    } catch {
+      setError('Could not toggle microphone.');
+    }
+    refresh(r);
+  }, [refresh]);
+
+  const toggleCam = useCallback(async () => {
+    const r = roomRef.current; if (!r) return;
+    const isOn = r.localParticipant.isCameraEnabled;
+    try {
+      if (isOn) {
+        await r.localParticipant.setCameraEnabled(false);
+      } else {
+        // Turning ON: another app (e.g. Zoom) may have grabbed the webcam while
+        // we were away, leaving a dead track. Force a fresh acquisition, and if
+        // the preferred device is busy, fall back to any available camera.
+        const opts = activeCameraId ? { deviceId: activeCameraId } : undefined;
+        try {
+          await r.localParticipant.setCameraEnabled(true, opts);
+        } catch {
+          await r.localParticipant.setCameraEnabled(true); // default device
+        }
+      }
+      setCamOn(r.localParticipant.isCameraEnabled);
+      // Turning the camera back on creates a fresh track — re-apply saved effects.
+      if (!isOn && r.localParticipant.isCameraEnabled) await applyVideoRef.current();
+      if (!r.localParticipant.isCameraEnabled && !isOn) {
+        setError('Camera is in use by another app. Close it (e.g. Zoom) and try again.');
+      } else {
+        setError('');
+      }
+    } catch {
+      setError('Camera is in use by another app. Close it (e.g. Zoom) and try again.');
+    }
+    refresh(r);
+  }, [refresh, activeCameraId]);
+
+  // Host/controller only (server also enforces via token grants).
+  const toggleScreen = useCallback(async () => {
+    const r = roomRef.current; if (!r) return;
+    const next = !screenOn;
+    try {
+      await r.localParticipant.setScreenShareEnabled(next);
+      setScreenOn(next); refresh(r);
+    } catch {
+      setError('Screen share not permitted or was cancelled.');
+    }
+  }, [screenOn, refresh]);
+
+  useEffect(() => () => { roomRef.current?.disconnect().catch(() => {}); }, []);
+
+  return {
+    room, connected, participants, activeSpeaker, error,
+    micOn, camOn, screenOn,
+    cameras, activeCameraId, switchCamera,
+    mics, activeMicId, switchMic,
+    effects, updateEffects, blurOn, toggleBlur,
+    connect, disconnect, toggleMic, toggleCam, toggleScreen,
+  };
+}

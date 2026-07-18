@@ -10,8 +10,12 @@ import socket from '../../socket';
 import RoomCodeBadge from '../../components/RoomCodeBadge';
 import './CoachDashboard.css';
 
-export default function CoachArenaLive() {
-  const { roomId } = useParams();
+// Works BOTH as a route (/coach/arena/:roomId) and EMBEDDED inside the live class
+// stage: pass `roomId` + `embedded` + `onBack` as props and it renders inline with a
+// "back" affordance instead of a route <Link>. When used as a route, params drive it.
+export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, onBack }) {
+  const params = useParams();
+  const roomId = roomIdProp || params.roomId;
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -111,7 +115,9 @@ export default function CoachArenaLive() {
   if (error) return (
     <div className="coach-dash">
       <div className="coach-error">⚠️ {error}</div>
-      <Link to="/coach/activities" className="btn-ghost">← Back to activities</Link>
+      {embedded
+        ? <button className="btn-ghost" onClick={onBack}>← Back to activities</button>
+        : <Link to="/coach/activities" className="btn-ghost">← Back to activities</Link>}
     </div>
   );
 
@@ -148,7 +154,9 @@ export default function CoachArenaLive() {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="btn-ghost" onClick={load}>↻ Refresh</button>
-          <Link to="/coach/activities" className="btn-ghost">← Activities</Link>
+          {embedded
+            ? <button className="btn-ghost" onClick={onBack}>← Activities</button>
+            : <Link to="/coach/activities" className="btn-ghost">← Activities</Link>}
         </div>
       </div>
 

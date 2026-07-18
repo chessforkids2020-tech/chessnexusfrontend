@@ -469,7 +469,7 @@ function AdminDashboard() {
   // "Needs attention" counts for the top nav badges (like chat unread pips):
   // open reports, pending supporters, unverified coaches. Polled for a
   // near-real-time feel.
-  const [badgeCounts, setBadgeCounts] = useState({ reports: 0, supporters: 0, coaches: 0, titleClaims: 0, eventSubmissions: 0 });
+  const [badgeCounts, setBadgeCounts] = useState({ reports: 0, supporters: 0, coaches: 0, titleClaims: 0, eventSubmissions: 0, feedback: 0 });
   // Ids of items that "need attention" from the server; the coaches/supporters
   // pips count only the ones this admin hasn't dismissed by viewing the list.
   const [unverifiedCoachIds, setUnverifiedCoachIds] = useState([]);
@@ -486,6 +486,7 @@ function AdminDashboard() {
             coaches: r.data.coaches || 0,
             titleClaims: r.data.titleClaims || 0,
             eventSubmissions: r.data.eventSubmissions || 0,
+            feedback: r.data.feedback || 0,
           });
           setUnverifiedCoachIds(Array.isArray(r.data.coachIds) ? r.data.coachIds : []);
           setPendingSupporterIds(Array.isArray(r.data.supporterIds) ? r.data.supporterIds : []);
@@ -1229,6 +1230,9 @@ function AdminDashboard() {
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/testimonials')}>
             💬 Testimonials
           </button>
+          <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/feedback')}>
+            💡 User Feedback{renderNavBadge(badgeCounts.feedback)}
+          </button>
           <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/supporters')}>
             ☕ Supporters{renderNavBadge(supporterBadge)}
           </button>
@@ -1520,6 +1524,24 @@ function AdminDashboard() {
               {pendingPaymentCount > 9 ? '9+' : pendingPaymentCount}
             </span>
           )}
+        </button>
+        {/* Live Classroom — host it directly (admin is an allowed host). Attendance
+            for admitted students is recorded automatically. */}
+        <button
+          onClick={() => nav('/coach/live')}
+          style={{
+            padding: "10px 20px",
+            background: "#dc2626",
+            color: "#fff",
+            border: "none",
+            borderRadius: 8,
+            cursor: "pointer",
+            fontWeight: 600,
+            fontSize: 14,
+            marginLeft: 10,
+          }}
+        >
+          🔴 Live Class →
         </button>
       </div>
 

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chess Nexus — What We Offer</title>
+<style>
+  :root {
+    --bg: #05050a;
+    --glass: rgba(9, 9, 18, 0.78);
+    --border: rgba(255, 255, 255, 0.07);
+    --text: #f0f4ff;
+    --text-2: #8899aa;
+    --muted: #3d4a5a;
+
+    --cyan: #06b6d4;
+    --cyan-2: #22d3ee;
+    --emerald: #10b981;
+    --emerald-2: #34d399;
+    --purple: #8b5cf6;
+    --purple-2: #a78bfa;
+    --pink: #ec4899;
+    --amber: #f59e0b;
+    --gold: #fbbf24;
+
+    --shadow: 0 8px 40px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    --radius: 20px;
+    --font: 'Inter', 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { max-width: 100%; overflow-x: hidden; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* ===== Atmosphere: aurora glows + grid ===== */
+  .aurora {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 55% at 12% 8%, rgba(6, 182, 212, 0.13), transparent 60%),
+      radial-gradient(55% 55% at 88% 92%, rgba(139, 92, 246, 0.11), transparent 62%),
+      radial-gradient(45% 45% at 50% 50%, rgba(16, 185, 129, 0.05), transparent 70%);
+  }
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(70% 60% at 50% 35%, #000 0%, transparent 80%);
+    mask-image: radial-gradient(70% 60% at 50% 35%, #000 0%, transparent 80%);
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 24px 96px;
+  }
+
+  /* ===== Minimal wordmark ===== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 88px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards;
+  }
+  .mark {
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.9), rgba(34, 211, 238, 0.7));
+    box-shadow: 0 0 22px rgba(6, 182, 212, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    font-size: 18px;
+  }
+  .wordmark {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-size: 18px;
+  }
+  .wordmark span { color: var(--cyan-2); }
+
+  /* ===== Section header ===== */
+  .header {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 56px;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--cyan-2);
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(6, 182, 212, 0.28);
+    background: rgba(6, 182, 212, 0.06);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.05s forwards;
+  }
+  .eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--cyan-2);
+    box-shadow: 0 0 10px var(--cyan-2);
+  }
+  h1 {
+    margin: 22px 0 16px;
+    font-size: clamp(30px, 5vw, 52px);
+    line-height: 1.08;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #ffffff 30%, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.12s forwards;
+  }
+  .sub {
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--text-2);
+    max-width: 560px;
+    margin: 0 auto 22px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.18s forwards;
+  }
+  .trust {
+    display: inline-flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.24s forwards;
+  }
+  .trust .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+  }
+  .trust .pill .ic {
+    color: var(--emerald-2);
+    font-size: 14px;
+  }
+  .trust .pill.free .ic { color: var(--gold); }
+
+  /* ===== Grid ===== */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  /* ===== Glass card ===== */
+  .card {
+    position: relative;
+    background: var(--glass);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 26px 26px;
+    overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+                border-color 0.4s ease,
+                box-shadow 0.4s ease;
+    opacity: 0;
+    transform: translateY(22px);
+    animation: cardIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+  /* signature top-edge shine */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 22px;
+    right: 22px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  }
+  /* accent glow bloom (revealed on hover) */
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(120% 90% at 50% 0%,
+                var(--accent-soft), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .card:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent-border);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7),
+                0 0 46px var(--accent-glow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  }
+  .card:hover::after { opacity: 1; }
+
+  /* per-card accent (defaults) */
+  .card {
+    --accent: var(--cyan);
+    --accent-2: var(--cyan-2);
+    --accent-soft: rgba(6, 182, 212, 0.12);
+    --accent-glow: rgba(6, 182, 212, 0.16);
+    --accent-border: rgba(6, 182, 212, 0.4);
+    --accent-chipbg: rgba(6, 182, 212, 0.09);
+    --accent-chipbd: rgba(6, 182, 212, 0.22);
+  }
+  .card.train   { --accent: #06b6d4; --accent-2:#22d3ee; --accent-soft:rgba(6,182,212,0.13); --accent-glow:rgba(6,182,212,0.18); --accent-border:rgba(34,211,238,0.42); --accent-chipbg:rgba(6,182,212,0.09); --accent-chipbd:rgba(34,211,238,0.24); }
+  .card.analyze { --accent: #8b5cf6; --accent-2:#a78bfa; --accent-soft:rgba(139,92,246,0.13); --accent-glow:rgba(139,92,246,0.18); --accent-border:rgba(167,139,250,0.42); --accent-chipbg:rgba(139,92,246,0.09); --accent-chipbd:rgba(167,139,250,0.24); }
+  .card.compete { --accent: #f59e0b; --accent-2:#fbbf24; --accent-soft:rgba(245,158,11,0.13); --accent-glow:rgba(245,158,11,0.18); --accent-border:rgba(251,191,36,0.42); --accent-chipbg:rgba(245,158,11,0.09); --accent-chipbd:rgba(251,191,36,0.24); }
+  .card.study   { --accent: #10b981; --accent-2:#34d399; --accent-soft:rgba(16,185,129,0.13); --accent-glow:rgba(16,185,129,0.18); --accent-border:rgba(52,211,153,0.42); --accent-chipbg:rgba(16,185,129,0.09); --accent-chipbd:rgba(52,211,153,0.24); }
+  .card.community { --accent: #ec4899; --accent-2:#f472b6; --accent-soft:rgba(236,72,153,0.13); --accent-glow:rgba(236,72,153,0.18); --accent-border:rgba(244,114,182,0.42); --accent-chipbg:rgba(236,72,153,0.09); --accent-chipbd:rgba(244,114,182,0.24); }
+  .card.coach   { --accent: #06b6d4; --accent-2:#34d399; --accent-soft:rgba(16,185,129,0.13); --accent-glow:rgba(16,185,129,0.2); --accent-border:rgba(52,211,153,0.45); --accent-chipbg:rgba(16,185,129,0.09); --accent-chipbd:rgba(52,211,153,0.24); }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+  .icon {
+    flex: none;
+    width: 50px; height: 50px;
+    display: grid; place-items: center;
+    font-size: 24px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent-soft), rgba(255, 255, 255, 0.02));
+    border: 1px solid var(--accent-chipbd);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+                0 0 0 rgba(0, 0, 0, 0);
+    transition: box-shadow 0.4s ease, transform 0.4s ease;
+  }
+  .card:hover .icon {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+                0 0 26px var(--accent-glow);
+    transform: scale(1.05) rotate(-3deg);
+  }
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .card-title .tag {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--accent-2);
+    margin-top: 2px;
+  }
+
+  .divider {
+    height: 1px;
+    margin: 18px 0 16px;
+    background: linear-gradient(90deg, var(--accent-chipbd), transparent 85%);
+  }
+
+  /* feature list */
+  ul.features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  ul.features li {
+    position: relative;
+    padding-left: 24px;
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.45;
+    transition: color 0.3s ease;
+  }
+  ul.features li::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 8px;
+    width: 6px; height: 6px;
+    border-radius: 2px;
+    background: var(--accent-2);
+    box-shadow: 0 0 8px var(--accent-glow);
+    transform: rotate(45deg);
+  }
+  ul.features li strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .card:hover ul.features li { color: #a7b4c4; }
+
+  /* chip row variant for buckets with short items */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chips .chip {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text);
+    padding: 6px 11px;
+    border-radius: 9px;
+    background: var(--accent-chipbg);
+    border: 1px solid var(--accent-chipbd);
+    transition: transform 0.25s ease, background 0.25s ease;
+  }
+  .chips .chip:hover {
+    transform: translateY(-2px);
+    background: var(--accent-chipbd);
+    border-color: var(--accent-2);
+  }
+
+  /* For-Coaches ribbon */
+  .ribbon {
+    position: absolute;
+    top: 16px;
+    right: -34px;
+    transform: rotate(45deg);
+    background: linear-gradient(135deg, var(--emerald), var(--cyan));
+    color: #04120e;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 40px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    z-index: 3;
+  }
+  .card.coach {
+    border-color: rgba(52, 211, 153, 0.22);
+  }
+
+  /* ===== CTA row ===== */
+  .cta {
+    margin-top: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.6s forwards;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 15px;
+    font-weight: 650;
+    font-family: inherit;
+    padding: 14px 26px;
+    border-radius: 13px;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform 0.25s ease, box-shadow 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--cyan-2);
+    outline-offset: 3px;
+  }
+  .btn-primary {
+    color: #04121a;
+    background: linear-gradient(135deg, var(--cyan-2), var(--cyan));
+    box-shadow: 0 10px 30px rgba(6, 182, 212, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(6, 182, 212, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+  .btn-primary:active { transform: translateY(-1px); }
+  .btn-ghost {
+    color: var(--text);
+    background: var(--glass);
+    border-color: var(--border);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(14px);
+  }
+  .btn-ghost:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .btn-ghost:active { transform: translateY(-1px); }
+  .cta-note {
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ===== Animations ===== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cardIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card:nth-child(1) { animation-delay: 0.24s; }
+  .card:nth-child(2) { animation-delay: 0.32s; }
+  .card:nth-child(3) { animation-delay: 0.40s; }
+  .card:nth-child(4) { animation-delay: 0.48s; }
+  .card:nth-child(5) { animation-delay: 0.56s; }
+  .card:nth-child(6) { animation-delay: 0.64s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .card, .eyebrow, h1, .sub, .trust, .topbar, .cta { opacity: 1 !important; transform: none !important; }
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .topbar { margin-bottom: 56px; }
+  }
+  @media (max-width: 580px) {
+    .grid { grid-template-columns: 1fr; }
+    .wrap { padding: 32px 18px 72px; }
+    .cta { flex-direction: column; }
+    .btn { width: 100%; justify-content: center; }
+    .ribbon { right: -38px; }
+  }
+</style>
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+
+  <main class="wrap">
+    <div class="topbar">
+      <span class="mark">♞</span>
+      <span class="wordmark">Chess<span>Nexus</span></span>
+    </div>
+
+    <header class="header">
+      <span class="eyebrow"><span class="dot"></span>Everything in one place</span>
+      <h1>One platform. Everything you need to improve at chess.</h1>
+      <p class="sub">Train, analyze, compete, study, and play — plus a full coaching toolkit. Deep enough for a serious academy, simple enough to start in five seconds.</p>
+      <div class="trust">
+        <span class="pill free"><span class="ic">★</span> 100% free to start</span>
+        <span class="pill"><span class="ic">✓</span> No ads, ever</span>
+        <span class="pill"><span class="ic">✓</span> For beginners to advanced</span>
+      </div>
+    </header>
+
+    <section class="grid" aria-label="What Chess Nexus offers">
+
+      <!-- 1. TRAIN -->
+      <article class="card train">
+        <div class="card-head">
+          <span class="icon" aria-hidden="true">🧩</span>
+          <div class="card-title">Train<span class="tag">Practice that targets your weaknesses</span></div>
+        </div>
+        <div class="divider"></div>
+        <ul class="features">
+          <li>A <strong>puzzle dashboard</strong> that finds your weak topics from past solves</li>
+          <li>Redo the puzzles you got wrong</li>
+          <li>Daily puzzles from <strong>World Champions' blunders</strong></li>
+          <li>Millions of Lichess-database puzzles</li>
+          <li>Fun modes: Puzzle <strong>Tic-Tac-Toe</strong> &amp; <strong>Bingo</strong></li>
+          <li><strong>Monthly Focus</strong> — a themed 7-day challenge</li>
+        </ul>
+      </article>
+
+      <!-- 2. ANALYZE -->
+      <article class="card analyze">
+        <div class="card-head">
+          <span class="icon" aria-hidden="true">🔬</span>
+          <div class="card-title">Analyze<span class="tag">Grandmaster-level analysis of your games</span></div>
+        </div>
+        <div class="divider"></div>
+        <ul class="features">
+          <li>Server-side <strong>Stockfish 18</strong> analysis</li>
+          <li>Import games from <strong>Lichess, Chess.com</strong> &amp; Chess Nexus</li>
+          <li><strong>OTB scanner</strong> — digitize an over-the-board game</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="chips">
+          <span class="chip">Full-game report</span>
+          <span class="chip">Blunder detection</span>
+          <span class="chip">Best-move lines</span>
+        </div>
+      </article>
+
+      <!-- 3. COMPETE -->
+      <article class="card compete">
+        <div class="card-head">
+          <span class="icon" aria-hidden="true">🏆</span>
+          <div class="card-title">Compete<span class="tag">Live events every day</span></div>
+        </div>
+        <div class="divider"></div>
+        <ul class="features">
+          <li><strong>Arena, Team &amp; Individual</strong> races</li>
+          <li>Arena tournaments — create &amp; play</li>
+          <li>Your own <strong>tournament dashboard</strong></li>
+        </ul>
+        <div class="divider"></div>
+        <div class="chips">
+          <span class="chip">Daily arenas</span>
+          <span class="chip">Team battles</span>
+          <span class="chip">Live leaderboards</span>
+        </div>
+      </article>
+
+      <!-- 4. STUDY -->
+      <article class="card study">
+        <div class="card-head">
+          <span class="icon" aria-hidden="true">📚</span>
+          <div class="card-title">Study<span class="tag">A full chess library &amp; tools</span></div>
+        </div>
+        <div class="divider"></div>
+        <ul class="features">
+          <li>Super-GM hand-picked, categorized <strong>endgames</strong></li>
+          <li>Masters &amp; <strong>Super-GM</strong> game database</li>
+          <li><strong>Opening explorer</strong></li>
+          <li>Create &amp; save your opening lines (with Stockfish 18)</li>
+          <li>Build studies &amp; share them</li>
+          <li>Read <strong>Nexus books</strong> — free</li>
+        </ul>
+      </article>
+
+      <!-- 5. PLAY & COMMUNITY -->
+      <article class="card community">
+        <div class="card-head">
+          <span class="icon" aria-hidden="true">👥</span>
+          <div class="card-title">Play &amp; Community<span class="tag">Play and belong</span></div>
+        </div>
+        <div class="divider"></div>
+        <ul class="features">
+          <li>Play with friends in <strong>private rooms</strong></li>
+          <li><strong>Clubs</strong> — create or join, chat &amp; discuss with members</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="chips">
+          <span class="chip">Private rooms</span>
+          <span class="chip">Club chat</span>
+          <span class="chip">Members feed</span>
+        </div>
+      </article>
+
+      <!-- 6. COACH -->
+      <article class="card coach">
+        <span class="ribbon">For Coaches</span>
+        <div class="card-head">
+          <span class="icon" aria-hidden="true">🎓</span>
+          <div class="card-title">Coach<span class="tag">Run your whole academy</span></div>
+        </div>
+        <div class="divider"></div>
+        <ul class="features">
+          <li><strong>Student roster</strong> with ratings &amp; activity</li>
+          <li>Assign puzzles, studies &amp; tasks in seconds</li>
+          <li>Track every student's <strong>progress &amp; weak spots</strong></li>
+        </ul>
+        <div class="divider"></div>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.5;">
+          The coaching layer — a separate paid toolkit for academies &amp; private coaches.
+        </p>
+      </article>
+
+    </section>
+
+    <div class="cta">
+      <a href="#" class="btn btn-primary">Start free →</a>
+      <a href="#" class="btn btn-ghost">See all features</a>
+      <p class="cta-note">No credit card. No ads. Just chess.</p>
+    </div>
+  </main>
+</body>
+</html>

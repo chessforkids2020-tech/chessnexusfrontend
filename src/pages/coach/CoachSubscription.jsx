@@ -19,7 +19,9 @@ function loadRazorpayScript() {
 export default function CoachSubscription() {
   const navigate = useNavigate();
 
-  const [plans, setPlans] = useState([]);
+  const [plansById, setPlansById] = useState({});      // id → plan (for family rendering)
+  const [families, setFamilies] = useState([]);        // [{ key, title, order }]
+  const [activeFamily, setActiveFamily] = useState('noLive'); // which tab is showing
   const [currencies, setCurrencies] = useState([]);   // [{ code, symbol, label }]
   const [currency, setCurrency] = useState('INR');     // coach-selected checkout currency
   const [durations, setDurations] = useState([1, 3, 6, 12]); // offered month options
@@ -40,14 +42,13 @@ export default function CoachSubscription() {
         api.get('/api/coach-subscription/history').catch(() => ({ data: { payments: [] } }))
       ]);
       const raw = p.data?.plans || {};
-      let arr = Array.isArray(raw) ? raw : Object.values(raw);
-      // Order tiers Free → Pro → Coach (server-provided order).
-      const order = p.data?.planOrder;
-      if (Array.isArray(order) && order.length) {
-        const rank = new Map(order.map((id, i) => [id, i]));
-        arr = [...arr].sort((a, b) => (rank.get(a.id) ?? 99) - (rank.get(b.id) ?? 99));
-      }
-      setPlans(arr);
+      const byId = Array.isArray(raw) ? Object.fromEntries(raw.map(pl => [pl.id, pl])) : raw;
+      setPlansById(byId);
+      // Two families ("Without Live Classroom" / "With Live Classroom") for the two tables.
+      setFamilies(p.data?.planFamilies || [
+        { key: 'noLive', title: 'Without Live Classroom', order: p.data?.planOrderNoLive || ['free', 'pro', 'coach'] },
+        { key: 'live', title: 'With Live Classroom', order: p.data?.planOrderLive || ['live1', 'live2', 'live3'] },
+      ]);
       const curs = p.data?.currencies || [];
       setCurrencies(curs);
       // Default the dropdown to the server's default (INR) the first time.
@@ -152,7 +153,18 @@ export default function CoachSubscription() {
   const TIER = {
     free:  { tagline: 'Start free, forever', badge: '' },
     pro:   { tagline: 'More students, same tools', badge: 'Best value' },
-    coach: { tagline: 'All-in-one · everything unlocked', badge: '💎 Elite Coach' },
+    coach: { tagline: 'All-in-one · everything unlocked', badge: '' },
+    live1: { tagline: 'Live teaching starts here', badge: '' },
+    live2: { tagline: 'Unlimited live · elite perks', badge: '⭐ Most popular' },
+    live3: { tagline: 'Everything, unlimited', badge: '💎 Elite Coach' },
+  };
+
+  // Human "live class" summary for a plan's liveClass config (server sends
+  // meetingsPerDay === -1 for Unlimited).
+  const liveSummary = (p) => {
+    const lc = p.liveClass || {};
+    const per = lc.meetingsPerDay === -1 ? 'Unlimited' : `${lc.meetingsPerDay}/day`;
+    return `${per} · ${lc.durationMin} min · up to ${lc.maxStudents} students`;
   };
 
   if (loading) return <div className="coach-loading">Loading plans…</div>;
@@ -287,61 +299,89 @@ export default function CoachSubscription() {
         </div>
       </div>
 
-      <div className="cs-plans">
-        {/* Free card + purchasable plans (elite_free is granted, never bought). */}
-        {plans.filter(p => p.id === 'free' || p.monthlyPrices).map(p => {
-          const isFreeCard = p.id === 'free';
-          const isCurrent = isFreeCard
-            ? (isOnFreePlan || access.downgraded)
-            : (p.id === currentPlan && !access.downgraded);
+      {/* Two tabs: "Without Live Classroom" / "With Live Classroom" — 3 cards each. */}
+      {families.length > 1 && (
+        <div className="cs-tabs" role="tablist">
+          {families.map(fam => (
+            <button
+              key={fam.key}
+              role="tab"
+              aria-selected={activeFamily === fam.key}
+              className={`cs-tab ${activeFamily === fam.key ? 'is-active' : ''}`}
+              onClick={() => setActiveFamily(fam.key)}
+            >
+              {fam.key === 'live' ? '🎥 ' : ''}{fam.title}
+            </button>
+          ))}
+        </div>
+      )}
 
-          const tier = TIER[p.id] || {};
-          const highlight = p.id === 'coach'; // visually feature the full-unlock tier
-          return (
-            <div key={p.id} className={`cs-plan ${isCurrent ? 'is-current' : ''} ${highlight ? 'is-featured' : ''}`}>
-              {tier.badge && <div className="cs-plan-badge">{tier.badge}</div>}
-              <div className="cs-plan-name">{p.name}</div>
-              {tier.tagline && <div className="cs-plan-tagline">{tier.tagline}</div>}
-              {isFreeCard ? (
-                <div className="cs-plan-price">
-                  <span className="amount">{curSymbol}0</span>
-                  <span className="cycle">forever</span>
-                </div>
-              ) : (
-                <>
-                  <div className="cs-plan-price">
-                    <span className="currency">{curSymbol}</span>
-                    <span className="amount">{totalFor(p)}</span>
-                    <span className="cycle">for {months} month{months === 1 ? '' : 's'}</span>
+      {families.filter(fam => families.length <= 1 || fam.key === activeFamily).map(fam => {
+        const famPlans = (fam.order || [])
+          .map(id => plansById[id])
+          .filter(p => p && (p.id === 'free' || p.monthlyPrices));
+        if (famPlans.length === 0) return null;
+        return (
+          <div key={fam.key} className="cs-family">
+            <div className="cs-plans">
+              {famPlans.map(p => {
+                const isFreeCard = p.id === 'free';
+                const isCurrent = isFreeCard
+                  ? (isOnFreePlan || access.downgraded)
+                  : (p.id === currentPlan && !access.downgraded);
+                const tier = TIER[p.id] || {};
+                const highlight = p.id === 'coach' || p.id === 'live2';
+                return (
+                  <div key={p.id} className={`cs-plan ${isCurrent ? 'is-current' : ''} ${highlight ? 'is-featured' : ''}`}>
+                    {tier.badge && <div className="cs-plan-badge">{tier.badge}</div>}
+                    <div className="cs-plan-name">{p.name}</div>
+                    {tier.tagline && <div className="cs-plan-tagline">{tier.tagline}</div>}
+                    {isFreeCard ? (
+                      <div className="cs-plan-price">
+                        <span className="amount">{curSymbol}0</span>
+                        <span className="cycle">forever</span>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="cs-plan-price">
+                          <span className="currency">{curSymbol}</span>
+                          <span className="amount">{totalFor(p)}</span>
+                          <span className="cycle">for {months} month{months === 1 ? '' : 's'}</span>
+                        </div>
+                        {months > 1 && (
+                          <div className="cs-plan-permonth">{curSymbol}{perMonthFor(p)} / month</div>
+                        )}
+                      </>
+                    )}
+                    <div className="cs-plan-students"><strong>{p.maxStudents.toLocaleString()}</strong> students</div>
+                    {p.liveClass && (
+                      <div className="cs-plan-live">🎥 {liveSummary(p)}</div>
+                    )}
+                    <ul className="cs-plan-features">
+                      {(p.features || []).map(f => <li key={f}>✓ {f}</li>)}
+                    </ul>
+                    {isFreeCard ? (
+                      <button className="btn-ghost" disabled>
+                        {isCurrent ? 'Current plan' : 'Included free'}
+                      </button>
+                    ) : (
+                      <button
+                        className={isCurrent ? 'btn-ghost' : 'btn-primary'}
+                        disabled={isCurrent || activating === p.id}
+                        onClick={() => subscribe(p.id)}
+                      >
+                        {isCurrent ? 'Current plan' :
+                          activating === p.id ? 'Starting…' :
+                            access.downgraded ? 'Renew plan' : 'Upgrade'}
+                      </button>
+                    )}
                   </div>
-                  {months > 1 && (
-                    <div className="cs-plan-permonth">{curSymbol}{perMonthFor(p)} / month</div>
-                  )}
-                </>
-              )}
-              <div className="cs-plan-students"><strong>{p.maxStudents.toLocaleString()}</strong> students</div>
-              <ul className="cs-plan-features">
-                {(p.features || []).map(f => <li key={f}>✓ {f}</li>)}
-              </ul>
-              {isFreeCard ? (
-                <button className="btn-ghost" disabled>
-                  {isCurrent ? 'Current plan' : 'Included free'}
-                </button>
-              ) : (
-                <button
-                  className={isCurrent ? 'btn-ghost' : 'btn-primary'}
-                  disabled={isCurrent || activating === p.id}
-                  onClick={() => subscribe(p.id)}
-                >
-                  {isCurrent ? 'Current plan' :
-                    activating === p.id ? 'Starting…' :
-                      access.downgraded ? 'Renew plan' : 'Upgrade'}
-                </button>
-              )}
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
 
       {history.length > 0 && (
         <div className="coach-section">

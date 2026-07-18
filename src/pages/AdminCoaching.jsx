@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom';
 import api from '../api';
 import CoachAssignments from './coach/CoachAssignments';
 import CoachStudentDetail from './coach/CoachStudentDetail';
+import MyMeetingsPage from './coach/MyMeetingsPage';
 import './coach/CoachDashboard.css';
 
 const C = {
@@ -163,8 +164,11 @@ export default function AdminCoaching() {
       <div style={s.tabs}>
         <button style={{ ...s.tab, ...(tab === 'assignments' ? s.tabOn : {}) }} onClick={() => setTab('assignments')}>📝 Assignments</button>
         <button style={{ ...s.tab, ...(tab === 'students' ? s.tabOn : {}) }} onClick={() => setTab('students')}>👥 Students</button>
+        <button style={{ ...s.tab, ...(tab === 'live' ? s.tabOn : {}) }} onClick={() => setTab('live')}>🔴 Live Class</button>
       </div>
-      {tab === 'assignments' ? <CoachAssignments /> : <StudentsTab />}
+      {tab === 'assignments' && <CoachAssignments />}
+      {tab === 'students' && <StudentsTab />}
+      {tab === 'live' && <MyMeetingsPage />}
     </div>
   );
 }

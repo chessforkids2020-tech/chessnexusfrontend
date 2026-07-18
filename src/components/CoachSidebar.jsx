@@ -6,6 +6,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api';
+import { useAuth } from '../contexts/AuthContext';
 
 const NAV = [
   { icon: '🏠', label: 'Dashboard',   path: '/coach/dashboard' },
@@ -18,11 +19,24 @@ const NAV = [
   { icon: '📋', label: 'Attendance',  path: '/coach/attendance' },
 ];
 
+// Live Class is host-only (the 2 allowed accounts). Appended conditionally below.
+const LIVE_NAV = { icon: '🔴', label: 'Classroom', path: '/coach/live' };
+
 export default function CoachSidebar({ onNavigate }) {
   const location = useLocation();
   const navigate = useNavigate();
-  // Plan state → drives the bottom button ("Upgrade" on free, else "Manage plan").
+  const { canHostLiveClassroom: authCanHost, isAdmin } = useAuth();
+  // Plan/status state → drives the bottom button AND the Classroom entry. We fetch
+  // /api/coach/status fresh below.
   const [plan, setPlan] = useState(null);
+  // Show the Classroom entry to any COACH — verified OR pending-verification — so an
+  // unverified coach can click it and see the friendly "verification in progress"
+  // screen (rather than the entry being invisible). We only hide it for confirmed
+  // non-coaches. hostState: 'yes' | 'pending' | 'no'. Default to showing during load
+  // (this sidebar only renders for coaches) to avoid the "hidden until reload" race.
+  const hostState = plan?.liveClassroomHostState;
+  const showClassroom = isAdmin || authCanHost || (hostState ? hostState !== 'no' : true);
+  const navItems = showClassroom ? [...NAV, LIVE_NAV] : NAV;
   // Students online (mirrors the main sidebar's "friends online").
   const [onlineStudents, setOnlineStudents] = useState([]);
   const [showOnline, setShowOnline] = useState(false);
@@ -59,9 +73,12 @@ export default function CoachSidebar({ onNavigate }) {
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
 
   // "Upgrade" for free coaches (or lapsed → downgraded); "Manage plan" otherwise.
+  // Admins/elite/privileged/comped NEVER see an upgrade prompt — they already have
+  // full access (the admin built the app; showing them "Upgrade" is absurd).
   const planId = plan?.coachSubscription?.plan;
   const isFree = !plan || planId === 'free' || planId === 'trial' || plan?.access?.downgraded;
-  const isPrivileged = plan?.access?.reason === 'privileged' || plan?.access?.reason === 'elite_free';
+  const reason = plan?.access?.reason;
+  const isPrivileged = isAdmin || reason === 'privileged' || reason === 'elite_free' || reason === 'comped';
   const upgradeLabel = isPrivileged ? null : (isFree ? '⚡ Upgrade' : '💳 Manage plan');
 
   return (
@@ -77,7 +94,7 @@ export default function CoachSidebar({ onNavigate }) {
 
         {/* Nav */}
         <nav style={styles.navMenu}>
-          {NAV.map(item => {
+          {navItems.map(item => {
             const active = isActive(item.path);
             return (
               <div

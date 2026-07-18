@@ -6,6 +6,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api';
+import { useAuth } from '../../contexts/AuthContext';
+import { buildJoinLink } from './MyMeetingsPage';
 import { DAY_NAMES, localToUtc, localDow, localTimeValue, localTimeLabel, localDayLabel, classesOnLocalDate } from '../../utils/istSchedule';
 import './CoachDashboard.css';
 import '../MyCoachPortal.css'; // reuse the monthly calendar styles (mcp-cal-*)
@@ -37,11 +39,14 @@ function localFormToUtc(localDays, localTime) {
 }
 
 export default function CoachSchedulePage() {
+  const { canHostLiveClassroom } = useAuth();
   const [slots, setSlots] = useState([]);
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [msg, setMsg] = useState('');
+  // Host-only: the host's reusable Live Class meetings, to auto-fill the link.
+  const [liveMeetings, setLiveMeetings] = useState([]);
 
   const [form, setForm] = useState(BLANK);
   const [editingId, setEditingId] = useState(null); // null = creating
@@ -121,6 +126,16 @@ export default function CoachSchedulePage() {
     new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', { timeZone: 'UTC', weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
   useEffect(() => { loadAll(); }, []); // eslint-disable-line
+
+  // Host-only: load the host's reusable Live Class meetings for the dropdown.
+  useEffect(() => {
+    if (!canHostLiveClassroom) return;
+    let alive = true;
+    api.get('/api/coach-live/meetings')
+      .then(r => { if (alive) setLiveMeetings(Array.isArray(r.data) ? r.data : []); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [canHostLiveClassroom]);
 
   const resetForm = () => { setForm(BLANK); setEditingId(null); setFormErr(''); };
 
@@ -360,8 +375,27 @@ export default function CoachSchedulePage() {
             </label>
           </div>
 
+          {canHostLiveClassroom && liveMeetings.length > 0 && (
+            <label>
+              <div className="csf-label">Use one of my Live Class meetings (in-app video)</div>
+              <select
+                className="csf-input"
+                value=""
+                onChange={e => {
+                  const m = liveMeetings.find(x => String(x.id) === e.target.value);
+                  if (m) setForm(f => ({ ...f, meetingLink: buildJoinLink(m.joinCode) }));
+                }}
+              >
+                <option value="">— pick a meeting to fill the link —</option>
+                {liveMeetings.map(m => (
+                  <option key={m.id} value={m.id}>{(m.title || 'Meeting')} · {m.durationMinutes} min</option>
+                ))}
+              </select>
+            </label>
+          )}
+
           <label>
-            <div className="csf-label">Meeting link (Zoom / Meet, optional)</div>
+            <div className="csf-label">Meeting link (in-app Live Class, Zoom / Meet — optional)</div>
             <input
               className="csf-input"
               type="url"
