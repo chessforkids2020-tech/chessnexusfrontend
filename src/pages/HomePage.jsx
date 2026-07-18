@@ -643,6 +643,63 @@ export default function HomePage() {
           );
         })()}
 
+        {/* ── LIVE CLASSROOM — teach live in-app ── */}
+        {(() => {
+          const goCoach = () => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login');
+          const LiveIcon = ({ d }) => (
+            <svg viewBox="0 0 24 24" fill="none"><path d={d} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          );
+          const LIVE_FEATS = [
+            { d: 'M2.5 6.5h12.5v11H2.5zM15 10.5 21 7.5v9L15 13.5z', title: 'HD video & audio', desc: 'Zoom-style grid with active-speaker view — no extra app to install' },
+            { d: 'M3 5h18v11H3zM8 20h8M12 16v4', title: 'Screen share', desc: 'Share your screen or slides while you teach the class' },
+            { d: 'M5 4h9l5 5v11H5zM9 12h6M9 16h4M14 4v5h5', title: 'Synced chess board', desc: 'One board everyone sees; give a student control, then take it back' },
+            { d: 'M7 3v3M17 3v3M4 8h16M5 6h14v13H5zM9 13l2 2 4-4', title: 'Auto attendance', desc: 'Admit from the waiting room and today’s Present mark is written for you' },
+          ];
+          return (
+            <div className="hp-glass hp-live">
+              <div className="hp-live-tx">
+                <span className="hp-live-eyebrow"><span className="hp-live-liveic" />Live Classroom · in-app</span>
+                <h2 className="hp-live-title">Teach live, right inside <em>Chess&nbsp;Nexus.</em></h2>
+                <p className="hp-live-sub">No Zoom, no Meet, no juggling links. Run your class with video, screen-share and a shared board — and attendance is marked automatically as students join.</p>
+                <div className="hp-live-grid">
+                  {LIVE_FEATS.map(f => (
+                    <div key={f.title} className="hp-live-item">
+                      <span className="hp-live-ic"><LiveIcon d={f.d} /></span>
+                      <div><h3>{f.title}</h3><p>{f.desc}</p></div>
+                    </div>
+                  ))}
+                </div>
+                <div className="hp-live-foot">
+                  <div className="hp-live-trust"><span>✓ Included on every coach plan</span><span>•</span><span>Bigger plans = more classes, students &amp; minutes</span></div>
+                  <button type="button" className="hp-live-btn" onClick={goCoach}>
+                    {(user && user.role !== 'guest') ? 'Start teaching live →' : 'Log in to start →'}
+                  </button>
+                </div>
+              </div>
+              <div className="hp-live-mock" aria-hidden="true">
+                <div className="hp-live-mock-bar"><span className="hp-live-mock-dot" />LIVE · Ends in 29:41</div>
+                <div className="hp-live-mock-body">
+                  <div className="hp-live-mock-board">
+                    <div className="hp-live-mock-grid">
+                      {Array.from({ length: 64 }).map((_, i) => {
+                        const dark = (Math.floor(i / 8) + i) % 2 === 1;
+                        return <span key={i} className={dark ? 'd' : 'l'} />;
+                      })}
+                    </div>
+                    <span className="hp-live-mock-ctrl">🎓 Coach has control</span>
+                  </div>
+                  <div className="hp-live-mock-tiles">
+                    <div className="hp-live-mock-tile hp-live-mock-coach">🎓<b>Coach</b><i className="hp-live-mock-mic" /></div>
+                    <div className="hp-live-mock-tile">A<b>Arjun</b></div>
+                    <div className="hp-live-mock-tile">P<b>Priya</b></div>
+                    <div className="hp-live-mock-tile">K<b>Kai</b></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ── HOW IT WORKS — illustrated flow ── */}
         <div className="hp-glass hp-howit">
           <div className="hp-howit-head">

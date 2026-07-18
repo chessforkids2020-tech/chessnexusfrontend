@@ -118,13 +118,29 @@ function FxPreview({ effects, blurOn, deviceId }) {
 }
 
 // never your own, to avoid echo).
-function MediaTile({ track, audioTrack, muted, label, isScreen, avatarUrl, speaking, ratio }) {
+// `local` marks YOUR own tile: we render the RAW camera MediaStreamTrack directly
+// (bypassing the encode/simulcast path) so the self-view is instant and full-res —
+// exactly how Zoom shows your own preview. Remote tiles still attach the LiveKit track.
+function MediaTile({ track, audioTrack, muted, label, isScreen, avatarUrl, speaking, ratio, local }) {
   const ref = useRef(null);
   const audioRef = useRef(null);
   useEffect(() => {
     const el = ref.current;
-    if (el && track) { track.attach(el); return () => { try { track.detach(el); } catch { /* */ } }; }
-  }, [track]);
+    if (!el || !track) return;
+    // Self-view: attach the underlying raw camera track straight to the <video> via a
+    // dedicated MediaStream — no SFU round-trip, no ~1s encode lag, no down-scaled
+    // simulcast layer. `mediaStreamTrack` is the raw browser track LiveKit wraps.
+    if (local) {
+      const raw = track.mediaStreamTrack;
+      if (raw) {
+        const stream = new MediaStream([raw]);
+        el.srcObject = stream;
+        return () => { try { el.srcObject = null; } catch { /* */ } };
+      }
+    }
+    track.attach(el);
+    return () => { try { track.detach(el); } catch { /* */ } };
+  }, [track, local]);
   useEffect(() => {
     const el = audioRef.current;
     if (el && audioTrack && !muted) { audioTrack.attach(el); return () => { try { audioTrack.detach(el); } catch { /* */ } }; }
@@ -136,7 +152,7 @@ function MediaTile({ track, audioTrack, muted, label, isScreen, avatarUrl, speak
       outline: speaking && !isScreen ? '2px solid #22c55e' : 'none',
     }}>
       {track
-        ? <video ref={ref} autoPlay playsInline muted={muted} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ? <video ref={ref} autoPlay playsInline muted={muted} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: (local && !isScreen) ? 'scaleX(-1)' : 'none' }} />
         : (
           <div style={{ display: 'grid', placeItems: 'center', height: '100%' }}>
             {avatarUrl
@@ -163,7 +179,7 @@ function Countdown({ endsAt, onExpire }) {
   }, [endsAt, onExpire]);
   const m = Math.floor(left / 60000), sec = Math.floor((left % 60000) / 1000);
   const low = left <= 60000;
-  return <span style={{ fontWeight: 800, color: low ? '#ef4444' : '#f0f0f0', fontVariantNumeric: 'tabular-nums' }}>
+  return <span style={{ fontWeight: 800, color: low ? '#ef4444' : '#e2e8f0', fontVariantNumeric: 'tabular-nums' }}>
     {m}:{String(sec).padStart(2, '0')}
   </span>;
 }
@@ -291,8 +307,12 @@ function MoveTreeNotation({ tree, path, onJump, canNavigate, height, collapsed, 
 const nt = {
   wrap: { width: 300, flexShrink: 0, maxHeight: '70vh', display: 'flex', flexDirection: 'column',
     background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, overflow: 'hidden' },
-  title: { padding: '9px 12px', fontSize: 12, fontWeight: 800, color: '#67e8f9', borderBottom: '1px solid rgba(255,255,255,0.06)' },
-  body: { padding: 10, overflowY: 'auto', lineHeight: 1.9, fontSize: 13.5 },
+  title: { flexShrink: 0, padding: '9px 12px', fontSize: 12, fontWeight: 800, color: '#67e8f9', borderBottom: '1px solid rgba(255,255,255,0.06)' },
+  // flex:1 + minHeight:0 makes the moves area fill the whole card height and scroll
+  // WITHIN it. overflowX:hidden + wordBreak keep moves WRAPPING to new lines and
+  // scrolling VERTICALLY only — never widening the card or scrolling sideways.
+  body: { flex: 1, minWidth: 0, minHeight: 0, padding: 10, overflowY: 'auto', overflowX: 'hidden',
+    lineHeight: 1.9, fontSize: 13.5, wordBreak: 'break-word', overflowWrap: 'anywhere' },
   num: { color: '#6b7280', marginRight: 3, marginLeft: 4 },
   mv: { color: '#e2e8f0', padding: '1px 5px', borderRadius: 5, marginRight: 2 },
   mvOn: { background: 'rgba(6,182,212,0.3)', color: '#fff', fontWeight: 700 },
@@ -365,6 +385,11 @@ function WaitingRoom({ note, user, joinCode }) {
             </div>
           </div>
 
+          {/* Live status pill — makes the "you're in the lobby" state explicit (Zoom-style). */}
+          <div style={wr.statusPill}>
+            <span style={wr.statusDot} />Waiting to be admitted
+          </div>
+
           <h1 style={wr.hi}>Hi {name}! 👋</h1>
           <p style={wr.sub}>{note || 'Your coach will let you in any moment now.'}</p>
 
@@ -377,7 +402,12 @@ function WaitingRoom({ note, user, joinCode }) {
 
           {/* Rotating chess tip */}
           <div style={wr.tipBox}>
-            <div style={wr.tipLabel}>💡 While you wait</div>
+            <div style={wr.tipLabel}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block', verticalAlign: '-2px', marginRight: 5 }}>
+                <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.2 1 2.5h6c0-1.3.3-1.8 1-2.5A6 6 0 0 0 12 3Z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              While you wait
+            </div>
             <div key={tip} style={{ ...wr.tipText, animation: 'wrFade 1.2s ease' }}>{CHESS_TIPS[tip]}</div>
           </div>
         </div>
@@ -385,7 +415,12 @@ function WaitingRoom({ note, user, joinCode }) {
         {/* Star students leaderboard — SIDE panel (right of the card, wraps below on mobile). */}
         {board && board.top && board.top.length > 0 && (
           <div style={wr.lbBox}>
-            <div style={wr.lbTitle}>🏆 Star Students</div>
+            <div style={wr.lbTitle}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" style={{ display: 'inline-block', verticalAlign: '-3px', marginRight: 6 }}>
+                <path d="M7 4h10v3a5 5 0 0 1-10 0V4ZM7 6H4.5A2.5 2.5 0 0 0 7 10.5M17 6h2.5A2.5 2.5 0 0 1 17 10.5M9.5 14.5h5M12 12v2.5M8 20h8M10 17h4v3h-4z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Star Students
+            </div>
             {board.top.map(r => (
               <div key={r.id} style={{ ...wr.lbRow, ...(r.isMe ? wr.lbMe : {}) }}>
                 <span style={wr.lbRank}>{r.rank <= 3 ? MEDALS[r.rank - 1] : r.rank}</span>
@@ -419,7 +454,12 @@ function WaitingRoom({ note, user, joinCode }) {
 
 const wr = {
   wrap: { position: 'relative', minHeight: '100vh', overflow: 'hidden', display: 'grid', placeItems: 'center',
-    background: 'radial-gradient(1200px 600px at 50% -10%, #0f2a24 0%, #0a0a0a 55%)', color: '#f0f0f0', fontFamily: "'Poppins',sans-serif" },
+    background: 'radial-gradient(1100px 560px at 15% -10%, rgba(6,182,212,0.12), transparent 60%), radial-gradient(1000px 560px at 85% 0%, rgba(16,185,129,0.12), transparent 60%), #0b0f14',
+    color: '#eef2f6', fontFamily: "'Poppins',sans-serif" },
+  statusPill: { display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 4, padding: '5px 13px', borderRadius: 999,
+    fontSize: 11.5, fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase',
+    color: '#6ee7b7', background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(52,211,153,0.28)' },
+  statusDot: { width: 7, height: 7, borderRadius: '50%', background: '#10b981', animation: 'wrDot 1.4s infinite' },
   floaters: { position: 'absolute', inset: 0, pointerEvents: 'none' },
   // Card + leaderboard sit side by side (wrap to stacked on narrow screens).
   row: { position: 'relative', zIndex: 1, display: 'flex', gap: 16, alignItems: 'stretch',
@@ -436,13 +476,13 @@ const wr = {
   sub: { margin: 0, color: '#9fb4c4', fontSize: 14.5, lineHeight: 1.6 },
   tipBox: { marginTop: 16, padding: '14px 16px', borderRadius: 14, background: 'rgba(6,182,212,0.08)',
     border: '1px solid rgba(6,182,212,0.2)', textAlign: 'left' },
-  tipLabel: { fontSize: 11, fontWeight: 800, letterSpacing: 1, color: '#67e8f9', marginBottom: 6, textTransform: 'uppercase' },
+  tipLabel: { display: 'flex', alignItems: 'center', fontSize: 11, fontWeight: 800, letterSpacing: 1, color: '#67e8f9', marginBottom: 6, textTransform: 'uppercase' },
   tipText: { fontSize: 14, color: '#e2e8f0', lineHeight: 1.5, minHeight: 42 },
   // Leaderboard — side panel
   lbBox: { flex: '1 1 300px', maxWidth: 360, alignSelf: 'stretch', overflowY: 'auto',
     padding: '18px 16px 14px', borderRadius: 18, background: 'rgba(245,158,11,0.06)',
     border: '1px solid rgba(245,158,11,0.22)', textAlign: 'left', backdropFilter: 'blur(10px)' },
-  lbTitle: { fontSize: 16, fontWeight: 800, color: '#fcd34d', marginBottom: 14, textAlign: 'center' },
+  lbTitle: { display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 800, color: '#fcd34d', marginBottom: 14, textAlign: 'center' },
   lbRow: { display: 'flex', alignItems: 'center', gap: 9, padding: '6px 8px', borderRadius: 10 },
   lbMe: { background: 'rgba(16,185,129,0.14)', border: '1px solid rgba(16,185,129,0.3)' },
   lbRank: { width: 22, textAlign: 'center', fontWeight: 800, fontSize: 14, color: '#e2e8f0', flexShrink: 0 },
@@ -590,6 +630,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const [devMenu, setDevMenu] = useState(null);
   // Video-effects panel (light / touch-up / blur) open state.
   const [fxOpen, setFxOpen] = useState(false);
+  const [camInfoOpen, setCamInfoOpen] = useState(false); // host camera diagnostics modal
   // "Activities" as a STAGE VIEW (host-only): like the teaching board, the coach can
   // put the activities list on the stage — create (new tab), watch live leaderboards,
   // open finished results — all inside the class, video keeps running. Not broadcast
@@ -629,8 +670,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // Host: load a position/game onto the shared board (paste FEN or PGN, like Quick Analyze).
   const [loadText, setLoadText] = useState('');
   const [loadErr, setLoadErr] = useState('');
-  // Host: content source — studies / courses / library / paste.
+  // Host: content source — studies / courses / library / puzzles / games / paste.
   const [contentTab, setContentTab] = useState('studies');
+  // Games importer (review a student's recent Lichess / Chess.com games on the board).
+  const [gamePlatform, setGamePlatform] = useState('lichess'); // 'lichess' | 'chesscom'
+  const [gameUser, setGameUser] = useState('');
+  const [gameMax, setGameMax] = useState(5);
+  const [fetchedGames, setFetchedGames] = useState([]);
+  const [gamesLoading, setGamesLoading] = useState(false);
+  const [gamesErr, setGamesErr] = useState('');
   // Studies picker (source → study → chapter → positions list beside the board).
   const [studySource, setStudySource] = useState('mine'); // mine | public | nexus
   const [studies, setStudies] = useState([]);
@@ -1085,6 +1133,26 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     } catch { /* ignore */ }
   };
 
+  // Fetch a student's recent Lichess / Chess.com games (raw, no analysis).
+  const fetchStudentGames = async () => {
+    const u = gameUser.trim();
+    if (!u) return;
+    setGamesLoading(true); setGamesErr(''); setFetchedGames([]);
+    try {
+      const r = await api.get('/api/coach-live/import-games', {
+        params: { platform: gamePlatform, username: u, max: gameMax },
+      });
+      setFetchedGames(Array.isArray(r.data?.games) ? r.data.games : []);
+    } catch (e) {
+      setGamesErr(e.response?.data?.message || 'Could not fetch games.');
+    } finally { setGamesLoading(false); }
+  };
+
+  // Load a fetched game onto the live board (syncs to all students via applyTree).
+  const loadFetchedGame = (g) => {
+    if (g?.pgn) loadPgnIntoTree(g.pgn);
+  };
+
   // Smart-load a course lesson / library item by its kind.
   const loadItem = async (item) => {
     if (!item) return;
@@ -1179,6 +1247,18 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     else { document.documentElement.requestFullscreen?.().catch(() => {}); }
   };
 
+  // In-PAGE fullscreen. Unlike the detached PiP window — where Chromium blocks both
+  // real fullscreen AND large resizing — the main tab's Fullscreen API works. When the
+  // video grid is on the stage we fullscreen JUST the grid (edge-to-edge faces); when a
+  // board/screen is on the stage instead, we fullscreen the whole class page. Either
+  // way the ⛶ button always does something useful and is always reachable.
+  const videoGridRef = useRef(null);
+  const toggleVideoFullscreen = () => {
+    if (document.fullscreenElement) { document.exitFullscreen?.(); return; }
+    const el = videoGridRef.current || document.documentElement;
+    el.requestFullscreen?.().catch(() => {});
+  };
+
   // ── Floating control bar while sharing (Document Picture-in-Picture) ──────────
   // A website can't draw over other windows, but Chrome/Edge's Document PiP lets us
   // pop a small always-on-top window with the class controls, so the presenter can
@@ -1207,7 +1287,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         pipWinRef.current = pip;
 
         const doc = pip.document;
-        doc.body.style.cssText = 'margin:0;background:#0f141c;font-family:Poppins,Segoe UI,sans-serif;color:#f0f0f0;';
+        doc.body.style.cssText = 'margin:0;background:#0f141c;font-family:Poppins,Segoe UI,sans-serif;color:#e2e8f0;';
         doc.body.innerHTML = `
           <div style="display:flex;flex-direction:column;gap:6px;padding:10px 12px">
             <div style="font-size:12px;color:#a7f3d0;font-weight:700">🔴 You’re sharing — class controls</div>
@@ -1218,7 +1298,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               <button id="p-stop" style="flex:1;background:#dc2626;color:#fff">Stop</button>
             </div>
           </div>`;
-        const btnCss = 'padding:7px 6px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#f0f0f0;font-size:14px;cursor:pointer';
+        const btnCss = 'padding:7px 6px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#e2e8f0;font-size:14px;cursor:pointer';
         doc.querySelectorAll('button').forEach(b => { b.style.cssText += btnCss; });
 
         const mic = doc.getElementById('p-mic');
@@ -1228,8 +1308,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         const micSvg = (off) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align:-3px"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M6 11a6 6 0 0 0 12 0" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>${off ? slash : ''}</svg>`;
         const camSvg = (off) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align:-3px"><rect x="2.5" y="6.5" width="12.5" height="11" rx="2.5" fill="currentColor"/><path d="M15 10.5 L21 7.5 V16.5 L15 13.5 Z" fill="currentColor"/>${off ? slash : ''}</svg>`;
         const paint = () => {
-          mic.style.color = pipApi.current.micOn ? '#f0f0f0' : '#f87171';
-          cam.style.color = pipApi.current.camOn ? '#f0f0f0' : '#f87171';
+          mic.style.color = pipApi.current.micOn ? '#e2e8f0' : '#f87171';
+          cam.style.color = pipApi.current.camOn ? '#e2e8f0' : '#f87171';
           mic.innerHTML = `${micSvg(!pipApi.current.micOn)} ${pipApi.current.micOn ? 'Mic' : 'Muted'}`;
           cam.innerHTML = `${camSvg(!pipApi.current.camOn)} ${pipApi.current.camOn ? 'Cam' : 'Off'}`;
         };
@@ -1266,32 +1346,33 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     const attached = []; // [{track, el}] to detach on teardown
     (async () => {
       try {
-        // Open LARGE (near current-screen size). Browsers won't let a web page force
-        // the window onto a specific monitor or make it fullscreen — that's a security
-        // limit — so we open big and tell the host to drag it to their 2nd screen and
-        // maximize it (double-click its title bar).
-        const w = Math.min(1280, Math.round((window.screen?.availWidth || 1280) * 0.9));
-        const h = Math.min(760, Math.round((window.screen?.availHeight || 760) * 0.9));
+        // Open as large as the screen allows. The browser still caps how tall a PiP
+        // window can be dragged — the reliable way to truly fill the screen is the
+        // Fullscreen button below (requestFullscreen), NOT dragging/maximizing.
+        const w = Math.round((window.screen?.availWidth || 1280) * 0.95);
+        const h = Math.round((window.screen?.availHeight || 800) * 0.95);
         const pip = await dpip.requestWindow({ width: w, height: h });
         if (cancelled) { try { pip.close(); } catch { /* */ } return; }
         popWinRef.current = pip;
         const doc = pip.document;
-        doc.body.style.cssText = 'margin:0;background:#0a0a0a;font-family:Poppins,Segoe UI,sans-serif;color:#f0f0f0;display:flex;flex-direction:column';
+        doc.body.style.cssText = 'margin:0;background:#0a0a0a;font-family:Poppins,Segoe UI,sans-serif;color:#e2e8f0;display:flex;flex-direction:column';
 
-        // One-line hint bar (how to get it fullscreen on the 2nd monitor).
-        const hint = doc.createElement('div');
-        hint.style.cssText = 'flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:6px 12px;font-size:12px;color:#a7f3d0;background:rgba(16,185,129,0.10);border-bottom:1px solid rgba(16,185,129,0.22)';
-        hint.innerHTML = '🖥️ Drag this window to your second screen, then double-click its title bar to fill it.';
-        doc.body.appendChild(hint);
-
+        // NOTE: a detached PiP window CANNOT be made fullscreen or script-resized to
+        // fill the screen — Chromium blocks both. So this pop-out is for dragging to a
+        // SECOND MONITOR (its real purpose). For big edge-to-edge video on THIS screen,
+        // the host uses the "⛶ Fullscreen" button on the in-page (docked) video grid,
+        // which uses the main tab's Fullscreen API and actually works.
         const cols = popTiles.length <= 1 ? 1 : popTiles.length <= 4 ? 2 : 3;
+        const rows = Math.ceil(popTiles.length / cols);
         const grid = doc.createElement('div');
-        grid.style.cssText = `flex:1 1 auto;display:grid;gap:8px;padding:10px;grid-template-columns:repeat(${cols},1fr);box-sizing:border-box;align-content:start;overflow:auto`;
+        grid.style.cssText = `flex:1 1 auto;display:grid;gap:8px;padding:10px;grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);box-sizing:border-box;overflow:hidden;min-height:0`;
         doc.body.appendChild(grid);
 
         popTiles.forEach(p => {
           const cell = doc.createElement('div');
-          cell.style.cssText = 'position:relative;background:linear-gradient(135deg,#141a24,#0f141c);border-radius:9px;overflow:hidden;aspect-ratio:4/3;display:grid;place-items:center';
+          // aspect-ratio:4/3 keeps each tile a proper BOX (not a wide letterbox) even
+          // when one person is in a wide window; justify/align-self center it in its cell.
+          cell.style.cssText = 'position:relative;justify-self:center;align-self:center;max-width:100%;max-height:100%;aspect-ratio:4/3;background:linear-gradient(135deg,#141a24,#0f141c);border-radius:9px;overflow:hidden;display:grid;place-items:center';
           if (p.videoTrack) {
             const v = doc.createElement('video');
             v.autoplay = true; v.playsInline = true; v.muted = true;
@@ -1299,14 +1380,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             try { p.videoTrack.attach(v); attached.push({ track: p.videoTrack, el: v }); } catch { /* */ }
             cell.appendChild(v);
           } else {
+            // Camera-off avatar — scale it to the tile (min of width/height) so it's a
+            // big readable circle, not a lost 44px dot in a large cell.
             const av = doc.createElement('div');
-            av.style.cssText = 'width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#06b6d4,#10b981);color:#04211d;display:grid;place-items:center;font-weight:800;font-size:18px';
+            av.style.cssText = 'width:min(28vw,28vh);height:min(28vw,28vh);max-width:180px;max-height:180px;border-radius:50%;background:linear-gradient(135deg,#06b6d4,#10b981);color:#04211d;display:grid;place-items:center;font-weight:800;font-size:min(12vw,12vh);line-height:1';
             av.textContent = (p.name || '?').charAt(0).toUpperCase();
             cell.appendChild(av);
           }
           const nm = doc.createElement('span');
           nm.textContent = p.name + (p.isLocal ? ' (you)' : '');
-          nm.style.cssText = 'position:absolute;left:6px;bottom:6px;font-size:11px;background:rgba(0,0,0,0.55);padding:2px 7px;border-radius:6px;max-width:calc(100% - 40px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+          nm.style.cssText = 'position:absolute;left:10px;bottom:10px;font-size:min(2.4vw,15px);font-weight:600;background:rgba(0,0,0,0.6);padding:4px 11px;border-radius:8px;max-width:calc(100% - 40px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
           cell.appendChild(nm);
           grid.appendChild(cell);
         });
@@ -1328,8 +1411,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
   // ── Render ───────────────────────────────────────────────────────────────────
   if (phase === 'loading') return <div style={s.center}>Loading classroom…</div>;
-  if (phase === 'error') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>🚫</div><p>{note}</p><button style={s.ghost} onClick={() => nav(-1)}>Back</button></div></div>;
-  if (phase === 'ended') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>👋</div><h2>Meeting ended</h2><button style={s.ghost} onClick={() => nav('/coach/live')}>Back to meetings</button></div></div>;
+  if (phase === 'error') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>🚫</div><p style={{ fontSize: 15, color: 'rgba(226,232,240,0.85)' }}>{note}</p><button style={s.ghost} onClick={() => nav(-1)}>Back</button></div></div>;
+  if (phase === 'ended') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>👋</div><h2 style={{ fontSize: 20, fontWeight: 700, margin: '6px 0 14px' }}>Meeting ended</h2><button style={s.ghost} onClick={() => nav('/coach/live')}>Back to meetings</button></div></div>;
   if (phase === 'waiting') return <WaitingRoom note={note} user={user} joinCode={mode === 'join' ? params.joinCode : null} />;
 
   // live
@@ -1366,6 +1449,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // the board (or a placeholder) takes it so faces never eat the whole page.
   const videoOnStage = videosDocked && !boardOnStage && !remoteScreen && !activitiesOnStage;
 
+  // Does the RIGHT RAIL actually have anything to show? It holds two things: the
+  // docked video thumbnails (only when videos are docked AND a board/screen is on
+  // stage) and the Participants panel (only when opened). If NEITHER is present, the
+  // rail is empty — so we must NOT reserve its 300–380px, otherwise the board can't
+  // expand into that blank gutter (the "board won't take the whole page" bug when
+  // videos are detached). When videos are re-attached, the rail fills again and the
+  // board reflows around it — which is exactly the behaviour that already worked.
+  const railHasThumbs = videosDocked && (boardOnStage || remoteScreen);
+  const railHasContent = railHasThumbs || showParticipants;
+
   const renderTile = (p, { small = false } = {}) => (
     // minWidth:0 + width:100% keep the tile inside its grid cell. Without minWidth:0 a
     // <video>'s intrinsic width can exceed the column and push tiles into a sideways
@@ -1373,6 +1466,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     <div key={p.identity} style={{ minWidth: 0, width: '100%' }}>
       <MediaTile
         track={p.videoTrack}
+        local={p.isLocal}
         audioTrack={p.audioTrack}
         muted={p.isLocal}
         label={p.name + (p.isLocal ? ' (you)' : '')}
@@ -1490,6 +1584,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   <span style={s.devCheck}>✨</span>
                   <span style={s.devLabel}>Video effects…</span>
                 </button>
+                {/* Host-only camera diagnostics: what the sensor supports & is publishing. */}
+                {isHost && (
+                  <button
+                    style={{ ...s.devItem, color: '#9ca3af' }}
+                    onClick={() => { setCamInfoOpen(true); setDevMenu(null); }}
+                  >
+                    <span style={s.devCheck}>ℹ️</span>
+                    <span style={s.devLabel}>Video info (diagnostics)…</span>
+                  </button>
+                )}
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '4px 0' }} />
                 <div style={s.devMenuHead}>Select a camera</div>
                 {lk.cameras.length === 0 && <div style={s.devMenuEmpty}>No cameras found</div>}
@@ -1537,7 +1641,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             ))}
           </div>
         )}
-        <button style={s.iconBtn} title={isFs ? 'Exit fullscreen' : 'Fullscreen'} onClick={toggleFullscreen}>
+        <button style={s.iconBtn} title={isFs ? 'Exit fullscreen' : 'Fullscreen (video if shown, else the class)'} onClick={toggleVideoFullscreen}>
           {isFs ? '🡼' : '⛶'}
         </button>
         {isHost && <button style={s.endBtn} onClick={endClass}>End</button>}
@@ -1601,8 +1705,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     </div>
                   );
                 }
-                // Otherwise study positions.
-                if (positions.length > 0) {
+                // Study positions — ONLY on the Studies tab. Guarding on contentTab
+                // means switching to Puzzles/Courses/Library/Games hides this list
+                // (the positions state is kept, so returning to Studies restores it).
+                if (contentTab === 'studies' && positions.length > 0) {
                   return (
                     <div style={s.posList}>
                       <div style={s.posListTitle}>Positions ({positions.length})</div>
@@ -1668,7 +1774,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   <div style={{ ...s.loadPanel, width: '100%' }}>
                     {/* Top-level content tabs */}
                     <div style={s.srcTabs}>
-                      {[['studies', '📚 Studies'], ['courses', '🎓 Courses'], ['library', '📁 Library'], ['puzzles', '🧩 Puzzles']].map(([v, label]) => (
+                      {[['studies', '📚 Studies'], ['courses', '🎓 Courses'], ['library', '📁 Library'], ['puzzles', '🧩 Puzzles'], ['games', '♟ Games']].map(([v, label]) => (
                         <button key={v}
                           style={{ ...s.srcTab, ...(contentTab === v ? s.srcTabOn : {}) }}
                           onClick={() => setContentTab(v)}>{label}</button>
@@ -1766,7 +1872,57 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       </div>
                     )}
 
-                    {contentTab !== 'puzzles' && (<>
+                    {/* GAMES: fetch a student's recent Lichess / Chess.com games and
+                        load one onto the board to review (raw game, no analysis). */}
+                    {contentTab === 'games' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={s.srcTabs}>
+                          {[['lichess', 'Lichess'], ['chesscom', 'Chess.com']].map(([v, label]) => (
+                            <button key={v}
+                              style={{ ...s.srcTab, ...(gamePlatform === v ? s.srcTabOn : {}) }}
+                              onClick={() => setGamePlatform(v)}>{label}</button>
+                          ))}
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                          <input
+                            style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit', minWidth: 120 }}
+                            placeholder={gamePlatform === 'lichess' ? 'Lichess username' : 'Chess.com username'}
+                            value={gameUser}
+                            onChange={e => setGameUser(e.target.value)}
+                            onKeyDown={e => { if (e.key === 'Enter') fetchStudentGames(); }}
+                          />
+                          <select style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }}
+                            value={gameMax} onChange={e => setGameMax(Number(e.target.value))}>
+                            <option value={5}>Last 5</option>
+                            <option value={10}>Last 10</option>
+                          </select>
+                          <button style={s.loadBtn} onClick={fetchStudentGames} disabled={gamesLoading || !gameUser.trim()}>
+                            {gamesLoading ? 'Fetching…' : 'Fetch'}
+                          </button>
+                        </div>
+                        {gamesErr && <div style={{ color: '#fca5a5', fontSize: 12 }}>{gamesErr}</div>}
+                        {fetchedGames.length > 0 && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 5, maxHeight: 200, overflowY: 'auto' }}>
+                            {fetchedGames.map((g, i) => {
+                              const rc = g.result === 'win' ? '#34d399' : g.result === 'loss' ? '#f87171' : '#fbbf24';
+                              const rl = g.result === 'win' ? 'Won' : g.result === 'loss' ? 'Lost' : 'Draw';
+                              return (
+                                <div key={i} style={s.gameRow}>
+                                  <span style={{ ...s.gameResult, color: rc, borderColor: rc }}>{rl}</span>
+                                  <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12.5 }}>
+                                    <b style={{ textTransform: 'capitalize' }}>{g.playerSide}</b> · {g.opening}
+                                    {g.timeClass && g.timeClass !== 'unknown' ? ` · ${g.timeClass}` : ''}
+                                  </span>
+                                  <button style={s.tiny} onClick={() => loadFetchedGame(g)}>Load</button>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {contentTab !== 'puzzles' && contentTab !== 'games' && (<>
                       <textarea
                         style={s.loadInput}
                         rows={2}
@@ -1813,7 +1969,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               </div>
             </div>
           ) : videoOnStage ? (
-            <div style={{ ...s.videoGrid, gridTemplateColumns: `repeat(${stageCols}, 1fr)` }}>
+            <div ref={videoGridRef} style={{ ...s.videoGrid, gridTemplateColumns: `repeat(${stageCols}, 1fr)`, ...(isFs ? s.videoGridFs : {}) }}>
               {tiles.map(p => renderTile(p))}
             </div>
           ) : (
@@ -1831,119 +1987,127 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         </div>
 
         {/* ── RIGHT RAIL: participants panel + video thumbnails + waiting room ──
-            When Moves is collapsed, the rail widens so the coach sees kids bigger. */}
-        {/* Rail never shrinks away (flexShrink:0) so the videos stay beside the
-            board even when a study's positions list makes the stage wide. */}
+            When Moves is collapsed, the rail widens so the coach sees kids bigger.
+            Rendered ONLY when it has content (docked thumbnails or an open Participants
+            panel). When videos are detached AND the panel is closed the rail is omitted
+            entirely, so the board + moves flex to the FULL page width. */}
+        {railHasContent && (
         <div style={{ ...s.side, flexShrink: 0, ...(movesCollapsed
           ? { flexBasis: 380, width: 380 }   // collapsed → wider rail, videos get bigger (2 per row)
           : { flexBasis: 300, width: 300 }) }}>
-          {/* Zoom-style Participants list — one click, works during screen share too. */}
+          {/* Zoom-style single panel: WAITING ROOM (top) + IN THE CLASS (below),
+              in ONE card. Shown ONLY when the coach opens Participants — it does NOT
+              sit permanently beside the shared board. New arrivals are still flagged by
+              the amber badge on the Participants toolbar button, so nothing is missed. */}
           {showParticipants && (
-            <div style={s.waitCard}>
-              <div style={{ fontWeight: 700, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-                👥 In the class <span style={s.waitBadge}>{tiles.length}</span>
-              </div>
-              {tiles.map(p => {
-                const controlling = String(controllerId) === String(p.identity);
-                const sharing = String(screenSharerId) === String(p.identity);
-                return (
-                  <div key={p.identity} style={s.partRow}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
-                      {p.avatar
-                        ? <img src={p.avatar} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
-                        : <span style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 800 }}>{(p.name || '?').charAt(0).toUpperCase()}</span>}
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13 }}>
-                        {p.name}{p.isLocal ? ' (you)' : ''}{controlling ? ' • presenting' : ''}
-                      </span>
-                    </span>
-                    {/* mic / cam status icons */}
-                    <span title={p.audioTrack ? 'Mic on' : 'Muted'} style={{ display: 'inline-flex', color: p.audioTrack ? '#9ca3af' : '#f87171' }}>
-                      <MicIcon off={!p.audioTrack} size={16} />
-                    </span>
-                    <span title={p.videoTrack ? 'Camera on' : 'Camera off'} style={{ display: 'inline-flex', color: p.videoTrack ? '#9ca3af' : '#f87171' }}>
-                      <CamIcon off={!p.videoTrack} size={16} />
-                    </span>
-                    {/* host: two SEPARATE grants — board control (moves) and screen share */}
-                    {isHost && !p.isLocal && (
-                      <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                        {controlling
-                          ? <button style={s.tiny} onClick={revoke} title="Take back board control">🎯 Take board</button>
-                          : <button style={s.tiny} onClick={() => grant(p.identity)} title="Let this student move the board">🎯 Give board</button>}
-                        {sharing
-                          ? <button style={s.tiny} onClick={revokeShare} title="Stop this student sharing">🖥️ Take share</button>
-                          : <button style={s.tiny} onClick={() => grantShare(p.identity)} title="Let this student share their screen">🖥️ Give share</button>}
-                      </span>
-                    )}
+            <div style={{ ...s.waitCard, ...(isHost && waitingNow.length > 0 ? s.waitCardHot : {}) }}>
+
+              {/* ── Waiting-room section (host only) — sits at the TOP like Zoom ── */}
+              {isHost && (
+                <div style={{ marginBottom: 12 }}>
+                  <div
+                    onClick={() => setWaitingCollapsed(c => !c)}
+                    style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginBottom: waitingCollapsed ? 0 : 8 }}
+                  >
+                    <span style={{ fontSize: 12, color: '#9ca3af' }}>{waitingCollapsed ? '▸' : '▾'}</span>
+                    ⏳ Waiting room
+                    {waitingNow.length > 0 && <span style={s.waitBadge}>{waitingNow.length}</span>}
                   </div>
-                );
-              })}
+
+                  {!waitingCollapsed && (<>
+                    {waitingNow.length === 0
+                      ? <div style={{ color: '#6b7280', fontSize: 13 }}>No one waiting.</div>
+                      : waitingNow.map(w => (
+                        <div key={w.studentId} style={s.waitRow}>
+                          <span style={{ flex: 1, fontSize: 14 }}>{w.name || w.username || 'Student'}</span>
+                          <button style={s.present} onClick={() => admit(w.studentId, 'Present')}>Present</button>
+                          <button style={s.catchup} onClick={() => admit(w.studentId, 'Catch-up')}>Catch up</button>
+                          <button style={s.remove} onClick={() => removeStu(w.studentId)}>Remove</button>
+                        </div>
+                      ))
+                    }
+                  </>)}
+
+                  {/* Collapsed but someone is waiting → show up to 2 names so the coach
+                      notices and can admit without expanding. */}
+                  {waitingCollapsed && waitingNow.length > 0 && (
+                    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {waitingNow.slice(0, 2).map(w => (
+                        <div key={w.studentId} style={s.waitRow}>
+                          <span style={{ flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{w.name || w.username || 'Student'}</span>
+                          <button style={s.present} onClick={() => admit(w.studentId, 'Present')}>Present</button>
+                          <button style={s.catchup} onClick={() => admit(w.studentId, 'Catch-up')}>Catch up</button>
+                        </div>
+                      ))}
+                      {waitingNow.length > 2 && (
+                        <div style={{ fontSize: 12, color: '#9ca3af', cursor: 'pointer' }} onClick={() => setWaitingCollapsed(false)}>
+                          +{waitingNow.length - 2} more — expand
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Divider between the two sections (host sees both; student sees only this). */}
+              {isHost && <div style={s.panelDivider} />}
+
+              {/* ── In-the-class section (the admitted participants) ── */}
+              {(
+                <div>
+                  <div style={{ fontWeight: 700, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    👥 In the class <span style={s.waitBadge}>{tiles.length}</span>
+                  </div>
+                  {tiles.map(p => {
+                    const controlling = String(controllerId) === String(p.identity);
+                    const sharing = String(screenSharerId) === String(p.identity);
+                    return (
+                      <div key={p.identity} style={s.partRow}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
+                          {p.avatar
+                            ? <img src={p.avatar} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
+                            : <span style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 800 }}>{(p.name || '?').charAt(0).toUpperCase()}</span>}
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13 }}>
+                            {p.name}{p.isLocal ? ' (you)' : ''}{controlling ? ' • presenting' : ''}
+                          </span>
+                        </span>
+                        {/* mic / cam status icons */}
+                        <span title={p.audioTrack ? 'Mic on' : 'Muted'} style={{ display: 'inline-flex', color: p.audioTrack ? '#9ca3af' : '#f87171' }}>
+                          <MicIcon off={!p.audioTrack} size={16} />
+                        </span>
+                        <span title={p.videoTrack ? 'Camera on' : 'Camera off'} style={{ display: 'inline-flex', color: p.videoTrack ? '#9ca3af' : '#f87171' }}>
+                          <CamIcon off={!p.videoTrack} size={16} />
+                        </span>
+                        {/* host: two SEPARATE grants — board control (moves) and screen share */}
+                        {isHost && !p.isLocal && (
+                          <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            {controlling
+                              ? <button style={s.tiny} onClick={revoke} title="Take back board control">🎯 Take board</button>
+                              : <button style={s.tiny} onClick={() => grant(p.identity)} title="Let this student move the board">🎯 Give board</button>}
+                            {sharing
+                              ? <button style={s.tiny} onClick={revokeShare} title="Stop this student sharing">🖥️ Take share</button>
+                              : <button style={s.tiny} onClick={() => grantShare(p.identity)} title="Let this student share their screen">🖥️ Give share</button>}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
           {/* Docked video thumbnails — only when the host keeps videos docked AND the
               stage is showing the board/screen (so faces sit beside the teaching view).
               Floated / popped / hidden videos render elsewhere, not here. */}
-          {videosDocked && (boardOnStage || remoteScreen) && (
+          {railHasThumbs && (
             // Wider rail (Moves collapsed) OR >5 people → 2 per line; else 1 (bigger).
             <div style={{ ...s.thumbCol, gridTemplateColumns: (movesCollapsed || tiles.length > 5) ? '1fr 1fr' : '1fr' }}>
               {tiles.map(p => renderTile(p, { small: true }))}
             </div>
           )}
-
-          {isHost && (
-            <div style={{ ...s.waitCard, ...(waitingNow.length > 0 ? s.waitCardHot : {}) }}>
-              {/* Header is a collapse/expand toggle. The count badge stays visible
-                  even when collapsed, so a new arrival is noticed. */}
-              <div
-                onClick={() => setWaitingCollapsed(c => !c)}
-                style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', marginBottom: waitingCollapsed ? 0 : 8 }}
-              >
-                <span style={{ fontSize: 12, color: '#9ca3af' }}>{waitingCollapsed ? '▸' : '▾'}</span>
-                ⏳ Waiting room
-                {waitingNow.length > 0 && <span style={s.waitBadge}>{waitingNow.length}</span>}
-              </div>
-
-              {!waitingCollapsed && (<>
-                {waitingNow.length === 0
-                  ? <div style={{ color: '#6b7280', fontSize: 13 }}>No one waiting.</div>
-                  : waitingNow.map(w => (
-                    <div key={w.studentId} style={s.waitRow}>
-                      <span style={{ flex: 1, fontSize: 14 }}>{w.name || w.username || 'Student'}</span>
-                      <button style={s.present} onClick={() => admit(w.studentId, 'Present')}>Present</button>
-                      <button style={s.catchup} onClick={() => admit(w.studentId, 'Catch-up')}>Catch up</button>
-                      <button style={s.remove} onClick={() => removeStu(w.studentId)}>Remove</button>
-                    </div>
-                  ))
-                }
-                {/* Already-admitted list (small) */}
-                {waiting.some(w => w.state === 'admitted') && (
-                  <div style={{ marginTop: 10, color: '#9ca3af', fontSize: 12 }}>
-                    Admitted: {waiting.filter(w => w.state === 'admitted').map(w => `${w.name || w.username} (${w.outcome})`).join(', ')}
-                  </div>
-                )}
-              </>)}
-
-              {/* Collapsed but someone is waiting → show up to 2 names right at the
-                  top so the coach notices and can admit without expanding. */}
-              {waitingCollapsed && waitingNow.length > 0 && (
-                <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {waitingNow.slice(0, 2).map(w => (
-                    <div key={w.studentId} style={s.waitRow}>
-                      <span style={{ flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{w.name || w.username || 'Student'}</span>
-                      <button style={s.present} onClick={() => admit(w.studentId, 'Present')}>Present</button>
-                      <button style={s.catchup} onClick={() => admit(w.studentId, 'Catch-up')}>Catch up</button>
-                    </div>
-                  ))}
-                  {waitingNow.length > 2 && (
-                    <div style={{ fontSize: 12, color: '#9ca3af', cursor: 'pointer' }} onClick={() => setWaitingCollapsed(false)}>
-                      +{waitingNow.length - 2} more — expand
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
         </div>
+        )}
       </div>
 
       {/* Floating class chat (transient — not saved, gone when the class ends). */}
@@ -2068,6 +2232,44 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       )}
 
       {/* ── Video effects panel (free, Zoom-style: light / touch-up / blur) ── */}
+      {camInfoOpen && (() => {
+        const ci = lk.camInfo;
+        const st = ci?.settings || {};
+        const supported = (arr) => Array.isArray(arr) && arr.includes('continuous');
+        const Row = ({ label, ok, detail }) => (
+          <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', fontSize: 13 }}>
+            <span style={{ color: '#9ca3af' }}>{label}</span>
+            <span style={{ color: ok ? '#34d399' : '#f87171', fontWeight: 600 }}>{detail}</span>
+          </div>
+        );
+        return (
+          <div style={s.fxOverlay} onMouseDown={(e) => { if (e.target === e.currentTarget) setCamInfoOpen(false); }}>
+            <div style={s.fxPanel}>
+              <div style={s.fxHead}>
+                <span>ℹ️ Video info (diagnostics)</span>
+                <button style={s.editorX} onClick={() => setCamInfoOpen(false)} title="Close">✕</button>
+              </div>
+              <p style={s.fxNote}>
+                What your camera reports it supports, and what it's publishing now. The
+                “continuous” auto modes are what make the picture polished like Zoom —
+                if a row shows “not supported”, this camera lacks that hardware control.
+              </p>
+              {!ci ? (
+                <div style={{ color: '#9ca3af', fontSize: 13, padding: '10px 0' }}>Turn the camera on to read its capabilities…</div>
+              ) : (
+                <div>
+                  <Row label="Resolution" ok={(st.width || 0) >= 1280} detail={st.width ? `${st.width}×${st.height} @ ${Math.round(st.frameRate || 0)}fps` : '—'} />
+                  <Row label="Auto exposure (continuous)"      ok={supported(ci.supports?.exposureMode)}     detail={supported(ci.supports?.exposureMode) ? 'supported ✓' : 'not supported'} />
+                  <Row label="Auto white balance (continuous)" ok={supported(ci.supports?.whiteBalanceMode)} detail={supported(ci.supports?.whiteBalanceMode) ? 'supported ✓' : 'not supported'} />
+                  <Row label="Auto focus (continuous)"         ok={supported(ci.supports?.focusMode)}        detail={supported(ci.supports?.focusMode) ? 'supported ✓' : 'not supported'} />
+                  <Row label="Auto modes applied" ok={(ci.autoApplied || []).length > 0} detail={(ci.autoApplied || []).length ? ci.autoApplied.join(', ') : 'none'} />
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {fxOpen && (
         <div style={s.fxOverlay} onMouseDown={(e) => { if (e.target === e.currentTarget) setFxOpen(false); }}>
           <div style={s.fxPanel}>
@@ -2080,9 +2282,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             {/* Live self-preview — see the effect as you drag the sliders (Zoom-style). */}
             <FxPreview effects={lk.effects} blurOn={lk.blurOn} deviceId={lk.activeCameraId} />
 
-            {/* Master enhance on/off (ON by default → Zoom-like rich look) */}
+            {/* Master enhance on/off. OFF by default now — the raw camera is sharpest
+                (Zoom-crisp). This is an opt-in for anyone who wants extra brightness/
+                colour or skin touch-up; it re-processes the frame so it's slightly softer. */}
             <label style={s.fxRow}>
-              <span style={s.fxLabel}>💡 Natural enhance (light &amp; colour)</span>
+              <span style={s.fxLabel}>💡 Natural enhance (light &amp; colour) — optional</span>
               <input
                 type="checkbox"
                 checked={lk.effects.enabled}
@@ -2167,17 +2371,22 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 }
 
 const s = {
-  wrap: { minHeight: '100vh', background: '#0a0a0a', color: '#f0f0f0', fontFamily: "'Poppins',sans-serif" },
-  center: { minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#0a0a0a', color: '#f0f0f0', fontFamily: "'Poppins',sans-serif" },
+  // Root: match the rest of the coach app — #0b0f14 bg, #e2e8f0 text, 15px base font
+  // (so any untagged text inherits the app scale instead of the browser's 16px default).
+  wrap: { minHeight: '100vh', background: '#0b0f14', color: '#e2e8f0', fontFamily: "'Poppins',sans-serif", fontSize: 15 },
+  center: { minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#0b0f14', color: '#e2e8f0', fontFamily: "'Poppins',sans-serif", fontSize: 15 },
   topbar: { display: 'flex', alignItems: 'center', gap: 10, padding: '6px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)', flexWrap: 'wrap' },
   noteBar: { padding: '8px 16px', background: 'rgba(245,158,11,0.12)', color: '#fcd34d', fontSize: 13 },
   body: { display: 'flex', gap: 16, padding: '12px 16px 16px', flexWrap: 'nowrap', alignItems: 'flex-start', justifyContent: 'flex-start', minHeight: 'calc(100vh - 62px)' },
   // Positions list beside the board (from a chosen study/chapter).
   posList: { width: 180, flexShrink: 0, maxHeight: '70vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5,
     background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 10 },
-  posListTitle: { fontSize: 12, fontWeight: 800, color: '#67e8f9', marginBottom: 2 },
-  posItem: { textAlign: 'left', padding: '7px 9px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)',
-    background: 'rgba(255,255,255,0.04)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12.5,
+  posListTitle: { flexShrink: 0, fontSize: 12, fontWeight: 800, color: '#67e8f9', marginBottom: 2 },
+  // flexShrink:0 is REQUIRED: without it, a long list (e.g. 23 positions) in the
+  // flex-column posList gets vertically SQUISHED to fit maxHeight, smearing the text.
+  // With it, each row keeps its height and the container scrolls instead.
+  posItem: { flexShrink: 0, textAlign: 'left', padding: '7px 9px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)',
+    background: 'rgba(255,255,255,0.04)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12.5, lineHeight: 1.3,
     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   srcTabs: { display: 'flex', gap: 6 },
   srcTab: { flex: 1, padding: '6px 8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)',
@@ -2188,7 +2397,7 @@ const s = {
     background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 10 },
   stepRow: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, flexWrap: 'wrap' },
   stepBtn: { padding: '5px 10px', borderRadius: 7, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12.5 },
-  loadInput: { width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#f0f0f0', fontSize: 12.5, resize: 'vertical', fontFamily: 'monospace' },
+  loadInput: { width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#e2e8f0', fontSize: 12.5, resize: 'vertical', fontFamily: 'monospace' },
   loadBtn: { flex: 1, padding: '7px 12px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 700, cursor: 'pointer', fontSize: 13 },
   ghostSm: { padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13 },
   editorOverlay: { position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.72)', backdropFilter: 'blur(3px)',
@@ -2213,7 +2422,9 @@ const s = {
   // NEVER pushed off-screen / to the page bottom.
   stage: { flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'stretch', overflowX: 'auto' },
   // Zoom-style grid of BIG tiles (1 = full stage, 2 = split, 4 = 2×2, more = 3-wide).
-  videoGrid: { display: 'grid', gap: 10, alignContent: 'center', width: '100%', minWidth: 0 },
+  videoGrid: { position: 'relative', display: 'grid', gap: 10, alignContent: 'center', width: '100%', minWidth: 0 },
+  // When the grid itself is fullscreened, fill the screen with a solid backdrop.
+  videoGridFs: { background: '#0a0a0a', padding: 16, boxSizing: 'border-box', height: '100%', alignContent: 'center' },
   // Empty-stage prompt shown when the host moved videos out and no board is up.
   stagePlaceholder: { flex: 1, minHeight: 320, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 14, border: '1px dashed rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.02)' },
   // Right rail: thumbnails (when the stage shows board/screen) + waiting room.
@@ -2222,6 +2433,9 @@ const s = {
   camSelect: { padding: '6px 8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: '#151a22', color: '#e2e8f0', fontSize: 12, maxWidth: 170, cursor: 'pointer' },
   waitCard: { background: 'rgba(23,23,23,0.72)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 12 },
   waitCardHot: { border: '1px solid rgba(245,158,11,0.45)', boxShadow: '0 0 14px rgba(245,158,11,0.15)' },
+  panelDivider: { height: 1, background: 'rgba(255,255,255,0.08)', margin: '2px 0 12px' },
+  gameRow: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' },
+  gameResult: { flex: 'none', width: 42, textAlign: 'center', fontSize: 11, fontWeight: 800, padding: '2px 0', borderRadius: 6, border: '1px solid' },
   waitBadge: { background: '#f59e0b', color: '#241a05', borderRadius: 999, fontSize: 12, fontWeight: 800, padding: '1px 8px' },
   waitRow: { display: 'flex', alignItems: 'center', gap: 6, padding: '6px 0', borderTop: '1px solid rgba(255,255,255,0.05)' },
   partRow: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderTop: '1px solid rgba(255,255,255,0.05)' },

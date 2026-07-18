@@ -25,8 +25,16 @@ const SIMULCAST = true;
 //   • If bandwidth becomes a problem for kids on weak wifi, adaptiveStream/dynacast
 //     already scale DOWN automatically — so raising the ceiling is safe.
 const VIDEO_ENCODING = {
-  maxBitrate: 2_600_000, // ~2.6 Mbps (up from LiveKit's ~1.7 Mbps default)
+  maxBitrate: 3_200_000, // ~3.2 Mbps — matches Zoom's clean 720p; adaptiveStream still scales DOWN on weak wifi
   maxFramerate: 30,
+};
+
+// Ask the browser to capture a specific, high-quality camera frame so we're not
+// encoding an undersized source. `ideal` (not `exact`) so a weaker webcam still
+// works — it just gives its best. Paired with the encoding above, this is the
+// "sharp like Zoom" combination (good source in → enough bits out).
+const VIDEO_CAPTURE_DEFAULTS = {
+  resolution: { width: 1280, height: 720, frameRate: 30 },
 };
 
 // ── Audio quality (the Zoom-parity settings) ────────────────────────────────
@@ -76,6 +84,56 @@ async function applyKrisp(r) {
   } catch { /* plugin unavailable/unsupported — built-in noiseSuppression still applies */ }
 }
 
+// Set the WebRTC contentHint on the local camera's raw track. 'detail' tells the
+// encoder to preserve sharpness (text/faces) rather than sacrificing it to keep
+// motion fluid — the crispness knob Zoom-style apps use. No-op where unsupported.
+function applyContentHint(r) {
+  try {
+    const pub = r?.localParticipant?.getTrackPublication?.('camera');
+    const raw = (pub?.videoTrack || pub?.track)?.mediaStreamTrack;
+    if (raw && 'contentHint' in raw) raw.contentHint = 'detail';
+  } catch { /* unsupported — ignore */ }
+}
+
+// ── Zoom-style AUTO camera adjustment (the "flat / overexposed" fix) ──────────
+// WebRTC hands you the camera in a NEUTRAL capture mode, so the picture looks flat
+// and often a touch overexposed vs. Zoom — which drives the sensor's own continuous
+// auto-exposure / auto-white-balance / auto-focus. We ask the CAMERA HARDWARE to do
+// the same via applyConstraints. This is the ideal fix: the sensor's ISP does the
+// tone/exposure/WB work (no canvas, no softening) — exactly what your analysis called
+// for. Everything is capability-gated, so a webcam that lacks a knob just skips it.
+async function applyCameraAutoAdjust(r, onInfo) {
+  try {
+    const pub = r?.localParticipant?.getTrackPublication?.('camera');
+    const raw = (pub?.videoTrack || pub?.track)?.mediaStreamTrack;
+    if (!raw || typeof raw.getCapabilities !== 'function') {
+      onInfo?.({ settings: raw?.getSettings?.() || null, autoApplied: [], supports: {} });
+      return;
+    }
+    const caps = raw.getCapabilities();
+    const advanced = [];
+    // SAFE-ONLY: request the sensor's own CONTINUOUS auto modes, and ONLY when the
+    // device advertises them. These just say "keep auto-adjusting" (what Zoom relies
+    // on) — they never force a fixed exposure/brightness value that could over- or
+    // under-expose. A camera missing a knob simply skips it; nothing degrades.
+    if (caps.exposureMode?.includes('continuous'))     advanced.push({ exposureMode: 'continuous' });
+    if (caps.whiteBalanceMode?.includes('continuous')) advanced.push({ whiteBalanceMode: 'continuous' });
+    if (caps.focusMode?.includes('continuous'))        advanced.push({ focusMode: 'continuous' });
+    if (advanced.length) {
+      await raw.applyConstraints({ advanced }).catch(() => {});
+    }
+    onInfo?.({
+      settings: raw.getSettings?.() || null,
+      autoApplied: advanced.map(a => Object.keys(a)[0]),
+      supports: {
+        exposureMode: caps.exposureMode || [],
+        whiteBalanceMode: caps.whiteBalanceMode || [],
+        focusMode: caps.focusMode || [],
+      },
+    });
+  } catch { /* unsupported — ignore, raw camera still fine */ }
+}
+
 export default function useLiveKitRoom() {
   const [room, setRoom] = useState(null);
   const [connected, setConnected] = useState(false);
@@ -88,6 +146,9 @@ export default function useLiveKitRoom() {
   // Multi-webcam support: available cameras + the one currently publishing.
   const [cameras, setCameras] = useState([]);
   const [activeCameraId, setActiveCameraId] = useState('');
+  // Camera capabilities + live settings, for the host "video info" readout so we can
+  // SEE (in production) what the sensor actually supports and is publishing.
+  const [camInfo, setCamInfo] = useState(null); // { settings, autoApplied: [...], supports: {...} }
   // Multi-mic support (external mic / headset): available mics + the one publishing.
   const [mics, setMics] = useState([]);
   const [activeMicId, setActiveMicId] = useState('');
@@ -171,6 +232,8 @@ export default function useLiveKitRoom() {
       // Apply the Zoom-parity mic DSP (noise suppression / echo cancel / auto gain)
       // to every mic we capture, and publish voice at a clear bitrate.
       audioCaptureDefaults: AUDIO_CAPTURE_DEFAULTS,
+      // Capture a full 720p30 source so the encoder isn't upscaling a small frame.
+      videoCaptureDefaults: VIDEO_CAPTURE_DEFAULTS,
       publishDefaults: {
         simulcast: SIMULCAST,
         videoResolution: VIDEO_PRESET,
@@ -227,6 +290,14 @@ export default function useLiveKitRoom() {
     // noiseSuppression still runs, so audio never breaks.
     await applyKrisp(r);
     try { await r.localParticipant.setCameraEnabled(true); } catch { /* device */ }
+    // Tell the browser encoder to favour DETAIL over motion-smoothness — this is the
+    // WebRTC `contentHint` Zoom-style apps use so faces/text stay crisp instead of
+    // getting the blurry "keep it moving" treatment. Best-effort per browser.
+    applyContentHint(r);
+    // Drive the camera sensor's own continuous auto-exposure / white-balance / focus
+    // so the picture is polished like Zoom (not flat/overexposed) — hardware ISP, no
+    // softening. Capability-gated; awaited so it lands before the first published frame.
+    await applyCameraAutoAdjust(r, setCamInfo);
     // Apply saved video effects ("set once, always used") to the fresh camera track.
     try { await applyVideoRef.current(); } catch { /* effects optional */ }
     setRoom(r);
@@ -253,7 +324,9 @@ export default function useLiveKitRoom() {
     try {
       await r.switchActiveDevice('videoinput', deviceId);
       setActiveCameraId(deviceId);
-      await applyVideoRef.current(); // re-apply effects to the new camera track
+      applyContentHint(r);              // new track → re-set the sharpness hint
+      await applyCameraAutoAdjust(r, setCamInfo);   // new sensor → drive its continuous auto modes
+      await applyVideoRef.current();    // re-apply effects to the new camera track
       refresh(r);
     } catch {
       setError('Could not switch camera.');
@@ -373,8 +446,8 @@ export default function useLiveKitRoom() {
         }
       }
       setCamOn(r.localParticipant.isCameraEnabled);
-      // Turning the camera back on creates a fresh track — re-apply saved effects.
-      if (!isOn && r.localParticipant.isCameraEnabled) await applyVideoRef.current();
+      // Turning the camera back on creates a fresh track — re-apply hint + auto-adjust + effects.
+      if (!isOn && r.localParticipant.isCameraEnabled) { applyContentHint(r); await applyCameraAutoAdjust(r, setCamInfo); await applyVideoRef.current(); }
       if (!r.localParticipant.isCameraEnabled && !isOn) {
         setError('Camera is in use by another app. Close it (e.g. Zoom) and try again.');
       } else {
@@ -407,5 +480,6 @@ export default function useLiveKitRoom() {
     mics, activeMicId, switchMic,
     effects, updateEffects, blurOn, toggleBlur,
     connect, disconnect, toggleMic, toggleCam, toggleScreen,
+    camInfo,
   };
 }

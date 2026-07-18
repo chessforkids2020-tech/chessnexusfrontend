@@ -11,14 +11,20 @@
 //
 // Settings persist in localStorage ("set once, always used").
 
-const LS_KEY = 'cn_video_effects_v1';
+// Bumped v1 → v2 when auto-enhance was switched OFF by default (raw camera = sharp,
+// like Zoom). The rename means everyone starts fresh on the new sharp default instead
+// of inheriting a stale `enabled:true` from localStorage; they can re-enable effects
+// any time and it re-persists under v2.
+const LS_KEY = 'cn_video_effects_v2';
 
-// Defaults are a subtle "natural enhance" that is ON by default — this is what makes
-// Zoom look better than a raw webcam feed. Zoom's signature look is a BRIGHT, clean,
-// slightly COOL/white light (not warm/yellow) — so we lift brightness, keep colour
-// neutral (warmth 0), and add a whitepoint lift. Users can adjust in Video effects.
+// Defaults: auto-enhance is OFF so we publish the RAW camera — which is the sharpest
+// possible image (this is exactly why Zoom looks crisp: it does NOT re-process your
+// feed through a canvas). The canvas processor, however good, re-samples every frame
+// and softens fine detail (hair, edges). Anyone who WANTS the brighter/whiter look or
+// skin touch-up can turn it on in Video effects — but the default is now "sharp like
+// the real camera", not "enhanced but soft".
 export const DEFAULT_EFFECTS = {
-  enabled: true,      // ON by default — Zoom-like auto-enhance out of the box
+  enabled: false,     // OFF by default — publish the raw, sharp camera (Zoom-style)
   brightness: 1.14,   // 0.6 … 1.8 — brighter for that clean "white light" look
   contrast: 1.06,     // 0.8 … 1.3 — a little depth (not too much, keeps it clean)
   saturation: 1.08,   // 0.8 … 1.4 — gentle richness (lowered so it's not heavy)
@@ -121,10 +127,12 @@ export function createLightAppearanceProcessor(getEffects) {
   const draw = () => {
     if (!running) return;
     const e = getEffects();
-    const w = videoEl.videoWidth || 640;
-    const h = videoEl.videoHeight || 480;
-    if (canvas.width !== w) canvas.width = w;
-    if (canvas.height !== h) canvas.height = h;
+    // Use the live frame size, but never shrink below what we already have (avoids the
+    // old 640×480 fallback resampling a 720p feed down to soft mush).
+    const w = videoEl.videoWidth || canvas.width;
+    const h = videoEl.videoHeight || canvas.height;
+    if (w && canvas.width !== w) canvas.width = w;
+    if (h && canvas.height !== h) canvas.height = h;
     renderFrame(ctx, videoEl, w, h, e);
     rafId = requestAnimationFrame(draw);
   };
@@ -139,13 +147,22 @@ export function createLightAppearanceProcessor(getEffects) {
       videoEl.autoplay = true; videoEl.playsInline = true; videoEl.muted = true;
       videoEl.srcObject = srcStream;
       await videoEl.play().catch(() => {});
+      // Wait for the REAL frame dimensions before sizing the canvas. Seeding at a
+      // fallback 640×480 (the old bug) permanently published an upscaled, soft image
+      // even when the camera was 720p. Prefer the track's actual settings, fall back
+      // to the video element, and only then to 1280×720.
+      const settings = (typeof track.getSettings === 'function' && track.getSettings()) || {};
+      const vw = settings.width || videoEl.videoWidth;
+      const vh = settings.height || videoEl.videoHeight;
       canvas = document.createElement('canvas');
-      canvas.width = videoEl.videoWidth || 640;
-      canvas.height = videoEl.videoHeight || 480;
-      ctx = canvas.getContext('2d', { alpha: false });
+      canvas.width = vw || 1280;
+      canvas.height = vh || 720;
+      // desynchronized: lower-latency canvas presentation (less of the ~1s pipeline lag).
+      ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
       running = true;
       draw();
-      outStream = canvas.captureStream(30);
+      // Capture at the source framerate so the processed track matches the raw one.
+      outStream = canvas.captureStream(settings.frameRate || 30);
       this.processedTrack = outStream.getVideoTracks()[0];
     },
     async restart(opts) { await this.destroy(); await this.init(opts); },

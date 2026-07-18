@@ -1,5 +1,5 @@
 // pages/coach/MyMeetingsPage.jsx
-// Host-only (the 2 allowed accounts). Create/manage REUSABLE live-classroom
+// Host-only (verified coaches + admin). Create/manage REUSABLE live-classroom
 // meetings — each has a fixed duration and a stable shareable link that can be
 // reused any day / pasted into a class-schedule slot. "Start" opens the classroom.
 import React, { useEffect, useState, useCallback } from 'react';
@@ -8,10 +8,31 @@ import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 
 const DURATIONS = [10, 20, 30, 40, 60];
+// Colours aligned to the rest of the coach app (CoachDashboard.css): body text
+// #e2e8f0, muted rgba(226,232,240,0.6), cyan/emerald accents. Keeps this page from
+// looking like a different product.
 const C = {
-  bg: '#0a0a0a', panel: 'rgba(23,23,23,0.72)', border: 'rgba(255,255,255,0.08)',
-  text: '#f0f0f0', dim: 'rgba(240,240,240,0.6)', cyan: '#06b6d4', green: '#10b981', red: '#ef4444',
+  text: '#e2e8f0', dim: 'rgba(226,232,240,0.6)', cyan: '#22d3ee', green: '#34d399', red: '#f87171',
+  border: 'rgba(255,255,255,0.08)', panel: 'rgba(20,26,34,0.72)',
 };
+
+// ── Crisp line icons (replace the emoji — the main "modern SaaS" upgrade) ──────
+const Ic = ({ d, size = 18, sw = 1.7 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ display: 'block', flex: 'none' }}>
+    <path d={d} stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+const IconVideo   = (p) => <Ic {...p} d="M4 6.5h10a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 16V8A1.5 1.5 0 0 1 4 6.5ZM15.5 10.5 21 7.5v9l-5.5-3Z" />;
+const IconPlus    = (p) => <Ic {...p} d="M12 5v14M5 12h14" sw={2} />;
+const IconClock   = (p) => <Ic {...p} d="M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" />;
+const IconUsers   = (p) => <Ic {...p} d="M16 19v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 17.5V19M9.5 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6M20 19v-1.4a3.2 3.2 0 0 0-2.4-3.1M16 5.2a3.2 3.2 0 0 1 0 6" />;
+const IconPlay    = (p) => <Ic {...p} d="M7 5.5v13l11-6.5-11-6.5Z" sw={1.5} />;
+const IconLink    = (p) => <Ic {...p} d="M9.5 14.5 14.5 9.5M10 6.5l1.2-1.2a3.5 3.5 0 0 1 5 5L15 11.5M14 17.5l-1.2 1.2a3.5 3.5 0 0 1-5-5L9 12.5" />;
+const IconCopy    = (p) => <Ic {...p} d="M9 9h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1ZM5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" />;
+const IconCheck   = (p) => <Ic {...p} d="M5 12.5 10 17.5 19 7" sw={2} />;
+const IconTrash   = (p) => <Ic {...p} d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12M10 11v6M14 11v6" />;
+const IconBolt    = (p) => <Ic {...p} d="M13 3 4 14h6l-1 7 9-11h-6l1-7Z" />;
+const IconLock    = (p) => <Ic {...p} d="M7 11V8a5 5 0 0 1 10 0v3M6 11h12a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1Z" />;
 
 // Build the shareable link on the FRONTEND origin (the /join/:code page lives in
 // the app, not the API server). This is always correct in dev and prod.
@@ -97,9 +118,10 @@ export default function MyMeetingsPage() {
   if (!privileged && hostState === 'pending') {
     return (
       <div style={s.wrap}>
+        <div style={s.bgGlow} />
         <div style={s.pendingCard}>
-          <div style={{ fontSize: 46, marginBottom: 10 }}>🎓</div>
-          <h1 style={{ margin: 0, fontSize: 22 }}>Verification in progress</h1>
+          <div style={s.pendingIcon}><IconVideo size={30} /></div>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#67e8f9' }}>Verification in progress</h1>
           <p style={{ color: C.dim, fontSize: 14.5, lineHeight: 1.6, marginTop: 12 }}>
             Live classrooms are available to <b style={{ color: C.text }}>verified coaches</b> only.
             The ChessNexus team is reviewing your onboarding — we’ll verify your account shortly.
@@ -117,7 +139,7 @@ export default function MyMeetingsPage() {
 
   // Confirmed not a coach at all → generic message.
   if (!privileged && hostState === 'no') {
-    return <div style={{ ...s.wrap }}><p style={{ color: C.dim }}>This area is only available to coaches.</p></div>;
+    return <div style={s.wrap}><div style={s.bgGlow} /><p style={{ color: C.dim, textAlign: 'center', marginTop: 60 }}>This area is only available to coaches.</p></div>;
   }
 
   const unlimited = limits?.limitToday === -1;
@@ -125,31 +147,42 @@ export default function MyMeetingsPage() {
 
   return (
     <div style={s.wrap}>
-      <div style={{ maxWidth: 880, margin: '0 auto' }}>
+      <div style={s.bgGlow} />
+      <div style={{ maxWidth: 920, margin: '0 auto', position: 'relative' }}>
+
         {/* ── Hero header ── */}
         <div style={s.hero}>
           <div style={s.heroMain}>
-            <div style={s.eyebrow}>Live Classroom</div>
+            <div style={s.eyebrow}>
+              <span style={s.liveDot} />Live Classroom
+            </div>
             <h1 style={s.h1}>Your classroom meetings</h1>
             <p style={s.sub}>
-              Create a reusable meeting once — it gets a permanent link you can share with a batch
-              and reuse any day.
+              Create a reusable meeting once — it gets a permanent
+              link you can share with a batch and reuse any day.
             </p>
           </div>
-          {/* Plan chips */}
+
+          {/* Plan stat cards */}
           {limits && (
             <div style={s.chips}>
               <div style={s.chip}>
+                <span style={{ ...s.chipIc, ...s.chipIcGreen }}><IconBolt size={17} /></span>
                 <span style={s.chipVal}>{unlimited ? '∞' : limits.limitToday}</span>
-                <span style={s.chipKey}>classes / day</span>
+                <span style={s.chipKey}>Classes / day</span>
+                <span style={{ ...s.chipTag, color: C.green }}>{unlimited ? 'Unlimited' : 'Per day'}</span>
               </div>
               <div style={s.chip}>
+                <span style={{ ...s.chipIc, ...s.chipIcGreen }}><IconClock size={17} /></span>
                 <span style={s.chipVal}>{limits.durationMin}<small style={s.chipUnit}>min</small></span>
-                <span style={s.chipKey}>per class</span>
+                <span style={s.chipKey}>Per class</span>
+                <span style={{ ...s.chipTag, color: C.green }}>Default duration</span>
               </div>
               <div style={s.chip}>
+                <span style={{ ...s.chipIc, ...s.chipIcBlue }}><IconUsers size={17} /></span>
                 <span style={s.chipVal}>{limits.maxStudents}</span>
-                <span style={s.chipKey}>students + coach</span>
+                <span style={s.chipKey}>Students + coach</span>
+                <span style={{ ...s.chipTag, color: '#60a5fa' }}>Per meeting</span>
               </div>
             </div>
           )}
@@ -158,10 +191,10 @@ export default function MyMeetingsPage() {
         {/* Today's usage — only when there's a real daily cap */}
         {limits && !unlimited && (
           <div style={{ ...s.usage, ...(atDailyLimit ? s.usageFull : {}) }}>
-            <span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
               {atDailyLimit
-                ? <>🔒 You’ve used today’s live class ({limits.usedToday}/{limits.limitToday}). It resets at midnight IST.</>
-                : <>Today: <b>{limits.usedToday ?? 0} of {limits.limitToday}</b> live class{limits.limitToday === 1 ? '' : 'es'} used</>}
+                ? <><IconLock size={16} /> You’ve used today’s live class ({limits.usedToday}/{limits.limitToday}). Resets at midnight IST.</>
+                : <><IconBolt size={16} /> Today: <b style={{ color: C.text }}>{limits.usedToday ?? 0} of {limits.limitToday}</b> live class{limits.limitToday === 1 ? '' : 'es'} used</>}
             </span>
             <a href="/coach/subscription" style={s.usageLink}>Get more →</a>
           </div>
@@ -169,20 +202,20 @@ export default function MyMeetingsPage() {
 
         {/* ── Create ── */}
         <div style={s.card}>
-          <div style={s.cardTitle}>➕ New meeting</div>
+          <div style={s.cardTitle}><span style={s.cardTitleIc}><IconPlus size={15} /></span>New meeting</div>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ flex: '2 1 260px' }}>
               <label style={s.label}>Title</label>
               <input style={s.input} value={title} maxLength={100} placeholder="e.g. Beginner Batch — Tuesday"
                 onChange={e => setTitle(e.target.value)} />
             </div>
-            <div style={{ flex: '0 1 140px' }}>
+            <div style={{ flex: '0 1 150px' }}>
               <label style={s.label}>Duration</label>
               <select style={s.input} value={duration} onChange={e => setDuration(Number(e.target.value))}>
                 {allowedDurations.map(d => <option key={d} value={d}>{d} min</option>)}
               </select>
             </div>
-            <button style={{ ...s.primary, ...(creating ? { opacity: 0.6 } : {}) }} disabled={creating} onClick={create}>
+            <button style={{ ...s.primary, ...(creating ? { opacity: 0.6, cursor: 'default' } : {}) }} disabled={creating} onClick={create}>
               {creating ? 'Creating…' : 'Create meeting'}
             </button>
           </div>
@@ -202,40 +235,47 @@ export default function MyMeetingsPage() {
         </div>
 
         {loading ? (
-          <p style={{ color: C.dim }}>Loading…</p>
+          <div style={s.skeletonWrap}>
+            {[0, 1].map(i => <div key={i} style={s.skeleton} />)}
+          </div>
         ) : meetings.length === 0 ? (
           <div style={s.empty}>
-            <div style={{ fontSize: 34, marginBottom: 8 }}>🎥</div>
-            <div style={{ fontWeight: 600 }}>No meetings yet</div>
+            <div style={s.emptyIcon}><IconVideo size={26} /></div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: C.text }}>No meetings yet</div>
             <p style={{ color: C.dim, fontSize: 13.5, margin: '6px 0 0' }}>
               Create one above — you’ll get a link to share with your batch.
             </p>
           </div>
         ) : (
-          meetings.map(m => (
-            <div key={m.id} style={s.meeting}>
-              <div style={s.meetingTop}>
-                <div style={{ minWidth: 0 }}>
-                  <div style={s.meetingName}>{m.title || 'Untitled meeting'}</div>
-                  <div style={s.meetingMeta}>
-                    <span style={s.pill}>⏱ {m.durationMinutes} min</span>
-                    {limits && <span style={s.pill}>👥 up to {limits.maxStudents} students</span>}
+          <div style={{ display: 'grid', gap: 12 }}>
+            {meetings.map(m => (
+              <div key={m.id} style={s.meeting}>
+                <div style={s.meetingTop}>
+                  <div style={s.meetingLead}>
+                    <div style={s.meetingAvatar}><IconVideo size={20} /></div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={s.meetingName}>{m.title || 'Untitled meeting'}</div>
+                      <div style={s.meetingMeta}>
+                        <span style={s.pill}><IconClock size={13} />{m.durationMinutes} min</span>
+                        {limits && <span style={s.pill}><IconUsers size={13} />up to {limits.maxStudents} students</span>}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={s.meetingActions}>
+                    <button style={s.start} onClick={() => start(m.id)}><IconPlay size={15} />Start class</button>
+                    <button style={s.ghost} onClick={() => copy(buildJoinLink(m.joinCode), m.id)}>
+                      {copied === m.id ? <><IconCheck size={15} />Copied</> : <><IconCopy size={15} />Copy link</>}
+                    </button>
+                    <button style={s.iconDanger} title="Deactivate meeting" onClick={() => remove(m.id)}><IconTrash size={16} /></button>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                  <button style={s.start} onClick={() => start(m.id)}>▶ Start class</button>
-                  <button style={s.ghost} onClick={() => copy(buildJoinLink(m.joinCode), m.id)}>
-                    {copied === m.id ? '✓ Copied' : '🔗 Copy link'}
-                  </button>
-                  <button style={s.danger} onClick={() => remove(m.id)}>Deactivate</button>
+                <div style={s.linkRow}>
+                  <span style={s.linkLabel}><IconLink size={13} />Share link</span>
+                  <code style={s.linkbox}>{buildJoinLink(m.joinCode)}</code>
                 </div>
               </div>
-              <div style={s.linkRow}>
-                <span style={s.linkLabel}>Share link</span>
-                <code style={s.linkbox}>{buildJoinLink(m.joinCode)}</code>
-              </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>
@@ -243,68 +283,101 @@ export default function MyMeetingsPage() {
 }
 
 const s = {
-  wrap: { minHeight: '100vh', background: C.bg, color: C.text, padding: '28px 20px 70px', fontFamily: "'Poppins',sans-serif" },
+  wrap: { position: 'relative', minHeight: '100vh', background: '#0b0f14', color: C.text, padding: '28px 24px 80px', fontFamily: "'Poppins',sans-serif", fontSize: 15, overflow: 'hidden' },
+  // Soft depth behind everything — kills the "flat dead black" look.
+  bgGlow: {
+    position: 'absolute', inset: 0, pointerEvents: 'none',
+    background: 'radial-gradient(60% 45% at 15% 0%, rgba(6,182,212,0.10), transparent 70%), radial-gradient(55% 45% at 95% 5%, rgba(16,185,129,0.09), transparent 70%)',
+  },
 
   // ── Hero ──
   hero: {
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20, flexWrap: 'wrap',
-    background: 'radial-gradient(120% 140% at 0% 0%, rgba(6,182,212,0.12), transparent 60%), rgba(23,23,23,0.6)',
-    border: `1px solid ${C.border}`, borderRadius: 18, padding: '22px 24px',
+    position: 'relative',
+    display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 30, flexWrap: 'wrap',
+    background: 'linear-gradient(135deg, rgba(20,26,34,0.85), rgba(14,19,26,0.7))',
+    border: `1px solid ${C.border}`, borderRadius: 20, padding: '28px 30px',
+    boxShadow: '0 20px 50px -30px rgba(0,0,0,0.8)',
   },
-  heroMain: { minWidth: 260, flex: '1 1 320px' },
-  eyebrow: { fontSize: 11, fontWeight: 800, letterSpacing: '0.14em', textTransform: 'uppercase', color: C.cyan, marginBottom: 7 },
-  h1: { margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: '-0.02em' },
-  sub: { color: C.dim, fontSize: 14, margin: '8px 0 0', lineHeight: 1.55, maxWidth: 460 },
+  heroMain: { minWidth: 280, flex: '1 1 420px' },
+  eyebrow: { display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 11.5, fontWeight: 800, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.green, marginBottom: 14 },
+  liveDot: { width: 7, height: 7, borderRadius: '50%', background: '#34d399', boxShadow: '0 0 0 4px rgba(52,211,153,0.18)' },
+  // Hero title — large, bold, white (a display heading; bigger than in-app h1 on purpose).
+  h1: { margin: '0 0 10px', fontSize: 'clamp(26px, 3.4vw, 38px)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.02em', color: '#f4f8fb' },
+  sub: { color: C.dim, fontSize: 12.5, margin: 0, lineHeight: 1.5, maxWidth: 400 },
 
-  // Plan stat chips
-  chips: { display: 'flex', gap: 10, flexWrap: 'wrap' },
+  // Plan stat cards
+  chips: { display: 'flex', gap: 12, flexWrap: 'wrap' },
   chip: {
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, minWidth: 92,
-    background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(16,185,129,0.28)',
-    borderRadius: 12, padding: '10px 14px',
+    position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, minWidth: 118, flex: '1 1 118px', maxWidth: 150,
+    background: 'linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015))', border: `1px solid ${C.border}`,
+    borderRadius: 16, padding: '16px 14px 14px',
   },
-  chipVal: { fontSize: 22, fontWeight: 800, color: '#6ee7b7', lineHeight: 1, fontVariantNumeric: 'tabular-nums' },
-  chipUnit: { fontSize: 11, fontWeight: 700, marginLeft: 2, color: '#6ee7b7' },
-  chipKey: { fontSize: 10.5, color: 'rgba(167,243,208,0.75)', fontWeight: 600, textAlign: 'center' },
+  chipIc: { display: 'grid', placeItems: 'center', width: 38, height: 38, borderRadius: '50%', marginBottom: 6, color: C.green, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(52,211,153,0.28)' },
+  chipIcGreen: { color: C.green, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(52,211,153,0.28)' },
+  chipIcBlue: { color: '#60a5fa', background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(96,165,250,0.3)' },
+  chipVal: { fontSize: 28, fontWeight: 800, color: '#f4f8fb', lineHeight: 1, fontVariantNumeric: 'tabular-nums' },
+  chipUnit: { fontSize: 13, fontWeight: 700, marginLeft: 2, color: 'rgba(244,248,251,0.7)' },
+  chipKey: { fontSize: 12, color: C.dim, fontWeight: 600, textAlign: 'center', marginTop: 2 },
+  chipTag: { fontSize: 11, fontWeight: 700, textAlign: 'center' },
 
   // Usage strip
   usage: {
+    position: 'relative',
     display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
-    marginTop: 14, padding: '10px 14px', borderRadius: 10, fontSize: 13,
+    marginTop: 16, padding: '11px 16px', borderRadius: 12, fontSize: 13,
     color: '#cbd5e1', background: 'rgba(255,255,255,0.03)', border: `1px solid ${C.border}`,
   },
   usageFull: { color: '#fcd34d', background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.3)' },
-  usageLink: { color: C.cyan, textDecoration: 'none', fontWeight: 700, fontSize: 12.5 },
+  usageLink: { color: C.cyan, textDecoration: 'none', fontWeight: 700, fontSize: 12.5, whiteSpace: 'nowrap' },
 
   // ── Cards ──
-  card: { background: C.panel, border: `1px solid ${C.border}`, borderRadius: 16, padding: 18, marginTop: 16 },
-  cardTitle: { fontSize: 13, fontWeight: 800, color: C.dim, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 14 },
-  upsell: { color: C.dim, fontSize: 12.5, marginTop: 12, marginBottom: 0 },
+  card: {
+    position: 'relative', background: C.panel, border: `1px solid ${C.border}`, borderRadius: 18,
+    padding: '20px 20px 18px', marginTop: 18, boxShadow: '0 14px 40px -28px rgba(0,0,0,0.8)',
+    backdropFilter: 'blur(8px)',
+  },
+  // Card heading matches the app's .cb-card h3 (15px), not a tiny uppercase label.
+  cardTitle: { display: 'flex', alignItems: 'center', gap: 9, fontSize: 15, fontWeight: 700, color: C.text, marginBottom: 16 },
+  cardTitleIc: { display: 'grid', placeItems: 'center', width: 26, height: 26, borderRadius: 8, color: C.cyan, background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.24)' },
+  upsell: { color: C.dim, fontSize: 12.5, marginTop: 14, marginBottom: 0 },
   upsellLink: { color: C.cyan, fontWeight: 700, textDecoration: 'none' },
 
-  pendingCard: { maxWidth: 520, margin: '40px auto 0', textAlign: 'center', background: C.panel, border: '1px solid rgba(6,182,212,0.25)', borderRadius: 18, padding: '32px 28px' },
-  pendingHint: { marginTop: 20, padding: '12px 14px', borderRadius: 10, fontSize: 13, color: '#cbd5e1', background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.2)', textAlign: 'left' },
+  pendingCard: { position: 'relative', maxWidth: 520, margin: '52px auto 0', textAlign: 'center', background: C.panel, border: '1px solid rgba(6,182,212,0.22)', borderRadius: 20, padding: '34px 30px', boxShadow: '0 20px 50px -30px rgba(0,0,0,0.8)' },
+  pendingIcon: { width: 64, height: 64, margin: '0 auto 16px', display: 'grid', placeItems: 'center', borderRadius: '50%', color: C.cyan, background: 'rgba(6,182,212,0.10)', border: '1px solid rgba(6,182,212,0.28)' },
+  pendingHint: { marginTop: 22, padding: '13px 15px', borderRadius: 12, fontSize: 13, color: '#cbd5e1', background: 'rgba(6,182,212,0.07)', border: '1px solid rgba(6,182,212,0.18)', textAlign: 'left', lineHeight: 1.5 },
 
-  label: { display: 'block', fontSize: 12, color: C.dim, marginBottom: 5, fontWeight: 600 },
-  input: { width: '100%', boxSizing: 'border-box', padding: '11px 12px', borderRadius: 10, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.04)', color: C.text, fontSize: 14, fontFamily: 'inherit' },
-  primary: { padding: '11px 20px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap' },
+  label: { display: 'block', fontSize: 12, color: C.dim, marginBottom: 6, fontWeight: 600 },
+  input: { width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 11, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.04)', color: C.text, fontSize: 14, fontFamily: 'inherit', outline: 'none' },
+  primary: { display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 22px', borderRadius: 11, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#ffffff', fontWeight: 800, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 10px 26px -12px rgba(52,211,153,0.6)' },
 
   // ── Meeting list ──
-  listHead: { display: 'flex', alignItems: 'center', gap: 9, margin: '30px 0 4px', fontSize: 15, fontWeight: 800 },
-  count: { fontSize: 11.5, fontWeight: 800, color: C.cyan, background: 'rgba(6,182,212,0.14)', borderRadius: 999, padding: '2px 9px' },
-  empty: { marginTop: 14, padding: '36px 20px', textAlign: 'center', border: `1px dashed ${C.border}`, borderRadius: 16, background: 'rgba(255,255,255,0.02)' },
+  listHead: { display: 'flex', alignItems: 'center', gap: 10, margin: '30px 0 14px', fontSize: 18, fontWeight: 700 },
+  count: { fontSize: 11.5, fontWeight: 800, color: C.cyan, background: 'rgba(6,182,212,0.14)', borderRadius: 999, padding: '2px 10px' },
 
-  meeting: { background: C.panel, border: `1px solid ${C.border}`, borderRadius: 16, padding: 16, marginTop: 12 },
-  meetingTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
-  meetingName: { fontWeight: 700, fontSize: 16, letterSpacing: '-0.01em' },
-  meetingMeta: { display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 7 },
-  pill: { fontSize: 11.5, fontWeight: 600, color: C.dim, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 999, padding: '3px 9px' },
+  skeletonWrap: { display: 'grid', gap: 12 },
+  skeleton: { height: 108, borderRadius: 18, background: 'linear-gradient(100deg, rgba(255,255,255,0.03) 30%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 70%)', border: `1px solid ${C.border}` },
 
-  start: { padding: '8px 14px', borderRadius: 9, border: 'none', background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' },
-  ghost: { padding: '8px 12px', borderRadius: 9, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.05)', color: C.text, cursor: 'pointer', fontWeight: 600, fontSize: 13 },
-  danger: { padding: '8px 12px', borderRadius: 9, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.12)', color: '#fca5a5', cursor: 'pointer', fontWeight: 600, fontSize: 13 },
+  empty: { position: 'relative', padding: '44px 20px', textAlign: 'center', border: `1px dashed ${C.border}`, borderRadius: 18, background: 'rgba(255,255,255,0.02)' },
+  emptyIcon: { width: 58, height: 58, margin: '0 auto 12px', display: 'grid', placeItems: 'center', borderRadius: '50%', color: C.green, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(52,211,153,0.22)' },
 
-  linkRow: { display: 'flex', alignItems: 'center', gap: 10, marginTop: 14, flexWrap: 'wrap' },
-  linkLabel: { fontSize: 11, fontWeight: 700, color: C.dim, textTransform: 'uppercase', letterSpacing: '0.05em', flexShrink: 0 },
-  linkbox: { flex: 1, minWidth: 200, fontFamily: 'ui-monospace,monospace', fontSize: 12.5, color: '#67e8f9', background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.2)', borderRadius: 8, padding: '8px 10px', wordBreak: 'break-all' },
+  meeting: {
+    position: 'relative', background: C.panel, border: `1px solid ${C.border}`, borderRadius: 18,
+    padding: 18, boxShadow: '0 14px 40px -30px rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
+    transition: 'border-color .16s ease',
+  },
+  meetingTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, flexWrap: 'wrap' },
+  meetingLead: { display: 'flex', alignItems: 'center', gap: 14, minWidth: 0, flex: '1 1 240px' },
+  meetingAvatar: { width: 46, height: 46, flex: 'none', display: 'grid', placeItems: 'center', borderRadius: 13, color: C.cyan, background: 'linear-gradient(135deg, rgba(6,182,212,0.16), rgba(16,185,129,0.12))', border: '1px solid rgba(6,182,212,0.24)' },
+  meetingName: { fontWeight: 700, fontSize: 15, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+  meetingMeta: { display: 'flex', gap: 7, flexWrap: 'wrap', marginTop: 8 },
+  pill: { display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11.5, fontWeight: 600, color: C.dim, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 999, padding: '4px 10px' },
+  meetingActions: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' },
+
+  start: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', boxShadow: '0 8px 20px -10px rgba(16,185,129,0.7)' },
+  ghost: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 14px', borderRadius: 10, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.05)', color: C.text, cursor: 'pointer', fontWeight: 600, fontSize: 13 },
+  iconDanger: { display: 'grid', placeItems: 'center', width: 36, height: 36, borderRadius: 10, border: '1px solid rgba(239,68,68,0.28)', background: 'rgba(239,68,68,0.10)', color: '#fca5a5', cursor: 'pointer' },
+
+  linkRow: { display: 'flex', alignItems: 'center', gap: 10, marginTop: 15, flexWrap: 'wrap' },
+  linkLabel: { display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, color: C.dim, textTransform: 'uppercase', letterSpacing: '0.05em', flexShrink: 0 },
+  linkbox: { flex: 1, minWidth: 200, fontFamily: 'ui-monospace,monospace', fontSize: 12.5, color: '#67e8f9', background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.2)', borderRadius: 9, padding: '9px 11px', wordBreak: 'break-all' },
 };
