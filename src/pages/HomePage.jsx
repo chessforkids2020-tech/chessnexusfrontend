@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Sidebar from "../components/Sidebar";
 import HomepagePuzzle from "../components/HomepagePuzzle";
 import BookDemoModal from "../components/BookDemoModal";
+import FoundingSupporterCard from "../components/FoundingSupporterCard";
 import { Link, useNavigate } from "react-router-dom";
 import "./HomePage.css";
 
@@ -346,6 +347,140 @@ function RatingTrend({ delta }) {
   );
 }
 
+// ── Hero slider ───────────────────────────────────────────────
+// Two auto-rotating slides sharing the same layout so the mobile fix (text + image
+// SIDE BY SIDE, like desktop) applies to both. Auto-advances every 6s, pauses on
+// hover, supports dots + touch swipe. Slide 1 = Academy, Slide 2 = Live Classroom.
+const HERO_SLIDES = ['academy', 'live'];
+
+function HeroSlider({ user, onStartCoach, onBookDemo }) {
+  const [idx, setIdx] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const touchX = React.useRef(null);
+
+  useEffect(() => {
+    if (paused) return;
+    const id = setInterval(() => setIdx(i => (i + 1) % HERO_SLIDES.length), 4500);
+    return () => clearInterval(id);
+  }, [paused]);
+
+  const go = (i) => setIdx((i + HERO_SLIDES.length) % HERO_SLIDES.length);
+  const onTouchStart = (e) => { touchX.current = e.touches[0].clientX; };
+  const onTouchEnd = (e) => {
+    if (touchX.current == null) return;
+    const dx = e.changedTouches[0].clientX - touchX.current;
+    if (Math.abs(dx) > 40) go(idx + (dx < 0 ? 1 : -1));
+    touchX.current = null;
+  };
+
+  // Identical short labels on BOTH slides so the buttons are the exact same size.
+  const primaryLabel = 'Start free';
+  const ghostLabel = 'Book demo';
+
+  return (
+    <div
+      className="hp-glass hp-hero hp-heroslider"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* SLIDE 1 — Academy */}
+      {idx === 0 && (
+        <div className="hp-slide">
+          <div className="hp-hero-grid">
+            <div className="hp-hero-copy">
+              <span className="hp-hero-kicker"><span className="hp-hero-dot" />For chess coaches &amp; academies</span>
+              <h1 className="hp-hero-title">Run your entire coaching in <span className="hp-hero-accent">one place.</span></h1>
+              <p className="hp-hero-sub">
+                <b>Start for free</b> — board your coach account and manage students, assignments and progress, all in one place.
+              </p>
+              <div className="hp-hero-cta">
+                <button type="button" className="hp-hero-btn hp-hero-btn-primary" onClick={onStartCoach}>{primaryLabel}</button>
+                <button type="button" className="hp-hero-btn hp-hero-btn-ghost" onClick={onBookDemo}>{ghostLabel}</button>
+              </div>
+              <div className="hp-hero-trust">
+                <span className="hp-hero-trust-item">✓ Free — up to 30 students</span>
+                <span className="hp-hero-trust-dot">•</span>
+                <span className="hp-hero-trust-item">No card required</span>
+              </div>
+            </div>
+            <div className="hp-hero-shot">
+              <div className="hp-hero-frame">
+                <img src="/Screenshot 2026-07-11 142338.png" alt="ChessNexus coach dashboard with students, assignments and activity charts" loading="eager" />
+              </div>
+              <div className="hp-hero-badge"><i />Live coach dashboard</div>
+            </div>
+          </div>
+          <div className="hp-hero-pilllabel">Your coach workspace</div>
+          <div className="hp-hero-pillbar">
+            <span className="hp-pill">🏠 Dashboard</span>
+            <span className="hp-pill">📝 Assignments</span>
+            <span className="hp-pill">📚 Courses</span>
+            <span className="hp-pill">📖 Library</span>
+            <span className="hp-pill">👥 Batches</span>
+            <span className="hp-pill">📅 Schedule</span>
+            <span className="hp-pill">🎯 Activities</span>
+            <span className="hp-pill">📋 Attendance</span>
+          </div>
+        </div>
+      )}
+
+      {/* SLIDE 2 — Live Classroom */}
+      {idx === 1 && (
+        <div className="hp-slide">
+          <div className="hp-hero-grid">
+            <div className="hp-hero-copy">
+              <span className="hp-hero-kicker"><span className="hp-hero-dot" style={{ background: '#ef4444', boxShadow: '0 0 10px 1px rgba(239,68,68,0.85)' }} />Live Classroom · built in</span>
+              <h1 className="hp-hero-title">Teach live, <span className="hp-hero-accent">right inside</span> <span className="hp-hero-brandsm">Chess&nbsp;Nexus.</span></h1>
+              <p className="hp-hero-sub">
+                Teach with <b>HD video, screen-share and one shared board</b> — give a student control, and every attendance mark is written for you as they join. <b className="hp-hero-lt">No Zoom, no extra apps.</b>
+              </p>
+              <div className="hp-hero-cta">
+                <button type="button" className="hp-hero-btn hp-hero-btn-primary" onClick={onStartCoach}>{primaryLabel}</button>
+                <button type="button" className="hp-hero-btn hp-hero-btn-ghost" onClick={onBookDemo}>{ghostLabel}</button>
+              </div>
+              <div className="hp-hero-trust">
+                <span className="hp-hero-trust-item">✓ Included on every coach plan</span>
+                <span className="hp-hero-trust-dot">•</span>
+                <span className="hp-hero-trust-item">Free to start</span>
+              </div>
+            </div>
+            <div className="hp-hero-shot">
+              <div className="hp-hero-frame">
+                <img src="/features/homepageslide.png" alt="ChessNexus live classroom — coach teaching students with video and a shared board" loading="lazy" />
+              </div>
+              <div className="hp-hero-badge"><i style={{ background: '#ef4444', boxShadow: '0 0 8px 1px rgba(239,68,68,0.7)' }} />Live class in session</div>
+            </div>
+          </div>
+          <div className="hp-hero-pilllabel">Everything in one live room</div>
+          <div className="hp-hero-pillbar">
+            <span className="hp-pill">🎥 HD video</span>
+            <span className="hp-pill">🖥️ Screen share</span>
+            <span className="hp-pill">♟ Synced board</span>
+            <span className="hp-pill">🎯 Give / take control</span>
+            <span className="hp-pill">⏳ Waiting room</span>
+            <span className="hp-pill">📋 Auto attendance</span>
+          </div>
+        </div>
+      )}
+
+      {/* Dots */}
+      <div className="hp-hero-dots">
+        {HERO_SLIDES.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            className={`hp-hero-dotbtn${i === idx ? ' on' : ''}`}
+            aria-label={`Go to slide ${i + 1}`}
+            onClick={() => go(i)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Main Component ────────────────────────────────────────────
 export default function HomePage() {
   const { user, loading } = useAuth();
@@ -445,40 +580,12 @@ export default function HomePage() {
 
       <div className="hp-content">
 
-        {/* ── COACH HERO (image + workspace pill bar) ── */}
-        <div className="hp-glass hp-hero">
-          <div className="hp-hero-grid">
-            <div className="hp-hero-copy">
-              <span className="hp-hero-kicker"><span className="hp-hero-dot" />For chess coaches &amp; academies</span>
-              <h1 className="hp-hero-title">Run your entire coaching in <span className="hp-hero-accent">one place.</span></h1>
-              <p className="hp-hero-sub">
-                <b>Start for free</b> — board your coach account and manage students, assignments and progress, all in one place.
-              </p>
-              <div className="hp-hero-cta">
-                <button type="button" className="hp-hero-btn hp-hero-btn-primary" onClick={() => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login')}>Start free</button>
-                <button type="button" className="hp-hero-btn hp-hero-btn-ghost" onClick={() => setDemoOpen(true)}>Book free demo</button>
-              </div>
-            </div>
-            <div className="hp-hero-shot">
-              <div className="hp-hero-frame">
-                <img src="/Screenshot 2026-07-11 142338.png" alt="ChessNexus coach dashboard with students, assignments and activity charts" loading="eager" />
-              </div>
-              <div className="hp-hero-badge"><i />Live coach dashboard</div>
-            </div>
-          </div>
-
-          <div className="hp-hero-pilllabel">Your coach workspace</div>
-          <div className="hp-hero-pillbar">
-            <span className="hp-pill">🏠 Dashboard</span>
-            <span className="hp-pill">📝 Assignments</span>
-            <span className="hp-pill">📚 Courses</span>
-            <span className="hp-pill">📖 Library</span>
-            <span className="hp-pill">👥 Batches</span>
-            <span className="hp-pill">📅 Schedule</span>
-            <span className="hp-pill">🎯 Activities</span>
-            <span className="hp-pill">📋 Attendance</span>
-          </div>
-        </div>
+        {/* ── HERO SLIDER — slide 1: Academy · slide 2: Live Classroom ── */}
+        <HeroSlider
+          user={user}
+          onStartCoach={() => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login')}
+          onBookDemo={() => setDemoOpen(true)}
+        />
 
         {/* ── TOP ROW: Puzzle + Right Column ── */}
         <div className="hp-top-row">
@@ -570,6 +677,11 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* ── FOUNDING SUPPORTER — honest early-backer draw (self-hides once spots gone) ── */}
+        <div style={{ margin: '4px 0 28px' }}>
+          <FoundingSupporterCard />
+        </div>
+
         {/* ── WHAT CHESS NEXUS OFFERS — 6 feature buckets ── */}
         <div className="hp-showcase">
           <div className="hp-showcase-head">
@@ -643,62 +755,7 @@ export default function HomePage() {
           );
         })()}
 
-        {/* ── LIVE CLASSROOM — teach live in-app ── */}
-        {(() => {
-          const goCoach = () => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login');
-          const LiveIcon = ({ d }) => (
-            <svg viewBox="0 0 24 24" fill="none"><path d={d} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          );
-          const LIVE_FEATS = [
-            { d: 'M2.5 6.5h12.5v11H2.5zM15 10.5 21 7.5v9L15 13.5z', title: 'HD video & audio', desc: 'Zoom-style grid with active-speaker view — no extra app to install' },
-            { d: 'M3 5h18v11H3zM8 20h8M12 16v4', title: 'Screen share', desc: 'Share your screen or slides while you teach the class' },
-            { d: 'M5 4h9l5 5v11H5zM9 12h6M9 16h4M14 4v5h5', title: 'Synced chess board', desc: 'One board everyone sees; give a student control, then take it back' },
-            { d: 'M7 3v3M17 3v3M4 8h16M5 6h14v13H5zM9 13l2 2 4-4', title: 'Auto attendance', desc: 'Admit from the waiting room and today’s Present mark is written for you' },
-          ];
-          return (
-            <div className="hp-glass hp-live">
-              <div className="hp-live-tx">
-                <span className="hp-live-eyebrow"><span className="hp-live-liveic" />Live Classroom · in-app</span>
-                <h2 className="hp-live-title">Teach live, right inside <em>Chess&nbsp;Nexus.</em></h2>
-                <p className="hp-live-sub">No Zoom, no Meet, no juggling links. Run your class with video, screen-share and a shared board — and attendance is marked automatically as students join.</p>
-                <div className="hp-live-grid">
-                  {LIVE_FEATS.map(f => (
-                    <div key={f.title} className="hp-live-item">
-                      <span className="hp-live-ic"><LiveIcon d={f.d} /></span>
-                      <div><h3>{f.title}</h3><p>{f.desc}</p></div>
-                    </div>
-                  ))}
-                </div>
-                <div className="hp-live-foot">
-                  <div className="hp-live-trust"><span>✓ Included on every coach plan</span><span>•</span><span>Bigger plans = more classes, students &amp; minutes</span></div>
-                  <button type="button" className="hp-live-btn" onClick={goCoach}>
-                    {(user && user.role !== 'guest') ? 'Start teaching live →' : 'Log in to start →'}
-                  </button>
-                </div>
-              </div>
-              <div className="hp-live-mock" aria-hidden="true">
-                <div className="hp-live-mock-bar"><span className="hp-live-mock-dot" />LIVE · Ends in 29:41</div>
-                <div className="hp-live-mock-body">
-                  <div className="hp-live-mock-board">
-                    <div className="hp-live-mock-grid">
-                      {Array.from({ length: 64 }).map((_, i) => {
-                        const dark = (Math.floor(i / 8) + i) % 2 === 1;
-                        return <span key={i} className={dark ? 'd' : 'l'} />;
-                      })}
-                    </div>
-                    <span className="hp-live-mock-ctrl">🎓 Coach has control</span>
-                  </div>
-                  <div className="hp-live-mock-tiles">
-                    <div className="hp-live-mock-tile hp-live-mock-coach">🎓<b>Coach</b><i className="hp-live-mock-mic" /></div>
-                    <div className="hp-live-mock-tile">A<b>Arjun</b></div>
-                    <div className="hp-live-mock-tile">P<b>Priya</b></div>
-                    <div className="hp-live-mock-tile">K<b>Kai</b></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })()}
+        {/* Live Classroom now lives as slide 2 of the hero slider at the top. */}
 
         {/* ── HOW IT WORKS — illustrated flow ── */}
         <div className="hp-glass hp-howit">

@@ -271,6 +271,8 @@
 .hp-hero-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--emerald-hi); box-shadow: 0 0 10px 1px rgba(52,211,153,0.85); animation: hp-dot-pulse 2s ease-out infinite; }
 .hp-hero-title { font-weight: 800; font-size: clamp(26px, 3vw, 38px); line-height: 1.07; letter-spacing: -0.02em; color: var(--t1); margin-bottom: 14px; }
 .hp-hero-accent { font-style: italic; font-weight: 500; color: var(--emerald-hi); }
+/* Brand name shown smaller than the rest of the title (per request). */
+.hp-hero-brandsm { font-size: 0.62em; font-weight: 700; color: var(--t1); white-space: nowrap; }
 .hp-hero-sub { font-size: 13px; line-height: 1.6; color: #b3bfce; max-width: 480px; margin-bottom: 22px; }
 .hp-hero-sub b { color: var(--t1); font-weight: 600; }
 .hp-hero-sub b.hp-hero-lt { color: var(--emerald-hi); }
@@ -280,14 +282,23 @@
 .hp-hero-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 32px -10px rgba(6,182,212,0.72); }
 .hp-hero-btn-ghost { background: rgba(255,255,255,0.05); border-color: var(--glass-border); color: var(--t1); }
 .hp-hero-btn-ghost:hover { background: rgba(255,255,255,0.1); border-color: var(--glass-border-hi); }
+/* Trust line under the CTA — the reassurance that converts coaches. */
+.hp-hero-trust { display: flex; align-items: center; gap: 9px; margin-top: 16px; flex-wrap: wrap; }
+.hp-hero-trust-item { font-size: 12.5px; font-weight: 600; color: #cbd5e1; display: inline-flex; align-items: center; gap: 5px; }
+.hp-hero-trust-item::first-letter { color: var(--emerald-hi); }
+.hp-hero-trust-dot { color: var(--t3); }
 
 .hp-hero-shot { position: relative; align-self: center; }
 .hp-hero-frame {
   border-radius: 16px; overflow: hidden; border: 1px solid var(--glass-border);
   box-shadow: 0 34px 70px -30px rgba(0,0,0,0.8);
   transform: perspective(1900px) rotateY(-2.4deg) rotateX(1.1deg); transform-origin: center left;
+  /* Fixed aspect box so BOTH slides' images occupy the exact same frame size,
+     regardless of each source image's own aspect ratio. object-fit:contain shows
+     each image WHOLE (no crop); the dark backdrop blends any letterbox bars. */
+  aspect-ratio: 16 / 10; width: 100%; background: #0b1017;
 }
-.hp-hero-frame img { display: block; width: 100%; height: auto; }
+.hp-hero-frame img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .hp-hero-badge {
   position: absolute; left: -14px; bottom: 22px; z-index: 2; display: flex; align-items: center; gap: 8px;
   padding: 9px 13px; border-radius: 12px; font-size: 12px; font-weight: 600; color: var(--t1);
@@ -351,9 +362,32 @@
   background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
 }
 
+/* ── Hero slider ─────────────────────────────────────── */
+.hp-heroslider { position: relative; }
+.hp-hero-dots { display: flex; justify-content: center; gap: 8px; margin-top: 18px; position: relative; z-index: 2; }
+.hp-hero-dotbtn { width: 8px; height: 8px; padding: 0; border-radius: 50%; border: none; cursor: pointer;
+  background: rgba(255,255,255,0.22); transition: width .2s ease, background .2s ease; }
+.hp-hero-dotbtn.on { width: 22px; border-radius: 5px; background: linear-gradient(90deg, #06b6d4, #10b981); }
+.hp-hero-dotbtn:hover { background: rgba(255,255,255,0.4); }
+.hp-slide { animation: hp-slide-in .5s cubic-bezier(.2,.7,.2,1); }
+@keyframes hp-slide-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+
+/* Mobile: keep the hero TEXT + IMAGE SIDE BY SIDE (like desktop), not stacked.
+   The image column just gets a bit narrower rather than dropping below the text. */
 @media (max-width: 900px) {
-  .hp-hero-grid { grid-template-columns: 1fr; gap: 24px; }
+  .hp-hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 18px; align-items: center; }
   .hp-hero-frame { transform: none; }
+  .hp-hero-title { font-size: clamp(19px, 4.4vw, 30px); margin-bottom: 10px; }
+  .hp-hero-sub { font-size: 12px; margin-bottom: 16px; }
+  .hp-hero-btn { font-size: 13px; padding: 10px 16px; }
+}
+/* Very small phones: text stays left, image stays right but tighter — still side by side. */
+@media (max-width: 560px) {
+  .hp-hero { padding: 18px 16px; }
+  .hp-hero-grid { gap: 12px; }
+  .hp-hero-title { font-size: clamp(17px, 5vw, 24px); }
+  .hp-hero-cta { gap: 8px; }
+  .hp-hero-btn { padding: 9px 13px; font-size: 12px; }
 }
 
 /* ── TOP ROW LAYOUT ────────────────────────────────── */

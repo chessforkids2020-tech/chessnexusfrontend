@@ -51,6 +51,10 @@ const DURATIONS = [
 const DEFAULT_MONTHS = 3;          // 3 months selected by default
 const MIN_BASE = { INR: 299, USD: 3 }; // minimum per-coffee base for manual entry
 
+// How many early backers get the permanent 👑 Founding Supporter badge. Purely a
+// front-end display incentive for the empty/early state — honest scarcity ("first N").
+const FOUNDING_LIMIT = 100;
+
 export default function BuyMeACoffee() {
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
@@ -324,6 +328,13 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
           {!myStatus.active && myStatus.pendingCount > 0 && (
             <div style={styles.pendingPill}>We've got your message — your badge will appear shortly.</div>
           )}
+          {/* Founding-supporter draw — only while early spots remain and the viewer
+              isn't already a supporter. Honest scarcity, not fake proof. */}
+          {!myStatus.active && !loading && info.supporters.length < FOUNDING_LIMIT && (
+            <div style={styles.foundingPill}>
+              👑 Founding Supporter — our first {FOUNDING_LIMIT} backers get a <strong>permanent</strong> badge that never expires.
+            </div>
+          )}
         </div>
 
         {/* Elite membership — our little gratitude to supporters */}
@@ -534,16 +545,42 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
         {loading ? (
           <div style={{ color: C.textFaint }}>Loading…</div>
         ) : info.supporters.length === 0 ? (
-          <div style={{ color: C.textFaint }}>Be the first to buy us a coffee 💛</div>
-        ) : (
-          <div style={styles.supporterRow}>
-            {info.supporters.map((s, i) => (
-              <div key={i} style={styles.supporterChip}>
-                <span aria-hidden style={{ marginRight: 6 }}>☕</span>
-                <span style={{ color: C.text, fontWeight: 600 }}>{s.displayName}</span>
-              </div>
-            ))}
+          // Honest empty state: instead of a faint one-liner, a warm "be the first"
+          // card. Being first is a draw, not a red flag — and it sells the permanent
+          // Founding Supporter badge that early backers get.
+          <div style={styles.firstSupporterCard}>
+            <div style={{ fontSize: 40, marginBottom: 6 }}>👑☕</div>
+            <div style={{ fontWeight: 800, color: C.text, fontSize: 19 }}>Be our very first supporter</div>
+            <p style={{ color: C.textDim, fontSize: 14, lineHeight: 1.6, margin: '10px auto 0', maxWidth: 460 }}>
+              ChessNexus is brand new and built by a tiny team. Our <strong style={{ color: '#fde68a' }}>first {FOUNDING_LIMIT} supporters</strong> get a
+              permanent <strong style={{ color: '#fde68a' }}>👑 Founding Supporter</strong> badge — it never expires, as a thank-you for believing early.
+            </p>
+            <button
+              type="button"
+              onClick={() => { if (!user) { navigate('/login'); return; } window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              style={{ ...styles.primaryBtn, marginTop: 16, padding: '11px 24px', borderRadius: 12, fontSize: 14 }}
+            >
+              Claim Founding Supporter ☕
+            </button>
           </div>
+        ) : (
+          <>
+            {/* Founding-supporter incentive stays visible while spots remain. */}
+            {info.supporters.length < FOUNDING_LIMIT && (
+              <div style={styles.foundingBanner}>
+                👑 <strong style={{ color: '#fde68a' }}>{FOUNDING_LIMIT - info.supporters.length} Founding Supporter {FOUNDING_LIMIT - info.supporters.length === 1 ? 'spot' : 'spots'} left</strong>
+                {' '}— early supporters get a permanent badge that never expires.
+              </div>
+            )}
+            <div style={styles.supporterRow}>
+              {info.supporters.map((s, i) => (
+                <div key={i} style={styles.supporterChip}>
+                  <span aria-hidden style={{ marginRight: 6 }}>{i < FOUNDING_LIMIT ? '👑' : '☕'}</span>
+                  <span style={{ color: C.text, fontWeight: 600 }}>{s.displayName}</span>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         <div style={{ height: 60 }} />
@@ -692,6 +729,17 @@ const styles = {
     background: 'rgba(6,182,212,0.12)',
     border: '1px solid rgba(6,182,212,0.4)',
     color: '#a5f3fc',
+    fontSize: 13,
+    fontWeight: 600
+  },
+  foundingPill: {
+    marginTop: 16,
+    display: 'inline-block',
+    padding: '8px 14px',
+    borderRadius: 999,
+    background: 'rgba(245,158,11,0.14)',
+    border: '1px solid rgba(245,158,11,0.45)',
+    color: '#fde68a',
     fontSize: 13,
     fontWeight: 600
   },
@@ -977,6 +1025,25 @@ const styles = {
     borderRadius: 14,
     padding: 18,
     textAlign: 'center'
+  },
+  firstSupporterCard: {
+    textAlign: 'center',
+    background: 'linear-gradient(135deg, rgba(245,158,11,0.10), rgba(139,92,246,0.07))',
+    border: '1px solid rgba(245,158,11,0.35)',
+    borderRadius: 18,
+    padding: '30px 24px',
+    backdropFilter: 'blur(14px)',
+    WebkitBackdropFilter: 'blur(14px)'
+  },
+  foundingBanner: {
+    marginBottom: 14,
+    padding: '10px 16px',
+    borderRadius: 12,
+    background: 'rgba(245,158,11,0.10)',
+    border: '1px solid rgba(245,158,11,0.30)',
+    color: C.textDim,
+    fontSize: 13.5,
+    lineHeight: 1.5
   },
   supporterRow: {
     display: 'flex',
