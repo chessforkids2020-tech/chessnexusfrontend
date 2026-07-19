@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import FeedbackModal from './FeedbackModal';
 
-// Show the first-session feedback prompt ONCE to NEW signups, after they've been
-// actively in the app for ~10 minutes. Deliberately narrow so we never nag
-// existing users or guests.
-const ACTIVE_MS_BEFORE_PROMPT = 10 * 60 * 1000; // 10 minutes of session activity
-const NEW_ACCOUNT_MAX_DAYS = 3;                  // only accounts created in the last N days
+// Show the first-session feedback prompt ONCE, ~3 minutes after the user has been
+// active in the app. Targets NEW signups (accounts <= 3 days old) AND guest users —
+// the freshest visitors whose first impression we most want to capture. Existing
+// long-time members are never nagged.
+const ACTIVE_MS_BEFORE_PROMPT = 3 * 60 * 1000; // 3 minutes of session activity
+const NEW_ACCOUNT_MAX_DAYS = 3;                // members: only accounts created in the last N days
 
 const uid = (user) => (user && (user._id || user.id)) || null;
 const shownKey = (id) => `feedbackPromptShown_${id}`;
@@ -24,13 +25,16 @@ export default function FeedbackPromptGate() {
     const id = uid(user);
     if (!id) return clear;
 
-    // Only real members — never guests.
-    if (user.role === 'guest' || user.isGuest) return clear;
+    const isGuest = user.role === 'guest' || user.isGuest;
 
-    // Only brand-new accounts (targets first-timers, not long-time users).
-    if (!user.memberSince) return clear;
-    const ageDays = (Date.now() - new Date(user.memberSince).getTime()) / 86400000;
-    if (!(ageDays >= 0 && ageDays <= NEW_ACCOUNT_MAX_DAYS)) return clear;
+    // Guests always qualify (they're the freshest visitors and have no memberSince).
+    // Members qualify only if the account is brand-new (<= N days old), so we never
+    // nag long-time users.
+    if (!isGuest) {
+      if (!user.memberSince) return clear;
+      const ageDays = (Date.now() - new Date(user.memberSince).getTime()) / 86400000;
+      if (!(ageDays >= 0 && ageDays <= NEW_ACCOUNT_MAX_DAYS)) return clear;
+    }
 
     // Never re-prompt an account that has already answered or dismissed.
     try { if (localStorage.getItem(shownKey(id))) return clear; } catch { return clear; }

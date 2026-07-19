@@ -98,8 +98,8 @@ export default function UserLayout({ children, showFooter = true }) {
         </>
       </div>
       {showFooter !== false && <Footer />}
-      {/* First-session feedback prompt for new signups (self-gating: shows once,
-          ~10 min in, members only). Mounted here so it can appear on any page. */}
+      {/* First-session feedback prompt (self-gating: shows once, ~3 min in, to new
+          signups and guests). Mounted here so it can appear on any in-app page. */}
       <FeedbackPromptGate />
     </div>
   );
