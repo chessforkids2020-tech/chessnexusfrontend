@@ -90,3 +90,16 @@
 }
 .mmb-caption-sub { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
 @keyframes mmbShimmer { to { background-position: -200% 0; } }
+
+/* Mobile: let the board fill the screen width (Lichess-style). Trim the card's
+   side padding and neutralise its radius/border on the horizontal edges so the
+   board reaches the screen, and let the board bleed to the card edges. */
+@media (max-width: 640px) {
+  .mmb-card {
+    padding: 12px 4px;
+    border-radius: 12px;
+  }
+  .mmb-board {
+    border-radius: 0;
+  }
+}

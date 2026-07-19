@@ -1036,39 +1036,51 @@ const Chessboard: React.FC<ChessboardProps> = ({
     // Align labels to the actual board. When labels sit inside (no outer gutter),
     // this is 0; when outside, it's the gutter width so labels clear the board.
     const boardOffset = outerPad;
-    // Inset of an inside-label from the board edge (small — tucks into the corner
-    // of the edge square, Lichess style). Outside labels sit in the gutter (2px).
-    const insideInset = 2;
 
     const labelStyle: React.CSSProperties = {
       position: 'absolute',
       fontSize: `${labelSize}px`,
       fontWeight: 'bold',
       color: '#8B4513',
-      textAlign: 'center',
       userSelect: 'none',
       pointerEvents: 'none',
       zIndex: 10
     };
+
+    // When labels sit INSIDE, tuck them into the CORNER of the edge squares
+    // (Lichess/chess.com style) so they never overlap the pieces sitting on
+    // those squares. Files -> bottom-left corner of each bottom square; ranks ->
+    // top-left corner of each left-edge square. `cornerPad` is the tiny inset
+    // from the square's edge. When labels sit OUTSIDE, they stay centered in the
+    // gutter (the original behaviour) so we branch on `coordsInside`.
+    const cornerPad = 2;
+    // Half-square centering used for OUTSIDE labels.
+    const centerInSquare = (i: number) => boardOffset + i * squareSize + squareSize / 2 - labelSize / 2;
 
     const coordinates: JSX.Element[] = [];
 
     // File labels (a-h) - flip if black orientation
     const files = isFlipped ? ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'] : ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     files.forEach((file, col) => {
+      // Horizontal position: inside -> left corner of the square; outside -> centered.
+      const fileLeft = coordsInside
+        ? `${boardOffset + col * squareSize + cornerPad}px`
+        : `${centerInSquare(col)}px`;
+      const fileStyle: React.CSSProperties = {
+        ...labelStyle,
+        left: fileLeft,
+        width: `${labelSize}px`,
+        height: `${labelSize}px`,
+        lineHeight: `${labelSize}px`,
+        textAlign: coordsInside ? 'left' : 'center',
+      };
+
       // Bottom labels
       if (effectiveCoordinateSides.includes('bottom')) {
         coordinates.push(
           <div
             key={`bottom-${file}`}
-            style={{
-              ...labelStyle,
-              bottom: coordsInside ? `${insideInset}px` : '2px',
-              left: `${boardOffset + col * squareSize + squareSize / 2 - labelSize / 2}px`,
-              width: `${labelSize}px`,
-              height: `${labelSize}px`,
-              lineHeight: `${labelSize}px`
-            }}
+            style={{ ...fileStyle, bottom: coordsInside ? `${cornerPad}px` : '2px' }}
           >
             {file}
           </div>
@@ -1080,14 +1092,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
         coordinates.push(
           <div
             key={`top-${file}`}
-            style={{
-              ...labelStyle,
-              top: coordsInside ? `${insideInset}px` : '2px',
-              left: `${boardOffset + col * squareSize + squareSize / 2 - labelSize / 2}px`,
-              width: `${labelSize}px`,
-              height: `${labelSize}px`,
-              lineHeight: `${labelSize}px`
-            }}
+            style={{ ...fileStyle, top: coordsInside ? `${cornerPad}px` : '2px' }}
           >
             {file}
           </div>
@@ -1098,19 +1103,25 @@ const Chessboard: React.FC<ChessboardProps> = ({
     // Rank labels (1-8) - flip if black orientation
     const ranks = isFlipped ? ['1', '2', '3', '4', '5', '6', '7', '8'] : ['8', '7', '6', '5', '4', '3', '2', '1'];
     ranks.forEach((rank, row) => {
+      // Vertical position: inside -> top corner of the square; outside -> centered.
+      const rankTop = coordsInside
+        ? `${boardOffset + row * squareSize + cornerPad}px`
+        : `${centerInSquare(row)}px`;
+      const rankStyle: React.CSSProperties = {
+        ...labelStyle,
+        top: rankTop,
+        width: `${labelSize}px`,
+        height: `${labelSize}px`,
+        lineHeight: `${labelSize}px`,
+        textAlign: 'center',
+      };
+
       // Left labels
       if (effectiveCoordinateSides.includes('left')) {
         coordinates.push(
           <div
             key={`left-${rank}`}
-            style={{
-              ...labelStyle,
-              left: coordsInside ? `${insideInset}px` : '2px',
-              top: `${boardOffset + row * squareSize + squareSize / 2 - labelSize / 2}px`,
-              width: `${labelSize}px`,
-              height: `${labelSize}px`,
-              lineHeight: `${labelSize}px`
-            }}
+            style={{ ...rankStyle, left: coordsInside ? `${cornerPad}px` : '2px' }}
           >
             {rank}
           </div>
@@ -1122,14 +1133,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
         coordinates.push(
           <div
             key={`right-${rank}`}
-            style={{
-              ...labelStyle,
-              right: coordsInside ? `${insideInset}px` : '2px',
-              top: `${boardOffset + row * squareSize + squareSize / 2 - labelSize / 2}px`,
-              width: `${labelSize}px`,
-              height: `${labelSize}px`,
-              lineHeight: `${labelSize}px`
-            }}
+            style={{ ...rankStyle, right: coordsInside ? `${cornerPad}px` : '2px' }}
           >
             {rank}
           </div>

@@ -617,9 +617,11 @@
 
 @media (max-width: 768px) {
   .games-container {
-    padding: 16px;
+    /* Slim side padding on mobile so cards/boards get closer to the screen
+       edges (the daily board fills the width, Lichess-style). */
+    padding: 12px 8px;
   }
-  
+
   .quick-play-grid {
     grid-template-columns: 1fr;
   }

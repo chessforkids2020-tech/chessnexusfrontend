@@ -458,8 +458,10 @@ export default function Games() {
         {/* RIGHT COLUMN - 40% */}
         <div className="right-column">
 
-          {/* Guess the Master's Move — daily widget (large inline playable board) */}
-          <MasterMoveBoard maxBoard={320} />
+          {/* Guess the Master's Move — daily widget (large inline playable board).
+              Cap is generous so on mobile (stacked, full-width) the board fills
+              the screen; on desktop it's limited by the 40% right-column width. */}
+          <MasterMoveBoard maxBoard={560} />
 
           {/* CoffeeCta temporarily hidden — Razorpay verification in progress (re-enable ~June 2, 2026) */}
 
