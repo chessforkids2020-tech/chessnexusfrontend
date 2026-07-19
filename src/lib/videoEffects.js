@@ -18,7 +18,7 @@
 // inheriting a stale v2 `enabled:false` from localStorage; users can still turn all
 // effects OFF (raw camera) or crank touch-up UP in the Video effects panel, and it
 // re-persists under v3.
-const LS_KEY = 'cn_video_effects_v3';
+const LS_KEY = 'cn_video_effects_v4';
 
 // Defaults: light-only enhancement is ON — a gentle brightness/contrast/whitepoint
 // lift for the clean, bright Zoom look, with touch-up (the soft-focus skin smoothing)
@@ -27,13 +27,19 @@ const LS_KEY = 'cn_video_effects_v3';
 // paired with the hardware auto-exposure/white-balance in the hook (which brightens
 // with zero softening). Net: brighter than raw, still sharp. Anyone who wants the raw
 // camera, more brightness, or skin touch-up can adjust it in Video effects.
+// Tuned to match Zoom's "clean white": the difference the user spotted is NOT
+// brightness — Zoom uses a WARM-NEUTRAL whitepoint with the highlights gently lifted,
+// so white walls read clean-white instead of the flat grey/cool cast a plain
+// brightness push leaves. So: a touch of warmth (kills the grey), a slightly stronger
+// whitepoint lift (clean whites), and brightness eased back a hair (the warmth+whiten
+// carry the "bright" feel, so we don't need to push raw brightness as hard).
 export const DEFAULT_EFFECTS = {
   enabled: true,      // ON by default — light-only enhancement (brighter, still sharp)
-  brightness: 1.12,   // 0.6 … 1.8 — gentle brighten (kept modest so it stays natural)
+  brightness: 1.10,   // 0.6 … 1.8 — eased back; warmth+whiten now carry the "bright" look
   contrast: 1.05,     // 0.8 … 1.3 — a little depth (not too much, keeps it clean)
   saturation: 1.06,   // 0.8 … 1.4 — gentle richness (lowered so it's not heavy)
-  whiten: 0.10,       // 0 … 0.4 — the "white light" lift (cool whitepoint, screen blend)
-  warmth: 0,          // -20 … +20 — neutral by default (positive = warm/yellow)
+  whiten: 0.14,       // 0 … 0.4 — stronger whitepoint lift for Zoom's clean, lifted whites
+  warmth: 5,          // -20 … +20 — slight warmth: removes the grey/cool cast (Zoom's clean white)
   touchUp: 0,         // 0 … 1 — soft-focus "touch up my appearance" (OFF — no softening)
 };
 
