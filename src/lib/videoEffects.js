@@ -11,26 +11,30 @@
 //
 // Settings persist in localStorage ("set once, always used").
 
-// Bumped v1 → v2 when auto-enhance was switched OFF by default (raw camera = sharp,
-// like Zoom). The rename means everyone starts fresh on the new sharp default instead
-// of inheriting a stale `enabled:true` from localStorage; they can re-enable effects
-// any time and it re-persists under v2.
-const LS_KEY = 'cn_video_effects_v2';
+// Bumped v2 → v3 when the default was switched to "brighter, but still sharp": a
+// LIGHT-ONLY enhancement (gentle brightness/contrast, NO touch-up blur) is ON by
+// default so the picture reads bright/clean like Zoom out of the box, while staying
+// crisp. The rename means everyone starts fresh on this new default instead of
+// inheriting a stale v2 `enabled:false` from localStorage; users can still turn all
+// effects OFF (raw camera) or crank touch-up UP in the Video effects panel, and it
+// re-persists under v3.
+const LS_KEY = 'cn_video_effects_v3';
 
-// Defaults: auto-enhance is OFF so we publish the RAW camera — which is the sharpest
-// possible image (this is exactly why Zoom looks crisp: it does NOT re-process your
-// feed through a canvas). The canvas processor, however good, re-samples every frame
-// and softens fine detail (hair, edges). Anyone who WANTS the brighter/whiter look or
-// skin touch-up can turn it on in Video effects — but the default is now "sharp like
-// the real camera", not "enhanced but soft".
+// Defaults: light-only enhancement is ON — a gentle brightness/contrast/whitepoint
+// lift for the clean, bright Zoom look, with touch-up (the soft-focus skin smoothing)
+// left OFF so we DON'T introduce the blur that softens hair/edges. The canvas does
+// re-sample each frame, but with no blur pass the sharpness cost is small, and it's
+// paired with the hardware auto-exposure/white-balance in the hook (which brightens
+// with zero softening). Net: brighter than raw, still sharp. Anyone who wants the raw
+// camera, more brightness, or skin touch-up can adjust it in Video effects.
 export const DEFAULT_EFFECTS = {
-  enabled: false,     // OFF by default — publish the raw, sharp camera (Zoom-style)
-  brightness: 1.14,   // 0.6 … 1.8 — brighter for that clean "white light" look
-  contrast: 1.06,     // 0.8 … 1.3 — a little depth (not too much, keeps it clean)
-  saturation: 1.08,   // 0.8 … 1.4 — gentle richness (lowered so it's not heavy)
-  whiten: 0.12,       // 0 … 0.4 — the "white light" lift (cool whitepoint, screen blend)
+  enabled: true,      // ON by default — light-only enhancement (brighter, still sharp)
+  brightness: 1.12,   // 0.6 … 1.8 — gentle brighten (kept modest so it stays natural)
+  contrast: 1.05,     // 0.8 … 1.3 — a little depth (not too much, keeps it clean)
+  saturation: 1.06,   // 0.8 … 1.4 — gentle richness (lowered so it's not heavy)
+  whiten: 0.10,       // 0 … 0.4 — the "white light" lift (cool whitepoint, screen blend)
   warmth: 0,          // -20 … +20 — neutral by default (positive = warm/yellow)
-  touchUp: 0,         // 0 … 1 — soft-focus "touch up my appearance" (off by default)
+  touchUp: 0,         // 0 … 1 — soft-focus "touch up my appearance" (OFF — no softening)
 };
 
 export function loadEffects() {
