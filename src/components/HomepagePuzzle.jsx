@@ -76,17 +76,35 @@ export default function HomepagePuzzle() {
   // initial size and overflow narrow phones/tablets (half the board hidden).
   useEffect(() => {
     if (loading || !boardContainerRef.current) return;
+    // Fill the container width, capped at 420px so it doesn't grow too large on
+    // wide screens. On mobile/tablet (<=1024px) ALSO clamp by viewport height —
+    // the board is square, so a full-width board can be taller than the screen;
+    // this keeps the whole board visible with no overflow (Lichess-style fit).
+    const compute = (containerWidth) => {
+      let size = Math.min(Math.floor(containerWidth), 420);
+      if (window.innerWidth <= 1024) {
+        size = Math.min(size, Math.floor(window.innerHeight * 0.72));
+      }
+      setBoardSize(size);
+    };
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const containerWidth = entry.contentRect.width;
-        if (containerWidth > 0) {
-          // Cap at 420px so it doesn't grow too large on wide screens.
-          setBoardSize(Math.min(Math.floor(containerWidth), 420));
-        }
+        if (entry.contentRect.width > 0) compute(entry.contentRect.width);
       }
     });
     observer.observe(boardContainerRef.current);
-    return () => observer.disconnect();
+    // Re-clamp on rotate: width may be unchanged but viewport height flips.
+    const onResize = () => {
+      const el = boardContainerRef.current;
+      if (el) { const w = el.getBoundingClientRect().width; if (w > 0) compute(w); }
+    };
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
   }, [loading]);
 
   // Make bot move after delay
