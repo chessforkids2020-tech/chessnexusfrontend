@@ -531,8 +531,8 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             />
             <WhyCard
               icon="🧑‍🏫"
-              title="ChessNexus Coach"
-              text="Advanced game analysis, personalised improvement tips, and coaching tools that help every player — from beginner to tournament-level — keep getting better."
+              title="Live Classroom"
+              text="Real-time video classes where coaches teach on a shared board — the servers, video, and tools that let every lesson happen live keep running on your coffee."
               accent="rgba(245,158,11,0.18)"
               border="rgba(245,158,11,0.25)"
               step="04"
