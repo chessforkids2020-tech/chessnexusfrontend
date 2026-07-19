@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Chess } from 'chess.js';
 import Chessboard from './Chessboard';
 import { useAuth } from '../contexts/AuthContext';
+import useResponsiveBoardSize from '../hooks/useResponsiveBoardSize';
 import api from '../api';
 import './MasterMoveBoard.css';
 
@@ -35,20 +36,11 @@ export default function MasterMoveBoard({ maxBoard = 360 }) {
   const [lastMove, setLastMove] = useState(null);
   const [done, setDone] = useState(false);          // attempted today (locks the board)
 
-  // Responsive board sizing — measure the card's rendered width.
+  // Responsive board sizing via the shared hook — fills the card width and, on
+  // mobile/tablet, also clamps by viewport height so the square board never runs
+  // below the fold. (Desktop is limited by the 40% right-column width.)
   const boardWrapRef = useRef(null);
-  const [boardSize, setBoardSize] = useState(maxBoard);
-  useEffect(() => {
-    if (!boardWrapRef.current) return;
-    const obs = new ResizeObserver((entries) => {
-      for (const e of entries) {
-        const w = e.contentRect.width;
-        if (w > 0) setBoardSize(Math.max(220, Math.min(Math.floor(w), maxBoard)));
-      }
-    });
-    obs.observe(boardWrapRef.current);
-    return () => obs.disconnect();
-  }, [maxBoard, loading]);
+  const boardSize = useResponsiveBoardSize(boardWrapRef, maxBoard, Math.min(maxBoard, 320));
 
   // Load today's position once.
   useEffect(() => {
