@@ -90,6 +90,7 @@ export default function HealthyMix() {
   const [exhausted, setExhausted] = useState(null); // { pieces, total } | null
 
   const [puzzle, setPuzzle] = useState(null);
+  const puzzleRef = useRef(null);         // mirror of `puzzle` for stable callbacks
   const [loading, setLoading] = useState(true);
   const [fen, setFen] = useState('start');
   const [orientation, setOrientation] = useState('white');
@@ -109,7 +110,7 @@ export default function HealthyMix() {
       const raw = sessionStorage.getItem(SESSION_KEY);
       if (raw) return JSON.parse(raw);
     } catch (_) { /* ignore */ }
-    return { correct: 0, wrong: 0, streak: 0 };
+    return { correct: 0, wrong: 0, streak: 0, history: [] };
   };
   const saved = initSession();
 
@@ -118,6 +119,30 @@ export default function HealthyMix() {
   const [sessionCorrect, setSessionCorrect] = useState(saved.correct);
   const [sessionWrong, setSessionWrong] = useState(saved.wrong);
   const [streak, setStreak] = useState(saved.streak);
+  // Per-session result strip shown below the board (like the daily puzzles page):
+  // one ✓/✗ mark per puzzle attempted this session, newest last. Session-only.
+  const [sessionHistory, setSessionHistory] = useState(Array.isArray(saved.history) ? saved.history : []);
+
+  // Mode switcher (below the board): Healthy Mix / Themes / Pieces / Rating.
+  // "Rating" opens an in-page band popup; the others navigate. Bands are prefetched
+  // so the popup opens instantly.
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [ratingBands, setRatingBands] = useState([]);
+  useEffect(() => {
+    api.get('/api/public/healthymix/rating-bands')
+      .then(res => setRatingBands(res.data.bands || []))
+      .catch(() => {});
+  }, []);
+  const chooseBand = (b) => {
+    setShowRatingModal(false);
+    navigate(`/training/healthy-mix?min=${b.min}&max=${b.max}`);
+  };
+  // Record one attempt result. Kept tiny (id + correctness + rating) so the strip
+  // can show a tooltip without holding whole puzzle objects.
+  const pushHistory = useCallback((correct) => {
+    const p = puzzleRef.current;
+    setSessionHistory(h => [...h, { correct, rating: p?.rating || null, topic: p?.topic || null }]);
+  }, []);
 
   // Coach-assignment tracking (only when ?assignment=<id> is present).
   const [assignProgress, setAssignProgress] = useState(0);
@@ -156,10 +181,10 @@ export default function HealthyMix() {
     try {
       sessionStorage.setItem(
         SESSION_KEY,
-        JSON.stringify({ correct: sessionCorrect, wrong: sessionWrong, streak })
+        JSON.stringify({ correct: sessionCorrect, wrong: sessionWrong, streak, history: sessionHistory })
       );
     } catch (_) { /* ignore */ }
-  }, [sessionCorrect, sessionWrong, streak]);
+  }, [sessionCorrect, sessionWrong, streak, sessionHistory]);
 
   const chessRef = useRef(new Chess());
   const solutionRef = useRef([]);
@@ -259,6 +284,7 @@ export default function HealthyMix() {
     tooEasyRef.current = false;
     puzzleStartTimeRef.current = Date.now();
     setPuzzle(p);
+    puzzleRef.current = p;
     setFen(game.fen());
     setOrientation(game.turn() === 'w' ? 'white' : 'black');
     setStatusSynced('solving');
@@ -356,6 +382,7 @@ export default function HealthyMix() {
       });
 
       setPuzzle(p);
+      puzzleRef.current = p;
       setFen(game.fen());
       setOrientation(game.turn() === 'w' ? 'white' : 'black');
       setStatusSynced('solving');
@@ -501,6 +528,7 @@ export default function HealthyMix() {
           playSound('correct');
           setSessionCorrect(c => c + 1);
           setStreak(s => s + 1);
+          pushHistory(true);
           submitResult(true);
         }
       } else {
@@ -516,6 +544,7 @@ export default function HealthyMix() {
       failedRef.current = true;
       setSessionWrong(w => w + 1);
       setStreak(0);
+      pushHistory(false);
       submitResult(false); // applies the penalty exactly once
       setMessage('That’s not the move. Try again — no points now.');
     } else {
@@ -542,6 +571,7 @@ export default function HealthyMix() {
         submitResult(false);
         setSessionWrong(w => w + 1);
         setStreak(0);
+        pushHistory(false);
       }
       setMessage('Solution revealed. Free play enabled.');
     }
@@ -831,24 +861,98 @@ export default function HealthyMix() {
             })()}
           </div>
 
-          {/* Puzzle meta — below the board */}
-          {puzzle && (
-            <div className="hm-meta hm-meta-below">
-              <div className="hm-meta-row">
-                <span>Puzzle rating</span>
-                <strong>{puzzle.rating || '—'}</strong>
+          {/* Mode switcher — quickly jump between training modes without going back
+              to the Training page. Healthy Mix / Themes / Pieces navigate; Rating
+              opens an in-page band popup. The current mode is highlighted. */}
+          <div className="hm-modes" style={{ width: boardSize }}>
+            <button
+              className={`hm-mode-btn ${trainingMode === 'healthymix' ? 'hm-mode-on' : ''}`}
+              onClick={() => navigate('/training/healthy-mix')}
+            >
+              🧩 Healthy Mix
+            </button>
+            <button
+              className={`hm-mode-btn ${trainingMode === 'themes' ? 'hm-mode-on' : ''}`}
+              onClick={() => navigate('/puzzles/themes')}
+            >
+              🎯 Themes
+            </button>
+            <button
+              className={`hm-mode-btn ${trainingMode === 'pieces' ? 'hm-mode-on' : ''}`}
+              onClick={() => navigate('/puzzles/pieces')}
+            >
+              ♟️ Pieces
+            </button>
+            <button
+              className={`hm-mode-btn ${trainingMode === 'rating' ? 'hm-mode-on' : ''}`}
+              onClick={() => setShowRatingModal(true)}
+            >
+              📊 Rating
+            </button>
+          </div>
+
+          {/* Session result strip — one ✓/✗ per puzzle attempted this session
+              (like the daily puzzles page). Session-only; clears on a new session. */}
+          {sessionHistory.length > 0 && (
+            <div className="hm-history" style={{ width: boardSize }}>
+              <div className="hm-history-head">
+                <span className="hm-history-title">This session</span>
+                <span className="hm-history-count">
+                  <span className="hm-green">{sessionCorrect} ✓</span>
+                  {' · '}
+                  <span className="hm-red">{sessionWrong} ✗</span>
+                </span>
               </div>
-              {puzzle.topic && puzzle.topic !== 'mixed' && (
-                <div className="hm-meta-row">
-                  <span>Theme</span>
-                  <strong className="hm-cap">{puzzle.topic}</strong>
-                </div>
-              )}
+              <div className="hm-history-marks">
+                {sessionHistory.map((h, i) => (
+                  <span
+                    key={i}
+                    className={`hm-mark ${h.correct ? 'hm-mark-ok' : 'hm-mark-bad'}`}
+                    title={`Puzzle ${i + 1}${h.rating ? ` · ${h.rating}` : ''}${h.topic && h.topic !== 'mixed' ? ` · ${h.topic}` : ''} — ${h.correct ? 'solved' : 'failed'}`}
+                  >
+                    {h.correct ? '✓' : '✗'}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
         </main>
 
       </div>
+
+      {/* Rating band picker — opened by the "Rating" mode button. Choosing a band
+          reloads Healthy Mix filtered to that range. */}
+      {showRatingModal && (
+        <div className="hm-modal-overlay" onClick={() => setShowRatingModal(false)}>
+          <div className="hm-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="hm-modal-head">
+              <div>
+                <h3 className="hm-modal-title">Choose a Rating Range</h3>
+                <p className="hm-modal-sub">You'll only get puzzles from the range you pick.</p>
+              </div>
+              <button className="hm-modal-close" onClick={() => setShowRatingModal(false)}>×</button>
+            </div>
+            {ratingBands.length === 0 ? (
+              <div className="hm-modal-loading">Loading ranges…</div>
+            ) : (
+              <div className="hm-band-grid">
+                {ratingBands.map(b => (
+                  <button
+                    key={b.min}
+                    className={`hm-band ${hasBand && Number(bandMin) === b.min && Number(bandMax) === b.max ? 'hm-band-on' : ''}`}
+                    onClick={() => chooseBand(b)}
+                  >
+                    <span className="hm-band-range">{b.min}–{b.max}</span>
+                    {typeof b.count === 'number' && (
+                      <span className="hm-band-count">{b.count.toLocaleString()} puzzles</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

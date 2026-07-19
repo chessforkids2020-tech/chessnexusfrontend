@@ -225,6 +225,185 @@
   padding-top: 0;
 }
 
+/* ── Session result strip (✓/✗ per puzzle this session) ── */
+.hm-history {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #161b22;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+.hm-history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.hm-history-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.hm-history-count {
+  font-size: 13px;
+  font-weight: 700;
+}
+.hm-history-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.hm-mark {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: default;
+  animation: hmMarkPop 0.25s ease;
+}
+.hm-mark-ok {
+  background: rgba(16, 185, 129, 0.16);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+.hm-mark-bad {
+  background: rgba(239, 68, 68, 0.16);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+@keyframes hmMarkPop {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Mode switcher (Healthy Mix / Themes / Pieces / Rating) ── */
+.hm-modes {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  box-sizing: border-box;
+}
+.hm-mode-btn {
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #161b22;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.05s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hm-mode-btn:hover {
+  background: #1c2230;
+  border-color: rgba(6, 182, 212, 0.4);
+}
+.hm-mode-btn:active { transform: translateY(1px); }
+.hm-mode-on {
+  background: rgba(6, 182, 212, 0.16);
+  border-color: rgba(6, 182, 212, 0.55);
+  color: #67e8f9;
+}
+
+/* ── Rating band picker modal ── */
+.hm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 12, 0.72);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  display: grid;
+  place-items: center;
+  z-index: 9500;
+  padding: 16px;
+}
+.hm-modal {
+  width: 100%;
+  /* Wider so 3 band cards fit per row (shorter overall). */
+  max-width: 560px;
+  /* Never taller than the screen — scroll inside if the band list is long.
+     Fixes the modal bottom being clipped on laptops with no way to scroll. */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #111827;
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85);
+}
+.hm-modal-head {
+  flex: 0 0 auto;            /* header stays put; only the band grid scrolls */
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.hm-modal-title { margin: 0; font-size: 18px; font-weight: 800; color: #fff; }
+.hm-modal-sub   { margin: 4px 0 0; font-size: 12.5px; color: rgba(255, 255, 255, 0.5); }
+.hm-modal-close {
+  flex: 0 0 auto;
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  font-size: 18px; line-height: 1;
+  cursor: pointer;
+}
+.hm-modal-loading { padding: 24px 0; text-align: center; color: rgba(255, 255, 255, 0.5); }
+.hm-band-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);   /* 3 cards per row → shorter modal */
+  gap: 10px;
+  overflow-y: auto;         /* scroll here when the list is tall (small screens) */
+  min-height: 0;            /* let the flex child actually shrink + scroll */
+  padding-right: 2px;       /* room for the scrollbar so cards aren't clipped */
+}
+.hm-band-grid::-webkit-scrollbar { width: 6px; }
+.hm-band-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+.hm-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #161b22;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.hm-band:hover { background: #1c2230; border-color: rgba(6, 182, 212, 0.4); }
+.hm-band-on {
+  background: rgba(6, 182, 212, 0.16);
+  border-color: rgba(6, 182, 212, 0.55);
+}
+.hm-band-range { font-size: 15px; font-weight: 800; white-space: nowrap; }
+.hm-band-count { font-size: 11px; color: rgba(255, 255, 255, 0.5); white-space: nowrap; }
+
+/* On narrow screens the 4-across mode row gets cramped — go 2×2, and the
+   3-across band grid drops to 2 so the range/count text isn't squeezed. */
+@media (max-width: 560px) {
+  .hm-modes { grid-template-columns: repeat(2, 1fr); }
+  .hm-band-grid { grid-template-columns: repeat(2, 1fr); }
+  .hm-band { padding: 12px 6px; }
+}
+
 .hm-status {
   display: flex;
   align-items: center;
@@ -298,16 +477,27 @@
   }
   .hm-layout {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 14px;
   }
+
+  /* Mobile order, top → bottom:
+       1. Title (brand) + filter badge
+       2. Rating card
+       3. Chessboard
+       4. Solved / Failed / Streak
+       5. Controls (View solution, Retry, Next…)
+     The sidebar dissolves (`display: contents`) so its pieces can be placed
+     individually around the board instead of all sitting in one column. */
   .hm-side {
-    position: static;
-    /* Show the board first, controls/stats below it on small screens. */
-    order: 2;
+    display: contents;
   }
-  .hm-board-col {
-    order: 1;
-  }
+  .hm-side .hm-brand      { order: 1; }
+  .hm-side .hm-band-badge { order: 2; }
+  .hm-side .hm-rating-card{ order: 3; }
+  .hm-board-col           { order: 4; }   /* board right below the rating */
+  .hm-side .hm-stats      { order: 5; }
+  .hm-side .hm-controls   { order: 6; }
+
   .hm-board-wrap {
     margin: 0 auto;
   }

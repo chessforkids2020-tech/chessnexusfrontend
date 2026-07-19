@@ -483,7 +483,7 @@ const Chat = () => {
   const shouldCenterMessagesInner = loadingMessages || (!loadingMessages && (!selectedChat || messages.length === 0 || messages.length < 4));
 
   return (
-    <div className={`chat-container ${sizeMode === 'compact' ? 'compact' : sizeMode === 'expanded' ? 'expanded' : ''}`}>
+    <div className={`chat-container ${sizeMode === 'compact' ? 'compact' : sizeMode === 'expanded' ? 'expanded' : ''} ${selectedChat ? 'mobile-viewing-chat' : 'mobile-viewing-list'}`}>
       {/* Sidebar */}
       <div className="chat-sidebar">
         <div className="chat-sidebar-header">
@@ -567,7 +567,20 @@ const Chat = () => {
       <div className="chat-main">
         {/* Always render header to keep layout stable */}
         <div className="chat-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>{selectedChat ? getChatName(selectedChat) : 'Select a chat'}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+              {/* Mobile-only back button — returns to the chat list (WhatsApp-style). */}
+              {selectedChat && (
+                <button
+                  className="chat-back-btn"
+                  onClick={() => setSelectedChat(null)}
+                  title="Back to chats"
+                  aria-label="Back to chats"
+                >
+                  ‹
+                </button>
+              )}
+              <div className="chat-header-name">{selectedChat ? getChatName(selectedChat) : 'Select a chat'}</div>
+            </div>
             {selectedChat && selectedChat.type === 'group' && (
               <div style={{ display: 'flex', gap: '5px' }}>
                 <button 

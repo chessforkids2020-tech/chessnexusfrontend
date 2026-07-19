@@ -230,6 +230,30 @@
   font-size: 1.1em;
   color: #213547; /* ensure header text is visible on light backgrounds */
 }
+.chat-header-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Mobile back button — hidden on desktop, shown in the conversation header on
+   phones so users can return to the chat list (WhatsApp-style). */
+.chat-back-btn {
+  display: none;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.06);
+  color: #213547;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 3px;
+}
+.chat-back-btn:hover { background: rgba(0, 0, 0, 0.12); }
 
 .chat-sidebar h3 {
   color: #111827;
@@ -493,40 +517,54 @@
 }
 
 /* Responsive Design */
+/* ══════════════════════════════════════════════════════════════════
+   MOBILE — WhatsApp-style single pane:
+   • No chat selected  → show ONLY the chat list, full width.
+   • Chat selected      → show ONLY the conversation, full width, with a
+     back button in the header to return to the list.
+   The two panes are swapped by the .mobile-viewing-list / -chat class on
+   .chat-container (set from React based on selectedChat).
+   ══════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .chat-container {
-    margin: 10px;
-    width: calc(100% - 20px);
-    height: calc(100vh - 140px);
+    margin: 8px;
+    width: calc(100% - 16px);
+    height: calc(100vh - 120px);
   }
-  
-  .chat-sidebar {
-    width: 250px;
+
+  /* Both panes take the FULL width; visibility is toggled below. The
+     !important + double-class specificity is deliberate: the desktop
+     .compact/.expanded size modes set width/display with !important, and on
+     mobile we must win over them (sizeMode defaults to 'expanded'). */
+  .chat-container .chat-sidebar,
+  .chat-container .chat-main {
+    flex: 1 1 100% !important;
+    width: 100% !important;
+    min-width: 0;
   }
-  
-  .message {
-    max-width: 85%;
-  }
-  
-  .messages-area {
-    padding: 15px;
-  }
+  .chat-sidebar { border-right: none; }
+
+  /* List view: show sidebar, hide conversation. */
+  .chat-container.mobile-viewing-list .chat-sidebar { display: flex !important; }
+  .chat-container.mobile-viewing-list .chat-main    { display: none !important; }
+
+  /* Conversation view: hide list, show conversation. */
+  .chat-container.mobile-viewing-chat .chat-sidebar { display: none !important; }
+  .chat-container.mobile-viewing-chat .chat-main    { display: flex !important; }
+
+  /* Show the back button on mobile (in the conversation header). */
+  .chat-back-btn { display: inline-flex; }
+
+  .message { max-width: 85%; }
+  .messages-area { padding: 15px; }
 }
 
 @media (max-width: 480px) {
-  .chat-sidebar {
-    width: 200px;
-  }
-  
-  .chat-item {
-    padding: 10px;
-  }
-  
+  .chat-item { padding: 12px 10px; }
   .message {
     max-width: 90%;
     padding: 8px 12px;
   }
-  
   .messages-area {
     padding: 10px;
     gap: 8px;

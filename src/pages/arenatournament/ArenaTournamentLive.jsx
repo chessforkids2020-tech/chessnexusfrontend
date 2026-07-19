@@ -287,14 +287,23 @@ export default function ArenaTournamentLive() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentGame, gameState, whiteTimeRemaining === null, blackTimeRemaining === null]);
 
-  // Responsive board size — proportional to viewport for consistency across all screens
+  // Responsive board size — proportional to viewport for consistency across all screens.
+  // On MOBILE (≤768px) the board AUTO-FITS the screen like Lichess/Chess.com: it fills
+  // almost the full viewport width, no fixed pixel cap and no manual resize needed.
+  // On DESKTOP it's proportional to the window (and the coach can still drag-resize).
+  const [isMobileBoard, setIsMobileBoard] = useState(typeof window !== 'undefined' && window.innerWidth <= 768);
   useEffect(() => {
     const updateBoardSize = () => {
       const width = window.innerWidth;
-      if (width <= 480) {
-        setBoardWidth(Math.min(320, width - 40));
-      } else if (width <= 768) {
-        setBoardWidth(Math.min(440, width - 60));
+      const height = window.innerHeight;
+      setIsMobileBoard(width <= 768);
+      if (width <= 768) {
+        // Fill the width (small 12px side margin), but never taller than fits the
+        // screen with room for the header/clocks — so the whole board is reachable
+        // without scrolling. This is the "just fits the phone" behaviour.
+        const byWidth = width - 24;
+        const byHeight = Math.floor(height * 0.62);
+        setBoardWidth(Math.max(260, Math.min(byWidth, byHeight)));
       } else if (width <= 1024) {
         setBoardWidth(Math.min(560, Math.floor(width * 0.44)));
       } else {
@@ -303,7 +312,7 @@ export default function ArenaTournamentLive() {
         setBoardWidth(Math.min(760, Math.floor(width * 0.36)));
       }
     };
-    
+
     updateBoardSize();
     window.addEventListener('resize', updateBoardSize);
     return () => window.removeEventListener('resize', updateBoardSize);
@@ -1624,49 +1633,64 @@ export default function ArenaTournamentLive() {
                     boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
                   }}
                 />
-                {/* Drag-to-resize handle — bottom-right corner */}
-                <div
-                  title="Drag to resize board"
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    const startX = e.clientX;
-                    const startW = boardWidth;
-                    const onMove = (mv) => {
-                      const delta = mv.clientX - startX;
-                      setBoardWidth(Math.min(720, Math.max(280, startW + delta)));
-                    };
-                    const onUp = () => {
-                      window.removeEventListener('mousemove', onMove);
-                      window.removeEventListener('mouseup', onUp);
-                    };
-                    window.addEventListener('mousemove', onMove);
-                    window.addEventListener('mouseup', onUp);
-                  }}
-                  style={{
-                    position: 'absolute',
-                    bottom: '6px',
-                    right: '6px',
-                    width: '22px',
-                    height: '22px',
-                    cursor: 'nwse-resize',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    opacity: 0.85,
-                    transition: 'opacity 0.15s, transform 0.15s',
-                    background: 'rgba(6,182,212,0.18)',
-                    border: '1px solid rgba(6,182,212,0.5)',
-                    borderRadius: '5px',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1.15)'; e.currentTarget.style.background = 'rgba(6,182,212,0.35)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'rgba(6,182,212,0.18)'; }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M13 1L1 13" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"/>
-                    <path d="M13 6L6 13" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"/>
-                    <path d="M13 11L11 13" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                </div>
+                {/* Drag-to-resize handle — DESKTOP ONLY. On mobile the board
+                    auto-fits the screen (Lichess/Chess.com style), so there's no
+                    handle to fight with the corner rook. The handle hangs OUTSIDE
+                    the board's bottom-right corner so it never covers the a1/h1
+                    square. Supports both mouse and touch. */}
+                {!isMobileBoard && (
+                  <div
+                    title="Drag to resize board"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      const startX = e.clientX;
+                      const startW = boardWidth;
+                      const onMove = (mv) => setBoardWidth(Math.min(760, Math.max(320, startW + (mv.clientX - startX))));
+                      const onUp = () => {
+                        window.removeEventListener('mousemove', onMove);
+                        window.removeEventListener('mouseup', onUp);
+                      };
+                      window.addEventListener('mousemove', onMove);
+                      window.addEventListener('mouseup', onUp);
+                    }}
+                    onTouchStart={(e) => {
+                      const startX = e.touches[0].clientX;
+                      const startW = boardWidth;
+                      const onMove = (mv) => setBoardWidth(Math.min(760, Math.max(320, startW + (mv.touches[0].clientX - startX))));
+                      const onEnd = () => {
+                        window.removeEventListener('touchmove', onMove);
+                        window.removeEventListener('touchend', onEnd);
+                      };
+                      window.addEventListener('touchmove', onMove, { passive: true });
+                      window.addEventListener('touchend', onEnd);
+                    }}
+                    style={{
+                      position: 'absolute',
+                      bottom: '-9px',
+                      right: '-9px',
+                      width: '22px',
+                      height: '22px',
+                      cursor: 'nwse-resize',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      opacity: 0.85,
+                      transition: 'opacity 0.15s, transform 0.15s',
+                      background: 'rgba(6,182,212,0.18)',
+                      border: '1px solid rgba(6,182,212,0.5)',
+                      borderRadius: '5px',
+                      touchAction: 'none',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1.15)'; e.currentTarget.style.background = 'rgba(6,182,212,0.35)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'rgba(6,182,212,0.18)'; }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M13 1L1 13" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M13 6L6 13" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M13 11L11 13" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                )}
               </div>
 
               {/* My Info - Below Chessboard */}

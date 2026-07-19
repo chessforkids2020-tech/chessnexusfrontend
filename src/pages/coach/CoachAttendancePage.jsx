@@ -150,7 +150,10 @@ function TabDashboard() {
     setSort(prev => prev.key === key ? { key, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'asc' });
 
   const sortedSummary = (() => {
-    const rows = [...(data?.summary || [])];
+    // Students on break are excluded from the monthly summary — they've dropped out
+    // of the active roster (like Mark Attendance and the Players tab), and live only
+    // in the Payments tab. Showing them here (even with a badge) was confusing.
+    const rows = (data?.summary || []).filter(s => !s.onBreak);
     const { key, dir } = sort;
     const val = (s) => {
       const { attended, pct } = rowVals(s);
@@ -232,7 +235,7 @@ function TabDashboard() {
 
         {loading ? (
           <p className="cap-muted">Loading…</p>
-        ) : !data || !data.summary.length ? (
+        ) : !data || !sortedSummary.length ? (
           <p className="cap-muted">No enrolled players found.</p>
         ) : (
           <div className="cap-table-wrap">
@@ -248,8 +251,8 @@ function TabDashboard() {
                 {sortedSummary.map(s => {
                   const { attended, pct } = rowVals(s);
                   return (
-                    <tr key={s.studentId} className={s.onBreak ? 'cap-row-break' : ''}>
-                      <td>{s.studentName} {s.onBreak && <span className="cap-break-badge">Break</span>}</td>
+                    <tr key={s.studentId}>
+                      <td>{s.studentName}</td>
                       <td><span className="cap-td-present">{attended}</span></td>
                       <td>{s.remaining}</td>
                       <td>
