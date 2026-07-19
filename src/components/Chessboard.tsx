@@ -161,6 +161,23 @@ const Chessboard: React.FC<ChessboardProps> = ({
   const isSmallScreen = boardWidth < 400;
   const coordinateSize = isSmallScreen ? 20 : 32;
 
+  // Is this a phone/tablet viewport? Used to place coordinates inside the board so
+  // it can fill the screen. Read at render (no listener) — the board already
+  // re-renders on resize via its container observers in the callers.
+  const isTouchViewport =
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(max-width: 1024px)').matches
+      : boardWidth < 400;
+
+  // Coordinate placement. On mobile/tablet we overlay the a-h/1-8 labels INSIDE
+  // the board — Lichess/chess.com style — so the board fills the full width
+  // instead of losing ~40-64px to outside label gutters. Desktop keeps the
+  // outside labels unless a caller explicitly asks for inside.
+  const coordsInside = coordinatesInside || isSmallScreen || isTouchViewport;
+  // Outer gutter reserved for OUTSIDE labels only. Zero when labels are inside,
+  // so the container width collapses to exactly the board size.
+  const outerPad = showCoordinates && !coordsInside ? coordinateSize : 0;
+
   // Parse FEN string to get piece positions (robust against invalid/empty FEN)
   const defaultFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
   
@@ -1013,16 +1030,15 @@ const Chessboard: React.FC<ChessboardProps> = ({
     if (!showCoordinates) return null;
 
     const labelSize = squareSize * 0.3; // Size of coordinate labels
-    const padding = coordinateSize; // Half of the extra space
-    
-    // Adjust logic if board is actually (boardWidth - 4) + 4 = boardWidth
-    // The board div is centered.
-    // Offset = (TotalWidth - BoardRealWidth) / 2
-    // TotalWidth = boardWidth + coordinateSize * 2
-    // BoardRealWidth = boardWidth
-    // Offset = coordinateSize
-    
-    const boardOffset = coordinateSize;
+
+    // The board div is centered in the container. The container is
+    // boardWidth + outerPad*2 wide, so the board's top-left starts at outerPad.
+    // Align labels to the actual board. When labels sit inside (no outer gutter),
+    // this is 0; when outside, it's the gutter width so labels clear the board.
+    const boardOffset = outerPad;
+    // Inset of an inside-label from the board edge (small — tucks into the corner
+    // of the edge square, Lichess style). Outside labels sit in the gutter (2px).
+    const insideInset = 2;
 
     const labelStyle: React.CSSProperties = {
       position: 'absolute',
@@ -1047,7 +1063,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
             key={`bottom-${file}`}
             style={{
               ...labelStyle,
-              bottom: coordinatesInside ? `${coordinateSize + 2}px` : '2px',
+              bottom: coordsInside ? `${insideInset}px` : '2px',
               left: `${boardOffset + col * squareSize + squareSize / 2 - labelSize / 2}px`,
               width: `${labelSize}px`,
               height: `${labelSize}px`,
@@ -1066,7 +1082,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
             key={`top-${file}`}
             style={{
               ...labelStyle,
-              top: coordinatesInside ? `${coordinateSize + 2}px` : '2px',
+              top: coordsInside ? `${insideInset}px` : '2px',
               left: `${boardOffset + col * squareSize + squareSize / 2 - labelSize / 2}px`,
               width: `${labelSize}px`,
               height: `${labelSize}px`,
@@ -1089,7 +1105,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
             key={`left-${rank}`}
             style={{
               ...labelStyle,
-              left: coordinatesInside ? `${coordinateSize + 2}px` : '2px',
+              left: coordsInside ? `${insideInset}px` : '2px',
               top: `${boardOffset + row * squareSize + squareSize / 2 - labelSize / 2}px`,
               width: `${labelSize}px`,
               height: `${labelSize}px`,
@@ -1108,7 +1124,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
             key={`right-${rank}`}
             style={{
               ...labelStyle,
-              right: coordinatesInside ? `${coordinateSize + 2}px` : '2px',
+              right: coordsInside ? `${insideInset}px` : '2px',
               top: `${boardOffset + row * squareSize + squareSize / 2 - labelSize / 2}px`,
               width: `${labelSize}px`,
               height: `${labelSize}px`,
@@ -1277,8 +1293,8 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
       }}
       style={{
         position: 'relative',
-        width: showCoordinates ? `${boardWidth + coordinateSize * 2}px` : `${boardWidth}px`,
-        height: showCoordinates ? `${boardWidth + coordinateSize * 2}px` : `${boardWidth}px`,
+        width: `${boardWidth + outerPad * 2}px`,
+        height: `${boardWidth + outerPad * 2}px`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -1400,7 +1416,7 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
             const screenRow = isFlipped ? 7 - boardRow : boardRow;
             // Promotion squares sit on the edge ranks; cascade INTO the board.
             const goingDown = screenRow <= 3;
-            const offset = showCoordinates ? coordinateSize : 0;
+            const offset = outerPad;
             const colLeft = offset + screenCol * squareSize;
             const startTop = offset + screenRow * squareSize;
 
@@ -1465,8 +1481,8 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
       <svg
         style={{
           position: 'absolute',
-          top: showCoordinates ? coordinateSize : 0,
-          left: showCoordinates ? coordinateSize : 0,
+          top: outerPad,
+          left: outerPad,
           width: boardWidth - 4,
           height: boardWidth - 4,
           pointerEvents: 'none',

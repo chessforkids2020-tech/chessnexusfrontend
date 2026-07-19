@@ -6,10 +6,15 @@
   min-height: 100vh;
   padding: 20px;
   position: relative;
-  overflow: hidden;
+  /* Only clip the decorative background layers, not the page content. */
+  overflow-x: hidden;
   display: flex;
+  flex-direction: column;
+  /* Center content horizontally, but align to the TOP so a tall page (hero +
+     cards + tournament list) flows and scrolls normally instead of being
+     vertically centered and clipped — which squashed the play cards on mobile. */
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 /* Background Effects */
@@ -565,6 +570,12 @@
 
 @media (max-width: 640px) {
   .games-play-row { flex-direction: column; }
+  /* Stacked (column) cards must NOT flex-shrink — `flex: 1 1 0` squeezed each
+     card to ~34px and clipped its subtitle. Let each card take its content height. */
+  .play-option-card--row {
+    flex: 0 0 auto;
+    min-height: 64px;
+  }
 }
 
 /* Info Card */
