@@ -66,7 +66,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
   onSquareRightClick,
   orientation = 'white',
   boardStyle = {},
-  boardWidth = 440,
+  boardWidth: boardWidthProp = 440,
   lightSquareStyle,
   darkSquareStyle,
   draggable = true,
@@ -113,6 +113,34 @@ const Chessboard: React.FC<ChessboardProps> = ({
   const arrowDragRef = useRef<{ square: string; color: string; button: number } | null>(null);
   // User-highlighted squares
   const [highlightedSquares, setHighlightedSquares] = useState<Record<string, string>>({});
+
+  // ── Universal mobile/tablet fit ─────────────────────────────────────────────
+  // A page can pass any boardWidth (some hardcode 500, 800, etc.). The board is
+  // SQUARE, so on a phone/tablet that can overflow the screen (only half the
+  // board visible). To behave like the Lichess/Chess.com mobile board — fill the
+  // device with ZERO overflow — we clamp the requested width on viewports
+  // <= 1024px by BOTH the viewport width and a fraction of the viewport height.
+  // Desktop (> 1024px) uses exactly the width the page asked for, unchanged.
+  const readViewport = () => ({
+    w: typeof window !== 'undefined' ? window.innerWidth : 1280,
+    h: typeof window !== 'undefined' ? window.innerHeight : 800,
+  });
+  const [viewport, setViewport] = useState(readViewport);
+  useEffect(() => {
+    const onResize = () => setViewport(readViewport());
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, []);
+  const MOBILE_BP = 1024;    // phones + tablets/iPads
+  const MOBILE_VH = 0.72;    // board may use at most this share of the screen height
+  const MOBILE_VW = 0.96;    // small side margin so it never touches the very edge
+  const boardWidth = viewport.w <= MOBILE_BP
+    ? Math.max(180, Math.min(boardWidthProp, Math.floor(viewport.w * MOBILE_VW), Math.floor(viewport.h * MOBILE_VH)))
+    : boardWidthProp;
 
   // Notify the parent whenever the user draws/clears arrows or highlights, so a
   // classroom can broadcast the coach's drawings to students in real time.

@@ -131,7 +131,10 @@ const UserStudyPuzzleView = () => {
       if (w <= 480)       setBoardWidth(Math.min(340, w - 40));
       else if (w <= 768)  setBoardWidth(Math.min(420, w - 60));
       else if (w <= 1024) setBoardWidth(Math.min(460, Math.floor(w * 0.36)));
-      else                setBoardWidth(Math.min(560, Math.floor(w * 0.36)));
+      // Desktop: was capped at 560px, so the board never grew on big monitors.
+      // Raised to 720 so a wide screen gets a big board; laptops are unchanged
+      // because w*0.36 (≈520 at 1440px) is the binding value below the cap.
+      else                setBoardWidth(Math.min(720, Math.floor(w * 0.36)));
     };
     update();
     window.addEventListener('resize', update);

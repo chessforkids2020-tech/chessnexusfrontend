@@ -606,8 +606,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const [controllerId, setControllerId] = useState(null);     // board-move control
   const [screenSharerId, setScreenSharerId] = useState(null); // screen-share control
   // Board size — a single state the coach resizes by dragging the corner (like
-  // the study/analysis board). No auto-fit fighting it.
-  const [boardWidth, setBoardWidth] = useState(440);
+  // the study/analysis board). No auto-fit fighting it. The INITIAL size scales
+  // with the screen so it's not a tiny 440px board on a 32" monitor (was the
+  // "nothing fits big screens" complaint); the coach can still drag to override.
+  const [boardWidth, setBoardWidth] = useState(() => {
+    if (typeof window === 'undefined') return 440;
+    // ~40% of viewport width, clamped to a sensible board range. Big screen → big
+    // board; laptop → the familiar ~440–520px.
+    return Math.round(Math.max(420, Math.min(720, window.innerWidth * 0.4)));
+  });
   const resizeStartX = useRef(0);
   const resizeStartW = useRef(500);
   const resizingRef = useRef(false);
@@ -1646,7 +1653,12 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         </button>
         {isHost && <button style={s.endBtn} onClick={endClass}>End</button>}
       </div>
-      {note && <div style={s.noteBar}>{note}</div>}
+      {note && (
+        <div style={s.noteBar}>
+          <span style={{ flex: 1 }}>{note}</span>
+          <button style={s.noteClose} title="Dismiss" aria-label="Dismiss" onClick={() => setNote('')}>✕</button>
+        </div>
+      )}
 
       {/* When I'm the presenter, a slim banner confirms I'm sharing — my controls
           stay right above it (Zoom-style), instead of my screen taking over. */}
@@ -1674,7 +1686,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             // nowrap on wide screens keeps [positions | board | moves+engine] as three
             // fixed columns so collapsing Moves never drops the card to the bottom of the
             // page. On narrow screens we still allow wrap so it stacks gracefully.
-            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', flexWrap: isNarrow ? 'wrap' : 'nowrap', width: '100%', justifyContent: 'flex-start' }}>
+            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', flexWrap: isNarrow ? 'wrap' : 'nowrap', width: '100%', justifyContent: 'center' }}>
               {/* LEFT of the board (host-only): the clickable list — course lessons,
                   library items, or study positions depending on the active tab. */}
               {isHost && (() => {
@@ -2251,7 +2263,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               </div>
               <p style={s.fxNote}>
                 What your camera reports it supports, and what it's publishing now. The
-                “continuous” auto modes are what make the picture polished like Zoom —
+                “continuous” auto modes are what keep the picture clear and well-lit —
                 if a row shows “not supported”, this camera lacks that hardware control.
               </p>
               {!ci ? (
@@ -2376,7 +2388,8 @@ const s = {
   wrap: { minHeight: '100vh', background: '#0b0f14', color: '#e2e8f0', fontFamily: "'Poppins',sans-serif", fontSize: 15 },
   center: { minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#0b0f14', color: '#e2e8f0', fontFamily: "'Poppins',sans-serif", fontSize: 15 },
   topbar: { display: 'flex', alignItems: 'center', gap: 10, padding: '6px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)', flexWrap: 'wrap' },
-  noteBar: { padding: '8px 16px', background: 'rgba(245,158,11,0.12)', color: '#fcd34d', fontSize: 13 },
+  noteBar: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', background: 'rgba(245,158,11,0.12)', color: '#fcd34d', fontSize: 13 },
+  noteClose: { flex: '0 0 auto', width: 24, height: 24, borderRadius: 6, border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.12)', color: '#fcd34d', cursor: 'pointer', fontSize: 12, lineHeight: 1, display: 'grid', placeItems: 'center' },
   body: { display: 'flex', gap: 16, padding: '12px 16px 16px', flexWrap: 'nowrap', alignItems: 'flex-start', justifyContent: 'flex-start', minHeight: 'calc(100vh - 62px)' },
   // Positions list beside the board (from a chosen study/chapter).
   posList: { width: 180, flexShrink: 0, maxHeight: '70vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5,
@@ -2428,7 +2441,9 @@ const s = {
   // Empty-stage prompt shown when the host moved videos out and no board is up.
   stagePlaceholder: { flex: 1, minHeight: 320, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 14, border: '1px dashed rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.02)' },
   // Right rail: thumbnails (when the stage shows board/screen) + waiting room.
-  side: { flex: '0 1 320px', minWidth: 260, display: 'flex', flexDirection: 'column', gap: 12 },
+  // Right rail. On a laptop this is ~320px; on a big monitor it GROWS (clamp scales
+  // it with viewport width) so the docked coach video isn't an ant on a 32" screen.
+  side: { flex: '0 1 clamp(320px, 24vw, 560px)', minWidth: 260, display: 'flex', flexDirection: 'column', gap: 12 },
   thumbCol: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, width: '100%', minWidth: 0 },
   camSelect: { padding: '6px 8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: '#151a22', color: '#e2e8f0', fontSize: 12, maxWidth: 170, cursor: 'pointer' },
   waitCard: { background: 'rgba(23,23,23,0.72)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 12 },

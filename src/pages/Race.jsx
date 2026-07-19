@@ -168,7 +168,10 @@ export default function Race() {
           }
           .content-grid {
             width: 100%;
-            max-width: 1400px;
+            /* Was 1400px, leaving big monitors with wide empty margins. Raised to
+               1800px so the races list grows to use the screen; the 400px menu
+               column stays fixed. Laptops (<1400px) are unchanged. */
+            max-width: 1800px;
           }
           .board-section,
           .menu-section {

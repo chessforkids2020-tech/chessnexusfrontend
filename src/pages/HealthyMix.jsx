@@ -177,7 +177,10 @@ export default function HealthyMix() {
   const boardWrapRef = useRef(null);
   const MIN_BOARD = 200;
   const MAX_BOARD = 720;
-  // Default 480 on desktop, but never wider than fits the viewport (phones/tablets).
+  // Board auto-sizes to the screen. The old code hard-capped the board at `preferred`
+  // (480px) on ANY desktop, so a 32" monitor showed the same tiny board as a laptop.
+  // Now the board GROWS with the viewport (a share of the available width beside the
+  // 320px sidebar), clamped to a sensible range — big screen → big board.
   const fitToViewport = (preferred) => {
     if (typeof window === 'undefined') return preferred;
     const w = window.innerWidth;
@@ -185,7 +188,10 @@ export default function HealthyMix() {
       // Single-column layout: board can use almost the full width, minus page padding.
       return Math.max(MIN_BOARD, Math.min(preferred, w - 48));
     }
-    return preferred;
+    // Desktop: ~52% of viewport width (leaving room for the sidebar + gaps), but never
+    // below the old 480 default and never above MAX_BOARD.
+    const target = Math.round((w - 320 - 100) * 0.62);
+    return Math.max(480, Math.min(MAX_BOARD, target));
   };
   const [boardSize, setBoardSize] = useState(() => fitToViewport(480));
   const userResizedRef = useRef(false); // once the user drags, stop auto-fitting

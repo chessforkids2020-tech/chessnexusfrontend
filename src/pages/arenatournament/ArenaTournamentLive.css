@@ -32,7 +32,11 @@
    Columns: stats+chat | chessboard | time+leaderboard
    ═══════════════════════════════════════════ */
 .at-live-grid {
-  max-width: 1400px;
+  /* Was capped at 1400px, so a big monitor showed the 3-column layout floating in
+     the middle with wide empty margins. Raised to 2000px; the columns are fr units
+     so board + panels all grow proportionally to fill a wide screen. Laptops are
+     unchanged (their width is already under the cap). */
+  max-width: 2000px;
   margin: 0 auto;
   position: relative;
   z-index: 1;

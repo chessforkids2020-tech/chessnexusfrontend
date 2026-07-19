@@ -298,7 +298,9 @@ export default function ArenaTournamentLive() {
       } else if (width <= 1024) {
         setBoardWidth(Math.min(560, Math.floor(width * 0.44)));
       } else {
-        setBoardWidth(Math.min(620, Math.floor(width * 0.36)));
+        // Desktop: was capped at 620px so the board never grew on big monitors.
+        // Raised to 760; laptops unchanged (width*0.36 ≈ 520 at 1440px is binding).
+        setBoardWidth(Math.min(760, Math.floor(width * 0.36)));
       }
     };
     

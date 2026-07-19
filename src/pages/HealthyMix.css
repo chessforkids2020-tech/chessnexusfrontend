@@ -9,10 +9,13 @@
 }
 
 .hm-layout {
-  max-width: 1100px;
+  /* Was capped at 1100px, so big screens showed a narrow column with huge empty
+     margins. Now it scales up to 1800px so the page uses a wide monitor. */
+  max-width: 1800px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 320px 1fr;
+  /* Sidebar itself grows a little on big screens; the board column takes the rest. */
+  grid-template-columns: clamp(320px, 22vw, 420px) 1fr;
   gap: 28px;
   align-items: start;
   padding-top: 0;
@@ -78,7 +81,8 @@
 }
 
 .hm-rating-value {
-  font-size: 48px;
+  /* Scales up on big screens (was a flat 48px). */
+  font-size: clamp(48px, 3.4vw, 68px);
   font-weight: 800;
   line-height: 1;
   display: inline-flex;
@@ -125,7 +129,7 @@
 }
 
 .hm-stat-num {
-  font-size: 24px;
+  font-size: clamp(24px, 1.8vw, 34px);
   font-weight: 800;
   line-height: 1;
 }

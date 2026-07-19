@@ -363,8 +363,27 @@ export default function useLiveKitRoom() {
       if (wantBlur) {
         // Background blur wins if enabled (mutually exclusive with light/appearance).
         const { BackgroundBlur } = await import('@livekit/track-processors');
-        if (blurProcRef.current?.name !== 'background-blur') {
-          blurProcRef.current = BackgroundBlur(12);
+        // Only (re)create if blur isn't already the active processor. We track this
+        // via our own ref rather than the processor's `.name` — in @livekit/track-
+        // processors the BackgroundBlur processor is named "background-processor",
+        // NOT "background-blur", so the old `.name !== 'background-blur'` guard was
+        // always true and could re-attach on every call. Ref-presence is exact.
+        if (!blurProcRef.current) {
+          // Self-host the MediaPipe segmentation assets. By default the library
+          // fetches the WASM from cdn.jsdelivr.net and the model from
+          // storage.googleapis.com — if EITHER external request is blocked (ad-
+          // blocker, CSP, school/office network, offline, CDN down) the segmenter
+          // silently fails to init and blur never appears. Pointing at files we
+          // ship in /public/mediapipe makes blur work everywhere, no CDN needed.
+          const base = import.meta.env.BASE_URL || '/';
+          // Signature: BackgroundBlur(blurRadius, segmenterOptions, onFrameProcessed,
+          // processorOptions). assetPaths lives in the 4th arg (processorOptions).
+          blurProcRef.current = BackgroundBlur(12, undefined, undefined, {
+            assetPaths: {
+              tasksVisionFileSet: `${base}mediapipe/wasm`,
+              modelAssetPath: `${base}mediapipe/selfie_segmenter.tflite`,
+            },
+          });
           await camTrack.setProcessor(blurProcRef.current);
         }
         lightProcRef.current = null;
@@ -380,7 +399,13 @@ export default function useLiveKitRoom() {
         blurProcRef.current = null; lightProcRef.current = null;
         if (typeof camTrack.stopProcessor === 'function') await camTrack.stopProcessor();
       }
-    } catch {
+    } catch (err) {
+      // Blur/light failed — drop the ref so a retry can re-create cleanly, log the
+      // real reason (silent failure was why "changing it never worked"), and tell
+      // the user accurately.
+      blurProcRef.current = null; lightProcRef.current = null;
+      // eslint-disable-next-line no-console
+      console.error('[LiveClassroom] video processor failed:', err);
       setError('Video effect unavailable on this device — using the plain camera.');
     }
   }, []);
