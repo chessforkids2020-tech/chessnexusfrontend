@@ -1,31 +1,111 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
 
+/* ═══════════════════════════════════════════════════════════
+   OBSIDIAN GLASS — dark theme for HealthyMix
+   Palette:  base #05060a · panel rgba(255,255,255,.03)
+             stroke rgba(255,255,255,.06) · accent #a78bfa
+             cyan halo #22d3ee (used sparingly)
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --hm-bg: #05060a;
+  --hm-panel: rgba(255, 255, 255, 0.028);
+  --hm-panel-hi: rgba(255, 255, 255, 0.05);
+  --hm-stroke: rgba(255, 255, 255, 0.06);
+  --hm-stroke-hi: rgba(255, 255, 255, 0.12);
+  --hm-text: #e6e8ee;
+  --hm-text-dim: rgba(230, 232, 238, 0.55);
+  --hm-text-mute: rgba(230, 232, 238, 0.35);
+  --hm-accent: #a78bfa;         /* violet */
+  --hm-accent-2: #22d3ee;       /* cyan glint */
+  --hm-good: #34d399;
+  --hm-bad: #f87171;
+  --hm-warn: #fbbf24;
+  --hm-radius: 18px;
+  --hm-radius-sm: 12px;
+  --hm-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.9),
+               0 2px 0 rgba(255, 255, 255, 0.03) inset;
+}
+
+/* ── Global page ── */
 .hm-page {
   min-height: 100vh;
-  background: #0d1117;
-  color: #fff;
-  font-family: 'Poppins', sans-serif;
-  padding: 0 24px 80px;
+  background: var(--hm-bg);
+  background-image:
+    radial-gradient(1200px 700px at 12% -10%, rgba(167, 139, 250, 0.10), transparent 60%),
+    radial-gradient(900px 600px at 100% 10%, rgba(34, 211, 238, 0.05), transparent 55%),
+    radial-gradient(700px 500px at 50% 110%, rgba(167, 139, 250, 0.06), transparent 60%),
+    linear-gradient(180deg, #06070c 0%, #04050a 100%);
+  color: var(--hm-text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'ss01', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  padding: 0 24px 96px;
+  box-sizing: border-box;
+  overflow-x: hidden;   /* nothing may spill sideways out of the page */
 }
 
 .hm-layout {
-  /* Was capped at 1100px, so big screens showed a narrow column with huge empty
-     margins. Now it scales up to 1800px so the page uses a wide monitor. */
-  max-width: 1800px;
+  max-width: 2400px;
+  width: 100%;
   margin: 0 auto;
   display: grid;
-  /* Sidebar itself grows a little on big screens; the board column takes the rest. */
-  grid-template-columns: clamp(320px, 22vw, 420px) 1fr;
-  gap: 28px;
+  /* Track widths are overridden by the v2 patch at the end of this file. */
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr) minmax(0, 340px);
+  gap: 22px;
   align-items: start;
-  padding-top: 0;
+  padding-top: 8px;
 }
 
-/* ── Left sidebar ── */
+.hm-board-col { justify-self: stretch; align-self: start; }
+.hm-side, .hm-moves { align-self: start; }
+
+/* ── Back button (top-right of the left card's brand header) ── */
+.hm-back-btn {
+  flex: 0 0 auto;
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--hm-stroke);
+  background: var(--hm-panel);
+  color: var(--hm-text-dim);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+.hm-back-btn:hover {
+  background: var(--hm-panel-hi);
+  border-color: var(--hm-stroke-hi);
+  color: var(--hm-text);
+}
+
+/* ── Glass cards (base) ── */
+.hm-side,
+.hm-moves,
+.hm-board-col .hm-history,
+.hm-meta,
+.hm-exhausted-card {
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.035) 0%,
+    rgba(255, 255, 255, 0.015) 100%);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  border: 1px solid var(--hm-stroke);
+  border-radius: var(--hm-radius);
+  box-shadow: var(--hm-shadow);
+  transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+/* ── Left panel ── */
 .hm-side {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  overflow: hidden;
   position: sticky;
   top: 24px;
 }
@@ -33,71 +113,104 @@
 .hm-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  padding: 20px 20px 18px;
+  border-bottom: 1px solid var(--hm-stroke);
+  position: relative;
+}
+.hm-brand::after {
+  content: '';
+  position: absolute;
+  inset: auto 20px 0 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.35), transparent);
 }
 
 .hm-brand-icon {
-  font-size: 32px;
+  font-size: 30px;
   line-height: 1;
+  filter: drop-shadow(0 0 12px rgba(167, 139, 250, 0.4));
 }
 
 .hm-brand-title {
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+  background: linear-gradient(135deg, #ffffff, #c4b5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hm-brand-sub {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  color: var(--hm-text-mute);
+  margin-top: 3px;
+  letter-spacing: 0.2px;
 }
 
 .hm-band-badge {
-  background: rgba(249, 115, 22, 0.12);
-  border: 1px solid rgba(249, 115, 22, 0.35);
-  color: #fb923c;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 8px 12px;
-  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(167, 139, 250, 0.10), rgba(34, 211, 238, 0.05));
+  border-bottom: 1px solid rgba(167, 139, 250, 0.20);
+  color: #c4b5fd;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 11px 20px;
   text-align: center;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
 }
 
-/* Rating card */
+/* ── Rating card ── */
 .hm-rating-card {
-  background: linear-gradient(145deg, #1b2230, #161b22);
-  border: 1px solid rgba(124, 58, 237, 0.3);
-  border-radius: 18px;
-  padding: 22px 20px;
+  padding: 26px 20px 22px;
   text-align: center;
-  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.12);
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--hm-stroke);
+}
+.hm-rating-card::before {
+  content: '';
+  position: absolute;
+  inset: -60% -20% auto -20%;
+  height: 200%;
+  background: radial-gradient(ellipse at center top, rgba(167, 139, 250, 0.14), transparent 60%);
+  pointer-events: none;
 }
 
 .hm-rating-label {
-  font-size: 12px;
+  font-size: 10.5px;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.55);
-  margin-bottom: 6px;
+  letter-spacing: 2px;
+  color: var(--hm-text-mute);
+  font-weight: 700;
+  margin-bottom: 8px;
+  position: relative;
 }
 
 .hm-rating-value {
-  /* Scales up on big screens (was a flat 48px). */
-  font-size: clamp(48px, 3.4vw, 68px);
-  font-weight: 800;
+  font-size: clamp(46px, 3.2vw, 60px);
+  font-weight: 900;
   line-height: 1;
+  letter-spacing: -2px;
   display: inline-flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 12px;
+  margin: 6px 0 6px;
+  font-feature-settings: 'tnum';
+  color: #fff;
+  position: relative;
 }
 
 .hm-rating-delta {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
   animation: hmPop 0.4s ease;
+  letter-spacing: -0.5px;
 }
-
-.hm-rating-delta.up { color: #10b981; }
-.hm-rating-delta.down { color: #ef4444; }
+.hm-rating-delta.up { color: var(--hm-good); text-shadow: 0 0 20px rgba(52, 211, 153, 0.5); }
+.hm-rating-delta.down { color: var(--hm-bad); text-shadow: 0 0 20px rgba(248, 113, 113, 0.5); }
 
 @keyframes hmPop {
   from { opacity: 0; transform: translateY(6px); }
@@ -105,151 +218,334 @@
 }
 
 .hm-rating-note {
-  margin-top: 10px;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--hm-text-mute);
+  position: relative;
+  letter-spacing: 0.2px;
 }
 
-/* Stats */
+/* ── Stats row ── */
 .hm-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--hm-stroke);
 }
 
 .hm-stat {
-  background: #161b22;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 14px 8px;
+  padding: 16px 6px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
+  border-right: 1px solid var(--hm-stroke);
 }
+.hm-stat:last-child { border-right: none; }
 
 .hm-stat-num {
-  font-size: clamp(24px, 1.8vw, 34px);
+  font-size: 24px;
   font-weight: 800;
   line-height: 1;
+  letter-spacing: -0.5px;
+  font-feature-settings: 'tnum';
 }
-
-.hm-green { color: #10b981; }
-.hm-red { color: #ef4444; }
-.hm-orange { color: #f59e0b; }
+.hm-green { color: var(--hm-good); }
+.hm-red { color: var(--hm-bad); }
+.hm-orange { color: var(--hm-warn); }
 
 .hm-stat-label {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  color: var(--hm-text-mute);
+  font-weight: 700;
 }
 
-/* Meta — shown below the board */
+/* ── Meta (below board) ── */
 .hm-meta {
-  background: #161b22;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 14px 16px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  border-radius: var(--hm-radius-sm);
 }
-
-.hm-meta-below {
-  margin-top: 10px;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 6px 24px;
-}
-
+.hm-meta-below { margin-top: 12px; flex-direction: row; flex-wrap: wrap; gap: 8px 28px; }
 .hm-meta-row {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.55);
+  font-size: 12.5px;
+  color: var(--hm-text-dim);
+  letter-spacing: 0.2px;
 }
+.hm-meta-row strong { color: var(--hm-text); font-weight: 700; }
 
-.hm-meta-row strong { color: #fff; }
-.hm-cap { text-transform: capitalize; }
-
-/* Controls */
+/* ── Controls ── */
 .hm-controls {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 4px;
+  padding: 16px 20px 20px;
 }
 
 .hm-message-inline {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.7);
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
+  color: var(--hm-text-dim);
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--hm-stroke);
+  border-radius: var(--hm-radius-sm);
   text-align: center;
+  letter-spacing: 0.2px;
 }
 
+/* ── Mode switcher ── */
+.hm-modes-wrap {
+  padding: 4px 20px 20px;
+  border-top: 1px solid var(--hm-stroke);
+}
+
+.hm-modes-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: var(--hm-text-mute);
+  font-weight: 800;
+  margin: 14px 0 12px;
+}
+
+.hm-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.hm-mode-btn {
+  padding: 11px 8px;
+  border-radius: var(--hm-radius-sm);
+  border: 1px solid var(--hm-stroke);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--hm-text-dim);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.2px;
+  font-family: inherit;
+}
+.hm-mode-btn:hover {
+  background: var(--hm-panel-hi);
+  border-color: var(--hm-stroke-hi);
+  color: var(--hm-text);
+  transform: translateY(-1px);
+}
+.hm-mode-btn:active { transform: translateY(0); }
+.hm-mode-on {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.18), rgba(167, 139, 250, 0.08));
+  border-color: rgba(167, 139, 250, 0.45);
+  color: #ddd6fe;
+  box-shadow: 0 0 24px rgba(167, 139, 250, 0.15),
+              0 1px 0 rgba(255, 255, 255, 0.06) inset;
+}
+
+/* ── Buttons ── */
 .hm-btn {
   width: 100%;
   padding: 13px 16px;
-  border-radius: 12px;
-  font-size: 14px;
+  border-radius: var(--hm-radius-sm);
+  font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
   border: none;
-  transition: filter 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+  font-family: inherit;
 }
-
-.hm-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.hm-btn:hover { transform: translateY(-1px); filter: brightness(1.08); }
+.hm-btn:active { transform: translateY(0); }
 
 .hm-btn-primary {
-  background: #7c3aed;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
   color: #fff;
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 8px 24px -6px rgba(139, 92, 246, 0.5),
+              0 1px 0 rgba(255, 255, 255, 0.15) inset;
+}
+.hm-btn-primary:hover {
+  box-shadow: 0 12px 32px -6px rgba(139, 92, 246, 0.6),
+              0 1px 0 rgba(255, 255, 255, 0.2) inset;
 }
 
 .hm-btn-ghost {
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--hm-text);
+  border: 1px solid var(--hm-stroke);
+}
+.hm-btn-ghost:hover {
+  background: var(--hm-panel-hi);
+  border-color: var(--hm-stroke-hi);
 }
 
-/* ── Right column ── */
-.hm-board-col {
+.hm-split-btn {
+  display: flex;
+  width: 100%;
+  border-radius: var(--hm-radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--hm-stroke);
+  background: rgba(255, 255, 255, 0.02);
+}
+.hm-split-seg {
+  flex: 1;
+  padding: 13px 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--hm-text);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.2s;
+  letter-spacing: 0.3px;
+}
+.hm-split-seg:hover { background: var(--hm-panel-hi); }
+.hm-split-divider { width: 1px; align-self: stretch; background: var(--hm-stroke); }
+
+/* ── Moves card ── */
+.hm-moves {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 0;
-  padding-top: 0;
+  overflow: hidden;
+  height: var(--hm-board-h, clamp(400px, 55vh, 600px));
 }
 
-/* ── Session result strip (✓/✗ per puzzle this session) ── */
+.hm-moves-empty {
+  display: block;
+  color: var(--hm-text-mute);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 28px 20px;
+  text-align: center;
+  font-style: italic;
+}
+
+.hm-moves-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--hm-stroke);
+  background: rgba(0, 0, 0, 0.15);
+}
+.hm-moves-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  color: var(--hm-text-mute);
+}
+.hm-moves-nav { display: flex; gap: 5px; }
+.hm-nav-btn {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--hm-stroke);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--hm-text-dim);
+  cursor: pointer;
+  font-size: 11px;
+  display: grid; place-items: center;
+  transition: all 0.18s ease;
+}
+.hm-nav-btn:disabled { opacity: 0.28; cursor: default; }
+.hm-nav-btn:not(:disabled):hover {
+  background: var(--hm-panel-hi);
+  border-color: rgba(167, 139, 250, 0.35);
+  color: #c4b5fd;
+}
+
+.hm-moves-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+.hm-moves-list::-webkit-scrollbar { width: 6px; }
+.hm-moves-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+.hm-moves-list::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.16); }
+
+.hm-mrow {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  font-size: 13.5px;
+}
+.hm-mrow:nth-child(odd) { background: rgba(255, 255, 255, 0.015); }
+.hm-mno {
+  color: var(--hm-text-mute);
+  font-weight: 700;
+  text-align: center;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.hm-mv {
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--hm-text);
+  background: transparent;
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  text-align: left;
+  min-height: 32px;
+  transition: background 0.15s;
+  letter-spacing: -0.2px;
+}
+button.hm-mv:hover { background: var(--hm-panel-hi); }
+.hm-mv.on {
+  background: linear-gradient(90deg, rgba(167, 139, 250, 0.14), transparent);
+  color: #ddd6fe;
+  box-shadow: inset 2px 0 0 var(--hm-accent);
+}
+
+.hm-moves-foot {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--hm-stroke);
+  background: rgba(0, 0, 0, 0.15);
+}
+/* ── History strip ── */
 .hm-history {
-  margin-top: 14px;
-  padding: 12px 14px;
-  background: #161b22;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  box-sizing: border-box;
+  margin-top: 18px;
+  padding: 14px 18px;
+  border-radius: var(--hm-radius-sm);
 }
 .hm-history-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 .hm-history-title {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 1.4px;
+  color: var(--hm-text-mute);
 }
 .hm-history-count {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--hm-text);
+  font-feature-settings: 'tnum';
 }
 .hm-history-marks {
   display: flex;
@@ -263,182 +559,37 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1;
   cursor: default;
-  animation: hmMarkPop 0.25s ease;
+  animation: hmMarkPop 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .hm-mark-ok {
-  background: rgba(16, 185, 129, 0.16);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(16, 185, 129, 0.08));
+  color: var(--hm-good);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
 }
 .hm-mark-bad {
-  background: rgba(239, 68, 68, 0.16);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(239, 68, 68, 0.08));
+  color: var(--hm-bad);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.12);
 }
 @keyframes hmMarkPop {
-  from { opacity: 0; transform: scale(0.6); }
-  to   { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
 }
 
-/* ── Mode switcher (Healthy Mix / Themes / Pieces / Rating) ── */
-.hm-modes {
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  box-sizing: border-box;
-}
-.hm-mode-btn {
-  padding: 10px 6px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #161b22;
-  color: #e2e8f0;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, transform 0.05s;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.hm-mode-btn:hover {
-  background: #1c2230;
-  border-color: rgba(6, 182, 212, 0.4);
-}
-.hm-mode-btn:active { transform: translateY(1px); }
-.hm-mode-on {
-  background: rgba(6, 182, 212, 0.16);
-  border-color: rgba(6, 182, 212, 0.55);
-  color: #67e8f9;
-}
-
-/* ── Rating band picker modal ── */
-.hm-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(3, 7, 12, 0.72);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-  display: grid;
-  place-items: center;
-  z-index: 9500;
-  padding: 16px;
-}
-.hm-modal {
-  width: 100%;
-  /* Wider so 3 band cards fit per row (shorter overall). */
-  max-width: 560px;
-  /* Never taller than the screen — scroll inside if the band list is long.
-     Fixes the modal bottom being clipped on laptops with no way to scroll. */
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  background: #111827;
-  border: 1px solid rgba(6, 182, 212, 0.35);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85);
-}
-.hm-modal-head {
-  flex: 0 0 auto;            /* header stays put; only the band grid scrolls */
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.hm-modal-title { margin: 0; font-size: 18px; font-weight: 800; color: #fff; }
-.hm-modal-sub   { margin: 4px 0 0; font-size: 12.5px; color: rgba(255, 255, 255, 0.5); }
-.hm-modal-close {
-  flex: 0 0 auto;
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.05);
-  color: #e2e8f0;
-  font-size: 18px; line-height: 1;
-  cursor: pointer;
-}
-.hm-modal-loading { padding: 24px 0; text-align: center; color: rgba(255, 255, 255, 0.5); }
-.hm-band-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);   /* 3 cards per row → shorter modal */
-  gap: 10px;
-  overflow-y: auto;         /* scroll here when the list is tall (small screens) */
-  min-height: 0;            /* let the flex child actually shrink + scroll */
-  padding-right: 2px;       /* room for the scrollbar so cards aren't clipped */
-}
-.hm-band-grid::-webkit-scrollbar { width: 6px; }
-.hm-band-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
-.hm-band {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 14px 8px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #161b22;
-  color: #e2e8f0;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
-}
-.hm-band:hover { background: #1c2230; border-color: rgba(6, 182, 212, 0.4); }
-.hm-band-on {
-  background: rgba(6, 182, 212, 0.16);
-  border-color: rgba(6, 182, 212, 0.55);
-}
-.hm-band-range { font-size: 15px; font-weight: 800; white-space: nowrap; }
-.hm-band-count { font-size: 11px; color: rgba(255, 255, 255, 0.5); white-space: nowrap; }
-
-/* On narrow screens the 4-across mode row gets cramped — go 2×2, and the
-   3-across band grid drops to 2 so the range/count text isn't squeezed. */
-@media (max-width: 560px) {
-  .hm-modes { grid-template-columns: repeat(2, 1fr); }
-  .hm-band-grid { grid-template-columns: repeat(2, 1fr); }
-  .hm-band { padding: 12px 6px; }
-}
-
-.hm-status {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 12px 18px;
-  border-radius: 12px;
-  background: #161b22;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.hm-status-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #06b6d4;
-  flex-shrink: 0;
-}
-
-.hm-status-solving .hm-status-dot { background: #06b6d4; }
-.hm-status-solved {
-  border-color: rgba(16, 185, 129, 0.4);
-  color: #10b981;
-}
-.hm-status-solved .hm-status-dot { background: #10b981; box-shadow: 0 0 10px #10b981; }
-.hm-status-failed {
-  border-color: rgba(239, 68, 68, 0.4);
-  color: #ef4444;
-}
-.hm-status-failed .hm-status-dot { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
-
+/* ── Board container ── */
 .hm-board-wrap {
   position: relative;
   display: inline-block;
+  border-radius: 8px;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.85),
+              0 0 0 1px rgba(255, 255, 255, 0.04),
+              0 0 60px -20px rgba(167, 139, 250, 0.15);
 }
 
 .hm-resize-handle {
@@ -452,109 +603,473 @@
   align-items: flex-end;
   justify-content: flex-end;
   padding: 4px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(255, 255, 255, 0.28);
   z-index: 10;
-  transition: color 0.15s;
+  transition: color 0.2s;
 }
-
-.hm-resize-handle:hover {
-  color: rgba(124, 58, 237, 0.9);
-}
+.hm-resize-handle:hover { color: var(--hm-accent); }
 
 .hm-tomove {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--hm-text-mute);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.4px;
   margin-bottom: 0;
 }
 
-/* ── Responsive ── */
-@media (max-width: 860px) {
-  .hm-page {
-    padding: 0 16px 60px;
-  }
-  .hm-layout {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
+/* ── Status bars ── */
+.hm-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 13px 18px;
+  border-radius: var(--hm-radius-sm);
+  background: rgba(255, 255, 255, 0.028);
+  border: 1px solid var(--hm-stroke);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  letter-spacing: 0.1px;
+}
+.hm-status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--hm-accent);
+  flex-shrink: 0;
+  box-shadow: 0 0 12px currentColor;
+}
+.hm-status-solving .hm-status-dot {
+  background: var(--hm-accent);
+  animation: hmPulse 1.6s ease-in-out infinite;
+}
+@keyframes hmPulse {
+  0%, 100% { box-shadow: 0 0 8px var(--hm-accent); opacity: 1; }
+  50% { box-shadow: 0 0 20px var(--hm-accent); opacity: 0.65; }
+}
+.hm-status-solved {
+  border-color: rgba(16, 185, 129, 0.35);
+  color: var(--hm-good);
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.08), rgba(255, 255, 255, 0.028));
+}
+.hm-status-solved .hm-status-dot { background: var(--hm-good); box-shadow: 0 0 14px var(--hm-good); }
+.hm-status-failed {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: var(--hm-bad);
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.08), rgba(255, 255, 255, 0.028));
+}
+.hm-status-failed .hm-status-dot { background: var(--hm-bad); box-shadow: 0 0 14px var(--hm-bad); }
 
-  /* Mobile order, top → bottom:
-       1. Title (brand) + filter badge
-       2. Rating card
-       3. Chessboard
-       4. Solved / Failed / Streak
-       5. Controls (View solution, Retry, Next…)
-     The sidebar dissolves (`display: contents`) so its pieces can be placed
-     individually around the board instead of all sitting in one column. */
-  .hm-side {
-    display: contents;
-  }
-  .hm-side .hm-brand      { order: 1; }
-  .hm-side .hm-band-badge { order: 2; }
-  .hm-side .hm-rating-card{ order: 3; }
-  .hm-board-col           { order: 4; }   /* board right below the rating */
-  .hm-side .hm-stats      { order: 5; }
-  .hm-side .hm-controls   { order: 6; }
+/* ── Modals ── */
+.hm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 4, 8, 0.72);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  display: grid;
+  place-items: center;
+  z-index: 9500;
+  padding: 16px;
+  animation: hmFadeIn 0.2s ease;
+}
+@keyframes hmFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-  .hm-board-wrap {
-    margin: 0 auto;
-  }
+.hm-modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(20, 20, 28, 0.9), rgba(10, 10, 16, 0.95));
+  backdrop-filter: blur(32px) saturate(140%);
+  -webkit-backdrop-filter: blur(32px) saturate(140%);
+  border: 1px solid rgba(167, 139, 250, 0.22);
+  border-radius: 20px;
+  padding: 26px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9),
+              0 0 60px -20px rgba(167, 139, 250, 0.25),
+              0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  animation: hmModalIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes hmModalIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.hm-modal-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.hm-modal-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.4px;
+}
+.hm-modal-sub { margin: 5px 0 0; font-size: 12.5px; color: var(--hm-text-dim); }
+.hm-modal-close {
+  flex: 0 0 auto;
+  width: 32px; height: 32px;
+  border-radius: 9px;
+  border: 1px solid var(--hm-stroke);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--hm-text-dim);
+  font-size: 18px; line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.hm-modal-close:hover {
+  background: var(--hm-panel-hi);
+  color: var(--hm-text);
+  border-color: var(--hm-stroke-hi);
+}
+.hm-modal-loading { padding: 24px 0; text-align: center; color: var(--hm-text-mute); }
+
+.hm-band-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 4px;
+}
+.hm-band-grid::-webkit-scrollbar { width: 6px; }
+.hm-band-grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
 
-@media (max-width: 480px) {
-  .hm-page {
-    padding: 0 10px 50px;
-  }
-  .hm-rating-value {
-    font-size: 40px;
-  }
-  .hm-stats {
-    gap: 8px;
-  }
+.hm-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 15px 8px;
+  border-radius: var(--hm-radius-sm);
+  border: 1px solid var(--hm-stroke);
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--hm-text);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.hm-band:hover {
+  background: var(--hm-panel-hi);
+  border-color: rgba(167, 139, 250, 0.35);
+  transform: translateY(-2px);
+}
+.hm-band-on {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(167, 139, 250, 0.05));
+  border-color: rgba(167, 139, 250, 0.55);
+  box-shadow: 0 0 20px rgba(167, 139, 250, 0.12);
+}
+.hm-band-range {
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+  letter-spacing: -0.3px;
+  font-feature-settings: 'tnum';
+}
+.hm-band-count {
+  font-size: 10.5px;
+  color: var(--hm-text-mute);
+  white-space: nowrap;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
-/* ── Exhausted overlay (Pieces mode: all puzzles at this count solved) ── */
+/* ── Exhausted overlay ── */
 .hm-exhausted-overlay {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(13, 17, 23, 0.82);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
+  background: rgba(3, 4, 8, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: inherit;
   z-index: 5;
   padding: 16px;
 }
-
 .hm-exhausted-card {
-  background: #161b22;
-  border: 1px solid rgba(52, 211, 153, 0.4);
-  border-radius: 16px;
-  padding: 28px 24px;
-  max-width: 320px;
+  background: linear-gradient(180deg, rgba(22, 24, 32, 0.92), rgba(12, 14, 20, 0.96));
+  border: 1px solid rgba(52, 211, 153, 0.28);
+  border-radius: var(--hm-radius);
+  padding: 30px 26px;
+  max-width: 340px;
   text-align: center;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7),
+              0 0 40px -10px rgba(52, 211, 153, 0.2);
 }
-
 .hm-exhausted-icon {
-  font-size: 40px;
-  margin-bottom: 10px;
+  font-size: 44px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 20px rgba(52, 211, 153, 0.5));
 }
-
 .hm-exhausted-title {
   font-size: 18px;
   font-weight: 800;
   margin: 0 0 8px;
-  color: #34d399;
+  color: var(--hm-good);
+  letter-spacing: -0.3px;
 }
-
 .hm-exhausted-text {
   font-size: 13px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.7);
-  margin: 0 0 18px;
+  line-height: 1.55;
+  color: var(--hm-text-dim);
+  margin: 0 0 20px;
+}
+
+/* ── Responsive ── */
+/* Must match the grid-collapse breakpoint at the end of this file (960px), otherwise
+   between 860–960px the grid is single-column while these stacking styles are off. */
+@media (max-width: 960px) {
+  .hm-page { padding: 0 16px 60px; }
+  .hm-layout { grid-template-columns: 1fr; gap: 16px; padding-top: 16px; }
+
+  .hm-side { display: contents; }
+  .hm-side .hm-brand,
+  .hm-side .hm-rating-card,
+  .hm-side .hm-stats,
+  .hm-side .hm-controls,
+  .hm-side .hm-modes-wrap {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--hm-stroke);
+    border-radius: var(--hm-radius-sm);
+  }
+  .hm-side .hm-brand { order: 1; }
+  .hm-side .hm-band-badge { order: 2; }
+  .hm-side .hm-rating-card { order: 3; }
+  .hm-board-col { order: 4; }
+  .hm-side .hm-stats { order: 5; }
+  .hm-side .hm-controls { order: 6; }
+  .hm-side .hm-modes-wrap { order: 7; }
+
+  .hm-moves {
+    order: 8;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: 42vh;
+  }
+  .hm-board-wrap { margin: 0 auto; }
+}
+
+@media (max-width: 480px) {
+  .hm-page { padding: 0 12px 50px; }
+  .hm-rating-value { font-size: 40px; }
+}
+
+/* ============================================================
+   v2 LAYOUT PATCH — bigger board, external coords,
+   right column stacks moves card + action controls,
+   nav buttons pinned to bottom of moves card.
+   Overrides earlier rules; keep at end of file.
+   ============================================================ */
+
+/* Three-column grid: slimmer sides, roomy center for the board.
+   minmax(0, …) on every track lets the columns shrink instead of overflowing the
+   page when the viewport is narrow. The fixed track widths here are mirrored in
+   fitToViewport() in HealthyMix.jsx — change both together. */
+.hm-layout {
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr) minmax(0, 290px) !important;
+  gap: 22px !important;
+  align-items: start;
+}
+
+/* ---------- Board column ----------
+   Left-aligned rather than centred: when the board is narrower than its column
+   (capped by MAX_BOARD or by viewport height) the slack all sits on the RIGHT,
+   so the board sits closer to the left card instead of floating mid-column. */
+.hm-board-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;   /* allow the flex/grid child to shrink rather than overflow */
+}
+
+/* No container around the board — it sits directly on the page background.
+   The element is kept (the exhausted/redo overlays position against it) but draws
+   nothing. FRAME_CHROME in HealthyMix.jsx is 0 to match this zero padding/border. */
+.hm-board-outer {
+  padding: 0;
+  box-sizing: border-box;
+  max-width: 100%;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.hm-board-stack { position: relative; }
+
+/* Bare board — no background, border or rounding of its own. */
+.hm-board-wrap {
+  position: relative;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0;
+}
+
+/* ---------- Right column: moves + action controls stacked ---------- */
+/* The column runs TALLER than the board (the moves list is the thing that benefits
+   most from height) but is capped by the viewport so it never scrolls off-screen.
+   The controls card keeps its natural height and the moves card absorbs the rest,
+   so both always sit INSIDE the column. */
+.hm-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  height: min(calc(var(--hm-board-h) + 190px), calc(100vh - 60px));
+}
+
+.hm-moves {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;        /* lets the inner list scroll instead of pushing the card taller */
+  overflow: hidden;
+}
+
+/* Controls never shrink away; if the stack is short on room they scroll internally. */
+.hm-right-col .hm-controls {
+  flex: 0 0 auto;
+  overflow-y: auto;
+}
+
+/* Head is just the "Moves" title now — kept slim so the list gets the space. */
+.hm-moves-head {
+  display: flex; align-items: center;
+  flex: 0 0 auto;
+  padding: 7px 12px 6px;
+}
+
+.hm-moves-list {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 4px 10px 10px;
+  min-height: 0;   /* must be 0, not a fixed floor, or the card can't shrink to fit */
+}
+
+/* ── Analysis variations ──
+   An alternative line branching off the puzzle's mainline. Rendered as an indented,
+   wrapped run of moves under the mainline row it forks from, so the original line
+   stays visible above it. */
+.hm-var {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 4px;
+  margin: 2px 0 4px 22px;
+  padding: 4px 6px;
+  border-left: 2px solid rgba(167, 139, 250, 0.35);
+  background: rgba(167, 139, 250, 0.04);
+  border-radius: 0 6px 6px 0;
+}
+.hm-var-no {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--hm-text-mute);
+}
+.hm-var-mv {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.82);
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 1px 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.hm-var-mv:hover { background: rgba(167, 139, 250, 0.16); color: #fff; }
+.hm-var-mv.on {
+  background: rgba(167, 139, 250, 0.28);
+  color: #fff;
+}
+
+/* Nav bar at the BOTTOM of the moves card */
+.hm-moves-foot {
+  border-top: 1px solid rgba(167,139,250,0.10);
+  padding: 10px 12px;
+  display: flex; justify-content: center;
+  background: rgba(255,255,255,0.02);
+}
+.hm-moves-nav {
+  display: inline-flex; gap: 6px;
+}
+.hm-nav-btn {
+  min-width: 40px; height: 34px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(167,139,250,0.14);
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.hm-nav-btn:hover:not(:disabled) { background: rgba(167,139,250,0.16); }
+.hm-nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* Action controls card sits directly under the moves card */
+.hm-right-col .hm-controls {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(10,12,20,0.55);
+  border: 1px solid rgba(167,139,250,0.14);
+  box-shadow:
+    0 16px 40px -24px rgba(0,0,0,0.8),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+}
+.hm-right-col .hm-message-inline {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(226,232,240,0.75);
+  padding: 6px 4px 2px;
+}
+
+/* Mobile: collapse to a single column */
+@media (max-width: 960px) {
+  .hm-layout { grid-template-columns: minmax(0, 1fr) !important; }
+  .hm-right-col { order: 3; }
+  .hm-board-outer { width: 100% !important; }
+  /* Single column: the board fills the width, so centre it again. */
+  .hm-board-col { align-items: center; }
+  /* Stacked vertically there is nothing to line up with, so drop the fixed height
+     and let both cards take their natural size instead of clipping. */
+  .hm-right-col { height: auto; }
+  .hm-moves { max-height: 60vh; }
+  .hm-right-col .hm-controls { overflow-y: visible; }
+}
+
+/* ---------- Wide screens: extend the layout ----------
+   Above 1600px the page has width to spare. The side columns deliberately stay at
+   their normal width so the surplus goes to the BOARD, which is measured from its
+   own column and grows automatically. */
+@media (min-width: 1600px) {
+  .hm-page { padding-left: 20px; padding-right: 24px; }
+  .hm-layout {
+    gap: 24px !important;
+    /* Anchor the grid to the LEFT edge instead of centring it, so the left card sits
+       further left on wide screens rather than floating in the middle. */
+    margin-left: 0;
+    margin-right: auto;
+  }
 }

@@ -12,6 +12,11 @@ import './UserLayout.css';
 // because they need the horizontal room (e.g. My Coach's nine tabs).
 const NARROW_SIDEBAR_PATHS = ['/my-coach'];
 
+// Pages that hide the sidebar entirely on desktop, because they lay out their own
+// full-width workspace (e.g. the Healthy Mix board + side cards). The mobile
+// hamburger still works, so the sidebar stays reachable at every size.
+const HIDDEN_SIDEBAR_PATHS = ['/training/healthy-mix'];
+
 export default function UserLayout({ children, showFooter = true }) {
   const { user } = useAuth();
   const location = useLocation();
@@ -27,6 +32,10 @@ export default function UserLayout({ children, showFooter = true }) {
   // Slim icon rail on cramped pages. It renders its own fixed 60px bar (and its
   // own hamburger on mobile portrait), so it needs no onNavigate.
   const useNarrowSidebar = NARROW_SIDEBAR_PATHS.includes(location.pathname);
+
+  // Hide the persistent sidebar on these pages (desktop + landscape). On mobile
+  // portrait the hamburger + overlay below still render, so it stays accessible.
+  const hideSidebar = HIDDEN_SIDEBAR_PATHS.includes(location.pathname);
 
   const renderSidebar = (onNavigate) =>
     useNarrowSidebar
@@ -68,7 +77,7 @@ export default function UserLayout({ children, showFooter = true }) {
           {useNarrowSidebar ? renderSidebar() : (
             <>
               {/* Desktop Sidebar or Landscape Mode Sidebar (always visible) */}
-              {(!isMobile || isLandscape) && renderSidebar()}
+              {(!isMobile || isLandscape) && !hideSidebar && renderSidebar()}
 
               {/* Mobile Portrait Sidebar Overlay */}
               {isMobile && !isLandscape && isSidebarOpen && (
@@ -92,7 +101,7 @@ export default function UserLayout({ children, showFooter = true }) {
             </>
           )}
 
-          <div className={`user-main-content with-sidebar ${useNarrowSidebar ? 'narrow-sidebar' : ''} ${isMobile ? 'mobile' : 'desktop'} ${isLandscape ? 'landscape' : ''}`}>
+          <div className={`user-main-content ${hideSidebar ? 'no-sidebar' : 'with-sidebar'} ${useNarrowSidebar ? 'narrow-sidebar' : ''} ${isMobile ? 'mobile' : 'desktop'} ${isLandscape ? 'landscape' : ''}`}>
             {children}
           </div>
         </>

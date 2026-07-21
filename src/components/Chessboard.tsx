@@ -205,6 +205,13 @@ const Chessboard: React.FC<ChessboardProps> = ({
   // Outer gutter reserved for OUTSIDE labels only. Zero when labels are inside,
   // so the container width collapses to exactly the board size.
   const outerPad = showCoordinates && !coordsInside ? coordinateSize : 0;
+  // Reserve the gutter only on sides that actually render labels — the default is
+  // bottom+left, so top/right would otherwise be empty dead space above and beside
+  // the board. Each side is independent.
+  const padTop = outerPad && effectiveCoordinateSides.includes('top') ? outerPad : 0;
+  const padBottom = outerPad && effectiveCoordinateSides.includes('bottom') ? outerPad : 0;
+  const padLeft = outerPad && effectiveCoordinateSides.includes('left') ? outerPad : 0;
+  const padRight = outerPad && effectiveCoordinateSides.includes('right') ? outerPad : 0;
 
   // Parse FEN string to get piece positions (robust against invalid/empty FEN)
   const defaultFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -1059,11 +1066,11 @@ const Chessboard: React.FC<ChessboardProps> = ({
 
     const labelSize = squareSize * 0.3; // Size of coordinate labels
 
-    // The board div is centered in the container. The container is
-    // boardWidth + outerPad*2 wide, so the board's top-left starts at outerPad.
-    // Align labels to the actual board. When labels sit inside (no outer gutter),
-    // this is 0; when outside, it's the gutter width so labels clear the board.
-    const boardOffset = outerPad;
+    // Where the board's top-left sits inside the container. Gutters are reserved
+    // per-side (only sides that render labels get one), so the horizontal and
+    // vertical offsets are independent — don't collapse these back into one value.
+    const boardOffsetX = padLeft;
+    const boardOffsetY = padTop;
 
     const labelStyle: React.CSSProperties = {
       position: 'absolute',
@@ -1082,8 +1089,9 @@ const Chessboard: React.FC<ChessboardProps> = ({
     // from the square's edge. When labels sit OUTSIDE, they stay centered in the
     // gutter (the original behaviour) so we branch on `coordsInside`.
     const cornerPad = 2;
-    // Half-square centering used for OUTSIDE labels.
-    const centerInSquare = (i: number) => boardOffset + i * squareSize + squareSize / 2 - labelSize / 2;
+    // Half-square centering used for OUTSIDE labels, along either axis.
+    const centerInSquare = (i: number, offset: number) =>
+      offset + i * squareSize + squareSize / 2 - labelSize / 2;
 
     const coordinates: JSX.Element[] = [];
 
@@ -1092,8 +1100,8 @@ const Chessboard: React.FC<ChessboardProps> = ({
     files.forEach((file, col) => {
       // Horizontal position: inside -> left corner of the square; outside -> centered.
       const fileLeft = coordsInside
-        ? `${boardOffset + col * squareSize + cornerPad}px`
-        : `${centerInSquare(col)}px`;
+        ? `${boardOffsetX + col * squareSize + cornerPad}px`
+        : `${centerInSquare(col, boardOffsetX)}px`;
       const fileStyle: React.CSSProperties = {
         ...labelStyle,
         left: fileLeft,
@@ -1133,8 +1141,8 @@ const Chessboard: React.FC<ChessboardProps> = ({
     ranks.forEach((rank, row) => {
       // Vertical position: inside -> top corner of the square; outside -> centered.
       const rankTop = coordsInside
-        ? `${boardOffset + row * squareSize + cornerPad}px`
-        : `${centerInSquare(row)}px`;
+        ? `${boardOffsetY + row * squareSize + cornerPad}px`
+        : `${centerInSquare(row, boardOffsetY)}px`;
       const rankStyle: React.CSSProperties = {
         ...labelStyle,
         top: rankTop,
@@ -1325,11 +1333,14 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
       }}
       style={{
         position: 'relative',
-        width: `${boardWidth + outerPad * 2}px`,
-        height: `${boardWidth + outerPad * 2}px`,
+        width: `${boardWidth + padLeft + padRight}px`,
+        height: `${boardWidth + padTop + padBottom}px`,
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        paddingTop: `${padTop}px`,
+        paddingLeft: `${padLeft}px`,
+        boxSizing: 'border-box',
         borderRadius: '20px',
         overflow: 'hidden',
         outline: 'none'
@@ -1448,9 +1459,8 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
             const screenRow = isFlipped ? 7 - boardRow : boardRow;
             // Promotion squares sit on the edge ranks; cascade INTO the board.
             const goingDown = screenRow <= 3;
-            const offset = outerPad;
-            const colLeft = offset + screenCol * squareSize;
-            const startTop = offset + screenRow * squareSize;
+            const colLeft = padLeft + screenCol * squareSize;
+            const startTop = padTop + screenRow * squareSize;
 
             return ['q', 'r', 'b', 'n'].map((piece, i) => {
               const top = goingDown
@@ -1513,8 +1523,8 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
       <svg
         style={{
           position: 'absolute',
-          top: outerPad,
-          left: outerPad,
+          top: padTop,
+          left: padLeft,
           width: boardWidth - 4,
           height: boardWidth - 4,
           pointerEvents: 'none',

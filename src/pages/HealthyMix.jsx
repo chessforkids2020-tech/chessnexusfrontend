@@ -38,6 +38,90 @@ const playSound = (type) => {
 // normalize a SAN string for comparison (strip + # and lowercase)
 const normSan = (s) => (s || '').toLowerCase().replace(/[+#]/g, '').trim();
 
+// Moves list + back/forward navigation. Rendered TWICE — right of the board on
+// desktop (hidden on mobile) and below the controls on mobile (hidden on desktop) —
+// via the `variant` class, so the same markup serves both placements.
+function MovesPanel({ plies, shownPlyIdx, atLive, navFirst, navPrev, navNext, navLast,
+                      goToPly, variant, variations = [], activeVar = null, varViewIdx = null,
+                      goToVarPly, atStart }) {
+  // Which move number / colour a mainline ply belongs to. Ply 1 is White's 1st move.
+  const moveNoOf = (idx) => Math.ceil(idx / 2);
+  const isWhitePly = (idx) => idx % 2 === 1;
+
+  // A variation renders as an indented line under the mainline move it branches from,
+  // e.g. "1... Nf6 2. c4" — so the original puzzle line is never overwritten.
+  const renderVariation = (v, vIdx) => {
+    const parts = [];
+    v.moves.forEach((m, i) => {
+      // The variation's first move continues from ply `startIdx`, so it is played by
+      // the opposite side to that ply.
+      const plyNo = v.startIdx + 1 + i;
+      const white = isWhitePly(plyNo);
+      const active = activeVar === vIdx &&
+        (varViewIdx === null ? i === v.moves.length - 1 : varViewIdx === i);
+      if (white || i === 0) {
+        parts.push(
+          <span key={`n${i}`} className="hm-var-no">
+            {moveNoOf(plyNo)}{white ? '.' : '…'}
+          </span>
+        );
+      }
+      parts.push(
+        <button
+          key={`m${i}`}
+          className={`hm-var-mv ${active ? 'on' : ''}`}
+          onClick={() => goToVarPly && goToVarPly(vIdx, i)}
+        >
+          {m.san}
+        </button>
+      );
+    });
+    return <div key={`v${vIdx}`} className="hm-var">{parts}</div>;
+  };
+
+  // Dense 2-column notation (Lichess-style): numbered rows, white move | black move.
+  // Variations are emitted directly after the row containing their branch point.
+  const rows = [];
+  for (let i = 1; i < plies.length; i += 2) {
+    const wIdx = i, bIdx = i + 1;
+    rows.push(
+      <div key={i} className="hm-mrow">
+        <span className="hm-mno">{Math.ceil(i / 2)}.</span>
+        <button className={`hm-mv ${activeVar === null && shownPlyIdx === wIdx ? 'on' : ''}`} onClick={() => goToPly(wIdx)}>{plies[wIdx].san}</button>
+        {plies[bIdx]
+          ? <button className={`hm-mv ${activeVar === null && shownPlyIdx === bIdx ? 'on' : ''}`} onClick={() => goToPly(bIdx)}>{plies[bIdx].san}</button>
+          : <span className="hm-mv" />}
+      </div>
+    );
+    // Any variation branching from this row's white or black ply.
+    variations.forEach((v, vIdx) => {
+      if (v.startIdx === wIdx || v.startIdx === bIdx) rows.push(renderVariation(v, vIdx));
+    });
+  }
+  // Variations branching from the start position (before any move) have no row above.
+  variations.forEach((v, vIdx) => {
+    if (v.startIdx === 0) rows.unshift(renderVariation(v, vIdx));
+  });
+  return (
+    <div className={`hm-moves ${variant || ''}`}>
+      <div className="hm-moves-head">
+        <span className="hm-moves-title">Moves</span>
+      </div>
+      <div className="hm-moves-list">
+        {rows.length ? rows : <span className="hm-moves-empty">No moves yet — make a move on the board.</span>}
+      </div>
+      <div className="hm-moves-foot">
+        <span className="hm-moves-nav">
+          <button className="hm-nav-btn" onClick={navFirst} disabled={atStart} title="Start">⏮</button>
+          <button className="hm-nav-btn" onClick={navPrev} disabled={atStart} title="Previous move">◀</button>
+          <button className="hm-nav-btn" onClick={navNext} disabled={atLive} title="Next move">▶</button>
+          <button className="hm-nav-btn" onClick={navLast} disabled={atLive} title="Latest">⏭</button>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function HealthyMix() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
@@ -189,6 +273,35 @@ export default function HealthyMix() {
   const chessRef = useRef(new Chess());
   const solutionRef = useRef([]);
   const moveIndexRef = useRef(0);
+
+  // ── Move history (back/forward navigation + moves list) ──
+  // Declared BEFORE the move callbacks below, which reference pushPly — a const can't
+  // be used before its initialization (temporal dead zone). `plies[0]` is the start
+  // position; later entries are played moves. `viewIdx` = ply being browsed (null = live).
+  const [plies, setPlies] = useState([]);       // [{ san, fen, from, to }]
+  const [viewIdx, setViewIdx] = useState(null); // null = live
+  const pushPly = useCallback((san, fen, from, to) => {
+    setPlies(prev => [...prev, { san, fen, from, to }]);
+  }, []);
+
+  // ── Analysis variations (free play after the puzzle is over) ──
+  // The puzzle line stays in `plies` as the untouched mainline. Playing an
+  // alternative move from a browsed position starts a VARIATION instead of
+  // overwriting it, so the original line is never lost:
+  //   { startIdx, moves: [{ san, fen, from, to }] }
+  // `startIdx` is the mainline ply the variation branches from. `activeVar` is the
+  // variation currently being played/browsed; `varViewIdx` is the ply within it.
+  const [variations, setVariations] = useState([]);
+  const [activeVar, setActiveVar] = useState(null);  // index into `variations`, or null
+  const [varViewIdx, setVarViewIdx] = useState(null); // ply within the active variation
+  // Analysis lines belong to one puzzle attempt — wipe them whenever the mainline is
+  // rebuilt (new puzzle, redo, retry), or they'd point at plies that no longer exist.
+  const clearVariations = useCallback(() => {
+    setVariations([]);
+    setActiveVar(null);
+    setVarViewIdx(null);
+  }, []);
+
   const usedSolutionRef = useRef(false);
   const submittedRef = useRef(false);
   const failedRef = useRef(false);   // puzzle scored as a fail (wrong move or solution shown)
@@ -200,8 +313,19 @@ export default function HealthyMix() {
 
   // Board sizing — drag-to-resize handle (Lichess-style corner grip)
   const boardWrapRef = useRef(null);
+  const boardColRef = useRef(null);
   const MIN_BOARD = 200;
-  const MAX_BOARD = 720;
+  // Chrome that .hm-board-outer adds around the board. There is no container behind
+  // the board any more, so this is 0 — kept as a named constant because the board
+  // sizing math and the right column's height both derive from it.
+  const FRAME_CHROME = 0;
+  // Ceiling for big monitors. The board is still bounded by its measured column
+  // (can't overflow the moves card) AND by viewport height below, so this is only
+  // the upper cap, not the usual limit.
+  const MAX_BOARD = 1100;
+  // Vertical space reserved for chrome above/below the board (trimmed page padding
+  // + the session strip). Kept small so tall screens actually get a tall board.
+  const VERT_RESERVE = 74;
   // Board auto-sizes to the screen. The old code hard-capped the board at `preferred`
   // (480px) on ANY desktop, so a 32" monitor showed the same tiny board as a laptop.
   // Now the board GROWS with the viewport (a share of the available width beside the
@@ -209,28 +333,64 @@ export default function HealthyMix() {
   const fitToViewport = (preferred) => {
     if (typeof window === 'undefined') return preferred;
     const w = window.innerWidth;
-    if (w <= 860) {
+    if (w <= 960) {
       // Single-column layout: board can use almost the full width, minus page padding.
-      return Math.max(MIN_BOARD, Math.min(preferred, w - 48));
+      return Math.max(MIN_BOARD, Math.min(preferred, w - 48 - FRAME_CHROME));
     }
-    // Desktop: ~52% of viewport width (leaving room for the sidebar + gaps), but never
-    // below the old 480 default and never above MAX_BOARD.
-    const target = Math.round((w - 320 - 100) * 0.62);
-    return Math.max(480, Math.min(MAX_BOARD, target));
+    // Desktop 3-column layout. These MUST match the grid track widths and gap in
+    // .hm-layout (HealthyMix.css) or the board will overflow into the moves card.
+    const leftCol = 300, rightCol = 290, gaps = 22 * 2, pagePad = 24 * 2;
+    const midColWidth = w - leftCol - rightCol - gaps - pagePad;
+    return Math.max(MIN_BOARD, Math.min(MAX_BOARD, midColWidth - FRAME_CHROME));
   };
   const [boardSize, setBoardSize] = useState(() => fitToViewport(480));
   const userResizedRef = useRef(false); // once the user drags, stop auto-fitting
   const dragStart = useRef(null);
-
-  // Re-fit the board when the viewport changes (rotation, resize), unless the
-  // user has manually resized it.
+  // Expose the board height to CSS so the moves card can match it exactly (they line
+  // up bottom-to-bottom).
   useEffect(() => {
-    const onResize = () => {
+    // The framed board is the board plus .hm-board-outer's padding/border, so the
+    // moves card must match THAT height to line up bottom-to-bottom.
+    document.documentElement.style.setProperty('--hm-board-h', `${boardSize + FRAME_CHROME}px`);
+    return () => document.documentElement.style.removeProperty('--hm-board-h');
+  }, [boardSize]);
+
+  // Re-fit the board to the ACTUAL width of its column (measured), so it can never
+  // overflow into the moves card — the estimate-from-innerWidth approach was wrong on
+  // some widths. A ResizeObserver on the board column keeps it correct on any resize.
+  useEffect(() => {
+    if (userResizedRef.current) return;
+    // Measure the COLUMN, not the board's own ancestors: .hm-board-stack and
+    // .hm-board-outer are both sized by the board, so observing them would feed the
+    // board's width back into itself. .hm-board-col is the real grid cell.
+    const el = boardColRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') {
+      // Fallback: viewport estimate.
+      const onResize = () => { if (!userResizedRef.current) setBoardSize(fitToViewport(480)); };
+      window.addEventListener('resize', onResize);
+      return () => window.removeEventListener('resize', onResize);
+    }
+    const fit = () => {
       if (userResizedRef.current) return;
-      setBoardSize(fitToViewport(480));
+      // The frame's padding/border live INSIDE the column, so the board gets whatever
+      // is left after the chrome. This is exact — no percentage fudge factor.
+      const avail = el.clientWidth - FRAME_CHROME;
+      if (window.innerWidth <= 960) {
+        // Single-column layout: fill the column, bounded by the viewport.
+        setBoardSize(Math.max(MIN_BOARD, Math.min(avail, window.innerWidth - 48 - FRAME_CHROME)));
+      } else {
+        // Desktop: capped by the column AND by viewport height (leaving room for the
+        // page chrome + session strip below) so a tall board never scrolls off.
+        const byHeight = window.innerHeight - VERT_RESERVE - FRAME_CHROME;
+        setBoardSize(Math.max(MIN_BOARD, Math.min(MAX_BOARD, avail, byHeight)));
+      }
     };
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    // Height-only window changes don't resize the column, so also refit on resize.
+    window.addEventListener('resize', fit);
+    fit();
+    return () => { ro.disconnect(); window.removeEventListener('resize', fit); };
   }, []);
 
   const onResizeDragStart = (e) => {
@@ -286,11 +446,15 @@ export default function HealthyMix() {
     setPuzzle(p);
     puzzleRef.current = p;
     setFen(game.fen());
+    // Reset move history to just the starting position (ply 0).
+    setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
+    setViewIdx(null);
+    clearVariations();
     setOrientation(game.turn() === 'w' ? 'white' : 'black');
     setStatusSynced('solving');
     setMessage('Your turn — find the best move.');
     setLoading(false);
-  }, [setStatusSynced]);
+  }, [setStatusSynced, clearVariations]);
 
   const loadPuzzle = useCallback(async (excludeId) => {
     setLoading(true);
@@ -384,6 +548,12 @@ export default function HealthyMix() {
       setPuzzle(p);
       puzzleRef.current = p;
       setFen(game.fen());
+      // Reset the move history to just THIS puzzle's start (clears previous puzzle's
+      // notation from the moves card). This path doesn't go through renderPuzzle, so
+      // it must reset plies/viewIdx itself.
+      setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
+      setViewIdx(null);
+      clearVariations();
       setOrientation(game.turn() === 'w' ? 'white' : 'black');
       setStatusSynced('solving');
       setMessage('Your turn — find the best move.');
@@ -464,12 +634,12 @@ export default function HealthyMix() {
         }
         chessRef.current = game;
         setFen(game.fen());
-        if (mv) setLastMove({ from: mv.from, to: mv.to });
+        if (mv) { setLastMove({ from: mv.from, to: mv.to }); pushPly(mv.san, game.fen(), mv.from, mv.to); }
         moveIndexRef.current = idx + 1;
       } catch (_) { /* ignore */ }
       setBotThinking(false);
     }, 450);
-  }, []);
+  }, [pushPly]);
 
   // ── Handle a user move ──
   const handleMove = useCallback((move) => {
@@ -478,13 +648,47 @@ export default function HealthyMix() {
     // After the puzzle is over (solved or failed), the board is a free analysis
     // board — accept any legal move for either side, like Lichess.
     if (st === 'solved' || st === 'failed') {
-      const game = new Chess(chessRef.current.fen());
+      // Where are we playing from? Three cases, in priority order:
+      //   1. inside a variation  -> extend it (or fork a new one from its middle)
+      //   2. browsing the mainline -> start a NEW variation there (mainline kept)
+      //   3. at the live end of the mainline -> just append to the mainline
+      const inVar = activeVar !== null && variations[activeVar];
+      let baseFen;
+      if (inVar) {
+        const vMoves = variations[activeVar].moves;
+        const vAt = varViewIdx === null ? vMoves.length - 1 : varViewIdx;
+        baseFen = vMoves[vAt] ? vMoves[vAt].fen : plies[variations[activeVar].startIdx].fen;
+      } else if (viewIdx !== null && viewIdx < plies.length - 1) {
+        baseFen = plies[viewIdx].fen;
+      } else {
+        baseFen = chessRef.current.fen();
+      }
+
+      const game = new Chess(baseFen);
       let mv;
       try { mv = game.move(move); } catch (_) { return false; }
       if (!mv) return false;
+      const node = { san: mv.san, fen: game.fen(), from: mv.from, to: mv.to };
       chessRef.current = game;
       setFen(game.fen());
       setLastMove({ from: mv.from, to: mv.to });
+
+      if (inVar) {
+        // Extend the active variation, truncating anything after the browsed ply
+        // (a variation is itself linear — nested sub-variations aren't supported).
+        const vAt = varViewIdx === null ? variations[activeVar].moves.length - 1 : varViewIdx;
+        setVariations(prev => prev.map((v, i) =>
+          i === activeVar ? { ...v, moves: [...v.moves.slice(0, vAt + 1), node] } : v));
+        setVarViewIdx(null);
+      } else if (viewIdx !== null && viewIdx < plies.length - 1) {
+        // Branch off the mainline — the mainline itself is left intact.
+        setActiveVar(variations.length);
+        setVariations(prev => [...prev, { startIdx: viewIdx, moves: [node] }]);
+        setVarViewIdx(null);
+        setViewIdx(null);
+      } else {
+        pushPly(node.san, node.fen, node.from, node.to);
+      }
       return true;
     }
 
@@ -513,6 +717,7 @@ export default function HealthyMix() {
       chessRef.current = game;
       setFen(game.fen());
       setLastMove({ from: result.from, to: result.to });
+      pushPly(result.san, game.fen(), result.from, result.to);
       moveIndexRef.current = idx + 1;
 
       // An alternate mate ends the puzzle immediately, even mid-line.
@@ -559,7 +764,8 @@ export default function HealthyMix() {
       setLastMove(null);
     }, 550);
     return true;
-  }, [botThinking, submitResult, playBotMove, setStatusSynced]);
+  }, [botThinking, submitResult, playBotMove, setStatusSynced, pushPly, viewIdx, plies,
+      activeVar, variations, varViewIdx]);
 
   // ── Reveal solution (after a fail or on demand) ──
   const showSolution = useCallback(() => {
@@ -594,14 +800,14 @@ export default function HealthyMix() {
           if (m) mv = game.move(m); else throw e;
         }
         setFen(game.fen());
-        if (mv) setLastMove({ from: mv.from, to: mv.to });
+        if (mv) { setLastMove({ from: mv.from, to: mv.to }); pushPly(mv.san, game.fen(), mv.from, mv.to); }
         chessRef.current = game;
       } catch (_) { /* ignore */ }
       i += 1;
       setTimeout(step, 500);
     };
     step();
-  }, [submitResult, setStatusSynced]);
+  }, [submitResult, setStatusSynced, pushPly]);
 
   const next = () => {
     if (isRedo) {
@@ -625,52 +831,148 @@ export default function HealthyMix() {
     moveIndexRef.current = 0;
     setFen(game.fen());
     setLastMove(null);
+    // Retry replays from the start — clear the moves card back to the start position.
+    setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
+    setViewIdx(null);
+    clearVariations();
     setStatusSynced('solving');
     setMessage(failedRef.current ? 'Retry — find the right line (no points).' : 'Your turn — find the best move.');
-  }, [puzzle, setStatusSynced]);
+  }, [puzzle, setStatusSynced, clearVariations]);
 
-  // Board is interactive while solving, OR always once the puzzle is over (free play).
+  // Copy the puzzle's STARTING fen (puzzle.fen is the position at the beginning,
+  // before the solution is played) with brief "Copied!" feedback.
+  const [fenCopied, setFenCopied] = useState(false);
+  const copyFen = useCallback(async () => {
+    const startFen = puzzle?.fen;
+    if (!startFen) return;
+    try {
+      await navigator.clipboard.writeText(startFen);
+      setFenCopied(true);
+      setTimeout(() => setFenCopied(false), 1500);
+    } catch { /* clipboard blocked — ignore */ }
+  }, [puzzle]);
+
+  // ── Move navigation ──
+  // Inside a variation the board follows the VARIATION's moves; otherwise it follows
+  // the mainline. `curVar` is the active variation (or null when on the mainline).
+  const curVar = activeVar !== null ? variations[activeVar] : null;
+  const varAt = curVar
+    ? (varViewIdx === null ? curVar.moves.length - 1 : varViewIdx)
+    : -1;
+  const curVarNode = curVar ? curVar.moves[varAt] : null;
+
+  const atLive = curVar
+    ? (varViewIdx === null || varViewIdx >= curVar.moves.length - 1)
+    : (viewIdx === null || viewIdx >= plies.length - 1);
+  const shownPlyIdx = viewIdx === null ? plies.length - 1 : viewIdx;
+  // What the board actually displays: the active variation's ply, else the browsed
+  // mainline ply, else the live position.
+  const displayFen = curVarNode ? curVarNode.fen
+    : (viewIdx !== null && plies[viewIdx]) ? plies[viewIdx].fen
+    : fen;
+  const displayLastMove = curVarNode ? { from: curVarNode.from, to: curVarNode.to }
+    : (viewIdx !== null && plies[viewIdx] && plies[viewIdx].from)
+      ? { from: plies[viewIdx].from, to: plies[viewIdx].to }
+      : lastMove;
+
+  // Jumping to a MAINLINE ply always leaves whatever variation was active.
+  const goToPly = useCallback((i) => {
+    const clamped = Math.max(0, Math.min(plies.length - 1, i));
+    setActiveVar(null);
+    setVarViewIdx(null);
+    setViewIdx(clamped >= plies.length - 1 ? null : clamped); // last ply = back to live
+  }, [plies.length]);
+
+  // Jump to a ply inside a specific variation.
+  const goToVarPly = useCallback((vIdx, i) => {
+    setActiveVar(vIdx);
+    setVarViewIdx(i);
+    setViewIdx(null);
+  }, []);
+  const navFirst = useCallback(() => goToPly(0), [goToPly]);
+  // Prev/next step INSIDE the active variation when there is one. Stepping back off
+  // the front of a variation returns to the mainline ply it branched from.
+  const navPrev = useCallback(() => {
+    if (curVar) {
+      const at = varViewIdx === null ? curVar.moves.length - 1 : varViewIdx;
+      if (at > 0) { setVarViewIdx(at - 1); return; }
+      goToPly(curVar.startIdx);
+      return;
+    }
+    goToPly((viewIdx === null ? plies.length - 1 : viewIdx) - 1);
+  }, [curVar, varViewIdx, goToPly, viewIdx, plies.length]);
+  const navNext = useCallback(() => {
+    if (curVar) {
+      const at = varViewIdx === null ? curVar.moves.length - 1 : varViewIdx;
+      if (at < curVar.moves.length - 1) setVarViewIdx(at + 1);
+      return;
+    }
+    goToPly((viewIdx === null ? plies.length - 1 : viewIdx) + 1);
+  }, [curVar, varViewIdx, goToPly, viewIdx, plies.length]);
+  const navLast = useCallback(() => {
+    if (curVar) { setVarViewIdx(null); return; }
+    setViewIdx(null);
+  }, [curVar]);
+
+  // Once the puzzle is over the board becomes a free analysis board: playable from
+  // ANY position in the line, including a browsed-back one (moving there forks the
+  // line from that point, like a study board). While still solving, moves are only
+  // accepted at the live position.
+  const puzzleOver = status === 'solved' || status === 'failed';
   const boardInteractive =
-    (status === 'solving' && !botThinking) || status === 'solved' || status === 'failed';
+    puzzleOver || (atLive && status === 'solving' && !botThinking);
+  // Back/start are dead only at the very start of the mainline — inside a variation
+  // there is always somewhere to step back to.
+  const atStart = !curVar && shownPlyIdx <= 0;
 
   const toMoveLabel = orientation === 'white' ? 'White to move' : 'Black to move';
 
   return (
     <div className="hm-page">
-      {/* Coach assignment progress banner */}
+      {/* Coach assignment progress banner - enhanced glass style */}
       {hasAssignment && (
         <div style={{
-          maxWidth: 1100, margin: '0 auto 12px', padding: '10px 16px',
-          background: 'rgba(139,92,246,0.12)', border: '1px solid rgba(139,92,246,0.3)',
-          borderRadius: 12, color: '#c4b5fd', fontWeight: 600, fontSize: 14,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+          maxWidth: 1100, margin: '0 auto 16px', padding: '12px 20px',
+          background: 'rgba(139,92,246,0.08)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          border: '1px solid rgba(139,92,246,0.2)',
+          borderRadius: 14,
+          color: '#c4b5fd',
+          fontWeight: 600,
+          fontSize: 14,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
         }}>
           <span>📋 Coach assignment{assignTarget > 0 ? ` · ${assignProgress}/${assignTarget} puzzles` : ''}</span>
           {assignTarget > 0 && (
-            <div style={{ flex: 1, maxWidth: 240, height: 8, background: 'rgba(255,255,255,0.1)', borderRadius: 999, overflow: 'hidden' }}>
+            <div style={{ flex: 1, maxWidth: 240, height: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 999, overflow: 'hidden' }}>
               <div style={{ width: `${Math.min(100, Math.round((assignProgress / assignTarget) * 100))}%`, height: '100%', background: 'linear-gradient(90deg,#8b5cf6,#06b6d4)' }} />
             </div>
           )}
         </div>
       )}
 
-      {/* Assignment finished popup */}
+      {/* Assignment finished popup - glass version */}
       {assignDone && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(8px)' }}>
-          <div style={{ background: 'rgba(23,23,23,0.97)', border: '1px solid rgba(139,92,246,0.4)', borderRadius: 20, padding: '32px 36px', textAlign: 'center', maxWidth: 420, width: '90%' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+          <div style={{ background: 'rgba(20,22,30,0.9)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 20, padding: '32px 36px', textAlign: 'center', maxWidth: 420, width: '90%', boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}>
             <div style={{ fontSize: 52, marginBottom: 12 }}>🎉</div>
             <h2 style={{ color: '#fff', fontSize: 24, fontWeight: 800, margin: '0 0 8px' }}>Assignment finished!</h2>
             <p style={{ color: '#9ca3af', margin: '0 0 22px' }}>You completed all {assignTarget} puzzles your coach assigned.</p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 24 }}>
-              <div style={{ flex: 1, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, padding: '12px 8px' }}>
+              <div style={{ flex: 1, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 12, padding: '12px 8px' }}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: '#34d399' }}>{assignDone.solved}</div>
                 <div style={{ fontSize: 11, color: '#9ca3af' }}>SOLVED</div>
               </div>
-              <div style={{ flex: 1, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 12, padding: '12px 8px' }}>
+              <div style={{ flex: 1, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, padding: '12px 8px' }}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: '#f87171' }}>{assignDone.failed}</div>
                 <div style={{ fontSize: 11, color: '#9ca3af' }}>FAILED</div>
               </div>
-              <div style={{ flex: 1, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.3)', borderRadius: 12, padding: '12px 8px' }}>
+              <div style={{ flex: 1, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 12, padding: '12px 8px' }}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: '#fbbf24' }}>🔥 {assignDone.maxStreak}</div>
                 <div style={{ fontSize: 11, color: '#9ca3af' }}>BEST STREAK</div>
               </div>
@@ -678,7 +980,7 @@ export default function HealthyMix() {
             <button
               onClick={submitAssignment}
               disabled={assignSubmitting}
-              style={{ width: '100%', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#fff', border: 'none', borderRadius: 12, padding: '13px 0', fontSize: 15, fontWeight: 700, cursor: assignSubmitting ? 'wait' : 'pointer' }}
+              style={{ width: '100%', background: 'linear-gradient(135deg,#06b6d4,#8b5cf6)', color: '#fff', border: 'none', borderRadius: 12, padding: '13px 0', fontSize: 15, fontWeight: 700, cursor: assignSubmitting ? 'wait' : 'pointer', boxShadow: '0 6px 24px rgba(6,182,212,0.3)' }}
             >
               {assignSubmitting ? 'Submitting…' : 'Submit to coach'}
             </button>
@@ -692,7 +994,7 @@ export default function HealthyMix() {
         <aside className="hm-side">
           <div className="hm-brand">
             <span className="hm-brand-icon">🧩</span>
-            <div>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div className="hm-brand-title">
                 {hasTheme ? themeLabel
                   : hasPieces ? `${piecesParam} Pieces`
@@ -705,6 +1007,14 @@ export default function HealthyMix() {
                   : 'Endless tactics'}
               </div>
             </div>
+            <button
+              className="hm-back-btn"
+              onClick={() => navigate('/training')}
+              title="Back to Training"
+              aria-label="Back to Training"
+            >
+              ← Back
+            </button>
           </div>
 
           {hasTheme && (
@@ -755,45 +1065,29 @@ export default function HealthyMix() {
             </div>
           </div>
 
-          {/* Controls */}
-          <div className="hm-controls">
-            <div className="hm-message-inline">{message}</div>
-
-            {/* While solving */}
-            {status === 'solving' && failedRef.current && (
-              <button className="hm-btn hm-btn-ghost" onClick={retry}>
-                ↻ Retry from start
-              </button>
-            )}
-            {status === 'solving' && (
-              <button className="hm-btn hm-btn-ghost" onClick={showSolution}>
-                View solution
-              </button>
-            )}
-
-            {/* After the puzzle is over (solved or failed) */}
-            {(status === 'solved' || status === 'failed') && (
-              <>
-                <button className="hm-btn hm-btn-primary" onClick={next}>
-                  Next puzzle →
-                </button>
-                <button className="hm-btn hm-btn-ghost" onClick={retry}>
-                  ↻ Retry this puzzle
-                </button>
-              </>
-            )}
+          {/* Training-mode switcher */}
+          <div className="hm-modes-wrap">
+            <div className="hm-modes-label">Training mode</div>
+            <div className="hm-modes">
+              <button className={`hm-mode-btn ${trainingMode === 'healthymix' ? 'hm-mode-on' : ''}`} onClick={() => navigate('/training/healthy-mix')}>🧩 Healthy Mix</button>
+              <button className={`hm-mode-btn ${trainingMode === 'themes' ? 'hm-mode-on' : ''}`} onClick={() => navigate('/puzzles/themes')}>🎯 Themes</button>
+              <button className={`hm-mode-btn ${trainingMode === 'pieces' ? 'hm-mode-on' : ''}`} onClick={() => navigate('/puzzles/pieces')}>♟️ Pieces</button>
+              <button className={`hm-mode-btn ${trainingMode === 'rating' ? 'hm-mode-on' : ''}`} onClick={() => setShowRatingModal(true)}>📊 Rating</button>
+            </div>
           </div>
         </aside>
 
-        {/* ── RIGHT: board ── */}
-        <main className="hm-board-col">
-          <div className="hm-board-wrap" ref={boardWrapRef} style={{ width: boardSize }}>
+        {/* ── MIDDLE: board ── */}
+        <main className="hm-board-col" ref={boardColRef}>
+          <div className="hm-board-outer" style={{ width: boardSize + FRAME_CHROME }}>
+            <div className="hm-board-stack">
+              <div className="hm-board-wrap" ref={boardWrapRef} style={{ width: boardSize }}>
             <Chessboard
-              position={fen}
+              position={displayFen}
               orientation={orientation}
               boardWidth={boardSize}
               draggable={boardInteractive}
-              lastMove={lastMove}
+              lastMove={displayLastMove}
               onDrop={(from, to, promotion) =>
                 handleMove({ from, to, promotion: promotion || 'q' })
               }
@@ -810,8 +1104,7 @@ export default function HealthyMix() {
               </svg>
             </div>
 
-            {/* Exhausted overlay — shown when every puzzle at this piece count
-                has been solved this session (sparse counts like 3 pieces). */}
+            {/* Exhausted overlay */}
             {exhausted && (
               <div className="hm-exhausted-overlay">
                 <div className="hm-exhausted-card">
@@ -833,7 +1126,7 @@ export default function HealthyMix() {
               </div>
             )}
 
-            {/* Redo complete overlay — shown after replaying all failed puzzles. */}
+            {/* Redo complete overlay */}
             {redoDone && (() => {
               const pct = redoTotal ? Math.round((redoSolved / redoTotal) * 100) : 0;
               const good = pct >= 70;
@@ -860,39 +1153,10 @@ export default function HealthyMix() {
               );
             })()}
           </div>
-
-          {/* Mode switcher — quickly jump between training modes without going back
-              to the Training page. Healthy Mix / Themes / Pieces navigate; Rating
-              opens an in-page band popup. The current mode is highlighted. */}
-          <div className="hm-modes" style={{ width: boardSize }}>
-            <button
-              className={`hm-mode-btn ${trainingMode === 'healthymix' ? 'hm-mode-on' : ''}`}
-              onClick={() => navigate('/training/healthy-mix')}
-            >
-              🧩 Healthy Mix
-            </button>
-            <button
-              className={`hm-mode-btn ${trainingMode === 'themes' ? 'hm-mode-on' : ''}`}
-              onClick={() => navigate('/puzzles/themes')}
-            >
-              🎯 Themes
-            </button>
-            <button
-              className={`hm-mode-btn ${trainingMode === 'pieces' ? 'hm-mode-on' : ''}`}
-              onClick={() => navigate('/puzzles/pieces')}
-            >
-              ♟️ Pieces
-            </button>
-            <button
-              className={`hm-mode-btn ${trainingMode === 'rating' ? 'hm-mode-on' : ''}`}
-              onClick={() => setShowRatingModal(true)}
-            >
-              📊 Rating
-            </button>
+            </div>
           </div>
 
-          {/* Session result strip — one ✓/✗ per puzzle attempted this session
-              (like the daily puzzles page). Session-only; clears on a new session. */}
+          {/* Session result strip */}
           {sessionHistory.length > 0 && (
             <div className="hm-history" style={{ width: boardSize }}>
               <div className="hm-history-head">
@@ -918,10 +1182,46 @@ export default function HealthyMix() {
           )}
         </main>
 
+        {/* ── RIGHT: moves card + controls ── */}
+        <div className="hm-right-col">
+          <MovesPanel {...{ plies, shownPlyIdx, atLive, atStart, navFirst, navPrev, navNext,
+                            navLast, goToPly, variations, activeVar, varViewIdx, goToVarPly }} />
+          <div className="hm-controls">
+            <div className="hm-message-inline">{message}</div>
+
+            {/* While solving */}
+            {status === 'solving' && failedRef.current && (
+              <button className="hm-btn hm-btn-ghost" onClick={retry}>
+                ↻ Retry from start
+              </button>
+            )}
+            {status === 'solving' && (
+              <button className="hm-btn hm-btn-ghost" onClick={showSolution}>
+                View solution
+              </button>
+            )}
+
+            {/* After the puzzle is over (solved or failed) */}
+            {(status === 'solved' || status === 'failed') && (
+              <>
+                <button className="hm-btn hm-btn-primary" onClick={next}>
+                  Next puzzle →
+                </button>
+                <div className="hm-split-btn">
+                  <button className="hm-split-seg" onClick={retry}>↻ Retry</button>
+                  <span className="hm-split-divider" />
+                  <button className="hm-split-seg" onClick={copyFen}>
+                    {fenCopied ? '✓ Copied' : '📋 Copy FEN'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
       </div>
 
-      {/* Rating band picker — opened by the "Rating" mode button. Choosing a band
-          reloads Healthy Mix filtered to that range. */}
+      {/* Rating band picker */}
       {showRatingModal && (
         <div className="hm-modal-overlay" onClick={() => setShowRatingModal(false)}>
           <div className="hm-modal" onClick={(e) => e.stopPropagation()}>

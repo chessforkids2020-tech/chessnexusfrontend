@@ -18,6 +18,23 @@ import EnginePanel from '../../components/EnginePanel';
 import { renderFrame } from '../../lib/videoEffects';
 import CoachArenaLive from './CoachArenaLive';
 
+// Zoom-style tile layout: pick the column count that maximizes each tile's area for
+// the stage shape + count (so few people → big tiles), and return that tile width so
+// the caller can lay tiles out in a centered, wrap flexbox (last row centered, no gap).
+// Module-scoped pure helper — used by the main stage, the float box, and the pop-out.
+function bestGrid(n, stageW, stageH, ar = 16 / 9, gap = 10) {
+  if (n <= 1) return { cols: 1, tileW: Math.max(0, Math.min(stageW, stageH * ar)) };
+  let best = { cols: 1, tileW: 0 };
+  for (let cols = 1; cols <= n; cols++) {
+    const rows = Math.ceil(n / cols);
+    const cellW = (stageW - (cols - 1) * gap) / cols;
+    const cellH = (stageH - (rows - 1) * gap) / rows;
+    const tileW = Math.min(cellW, cellH * ar);
+    if (tileW > best.tileW) best = { cols, tileW };
+  }
+  return best;
+}
+
 // ── Zoom-style mic / camera icons ─────────────────────────────────────────────
 // The icon IS the mic/camera shape; "off" draws a diagonal slash across the SAME
 // icon (like Zoom / Meet) instead of swapping in a separate ✗/🚫 glyph. The slash
@@ -69,8 +86,12 @@ function AvatarFallback({ name, speaking }) {
 function FxPreview({ effects, blurOn, deviceId }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const blurVideoRef = useRef(null);   // <video> that shows the REAL blurred output
   const effectsRef = useRef(effects);
   effectsRef.current = effects; // read live so dragging a slider updates instantly
+  const [blurPreviewReady, setBlurPreviewReady] = useState(false);
+
+  // Base camera stream for the preview (shared by both the canvas + blur paths).
   useEffect(() => {
     let stream, raf, cancelled = false;
     const video = document.createElement('video');
@@ -91,8 +112,7 @@ function FxPreview({ effects, blurOn, deviceId }) {
           const w = video.videoWidth || 640, h = video.videoHeight || 480;
           if (canvas.width !== w) canvas.width = w;
           if (canvas.height !== h) canvas.height = h;
-          // Renders the SAME pipeline as the published track — so touch-up (skin
-          // smoothing) is visible here exactly as others will see it.
+          // Renders the light/colour pipeline (used when blur is OFF).
           renderFrame(ctx, video, w, h, effectsRef.current);
           raf = requestAnimationFrame(loop);
         };
@@ -101,16 +121,65 @@ function FxPreview({ effects, blurOn, deviceId }) {
     })();
     return () => { cancelled = true; if (raf) cancelAnimationFrame(raf); try { stream?.getTracks().forEach(t => t.stop()); } catch { /* */ } };
   }, [deviceId]);
+
+  // When blur is ON, run the SAME MediaPipe background-blur the call uses, on the
+  // preview's own camera track, and show its processed output. This makes the
+  // preview honest — "what you see is what students get" — instead of showing a
+  // sharp background while the call is blurred.
+  useEffect(() => {
+    if (!blurOn) { setBlurPreviewReady(false); return; }
+    let cancelled = false, procStream, processor, elVideo;
+    setBlurPreviewReady(false);
+    (async () => {
+      try {
+        procStream = await navigator.mediaDevices.getUserMedia({
+          video: deviceId ? { deviceId: { ideal: deviceId } } : true, audio: false,
+        });
+        if (cancelled) { procStream.getTracks().forEach(t => t.stop()); return; }
+        const track = procStream.getVideoTracks()[0];
+        const { BackgroundBlur } = await import('@livekit/track-processors');
+        const base = import.meta.env.BASE_URL || '/';
+        processor = BackgroundBlur(12, undefined, undefined, {
+          assetPaths: {
+            tasksVisionFileSet: `${base}mediapipe/wasm`,
+            modelAssetPath: `${base}mediapipe/selfie_segmenter.tflite`,
+          },
+        });
+        // The processor needs a <video> element bound to the source track.
+        elVideo = document.createElement('video');
+        elVideo.autoplay = true; elVideo.playsInline = true; elVideo.muted = true;
+        elVideo.srcObject = new MediaStream([track]);
+        await elVideo.play().catch(() => {});
+        await processor.init({ kind: 'video', track, element: elVideo });
+        if (cancelled) return;
+        const out = processor.processedTrack;
+        if (out && blurVideoRef.current) {
+          blurVideoRef.current.srcObject = new MediaStream([out]);
+          await blurVideoRef.current.play().catch(() => {});
+          setBlurPreviewReady(true);
+        }
+      } catch { /* blur unsupported here — fall back to the canvas preview */ }
+    })();
+    return () => {
+      cancelled = true;
+      try { processor?.destroy?.(); } catch { /* */ }
+      try { procStream?.getTracks().forEach(t => t.stop()); } catch { /* */ }
+      try { if (blurVideoRef.current) blurVideoRef.current.srcObject = null; } catch { /* */ }
+    };
+  }, [blurOn, deviceId]);
+
   return (
     <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', borderRadius: 12, overflow: 'hidden', background: '#000', marginBottom: 14 }}>
-      {/* Canvas mirrored like a self-view; shows the real processed frame incl. smoothing. */}
-      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)' }} />
+      {/* Canvas = light/colour preview (shown when blur is off, or while blur loads). */}
+      <canvas ref={canvasRef} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)', display: blurOn && blurPreviewReady ? 'none' : 'block' }} />
+      {/* Video = the ACTUAL blurred output (shown once the blur processor is ready). */}
+      <video ref={blurVideoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)', display: blurOn && blurPreviewReady ? 'block' : 'none' }} />
       <span style={{ position: 'absolute', left: 8, bottom: 8, fontSize: 11, fontWeight: 700, background: 'rgba(0,0,0,0.55)', padding: '2px 8px', borderRadius: 6 }}>
         Live preview — you
       </span>
       {blurOn && (
         <span style={{ position: 'absolute', right: 8, bottom: 8, fontSize: 11, background: 'rgba(6,182,212,0.85)', color: '#04222a', padding: '2px 8px', borderRadius: 6, fontWeight: 700 }}>
-          🌫️ Blur active in the call
+          {blurPreviewReady ? '🌫️ Blur active' : '🌫️ Starting blur…'}
         </span>
       )}
     </div>
@@ -127,16 +196,27 @@ function MediaTile({ track, audioTrack, muted, label, isScreen, avatarUrl, speak
   useEffect(() => {
     const el = ref.current;
     if (!el || !track) return;
-    // Self-view: attach the underlying raw camera track straight to the <video> via a
+    // Self-view: attach the underlying camera track straight to the <video> via a
     // dedicated MediaStream — no SFU round-trip, no ~1s encode lag, no down-scaled
-    // simulcast layer. `mediaStreamTrack` is the raw browser track LiveKit wraps.
+    // simulcast layer. `mediaStreamTrack` is the processed track when a video effect
+    // processor is active, else the raw camera.
     if (local) {
-      const raw = track.mediaStreamTrack;
-      if (raw) {
-        const stream = new MediaStream([raw]);
-        el.srcObject = stream;
-        return () => { try { el.srcObject = null; } catch { /* */ } };
-      }
+      // (Re)point the <video> at whatever the CURRENT mediaStreamTrack is. This must
+      // run again when a processor is attached/detached/changed — otherwise the coach's
+      // own tile stays on the raw camera and effect changes only show after a reload.
+      const attachLocal = () => {
+        const cur = track.mediaStreamTrack;
+        if (cur) el.srcObject = new MediaStream([cur]);
+      };
+      attachLocal();
+      // LiveKit fires TrackProcessorUpdate when the processor (and thus processedTrack)
+      // changes — re-attach so the self-view follows the effect live.
+      let off = () => {};
+      try {
+        track.on?.('trackProcessorUpdate', attachLocal);
+        off = () => { try { track.off?.('trackProcessorUpdate', attachLocal); } catch { /* */ } };
+      } catch { /* older livekit — best effort */ }
+      return () => { off(); try { el.srcObject = null; } catch { /* */ } };
     }
     track.attach(el);
     return () => { try { track.detach(el); } catch { /* */ } };
@@ -591,6 +671,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
   const [session, setSession] = useState(null);
   const [isHost, setIsHost] = useState(mode === 'host');
+  // Mic control: set of studentIds the coach has hard-muted (coach roster shows it);
+  // whether I (a student) am coach-muted (locks my mic button); and a pending
+  // "coach wants you to unmute" consent popup.
+  const [coachMutedIds, setCoachMutedIds] = useState([]);
+  const [iAmCoachMuted, setIAmCoachMuted] = useState(false);
+  const [unmuteRequest, setUnmuteRequest] = useState(false);
+  // Raised hands: set of studentIds currently raising a hand (pins their tile to the
+  // top + shows ✋ to the coach). `myHandRaised` tracks my own toggle (student).
+  const [raisedHandIds, setRaisedHandIds] = useState([]);
+  const [myHandRaised, setMyHandRaised] = useState(false);
   const [phase, setPhase] = useState('loading'); // loading | waiting | live | ended | error
   const phaseRef = useRef('loading');
   useEffect(() => { phaseRef.current = phase; }, [phase]);
@@ -706,6 +796,21 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const curNode = nodeAtPath(tree, treePath);
   const curFen = curNode?.fen || new Chess().fen();
   const lastMove = curNode && curNode.from ? { from: curNode.from, to: curNode.to } : null;
+
+  // Board orientation follows the side to move at the ROOT of the loaded position,
+  // so a black-to-move puzzle shows Black at the bottom. Derived from the shared
+  // tree (not local state) so the host and every student see the same side, and
+  // taken from the root rather than the current node so it doesn't flip on each
+  // move. `flipOverride` lets anyone flip their own view without affecting others.
+  const [flipOverride, setFlipOverride] = useState(null); // null = auto, else 'white'|'black'
+  const rootFenRef = useRef(null); // last root FEN seen, to detect a NEW position
+  // buildTreeFromPgn returns the ROOT node itself, so `tree.fen` is the start position.
+  const autoOrientation = (() => {
+    // FEN field 2 is the side to move: "… w KQkq -" / "… b KQkq -".
+    const side = String(tree?.fen || '').split(/\s+/)[1];
+    return side === 'b' ? 'black' : 'white';
+  })();
+  const boardOrientation = flipOverride || autoOrientation;
 
   // Broadcast the current tree + path to the class (host/controller only).
   const broadcastTree = (t, p) => {
@@ -851,7 +956,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
   useEffect(() => {
     // The shared study tree + current path — everyone follows the host/controller.
-    const onTree = ({ tree: t, path: p }) => { if (t) { setTree(t); setTreePath(Array.isArray(p) ? p : []); } };
+    const onTree = ({ tree: t, path: p }) => {
+      if (!t) return;
+      // A different ROOT position means the coach loaded something new (puzzle, study,
+      // game) — drop this viewer's manual flip so the board auto-orients to it again.
+      // Merely stepping through moves keeps the same root, so a flip survives that.
+      if (rootFenRef.current !== t.fen) { rootFenRef.current = t.fen; setFlipOverride(null); }
+      setTree(t);
+      setTreePath(Array.isArray(p) ? p : []);
+    };
     // Coach's drawn arrows + square highlights — everyone follows.
     const onDraw = ({ arrows, highlights }) => {
       if (hostStateRef.current.isHost) return; // host has the source of truth
@@ -873,6 +986,36 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       }
     };
     const onAdmitted = () => { if (mode === 'join') enterRoom(params.joinCode); };
+    // ── Mic control ──
+    // Coach hard-muted me (student): lock my mic + force it off locally.
+    const onMuted = () => {
+      if (hostStateRef.current.isHost) return;
+      setIAmCoachMuted(true);
+      setUnmuteRequest(false);
+      if (lk.micOn) lk.toggleMic();   // ensure my mic is actually off
+    };
+    // Coach asked me to unmute: show the green/red consent popup (student decides).
+    const onUnmuteRequest = () => {
+      if (hostStateRef.current.isHost) return;
+      setIAmCoachMuted(false);        // permission restored; mic stays off until I accept
+      setUnmuteRequest(true);
+    };
+    // Roster mic-state update (for the coach's participant list).
+    const onMicState = ({ studentId, coachMuted }) => {
+      setCoachMutedIds(prev => {
+        const s = new Set(prev.map(String));
+        if (coachMuted) s.add(String(studentId)); else s.delete(String(studentId));
+        return [...s];
+      });
+    };
+    // A student raised/lowered their hand — pin their tile + show ✋ to the coach.
+    const onHand = ({ studentId, raised }) => {
+      setRaisedHandIds(prev => {
+        const s = new Set(prev.map(String));
+        if (raised) s.add(String(studentId)); else s.delete(String(studentId));
+        return [...s];
+      });
+    };
     const onRemoved = () => { setPhase('error'); setNote('The coach didn\'t admit you to this class.'); };
     const onEnded = () => { setPhase('ended'); lkDisconnectRef.current?.(); };
     const onWaiting = () => { const { isHost: h, session: se } = hostStateRef.current; if (h && se) refreshWaitingRef.current?.(); };
@@ -887,14 +1030,20 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     socket.on('liveclass:ended', onEnded);
     socket.on('liveclass:waiting-updated', onWaiting);
     socket.on('liveclass:stage', onStage);
+    socket.on('liveclass:muted', onMuted);
+    socket.on('liveclass:unmute-request', onUnmuteRequest);
+    socket.on('liveclass:mic-state', onMicState);
+    socket.on('liveclass:hand', onHand);
     return () => {
       socket.off('liveclass:tree', onTree); socket.off('liveclass:draw', onDraw); socket.off('liveclass:control', onControl);
       socket.off('liveclass:screenshare', onScreenShare);
       socket.off('liveclass:admitted', onAdmitted); socket.off('liveclass:removed', onRemoved);
       socket.off('liveclass:ended', onEnded); socket.off('liveclass:waiting-updated', onWaiting);
       socket.off('liveclass:stage', onStage);
+      socket.off('liveclass:muted', onMuted); socket.off('liveclass:unmute-request', onUnmuteRequest);
+      socket.off('liveclass:mic-state', onMicState); socket.off('liveclass:hand', onHand);
     };
-  }, [mode, params.joinCode, enterRoom]);
+  }, [mode, params.joinCode, enterRoom, lk]);
 
   // ── Socket reconnect recovery ────────────────────────────────────────────────
   // When the socket drops (e.g. host/student internet blip) it leaves all rooms.
@@ -981,19 +1130,25 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const isNarrow = vpW < 1000;
   // The host/controller keeps their draggable size. A VIEWER (student) can't drag,
   // so their board AUTO-FITS the available height — and grows big in fullscreen.
-  const viewerFit = Math.max(320, Math.min(vpH - 170, window.innerWidth - 360, 820));
-  const shownBoardW = iControl ? boardWidth : viewerFit;
-  // The Chessboard reserves a 32px coordinate gutter each side, but we crop the
-  // empty top+right gutter (see the wrapper's negative margins), so the board's
-  // effective on-screen box is ~boardWidth + one gutter. Use this for the column
-  // width and the Moves-panel height so everything lines up.
+  // vpW/vpH (not window.*) so this recomputes on resize and fullscreen changes.
+  const viewerFit = Math.max(320, Math.min(vpH - 170, vpW - 360, 820));
+  // The host/controller's dragged width is CLAMPED to what actually fits on screen.
+  // Without this a stored/dragged size larger than the viewport pushed the top rank
+  // off the top of the stage, and shrinking the board couldn't recover it.
+  const controlFit = Math.max(280, Math.min(boardWidth, vpH - 170, vpW - 360));
+  const shownBoardW = iControl ? controlFit : viewerFit;
+  // The Chessboard reserves a coordinate gutter on the labelled sides only
+  // (bottom+left), so the on-screen box is the board plus one gutter. Use this for
+  // the column width and the Moves-panel height so everything lines up.
   const boardBoxSize = shownBoardW + 34;
   const onResizeMove = useCallback((e) => {
     if (!resizingRef.current) return;
     e.preventDefault();
     const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const max = Math.min(820, window.innerWidth - 100);
-    setBoardWidth(Math.max(320, Math.min(max, resizeStartW.current + (x - resizeStartX.current))));
+    // Bound by HEIGHT as well as width — a board dragged taller than the viewport
+    // used to run off the top of the stage.
+    const max = Math.min(820, window.innerWidth - 100, window.innerHeight - 170);
+    setBoardWidth(Math.max(280, Math.min(max, resizeStartW.current + (x - resizeStartX.current))));
   }, []);
   const onResizeEnd = useCallback(() => {
     resizingRef.current = false;
@@ -1016,7 +1171,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   }, [boardWidth, onResizeMove, onResizeEnd]);
 
   // Apply a new tree+path locally and broadcast to the class.
-  const applyTree = (t, p) => { setTree(t); setTreePath(p); broadcastTree(t, p); clearDrawings(); };
+  // Loading a new position drops any manual flip so the board auto-orients to the
+  // new side to move (a stale override would show the next puzzle backwards).
+  const applyTree = (t, p) => {
+    setTree(t); setTreePath(p); broadcastTree(t, p); clearDrawings(); setFlipOverride(null);
+  };
   // Clear drawn arrows/highlights (on a move or navigation) and tell everyone.
   const clearDrawings = () => {
     setDrawArrows([]); setDrawHighlights({});
@@ -1229,6 +1388,19 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const revoke = async () => { try { await api.post(`/api/coach-live/sessions/${session.id}/revoke-control`); } catch { /* */ } };
   const grantShare = async (studentId) => { try { await api.post(`/api/coach-live/sessions/${session.id}/grant-screenshare`, { studentId }); } catch { /* */ } };
   const revokeShare = async () => { try { await api.post(`/api/coach-live/sessions/${session.id}/revoke-screenshare`); } catch { /* */ } };
+  // Coach mic control: hard-mute a student, or ask a muted student to unmute (consent).
+  const muteStudent = async (studentId) => { try { await api.post(`/api/coach-live/sessions/${session.id}/mute-student`, { studentId }); } catch { /* */ } };
+  const requestUnmute = async (studentId) => { try { await api.post(`/api/coach-live/sessions/${session.id}/request-unmute`, { studentId }); } catch { /* */ } };
+  // Student responses to the "coach wants you to unmute" popup.
+  const acceptUnmute = () => { setUnmuteRequest(false); if (!lk.micOn) lk.toggleMic(); };
+  const declineUnmute = () => { setUnmuteRequest(false); };
+  // Student: raise/lower my hand (optimistic; broadcast confirms to everyone).
+  const toggleHand = async () => {
+    const next = !myHandRaised;
+    setMyHandRaised(next);
+    try { await api.post(`/api/coach-live/sessions/${session.id}/raise-hand`, { raised: next }); }
+    catch { setMyHandRaised(!next); /* revert on failure */ }
+  };
   const endClass = async () => {
     if (!window.confirm('End the class for everyone?')) return;
     try { await api.post(`/api/coach-live/sessions/${session.id}/end`); } catch { /* */ }
@@ -1260,6 +1432,21 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // board/screen is on the stage instead, we fullscreen the whole class page. Either
   // way the ⛶ button always does something useful and is always reachable.
   const videoGridRef = useRef(null);
+  // Measured stage size — drives the area-maximizing column choice (bestColumns).
+  const [stageSize, setStageSize] = useState({ w: 1000, h: 600 });
+  const roRef = useRef(null);
+  // Callback ref: (re)observe whenever the grid element mounts/unmounts, without
+  // re-running on every render.
+  const attachStageObserver = useCallback((el) => {
+    videoGridRef.current = el;
+    if (roRef.current) { roRef.current.disconnect(); roRef.current = null; }
+    if (el && typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => setStageSize({ w: el.clientWidth || 1000, h: el.clientHeight || 600 }));
+      ro.observe(el);
+      roRef.current = ro;
+      setStageSize({ w: el.clientWidth || 1000, h: el.clientHeight || 600 });
+    }
+  }, []);
   const toggleVideoFullscreen = () => {
     if (document.fullscreenElement) { document.exitFullscreen?.(); return; }
     const el = videoGridRef.current || document.documentElement;
@@ -1369,17 +1556,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         // SECOND MONITOR (its real purpose). For big edge-to-edge video on THIS screen,
         // the host uses the "⛶ Fullscreen" button on the in-page (docked) video grid,
         // which uses the main tab's Fullscreen API and actually works.
-        const cols = popTiles.length <= 1 ? 1 : popTiles.length <= 4 ? 2 : 3;
-        const rows = Math.ceil(popTiles.length / cols);
+        // Centered flexbox (wrap) so the last partial row centers — continuous, no gap.
+        const pbg = bestGrid(popTiles.length, (pip.innerWidth || 320) - 20, (pip.innerHeight || 240) - 20, 4 / 3, 8);
+        const popTileW = Math.max(80, Math.floor(pbg.tileW));
         const grid = doc.createElement('div');
-        grid.style.cssText = `flex:1 1 auto;display:grid;gap:8px;padding:10px;grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);box-sizing:border-box;overflow:hidden;min-height:0`;
+        grid.style.cssText = 'flex:1 1 auto;display:flex;flex-wrap:wrap;gap:8px;padding:10px;align-content:center;justify-content:center;box-sizing:border-box;overflow:auto;min-height:0';
         doc.body.appendChild(grid);
 
         popTiles.forEach(p => {
           const cell = doc.createElement('div');
-          // aspect-ratio:4/3 keeps each tile a proper BOX (not a wide letterbox) even
-          // when one person is in a wide window; justify/align-self center it in its cell.
-          cell.style.cssText = 'position:relative;justify-self:center;align-self:center;max-width:100%;max-height:100%;aspect-ratio:4/3;background:linear-gradient(135deg,#141a24,#0f141c);border-radius:9px;overflow:hidden;display:grid;place-items:center';
+          cell.style.cssText = `position:relative;flex:0 0 auto;width:${popTileW}px;aspect-ratio:4/3;background:linear-gradient(135deg,#141a24,#0f141c);border-radius:9px;overflow:hidden;display:grid;place-items:center`;
           if (p.videoTrack) {
             const v = doc.createElement('video');
             v.autoplay = true; v.playsInline = true; v.muted = true;
@@ -1416,10 +1602,28 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHost, videoMode, lk.connected, lk.participants.map(p => `${p.identity}:${p.videoTrack?.sid || 'none'}`).join('|')]);
 
+  // When the meeting ends, a STUDENT is auto-sent to their own portal after a short
+  // beat (they can't stay in the coach's classroom, and must not land on the coach's
+  // meetings page). The coach stays on the "ended" screen and returns to meetings.
+  useEffect(() => {
+    if (phase !== 'ended' || isHost) return;
+    const t = setTimeout(() => nav('/my-coach'), 3000);
+    return () => clearTimeout(t);
+  }, [phase, isHost, nav]);
+
   // ── Render ───────────────────────────────────────────────────────────────────
   if (phase === 'loading') return <div style={s.center}>Loading classroom…</div>;
   if (phase === 'error') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>🚫</div><p style={{ fontSize: 15, color: 'rgba(226,232,240,0.85)' }}>{note}</p><button style={s.ghost} onClick={() => nav(-1)}>Back</button></div></div>;
-  if (phase === 'ended') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>👋</div><h2 style={{ fontSize: 20, fontWeight: 700, margin: '6px 0 14px' }}>Meeting ended</h2><button style={s.ghost} onClick={() => nav('/coach/live')}>Back to meetings</button></div></div>;
+  if (phase === 'ended') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>👋</div><h2 style={{ fontSize: 20, fontWeight: 700, margin: '6px 0 14px' }}>Meeting ended</h2>{/* Coach goes back to their meetings; a STUDENT goes to their own portal
+      (they have no access to the coach's meetings page) — auto-redirected after a
+      moment, with a button to go now. */}
+    {isHost
+      ? <button style={s.ghost} onClick={() => nav('/coach/live')}>Back to meetings</button>
+      : <>
+          <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.7)', margin: '0 0 14px' }}>Taking you back to My Coach…</p>
+          <button style={s.ghost} onClick={() => nav('/my-coach')}>Go to My Coach now</button>
+        </>}
+  </div></div>;
   if (phase === 'waiting') return <WaitingRoom note={note} user={user} joinCode={mode === 'join' ? params.joinCode : null} />;
 
   // live
@@ -1430,15 +1634,23 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
   // The people to show. Before video connects, show ME as an avatar tile so the
   // stage never looks empty or broken.
-  const tiles = (lk.connected && lk.participants.length > 0)
+  const rawTiles = (lk.connected && lk.participants.length > 0)
     ? lk.participants
     : [{
         identity: '__me__', isLocal: true, name: (user?.displayName || user?.username || 'You'),
         videoTrack: null, audioTrack: null, avatar: user?.profilePhotoUrl || null,
       }];
+  // Pin raised-hand students to the FRONT of the grid (Zoom-style), preserving the
+  // relative order otherwise. A stable sort keeps everyone else where they were.
+  const handSet = new Set(raisedHandIds.map(String));
+  const tiles = [...rawTiles].sort((a, b) => (handSet.has(String(b.identity)) ? 1 : 0) - (handSet.has(String(a.identity)) ? 1 : 0));
 
-  // Zoom-style stage columns: 1 person fills the stage; 2 split; up to 4 → 2×2; more → 3 across.
-  const stageCols = tiles.length <= 1 ? 1 : tiles.length <= 4 ? 2 : 3;
+  // Zoom-style grid: choose the column count that maximizes each tile's on-screen AREA
+  // for the current stage shape — this both fills continuously (no stray gap) AND makes
+  // videos as BIG as possible when there are few people. We measure the stage and, for
+  // each candidate column count, compute the resulting tile size and keep the count
+  // that yields the largest tile. Re-measured on resize. (bestGrid is module-scoped.)
+  const { cols: stageCols, tileW: stageTileW } = bestGrid(tiles.length, stageSize.w, stageSize.h, 16 / 9, 10);
   // Activities view wins the stage when the host opened it (host-only; a remote screen
   // still takes priority so screen-share isn't hidden).
   const activitiesOnStage = isHost && showActivities && !remoteScreen;
@@ -1466,11 +1678,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const railHasThumbs = videosDocked && (boardOnStage || remoteScreen);
   const railHasContent = railHasThumbs || showParticipants;
 
-  const renderTile = (p, { small = false } = {}) => (
-    // minWidth:0 + width:100% keep the tile inside its grid cell. Without minWidth:0 a
-    // <video>'s intrinsic width can exceed the column and push tiles into a sideways
-    // scroll ("videos running left to right"). This pins each tile to its cell.
-    <div key={p.identity} style={{ minWidth: 0, width: '100%' }}>
+  const renderTile = (p, { small = false, width = '100%' } = {}) => (
+    // minWidth:0 keeps the tile from overflowing. `width` is a fixed px on the main
+    // stage (flex layout, for size-maximized centered tiles), else 100% (grid columns).
+    <div key={p.identity} style={{ minWidth: 0, width, flex: '0 0 auto', position: 'relative' }}>
+      {raisedHandIds.map(String).includes(String(p.identity)) && (
+        <span style={{ position: 'absolute', top: 6, left: 6, zIndex: 3, background: 'rgba(245,158,11,0.95)', color: '#241a05', borderRadius: 8, padding: '2px 7px', fontSize: small ? 12 : 15, fontWeight: 800, boxShadow: '0 2px 8px rgba(0,0,0,0.4)' }} title="Hand raised">✋</span>
+      )}
       <MediaTile
         track={p.videoTrack}
         local={p.isLocal}
@@ -1531,11 +1745,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         {/* Mic button + inline device picker (the ˅ opens a mic chooser, Zoom-style). */}
         <div style={s.mediaWrap}>
           <button
-            style={{ ...s.mediaBtn, ...(lk.micOn ? s.mediaOn : s.mediaOff), ...(lk.connected ? {} : s.btnOff) }}
-            disabled={!lk.connected}
-            title={lk.connected ? (lk.micOn ? 'Mute microphone' : 'Unmute microphone') : 'Available once the video server is connected'}
+            style={{ ...s.mediaBtn, ...(lk.micOn ? s.mediaOn : s.mediaOff), ...((lk.connected && !iAmCoachMuted) ? {} : s.btnOff) }}
+            disabled={!lk.connected || iAmCoachMuted}
+            title={iAmCoachMuted ? 'Muted by coach — the coach can let you unmute' : (lk.connected ? (lk.micOn ? 'Mute microphone' : 'Unmute microphone') : 'Available once the video server is connected')}
             onClick={lk.toggleMic}
-          ><MicIcon off={!lk.micOn} size={18} /><span>{lk.micOn ? 'Mic' : 'Muted'}</span></button>
+          ><MicIcon off={!lk.micOn || iAmCoachMuted} size={18} /><span>{iAmCoachMuted ? '🔒 Muted' : (lk.micOn ? 'Mic' : 'Muted')}</span></button>
           {lk.connected && (
             <button
               style={{ ...s.devCaret, ...(devMenu === 'mic' ? s.devCaretOn : {}) }}
@@ -1618,7 +1832,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             </>
           )}
         </div>
-        {/* One-click Participants panel (Zoom-style). Shows a count badge. */}
+        {/* STUDENT: raise / lower hand (Zoom-style — pins your tile to the top). */}
+        {!isHost && lk.connected && (
+          <button
+            style={{ ...s.iconBtn, ...(myHandRaised ? { borderColor: 'rgba(245,158,11,0.6)', color: '#fcd34d', background: 'rgba(245,158,11,0.14)' } : {}) }}
+            title={myHandRaised ? 'Lower your hand' : 'Raise your hand'}
+            onClick={toggleHand}
+          >✋ {myHandRaised ? 'Lower' : 'Raise'}</button>
+        )}
+        {/* One-click Participants panel (Zoom-style). Shows a count badge + raised hands. */}
         <button
           style={{ ...s.iconBtn, ...(showParticipants ? { borderColor: 'rgba(6,182,212,0.5)', color: '#67e8f9' } : {}), position: 'relative' }}
           title="Participants"
@@ -1627,6 +1849,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           👥 {tiles.length}
           {isHost && waitingNow.length > 0 && (
             <span style={{ position: 'absolute', top: -6, right: -6, background: '#f59e0b', color: '#241a05', borderRadius: 999, fontSize: 10, fontWeight: 800, minWidth: 16, height: 16, display: 'grid', placeItems: 'center', padding: '0 4px' }}>{waitingNow.length}</span>
+          )}
+          {/* ✋ badge when students have hands up (coach sees it at a glance). */}
+          {isHost && raisedHandIds.length > 0 && (
+            <span style={{ position: 'absolute', bottom: -6, right: -6, background: '#f59e0b', color: '#241a05', borderRadius: 999, fontSize: 10, fontWeight: 800, minWidth: 16, height: 16, display: 'grid', placeItems: 'center', padding: '0 4px' }} title={`${raisedHandIds.length} hand(s) up`}>✋{raisedHandIds.length}</span>
           )}
         </button>
         {/* HOST video placement — where the class videos live. Dock (in the rail) /
@@ -1657,6 +1883,23 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         <div style={s.noteBar}>
           <span style={{ flex: 1 }}>{note}</span>
           <button style={s.noteClose} title="Dismiss" aria-label="Dismiss" onClick={() => setNote('')}>✕</button>
+        </div>
+      )}
+
+      {/* Student consent popup: "Coach wants you to unmute" — green/red choice. */}
+      {unmuteRequest && !isHost && (
+        <div style={s.unmuteOverlay}>
+          <div style={s.unmuteCard}>
+            <div style={{ fontSize: 40 }}>🎙️</div>
+            <h3 style={{ margin: '8px 0 4px', fontSize: 18, fontWeight: 800 }}>Coach wants you to unmute</h3>
+            <p style={{ fontSize: 13.5, color: 'rgba(226,232,240,0.75)', margin: '0 0 16px' }}>
+              Your coach is asking you to turn your microphone on. You can unmute, or stay muted.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+              <button style={s.unmuteYes} onClick={acceptUnmute}>🔊 Unmute</button>
+              <button style={s.unmuteNo} onClick={declineUnmute}>🔇 Stay muted</button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -1739,12 +1982,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
               {/* Board column — the board + the load panel below, both board-width. */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: isHost ? Math.max(boardBoxSize, 560) : boardBoxSize }}>
-                {/* Relative wrapper (inline-block so it hugs the board) for the resize handle.
-                    The board component reserves a ~32px coordinate gutter on every side;
-                    coordinates are only on bottom+left, so we crop the EMPTY top+right
-                    gutter with negative margins to remove the space above the board. */}
-                <div style={{ position: 'relative', display: 'inline-block', lineHeight: 0, marginTop: -30, marginRight: -30, marginBottom: -6 }}>
+                {/* Relative wrapper (inline-block so it hugs the board) for the resize
+                    handle. The board component now reserves its coordinate gutter only on
+                    the sides that actually render labels (bottom+left), so there is no
+                    empty top/right gutter to crop — negative margins here would clip the
+                    board's own top rank. */}
+                <div style={{ position: 'relative', display: 'inline-block', lineHeight: 0 }}>
                   <Chessboard position={curFen} lastMove={lastMove} boardWidth={shownBoardW} draggable={!!iControl} onDrop={onDrop}
+                    orientation={boardOrientation}
                     // Controller draws locally (its own arrows) and broadcasts them;
                     // everyone else renders the synced arrows/highlights as props.
                     arrows={iControl ? [] : drawArrows}
@@ -1779,6 +2024,12 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       <button style={s.zoomBtn} title="End" onClick={goEnd}>⏭</button>
                     </span>
                   )}
+                  {/* Flip is a LOCAL view preference — available to everyone, and it
+                      never broadcasts, so one student flipping doesn't move the class. */}
+                  <button style={s.zoomBtn} title="Flip board"
+                    onClick={() => setFlipOverride(boardOrientation === 'white' ? 'black' : 'white')}>
+                    ⇅
+                  </button>
                 </div>
 
                 {/* Host-only: load from studies / courses / library, or paste a FEN/PGN. */}
@@ -1981,8 +2232,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               </div>
             </div>
           ) : videoOnStage ? (
-            <div ref={videoGridRef} style={{ ...s.videoGrid, gridTemplateColumns: `repeat(${stageCols}, 1fr)`, ...(isFs ? s.videoGridFs : {}) }}>
-              {tiles.map(p => renderTile(p))}
+            <div ref={attachStageObserver} style={{ ...s.videoGrid, ...(isFs ? s.videoGridFs : {}) }}>
+              {tiles.map(p => renderTile(p, { width: Math.floor(stageTileW) }))}
             </div>
           ) : (
             // Host moved the videos out (float / pop / hidden) and there's no board up —
@@ -2080,6 +2331,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                             ? <img src={p.avatar} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
                             : <span style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 800 }}>{(p.name || '?').charAt(0).toUpperCase()}</span>}
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13 }}>
+                            {raisedHandIds.map(String).includes(String(p.identity)) && <span title="Hand raised" style={{ marginRight: 3 }}>✋</span>}
                             {p.name}{p.isLocal ? ' (you)' : ''}{controlling ? ' • presenting' : ''}
                           </span>
                         </span>
@@ -2093,6 +2345,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                         {/* host: two SEPARATE grants — board control (moves) and screen share */}
                         {isHost && !p.isLocal && (
                           <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                            {/* Mic control: hard-mute a student, or ask a muted one to unmute. */}
+                            {coachMutedIds.map(String).includes(String(p.identity))
+                              ? <button style={s.tiny} onClick={() => requestUnmute(p.identity)} title="Ask this student to unmute">🎙️ Ask to unmute</button>
+                              : <button style={s.tiny} onClick={() => muteStudent(p.identity)} title="Mute this student (they can't unmute until you ask)">🔇 Mute</button>}
                             {controlling
                               ? <button style={s.tiny} onClick={revoke} title="Take back board control">🎯 Take board</button>
                               : <button style={s.tiny} onClick={() => grant(p.identity)} title="Let this student move the board">🎯 Give board</button>}
@@ -2215,8 +2471,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               <button style={s.vfBtn} title="Hide videos" onClick={() => setVideoMode('hidden')}>✕</button>
             </span>
           </div>
-          <div style={{ ...s.vFloatBody, gridTemplateColumns: `repeat(${floatSize.w < 220 ? 1 : floatSize.w < 360 ? 2 : 3}, 1fr)` }}>
-            {tiles.map(p => renderTile(p, { small: true }))}
+          <div style={s.vFloatBody}>
+            {(() => {
+              // Same area-maximizing + centered-last-row layout as the main stage, sized
+              // to the float box so its tiles also flow continuously (no trailing gap).
+              const innerW = floatSize.w - 16, innerH = floatSize.h - 46; // minus padding + header
+              const bg = bestGrid(tiles.length, innerW, innerH, 4 / 3, 6);
+              return tiles.map(p => renderTile(p, { small: true, width: Math.max(70, Math.floor(bg.tileW)) }));
+            })()}
           </div>
           <div
             style={s.vFloatResize}
@@ -2347,7 +2609,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 </div>
                 <button
                   style={{ ...s.ghostSm, alignSelf: 'flex-start', marginTop: 2 }}
-                  onClick={() => lk.updateEffects({ brightness: 1.14, contrast: 1.06, saturation: 1.08, whiten: 0.12, warmth: 0, touchUp: 0 })}
+                  onClick={() => lk.updateEffects({ brightness: 1.16, contrast: 1.0, saturation: 0.94, whiten: 0.18, warmth: 0, touchUp: 0.25 })}
                 >↺ Reset to recommended</button>
               </div>
             )}
@@ -2370,6 +2632,22 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             <p style={s.fxHint}>
               Blur uses your device’s AI — great on a laptop, but if your video gets choppy or your device
               heats up (older phones), turn it off. Light adjustment and blur can’t run at the same time.
+            </p>
+
+            <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '14px 0' }} />
+
+            {/* Free AI noise suppression (RNNoise) — cleans mic audio like Zoom. */}
+            <label style={s.fxRow}>
+              <span style={s.fxLabel}>🎙️ Clean up background noise (AI)</span>
+              <input
+                type="checkbox"
+                checked={lk.noiseSuppression}
+                onChange={e => lk.toggleNoiseSuppression(e.target.checked)}
+              />
+            </label>
+            <p style={s.fxHint}>
+              Removes fan hum, keyboard clicks and background chatter from your mic so your voice is clear —
+              like Zoom. Runs on your device (free). If your voice sounds odd on older phones, turn it off.
             </p>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 14 }}>
@@ -2415,6 +2693,15 @@ const s = {
   ghostSm: { padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13 },
   editorOverlay: { position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.72)', backdropFilter: 'blur(3px)',
     display: 'grid', placeItems: 'center', zIndex: 9500, padding: 16 },
+  // Student "coach wants you to unmute" consent popup.
+  unmuteOverlay: { position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.78)', backdropFilter: 'blur(4px)',
+    display: 'grid', placeItems: 'center', zIndex: 9600, padding: 16 },
+  unmuteCard: { background: 'rgba(15,20,28,0.98)', border: '1px solid rgba(6,182,212,0.4)', borderRadius: 18,
+    padding: '28px 26px', width: 'min(92vw, 380px)', textAlign: 'center', boxShadow: '0 24px 70px rgba(0,0,0,0.7)' },
+  unmuteYes: { padding: '11px 20px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#10b981,#059669)',
+    color: '#fff', fontWeight: 800, fontSize: 14.5, cursor: 'pointer' },
+  unmuteNo: { padding: '11px 20px', borderRadius: 10, border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.14)',
+    color: '#fca5a5', fontWeight: 700, fontSize: 14.5, cursor: 'pointer' },
   editorModal: { background: 'rgba(15,20,28,0.98)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 16,
     padding: 18, width: 'min(94vw, 720px)', maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 24px 70px rgba(0,0,0,0.6)' },
   editorHead: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, fontSize: 13, fontWeight: 600, color: '#cbd5e1', marginBottom: 14, lineHeight: 1.4 },
@@ -2433,9 +2720,14 @@ const s = {
   // Stage takes the remaining width and may shrink; its wide inner row (positions +
   // board + moves) scrolls horizontally if cramped so the video rail beside it is
   // NEVER pushed off-screen / to the page bottom.
-  stage: { flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'stretch', overflowX: 'auto' },
+  // overflowY: auto so a tall board (or a small viewport) can still be scrolled to
+  // instead of being clipped off the top/bottom of the stage with no way to reach it.
+  stage: { flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'stretch', overflowX: 'auto', overflowY: 'auto' },
   // Zoom-style grid of BIG tiles (1 = full stage, 2 = split, 4 = 2×2, more = 3-wide).
-  videoGrid: { position: 'relative', display: 'grid', gap: 10, alignContent: 'center', width: '100%', minWidth: 0 },
+  // Flexbox (wrap + center) so a partial last row is CENTERED, not left-aligned with a
+  // trailing hole — the continuous Zoom-style arrangement. Tiles get a fixed px width
+  // (computed to maximize size for the count), so few people → big tiles.
+  videoGrid: { position: 'relative', display: 'flex', flexWrap: 'wrap', gap: 10, alignContent: 'center', justifyContent: 'center', width: '100%', height: '100%', minWidth: 0 },
   // When the grid itself is fullscreened, fill the screen with a solid backdrop.
   videoGridFs: { background: '#0a0a0a', padding: 16, boxSizing: 'border-box', height: '100%', alignContent: 'center' },
   // Empty-stage prompt shown when the host moved videos out and no board is up.
@@ -2467,7 +2759,7 @@ const s = {
   vFloat: { position: 'fixed', zIndex: 80, background: 'rgba(13,16,22,0.94)', backdropFilter: 'blur(14px)', border: '1px solid rgba(6,182,212,0.35)', borderRadius: 14, boxShadow: '0 20px 60px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', overflow: 'hidden', userSelect: 'none' },
   vFloatHead: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', cursor: 'grab', background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.08)' },
   vFloatTitle: { fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: 6 },
-  vFloatBody: { flex: 1, minHeight: 0, minWidth: 0, width: '100%', overflow: 'auto', padding: 8, display: 'grid', gap: 6 },
+  vFloatBody: { flex: 1, minHeight: 0, minWidth: 0, width: '100%', overflow: 'auto', padding: 8, display: 'flex', flexWrap: 'wrap', gap: 6, alignContent: 'center', justifyContent: 'center' },
   vFloatResize: { position: 'absolute', right: 3, bottom: 3, width: 16, height: 16, cursor: 'nwse-resize', color: '#6b7280', display: 'grid', placeItems: 'center', fontSize: 11, touchAction: 'none' },
   vfBtn: { width: 26, height: 22, borderRadius: 6, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#cbd5e1', cursor: 'pointer', fontSize: 11, display: 'grid', placeItems: 'center' },
   // "Show video" pill shown when videos are hidden.

@@ -59,10 +59,20 @@
   width: 100%;
 }
 
-/* No sidebar */
-.user-main-content.no-sidebar {
+/* No sidebar — pages that hide the rail and lay out their own full-width
+   workspace. Must also beat the desktop max-width cap further down this file,
+   otherwise the content stays boxed at 1400px and centred. */
+.user-main-content.no-sidebar,
+.user-main-content.no-sidebar.desktop,
+.user-main-content.no-sidebar.mobile,
+.user-main-content.no-sidebar.mobile.landscape {
   margin-left: 0;
+  margin-right: 0;
   width: 100%;
+  max-width: none;
+  /* These pages lay out their own workspace and want to start near the top, so
+     the layout's generous top padding is trimmed here. */
+  padding-top: 6px;
 }
 
 /* Mobile Sidebar Overlay */
@@ -164,7 +174,19 @@
     margin-left: 170px;
     max-width: calc(1400px - 170px);
   }
+
+  /* Full-width workspace pages opt out of the 1400px cap and the auto-centring. */
+  .user-main-content.no-sidebar {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
+
+/* Every breakpoint above resets `padding` wholesale, which clobbers the trimmed
+   top padding set earlier. Re-assert it here, after all of them, so full-width
+   workspace pages start near the top at any width. */
+.user-main-content.no-sidebar { padding-top: 6px; }
 
 /* Floating Menu Button for Mobile */
 .floating-menu-btn {
