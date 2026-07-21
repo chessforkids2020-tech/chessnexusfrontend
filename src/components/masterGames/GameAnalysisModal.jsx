@@ -144,8 +144,19 @@ export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
       setTree(prev => annotateMainLine(prev, analysis));
       setAnalyzed(true);
       setProgress(1);
-    } catch {
-      setAnalyzeError('Analysis failed — the engine may be busy. Please try again.');
+    } catch (e) {
+      // Report the ACTUAL failure so it isn't always "engine busy". A persistent
+      // 500 (e.g. engine missing on the server) now reads differently from a real
+      // 429 busy, and the server's `detail` is surfaced when present.
+      const status = e?.response?.status;
+      const detail = e?.response?.data?.detail;
+      if (status === 429) {
+        setAnalyzeError('The analysis engine is busy right now. Please try again in a moment.');
+      } else if (status === 500) {
+        setAnalyzeError(`Analysis failed on the server${detail ? ` (${detail})` : ''}. Please try again later.`);
+      } else {
+        setAnalyzeError('Analysis failed. Please try again.');
+      }
     } finally {
       clearInterval(ticker);
       setAnalyzing(false);

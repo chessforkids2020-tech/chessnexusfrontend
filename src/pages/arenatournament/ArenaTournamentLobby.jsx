@@ -693,6 +693,8 @@ export default function ArenaTournamentLobby() {
                             bright text to match the name. For a marathon it flips
                             bullet→blitz at phase 2. Blank for old rows. */}
                         {(() => {
+                          // Chess960 has no rating — never show it in the lobby.
+                          if (tournament?.tournamentType === 'chess960') return null;
                           const isMarathon = tournament?.tournamentType === 'bullet_blitz_marathon';
                           const inBlitzPhase = isMarathon && (tournament?.currentPhase ?? 0) >= 1;
                           const shown = isMarathon

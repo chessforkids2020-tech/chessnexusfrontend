@@ -575,7 +575,8 @@ export default function ArenaTournamentLeaderboard() {
                   <th>Rank</th>
                   <th style={{ textAlign: 'left' }}>Player</th>
                   {tournament?.tournamentType === 'team_battle' && <th>Team</th>}
-                  <th style={{ textAlign: 'center' }}>Rating</th>
+                  {/* Chess960 has no rating. */}
+                  {tournament?.tournamentType !== 'chess960' && <th style={{ textAlign: 'center' }}>Rating</th>}
                   <th>W</th>
                   <th>L</th>
                   <th>D</th>
@@ -613,7 +614,9 @@ export default function ArenaTournamentLeaderboard() {
                           ) : '—'}
                         </td>
                       )}
-                      <td style={{ textAlign: 'center', fontWeight: '700', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{participant.tournamentRating ?? 1200}</td>
+                      {tournament?.tournamentType !== 'chess960' && (
+                        <td style={{ textAlign: 'center', fontWeight: '700', color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{participant.tournamentRating ?? 1200}</td>
+                      )}
                       <td className="win-cell">{participant.wins}</td>
                       <td className="loss-cell">{participant.losses}</td>
                       <td className="draw-cell">{participant.draws}</td>

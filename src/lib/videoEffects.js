@@ -18,7 +18,11 @@
 // inheriting a stale v2 `enabled:false` from localStorage; users can still turn all
 // effects OFF (raw camera) or crank touch-up UP in the Video effects panel, and it
 // re-persists under v3.
-const LS_KEY = 'cn_video_effects_v4';
+// Bumped v4 → v5 with the "Zoom-white" retune (brighter + whiter + LESS colour,
+// neutral white balance). The rename means everyone starts fresh on the new defaults
+// instead of inheriting a stale warm/saturated v4 from localStorage; they can still
+// adjust or turn effects off in the Video effects panel, and it re-persists under v5.
+const LS_KEY = 'cn_video_effects_v5';
 
 // Defaults: light-only enhancement is ON — a gentle brightness/contrast/whitepoint
 // lift for the clean, bright Zoom look, with touch-up (the soft-focus skin smoothing)
@@ -33,14 +37,20 @@ const LS_KEY = 'cn_video_effects_v4';
 // brightness push leaves. So: a touch of warmth (kills the grey), a slightly stronger
 // whitepoint lift (clean whites), and brightness eased back a hair (the warmth+whiten
 // carry the "bright" feel, so we don't need to push raw brightness as hard).
+// Retuned toward the ZOOM look: brighter + "whiter" + LESS colour, not warmer.
+// The previous defaults pushed warmth (a sepia/orange cast) and saturation UP, which
+// read as "too much colour / heavy skin". Zoom instead lifts the image toward white:
+// more brightness + whitepoint, saturation pulled slightly DOWN, a NEUTRAL white
+// balance (no sepia), softer contrast, and a little skin smoothing. That gives the
+// clean, light, "whiter" appearance the user spotted.
 export const DEFAULT_EFFECTS = {
-  enabled: true,      // ON by default — light-only enhancement (brighter, still sharp)
-  brightness: 1.10,   // 0.6 … 1.8 — eased back; warmth+whiten now carry the "bright" look
-  contrast: 1.05,     // 0.8 … 1.3 — a little depth (not too much, keeps it clean)
-  saturation: 1.06,   // 0.8 … 1.4 — gentle richness (lowered so it's not heavy)
-  whiten: 0.14,       // 0 … 0.4 — stronger whitepoint lift for Zoom's clean, lifted whites
-  warmth: 5,          // -20 … +20 — slight warmth: removes the grey/cool cast (Zoom's clean white)
-  touchUp: 0,         // 0 … 1 — soft-focus "touch up my appearance" (OFF — no softening)
+  enabled: true,      // ON by default — the clean "Zoom-white" light enhancement
+  brightness: 1.16,   // 0.6 … 1.8 — brighter/lifted (Zoom reads noticeably lighter)
+  contrast: 1.0,      // 0.8 … 1.3 — soft, not harsh (Zoom's gentle contrast)
+  saturation: 0.94,   // 0.8 … 1.4 — pulled DOWN so it's not "too much colour"
+  whiten: 0.18,       // 0 … 0.4 — stronger whitepoint lift → the clean, white feel
+  warmth: 0,          // -20 … +20 — NEUTRAL: no sepia/orange cast (that was the heavy look)
+  touchUp: 0.25,      // 0 … 1 — light skin smoothing, like Zoom's softer picture
 };
 
 export function loadEffects() {
@@ -85,43 +95,44 @@ export function effectsToCssFilter(e) {
   return parts.length ? parts.join(' ') : 'none';
 }
 
+import { createSkinSmoother } from './skinSmooth';
+
+// One WebGL skin-smoother PER 2D canvas context (the published track + the preview
+// each get their own). Created lazily on first touch-up use; reused every frame.
+// A WeakMap keyed by the destination ctx means we never leak GL contexts and each
+// surface keeps its own smoother.
+const _smoothers = new WeakMap();
+function getSmoother(ctx) {
+  if (_smoothers.has(ctx)) return _smoothers.get(ctx);
+  const s = createSkinSmoother();   // null if WebGL unavailable
+  _smoothers.set(ctx, s);
+  return s;
+}
+
 // Render ONE processed frame onto a 2D canvas context. Shared by the published
-// LiveKit processor AND the in-panel live preview, so "what you see = what you get"
-// (including skin-smoothing, which a plain CSS filter can't do).
+// LiveKit processor AND the in-panel live preview, so "what you see = what you get".
+//
+// Touch-up = TRUE skin smoothing (edge-preserving bilateral filter in WebGL), NOT a
+// blur: flat skin evens out while eyes/mouth/hair/glasses stay sharp. See skinSmooth.js.
 export function renderFrame(ctx, videoEl, w, h, e) {
   const baseFilter = effectsToCssFilter({ ...e, touchUp: 0 });
 
-  // Pass 1: base frame with light/colour filters (sharp — keeps eyes/edges crisp).
+  // Skin smoothing (edge-preserving) BEFORE the light/colour filters, so we smooth
+  // the real skin then apply the tone/whitepoint on top. Falls back to the raw frame
+  // if WebGL isn't available.
+  let frameSource = videoEl;
+  if (e.enabled && e.touchUp > 0) {
+    const smoother = getSmoother(ctx);
+    const out = smoother && smoother.render(videoEl, w, h, e.touchUp);
+    if (out) frameSource = out;   // use the smoothed frame as the source below
+  }
+
+  // Draw the (smoothed-or-raw) frame with the light/colour filters. Sharp — the
+  // filter here is brightness/contrast/warmth only, never blur.
   ctx.globalCompositeOperation = 'source-over';
   ctx.globalAlpha = 1;
   ctx.filter = baseFilter;
-  ctx.drawImage(videoEl, 0, 0, w, h);
-
-  // Pass 2 (touch-up / skin smoothing). Blemishes/pores/shadows on skin are DARKER
-  // than surrounding skin: a blurred "lighten" pass fills them with the smooth tone
-  // around them (evening the skin), then a "darken" pass tames blown highlights, so
-  // the skin evens out. Eyes/hair (high-contrast edges) survive because lighten/darken
-  // only move pixels toward the local average, not into a full blur.
-  if (e.enabled && e.touchUp > 0) {
-    const t = e.touchUp;
-    const radius = (2 + t * 4).toFixed(1);        // 2–6px blur of the smoothing layer
-    const soft = `${baseFilter === 'none' ? '' : baseFilter + ' '}blur(${radius}px)`;
-
-    ctx.filter = soft;
-    ctx.globalCompositeOperation = 'lighten';      // fill dark specks
-    ctx.globalAlpha = Math.min(0.9, 0.5 + t * 0.4);
-    ctx.drawImage(videoEl, 0, 0, w, h);
-
-    ctx.globalCompositeOperation = 'darken';       // tame bright specks/shine
-    ctx.globalAlpha = Math.min(0.7, 0.35 + t * 0.35);
-    ctx.drawImage(videoEl, 0, 0, w, h);
-
-    // Restore a bit of real detail so it reads as "smooth skin", not "plastic".
-    ctx.filter = baseFilter;
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = Math.max(0.18, 0.4 - t * 0.25);
-    ctx.drawImage(videoEl, 0, 0, w, h);
-  }
+  ctx.drawImage(frameSource, 0, 0, w, h);
 
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'source-over';

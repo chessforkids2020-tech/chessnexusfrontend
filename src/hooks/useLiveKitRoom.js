@@ -52,10 +52,17 @@ const AUDIO_CAPTURE_DEFAULTS = {
   noiseSuppression: true,
   channelCount: 1,          // mono — voice doesn't need stereo; more bits per channel
   voiceIsolation: true,     // stronger speech focus where the browser supports it
+  // Capture at 48 kHz so it matches Opus's native rate — no browser resample step,
+  // which otherwise adds a subtle muddiness. Well-supported (ignored where not).
+  sampleRate: 48000,
+  sampleSize: 16,
 };
-// 32 kbps is a clear voice bitrate (LiveKit's speech preset). Bump to 48–64k for
-// music-grade later if needed; higher = clearer but more bandwidth.
-const AUDIO_PUBLISH_BITRATE = 32000;
+// Voice bitrate. 32 kbps (LiveKit's speech preset) is intelligible but thin — it
+// drops the higher frequencies that make speech sound crisp/present, which is why
+// it wasn't "clear like Zoom". Zoom runs ~48–64 kbps for voice; 48 kbps is the
+// sweet spot: noticeably clearer, still tiny bandwidth. Paired with RED (redundancy)
+// + DTX below so weak-wifi resilience is unchanged.
+const AUDIO_PUBLISH_BITRATE = 48000;
 
 // ── Krisp AI noise filter — LICENSING GATE ──────────────────────────────────
 // The Krisp filter is a PROPRIETARY LiveKit component under LiveKit's commercial
@@ -82,6 +89,24 @@ async function applyKrisp(r) {
     if (typeof isKrispNoiseFilterSupported === 'function' && !isKrispNoiseFilterSupported()) return;
     await track.setProcessor(KrispNoiseFilter());
   } catch { /* plugin unavailable/unsupported — built-in noiseSuppression still applies */ }
+}
+
+// Attach (or remove) the FREE RNNoise AI noise suppressor to the mic track. This is
+// the open-source, no-license, no-cost path to Zoom-grade noise removal. Best-effort:
+// any failure falls back silently to the browser's built-in noiseSuppression, so the
+// mic never breaks. `on=false` removes it (back to the raw/browser-DSP mic).
+async function applyNoiseSuppression(r, on) {
+  try {
+    const mic = r?.localParticipant?.getTrackPublication?.('microphone');
+    const track = mic?.audioTrack || mic?.track;
+    if (!track || typeof track.setProcessor !== 'function') return;
+    if (on) {
+      const { createNoiseSuppressionProcessor } = await import('../lib/noiseSuppression');
+      await track.setProcessor(createNoiseSuppressionProcessor());
+    } else if (typeof track.stopProcessor === 'function') {
+      await track.stopProcessor();
+    }
+  } catch { /* unsupported/blocked — built-in noiseSuppression still applies */ }
 }
 
 // Set the WebRTC contentHint on the local camera's raw track. 'detail' tells the
@@ -158,6 +183,13 @@ export default function useLiveKitRoom() {
   // updates the published video instantly without re-creating the track.
   const [effects, setEffects] = useState(() => loadEffects());
   const [blurOn, setBlurOn] = useState(false);
+  // Free AI noise suppression (RNNoise). Persisted so "set once, always used".
+  // Default OFF until the coach turns it on and confirms it sounds good.
+  const [noiseSuppression, setNoiseSuppressionState] = useState(() => {
+    try { return localStorage.getItem('cn_noise_suppression') === 'on'; } catch { return false; }
+  });
+  const noiseSuppressionRef = useRef(noiseSuppression);
+  noiseSuppressionRef.current = noiseSuppression;
   const effectsRef = useRef(effects);
   effectsRef.current = effects;
   const blurRef = useRef(false);     // desired blur on/off (read inside callbacks)
@@ -281,40 +313,50 @@ export default function useLiveKitRoom() {
       .on(RoomEvent.Disconnected, () => { setConnected(false); });
 
     await r.connect(url, token);
-    // Publish mic + camera by default. Pass the audio DSP options explicitly here too
-    // (not just via audioCaptureDefaults) so noise-suppression / echo-cancel / auto-gain
-    // are guaranteed to be baked into the captured track across livekit-client versions.
-    try { await r.localParticipant.setMicrophoneEnabled(true, AUDIO_CAPTURE_DEFAULTS); } catch { /* device */ }
-    // Krisp AI noise filter — the pro (Zoom-grade) layer on top of the browser DSP.
-    // Best-effort: if the plugin fails to load or isn't supported, the built-in
-    // noiseSuppression still runs, so audio never breaks.
-    await applyKrisp(r);
-    try { await r.localParticipant.setCameraEnabled(true); } catch { /* device */ }
-    // Tell the browser encoder to favour DETAIL over motion-smoothness — this is the
-    // WebRTC `contentHint` Zoom-style apps use so faces/text stay crisp instead of
-    // getting the blurry "keep it moving" treatment. Best-effort per browser.
-    applyContentHint(r);
-    // Drive the camera sensor's own continuous auto-exposure / white-balance / focus
-    // so the picture is polished like Zoom (not flat/overexposed) — hardware ISP, no
-    // softening. Capability-gated; awaited so it lands before the first published frame.
-    await applyCameraAutoAdjust(r, setCamInfo);
-    // Apply saved video effects ("set once, always used") to the fresh camera track.
-    try { await applyVideoRef.current(); } catch { /* effects optional */ }
+
+    // ── FAST PATH: get the coach INTO the room ASAP ──────────────────────────────
+    // Enable mic + camera in PARALLEL (not serially), then immediately mark connected
+    // and render the UI. The old code awaited mic → Krisp → RNNoise → camera →
+    // auto-adjust → video-effects one after another before showing anything, which
+    // took ~20-30s (RNNoise WASM + canvas processor setup are slow). None of those
+    // "polish" steps are needed to SEE the room, so they now run in the BACKGROUND.
+    await Promise.all([
+      r.localParticipant.setMicrophoneEnabled(true, AUDIO_CAPTURE_DEFAULTS).catch(() => {}),
+      r.localParticipant.setCameraEnabled(true).catch(() => {}),
+    ]);
     setRoom(r);
-    setConnected(true);
+    setConnected(true);   // UI + waiting room show now — no waiting on the polish steps
     refresh(r);
-    // Now that permissions are granted, device labels are available.
-    try {
-      const devs = await navigator.mediaDevices.enumerateDevices();
-      setCameras(devs.filter((d) => d.kind === 'videoinput'));
-      setMics(devs.filter((d) => d.kind === 'audioinput'));
-      if (typeof r.getActiveDevice === 'function') {
-        const activeCam = r.getActiveDevice('videoinput');
-        if (activeCam && typeof activeCam === 'string') setActiveCameraId(activeCam);
-        const activeMic = r.getActiveDevice('audioinput');
-        if (activeMic && typeof activeMic === 'string') setActiveMicId(activeMic);
-      }
-    } catch { /* ignore */ }
+
+    // ── BACKGROUND: apply the heavy/optional enhancements after the UI is live. ──
+    // A failure in any of these must never block or break the classroom.
+    (async () => {
+      try {
+        // Camera sensor auto-exposure / white-balance / focus (quick, hardware).
+        applyContentHint(r);
+        await applyCameraAutoAdjust(r, setCamInfo);
+        // Saved video effects (canvas processor) — visual polish, can lag a beat.
+        try { await applyVideoRef.current(); } catch { /* effects optional */ }
+        // AI noise filters — the SLOWEST (WASM + AudioWorklet), so last + non-blocking.
+        await applyKrisp(r);
+        if (!KRISP_ENABLED && noiseSuppressionRef.current) await applyNoiseSuppression(r, true);
+      } catch { /* best-effort enhancements */ }
+    })();
+
+    // Device labels (available once permissions granted). Also background.
+    (async () => {
+      try {
+        const devs = await navigator.mediaDevices.enumerateDevices();
+        setCameras(devs.filter((d) => d.kind === 'videoinput'));
+        setMics(devs.filter((d) => d.kind === 'audioinput'));
+        if (typeof r.getActiveDevice === 'function') {
+          const activeCam = r.getActiveDevice('videoinput');
+          if (activeCam && typeof activeCam === 'string') setActiveCameraId(activeCam);
+          const activeMic = r.getActiveDevice('audioinput');
+          if (activeMic && typeof activeMic === 'string') setActiveMicId(activeMic);
+        }
+      } catch { /* ignore */ }
+    })();
     return r;
   }, [refresh]);
 
@@ -430,6 +472,17 @@ export default function useLiveKitRoom() {
     await applyVideoProcessor();
   }, [applyVideoProcessor]);
 
+  // Toggle the free RNNoise AI noise suppression on the mic (persisted). Applied live
+  // to the current mic track. If Krisp is licensed/enabled it owns the mic instead.
+  const toggleNoiseSuppression = useCallback(async (on) => {
+    const next = typeof on === 'boolean' ? on : !noiseSuppressionRef.current;
+    noiseSuppressionRef.current = next;
+    setNoiseSuppressionState(next);
+    try { localStorage.setItem('cn_noise_suppression', next ? 'on' : 'off'); } catch { /* */ }
+    const r = roomRef.current;
+    if (r && !KRISP_ENABLED) await applyNoiseSuppression(r, next);
+  }, []);
+
   const disconnect = useCallback(async () => {
     try { await roomRef.current?.disconnect(); } catch { /* ignore */ }
     roomRef.current = null;
@@ -445,8 +498,11 @@ export default function useLiveKitRoom() {
       // Re-apply the audio DSP options when turning the mic back on.
       await r.localParticipant.setMicrophoneEnabled(!isOn, isOn ? undefined : AUDIO_CAPTURE_DEFAULTS);
       setMicOn(r.localParticipant.isMicrophoneEnabled);
-      // Turning ON creates a fresh track — re-attach the Krisp filter to it.
-      if (!isOn) await applyKrisp(r);
+      // Turning ON creates a fresh track — re-attach the noise filter to it.
+      if (!isOn) {
+        await applyKrisp(r);
+        if (!KRISP_ENABLED && noiseSuppressionRef.current) await applyNoiseSuppression(r, true);
+      }
     } catch {
       setError('Could not toggle microphone.');
     }
@@ -504,6 +560,7 @@ export default function useLiveKitRoom() {
     cameras, activeCameraId, switchCamera,
     mics, activeMicId, switchMic,
     effects, updateEffects, blurOn, toggleBlur,
+    noiseSuppression, toggleNoiseSuppression,
     connect, disconnect, toggleMic, toggleCam, toggleScreen,
     camInfo,
   };
