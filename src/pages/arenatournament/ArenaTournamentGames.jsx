@@ -349,7 +349,7 @@ export default function ArenaTournamentGames() {
                     <Chessboard
                       position={game.fen || DEFAULT_START_FEN}
                       boardWidth={200}
-                      draggable={false}
+                      draggable={false} resizable={false}
                       orientation="white"
                     />
                     <div className={`atg-result-badge atg-result-${game.result || 'unknown'}`}>

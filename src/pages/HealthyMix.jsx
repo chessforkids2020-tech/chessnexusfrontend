@@ -344,8 +344,6 @@ export default function HealthyMix() {
     return Math.max(MIN_BOARD, Math.min(MAX_BOARD, midColWidth - FRAME_CHROME));
   };
   const [boardSize, setBoardSize] = useState(() => fitToViewport(480));
-  const userResizedRef = useRef(false); // once the user drags, stop auto-fitting
-  const dragStart = useRef(null);
   // Expose the board height to CSS so the moves card can match it exactly (they line
   // up bottom-to-bottom).
   useEffect(() => {
@@ -359,19 +357,17 @@ export default function HealthyMix() {
   // overflow into the moves card — the estimate-from-innerWidth approach was wrong on
   // some widths. A ResizeObserver on the board column keeps it correct on any resize.
   useEffect(() => {
-    if (userResizedRef.current) return;
     // Measure the COLUMN, not the board's own ancestors: .hm-board-stack and
     // .hm-board-outer are both sized by the board, so observing them would feed the
     // board's width back into itself. .hm-board-col is the real grid cell.
     const el = boardColRef.current;
     if (!el || typeof ResizeObserver === 'undefined') {
       // Fallback: viewport estimate.
-      const onResize = () => { if (!userResizedRef.current) setBoardSize(fitToViewport(480)); };
+      const onResize = () => setBoardSize(fitToViewport(480));
       window.addEventListener('resize', onResize);
       return () => window.removeEventListener('resize', onResize);
     }
     const fit = () => {
-      if (userResizedRef.current) return;
       // The frame's padding/border live INSIDE the column, so the board gets whatever
       // is left after the chrome. This is exact — no percentage fudge factor.
       const avail = el.clientWidth - FRAME_CHROME;
@@ -392,34 +388,6 @@ export default function HealthyMix() {
     fit();
     return () => { ro.disconnect(); window.removeEventListener('resize', fit); };
   }, []);
-
-  const onResizeDragStart = (e) => {
-    e.preventDefault();
-    const startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-    const startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-    dragStart.current = { x: startX, y: startY, size: boardSize };
-
-    const onMove = (ev) => {
-      const cx = ev.type === 'touchmove' ? ev.touches[0].clientX : ev.clientX;
-      const cy = ev.type === 'touchmove' ? ev.touches[0].clientY : ev.clientY;
-      const dx = cx - dragStart.current.x;
-      const dy = cy - dragStart.current.y;
-      const delta = (Math.abs(dx) > Math.abs(dy) ? dx : dy);
-      const newSize = Math.min(MAX_BOARD, Math.max(MIN_BOARD, dragStart.current.size + delta));
-      userResizedRef.current = true;
-      setBoardSize(Math.round(newSize));
-    };
-    const onUp = () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-      window.removeEventListener('touchmove', onMove);
-      window.removeEventListener('touchend', onUp);
-    };
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    window.addEventListener('touchmove', onMove, { passive: true });
-    window.addEventListener('touchend', onUp);
-  };
 
   // ── Load current rating once ──
   useEffect(() => {
@@ -1092,18 +1060,6 @@ export default function HealthyMix() {
                 handleMove({ from, to, promotion: promotion || 'q' })
               }
             />
-            <div
-              className="hm-resize-handle"
-              onMouseDown={onResizeDragStart}
-              onTouchStart={onResizeDragStart}
-              title="Drag to resize board"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <line x1="2" y1="12" x2="12" y2="2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-                <line x1="6" y1="12" x2="12" y2="6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
-              </svg>
-            </div>
-
             {/* Exhausted overlay */}
             {exhausted && (
               <div className="hm-exhausted-overlay">

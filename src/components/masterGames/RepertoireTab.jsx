@@ -150,10 +150,10 @@ const st = {
   modeOn: { background: 'rgba(34,211,238,0.14)', color: C.active, borderColor: C.active },
   cards: { display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'flex-start' },
   boardCard: { flex: '0 0 auto', background: C.glass, border: `1px solid ${C.border}`, borderRadius: 16, padding: 10, alignSelf: 'flex-start', display: 'inline-flex', flexDirection: 'column' },
-  // Chessboard reserves a 32px coordinate margin on all sides but only draws labels
-  // bottom+left; pull up to trim the empty TOP margin (matches OpeningStudy).
-  boardArea: { position: 'relative', display: 'inline-flex', lineHeight: 0, marginTop: -26, overflow: 'visible' },
-  resizeHandle: { position: 'absolute', right: 2, bottom: 2, width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'nwse-resize', borderRadius: 6, background: 'rgba(18,21,28,0.85)', border: `1px solid ${C.border}`, zIndex: 5, touchAction: 'none' },
+  // Chessboard reserves gutter space only on the sides that draw labels (bottom+left),
+  // so there is no empty TOP margin to pull up over — a negative marginTop here would
+  // clip the top rank.
+  boardArea: { position: 'relative', display: 'inline-flex', lineHeight: 0, overflow: 'visible' },
   rightCard: { flex: '1 1 320px', minWidth: 280, background: C.glass, border: `1px solid ${C.border}`, borderRadius: 16, padding: 14, minHeight: '78vh', maxHeight: '92vh', display: 'flex', flexDirection: 'column' },
   rightScroll: { overflowY: 'auto', flex: '1 1 auto', minHeight: 220 },
   rightPinned: { flexShrink: 0, paddingTop: 12, marginTop: 4, borderTop: `1px solid ${C.border}` },
@@ -267,28 +267,8 @@ function BuildMode({ access, onWalletChange }) {
   const [name, setName] = useState(draft?.name || '');
   const [lines, setLines] = useState([]);
 
-  // Drag-to-resize board (bottom-right handle). Base 420, clamp 300–620.
   const [boardSize, setBoardSize] = useState(420);
-  const dragRef = useRef(null);
-  const onResizeStart = useCallback((e) => {
-    e.preventDefault();
-    const pt = e.touches ? e.touches[0] : e;
-    dragRef.current = { startX: pt.clientX, startY: pt.clientY, startSize: boardSize };
-    const onMove = (ev) => {
-      if (!dragRef.current) return;
-      const p = ev.touches ? ev.touches[0] : ev;
-      const delta = ((p.clientX - dragRef.current.startX) + (p.clientY - dragRef.current.startY)) / 2;
-      setBoardSize(Math.max(300, Math.min(620, dragRef.current.startSize + delta)));
-    };
-    const onUp = () => {
-      dragRef.current = null;
-      window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp);
-      window.removeEventListener('touchmove', onMove); window.removeEventListener('touchend', onUp);
-    };
-    window.addEventListener('mousemove', onMove); window.addEventListener('mouseup', onUp);
-    window.addEventListener('touchmove', onMove, { passive: false }); window.addEventListener('touchend', onUp);
-  }, [boardSize]);
-  const resetBoardSize = useCallback(() => setBoardSize(420), []);
+  const resetBoardSize = useCallback(() => setBoardSize(BOARD_DEFAULT), [setBoardSize]);
   const [msg, setMsg] = useState('');
   const [engineOn, setEngineOn] = useState(false);
   const [engineLines, setEngineLines] = useState(3); // MultiPV count (user-chosen)
@@ -470,18 +450,7 @@ function BuildMode({ access, onWalletChange }) {
       <div style={st.boardCard}>
         <div style={st.boardArea}>
           <Chessboard position={fen} boardWidth={isFull ? Math.max(boardSize, Math.min(680, Math.round((typeof window !== 'undefined' ? window.innerHeight : 800) * 0.8))) : boardSize} orientation={side} draggable onDrop={onDrop} lastMove={lastMove} />
-          {/* Drag-to-resize handle (bottom-right). Double-click resets. */}
-          <div
-            style={st.resizeHandle}
-            onMouseDown={onResizeStart}
-            onTouchStart={onResizeStart}
-            onDoubleClick={resetBoardSize}
-            title="Drag to resize the board · double-click to reset"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" style={{ display: 'block' }}>
-              <path d="M13 1 L1 13 M13 6 L6 13 M13 11 L11 13" stroke={C.textMut} strokeWidth="1.5" fill="none" strokeLinecap="round" />
-            </svg>
-          </div>
+          {/* Shared grip — double-click still resets to the default size. */}
         </div>
         <div style={{ ...st.row, marginTop: 10, marginBottom: 0 }}>
           <button style={st.ghostSm} onClick={() => setSide(s => s === 'white' ? 'black' : 'white')}>⇅ Flip</button>

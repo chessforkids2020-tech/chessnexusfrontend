@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import api from '../../api';
-import Chessboard from '../Chessboard';
+import Chessboard, { gutterFor } from '../Chessboard';
 import GameAnalysisModal from './GameAnalysisModal';
 import EnginePanel from '../EnginePanel'; // self-contained (imports its own CSS)
 import {
@@ -116,27 +116,26 @@ export default function OpeningStudy() {
     setCurrentId(null);
   }, []);
 
-  // Board sizing — an auto "fit to card" size PLUS a user drag delta, so the board
-  // auto-fits the layout but the user can also grow/shrink it with the corner handle.
+  // Board sizing — auto-fits the card width (measured below). There is no manual
+  // drag-to-resize anywhere in the app any more.
   const boardColRef = useRef(null);
   const [fitSize, setFitSize] = useState(420);       // computed from the card width
-  const [userScale, setUserScale] = useState(0);      // px the user has dragged (+/-)
-  // Final board size = fit + user delta, clamped to sane bounds.
-  const boardSize = Math.max(240, Math.min(fitSize + userScale, 620));
-  const dragRef = useRef(null);                        // { startX, startY, startScale }
+  const boardSize = Math.max(240, Math.min(fitSize, 620));
 
   useEffect(() => {
     const el = boardColRef.current;
     if (!el) return;
 
-    // The board keeps its LEFT and RIGHT coordinate margins (32px each = 64px total).
-    // Subtract that (plus slack) so the full board + labels fit inside the card
-    // without overflowing or clipping the h-file.
+    // Only the LEFT gutter exists (labels are bottom+left), so subtract that plus a
+    // little slack — not both sides, which used to leave the board undersized.
     const measure = () => {
       const cs = window.getComputedStyle(el);
       const padX = parseFloat(cs.paddingLeft || '0') + parseFloat(cs.paddingRight || '0');
       const w = Math.floor(el.clientWidth - padX);
-      if (w > 0) setFitSize(Math.max(240, Math.min(w - 72, 420)));
+      if (w > 0) {
+        const g = gutterFor(w);
+        setFitSize(Math.max(240, Math.min(w - g.left - g.right - 8, 420)));
+      }
     };
 
     measure(); // initial
@@ -156,38 +155,6 @@ export default function OpeningStudy() {
       window.removeEventListener('orientationchange', measure);
     };
   }, []);
-
-  // ── Drag-to-resize (bottom-right corner handle) ──
-  // The handle sits at the board's bottom-right corner, so dragging it DOWN-RIGHT
-  // (away from the board center) grows the board and UP-LEFT shrinks it. We track
-  // the pointer and adjust userScale by the average of the two axes' movement.
-  const onResizeStart = useCallback((e) => {
-    e.preventDefault();
-    const pt = e.touches ? e.touches[0] : e;
-    dragRef.current = { startX: pt.clientX, startY: pt.clientY, startScale: userScale };
-
-    const onMove = (ev) => {
-      if (!dragRef.current) return;
-      const p = ev.touches ? ev.touches[0] : ev;
-      const dxRight = p.clientX - dragRef.current.startX;  // drag right → positive → bigger
-      const dyDown = p.clientY - dragRef.current.startY;   // drag down → positive → bigger
-      const delta = (dxRight + dyDown) / 2;
-      setUserScale(Math.max(-160, Math.min(200, dragRef.current.startScale + delta)));
-    };
-    const onUp = () => {
-      dragRef.current = null;
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-      window.removeEventListener('touchmove', onMove);
-      window.removeEventListener('touchend', onUp);
-    };
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    window.addEventListener('touchmove', onMove, { passive: false });
-    window.addEventListener('touchend', onUp);
-  }, [userScale]);
-
-  const resetBoardSize = useCallback(() => setUserScale(0), []);
 
   return (
     <div style={st.wrap}>
@@ -215,20 +182,6 @@ export default function OpeningStudy() {
                 lastMove={lastMove}
                 transitionDuration={180}
               />
-            </div>
-            {/* Drag-to-resize handle (bottom-left corner). Double-click resets size. */}
-            <div
-              style={st.resizeHandle}
-              onMouseDown={onResizeStart}
-              onTouchStart={onResizeStart}
-              onDoubleClick={resetBoardSize}
-              title="Drag to resize the board · double-click to reset"
-            >
-              {/* Classic corner grip: short parallel lines stepping into the
-                  bottom-right corner (each runs bottom-left → top-right). */}
-              <svg width="14" height="14" viewBox="0 0 14 14" style={{ display: 'block' }}>
-                <path d="M13 1 L1 13 M13 6 L6 13 M13 11 L11 13" stroke={C.textMut} strokeWidth="1.5" fill="none" strokeLinecap="round" />
-              </svg>
             </div>
           </div>
         </div>
@@ -454,9 +407,10 @@ const st = {
   // labels there); the left/right/bottom margins are LEFT INTACT so the a–h files
   // and 1–8 ranks are never clipped. boardArea wraps the board's natural footprint.
   boardArea: { position: 'relative', flex: '0 0 auto', display: 'inline-flex' },
-  boardWrap: { display: 'flex', justifyContent: 'center', marginTop: -26, overflow: 'visible' },
+  // No negative marginTop: there is no empty top gutter to pull over (labels are
+  // bottom+left only), so one would clip the top rank.
+  boardWrap: { display: 'flex', justifyContent: 'center', overflow: 'visible' },
   // Drag-to-resize grip, tucked into the board's bottom-right coordinate margin.
-  resizeHandle: { position: 'absolute', right: 0, bottom: 4, width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'nwse-resize', borderRadius: 6, background: 'rgba(18,21,28,0.85)', border: `1px solid ${C.border}`, zIndex: 5, touchAction: 'none' },
 
   rightCard: { position: 'relative', flex: '1 1 380px', minWidth: 300, maxWidth: 480, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: 14, display: 'flex', flexDirection: 'column', boxShadow: '0 8px 30px rgba(0,0,0,0.45)' },
 

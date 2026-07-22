@@ -64,6 +64,7 @@ function MiniBoard({ fen }) {
         boardWidth={size}
         draggable={false}
         showCoordinates={false}
+        resizable={false}   // read-only thumbnail — no grip
         mute
       />
     </div>

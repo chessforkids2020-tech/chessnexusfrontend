@@ -379,42 +379,9 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
   // Jump to an arbitrary node by its full path (clicking a move in the list).
   const goToPath = useCallback((p) => setPath(p), []);
 
-  // Resizable board — user drags the corner handle. Persisted across games.
-  const BOARD_MIN = 300;
-  const BOARD_MAX = 640;
-  const [boardSize, setBoardSize] = useState(() => {
-    const saved = parseInt(localStorage.getItem('gaBoardSize') || '', 10);
-    return Number.isFinite(saved) ? Math.min(BOARD_MAX, Math.max(BOARD_MIN, saved)) : 380;
-  });
-  const resizeRef = useRef(null); // { startX, startSize }
-
-  const onResizeStart = useCallback((e) => {
-    e.preventDefault();
-    const startX = e.touches ? e.touches[0].clientX : e.clientX;
-    resizeRef.current = { startX, startSize: boardSize };
-
-    const onMove = (ev) => {
-      const x = ev.touches ? ev.touches[0].clientX : ev.clientX;
-      const delta = x - resizeRef.current.startX;
-      const next = Math.min(BOARD_MAX, Math.max(BOARD_MIN, Math.round(resizeRef.current.startSize + delta)));
-      setBoardSize(next);
-    };
-    const onUp = () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-      window.removeEventListener('touchmove', onMove);
-      window.removeEventListener('touchend', onUp);
-      try { localStorage.setItem('gaBoardSize', String(boardSizeRef.current)); } catch { /* ignore */ }
-    };
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-    window.addEventListener('touchmove', onMove, { passive: false });
-    window.addEventListener('touchend', onUp);
-  }, [boardSize]);
-
-  // Keep a ref of the latest size so the resize-end handler persists the final value.
-  const boardSizeRef = useRef(boardSize);
-  useEffect(() => { boardSizeRef.current = boardSize; }, [boardSize]);
+  // Board size + drag-to-resize now come from the shared hook, so the size is the
+  // same on every page and the grip behaves identically everywhere.
+  const [boardSize, setBoardSize] = useState(380);
 
   // Auto-play — steps forward along the current line.
   useEffect(() => {
@@ -572,21 +539,8 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
               lastMove={currentMove}
               arrows={exploring ? [] : arrows}
               boardWidth={boardSize}
-              coordinateSides={['left', 'bottom']}
             />
-            {/* Drag this corner to resize the board. The Chessboard centres an
-                8×8 grid inside a container padded by the coordinate gutter, so we
-                inset the handle by that gutter to land on the h1 square. */}
-            <div
-              className="gr-resize-handle"
-              onMouseDown={onResizeStart}
-              onTouchStart={onResizeStart}
-              title="Drag to resize the board"
-              style={{
-                right: (boardSize < 400 ? 20 : 32) + 3,
-                bottom: (boardSize < 400 ? 20 : 32) + 3,
-              }}
-            />
+            {/* Shared grip — positions itself from the board's exported geometry. */}
           </div>
 
           {exploring ? (

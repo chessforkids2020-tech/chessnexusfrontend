@@ -34,7 +34,6 @@ function BoardBlock({ block }) {
         onDrop={onMove}
         boardWidth={340}
         draggable={true}
-        showCoordinates={true}
         orientation={block.orientation || 'white'}
       />
       {block.caption && <div style={styles.caption}>{block.caption}</div>}

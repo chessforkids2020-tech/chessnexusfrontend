@@ -418,6 +418,9 @@ function HeroSlider({ user, onStartCoach, onBookDemo }) {
             <span className="hp-pill">📝 Assignments</span>
             <span className="hp-pill">📚 Courses</span>
             <span className="hp-pill">📖 Library</span>
+            {/* Live Classroom sits mid-bar: it's the headline capability, so it
+                reads as part of the workspace rather than an afterthought. */}
+            <span className="hp-pill hp-pill-hero">🎥 Live Classroom</span>
             <span className="hp-pill">👥 Batches</span>
             <span className="hp-pill">📅 Schedule</span>
             <span className="hp-pill">🎯 Activities</span>
@@ -718,12 +721,16 @@ export default function HomePage() {
         {/* ── FOR COACHES — image + circular-icon feature grid ── */}
         {(() => {
           const goCoach = () => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login');
+          // /coach/subscription is behind ProtectedRoute, so guests go via login.
+          const goPricing = () => navigate((user && user.role !== 'guest') ? '/coach/subscription' : '/login');
           const CoachIcon = ({ d }) => (
             <svg viewBox="0 0 24 24" fill="none"><path d={d} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
           );
           const COACH_FEATS = [
             { d: 'M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-4A3.5 3.5 0 0 0 5 18.5V20M9 11a3.25 3.25 0 1 0 0-6.5A3.25 3.25 0 0 0 9 11M19 20v-1.4a3.2 3.2 0 0 0-2.4-3.1M15.5 4.7a3.2 3.2 0 0 1 0 6.1', title: 'Roster & Batches', desc: 'Unlimited groups, private notes, students online' },
-            { d: 'M7 3v3M17 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1ZM9 13l2 2 4-4', title: 'Attendance & Fees', desc: 'Mark in a tap, request payments, CSV export' },
+            // Video-camera glyph — the classroom is the headline feature, and
+            // attendance is now a by-product of it rather than a separate chore.
+            { d: 'M15 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-3.5ZM15 10.5 21 7v10l-6-3.5', title: 'Built-in classroom', desc: 'Teach live — attendance marks itself as students join' },
             { d: 'M4 5.5A2.5 2.5 0 0 1 6.5 3H20v14H6.5A2.5 2.5 0 0 0 4 19.5V5.5ZM4 19.5A2.5 2.5 0 0 0 6.5 22H20', title: 'Assignments & Courses', desc: '7 types: templates, studies & master games' },
             { d: 'M14 3v4a1 1 0 0 0 1 1h4M15 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-4-5ZM9 13h6M9 17h4', title: 'Parent Reports', desc: 'One shareable progress link per student' },
           ];
@@ -746,9 +753,16 @@ export default function HomePage() {
                 </div>
                 <div className="hp-cshow-foot">
                   <div className="hp-cshow-trust"><span>✓ Free — up to 30 students</span><span>•</span><span>No card required</span></div>
-                  <button type="button" className="hp-cshow-btn" onClick={goCoach}>
-                    {(user && user.role !== 'guest') ? 'Start coaching free →' : 'Log in to start →'}
-                  </button>
+                  <div className="hp-cshow-btns">
+                    <button type="button" className="hp-cshow-btn" onClick={goCoach}>
+                      {(user && user.role !== 'guest') ? 'Start coaching free →' : 'Log in to start →'}
+                    </button>
+                    {/* Pricing lives on the coach subscription page, which already
+                        splits plans into "With / Without Live Classroom" tabs. */}
+                    <button type="button" className="hp-cshow-btn2" onClick={goPricing}>
+                      See coach pricing
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

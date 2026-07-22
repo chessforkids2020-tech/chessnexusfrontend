@@ -156,7 +156,7 @@ export default function MyMoments() {
           {puzzles.map((p) => (
             <button key={p._id} className={`mm-card${p.solved ? ' solved' : ''}`} onClick={() => openPuzzle(p)}>
               <div className="mm-card-board">
-                <Chessboard position={p.fen} boardWidth={160} draggable={false} orientation={p.sideToMove} />
+                <Chessboard position={p.fen} boardWidth={160} draggable={false} resizable={false} orientation={p.sideToMove} />
               </div>
               <div className="mm-card-info">
                 <span className="mm-card-theme">{themeLabel(p.theme)}</span>

@@ -13,6 +13,8 @@ import BestRacers from "../components/BestRacers";
 import FriendGamesSection from "../components/FriendGamesSection";
 import GameInsightsPanel from "../components/GameInsightsPanel";
 import CoffeeBadge from "../components/CoffeeBadge";
+import FoundingBadge from "../components/FoundingBadge";
+import { useIsFoundingSupporter } from "../context/SupporterContext";
 import UserAvatar from "../components/UserAvatar";
 import CoffeeCta from "../components/CoffeeCta";
 
@@ -959,6 +961,9 @@ function MonthlyFocusPanel({ publicData = null }) {
 export default function UserDashboard() {
   const { displayName: routeDisplayName } = useParams();
   const [user, setUser] = useState(null);
+  // Founding Supporter → permanent 👑 instead of the ☕. Hook must run unconditionally
+  // (rules of hooks), so it takes undefined while `user` is still loading.
+  const isFounder = useIsFoundingSupporter(user?.username, user?.displayName, user?._id || user?.id);
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
@@ -1406,7 +1411,12 @@ export default function UserDashboard() {
             <div className="welcome-text">
               <h1 className="welcome-title">
                 {isPublicView ? user.displayName : `Welcome, ${user.displayName}!`}
-                {user.coffeeSupporter && <CoffeeBadge size={26} />}
+                {/* A Founding Supporter's permanent 👑 replaces the ☕ — otherwise a
+                    founder would see a coffee cup on their OWN dashboard while
+                    everyone else in the app sees their crown. */}
+                {isFounder
+                  ? <FoundingBadge size={26} />
+                  : user.coffeeSupporter && <CoffeeBadge size={26} />}
                 {user.role === 'elite' && (
                   <span style={{
                     display: 'inline-flex',

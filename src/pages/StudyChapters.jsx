@@ -231,7 +231,6 @@ const StudyChapters = () => {
               onDrop={handleMove}
               boardWidth={boardSize}
               draggable={true}
-              showCoordinates={true}
             />
           </div>
           <button style={styles.nextButton} onClick={nextChapter}>

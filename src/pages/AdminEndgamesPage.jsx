@@ -23,7 +23,6 @@ import { Chess } from "chess.js";
 import api from "../api";
 import Chessboard from "../components/Chessboard";
 import stockfishService from "../services/stockfishService";
-import EndgameTrainer from "../components/EndgameTrainer";
 import { useAuth } from "../contexts/AuthContext";
 
 // ── Engine analysis helpers (shared style with GameReplay's Stockfish panel) ──
@@ -211,6 +210,37 @@ const styles = {
   subtitle: { margin: "4px 0 18px", color: "#94a3b8", fontSize: 13 },
   secondaryBtn: { padding: "8px 12px", background: "rgba(255,255,255,0.05)", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, cursor: "pointer", fontWeight: 600 },
   cardGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 18 },
+  // Wide rectangular banner for the curated challenges, above the type grid.
+  challengeBanner: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    gap: 18,
+    padding: "18px 22px",
+    marginBottom: 20,
+    borderRadius: 16,
+    cursor: "pointer",
+    overflow: "hidden",
+    background: "linear-gradient(120deg, rgba(245,158,11,0.10) 0%, rgba(30,30,34,0.75) 45%, rgba(12,12,14,0.85) 100%)",
+    border: "1px solid rgba(245,158,11,0.20)",
+    boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+    transition: "transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease",
+    flexWrap: "wrap",
+  },
+  challengeIcon: {
+    flex: "0 0 auto", width: 52, height: 52, borderRadius: 14,
+    display: "grid", placeItems: "center", fontSize: 26,
+    background: "rgba(245,158,11,0.14)", color: "#f59e0b",
+    border: "1px solid rgba(245,158,11,0.25)",
+  },
+  challengeTitle: { fontSize: 18, fontWeight: 800, color: "#fff", letterSpacing: -0.2 },
+  challengeSub: { fontSize: 13, color: "#94a3b8", marginTop: 4, lineHeight: 1.55 },
+  challengeCta: {
+    flex: "0 0 auto", padding: "10px 18px", borderRadius: 999,
+    background: "rgba(245,158,11,0.14)", color: "#f59e0b",
+    border: "1px solid rgba(245,158,11,0.35)",
+    fontSize: 13.5, fontWeight: 800, whiteSpace: "nowrap",
+  },
   card: {
     position: "relative",
     background: "linear-gradient(160deg, rgba(30,30,34,0.75) 0%, rgba(12,12,14,0.85) 100%)",
@@ -613,7 +643,9 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
 
         <div ref={bodyRef} style={compact ? { ...styles.modalBody, flexWrap: "nowrap", marginTop: 0, gap: 16, alignItems: "stretch" } : styles.modalBody}>
           {/* LEFT: chessboard + navigation controls */}
-          <div style={compact ? { ...styles.boardColCompact, marginTop: -68, marginBottom: -20 } : styles.boardCol}>
+          {/* No negative marginTop: the board reserves gutter space only on its
+              labelled sides (bottom+left), so cropping the top clips rank 8. */}
+          <div style={compact ? { ...styles.boardColCompact, marginBottom: -20 } : styles.boardCol}>
             <Chessboard
               position={shownFen}
               boardWidth={compact ? boardWidth : 440}
@@ -708,7 +740,18 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
 
 // Shared Endgames browser. Used by the admin page and the student Study page;
 // only the back-link target/label differ (passed as props).
-export default function AdminEndgamesPage({ backTo = "/admin", backLabel = "← Back to Admin", compact = false }) {
+// Accent + destination for the "Endgame Challenges" card. Amber sets it apart from
+// the cyan/violet family accents so it reads as a different kind of activity.
+const CHALLENGE_ACCENT = "#f59e0b";
+
+export default function AdminEndgamesPage({
+  backTo = "/admin",
+  backLabel = "← Back to Admin",
+  compact = false,
+  // Where the Endgame Challenges card navigates. Student and admin views mount
+  // this same component under different routes.
+  challengesPath = "/study/endgame-challenges",
+}) {
   // `compact` (student view) hides the Type / Move / Event columns: students are
   // already inside a type, and event/move metadata isn't relevant for them.
   const navigate = useNavigate();
@@ -796,9 +839,33 @@ export default function AdminEndgamesPage({ backTo = "/admin", backLabel = "← 
         {error && <div style={{ color: "#b91c1c", marginBottom: 12 }}>{error}</div>}
         {loadingIndex && <div style={styles.loading}>Loading endgame types…</div>}
 
-        {/* Premium play-out trainer band — renders itself only if admin has curated
-            positions; otherwise returns null and the browse grid shows as before. */}
-        <EndgameTrainer />
+        {/* Curated play-out challenges — a WIDE banner above the type grid. They're
+            a different activity (play vs engine) to browsing positions by type, so
+            they get the full width rather than competing as one square in the grid. */}
+        <div
+          style={styles.challengeBanner}
+          onClick={() => navigate(challengesPath)}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-3px)";
+            e.currentTarget.style.boxShadow = `0 18px 40px rgba(0,0,0,0.5), 0 0 0 1px ${CHALLENGE_ACCENT}66`;
+            e.currentTarget.style.borderColor = `${CHALLENGE_ACCENT}66`;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "none";
+            e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.4)";
+            e.currentTarget.style.borderColor = `${CHALLENGE_ACCENT}33`;
+          }}
+        >
+          <div style={{ ...styles.cardTopBar, background: `linear-gradient(90deg, ${CHALLENGE_ACCENT}, transparent)` }} />
+          <div style={styles.challengeIcon}>👑</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={styles.challengeTitle}>Endgame Challenges</div>
+            <div style={styles.challengeSub}>
+              Hand-picked endgames to play out against Stockfish — convert the win or hold the draw.
+            </div>
+          </div>
+          <div style={styles.challengeCta}>Play vs Stockfish →</div>
+        </div>
 
         {index && (
           <div style={styles.cardGrid}>

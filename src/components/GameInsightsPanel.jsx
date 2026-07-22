@@ -315,7 +315,7 @@ export default function GameInsightsPanel() {
             {puzzles.map((p) => (
               <button key={p._id} className="gip-card" onClick={() => openPuzzle(p)}>
                 <div className="gip-card-board">
-                  <Chessboard position={p.fen} boardWidth={150} draggable={false} orientation={p.sideToMove} />
+                  <Chessboard position={p.fen} boardWidth={150} draggable={false} resizable={false} orientation={p.sideToMove} />
                 </div>
                 <div className="gip-card-info">
                   <span className="gip-card-theme">{themeLabel(p.theme)}</span>

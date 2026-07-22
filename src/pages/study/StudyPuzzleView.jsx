@@ -35,10 +35,13 @@ const StudyPuzzleView = () => {
   const [humanColor, setHumanColor] = useState('white');
   const [sfLevel, setSfLevel] = useState('medium');
 
+  // ── Analysis mode (evaluate the CURRENT position; does not play moves) ──
+  const [anMode, setAnMode] = useState(false);
+  const [anEval, setAnEval] = useState(null);   // { cp } | { mate } — White's POV
+  const [anLine, setAnLine] = useState('');     // best line in SAN
+  const [anDepth, setAnDepth] = useState(0);
+
   // Resizing refs
-  const resizingRef = useRef(false);
-  const startXRef = useRef(0);
-  const startWidthRef = useRef(0);
   const chessboardRef = useRef(null);
 
   // Stockfish refs
@@ -48,6 +51,11 @@ const StudyPuzzleView = () => {
   const sfThinkingRef = useRef(false);
   const humanColorRef = useRef('white');
   const currentMoveIndexRef = useRef(0);
+  // Analysis uses its OWN worker so it never competes with the play-vs-Stockfish
+  // engine (two `go` commands on one worker cancel each other).
+  const anWorkerRef = useRef(null);
+  const anModeRef = useRef(false);
+  const anFenRef = useRef('');   // FEN the current search is running on (SAN + POV)
 
   const studyTypeColors = {
     positional: {
@@ -315,42 +323,73 @@ const StudyPuzzleView = () => {
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userMoves, sfReady, sfMode]);
+
+  /* ── Analysis mode ─────────────────────────────
+     Evaluates the position on the board and streams depth / score / best line.
+     Read-only — it never plays a move. */
+  useEffect(() => { return () => { if (anWorkerRef.current) anWorkerRef.current.terminate(); }; }, []);
+
+  const stopAnalysis = useCallback(() => {
+    if (anWorkerRef.current) { anWorkerRef.current.terminate(); anWorkerRef.current = null; }
+    anModeRef.current = false;
+    setAnMode(false); setAnEval(null); setAnLine(''); setAnDepth(0);
+  }, []);
+
+  const toggleAnalysis = useCallback(() => {
+    if (anModeRef.current) { stopAnalysis(); return; }
+    anModeRef.current = true;
+    setAnMode(true);
+    setAnEval(null); setAnLine(''); setAnDepth(0);
+    if (anWorkerRef.current) anWorkerRef.current.terminate();
+    const w = new Worker('/stockfish.js');
+    anWorkerRef.current = w;
+    w.onmessage = (e) => {
+      const line = typeof e.data === 'string' ? e.data : '';
+      if (line.includes('uciok')) { w.postMessage('isready'); return; }
+      if (!line.startsWith('info') || !line.includes(' pv ')) return;
+      const d = /\bdepth (\d+)/.exec(line);
+      const cp = /\bscore cp (-?\d+)/.exec(line);
+      const mate = /\bscore mate (-?\d+)/.exec(line);
+      const pv = /\bpv (.+)$/.exec(line);
+      if (d) setAnDepth(Number(d[1]));
+      // Scores come from the SIDE TO MOVE; flip to White's POV so the sign is stable.
+      const sideToMove = anFenRef.current.split(' ')[1] === 'b' ? -1 : 1;
+      if (mate) setAnEval({ mate: Number(mate[1]) * sideToMove });
+      else if (cp) setAnEval({ cp: Number(cp[1]) * sideToMove });
+      if (pv) {
+        try {
+          const tmp = new Chess(anFenRef.current);
+          const sans = [];
+          for (const uci of pv[1].trim().split(/\s+/).slice(0, 8)) {
+            const mv = tmp.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || 'q' });
+            if (!mv) break;
+            sans.push(mv.san);
+          }
+          setAnLine(sans.join(' '));
+        } catch { /* malformed pv — keep the previous line */ }
+      }
+    };
+    w.onerror = () => stopAnalysis();
+    w.postMessage('uci');
+  }, [stopAnalysis]);
+
+  // Re-run the search whenever the position changes while analysis is on. Keyed on
+  // userMoves (same signal the play-vs-Stockfish effect uses in this file).
+  useEffect(() => {
+    const fen = chess.fen();
+    anFenRef.current = fen;
+    const w = anWorkerRef.current;
+    if (!anMode || !w) return;
+    setAnEval(null); setAnLine(''); setAnDepth(0);
+    w.postMessage('stop');
+    w.postMessage(`position fen ${fen}`);
+    w.postMessage('go depth 20');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userMoves, anMode]);
   // ─────────────────────────────────────────────────────────────────────────
 
-  // Resize handlers with touch support
-  const handleManualResizeStart = (e) => {
-    e.preventDefault();
-    resizingRef.current = true;
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    startXRef.current = clientX;
-    startWidthRef.current = boardWidth;
-    
-    // Add both mouse and touch listeners
-    document.addEventListener('mousemove', handleManualResizeMove);
-    document.addEventListener('mouseup', handleManualResizeEnd);
-    document.addEventListener('touchmove', handleManualResizeMove, { passive: false });
-    document.addEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'nwse-resize';
-  };
   
-  const handleManualResizeMove = (e) => {
-    if (!resizingRef.current) return;
-    e.preventDefault();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const deltaX = clientX - startXRef.current;
-    const maxWidth = Math.min(800, window.innerWidth - 100);
-    const newWidth = Math.max(300, Math.min(maxWidth, startWidthRef.current + deltaX));
-    setBoardWidth(newWidth);
-  };
   
-  const handleManualResizeEnd = () => {
-    resizingRef.current = false;
-    document.removeEventListener('mousemove', handleManualResizeMove);
-    document.removeEventListener('mouseup', handleManualResizeEnd);
-    document.removeEventListener('touchmove', handleManualResizeMove);
-    document.removeEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'default';
-  };
 
   const formatMovesDisplay = () => {
     const moves = [];
@@ -892,10 +931,9 @@ const StudyPuzzleView = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 maxWidth: '100%',
-                // The shared Chessboard reserves coordinate-label space on all 4
-                // sides but we only show bottom+left here — pull the board up over
-                // the empty top reservation (matches component's coordinateSize).
-                marginTop: `-${boardWidth < 400 ? 20 : 32}px`,
+                // No negative margin here: Chessboard reserves gutter space only on
+                // the sides that render labels (bottom+left), so there is no empty
+                // top reservation to pull over — doing so clips the top rank.
               }}
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -906,29 +944,7 @@ const StudyPuzzleView = () => {
                 onDrop={handleMove}
                 boardWidth={boardWidth}
                 draggable={true}
-                showCoordinates={true}
-                coordinateSides={['bottom', 'left']}
                 orientation={boardOrientation}
-              />
-              
-              <div
-                onMouseDown={handleManualResizeStart}
-                onTouchStart={handleManualResizeStart}
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  width: '0',
-                  height: '0',
-                  borderStyle: 'solid',
-                  borderWidth: '0 0 30px 30px',
-                  borderColor: 'transparent transparent #3b82f6 transparent',
-                  cursor: 'nwse-resize',
-                  zIndex: 100,
-                  opacity: 0.8,
-                  touchAction: 'none'
-                }}
-                title="Drag to resize chessboard"
               />
             </motion.div>
 
@@ -1007,6 +1023,39 @@ const StudyPuzzleView = () => {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
+            {/* ── Analyze with Stockfish (evaluates the position; plays nothing) ── */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: anMode ? 8 : 14 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: anMode ? '#38bdf8' : '#4b5563', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+                🔍 {anMode ? (anDepth ? `Analysing · depth ${anDepth}` : 'Starting…') : 'Analysis'}
+              </div>
+              <button
+                onClick={toggleAnalysis}
+                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'rgba(239,68,68,0.12)' : 'rgba(56,189,248,0.12)', color: anMode ? '#ef4444' : '#38bdf8', border: `1px solid ${anMode ? 'rgba(239,68,68,0.35)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
+              >{anMode ? '■ Stop' : '🔍 Analyse'}</button>
+            </div>
+            {anMode && (
+              <div style={{ marginBottom: 14, padding: '10px 12px', borderRadius: 10, background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                  <span style={{ fontSize: 20, fontWeight: 800, color: '#e0f2fe', fontVariantNumeric: 'tabular-nums' }}>
+                    {anEval == null ? '…'
+                      : anEval.mate != null
+                        ? `M${Math.abs(anEval.mate)}${anEval.mate < 0 ? ' ♚' : ''}`
+                        : `${anEval.cp > 0 ? '+' : ''}${(anEval.cp / 100).toFixed(2)}`}
+                  </span>
+                  <span style={{ fontSize: 11, color: '#7dd3fc' }}>
+                    {anEval == null ? '' : anEval.mate != null
+                      ? (anEval.mate > 0 ? 'White mates' : 'Black mates')
+                      : anEval.cp > 30 ? 'White is better' : anEval.cp < -30 ? 'Black is better' : 'Equal'}
+                  </span>
+                </div>
+                {anLine && (
+                  <div style={{ marginTop: 6, fontSize: 11.5, color: '#94a3b8', lineHeight: 1.5, wordBreak: 'break-word' }}>
+                    <span style={{ color: '#64748b' }}>Best line: </span>{anLine}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* ── Stockfish Toggle ── */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: sfMode ? '#22c55e' : '#4b5563', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>

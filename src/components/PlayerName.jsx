@@ -8,7 +8,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CoffeeBadge from './CoffeeBadge';
-import { useIsSupporter } from '../context/SupporterContext';
+import FoundingBadge from './FoundingBadge';
+import { useIsSupporter, useIsFoundingSupporter } from '../context/SupporterContext';
 
 export default function PlayerName({
   displayName,
@@ -28,13 +29,16 @@ export default function PlayerName({
   // Match on username OR displayName (or userId) so the badge shows everywhere,
   // regardless of which field a given list happens to render.
   const fromContext = useIsSupporter(username, displayName, userId);
+  const isFounder = useIsFoundingSupporter(username, displayName, userId);
   const showBadge = coffeeSupporter === true || (coffeeSupporter == null && fromContext);
   const name = displayName || username || '';
 
   const inner = (
     <>
       {name}
-      {showBadge && <CoffeeBadge />}
+      {/* A Founding Supporter's permanent 👑 replaces the ☕ — one badge, not two.
+          Founders are shown even if their paid window has lapsed. */}
+      {isFounder ? <FoundingBadge /> : showBadge && <CoffeeBadge />}
     </>
   );
 

@@ -608,7 +608,6 @@ export default function ArcadeGame() {
                 lastMove={makeLastMoveObj(lastMove)}
                 draggable={isMyTurn && phase === "solving"}
                 allowMovePiece={() => isMyTurn && phase === "solving"}
-                coordinateSides={['bottom', 'left']}
                 boardWidth={chessBoardWidth}
               />
               {!isMyTurn && <div style={{ color:T.textDim, fontSize:12 }}>Watch {oppName} solve...</div>}
@@ -708,7 +707,6 @@ export default function ArcadeGame() {
                 draggable={isMyTurn && phase === "solving"}
                 allowMovePiece={() => isMyTurn && phase === "solving"}
                 boardWidth={typeof window !== "undefined" ? (window.innerWidth <= 480 ? Math.min(320, window.innerWidth - 32) : Math.min(420, window.innerWidth - 500)) : 420}
-                coordinateSides={["bottom", "left"]}
               />
               {feedback && (
                 <div style={{ fontSize:13, fontWeight:600, color: feedback.startsWith("❌") ? T.wrong : T.correct, textAlign:"center" }}>

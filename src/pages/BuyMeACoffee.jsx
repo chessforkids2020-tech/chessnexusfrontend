@@ -65,6 +65,14 @@ export default function BuyMeACoffee() {
   const [customBase, setCustomBase] = useState(''); // manual per-coffee amount
   const [info, setInfo] = useState({ payment: {}, supporters: [] });
   const [myStatus, setMyStatus] = useState({ active: false, pendingCount: 0 });
+  // Founding spots remaining, from the backend's DISTINCT founder count. Never derive
+  // this from `supporters.length` — that list is newest-first and capped at 20, so it
+  // would report "80 spots left" forever. Falls back to the limit if the field is
+  // missing (older backend), which just keeps the offer visible.
+  const foundingLeft = Math.max(
+    0,
+    (info.foundingLimit ?? FOUNDING_LIMIT) - (info.foundingTaken ?? 0)
+  );
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [confirmFor, setConfirmFor] = useState(null); // provider key
@@ -330,7 +338,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
           )}
           {/* Founding-supporter draw — only while early spots remain and the viewer
               isn't already a supporter. Honest scarcity, not fake proof. */}
-          {!myStatus.active && !loading && info.supporters.length < FOUNDING_LIMIT && (
+          {!myStatus.active && !loading && foundingLeft > 0 && (
             <div style={styles.foundingPill}>
               👑 Founding Supporter — our first {FOUNDING_LIMIT} backers get a <strong>permanent</strong> badge that never expires.
             </div>
@@ -566,16 +574,19 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
         ) : (
           <>
             {/* Founding-supporter incentive stays visible while spots remain. */}
-            {info.supporters.length < FOUNDING_LIMIT && (
+            {foundingLeft > 0 && (
               <div style={styles.foundingBanner}>
-                👑 <strong style={{ color: '#fde68a' }}>{FOUNDING_LIMIT - info.supporters.length} Founding Supporter {FOUNDING_LIMIT - info.supporters.length === 1 ? 'spot' : 'spots'} left</strong>
+                👑 <strong style={{ color: '#fde68a' }}>{foundingLeft} Founding Supporter {foundingLeft === 1 ? 'spot' : 'spots'} left</strong>
                 {' '}— early supporters get a permanent badge that never expires.
               </div>
             )}
             <div style={styles.supporterRow}>
               {info.supporters.map((s, i) => (
                 <div key={i} style={styles.supporterChip}>
-                  <span aria-hidden style={{ marginRight: 6 }}>{i < FOUNDING_LIMIT ? '👑' : '☕'}</span>
+                  {/* Founder status comes from the STORED flag, not list position —
+                      the list is newest-first and capped, so an index check would
+                      hand out crowns to the wrong people as it grows. */}
+                  <span aria-hidden style={{ marginRight: 6 }}>{s.founding ? '👑' : '☕'}</span>
                   <span style={{ color: C.text, fontWeight: 600 }}>{s.displayName}</span>
                 </div>
               ))}

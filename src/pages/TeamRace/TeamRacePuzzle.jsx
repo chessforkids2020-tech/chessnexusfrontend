@@ -48,9 +48,6 @@ function TeamRacePuzzle() {
   const [myUserId, setMyUserId] = useState('');
   const [playerLbPage, setPlayerLbPage] = useState(0);
   const [boardWidth, setBoardWidth] = useState(450);
-  const resizingRef = useRef(false);
-  const startXRef = useRef(0);
-  const startWidthRef = useRef(400);
 
   // Calculate responsive board width
   const calculateResponsiveBoardWidth = () => {
@@ -77,21 +74,15 @@ function TeamRacePuzzle() {
     return Math.min(availableWidth * 0.7, 750);
   };
 
-  // Set initial responsive board width
-  useEffect(() => {
-    const initialWidth = calculateResponsiveBoardWidth();
-    setBoardWidth(initialWidth);
-  }, []);
-
-  // Handle window resize for responsive board sizing
+  // Shrink to fit only when the viewport is genuinely too small for the user's
+  // chosen size. We no longer overwrite their size on every resize event — the
+  // size is shared app-wide now, so clobbering it here would undo a deliberate drag.
   useEffect(() => {
     const handleResize = () => {
-      // Only auto-resize if not currently manually resizing
-      if (!resizingRef.current) {
-        const newWidth = calculateResponsiveBoardWidth();
-        setBoardWidth(newWidth);
-      }
+      const fit = calculateResponsiveBoardWidth();
+      setBoardWidth((cur) => (cur > fit ? fit : cur));
     };
+    handleResize();
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -256,38 +247,8 @@ function TeamRacePuzzle() {
     }
   };
 
-  // Resize handlers
-  const handleManualResizeStart = (e) => {
-    e.preventDefault();
-    resizingRef.current = true;
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    startXRef.current = clientX;
-    startWidthRef.current = boardWidth;
-    
-    document.addEventListener('mousemove', handleManualResizeMove);
-    document.addEventListener('mouseup', handleManualResizeEnd);
-    document.addEventListener('touchmove', handleManualResizeMove, { passive: false });
-    document.addEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'nwse-resize';
-  };
   
-  const handleManualResizeMove = (e) => {
-    if (!resizingRef.current) return;
-    e.preventDefault();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const deltaX = clientX - startXRef.current;
-    const newWidth = Math.max(300, Math.min(800, startWidthRef.current + deltaX));
-    setBoardWidth(newWidth);
-  };
   
-  const handleManualResizeEnd = () => {
-    resizingRef.current = false;
-    document.removeEventListener('mousemove', handleManualResizeMove);
-    document.removeEventListener('mouseup', handleManualResizeEnd);
-    document.removeEventListener('touchmove', handleManualResizeMove);
-    document.removeEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'default';
-  };
 
   useEffect(() => {
     if (!raceStartTime || !duration) return;
@@ -864,25 +825,6 @@ function TeamRacePuzzle() {
             />
             
             {/* Resize Handle */}
-            <div
-              onMouseDown={handleManualResizeStart}
-              onTouchStart={handleManualResizeStart}
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                right: 0,
-                width: '0',
-                height: '0',
-                borderStyle: 'solid',
-                borderWidth: '0 0 30px 30px',
-                borderColor: 'transparent transparent #3b82f6 transparent',
-                cursor: 'nwse-resize',
-                zIndex: 100,
-                opacity: 0.8,
-                touchAction: 'none'
-              }}
-              title="Drag to resize"
-            />
           </div>
         </div>
 

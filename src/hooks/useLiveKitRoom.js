@@ -159,12 +159,36 @@ async function applyCameraAutoAdjust(r, onInfo) {
   } catch { /* unsupported — ignore, raw camera still fine */ }
 }
 
+// Classify a getUserMedia/LiveKit device error into something we can show a human.
+// The names are the standard DOMException names browsers throw; LiveKit wraps them
+// but preserves `name`, and some browsers only set `message`, so we check both.
+function classifyDeviceError(err) {
+  const name = err?.name || '';
+  const msg = String(err?.message || '');
+  if (name === 'NotAllowedError' || name === 'PermissionDeniedError' ||
+      /permission|denied|dismissed/i.test(msg)) return 'blocked';
+  if (name === 'NotFoundError' || name === 'DevicesNotFoundError' ||
+      /not ?found|no device/i.test(msg)) return 'missing';
+  if (name === 'NotReadableError' || name === 'TrackStartError' ||
+      /in use|could not start|busy/i.test(msg)) return 'busy';
+  return 'failed';
+}
+
 export default function useLiveKitRoom() {
   const [room, setRoom] = useState(null);
   const [connected, setConnected] = useState(false);
   const [participants, setParticipants] = useState([]); // [{ identity, name, isLocal, isSpeaking, videoTrack, audioTrack, screenTrack }]
   const [activeSpeaker, setActiveSpeaker] = useState(null);
   const [error, setError] = useState('');
+  // Why the camera/mic failed to start, if they did. The join path deliberately does
+  // NOT block on device setup (see the fast path in connect()), so without this the
+  // failure was swallowed entirely and the student sat in a dead, silent class with
+  // nothing on screen explaining it.
+  //   kind: 'blocked'  — browser/OS denied permission (cannot be re-prompted from JS)
+  //         'missing'  — no camera/mic attached
+  //         'busy'     — device held by another app (Zoom/Teams)
+  //         'failed'   — anything else
+  const [deviceIssue, setDeviceIssue] = useState(null); // { mic, cam, kind } | null
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
   const [screenOn, setScreenOn] = useState(false);
@@ -320,10 +344,25 @@ export default function useLiveKitRoom() {
     // auto-adjust → video-effects one after another before showing anything, which
     // took ~20-30s (RNNoise WASM + canvas processor setup are slow). None of those
     // "polish" steps are needed to SEE the room, so they now run in the BACKGROUND.
-    await Promise.all([
-      r.localParticipant.setMicrophoneEnabled(true, AUDIO_CAPTURE_DEFAULTS).catch(() => {}),
-      r.localParticipant.setCameraEnabled(true).catch(() => {}),
+    // Failures are RECORDED, not swallowed: entering the room must never be blocked by
+    // a dead device, but the user still has to be told why they're silent/invisible.
+    const [micRes, camRes] = await Promise.all([
+      r.localParticipant.setMicrophoneEnabled(true, AUDIO_CAPTURE_DEFAULTS)
+        .then(() => null).catch((e) => e),
+      r.localParticipant.setCameraEnabled(true).then(() => null).catch((e) => e),
     ]);
+    if (micRes || camRes) {
+      // Permission is asked for both at once, so a block usually fails both. Report the
+      // most actionable cause: a hard block outranks a missing/busy device.
+      const kinds = [micRes && classifyDeviceError(micRes), camRes && classifyDeviceError(camRes)].filter(Boolean);
+      setDeviceIssue({
+        mic: !!micRes,
+        cam: !!camRes,
+        kind: kinds.includes('blocked') ? 'blocked' : kinds[0],
+      });
+    } else {
+      setDeviceIssue(null);
+    }
     setRoom(r);
     setConnected(true);   // UI + waiting room show now — no waiting on the polish steps
     refresh(r);
@@ -472,6 +511,36 @@ export default function useLiveKitRoom() {
     await applyVideoProcessor();
   }, [applyVideoProcessor]);
 
+  // Re-attempt camera + mic after the user has fixed their browser/OS permission, so
+  // they don't have to leave and rejoin the class. Safe to call any time.
+  const retryDevices = useCallback(async () => {
+    const r = roomRef.current;
+    if (!r) return false;
+    const [micRes, camRes] = await Promise.all([
+      r.localParticipant.setMicrophoneEnabled(true, AUDIO_CAPTURE_DEFAULTS)
+        .then(() => null).catch((e) => e),
+      r.localParticipant.setCameraEnabled(true).then(() => null).catch((e) => e),
+    ]);
+    if (micRes || camRes) {
+      const kinds = [micRes && classifyDeviceError(micRes), camRes && classifyDeviceError(camRes)].filter(Boolean);
+      setDeviceIssue({ mic: !!micRes, cam: !!camRes, kind: kinds.includes('blocked') ? 'blocked' : kinds[0] });
+      refresh(r);
+      return false;
+    }
+    // Working again — clear the warning and re-apply the optional polish.
+    setDeviceIssue(null);
+    setMicOn(r.localParticipant.isMicrophoneEnabled);
+    setCamOn(r.localParticipant.isCameraEnabled);
+    try {
+      applyContentHint(r);
+      await applyCameraAutoAdjust(r, setCamInfo);
+      await applyVideoRef.current();
+    } catch { /* effects are optional */ }
+    loadCameras();
+    refresh(r);
+    return true;
+  }, [refresh, loadCameras]);
+
   // Toggle the free RNNoise AI noise suppression on the mic (persisted). Applied live
   // to the current mic track. If Krisp is licensed/enabled it owns the mic instead.
   const toggleNoiseSuppression = useCallback(async (on) => {
@@ -556,6 +625,7 @@ export default function useLiveKitRoom() {
 
   return {
     room, connected, participants, activeSpeaker, error,
+    deviceIssue, retryDevices,
     micOn, camOn, screenOn,
     cameras, activeCameraId, switchCamera,
     mics, activeMicId, switchMic,

@@ -111,10 +111,10 @@ export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
     if (!game || analyzing) return;
     setAnalyzing(true); setAnalyzeError(null); setProgress(0);
 
-    // Smoothly creep the progress bar while we wait on the server. Estimate the
-    // duration from the move count (~2 positions/move). Caps at 95% until done.
+    // Smoothly creep the progress bar while we wait on the server. Measured at
+    // ~0.7s per ply (depth 16 + per-position cache). Caps at 95% until done.
     const moveCount = (game.moves || []).length || 40;
-    const estMs = Math.max(8000, moveCount * 900);
+    const estMs = Math.max(8000, moveCount * 750);
     const startedAt = Date.now();
     const ticker = setInterval(() => {
       const frac = Math.min(0.95, (Date.now() - startedAt) / estMs);
@@ -126,7 +126,15 @@ export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
       let analysis = null;
       for (let attempt = 0; attempt <= MAX_BUSY_RETRIES; attempt++) {
         try {
-          const res = await api.post(`/api/master-games/${gameId}/analyze`, { depth: 20 });
+          // A full-game analysis runs Stockfish at depth 20 on EVERY ply — measured
+          // at ~5s/ply, so a normal 80–100 ply game takes 6–8 MINUTES. The shared
+          // axios client has a 30s timeout, which aborted this every time and
+          // surfaced as "Analysis failed" no matter how healthy the engine was.
+          const res = await api.post(
+            `/api/master-games/${gameId}/analyze`,
+            { depth: 20 },
+            { timeout: 15 * 60 * 1000 }
+          );
           analysis = res.data?.analysis || [];
           break;
         } catch (e) {
@@ -498,10 +506,9 @@ const st = {
   // gap never forces a wrap to two rows).
   leftCol: { flex: '0 0 55%', minWidth: 0, display: 'flex', flexDirection: 'column' },
   boardRow: { display: 'flex', gap: 8, alignItems: 'flex-start' },
-  // The Chessboard reserves ~32px of coordinate padding on ALL sides but only
-  // draws coords on bottom+left, so the top is empty space. Pull the board up to
-  // sit flush under the header (clip the wasted top padding).
-  boardWrap: { width: '100%', display: 'flex', justifyContent: 'center', marginTop: -28, overflow: 'hidden' },
+  // The Chessboard reserves gutter space only on the sides that draw labels
+  // (bottom+left), so there is no wasted top padding to pull up over.
+  boardWrap: { width: '100%', display: 'flex', justifyContent: 'center' },
 
   right: { flex: '1 1 0', minWidth: 0, display: 'flex', flexDirection: 'column' },
 

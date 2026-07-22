@@ -146,7 +146,7 @@ function MiniPuzzleCard({ puzzle, index, onClick }) {
           position={puzzle.fen || 'start'}
           boardWidth={130}
           orientation={orientation}
-          draggable={false}
+          draggable={false} resizable={false}
           showCoordinates={false}
           mute
         />

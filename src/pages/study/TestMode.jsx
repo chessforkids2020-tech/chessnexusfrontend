@@ -29,44 +29,6 @@ const TestMode = () => {
   // Board resize state & refs (for manual drag resize)
   const [boardWidth, setBoardWidth] = useState(400);
   const rightPanelRef = useRef(null);
-  const startXRef = useRef(0);
-  const startWidthRef = useRef(0);
-  const resizingRef = useRef(false);
-
-  // Manual resize handlers (touch + mouse)
-  const handleManualResizeStart = (e) => {
-    e.preventDefault();
-    resizingRef.current = true;
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    startXRef.current = clientX;
-    startWidthRef.current = boardWidth;
-
-    document.addEventListener('mousemove', handleManualResizeMove);
-    document.addEventListener('mouseup', handleManualResizeEnd);
-    document.addEventListener('touchmove', handleManualResizeMove, { passive: false });
-    document.addEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'nwse-resize';
-  };
-
-  const handleManualResizeMove = (e) => {
-    if (!resizingRef.current) return;
-    e.preventDefault();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const deltaX = clientX - startXRef.current;
-    const rightPanelWidth = rightPanelRef.current ? rightPanelRef.current.clientWidth - 40 : 800;
-    const maxWidth = Math.min(800, rightPanelWidth);
-    const newWidth = Math.max(300, Math.min(maxWidth, startWidthRef.current + deltaX));
-    setBoardWidth(newWidth);
-  };
-
-  const handleManualResizeEnd = () => {
-    resizingRef.current = false;
-    document.removeEventListener('mousemove', handleManualResizeMove);
-    document.removeEventListener('mouseup', handleManualResizeEnd);
-    document.removeEventListener('touchmove', handleManualResizeMove);
-    document.removeEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'default';
-  };
 
   useEffect(() => {
     const startTest = async () => {
@@ -532,30 +494,8 @@ const TestMode = () => {
                 onDrop={handleMove}
                 boardWidth={boardWidth}
                 draggable={!isSolved && !waitingForStockfish && timeLeft > 0}
-                showCoordinates={true}
                 orientation={boardOrientation}
-              />
-
-              <div
-                onMouseDown={handleManualResizeStart}
-                onTouchStart={handleManualResizeStart}
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  width: '0',
-                  height: '0',
-                  borderStyle: 'solid',
-                  borderWidth: '0 0 30px 30px',
-                  borderColor: 'transparent transparent #06b6d4 transparent',
-                  cursor: 'nwse-resize',
-                  zIndex: 100,
-                  opacity: 0.9,
-                  touchAction: 'none'
-                }}
-                title="Drag to resize"
-              />
-            </div>
+              />            </div>
           </div>
 
         </div>

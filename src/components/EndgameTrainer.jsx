@@ -236,11 +236,11 @@ function StudyView({ pick, onPlay }) {
 
   return (
     <div style={{ display: "flex", gap: 22, flexWrap: "wrap", alignItems: "flex-start" }}>
-      {/* LEFT: interactive board. Crop the blank TOP coordinate gutter. */}
-      <div style={{ overflow: "hidden" }}>
-        <div style={{ marginTop: -(boardW < 400 ? 20 : 32) }}>
-          <Chessboard position={fen} boardWidth={boardW} orientation={trainerSide} draggable onDrop={onDrop} lastMove={lastMove} />
-        </div>
+      {/* LEFT: interactive board. The Chessboard reserves its coordinate gutter only
+          on the sides that render labels (bottom+left), so there is no blank TOP
+          gutter to crop — a negative margin here would clip the top rank. */}
+      <div>
+        <Chessboard position={fen} boardWidth={boardW} orientation={trainerSide} draggable onDrop={onDrop} lastMove={lastMove} />
       </div>
 
       {/* RIGHT: buttons, goal, description, engine, move list, navigation. */}
@@ -458,17 +458,16 @@ function PlayView({ pick, onResult, onBack }) {
 
   return (
     <div style={{ display: "flex", gap: 22, flexWrap: "wrap", alignItems: "flex-start" }}>
-      {/* LEFT: board only (no title above it). Crop the blank TOP coordinate gutter. */}
-      <div style={{ overflow: "hidden" }}>
-        <div style={{ marginTop: -(boardW < 400 ? 20 : 32) }}>
-          <Chessboard
-            position={fen}
-            boardWidth={boardW}
-            orientation={trainerSide}
-            draggable={status === "play"}
-            onDrop={onUserMove}
-          />
-        </div>
+      {/* LEFT: board only (no title above it). No blank TOP gutter to crop — the
+          Chessboard only reserves gutters on the labelled sides (bottom+left). */}
+      <div>
+        <Chessboard
+          position={fen}
+          boardWidth={boardW}
+          orientation={trainerSide}
+          draggable={status === "play"}
+          onDrop={onUserMove}
+        />
       </div>
       <div style={{ flex: "1 1 260px", minWidth: 240 }}>
           {/* Back-to-study + play instruction (no title above the board now). */}
@@ -572,7 +571,7 @@ function EndgameModal({ pick, onClose, onResult }) {
 }
 
 // ── Main trainer (band → list → play) ────────────────────────────────────────
-export default function EndgameTrainer() {
+export default function EndgameTrainer({ emptyFallback = null }) {
   const [data, setData] = useState(null);   // { families, walletXp, freeAccess, ... }
   const [progress, setProgress] = useState({});
   const [loading, setLoading] = useState(true);
@@ -619,7 +618,9 @@ export default function EndgameTrainer() {
   };
 
   if (loading) return null;
-  if (!data || familyKeys.length === 0) return null; // nothing curated yet → hide the band entirely
+  // Nothing curated yet. Embedded in a page (as a band) that means render nothing;
+  // on its OWN page a blank screen looks broken, so callers can pass a fallback.
+  if (!data || familyKeys.length === 0) return emptyFallback || null;
 
   // ── LIST VIEW (one family) ──
   if (family) {

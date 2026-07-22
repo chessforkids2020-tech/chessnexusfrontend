@@ -423,7 +423,6 @@ const StudyTest = () => {
                 onDrop={handleMove}
                 boardWidth={boardSize}
                 draggable={!isSolved && !waitingForStockfish}
-                showCoordinates={true}
               />
             </div>
           </div>

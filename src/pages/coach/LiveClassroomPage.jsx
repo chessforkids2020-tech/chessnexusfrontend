@@ -332,7 +332,7 @@ const FLOATERS = ['♟', '♞', '♝', '♜', '♛', '♚', '♙', '♘'];
 // SAN notation panel with variations, rendered from the shared game tree.
 // Clicking a move jumps everyone to it (host/controller drives). Read-only for
 // students without control (they just follow the highlight).
-function MoveTreeNotation({ tree, path, onJump, canNavigate, height, collapsed, onToggle }) {
+function MoveTreeNotation({ tree, path, onJump, canNavigate, height, collapsed, onToggle, width }) {
   const curId = path.length ? path[path.length - 1] : 'root';
 
   // Render a chain of moves; branch (children[1..]) shown as indented variations.
@@ -369,7 +369,7 @@ function MoveTreeNotation({ tree, path, onJump, canNavigate, height, collapsed, 
 
   const hasMoves = tree && tree.children && tree.children.length > 0;
   return (
-    <div style={{ ...nt.wrap, width: collapsed ? 150 : 300, height: collapsed ? 'auto' : (height || 420) }}>
+    <div style={{ ...nt.wrap, width: collapsed ? 150 : (width || 300), height: collapsed ? 'auto' : (height || 420) }}>
       <div style={{ ...nt.title, cursor: onToggle ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
         onClick={onToggle} title={onToggle ? (collapsed ? 'Expand moves' : 'Collapse moves — more room for videos') : ''}>
         <span>📝 Moves</span>
@@ -705,9 +705,6 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     // board; laptop → the familiar ~440–520px.
     return Math.round(Math.max(420, Math.min(720, window.innerWidth * 0.4)));
   });
-  const resizeStartX = useRef(0);
-  const resizeStartW = useRef(500);
-  const resizingRef = useRef(false);
   // Video-first layout (like Zoom): the stage shows the video grid by default;
   // the chessboard is a toggle. Screen share always takes the stage when active.
   const [showBoard, setShowBoard] = useState(false);
@@ -1131,44 +1128,68 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // The host/controller keeps their draggable size. A VIEWER (student) can't drag,
   // so their board AUTO-FITS the available height — and grows big in fullscreen.
   // vpW/vpH (not window.*) so this recomputes on resize and fullscreen changes.
-  const viewerFit = Math.max(320, Math.min(vpH - 170, vpW - 360, 820));
+  // Width the OTHER stage columns need, so the board can give way to them instead
+  // of overflowing. The positions/lessons list only exists for the host and only on
+  // tabs that populate it — when it appears the board must shrink to make room.
+  const posListShown = isHost && (
+    (contentTab === 'courses' && !!pickCourse) ||
+    (contentTab === 'library' && libraryItems.length > 0) ||
+    (contentTab === 'studies' && positions.length > 0)
+  );
+  const posListW = posListShown ? 194 : 0;            // 180 + column gap
+  // Videos detached (floating, hidden or popped out) → the right rail is empty, so
+  // the Stockfish + Moves cards take that freed width instead of leaving a gap.
+  // Only the host can detach; `vMode` further down forces 'dock' for everyone else.
+  const videosDetached = isHost && videoMode !== 'dock';
+  // The moves/engine cards narrow when the positions list is on screen so the three
+  // columns share the width, and widen when the video rail goes away.
+  const movesCardW = videosDetached ? (posListShown ? 340 : 400)
+                                    : (posListShown ? 250 : 300);
+  const movesColW = movesCollapsed ? 60 : movesCardW + 54;   // + card padding
+  // The video rail's own width — zero once the videos are detached, since the rail
+  // then has no thumbnails to hold.
+  const railW = videosDetached ? 0 : (movesCollapsed ? 380 : 300) + 16;
+  // Everything the board is competing with, plus page padding.
+  const sideCols = posListW + movesColW + railW + 60;
+
+  const viewerFit = Math.max(320, Math.min(vpH - 170, vpW - sideCols, 820));
   // The host/controller's dragged width is CLAMPED to what actually fits on screen.
   // Without this a stored/dragged size larger than the viewport pushed the top rank
   // off the top of the stage, and shrinking the board couldn't recover it.
-  const controlFit = Math.max(280, Math.min(boardWidth, vpH - 170, vpW - 360));
+  // The controller's dragged size is respected. We only stop it running off the
+  // VIEWPORT — deliberately not `vpW - sideCols`, because that reserve (positions
+  // list + moves card + video rail) is bigger than the slack on a laptop, so the
+  // clamp snapped every drag straight back and the board looked un-resizable.
+  // The stage scrolls if the coach makes it genuinely huge; that's their choice.
+  // The coach's dragged size WINS. Only the viewport bounds it, so the board can
+  // grow until it genuinely won't fit the screen.
+  //
+  // `sideCols` (positions list + moves card + video rail) deliberately does NOT cap
+  // this: it's 730–874px, which on a laptop leaves a ceiling at or below the board's
+  // own starting size — so the board hit an invisible wall part-way through a drag.
+  // The stage scrolls horizontally instead, which is the coach's choice to make.
+  // `sideCols` still drives the VIEWER auto-fit below, where the layout decides.
+  const controlFit = Math.max(280, Math.min(boardWidth, vpH - 120, vpW - 120));
   const shownBoardW = iControl ? controlFit : viewerFit;
+
+  // When the positions list first appears, shrink the board ONCE to make room for
+  // it. This is a nudge, not a cap: the coach can immediately drag back to any size
+  // they like, and re-opening the list won't fight them.
+  const shrunkForListRef = useRef(false);
+  useEffect(() => {
+    if (!iControl) return;
+    if (posListShown && !shrunkForListRef.current) {
+      shrunkForListRef.current = true;
+      const room = Math.max(380, vpW - sideCols);
+      setBoardWidth(w => (w > room ? room : w));
+    } else if (!posListShown) {
+      shrunkForListRef.current = false;   // arm again for the next time it opens
+    }
+  }, [posListShown, iControl, vpW, sideCols]);
   // The Chessboard reserves a coordinate gutter on the labelled sides only
   // (bottom+left), so the on-screen box is the board plus one gutter. Use this for
   // the column width and the Moves-panel height so everything lines up.
   const boardBoxSize = shownBoardW + 34;
-  const onResizeMove = useCallback((e) => {
-    if (!resizingRef.current) return;
-    e.preventDefault();
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    // Bound by HEIGHT as well as width — a board dragged taller than the viewport
-    // used to run off the top of the stage.
-    const max = Math.min(820, window.innerWidth - 100, window.innerHeight - 170);
-    setBoardWidth(Math.max(280, Math.min(max, resizeStartW.current + (x - resizeStartX.current))));
-  }, []);
-  const onResizeEnd = useCallback(() => {
-    resizingRef.current = false;
-    document.removeEventListener('mousemove', onResizeMove);
-    document.removeEventListener('mouseup', onResizeEnd);
-    document.removeEventListener('touchmove', onResizeMove);
-    document.removeEventListener('touchend', onResizeEnd);
-    document.body.style.cursor = 'default';
-  }, [onResizeMove]);
-  const onResizeStart = useCallback((e) => {
-    e.preventDefault();
-    resizingRef.current = true;
-    resizeStartX.current = e.touches ? e.touches[0].clientX : e.clientX;
-    resizeStartW.current = boardWidth;
-    document.addEventListener('mousemove', onResizeMove);
-    document.addEventListener('mouseup', onResizeEnd);
-    document.addEventListener('touchmove', onResizeMove, { passive: false });
-    document.addEventListener('touchend', onResizeEnd);
-    document.body.style.cursor = 'nwse-resize';
-  }, [boardWidth, onResizeMove, onResizeEnd]);
 
   // Apply a new tree+path locally and broadcast to the class.
   // Loading a new position drops any manual flip so the board auto-orients to the
@@ -1929,7 +1950,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             // nowrap on wide screens keeps [positions | board | moves+engine] as three
             // fixed columns so collapsing Moves never drops the card to the bottom of the
             // page. On narrow screens we still allow wrap so it stacks gracefully.
-            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', flexWrap: isNarrow ? 'wrap' : 'nowrap', width: '100%', justifyContent: 'center' }}>
+            // `justifyContent: center` overflows EQUALLY on both sides once the
+            // columns exceed the stage, which pushed the positions card off the left
+            // edge. `flex-start` keeps the row anchored so nothing is ever clipped;
+            // `margin: 0 auto` on the row still centres it when there IS spare room.
+            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', flexWrap: isNarrow ? 'wrap' : 'nowrap', maxWidth: '100%', margin: '0 auto', justifyContent: 'flex-start', minWidth: 0 }}>
               {/* LEFT of the board (host-only): the clickable list — course lessons,
                   library items, or study positions depending on the active tab. */}
               {isHost && (() => {
@@ -1980,8 +2005,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 return null;
               })()}
 
-              {/* Board column — the board + the load panel below, both board-width. */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: isHost ? Math.max(boardBoxSize, 560) : boardBoxSize }}>
+              {/* Board column — hugs the board. The old flat 560px host minimum left
+                  a wide empty gap beside a smaller board (the board is centred in the
+                  column). The panel below needs ~460px to keep its tabs readable, so
+                  only fall back to that when the board is genuinely narrower. */}
+              <div style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0,
+                width: isHost ? Math.max(boardBoxSize, 460) : boardBoxSize,
+                minWidth: 0,
+              }}>
                 {/* Relative wrapper (inline-block so it hugs the board) for the resize
                     handle. The board component now reserves its coordinate gutter only on
                     the sides that actually render labels (bottom+left), so there is no
@@ -1995,19 +2027,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     arrows={iControl ? [] : drawArrows}
                     highlightSquares={iControl ? undefined : drawHighlights}
                     onDrawingChange={iControl ? onBoardDrawing : undefined}
-                    showCoordinates coordinateSides={['bottom', 'left']} />
-                  {/* Blue corner triangle — drag to resize (same as the study board). */}
-                  {iControl && (
-                    <div
-                      onMouseDown={onResizeStart}
-                      onTouchStart={onResizeStart}
-                      title="Drag to resize the board"
-                      style={{ position: 'absolute', bottom: 0, right: 0, width: 0, height: 0,
-                        borderStyle: 'solid', borderWidth: '0 0 28px 28px',
-                        borderColor: 'transparent transparent #3b82f6 transparent',
-                        cursor: 'nwse-resize', zIndex: 100, opacity: 0.85, touchAction: 'none' }}
-                    />
-                  )}
+                    // Only the host/controller may resize; the board draws its own
+                    // grip, so this page no longer adds a second (blue) one.
+                    resizable={!!iControl}
+                    onResize={iControl ? setBoardWidth : undefined}
+                  />
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
                   <span style={{ color: '#9ca3af', fontSize: 12 }}>
@@ -2034,7 +2058,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
                 {/* Host-only: load from studies / courses / library, or paste a FEN/PGN. */}
                 {isHost && (
-                  <div style={{ ...s.loadPanel, width: '100%' }}>
+                  <div style={{ ...s.loadPanel, width: '100%', boxSizing: 'border-box' }}>
                     {/* Top-level content tabs */}
                     <div style={s.srcTabs}>
                       {[['studies', '📚 Studies'], ['courses', '🎓 Courses'], ['library', '📁 Library'], ['puzzles', '🧩 Puzzles'], ['games', '♟ Games']].map(([v, label]) => (
@@ -2213,11 +2237,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 {/* Host-only Stockfish (browser WASM) — top 3 lines, on/off.
                     Private to the host; not shared with students, not saved. */}
                 {isHost && (
-                  <div style={{ width: 340 }}>
+                  // Same width as the Moves card below — they were mismatched by 40px,
+                  // so the two stacked cards had visibly different edges.
+                  <div style={{ width: movesCardW }}>
                     <EnginePanel fen={curFen} numLines={3} enabled={engineOn} onToggle={() => setEngineOn(v => !v)} />
                   </div>
                 )}
                 <MoveTreeNotation tree={tree} path={treePath} onJump={goToPath} canNavigate={iControl} height={boardBoxSize}
+                  width={movesCardW}
                   collapsed={movesCollapsed} onToggle={() => setMovesCollapsed(c => !c)} />
                 {isHost && puzzle && contentTab === 'puzzles' && (
                   <div style={s.puzBar}>

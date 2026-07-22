@@ -6,7 +6,11 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import api from '../api';
 
-const EMPTY = { keys: new Set(), ids: new Set() };
+const EMPTY = {
+  keys: new Set(), ids: new Set(),
+  // Founding Supporters (first 100 backers) — they get a permanent 👑 instead of ☕.
+  foundingKeys: new Set(), foundingIds: new Set(),
+};
 
 const SupporterContext = createContext({ ...EMPTY, refresh: () => {} });
 
@@ -27,7 +31,10 @@ export function SupporterProvider({ children }) {
         : [...(data.usernames || []), ...(data.displayNames || [])];
       const keys = new Set(rawKeys.map(norm).filter(Boolean));
       const ids = new Set((data.userIds || []).map(String));
-      setSupporters({ keys, ids });
+      // Founder sets are absent on an older backend — the ☕ badge still works.
+      const foundingKeys = new Set((data.foundingKeys || []).map(norm).filter(Boolean));
+      const foundingIds = new Set((data.foundingUserIds || []).map(String));
+      setSupporters({ keys, ids, foundingKeys, foundingIds });
     } catch (err) {
       // Badge is best-effort, but log so this doesn't fail invisibly again.
       console.warn('SupporterContext refresh failed:', err?.message || err);
@@ -59,6 +66,21 @@ export function useIsSupporter(username, displayName, userId) {
   if (u && keys.has(u)) return true;
   const d = norm(displayName);
   if (d && keys.has(d)) return true;
+  return false;
+}
+
+/**
+ * Returns true if the given player is a FOUNDING supporter (one of the first 100),
+ * whose 👑 badge is permanent and never expires. Same matching rules as
+ * useIsSupporter. A founder is always also a supporter.
+ */
+export function useIsFoundingSupporter(username, displayName, userId) {
+  const { foundingKeys, foundingIds } = useContext(SupporterContext);
+  if (userId && foundingIds.has(String(userId))) return true;
+  const u = norm(username);
+  if (u && foundingKeys.has(u)) return true;
+  const d = norm(displayName);
+  if (d && foundingKeys.has(d)) return true;
   return false;
 }
 

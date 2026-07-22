@@ -15,7 +15,7 @@ const FOUNDING_LIMIT = 100; // keep in sync with BuyMeACoffee.jsx
 export default function FoundingSupporterCard({ compact = false, style = {} }) {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [supporters, setSupporters] = useState(null); // null = loading
+  const [spotsInfo, setSpotsInfo] = useState(null); // null = loading; { taken, limit }
   const [dismissed, setDismissed] = useState(() => {
     try { return localStorage.getItem('foundingCardDismissed') === '1'; } catch { return false; }
   });
@@ -23,16 +23,24 @@ export default function FoundingSupporterCard({ compact = false, style = {} }) {
   useEffect(() => {
     let alive = true;
     api.get('/api/coffee/info')
-      .then(r => { if (alive) setSupporters(Array.isArray(r.data?.supporters) ? r.data.supporters : []); })
-      .catch(() => { if (alive) setSupporters([]); });
+      .then(r => {
+        if (!alive) return;
+        // Use the backend's DISTINCT founder count — the `supporters` array is capped
+        // at 20, so counting it would claim "80 spots left" forever.
+        setSpotsInfo({
+          taken: r.data?.foundingTaken ?? 0,
+          limit: r.data?.foundingLimit ?? FOUNDING_LIMIT,
+        });
+      })
+      .catch(() => { if (alive) setSpotsInfo({ taken: 0, limit: FOUNDING_LIMIT }); });
     return () => { alive = false; };
   }, []);
 
   // Already a supporter, dismissed, still loading, or spots gone → don't show.
   if (dismissed) return null;
   if (user?.coffeeSupporter) return null;
-  if (supporters === null) return null;
-  const spotsLeft = FOUNDING_LIMIT - supporters.length;
+  if (spotsInfo === null) return null;
+  const spotsLeft = Math.max(0, spotsInfo.limit - spotsInfo.taken);
   if (spotsLeft <= 0) return null;
 
   const dismiss = (e) => {

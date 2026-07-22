@@ -232,7 +232,7 @@ export default function FriendGamesSection({ userId }) {
                   <span>{game.whitePlayerDisplayName || game.whitePlayerUsername}</span>
                 </div>
                 <div className="atg-card-board-wrap">
-                  <Chessboard position={game.fen || DEFAULT_FEN} boardWidth={200} draggable={false} orientation="white" />
+                  <Chessboard position={game.fen || DEFAULT_FEN} boardWidth={200} draggable={false} resizable={false} orientation="white" />
                   <div className={`atg-result-badge atg-result-${game.result || 'unknown'}`}>
                     {formatResult(game.result)}
                   </div>

@@ -111,7 +111,6 @@ export default function OTBConfirmPanel({ scanResult, onConfirm, onCancel, submi
                   orientation={m.side === 'white' ? 'white' : 'black'}
                   draggable={false}
                   boardWidth={200}
-                  showCoordinates={true}
                 />
               </div>
             )}

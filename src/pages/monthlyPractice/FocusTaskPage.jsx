@@ -1249,7 +1249,6 @@ export default function FocusTaskPage() {
                 <PGNChessboard 
                   pgn={task.content.pgn} 
                   boardWidth={400} 
-                  coordinateSides={['bottom', 'left']}
                   orientation={task.content.side || 'white'}
                 />
               </div>
@@ -1779,13 +1778,11 @@ export default function FocusTaskPage() {
                   boardWidth={Math.min(window.innerWidth * 0.9, 450)}
                   draggable={false}
                   orientation={popupChessboardData.orientation}
-                  coordinateSides={['bottom', 'left']}
                 />
               ) : (
                 <PGNChessboard 
                   pgn={popupChessboardData.fen} 
                   boardWidth={Math.min(window.innerWidth * 0.9, 450)}
-                  coordinateSides={['bottom', 'left']}
                 />
               )}
             </div>

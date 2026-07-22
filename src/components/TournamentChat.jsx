@@ -2,6 +2,7 @@
 import socket from '../socket-jwt';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
+import PlayerName from './PlayerName';
 import './TournamentChat.css';
 
 export default function TournamentChat({ tournamentId }) {
@@ -136,7 +137,16 @@ export default function TournamentChat({ tournamentId }) {
                 color: msg.userId === currentUserId ? '#67e8f9' : '#06b6d4',
                 marginRight: '6px'
               }}>
-                {msg.displayName || msg.username || 'Anonymous'}:
+                {/* PlayerName adds the supporter ☕ / founder 👑 badge. It renders
+                    nothing when both names are missing, so keep the old fallback. */}
+                {(msg.displayName || msg.username)
+                  ? <PlayerName
+                      displayName={msg.displayName}
+                      username={msg.username}
+                      userId={msg.userId}
+                      style={{ color: 'inherit', fontWeight: 'inherit' }}
+                    />
+                  : 'Anonymous'}:
               </span>
               <span style={{ color: '#ffffff' }}>
                 {msg.message}

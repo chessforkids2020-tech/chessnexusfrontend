@@ -4,6 +4,46 @@ import soundManager from '../utils/soundManager';
 import { useBoardTheme } from '../contexts/BoardThemeContext';
 import { usePieceTheme } from '../contexts/PieceThemeContext';
 
+export type CoordinateSide = 'top' | 'bottom' | 'left' | 'right';
+
+/** The board's DEFAULT coordinate sides. Callers should not restate this. */
+export const DEFAULT_COORDINATE_SIDES: CoordinateSide[] = ['bottom', 'left'];
+
+/**
+ * Width of the coordinate gutter for a given board width.
+ * EXPORTED because layout around the board (resize grips, wrappers, column widths)
+ * has to line up with it. Callers must use this instead of hardcoding the numbers —
+ * copies of this math in page files are what broke when the gutter changed.
+ */
+export function coordinateGutter(boardWidth: number): number {
+  // Sized to the LABEL, not a fixed slab: the label height plus a 2px gap. A flat
+  // 32px (or even label + 6) left visible dead space beyond the digits/letters,
+  // because the label hugs the board and all the slack fell on the outer side.
+  // No upper clamp: the gutter must always be at least as tall as the label it
+  // holds, or big boards clip their own coordinates.
+  const squareSize = (boardWidth - 4) / 8;
+  return Math.round(Math.max(10, squareSize * 0.22 + 2));
+}
+
+/**
+ * Per-side gutter for a board. A side only reserves space when it actually renders
+ * labels, so with the default sides `top` and `right` are 0. Use this to position
+ * anything that must sit against the board's true edge.
+ */
+export function gutterFor(
+  boardWidth: number,
+  sides: CoordinateSide[] = DEFAULT_COORDINATE_SIDES,
+  showCoordinates: boolean = true
+): { top: number; right: number; bottom: number; left: number } {
+  const g = showCoordinates ? coordinateGutter(boardWidth) : 0;
+  return {
+    top: sides.includes('top') ? g : 0,
+    right: sides.includes('right') ? g : 0,
+    bottom: sides.includes('bottom') ? g : 0,
+    left: sides.includes('left') ? g : 0,
+  };
+}
+
 // Map a chess.js piece character to a two-char filename prefix understood by all piece sets.
 // e.g. 'p' -> 'bP', 'K' -> 'wK'
 function pieceToCode(piece: string): string {
@@ -18,12 +58,28 @@ interface ChessboardProps {
   orientation?: 'white' | 'black';
   boardStyle?: React.CSSProperties;
   boardWidth?: number;
+  /**
+   * Drag-to-resize is ON by default and fully self-contained: the board renders its
+   * own grip and tracks its own size. Pages need to wire nothing. Set false to hide
+   * the grip (e.g. tiny preview boards, or a mobile layout that must stay fixed).
+   */
+  resizable?: boolean;
+  /**
+   * Optional: take control of the size. When provided, the board reports the new
+   * width here instead of resizing itself, so the page owns the state.
+   */
+  onResize?: (width: number) => void;
+  /** Bounds for resize dragging. */
+  minBoardWidth?: number;
+  maxBoardWidth?: number;
   lightSquareStyle?: React.CSSProperties;
   darkSquareStyle?: React.CSSProperties;
   draggable?: boolean;
   transitionDuration?: number;
   showCoordinates?: boolean;
   coordinatesInside?: boolean;
+  /** Multiplier on the coordinate label size. 1 = default; <1 for a smaller board. */
+  coordinateScale?: number;
   coordinateSides?: ('top' | 'bottom' | 'left' | 'right')[];
   lastMove?: { from: string; to: string } | null;
   mute?: boolean;
@@ -67,12 +123,17 @@ const Chessboard: React.FC<ChessboardProps> = ({
   orientation = 'white',
   boardStyle = {},
   boardWidth: boardWidthProp = 440,
+  resizable = true,
+  onResize,
+  minBoardWidth = 280,
+  maxBoardWidth = 900,
   lightSquareStyle,
   darkSquareStyle,
   draggable = true,
   transitionDuration = 400,
   showCoordinates = true,
   coordinatesInside = false,
+  coordinateScale = 1,
   coordinateSides,
   lastMove = null,
   mute = false,
@@ -96,7 +157,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
     darkSquareStyle ?? { backgroundColor: boardTheme.dark };
 
   // Always show bottom and left sides only
-  const effectiveCoordinateSides = coordinateSides || ['bottom', 'left'];
+  const effectiveCoordinateSides = coordinateSides || DEFAULT_COORDINATE_SIDES;
   const [localFlipped, setLocalFlipped] = useState(orientation === 'black');
   const [draggedPiece, setDraggedPiece] = useState<PieceInfo | null>(null);
   const [selectedPiece, setSelectedPiece] = useState<PieceInfo | null>(null);
@@ -138,9 +199,26 @@ const Chessboard: React.FC<ChessboardProps> = ({
   const MOBILE_BP = 1024;    // phones + tablets/iPads
   const MOBILE_VH = 0.72;    // board may use at most this share of the screen height
   const MOBILE_VW = 0.96;    // small side margin so it never touches the very edge
-  const boardWidth = viewport.w <= MOBILE_BP
-    ? Math.max(180, Math.min(boardWidthProp, Math.floor(viewport.w * MOBILE_VW), Math.floor(viewport.h * MOBILE_VH)))
-    : boardWidthProp;
+
+  // Drag-to-resize is OWNED BY THE BOARD. Pages don't wire anything up: the grip
+  // appears on every board and this state remembers the user's drag. `null` means
+  // "never dragged", so the board keeps following whatever size the page passes.
+  // A page can still opt out with resizable={false}, or take control by passing
+  // onResize (then it owns the state and this is bypassed).
+  const [draggedWidth, setDraggedWidth] = useState<number | null>(null);
+  // Once dragged, the user's size STICKS. We deliberately do NOT reset it when the
+  // page changes `boardWidth`: several pages (HealthyMix, arena) recompute their
+  // size continuously from a ResizeObserver, and resetting on that would wipe the
+  // drag on the very next frame — which is why this used to need per-page wiring.
+  // The size is still clamped to the viewport below, so it can never overflow.
+  const effectiveWidth = draggedWidth ?? boardWidthProp;
+  // Clamp DOWN to the viewport, but never UP: a caller asking for a small board
+  // (thumbnails, previews) means it, and forcing a minimum made those overflow
+  // their fixed-size containers and get clipped.
+  const viewportCap = viewport.w <= MOBILE_BP
+    ? Math.min(Math.floor(viewport.w * MOBILE_VW), Math.floor(viewport.h * MOBILE_VH))
+    : Math.floor(viewport.h * 0.92);
+  const boardWidth = Math.min(effectiveWidth, viewportCap);
 
   // Notify the parent whenever the user draws/clears arrows or highlights, so a
   // classroom can broadcast the coach's drawings to students in real time.
@@ -187,7 +265,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
   // Calculate square size early (needed for useEffect)
   const squareSize = (boardWidth - 4) / 8;
   const isSmallScreen = boardWidth < 400;
-  const coordinateSize = isSmallScreen ? 20 : 32;
+  const coordinateSize = coordinateGutter(boardWidth);
 
   // Is this a phone/tablet viewport? Used to place coordinates inside the board so
   // it can fill the screen. Read at render (no listener) — the board already
@@ -212,6 +290,52 @@ const Chessboard: React.FC<ChessboardProps> = ({
   const padBottom = outerPad && effectiveCoordinateSides.includes('bottom') ? outerPad : 0;
   const padLeft = outerPad && effectiveCoordinateSides.includes('left') ? outerPad : 0;
   const padRight = outerPad && effectiveCoordinateSides.includes('right') ? outerPad : 0;
+
+  // Small and discreet — it sits ON the board's bottom-right corner square, so it
+  // must stay well under the piece there. Tinted with the dark square colour.
+  const gripSize = Math.round(Math.max(8, Math.min(12, boardWidthProp * 0.022)));
+  const gripColor = boardTheme.dark;
+
+  // ── Drag-to-resize ──────────────────────────────────────────────────────────
+  // Only active when the caller passes `onResize`. Tracks the pointer from the
+  // grip and reports a new width; the caller owns the state, so the board stays
+  // a controlled component.
+  const resizeStartRef = useRef<{ x: number; y: number; w: number } | null>(null);
+  const onResizeGripDown = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();   // never let the grip start a piece drag
+    const pt = 'touches' in e ? e.touches[0] : e;
+    resizeStartRef.current = { x: pt.clientX, y: pt.clientY, w: boardWidth };
+
+    const onMove = (ev: MouseEvent | TouchEvent) => {
+      const s = resizeStartRef.current;
+      if (!s) return;
+      const p = 'touches' in ev ? (ev as TouchEvent).touches[0] : (ev as MouseEvent);
+      const dx = p.clientX - s.x;
+      const dy = p.clientY - s.y;
+      // The grip is on a corner, so honour whichever axis moved further —
+      // dragging down feels the same as dragging right.
+      const delta = Math.abs(dx) > Math.abs(dy) ? dx : dy;
+      const next = Math.round(Math.min(maxBoardWidth, Math.max(minBoardWidth, s.w + delta)));
+      // Default: the board resizes itself. If the page passed onResize it owns the
+      // size instead, so hand the value over and don't double-track it here.
+      if (onResize) onResize(next);
+      else setDraggedWidth(next);
+    };
+    const onUp = () => {
+      resizeStartRef.current = null;
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onUp);
+      document.body.style.cursor = '';
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onUp);
+    document.body.style.cursor = 'nwse-resize';
+  }, [onResize, boardWidth, boardWidthProp, minBoardWidth, maxBoardWidth]);
 
   // Parse FEN string to get piece positions (robust against invalid/empty FEN)
   const defaultFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -1064,7 +1188,10 @@ const Chessboard: React.FC<ChessboardProps> = ({
   const renderCoordinates = () => {
     if (!showCoordinates) return null;
 
-    const labelSize = squareSize * 0.3; // Size of coordinate labels
+    // INSIDE labels sit on a square and need enough weight to read against a piece.
+    // OUTSIDE labels sit in their own gutter on the app's dark background, so they
+    // can be noticeably smaller and still be perfectly legible.
+    const labelSize = squareSize * (coordsInside ? 0.3 : 0.22) * coordinateScale;
 
     // Where the board's top-left sits inside the container. Gutters are reserved
     // per-side (only sides that render labels get one), so the horizontal and
@@ -1076,19 +1203,29 @@ const Chessboard: React.FC<ChessboardProps> = ({
       position: 'absolute',
       fontSize: `${labelSize}px`,
       fontWeight: 'bold',
-      color: '#8B4513',
+      // OUTSIDE labels sit in the gutter on the app's dark background, so they are
+      // white. INSIDE labels are overridden per-label further down to contrast with
+      // the square they sit on, so this brown is only a fallback for those.
+      color: coordsInside ? '#8B4513' : 'rgba(255, 255, 255, 0.75)',
       userSelect: 'none',
       pointerEvents: 'none',
       zIndex: 10
     };
 
-    // When labels sit INSIDE, tuck them into the CORNER of the edge squares
-    // (Lichess/chess.com style) so they never overlap the pieces sitting on
-    // those squares. Files -> bottom-left corner of each bottom square; ranks ->
-    // top-left corner of each left-edge square. `cornerPad` is the tiny inset
-    // from the square's edge. When labels sit OUTSIDE, they stay centered in the
-    // gutter (the original behaviour) so we branch on `coordsInside`.
-    const cornerPad = 2;
+    // INSIDE labels are tinted to CONTRAST with the square they sit on — a label on
+    // a dark square takes the light square colour and vice versa. That is what makes
+    // them read cleanly (chess.com style) instead of a fixed brown that disappears
+    // against half the board. Reuses getSquareColor so flipping the board keeps the
+    // contrast correct (the corner squares swap colour when flipped).
+    const insideLabelColor = (row: number, col: number) =>
+      getSquareColor(row, col) === 'light' ? boardTheme.dark : boardTheme.light;
+
+    // When labels sit INSIDE, tuck them into the CORNER of the edge squares so they
+    // never overlap the piece on that square: ranks -> TOP-LEFT of the left-edge
+    // squares, files -> BOTTOM-RIGHT of the bottom squares. `cornerPad` is the inset
+    // from the square's edge. When labels sit OUTSIDE they stay centred in the
+    // gutter (the original behaviour), so we branch on `coordsInside`.
+    const cornerPad = Math.max(2, Math.round(squareSize * 0.05));
     // Half-square centering used for OUTSIDE labels, along either axis.
     const centerInSquare = (i: number, offset: number) =>
       offset + i * squareSize + squareSize / 2 - labelSize / 2;
@@ -1098,37 +1235,73 @@ const Chessboard: React.FC<ChessboardProps> = ({
     // File labels (a-h) - flip if black orientation
     const files = isFlipped ? ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a'] : ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
     files.forEach((file, col) => {
-      // Horizontal position: inside -> left corner of the square; outside -> centered.
-      const fileLeft = coordsInside
-        ? `${boardOffsetX + col * squareSize + cornerPad}px`
-        : `${centerInSquare(col, boardOffsetX)}px`;
-      const fileStyle: React.CSSProperties = {
-        ...labelStyle,
-        left: fileLeft,
-        width: `${labelSize}px`,
-        height: `${labelSize}px`,
-        lineHeight: `${labelSize}px`,
-        textAlign: coordsInside ? 'left' : 'center',
-      };
+      // Inside: right-align within the square so the letter sits in the BOTTOM-RIGHT
+      // corner. Outside: centred in the gutter under the file.
+      const fileStyle: React.CSSProperties = coordsInside
+        ? {
+            ...labelStyle,
+            // Span the square's width and right-align — simpler and more exact than
+            // offsetting by the glyph width, which varies per character.
+            left: `${boardOffsetX + col * squareSize}px`,
+            width: `${squareSize - cornerPad}px`,
+            lineHeight: `${labelSize}px`,
+            textAlign: 'right',
+            // Bottom row: row index 7 (the rank shown at the bottom of the board).
+            color: insideLabelColor(7, col),
+            // NOTE: positioned from the TOP below, like the ranks. Using `bottom`
+            // measures from the container edge, which includes the coordinate
+            // gutter — that pushed the letters off the board onto the border.
+          }
+        : {
+            // OUTSIDE: span the whole square and centre — exact regardless of how
+            // wide the glyph is.
+            ...labelStyle,
+            left: `${boardOffsetX + col * squareSize}px`,
+            width: `${squareSize}px`,
+            height: `${labelSize}px`,
+            lineHeight: `${labelSize}px`,
+            textAlign: 'center',
+          };
 
-      // Bottom labels
+      // Bottom labels. Inside: sit in the bottom-right of the LAST rank's square,
+      // positioned from the top (the container's `bottom` edge includes the gutter).
       if (effectiveCoordinateSides.includes('bottom')) {
         coordinates.push(
           <div
             key={`bottom-${file}`}
-            style={{ ...fileStyle, bottom: coordsInside ? `${cornerPad}px` : '2px' }}
+            style={coordsInside
+              ? {
+                  ...fileStyle,
+                  top: `${boardOffsetY + 8 * squareSize - labelSize - cornerPad}px`,
+                }
+              // OUTSIDE: sit immediately under the board's bottom edge. The gutter is
+              // now sized to the label, so there is no slack to distribute — a fixed
+              // 1px gap keeps the letters tight against the board.
+              : {
+                  ...fileStyle,
+                  top: `${boardOffsetY + 8 * squareSize + 1}px`,
+                }}
           >
             {file}
           </div>
         );
       }
 
-      // Top labels
+      // Top labels — same style, but tinted against the TOP row (row 0), not the
+      // bottom one that `fileStyle` was built for.
       if (effectiveCoordinateSides.includes('top')) {
         coordinates.push(
           <div
             key={`top-${file}`}
-            style={{ ...fileStyle, top: coordsInside ? `${cornerPad}px` : '2px' }}
+            style={{
+              ...fileStyle,
+              // Outside: sit just ABOVE the board's top edge, hugging it — mirrors
+              // the bottom labels rather than floating at the container edge.
+              top: coordsInside
+                ? `${boardOffsetY + cornerPad}px`
+                : `${Math.max(1, padTop - labelSize - Math.max(1, (padTop - labelSize) * 0.18))}px`,
+              ...(coordsInside ? { color: insideLabelColor(0, col) } : null),
+            }}
           >
             {file}
           </div>
@@ -1150,26 +1323,48 @@ const Chessboard: React.FC<ChessboardProps> = ({
         height: `${labelSize}px`,
         lineHeight: `${labelSize}px`,
         textAlign: 'center',
+        // Left column: col index 0 — tint to contrast with that square.
+        ...(coordsInside ? { color: insideLabelColor(row, 0) } : null),
       };
 
-      // Left labels
+      // Left labels. Inside: tucked into the square's top-left. Outside: centred
+      // horizontally in the left gutter, beside its rank.
       if (effectiveCoordinateSides.includes('left')) {
         coordinates.push(
           <div
             key={`left-${rank}`}
-            style={{ ...rankStyle, left: coordsInside ? `${cornerPad}px` : '2px' }}
+            style={coordsInside
+              ? { ...rankStyle, left: `${boardOffsetX + cornerPad}px` }
+              // OUTSIDE: span the gutter but RIGHT-align, so the digits sit against
+              // the board's left edge. Only a 1px gap now — the gutter is sized to
+              // the label, so a larger inset would just reintroduce dead space.
+              : { ...rankStyle, left: 0, width: `${Math.max(0, padLeft - 1)}px`, textAlign: 'right' }}
           >
             {rank}
           </div>
         );
       }
 
-      // Right labels
+      // Right labels — tinted against the RIGHT column (col 7), not col 0.
       if (effectiveCoordinateSides.includes('right')) {
         coordinates.push(
           <div
             key={`right-${rank}`}
-            style={{ ...rankStyle, right: coordsInside ? `${cornerPad}px` : '2px' }}
+            style={coordsInside
+              ? {
+                  ...rankStyle,
+                  // Position from the LEFT so the gutter can't shift it: the board's
+                  // right edge minus the label box and its inset.
+                  left: `${boardOffsetX + 8 * squareSize - labelSize - cornerPad}px`,
+                  color: insideLabelColor(row, 7),
+                }
+              // OUTSIDE: hug the board's right edge, mirroring the left labels.
+              : {
+                  ...rankStyle,
+                  left: `${boardOffsetX + 8 * squareSize + 3}px`,
+                  width: `${Math.max(0, padRight - 3)}px`,
+                  textAlign: 'left',
+                }}
           >
             {rank}
           </div>
@@ -1341,7 +1536,9 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
         paddingTop: `${padTop}px`,
         paddingLeft: `${padLeft}px`,
         boxSizing: 'border-box',
-        borderRadius: '20px',
+        // Matches the inner board's radius. Keep these in step — a larger radius
+        // here would clip the board's own corners.
+        borderRadius: '8px',
         overflow: 'hidden',
         outline: 'none'
       }}
@@ -1353,7 +1550,7 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
           gridTemplateColumns: `repeat(8, ${squareSize}px)`,
           gridTemplateRows: `repeat(8, ${squareSize}px)`,
           border: '2px solid #8B4513',
-          borderRadius: '20px',
+          borderRadius: '8px',
           overflow: 'hidden',
           position: 'relative',
           width: `${boardWidth - 4}px`,
@@ -1424,6 +1621,41 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
 
       {/* Render coordinate labels */}
       {renderCoordinates()}
+
+      {/* Drag-to-resize grip — tucked INSIDE the board's bottom-right corner.
+          Anchored to the board's own edge (not the container's, which would push it
+          out past the coordinate gutter), and kept small so it never competes with
+          the piece standing on that corner square. */}
+      {resizable && (
+        <div
+          role="separator"
+          aria-label="Resize board"
+          title="Drag to resize the board"
+          onMouseDown={onResizeGripDown}
+          onTouchStart={onResizeGripDown}
+          style={{
+            position: 'absolute',
+            // The board's drawn surface is `boardWidth - 4` (2px border each side),
+            // starting at padLeft/padTop. Inset the grip a couple of px from that.
+            left: padLeft + (boardWidth - 4) - gripSize - 3,
+            top: padTop + (boardWidth - 4) - gripSize - 3,
+            width: gripSize,
+            height: gripSize,
+            cursor: 'nwse-resize',
+            touchAction: 'none',
+            zIndex: 12,
+            opacity: 0.6,
+            // Two thin diagonal strokes — the familiar corner-grip affordance, kept
+            // light so it reads as a hint rather than a control sitting on the board.
+            background: `linear-gradient(135deg,
+              transparent 0%, transparent 46%,
+              ${gripColor} 46%, ${gripColor} 54%,
+              transparent 54%, transparent 70%,
+              ${gripColor} 70%, ${gripColor} 78%,
+              transparent 78%)`,
+          }}
+        />
+      )}
 
       {/* Promotion popup */}
       {promotionPopup && (

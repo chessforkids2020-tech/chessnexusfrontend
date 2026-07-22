@@ -1147,34 +1147,6 @@
   display: inline-block;
   line-height: 0;
 }
-.gr-resize-handle {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  cursor: nwse-resize;
-  z-index: 6;
-  touch-action: none;
-  /* Diagonal grip lines sitting on the bottom-right (h1) square */
-  background:
-    linear-gradient(135deg,
-      transparent 0%, transparent 45%,
-      rgba(6, 182, 212, 0.95) 45%, rgba(6, 182, 212, 0.95) 55%,
-      transparent 55%, transparent 70%,
-      rgba(6, 182, 212, 0.95) 70%, rgba(6, 182, 212, 0.95) 80%,
-      transparent 80%);
-  opacity: 0.85;
-}
-.gr-resize-handle:hover {
-  opacity: 1;
-  background:
-    linear-gradient(135deg,
-      transparent 0%, transparent 45%,
-      rgba(16, 185, 129, 1) 45%, rgba(16, 185, 129, 1) 55%,
-      transparent 55%, transparent 70%,
-      rgba(16, 185, 129, 1) 70%, rgba(16, 185, 129, 1) 80%,
-      transparent 80%);
-}
-
 /* Win chance bar */
 .gr-winbar-wrap {
   width: 100%;

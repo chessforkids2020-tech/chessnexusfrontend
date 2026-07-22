@@ -361,6 +361,12 @@
   font-size: 13px; font-weight: 500; color: #b3bfce; cursor: default; -webkit-user-select: none; user-select: none;
   background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
 }
+/* Highlighted pill — marks the headline capability in an otherwise flat bar. */
+.hp-pill-hero {
+  color: #7ff0d0; font-weight: 600;
+  background: linear-gradient(135deg, rgba(6,182,212,0.16), rgba(16,185,129,0.12));
+  border-color: rgba(16,185,129,0.34);
+}
 
 /* ── Hero slider ─────────────────────────────────────── */
 .hp-heroslider { position: relative; }
@@ -2807,6 +2813,10 @@
 .hp-cshow-trust { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #8899aa; }
 .hp-cshow-btn { font-weight: 600; font-size: 14px; border-radius: 12px; padding: 12px 20px; border: 1px solid transparent; cursor: pointer; background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%); color: #04211d; box-shadow: 0 10px 26px -12px rgba(52,211,153,0.6); transition: transform .16s ease; }
 .hp-cshow-btn:hover { transform: translateY(-1px); }
+/* Primary + secondary CTA pair. Wraps on narrow screens so neither is squashed. */
+.hp-cshow-btns { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.hp-cshow-btn2 { font-weight: 600; font-size: 14px; border-radius: 12px; padding: 12px 20px; cursor: pointer; background: rgba(255,255,255,0.05); color: var(--t1); border: 1px solid rgba(255,255,255,0.14); transition: background .16s ease, border-color .16s ease, transform .16s ease; }
+.hp-cshow-btn2:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.26); transform: translateY(-1px); }
 @media (max-width: 900px) { .hp-cshow { grid-template-columns: 1fr; gap: 24px; } .hp-cshow-img img { max-height: 300px; } }
 @media (max-width: 620px) { .hp-cshow-grid { grid-template-columns: 1fr; } }
 

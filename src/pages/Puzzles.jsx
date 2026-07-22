@@ -107,17 +107,24 @@ export default function Puzzles() {
   useEffect(() => {
     const updateBoardSize = () => {
       const width = window.innerWidth;
+      // A board is SQUARE, so height matters as much as width. Sizing by width
+      // alone (the old behaviour) overflowed short/wide windows — the top rank was
+      // cut off and the board ran past the viewport. 78% of the viewport height
+      // leaves room for the page header and the controls under the board.
+      const byHeight = Math.floor(window.innerHeight * 0.78);
+      let byWidth;
       if (width <= 480) {
-        setBoardWidth(Math.min(320, width - 40));
+        byWidth = Math.min(320, width - 40);
       } else if (width <= 768) {
-        setBoardWidth(Math.min(450, width - 60));
+        byWidth = Math.min(450, width - 60);
       } else if (width <= 1024) {
         // ~50 % of viewport, capped at 490
-        setBoardWidth(Math.min(490, Math.floor(width * 0.50)));
+        byWidth = Math.min(490, Math.floor(width * 0.50));
       } else {
         // ~50 % of viewport on large/wide screens, capped at 510
-        setBoardWidth(Math.min(510, Math.floor(width * 0.50)));
+        byWidth = Math.min(510, Math.floor(width * 0.50));
       }
+      setBoardWidth(Math.max(260, Math.min(byWidth, byHeight)));
     };
     
     updateBoardSize();
@@ -162,9 +169,6 @@ export default function Puzzles() {
   const wrongMoveMadeRef = useRef(false); // Track if a wrong move was just made (for immediate undo)
   
   // Resizing refs
-  const resizingRef = useRef(false);
-  const startXRef = useRef(0);
-  const startWidthRef = useRef(0);
   
   useEffect(() => {
     if (user && localRating === null) {
@@ -209,42 +213,8 @@ export default function Puzzles() {
 
   // Session storage removed - was causing cross-player contamination
 
-  // Resize handlers with touch support
-  const handleManualResizeStart = (e) => {
-    e.preventDefault();
-    resizingRef.current = true;
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    startXRef.current = clientX;
-    startWidthRef.current = boardWidth;
-    
-    // Add both mouse and touch listeners
-    document.addEventListener('mousemove', handleManualResizeMove);
-    document.addEventListener('mouseup', handleManualResizeEnd);
-    document.addEventListener('touchmove', handleManualResizeMove, { passive: false });
-    document.addEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'nwse-resize';
-  };
   
-  const handleManualResizeMove = (e) => {
-    if (!resizingRef.current) return;
-    e.preventDefault();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const deltaX = clientX - startXRef.current;
-    // Get the right panel width to ensure we don't exceed it
-    const rightPanelWidth = rightPanelRef.current ? rightPanelRef.current.clientWidth - 40 : 800;
-    const maxWidth = Math.min(800, rightPanelWidth);
-    const newWidth = Math.max(300, Math.min(maxWidth, startWidthRef.current + deltaX));
-    setBoardWidth(newWidth);
-  };
   
-  const handleManualResizeEnd = () => {
-    resizingRef.current = false;
-    document.removeEventListener('mousemove', handleManualResizeMove);
-    document.removeEventListener('mouseup', handleManualResizeEnd);
-    document.removeEventListener('touchmove', handleManualResizeMove);
-    document.removeEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'default';
-  };
 
   // SKIP CONFIRMATION FUNCTIONS
   const handleSkipClick = () => {
@@ -1427,10 +1397,10 @@ export default function Puzzles() {
             position: 'relative',
             opacity: gameOver ? 0.8 : 1,
             transition: 'opacity 0.3s',
-            /* Lift the board to absorb the Chessboard's empty TOP coordinate
-               gutter. `overflow` is left visible so the BOTTOM file labels
-               (h g f … a) are never clipped (this page only). */
-            marginTop: -40
+            /* No negative marginTop: the Chessboard reserves gutter space only on
+               the sides that render labels (bottom+left), so there is no empty TOP
+               gutter to absorb — lifting the board just clipped rank 8 under the
+               header above it. */
           }}>
             {/* Game Over Overlay */}
             {gameOver && (
@@ -1509,26 +1479,6 @@ export default function Puzzles() {
                 boardWidth={boardWidth}
                 orientation={orientation}
                 draggable={!gameOver}
-              />
-              
-              <div
-                onMouseDown={handleManualResizeStart}
-                onTouchStart={handleManualResizeStart}
-                style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  right: 0,
-                  width: '0',
-                  height: '0',
-                  borderStyle: 'solid',
-                  borderWidth: '0 0 30px 30px',
-                  borderColor: 'transparent transparent #3b82f6 transparent',
-                  cursor: 'nwse-resize',
-                  zIndex: 100,
-                  opacity: 0.8,
-                  touchAction: 'none'
-                }}
-                title="Drag to resize"
               />
             </div>
             <style>{`

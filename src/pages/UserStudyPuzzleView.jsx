@@ -98,9 +98,14 @@ const UserStudyPuzzleView = () => {
   const [humanColor, setHumanColor] = useState('white');
   const [sfLevel, setSfLevel] = useState('medium');
 
-  const resizingRef = useRef(false);
-  const startXRef = useRef(0);
-  const startWidthRef = useRef(0);
+  // ── Analysis mode (evaluate the CURRENT position; does not play moves) ──
+  // Separate from "play vs Stockfish": this runs an infinite search on whatever
+  // position is on the board and streams back the eval + best line.
+  const [anMode, setAnMode] = useState(false);
+  const [anEval, setAnEval] = useState(null);   // { cp } | { mate } — from White's POV
+  const [anLine, setAnLine] = useState('');     // best line in SAN
+  const [anDepth, setAnDepth] = useState(0);
+
   const chessboardRef = useRef(null);
 
   // Stockfish refs
@@ -109,6 +114,11 @@ const UserStudyPuzzleView = () => {
   const sfModeRef = useRef(false);
   const sfThinkingRef = useRef(false);
   const humanColorRef = useRef('white');
+  // Analysis uses its OWN worker so it never fights the play-vs-Stockfish one for
+  // the same engine instance (two `go` commands on one worker cancel each other).
+  const anWorkerRef = useRef(null);
+  const anModeRef = useRef(false);
+  const anFenRef = useRef('');   // FEN the current search is running on (for SAN + POV)
 
   const typeColors = {
     basics:     { color: '#10b981', gradient: 'linear-gradient(135deg,#10b981,#06b6d4)', accentColor: 'rgba(16,185,129,0.15)', bgColor: 'rgba(16,185,129,0.2)' },
@@ -294,6 +304,70 @@ const UserStudyPuzzleView = () => {
   }, [currentNode.fen, sfReady, sfMode]);
   /* ─────────────────────────────────────────────── */
 
+  /* ── Analysis mode ─────────────────────────────
+     Evaluates the position currently on the board and streams depth / score /
+     principal variation. Read-only: it never plays a move into the tree. */
+  useEffect(() => { return () => { if (anWorkerRef.current) anWorkerRef.current.terminate(); }; }, []);
+
+  const stopAnalysis = useCallback(() => {
+    if (anWorkerRef.current) { anWorkerRef.current.terminate(); anWorkerRef.current = null; }
+    anModeRef.current = false;
+    setAnMode(false); setAnEval(null); setAnLine(''); setAnDepth(0);
+  }, []);
+
+  const toggleAnalysis = useCallback(() => {
+    if (anModeRef.current) { stopAnalysis(); return; }
+    anModeRef.current = true;
+    setAnMode(true);
+    setAnEval(null); setAnLine(''); setAnDepth(0);
+    if (anWorkerRef.current) anWorkerRef.current.terminate();
+    const w = new Worker('/stockfish.js');
+    anWorkerRef.current = w;
+    w.onmessage = (e) => {
+      const line = typeof e.data === 'string' ? e.data : '';
+      if (line.includes('uciok')) { w.postMessage('isready'); return; }
+      if (!line.startsWith('info') || !line.includes(' pv ')) return;
+      // "info depth 18 ... score cp 34 ... pv e2e4 e7e5 ..."
+      const d = /\bdepth (\d+)/.exec(line);
+      const cp = /\bscore cp (-?\d+)/.exec(line);
+      const mate = /\bscore mate (-?\d+)/.exec(line);
+      const pv = /\bpv (.+)$/.exec(line);
+      if (d) setAnDepth(Number(d[1]));
+      // Engine scores are from the SIDE TO MOVE; flip to White's POV so the number
+      // means the same thing regardless of whose turn it is.
+      const sideToMove = anFenRef.current.split(' ')[1] === 'b' ? -1 : 1;
+      if (mate) setAnEval({ mate: Number(mate[1]) * sideToMove });
+      else if (cp) setAnEval({ cp: Number(cp[1]) * sideToMove });
+      if (pv) {
+        // Convert the UCI principal variation to SAN for readability.
+        try {
+          const tmp = new Chess(anFenRef.current);
+          const sans = [];
+          for (const uci of pv[1].trim().split(/\s+/).slice(0, 8)) {
+            const mv = tmp.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || 'q' });
+            if (!mv) break;
+            sans.push(mv.san);
+          }
+          setAnLine(sans.join(' '));
+        } catch { /* malformed pv — keep the previous line */ }
+      }
+    };
+    w.onerror = () => stopAnalysis();
+    w.postMessage('uci');
+  }, [stopAnalysis]);
+
+  // Re-run the search whenever the board position changes while analysis is on.
+  useEffect(() => {
+    anFenRef.current = currentNode.fen;
+    const w = anWorkerRef.current;
+    if (!anMode || !w) return;
+    setAnEval(null); setAnLine(''); setAnDepth(0);
+    w.postMessage('stop');
+    w.postMessage(`position fen ${currentNode.fen}`);
+    w.postMessage('go depth 20');
+  }, [currentNode.fen, anMode]);
+  /* ─────────────────────────────────────────────── */
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') { setShowCreateModal(false); return; }
@@ -310,33 +384,6 @@ const UserStudyPuzzleView = () => {
   }, []);
 
   /* ── resize ──────────────────────────────────── */
-  const handleManualResizeStart = (e) => {
-    e.preventDefault();
-    resizingRef.current = true;
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    startXRef.current = x;
-    startWidthRef.current = boardWidth;
-    document.addEventListener('mousemove', handleManualResizeMove);
-    document.addEventListener('mouseup', handleManualResizeEnd);
-    document.addEventListener('touchmove', handleManualResizeMove, { passive: false });
-    document.addEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'nwse-resize';
-  };
-  const handleManualResizeMove = (e) => {
-    if (!resizingRef.current) return;
-    e.preventDefault();
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const max = Math.min(800, window.innerWidth - 100);
-    setBoardWidth(Math.max(300, Math.min(max, startWidthRef.current + (x - startXRef.current))));
-  };
-  const handleManualResizeEnd = () => {
-    resizingRef.current = false;
-    document.removeEventListener('mousemove', handleManualResizeMove);
-    document.removeEventListener('mouseup', handleManualResizeEnd);
-    document.removeEventListener('touchmove', handleManualResizeMove);
-    document.removeEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'default';
-  };
 
   /* ── create position modal ───────────────────── */
   const validateEditorPosition = (c) => {
@@ -747,16 +794,8 @@ const UserStudyPuzzleView = () => {
                 onDrop={handleMove}
                 boardWidth={boardWidth}
                 draggable={true}
-                showCoordinates={true}
-                coordinateSides={['bottom', 'left']}
                 orientation={boardOrientation}
                 lastMove={lastMove}
-              />
-              <div
-                onMouseDown={handleManualResizeStart}
-                onTouchStart={handleManualResizeStart}
-                style={{ position: 'absolute', bottom: 0, right: 0, width: 0, height: 0, borderStyle: 'solid', borderWidth: '0 0 30px 30px', borderColor: 'transparent transparent #3b82f6 transparent', cursor: 'nwse-resize', zIndex: 100, opacity: 0.8, touchAction: 'none' }}
-                title="Drag to resize board"
               />
             </motion.div>
 
@@ -780,6 +819,39 @@ const UserStudyPuzzleView = () => {
 
           {/* Right Panel – moves + solution + description */}
           <motion.div style={st.rightPanel} initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
+            {/* ── Analyze with Stockfish (evaluates the position; plays nothing) ── */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: anMode ? 8 : 14 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: anMode ? '#38bdf8' : '#4b5563', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+                🔍 {anMode ? (anDepth ? `Analysing · depth ${anDepth}` : 'Starting…') : 'Analysis'}
+              </div>
+              <button
+                onClick={toggleAnalysis}
+                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'rgba(239,68,68,0.12)' : 'rgba(56,189,248,0.12)', color: anMode ? '#ef4444' : '#38bdf8', border: `1px solid ${anMode ? 'rgba(239,68,68,0.35)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
+              >{anMode ? '■ Stop' : '🔍 Analyse'}</button>
+            </div>
+            {anMode && (
+              <div style={{ marginBottom: 14, padding: '10px 12px', borderRadius: 10, background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                  <span style={{ fontSize: 20, fontWeight: 800, color: '#e0f2fe', fontVariantNumeric: 'tabular-nums' }}>
+                    {anEval == null ? '…'
+                      : anEval.mate != null
+                        ? `M${Math.abs(anEval.mate)}${anEval.mate < 0 ? ' ♚' : ''}`
+                        : `${anEval.cp > 0 ? '+' : ''}${(anEval.cp / 100).toFixed(2)}`}
+                  </span>
+                  <span style={{ fontSize: 11, color: '#7dd3fc' }}>
+                    {anEval == null ? '' : anEval.mate != null
+                      ? (anEval.mate > 0 ? 'White mates' : 'Black mates')
+                      : anEval.cp > 30 ? 'White is better' : anEval.cp < -30 ? 'Black is better' : 'Equal'}
+                  </span>
+                </div>
+                {anLine && (
+                  <div style={{ marginTop: 6, fontSize: 11.5, color: '#94a3b8', lineHeight: 1.5, wordBreak: 'break-word' }}>
+                    <span style={{ color: '#64748b' }}>Best line: </span>{anLine}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* ── Stockfish Toggle ── */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: sfMode ? '#22c55e' : '#4b5563', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>

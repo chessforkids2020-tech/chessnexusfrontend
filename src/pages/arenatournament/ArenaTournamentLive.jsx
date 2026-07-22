@@ -1636,64 +1636,6 @@ export default function ArenaTournamentLive() {
                     boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
                   }}
                 />
-                {/* Drag-to-resize handle — DESKTOP ONLY. On mobile the board
-                    auto-fits the screen (Lichess/Chess.com style), so there's no
-                    handle to fight with the corner rook. The handle hangs OUTSIDE
-                    the board's bottom-right corner so it never covers the a1/h1
-                    square. Supports both mouse and touch. */}
-                {!isMobileBoard && (
-                  <div
-                    title="Drag to resize board"
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      const startX = e.clientX;
-                      const startW = boardWidth;
-                      const onMove = (mv) => setBoardWidth(Math.min(760, Math.max(320, startW + (mv.clientX - startX))));
-                      const onUp = () => {
-                        window.removeEventListener('mousemove', onMove);
-                        window.removeEventListener('mouseup', onUp);
-                      };
-                      window.addEventListener('mousemove', onMove);
-                      window.addEventListener('mouseup', onUp);
-                    }}
-                    onTouchStart={(e) => {
-                      const startX = e.touches[0].clientX;
-                      const startW = boardWidth;
-                      const onMove = (mv) => setBoardWidth(Math.min(760, Math.max(320, startW + (mv.touches[0].clientX - startX))));
-                      const onEnd = () => {
-                        window.removeEventListener('touchmove', onMove);
-                        window.removeEventListener('touchend', onEnd);
-                      };
-                      window.addEventListener('touchmove', onMove, { passive: true });
-                      window.addEventListener('touchend', onEnd);
-                    }}
-                    style={{
-                      position: 'absolute',
-                      bottom: '-9px',
-                      right: '-9px',
-                      width: '22px',
-                      height: '22px',
-                      cursor: 'nwse-resize',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      opacity: 0.85,
-                      transition: 'opacity 0.15s, transform 0.15s',
-                      background: 'rgba(6,182,212,0.18)',
-                      border: '1px solid rgba(6,182,212,0.5)',
-                      borderRadius: '5px',
-                      touchAction: 'none',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scale(1.15)'; e.currentTarget.style.background = 'rgba(6,182,212,0.35)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.opacity = '0.85'; e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.background = 'rgba(6,182,212,0.18)'; }}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path d="M13 1L1 13" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M13 6L6 13" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M13 11L11 13" stroke="#06b6d4" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                  </div>
-                )}
               </div>
 
               {/* My Info - Below Chessboard */}

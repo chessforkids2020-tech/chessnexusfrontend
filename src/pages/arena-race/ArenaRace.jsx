@@ -3,7 +3,7 @@ import { Chess } from 'chess.js';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import PlayerName from '../../components/PlayerName';
-import Chessboard from '../../components/Chessboard';
+import Chessboard, { gutterFor } from '../../components/Chessboard';
 import { useAuth } from '../../contexts/AuthContext';
 import socket from '../../socket';
 
@@ -306,9 +306,6 @@ export default function ArenaRace({ isAdminView = false }) {
   const botIntroTimeoutRef = useRef(null);
   
   // Manual resize refs
-  const resizingRef = useRef(false);
-  const startXRef = useRef(0);
-  const startWidthRef = useRef(0);
 
   useEffect(() => {
     // Guard: Don't proceed if roomId is undefined
@@ -558,38 +555,8 @@ export default function ArenaRace({ isAdminView = false }) {
     return () => window.removeEventListener('resize', updateBoardSize);
   }, []);
 
-  // Manual resize handlers with touch support
-  const handleManualResizeStart = (e) => {
-    e.preventDefault();
-    resizingRef.current = true;
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    startXRef.current = clientX;
-    startWidthRef.current = boardSize;
-    
-    document.addEventListener('mousemove', handleManualResizeMove);
-    document.addEventListener('mouseup', handleManualResizeEnd);
-    document.addEventListener('touchmove', handleManualResizeMove, { passive: false });
-    document.addEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'nwse-resize';
-  };
   
-  const handleManualResizeMove = (e) => {
-    if (!resizingRef.current) return;
-    e.preventDefault();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const deltaX = clientX - startXRef.current;
-    const newWidth = Math.max(300, Math.min(800, startWidthRef.current + deltaX));
-    setBoardSize(newWidth);
-  };
   
-  const handleManualResizeEnd = () => {
-    resizingRef.current = false;
-    document.removeEventListener('mousemove', handleManualResizeMove);
-    document.removeEventListener('mouseup', handleManualResizeEnd);
-    document.removeEventListener('touchmove', handleManualResizeMove);
-    document.removeEventListener('touchend', handleManualResizeEnd);
-    document.body.style.cursor = 'default';
-  };
 
   // Appends the next 30 puzzles to the local queue so fast solvers
   // never run out of pre-loaded data between puzzles.
@@ -1274,8 +1241,10 @@ export default function ArenaRace({ isAdminView = false }) {
           padding: isMobileLayout ? '20px' : '30px',
           marginBottom: isMobileLayout ? '20px' : '0',
           width: (() => {
-            const coordinateSize = boardSize < 400 ? 20 : 32;
-            const totalBoardWidth = boardSize + coordinateSize * 2;
+            // Ask the board for its real gutters instead of copying its internal
+            // math — only the labelled sides (bottom+left) reserve space.
+            const g = gutterFor(boardSize);
+            const totalBoardWidth = boardSize + g.left + g.right;
             return `${totalBoardWidth + (isMobileLayout ? 40 : 60)}px`;
           })(),
           maxWidth: '100%', // Prevent overflow on very small screens
@@ -1295,25 +1264,6 @@ export default function ArenaRace({ isAdminView = false }) {
               draggable={true}
             />
             {/* Resize Handle */}
-            <div
-              onMouseDown={handleManualResizeStart}
-              onTouchStart={handleManualResizeStart}
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                right: 0,
-                width: '0',
-                height: '0',
-                borderStyle: 'solid',
-                borderWidth: '0 0 30px 30px',
-                borderColor: 'transparent transparent #06b6d4 transparent',
-                cursor: 'nwse-resize',
-                zIndex: 100,
-                opacity: 0.8,
-                touchAction: 'none'
-              }}
-              title="Drag to resize"
-            />
           </div>
 
           <div style={{

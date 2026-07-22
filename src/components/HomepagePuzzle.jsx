@@ -490,7 +490,11 @@ export default function HomepagePuzzle() {
           }}
           orientation={puzzle?.orientation || 'white'}
           boardWidth={boardSize}
-          showCoordinates={false}
+          // Coordinates INSIDE on every device: this board sits in a tight homepage
+          // card, so outside gutters would eat width that the board needs. Scaled
+          // down because the default inside size reads oversized at this board width.
+          coordinatesInside
+          coordinateScale={0.72}
           draggable={!botThinking && !judging}
         />
 

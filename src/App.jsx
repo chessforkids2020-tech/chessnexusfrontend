@@ -112,6 +112,7 @@ import EventPage from './pages/EventPage';
 import EventSubmissions from './pages/EventSubmissions';
 import StudyOverview from './pages/study/StudyOverview';
 import StudyEndgamesPage from './pages/study/StudyEndgamesPage';
+import EndgameChallengesPage from './pages/study/EndgameChallengesPage';
 import StudySelection from './pages/study/StudySelection';
 import StudyChapterSelection from './pages/study/StudyChapterSelection';
 import StudyPuzzleView from './pages/study/StudyPuzzleView';
@@ -1502,6 +1503,13 @@ export default function App() {
           <UserLayout>
             <ProtectedRoute>
               <StudyEndgamesPage />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/study/endgame-challenges" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <EndgameChallengesPage />
             </ProtectedRoute>
           </UserLayout>
         } />
