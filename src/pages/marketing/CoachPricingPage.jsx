@@ -33,9 +33,19 @@ const FAQ = [
   },
 ];
 
-function money(paise) {
-  if (!paise) return "Free";
-  return `₹${Math.round(paise / 100).toLocaleString("en-IN")}`;
+// This PUBLIC page quotes USD — it's the SEO landing page and most of its
+// non-Indian traffic can't read a rupee figure. INR (and every other currency)
+// is still offered at checkout; see CoachSubscription.jsx for the picker.
+// Falls back to the INR base only if a plan somehow has no USD price.
+function money(plan) {
+  const cents = plan?.monthlyPrices?.USD;
+  if (cents == null) {
+    const paise = plan?.monthlyPrice;
+    if (!paise) return "Free";
+    return `₹${Math.round(paise / 100).toLocaleString("en-IN")}`;
+  }
+  if (!cents) return "Free";
+  return `$${Math.round(cents / 100).toLocaleString("en-US")}`;
 }
 
 // "Unlimited" markers on the wire. JSON can't carry Infinity, so the API sends -1
@@ -123,7 +133,7 @@ export default function CoachPricingPage() {
               <thead>
                 <tr>
                   <th>Plan</th>
-                  <th>Per month</th>
+                  <th>Per month (USD)</th>
                   <th>Students</th>
                   <th>Live classes</th>
                 </tr>
@@ -132,7 +142,7 @@ export default function CoachPricingPage() {
                 {shown.map((p) => (
                   <tr key={p.id}>
                     <td><strong>{p.name}</strong></td>
-                    <td>{money(p.monthlyPrice)}</td>
+                    <td>{money(p)}</td>
                     <td>{orUnlimited(p.maxStudents)}</td>
                     <td>
                       {p.liveClass
@@ -145,6 +155,10 @@ export default function CoachPricingPage() {
                 ))}
               </tbody>
             </table>
+            <p className="mkt-p" style={{ fontSize: 13, opacity: 0.75, marginTop: 10 }}>
+              Prices shown in USD. At checkout you can pay in ₹ INR, €, £, A$, C$, S$ or د.إ —
+              India and other regions are priced separately.
+            </p>
           </div>
         )}
 
@@ -156,7 +170,7 @@ export default function CoachPricingPage() {
                   {p.monthlyPrice ? "⭐" : "🎁"}
                 </span>
                 <span className="mkt-feat-tx">
-                  <strong>{p.name} — {money(p.monthlyPrice)}{p.monthlyPrice ? "/mo" : ""}</strong>
+                  <strong>{p.name} — {money(p)}{p.monthlyPrice ? "/mo" : ""}</strong>
                   <span>{(p.features || []).join(" · ")}</span>
                 </span>
               </li>
