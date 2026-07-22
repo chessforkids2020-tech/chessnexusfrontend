@@ -361,6 +361,76 @@ a.mkt-card:hover {
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* ---------- Coach guide: numbered steps, prose, plan table ---------- */
+.mkt-steps {
+  counter-reset: mkt-step;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.mkt-steps li {
+  counter-increment: mkt-step;
+  position: relative;
+  padding: 14px 18px 14px 52px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--mkt-border);
+}
+.mkt-steps li::before {
+  content: counter(mkt-step);
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #04211d;
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+}
+.mkt-steps li strong { display: block; font-size: 15px; margin-bottom: 3px; }
+.mkt-steps li span { font-size: 14px; line-height: 1.65; color: rgba(255, 255, 255, 0.7); }
+
+.mkt-h3 {
+  margin: 26px 0 12px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #67e8f9;
+}
+.mkt-muted { color: rgba(255, 255, 255, 0.55); font-size: 13.5px; }
+
+/* Plan comparison table — scrolls on narrow screens instead of overflowing. */
+.mkt-table-wrap { overflow-x: auto; }
+.mkt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 460px;
+}
+.mkt-table th,
+.mkt-table td {
+  padding: 11px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--mkt-border);
+}
+.mkt-table th {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #67e8f9;
+  background: rgba(255, 255, 255, 0.03);
+}
+.mkt-table td { color: rgba(255, 255, 255, 0.78); }
+.mkt-table tr:last-child td { border-bottom: none; }
+
+.mkt-cta-section { text-align: center; }
+
 /* ---------- Explore-more block ---------- */
 .mkt-explore {
   margin-top: 64px;

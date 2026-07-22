@@ -27,6 +27,7 @@ const ELITE_PERKS = [
 
 // What coaches can do.
 const COACH_PERKS = [
+  { icon: "🎥", title: "Built-in live classroom", desc: "Teach inside the app — HD video, screen share and one shared board. Give a student control to play their move, load studies, endgames, puzzles or master games onto the board, and run a waiting room with raise-hand, mic and camera controls. Attendance marks itself as students join." },
   { icon: "📋", title: "Assign structured work", desc: "Give students puzzle topics, timed Study Tests, Timed Races and 'find the blunder' tasks." },
   { icon: "📊", title: "Track every student", desc: "See each student's solved/failed/streak, accuracy, grades and the exact answers they submitted." },
   { icon: "📝", title: "Attendance & payments", desc: "Mark attendance, manage enrollment and record payments — built for running real classes." },

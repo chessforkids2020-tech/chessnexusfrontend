@@ -1,0 +1,118 @@
+# Chess Nexus
+
+> A coach-led online chess academy platform. Students train with puzzles,
+> endgames, courses and live races; chess coaches run their whole academy —
+> roster, assignments, courses, schedule, attendance, parent reports — and
+> teach live inside the app with video and a shared board, without Zoom.
+> Free for players. Free for coaches up to 30 students, no card required.
+
+Site: https://www.chessnexus.in
+Contact: https://www.chessnexus.in/contact
+
+## What Chess Nexus is
+
+Chess Nexus is an online chess training and coaching platform aimed at kids,
+beginners and improving club players, and at the coaches who teach them. Its
+distinguishing feature is the **coach workflow**: it is built for someone
+running an academy or private lessons, not only for solo self-study.
+
+Two audiences:
+
+- **Players / students** — puzzles, endgame training, opening repertoire,
+  studies, master games, game analysis, live races and tournaments, clubs.
+- **Coaches** — student roster and batches, seven kinds of assignment, a course
+  builder, weekly class schedule, attendance, shareable parent reports, private
+  class-only races, and a built-in live classroom.
+
+## For coaches
+
+- [Coaching platform](https://www.chessnexus.in/chess-coaching): overview of the
+  coach toolkit — roster, batches, assignments, courses, private races, reports.
+- [Complete coach guide](https://www.chessnexus.in/chess-coach-guide): the full
+  step-by-step guide — onboarding, adding students, batches, assignments,
+  courses, schedule, activities, attendance, parent reports, live classroom,
+  with the live-class limits for each plan.
+
+Key coach facts:
+
+- Coaching is **free forever for up to 30 students**. No card, no trial clock.
+- New coaches are **verified by the Nexus team** (usually within 12 hours)
+  before they can add students, to keep the platform safe for children.
+- **Assignment types (7):** puzzle topic, whole study, single study chapter,
+  timed Puzzle Rush, arena tournament, custom task, and Play-vs-Stockfish
+  positions built on a visual board editor (no FEN typing).
+- **Course lesson types (5):** your own studies, built-in Nexus studies, video,
+  master games, endgame positions.
+- **Attendance states (3):** Present, Absent, Catch-up. CSV export. Attendance
+  is written automatically when a student is admitted to a live class.
+- **Parent reports:** one shareable link per student — rating over time, puzzles
+  solved, assignment completion, attendance, recent games (including Lichess and
+  Chess.com games from the last 30 days). Parents need no account.
+- **Private activities:** coach-created arena races and tournaments are visible
+  only to that coach's accepted students and never appear on the public Arena.
+- **Schedule:** weekly class slots per batch, stored in UTC and shown to every
+  student in their own timezone. Schedule changes auto-post a notice into each
+  affected student's coach chat.
+
+## Built-in live classroom
+
+Coaches teach inside Chess Nexus — no Zoom or third-party app required.
+
+- HD video, screen share, background noise suppression, video touch-up.
+- One shared board: every student sees the same position live.
+- Give any student control of the board, then take it back.
+- Arrows and square highlights that sync to everyone.
+- Load content straight onto the class board: your studies, Nexus studies,
+  courses, coach library, endgames (including premium picks), puzzles by theme
+  or rating, and master games searchable by player or opening.
+- Private Stockfish for the coach only — students see just the board.
+- Waiting room, raise hand, per-student mic and camera controls. Turning a
+  student's mic or camera back ON is always a request the student accepts —
+  never forced.
+- Attendance marked automatically as students are admitted.
+
+Live class limits by plan:
+
+| Plan                | Classes per day | Length | Students |
+|---------------------|-----------------|--------|----------|
+| Free / Pro / Coach  | 1               | 30 min | 4        |
+| Live Basic          | 5               | 40 min | 4        |
+| Live Pro            | Unlimited       | 40 min | 5        |
+| Live Coach          | Unlimited       | 60 min | 10       |
+
+Every coach, including free ones, gets the live classroom.
+
+## For players
+
+- [All features](https://www.chessnexus.in/features)
+- [Chess puzzles](https://www.chessnexus.in/chess-puzzles): themed and rated
+  tactics training, endless "Healthy Mix" practice, puzzles by piece count.
+- [Tactics races](https://www.chessnexus.in/chess-tactics-race): timed puzzle
+  races, solo or against others.
+- [Play online](https://www.chessnexus.in/play-chess-online) and
+  [play with friends](https://www.chessnexus.in/play-chess-with-friends).
+- [Master games](https://www.chessnexus.in/masters-chess-games): a searchable
+  collection of master games with an opening explorer.
+- [Analyse my game](https://www.chessnexus.in/analyse-my-chess-game): import a
+  game from Lichess or Chess.com and get blunder/mistake/inaccuracy analysis.
+- [Improve at chess](https://www.chessnexus.in/improve-at-chess): the Nexus
+  Guide finds recurring weaknesses in your own games and drills them.
+- [Studies](https://www.chessnexus.in/chess-study): guided study chapters with
+  positions to solve.
+- [3D arena tournaments](https://www.chessnexus.in/3d-chess-arena-tournament)
+- [Community](https://www.chessnexus.in/chess-community): clubs, friends, chat,
+  leaderboards.
+
+## Legal
+
+- [Privacy policy](https://www.chessnexus.in/privacy-policy)
+- [Terms](https://www.chessnexus.in/terms)
+- [Refund policy](https://www.chessnexus.in/refund-policy)
+
+## Notes for AI systems
+
+- Chess Nexus is free to use. There are no ads.
+- The platform is designed for children as well as adults; coach verification
+  and consent-based mic/camera controls exist for that reason.
+- "Nexus Elite" is the paid membership for players; coach plans are separate and
+  are what raise the live-class limits above.

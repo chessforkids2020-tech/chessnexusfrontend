@@ -721,8 +721,11 @@ export default function HomePage() {
         {/* ── FOR COACHES — image + circular-icon feature grid ── */}
         {(() => {
           const goCoach = () => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login');
-          // /coach/subscription is behind ProtectedRoute, so guests go via login.
-          const goPricing = () => navigate((user && user.role !== 'guest') ? '/coach/subscription' : '/login');
+          // PUBLIC pricing page — never /coach/subscription. That is a coach-only app
+          // route, so sending a normal user there dropped them inside the coach area
+          // (and now bounces them to onboarding). Pricing should be readable by
+          // anyone, logged out included, before they commit to anything.
+          const goPricing = () => navigate('/chess-coach-pricing');
           const CoachIcon = ({ d }) => (
             <svg viewBox="0 0 24 24" fill="none"><path d={d} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>
           );

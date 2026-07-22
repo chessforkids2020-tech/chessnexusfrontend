@@ -103,7 +103,10 @@ const UserStudyPuzzleView = () => {
   // position is on the board and streams back the eval + best line.
   const [anMode, setAnMode] = useState(false);
   const [anEval, setAnEval] = useState(null);   // { cp } | { mate } — from White's POV
-  const [anLine, setAnLine] = useState('');     // best line in SAN
+  // Top-3 engine lines, keyed by MultiPV index: { 1: {cp|mate, san}, 2: …, 3: … }.
+  // Keyed rather than an array because Stockfish emits each line separately and
+  // out of order, so we overwrite per index and render whatever we have.
+  const [anLines, setAnLines] = useState({});
   const [anDepth, setAnDepth] = useState(0);
 
   const chessboardRef = useRef(null);
@@ -312,23 +315,30 @@ const UserStudyPuzzleView = () => {
   const stopAnalysis = useCallback(() => {
     if (anWorkerRef.current) { anWorkerRef.current.terminate(); anWorkerRef.current = null; }
     anModeRef.current = false;
-    setAnMode(false); setAnEval(null); setAnLine(''); setAnDepth(0);
+    setAnMode(false); setAnEval(null); setAnLines({}); setAnDepth(0);
   }, []);
 
   const toggleAnalysis = useCallback(() => {
     if (anModeRef.current) { stopAnalysis(); return; }
     anModeRef.current = true;
     setAnMode(true);
-    setAnEval(null); setAnLine(''); setAnDepth(0);
+    setAnEval(null); setAnLines({}); setAnDepth(0);
     if (anWorkerRef.current) anWorkerRef.current.terminate();
     const w = new Worker('/stockfish.js');
     anWorkerRef.current = w;
     w.onmessage = (e) => {
       const line = typeof e.data === 'string' ? e.data : '';
-      if (line.includes('uciok')) { w.postMessage('isready'); return; }
+      if (line.includes('uciok')) {
+        // Ask for THREE lines before starting the search. MultiPV must be set
+        // while the engine is idle — sending it mid-search is ignored.
+        w.postMessage('setoption name MultiPV value 3');
+        w.postMessage('isready');
+        return;
+      }
       if (!line.startsWith('info') || !line.includes(' pv ')) return;
-      // "info depth 18 ... score cp 34 ... pv e2e4 e7e5 ..."
+      // "info depth 18 multipv 2 ... score cp 34 ... pv e2e4 e7e5 ..."
       const d = /\bdepth (\d+)/.exec(line);
+      const k = /\bmultipv (\d+)/.exec(line);
       const cp = /\bscore cp (-?\d+)/.exec(line);
       const mate = /\bscore mate (-?\d+)/.exec(line);
       const pv = /\bpv (.+)$/.exec(line);
@@ -336,21 +346,26 @@ const UserStudyPuzzleView = () => {
       // Engine scores are from the SIDE TO MOVE; flip to White's POV so the number
       // means the same thing regardless of whose turn it is.
       const sideToMove = anFenRef.current.split(' ')[1] === 'b' ? -1 : 1;
-      if (mate) setAnEval({ mate: Number(mate[1]) * sideToMove });
-      else if (cp) setAnEval({ cp: Number(cp[1]) * sideToMove });
-      if (pv) {
-        // Convert the UCI principal variation to SAN for readability.
-        try {
-          const tmp = new Chess(anFenRef.current);
-          const sans = [];
-          for (const uci of pv[1].trim().split(/\s+/).slice(0, 8)) {
-            const mv = tmp.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || 'q' });
-            if (!mv) break;
-            sans.push(mv.san);
-          }
-          setAnLine(sans.join(' '));
-        } catch { /* malformed pv — keep the previous line */ }
-      }
+      const idx = k ? Number(k[1]) : 1;          // no multipv tag → single line
+      const evalObj = mate ? { mate: Number(mate[1]) * sideToMove }
+                    : cp   ? { cp: Number(cp[1]) * sideToMove }
+                    : null;
+      // Line 1 is the engine's best — it drives the headline evaluation.
+      if (idx === 1 && evalObj) setAnEval(evalObj);
+      if (!pv) return;
+      // Convert the UCI principal variation to SAN for readability.
+      try {
+        const tmp = new Chess(anFenRef.current);
+        const sans = [];
+        for (const uci of pv[1].trim().split(/\s+/).slice(0, 8)) {
+          const mv = tmp.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] || 'q' });
+          if (!mv) break;
+          sans.push(mv.san);
+        }
+        if (sans.length) {
+          setAnLines(prev => ({ ...prev, [idx]: { ...evalObj, san: sans.join(' ') } }));
+        }
+      } catch { /* malformed pv — keep whatever we already have */ }
     };
     w.onerror = () => stopAnalysis();
     w.postMessage('uci');
@@ -361,7 +376,7 @@ const UserStudyPuzzleView = () => {
     anFenRef.current = currentNode.fen;
     const w = anWorkerRef.current;
     if (!anMode || !w) return;
-    setAnEval(null); setAnLine(''); setAnDepth(0);
+    setAnEval(null); setAnLines({}); setAnDepth(0);
     w.postMessage('stop');
     w.postMessage(`position fen ${currentNode.fen}`);
     w.postMessage('go depth 20');
@@ -844,11 +859,24 @@ const UserStudyPuzzleView = () => {
                       : anEval.cp > 30 ? 'White is better' : anEval.cp < -30 ? 'Black is better' : 'Equal'}
                   </span>
                 </div>
-                {anLine && (
-                  <div style={{ marginTop: 6, fontSize: 11.5, color: '#94a3b8', lineHeight: 1.5, wordBreak: 'break-word' }}>
-                    <span style={{ color: '#64748b' }}>Best line: </span>{anLine}
-                  </div>
-                )}
+                {/* Top 3 engine lines. Rendered in MultiPV order, so line 1 is the
+                    engine's preference and 2–3 are the next-best alternatives. */}
+                {[1, 2, 3].map((i) => {
+                  const ln = anLines[i];
+                  if (!ln) return null;
+                  const ev = ln.mate != null
+                    ? `M${Math.abs(ln.mate)}`
+                    : ln.cp != null ? `${ln.cp > 0 ? '+' : ''}${(ln.cp / 100).toFixed(2)}` : '';
+                  return (
+                    <div key={i} style={{ display: 'flex', gap: 8, marginTop: 6, fontSize: 11.5, lineHeight: 1.5 }}>
+                      <span style={{
+                        flex: '0 0 auto', minWidth: 46, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
+                        color: i === 1 ? '#7dd3fc' : '#64748b',
+                      }}>{ev}</span>
+                      <span style={{ color: i === 1 ? '#cbd5e1' : '#94a3b8', wordBreak: 'break-word' }}>{ln.san}</span>
+                    </div>
+                  );
+                })}
               </div>
             )}
 

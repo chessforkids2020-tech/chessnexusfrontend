@@ -74,6 +74,54 @@ export const FEATURES = [
       "A free toolkit for chess coaches and academies — student roster & batches, assignments, course builder, private class races and parent reports.",
   },
   {
+    slug: "/live-chess-classroom",
+    appPath: "/coach/onboarding",
+    icon: "🎥",
+    title: "Live Chess Classroom",
+    blurb:
+      "Teach chess live without Zoom — HD video, screen share and one shared board every student sees, with attendance marked automatically.",
+  },
+  {
+    slug: "/chess-endgame-training",
+    appPath: "/study/endgames",
+    icon: "♔",
+    title: "Endgame Training",
+    blurb:
+      "Endgames pulled from real master games, grouped by type — then play them out against Stockfish until you can actually convert them.",
+  },
+  {
+    slug: "/chess-opening-repertoire",
+    appPath: "/masters-chess-games",
+    icon: "📖",
+    title: "Opening Repertoire",
+    blurb:
+      "Build your repertoire on the board, drill it with spaced repetition, and find the exact move where you left your prep in real games.",
+  },
+  {
+    slug: "/chess-courses",
+    appPath: "/coach/onboarding",
+    icon: "📚",
+    title: "Chess Course Builder",
+    blurb:
+      "Build an ordered syllabus from your studies, built-in studies, videos, master games and endgames — enrolled to a whole batch.",
+  },
+  {
+    slug: "/chess-progress-reports",
+    appPath: "/coach/onboarding",
+    icon: "📊",
+    title: "Progress Reports",
+    blurb:
+      "One shareable link per student — rating, puzzles, assignments, attendance and recent games. Parents need no account.",
+  },
+  {
+    slug: "/chess-coach-guide",
+    appPath: "/coach/onboarding",
+    icon: "📖",
+    title: "Complete Coach Guide",
+    blurb:
+      "How everything works, step by step — onboarding, students, batches, assignments, courses, schedule, attendance, parent reports and the built-in live classroom.",
+  },
+  {
     slug: "/3d-chess-arena-tournament",
     appPath: "/3d-chess-arena-tournament",
     icon: "🏟️",

@@ -62,7 +62,7 @@ export default function ChessCoachingPage() {
         h1: "Chess Coaching Platform — Run Your Academy in One Place",
         sub: "Chess Nexus gives chess coaches and academies a complete free toolkit: a student roster organised into batches, assignments you can build in seconds, a course builder, private class-only races, direct student chat, and progress reports parents actually understand.",
         primary: { label: "Start coaching free", to: "/coach/onboarding" },
-        secondary: { label: "Browse all features", to: "/features" },
+        secondary: { label: "Read the full coach guide", to: "/chess-coach-guide" },
       }}
     >
       <section className="mkt-section">
@@ -77,6 +77,19 @@ export default function ChessCoachingPage() {
               rosters, lessons, live activities and parent communication.
             </p>
             <ul className="mkt-featurelist">
+              <li>
+                <span className="mkt-feat-ic" aria-hidden="true">🎥</span>
+                <span className="mkt-feat-tx">
+                  <strong>Built-in live classroom</strong>
+                  <span>
+                    Teach inside Chess Nexus — HD video, screen share and one board every
+                    student sees. Hand a student control to play their move, load studies,
+                    endgames, puzzles or master games straight onto the board, and run a
+                    waiting room with raise-hand, mic and camera controls. Attendance marks
+                    itself as students join. No Zoom, no extra apps.
+                  </span>
+                </span>
+              </li>
               <li>
                 <span className="mkt-feat-ic" aria-hidden="true">👥</span>
                 <span className="mkt-feat-tx">

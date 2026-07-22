@@ -85,14 +85,38 @@ export default function CoachOnboarding() {
               <div className="perk">✅ No card required</div>
             </div>
 
-            {/* Everything a free coach already gets. */}
+            {/* Everything a free coach already gets, grouped so each capability is
+                legible instead of several features crammed into one line. */}
             <div className="coach-onboard-benefits">
               <div className="coach-onboard-benefits-title">🎁 Included free, always</div>
-              <div className="benefit">📝 Assignments, courses & the coach library</div>
-              <div className="benefit">📊 Student progress, parent reports & game analysis</div>
-              <div className="benefit">📋 Attendance, payments & class schedule (with Zoom links)</div>
-              <div className="benefit">🏁 Run private Arena Races & Tournaments for your class</div>
-              <div className="benefit">♟️ Premium Endgame Mastery & Opening Repertoire</div>
+
+              <div className="benefit-group">
+                <div className="benefit-head">🎥 Built-in live classroom</div>
+                <div className="benefit">HD video, screen share &amp; a shared board — no Zoom needed</div>
+                <div className="benefit">Give any student control of the board to play their move</div>
+                <div className="benefit">Teach from studies, courses, endgames, puzzles &amp; master games</div>
+                <div className="benefit">Raise hand, mute/camera controls &amp; a waiting room</div>
+                <div className="benefit">Attendance marks itself as students join</div>
+              </div>
+
+              <div className="benefit-group">
+                <div className="benefit-head">📝 Teaching &amp; content</div>
+                <div className="benefit">Assignments — 7 types, from puzzles to full studies</div>
+                <div className="benefit">Build courses &amp; keep a reusable coach library</div>
+                <div className="benefit">Premium Endgame Mastery &amp; Opening Repertoire</div>
+              </div>
+
+              <div className="benefit-group">
+                <div className="benefit-head">📊 Tracking &amp; parents</div>
+                <div className="benefit">Student progress dashboards &amp; game analysis</div>
+                <div className="benefit">One shareable parent report per student</div>
+              </div>
+
+              <div className="benefit-group">
+                <div className="benefit-head">🗂 Running your academy</div>
+                <div className="benefit">Batches, class schedule, attendance &amp; fee requests</div>
+                <div className="benefit">Private Arena Races &amp; Tournaments for your students</div>
+              </div>
             </div>
 
             <div className="coach-onboard-verify-note">

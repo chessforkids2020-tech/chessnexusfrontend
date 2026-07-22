@@ -384,6 +384,13 @@ function MoveTreeNotation({ tree, path, onJump, canNavigate, height, collapsed, 
     </div>
   );
 }
+// Endgame family labels for the PREMIUM picker. The free browse index ships its own
+// `label` per family; premium picks carry only the raw family key.
+const EG_LABEL = {
+  pawn: 'Pawn', knight: 'Knight', bishop: 'Bishop', bishop_knight: 'Bishop + Knight',
+  rook: 'Rook', queen: 'Queen', queen_rook: 'Queen + Rook', other_mixed: 'Other / mixed',
+};
+
 const nt = {
   wrap: { width: 300, flexShrink: 0, maxHeight: '70vh', display: 'flex', flexDirection: 'column',
     background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, overflow: 'hidden' },
@@ -677,6 +684,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const [coachMutedIds, setCoachMutedIds] = useState([]);
   const [iAmCoachMuted, setIAmCoachMuted] = useState(false);
   const [unmuteRequest, setUnmuteRequest] = useState(false);
+  const [cameraRequest, setCameraRequest] = useState(false);  // coach asked me to turn my camera on
   // Raised hands: set of studentIds currently raising a hand (pins their tile to the
   // top + shows ✋ to the coach). `myHandRaised` tracks my own toggle (student).
   const [raisedHandIds, setRaisedHandIds] = useState([]);
@@ -718,6 +726,19 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // 'hidden' (off — a "Show video" pill brings them back), 'pop' (own window).
   // Videos are NEVER tied to what's on the stage, so screen-share keeps faces up.
   const [videoMode, setVideoMode] = useState('dock');
+  // Zoom-style "Hide Self View": removes MY OWN tile from MY screen only. The camera
+  // keeps publishing, so students still see me — this is purely about not watching
+  // yourself and freeing a grid slot. Persisted so it survives a rejoin.
+  const [hideSelfView, setHideSelfView] = useState(() => {
+    try { return localStorage.getItem('cn_hide_self_view') === '1'; } catch { return false; }
+  });
+  const toggleSelfView = useCallback(() => {
+    setHideSelfView(v => {
+      const next = !v;
+      try { localStorage.setItem('cn_hide_self_view', next ? '1' : '0'); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
   const [floatPos, setFloatPos] = useState({ x: null, y: 96 });    // floating box position
   const [floatSize, setFloatSize] = useState({ w: 300, h: 250 });  // floating box size
   // Which inline device menu is open: 'mic' | 'cam' | null (the ˅ next to each icon).
@@ -784,6 +805,27 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const [courses, setCourses] = useState([]);
   const [pickCourse, setPickCourse] = useState('');
   const [libraryItems, setLibraryItems] = useState([]);
+
+  // ── Endgames tab ──────────────────────────────────────────────────────────
+  // Two sources: the free browse index (static JSON of positions pulled from the
+  // master-game collection) and the coach's PREMIUM curated picks. Premium picks
+  // are only listed when the coach actually has access — the API already returns
+  // `locked` per pick, so we never surface something they can't load.
+  const [egFamilies, setEgFamilies] = useState([]);    // [{ family, label, count }]
+  const [egFamily, setEgFamily] = useState('');        // chosen family key
+  const [egList, setEgList] = useState([]);            // positions in that family
+  const [egLoading, setEgLoading] = useState(false);
+  // Masters games source inside the Games tab: search the saved master-game
+  // collection by player (either side), a "X vs Y" pairing, or opening name.
+  const [mgQuery, setMgQuery] = useState('');
+  const [mgField, setMgField] = useState('player');    // 'player' | 'opening'
+  const [mgList, setMgList] = useState([]);
+  const [mgLoading, setMgLoading] = useState(false);
+  const [mgErr, setMgErr] = useState('');
+
+  const [egPremium, setEgPremium] = useState({});      // { family: [picks] } — usable only
+  const [egPremFamily, setEgPremFamily] = useState(''); // chosen premium family
+  const [egSource, setEgSource] = useState('browse');  // 'browse' | 'premium'
 
   const myId = user && (user.id || user._id);
   const iControl = isHost || (controllerId && String(controllerId) === String(myId));   // can move the board
@@ -1006,6 +1048,17 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       });
     };
     // A student raised/lowered their hand — pin their tile + show ✋ to the coach.
+    // Coach turned MY camera off — stop publishing (mirrors the mic model).
+    const onCameraOff = () => {
+      if (hostStateRef.current.isHost) return;
+      setCameraRequest(false);
+      if (lk.camOn) lk.toggleCam();
+    };
+    // Coach ASKED me to turn my camera on — consent popup, never forced.
+    const onCameraRequest = () => {
+      if (hostStateRef.current.isHost) return;
+      setCameraRequest(true);
+    };
     const onHand = ({ studentId, raised }) => {
       setRaisedHandIds(prev => {
         const s = new Set(prev.map(String));
@@ -1031,6 +1084,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     socket.on('liveclass:unmute-request', onUnmuteRequest);
     socket.on('liveclass:mic-state', onMicState);
     socket.on('liveclass:hand', onHand);
+    socket.on('liveclass:camera-off', onCameraOff);
+    socket.on('liveclass:camera-request', onCameraRequest);
     return () => {
       socket.off('liveclass:tree', onTree); socket.off('liveclass:draw', onDraw); socket.off('liveclass:control', onControl);
       socket.off('liveclass:screenshare', onScreenShare);
@@ -1039,6 +1094,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       socket.off('liveclass:stage', onStage);
       socket.off('liveclass:muted', onMuted); socket.off('liveclass:unmute-request', onUnmuteRequest);
       socket.off('liveclass:mic-state', onMicState); socket.off('liveclass:hand', onHand);
+      socket.off('liveclass:camera-off', onCameraOff); socket.off('liveclass:camera-request', onCameraRequest);
     };
   }, [mode, params.joinCode, enterRoom, lk]);
 
@@ -1076,7 +1132,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
   // ── Host: load studies for the chosen source (mine / public / nexus) ─────────
   useEffect(() => {
-    if (!isHost) return;
+    // 'endgames' is a pseudo-source handled entirely client-side (static JSON +
+    // the premium picks API), so don't ask the studies endpoint for it.
+    if (!isHost || studySource === 'endgames') return;
     let alive = true;
     setPickStudy(''); setPickChapter(''); setPositions([]);
     api.get(`/api/coach-live/studies?source=${studySource}`)
@@ -1110,6 +1168,40 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     if (!isHost || contentTab !== 'puzzles' || puzzleThemes.length) return;
     api.get('/api/coach-live/puzzle/themes').then(r => setPuzzleThemes(r.data?.themes || [])).catch(() => {});
   }, [isHost, contentTab, puzzleThemes.length]);
+
+  // Endgames: load the family index once, plus any premium picks the coach can
+  // actually use. A coach without premium simply gets no premium section.
+  useEffect(() => {
+    if (!isHost || contentTab !== 'studies' || studySource !== 'endgames' || egFamilies.length) return;
+    api.get('/api/public/endgames/index.json')
+      .then(r => setEgFamilies(r.data?.families || []))
+      .catch(() => setEgFamilies([]));
+    api.get('/api/endgame-trainer/positions')
+      .then(r => {
+        // Keep the family GROUPING (the coach picks a type first, same as browse).
+        // Only usable picks are kept — the API marks the rest `locked`.
+        const fams = r.data?.families || {};
+        const grouped = {};
+        for (const [fam, picks] of Object.entries(fams)) {
+          const usable = (picks || []).filter(p => !p.locked);
+          if (usable.length) grouped[fam] = usable;
+        }
+        setEgPremium(grouped);
+      })
+      .catch(() => setEgPremium({}));
+  }, [isHost, contentTab, studySource, egFamilies.length]);
+
+  // Load one family's positions when the coach picks it.
+  useEffect(() => {
+    if (!egFamily) { setEgList([]); return; }
+    let alive = true;
+    setEgLoading(true);
+    api.get(`/api/public/endgames/${egFamily}.json`)
+      .then(r => { if (alive) setEgList(Array.isArray(r.data) ? r.data.slice(0, 200) : []); })
+      .catch(() => { if (alive) setEgList([]); })
+      .finally(() => { if (alive) setEgLoading(false); });
+    return () => { alive = false; };
+  }, [egFamily]);
 
 
   // ── Board resize (drag the corner triangle) — same as the study/analysis board ──
@@ -1152,7 +1244,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // Everything the board is competing with, plus page padding.
   const sideCols = posListW + movesColW + railW + 60;
 
-  const viewerFit = Math.max(320, Math.min(vpH - 170, vpW - sideCols, 820));
+  // Students don't get the host's positions list or content panel, so their board
+  // only competes with the moves card and the video rail — `sideCols` includes the
+  // host-only columns and was making their board smaller than it needed to be.
+  // The vertical reserve is also smaller for them (no content panel below the
+  // board), and the ceiling is raised so a big monitor gets a genuinely big board.
+  const viewerSideCols = (movesCollapsed ? 60 : 354) + (videosDetached ? 0 : 316) + 60;
+  // Vertical reserve: ~62px topbar + 28px body padding + ~26px caption row under
+  // the board. The old 170 was over-generous and left visible dead space below.
+  const viewerFit = Math.max(320, Math.min(vpH - 118, vpW - viewerSideCols, 900));
   // The host/controller's dragged width is CLAMPED to what actually fits on screen.
   // Without this a stored/dragged size larger than the viewport pushed the top rank
   // off the top of the stage, and shrinking the board couldn't recover it.
@@ -1340,6 +1440,39 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     if (g?.pgn) loadPgnIntoTree(g.pgn);
   };
 
+  // Search the saved master-games collection. Supports a plain player name, a
+  // "Fischer vs Spassky" pairing (matched as both players in the same game), or an
+  // opening name. The list endpoint returns light rows only — no PGN — so loading
+  // a game onto the board goes through loadMasterGame(id).
+  const searchMasterGames = async () => {
+    const q = mgQuery.trim();
+    if (!q) return;
+    setMgLoading(true); setMgErr(''); setMgList([]);
+    try {
+      const params = new URLSearchParams({ limit: '30' });
+      if (mgField === 'opening') {
+        params.set('opening', q);
+      } else {
+        // "A vs B" → filter by A, then keep rows where B is the other player.
+        const vs = q.split(/\s+vs\.?\s+/i);
+        params.set('player', vs[0].trim());
+      }
+      const r = await api.get(`/api/master-games?${params.toString()}`);
+      let games = r.data?.games || [];
+      const vs = q.split(/\s+vs\.?\s+/i);
+      if (mgField === 'player' && vs.length === 2) {
+        const b = vs[1].trim().toLowerCase();
+        games = games.filter(g =>
+          String(g.white || '').toLowerCase().includes(b) ||
+          String(g.black || '').toLowerCase().includes(b));
+      }
+      setMgList(games);
+      if (!games.length) setMgErr('No master games matched that search.');
+    } catch (e) {
+      setMgErr(e.response?.data?.error || 'Could not search master games.');
+    } finally { setMgLoading(false); }
+  };
+
   // Smart-load a course lesson / library item by its kind.
   const loadItem = async (item) => {
     if (!item) return;
@@ -1412,6 +1545,18 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // Coach mic control: hard-mute a student, or ask a muted student to unmute (consent).
   const muteStudent = async (studentId) => { try { await api.post(`/api/coach-live/sessions/${session.id}/mute-student`, { studentId }); } catch { /* */ } };
   const requestUnmute = async (studentId) => { try { await api.post(`/api/coach-live/sessions/${session.id}/request-unmute`, { studentId }); } catch { /* */ } };
+  // Camera equivalents — coach can turn a student's camera OFF, but only ASK to turn
+  // it on. `camAskedIds` marks students we've asked, so the icon can show it worked.
+  const [camAskedIds, setCamAskedIds] = useState([]);
+  const cameraOffStudent = async (studentId) => {
+    try { await api.post(`/api/coach-live/sessions/${session.id}/camera-off`, { studentId }); } catch { /* */ }
+  };
+  const requestCamera = async (studentId) => {
+    const id = String(studentId);
+    setCamAskedIds(prev => (prev.includes(id) ? prev : [...prev, id]));
+    setTimeout(() => setCamAskedIds(prev => prev.filter(x => x !== id)), 8000);
+    try { await api.post(`/api/coach-live/sessions/${session.id}/request-camera`, { studentId: id }); } catch { /* */ }
+  };
   // Student responses to the "coach wants you to unmute" popup.
   const acceptUnmute = () => { setUnmuteRequest(false); if (!lk.micOn) lk.toggleMic(); };
   const declineUnmute = () => { setUnmuteRequest(false); };
@@ -1421,6 +1566,30 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     setMyHandRaised(next);
     try { await api.post(`/api/coach-live/sessions/${session.id}/raise-hand`, { raised: next }); }
     catch { setMyHandRaised(!next); /* revert on failure */ }
+  };
+
+  // Host: lower a student's hand. Students often raise and never lower it, leaving
+  // the ✋ up for the rest of the class, so the coach needs to be able to clear it.
+  const lowerStudentHand = async (studentId) => {
+    if (!isHost || !session) return;
+    const id = String(studentId);
+    setRaisedHandIds(prev => prev.filter(x => String(x) !== id));   // optimistic
+    try {
+      await api.post(`/api/coach-live/sessions/${session.id}/raise-hand`, { raised: false, studentId: id });
+    } catch {
+      setRaisedHandIds(prev => (prev.map(String).includes(id) ? prev : [...prev, id]));
+    }
+  };
+
+  // Host: clear EVERY raised hand at once.
+  const lowerAllHands = async () => {
+    if (!isHost || !session) return;
+    const ids = raisedHandIds.map(String);
+    setRaisedHandIds([]);
+    try {
+      await Promise.all(ids.map(id =>
+        api.post(`/api/coach-live/sessions/${session.id}/raise-hand`, { raised: false, studentId: id })));
+    } catch { setRaisedHandIds(ids); }
   };
   const endClass = async () => {
     if (!window.confirm('End the class for everyone?')) return;
@@ -1655,12 +1824,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
   // The people to show. Before video connects, show ME as an avatar tile so the
   // stage never looks empty or broken.
-  const rawTiles = (lk.connected && lk.participants.length > 0)
+  const allTiles = (lk.connected && lk.participants.length > 0)
     ? lk.participants
     : [{
         identity: '__me__', isLocal: true, name: (user?.displayName || user?.username || 'You'),
         videoTrack: null, audioTrack: null, avatar: user?.profilePhotoUrl || null,
       }];
+  // Hide MY tile when self-view is off — but never end up with an empty grid (if
+  // I'm the only one in the room, keep showing me rather than a blank stage).
+  const withoutSelf = allTiles.filter(t => !t.isLocal);
+  const rawTiles = (hideSelfView && withoutSelf.length > 0) ? withoutSelf : allTiles;
   // Pin raised-hand students to the FRONT of the grid (Zoom-style), preserving the
   // relative order otherwise. A stable sort keeps everyone else where they were.
   const handSet = new Set(raisedHandIds.map(String));
@@ -1704,7 +1877,17 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     // stage (flex layout, for size-maximized centered tiles), else 100% (grid columns).
     <div key={p.identity} style={{ minWidth: 0, width, flex: '0 0 auto', position: 'relative' }}>
       {raisedHandIds.map(String).includes(String(p.identity)) && (
-        <span style={{ position: 'absolute', top: 6, left: 6, zIndex: 3, background: 'rgba(245,158,11,0.95)', color: '#241a05', borderRadius: 8, padding: '2px 7px', fontSize: small ? 12 : 15, fontWeight: 800, boxShadow: '0 2px 8px rgba(0,0,0,0.4)' }} title="Hand raised">✋</span>
+        // Just the emoji — no pill. A drop-shadow keeps it legible over a bright
+        // video frame without boxing it in.
+        <span
+          onClick={isHost && !p.isLocal ? (e) => { e.stopPropagation(); lowerStudentHand(p.identity); } : undefined}
+          title={isHost && !p.isLocal ? 'Click to lower this hand' : 'Hand raised'}
+          style={{ position: 'absolute', top: 6, left: 8, zIndex: 3, fontSize: small ? 16 : 22, lineHeight: 1,
+            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.7))',
+            // Only the host needs to interact — for students it stays a pure badge.
+            pointerEvents: isHost && !p.isLocal ? 'auto' : 'none',
+            cursor: isHost && !p.isLocal ? 'pointer' : 'default' }}
+        >✋</span>
       )}
       <MediaTile
         track={p.videoTrack}
@@ -1716,11 +1899,41 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         speaking={p.isSpeaking || String(lk.activeSpeaker) === String(p.identity)}
         ratio={small ? '4/3' : '16/9'}
       />
+      {/* HOST-ONLY tile controls, overlaid on the video so they cost no layout space.
+          One click each: mute / camera off / give board control. Muted or camera-off
+          students get an ASK action instead — we never force a child's mic or camera
+          back on. */}
       {isHost && !p.isLocal && (
-        <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
-          {String(controllerId) === String(p.identity)
-            ? <button style={s.tiny} onClick={revoke}>Take back control</button>
-            : <button style={s.tiny} onClick={() => grant(p.identity)}>Give control</button>}
+        <div style={s.tileCtl}>
+          {coachMutedIds.map(String).includes(String(p.identity))
+            ? <button style={{ ...s.tileBtn, ...s.tileBtnAsk }} title="Ask this student to unmute"
+                onClick={(e) => { e.stopPropagation(); requestUnmute(p.identity); }}>🎙️</button>
+            : <button style={s.tileBtn} title="Mute this student"
+                onClick={(e) => { e.stopPropagation(); muteStudent(p.identity); }}>
+                <MicIcon off={false} size={15} />
+              </button>}
+
+          {p.videoTrack
+            ? <button style={s.tileBtn} title="Turn this student's camera off"
+                onClick={(e) => { e.stopPropagation(); cameraOffStudent(p.identity); }}>
+                <CamIcon off={false} size={15} />
+              </button>
+            : <button style={{ ...s.tileBtn, ...(camAskedIds.includes(String(p.identity)) ? s.tileBtnAsked : s.tileBtnAsk) }}
+                title="Ask this student to turn their camera on"
+                onClick={(e) => { e.stopPropagation(); requestCamera(p.identity); }}>
+                <CamIcon off size={15} />
+              </button>}
+
+          <button
+            style={{ ...s.tileBtn, ...(String(controllerId) === String(p.identity) ? s.tileBtnOn : {}) }}
+            title={String(controllerId) === String(p.identity)
+              ? 'Take back board control'
+              : 'Give this student board control'}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (String(controllerId) === String(p.identity)) revoke(); else grant(p.identity);
+            }}
+          >🖱️</button>
         </div>
       )}
     </div>
@@ -1807,6 +2020,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             title={lk.connected ? (lk.camOn ? 'Turn camera off' : 'Turn camera on') : 'Available once the video server is connected'}
             onClick={lk.toggleCam}
           ><CamIcon off={!lk.camOn} size={18} /><span>{lk.camOn ? 'Camera' : 'Off'}</span></button>
+          {/* Self-view is hidden — show a one-click way back, since an invisible
+              setting is otherwise hard to undo without hunting through the menu. */}
+          {hideSelfView && lk.connected && (
+            <button
+              style={{ ...s.devCaret, width: 'auto', padding: '0 8px', fontSize: 12, color: '#fcd34d', borderColor: 'rgba(245,158,11,0.5)' }}
+              title="Your tile is hidden from your own screen (students still see you)"
+              onClick={toggleSelfView}
+            >🙈</button>
+          )}
           {lk.connected && (
             <button
               style={{ ...s.devCaret, ...(devMenu === 'cam' ? s.devCaretOn : {}) }}
@@ -1818,6 +2040,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             <>
               <div style={s.devBackdrop} onClick={() => setDevMenu(null)} />
               <div style={s.devMenu}>
+                {/* Hide Self View — removes MY tile from MY screen only. The camera
+                    keeps publishing, so students still see me. Same place Zoom puts it. */}
+                <button
+                  style={{ ...s.devItem, fontWeight: 700 }}
+                  onClick={() => { toggleSelfView(); setDevMenu(null); }}
+                  title="Your camera stays on — this only changes what you see"
+                >
+                  <span style={s.devCheck}>{hideSelfView ? '👁️' : '🙈'}</span>
+                  <span style={s.devLabel}>{hideSelfView ? 'Show self view' : 'Hide self view'}</span>
+                </button>
                 {/* Video effects launcher — light adjustment, touch-up, blur. */}
                 <button
                   style={{ ...s.devItem, fontWeight: 700, color: '#67e8f9' }}
@@ -1867,7 +2099,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           title="Participants"
           onClick={() => setShowParticipants(v => !v)}
         >
-          👥 {tiles.length}
+          👥 {allTiles.length}
           {isHost && waitingNow.length > 0 && (
             <span style={{ position: 'absolute', top: -6, right: -6, background: '#f59e0b', color: '#241a05', borderRadius: 999, fontSize: 10, fontWeight: 800, minWidth: 16, height: 16, display: 'grid', placeItems: 'center', padding: '0 4px' }}>{waitingNow.length}</span>
           )}
@@ -1876,6 +2108,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             <span style={{ position: 'absolute', bottom: -6, right: -6, background: '#f59e0b', color: '#241a05', borderRadius: 999, fontSize: 10, fontWeight: 800, minWidth: 16, height: 16, display: 'grid', placeItems: 'center', padding: '0 4px' }} title={`${raisedHandIds.length} hand(s) up`}>✋{raisedHandIds.length}</span>
           )}
         </button>
+        {/* Host: clear every raised hand in one click. Students frequently raise and
+            never lower, so without this the ✋s accumulate for the whole class. */}
+        {isHost && raisedHandIds.length > 0 && (
+          <button
+            style={{ ...s.iconBtn, borderColor: 'rgba(245,158,11,0.6)', color: '#fcd34d', background: 'rgba(245,158,11,0.14)' }}
+            title="Lower all raised hands"
+            onClick={lowerAllHands}
+          >✋ Lower all ({raisedHandIds.length})</button>
+        )}
         {/* HOST video placement — where the class videos live. Dock (in the rail) /
             Float (draggable box over the board) / Pop out (own window) / Hide.
             The tracks never unmount; only their container changes, so students'
@@ -1924,6 +2165,25 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         </div>
       )}
 
+      {/* Coach asked me to turn my camera on — consent, never forced (same model as
+          the unmute request above). */}
+      {cameraRequest && !isHost && (
+        <div style={s.unmuteOverlay}>
+          <div style={s.unmuteCard}>
+            <div style={{ fontSize: 40 }}>📹</div>
+            <h3 style={{ margin: '8px 0 4px', fontSize: 18, fontWeight: 800 }}>Coach wants you to turn your camera on</h3>
+            <p style={{ fontSize: 13.5, color: 'rgba(226,232,240,0.75)', margin: '0 0 16px' }}>
+              Your coach is asking you to switch your camera on. You can turn it on, or keep it off.
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+              <button style={s.unmuteYes}
+                onClick={() => { setCameraRequest(false); if (!lk.camOn) lk.toggleCam(); }}>📹 Turn on</button>
+              <button style={s.unmuteNo} onClick={() => setCameraRequest(false)}>Keep it off</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* When I'm the presenter, a slim banner confirms I'm sharing — my controls
           stay right above it (Zoom-style), instead of my screen taking over. */}
       {iAmSharing && (
@@ -1954,7 +2214,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             // columns exceed the stage, which pushed the positions card off the left
             // edge. `flex-start` keeps the row anchored so nothing is ever clipped;
             // `margin: 0 auto` on the row still centres it when there IS spare room.
-            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', flexWrap: isNarrow ? 'wrap' : 'nowrap', maxWidth: '100%', margin: '0 auto', justifyContent: 'flex-start', minWidth: 0 }}>
+            // `wrap` is required (not nowrap) so the host's content panel — which has
+            // flexBasis 100% — can break onto its own line below the columns. The
+            // columns themselves are flexShrink: 0, so they still stay side by side.
+            <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', flexWrap: 'wrap', maxWidth: '100%', margin: '0 auto', justifyContent: 'flex-start', minWidth: 0 }}>
               {/* LEFT of the board (host-only): the clickable list — course lessons,
                   library items, or study positions depending on the active tab. */}
               {isHost && (() => {
@@ -2055,10 +2318,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     ⇅
                   </button>
                 </div>
+              </div>
+              {/* ── board column ends ── */}
 
-                {/* Host-only: load from studies / courses / library, or paste a FEN/PGN. */}
+              {/* Host content panel. Rendered as the LAST child of the stage row with
+                  `order: 1` + a full-width flex-basis, so it drops onto its own line
+                  BELOW the row and spans the board AND the Stockfish/Moves column. */}
                 {isHost && (
-                  <div style={{ ...s.loadPanel, width: '100%', boxSizing: 'border-box' }}>
+                  <div style={{ ...s.loadPanel, ...s.loadPanelSpan }}>
                     {/* Top-level content tabs */}
                     <div style={s.srcTabs}>
                       {[['studies', '📚 Studies'], ['courses', '🎓 Courses'], ['library', '📁 Library'], ['puzzles', '🧩 Puzzles'], ['games', '♟ Games']].map(([v, label]) => (
@@ -2072,27 +2339,97 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     {contentTab === 'studies' && (
                       <>
                         <div style={s.srcTabs}>
-                          {[['mine', 'My studies'], ['public', 'Public'], ['nexus', 'Nexus']].map(([v, label]) => (
+                          {/* Endgames is a study source too — same row as Nexus. */}
+                          {[['mine', 'My studies'], ['public', 'Public'], ['nexus', 'Nexus'], ['endgames', '♔ Endgames']].map(([v, label]) => (
                             <button key={v}
                               style={{ ...s.srcTab, ...(studySource === v ? s.srcTabOn : {}) }}
                               onClick={() => setStudySource(v)}>{label}</button>
                           ))}
                         </div>
-                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                          <select style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit' }} value={pickStudy}
-                            onChange={e => { setPickStudy(e.target.value); setPickChapter(''); }}>
-                            <option value="">Choose a study…</option>
-                            {studies.map(st => <option key={st.id} value={st.id}>{st.name}</option>)}
-                          </select>
-                          <select style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit' }} value={pickChapter}
-                            disabled={!pickStudy}
-                            onChange={e => setPickChapter(e.target.value)}>
-                            <option value="">Choose a chapter…</option>
-                            {(studies.find(st => st.id === pickStudy)?.chapters || []).map(ch => (
-                              <option key={ch.id} value={ch.id}>{ch.name}{ch.count != null ? ` (${ch.count})` : ''}</option>
-                            ))}
-                          </select>
-                        </div>
+
+                        {studySource === 'endgames' ? (
+                          <>
+                            {/* Free browse vs the coach's premium picks. The premium row
+                                only appears when they actually have usable picks. */}
+                            {Object.keys(egPremium).length > 0 && (
+                              <div style={s.srcTabs}>
+                                <button style={{ ...s.srcTab, ...(egSource === 'browse' ? s.srcTabOn : {}) }}
+                                  onClick={() => setEgSource('browse')}>All endgames</button>
+                                <button style={{ ...s.srcTab, ...(egSource === 'premium' ? s.srcTabOn : {}) }}
+                                  onClick={() => setEgSource('premium')}>👑 Premium</button>
+                              </div>
+                            )}
+
+                            {egSource === 'premium' && Object.keys(egPremium).length > 0 ? (
+                              <>
+                                {/* Premium: pick a TYPE first, same flow as browse. */}
+                                <select style={{ ...s.loadInput, fontFamily: 'inherit' }} value={egPremFamily}
+                                  onChange={e => setEgPremFamily(e.target.value)}>
+                                  <option value="">Choose an endgame type…</option>
+                                  {Object.entries(egPremium).map(([fam, picks]) => (
+                                    <option key={fam} value={fam}>
+                                      {EG_LABEL[fam] || fam} ({picks.length})
+                                    </option>
+                                  ))}
+                                </select>
+                                {egPremFamily && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 260, overflowY: 'auto' }}>
+                                    {(egPremium[egPremFamily] || []).map(p => (
+                                      <button key={p._id} style={s.posItem} title={p.idea || p.title}
+                                        onClick={() => setBoardFen(p.fen)}>
+                                        <b>👑</b> {p.title || 'Endgame'}
+                                        {p.goal ? ` · ${String(p.goal).replace(/_/g, ' ')}` : ''}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <select style={{ ...s.loadInput, fontFamily: 'inherit' }} value={egFamily}
+                                  onChange={e => setEgFamily(e.target.value)}>
+                                  <option value="">Choose an endgame type…</option>
+                                  {egFamilies.map(f => (
+                                    <option key={f.family} value={f.family} disabled={!f.count}>
+                                      {f.label} ({f.count})
+                                    </option>
+                                  ))}
+                                </select>
+                                {egLoading && <div style={{ fontSize: 12, color: '#9ca3af' }}>Loading positions…</div>}
+                                {!egLoading && egFamily && (
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 260, overflowY: 'auto' }}>
+                                    {egList.length === 0 && <div style={{ fontSize: 12, color: '#9ca3af' }}>No positions found.</div>}
+                                    {egList.map((g, i) => (
+                                      <button key={g.id || i} style={s.posItem}
+                                        title={`${g.white} vs ${g.black}${g.year ? ` (${g.year})` : ''}`}
+                                        onClick={() => setBoardFen(g.fen)}>
+                                        <b>{i + 1}.</b> {g.white} vs {g.black}
+                                        {g.year ? ` · ${g.year}` : ''}
+                                        {g.pieceCount ? ` · ${g.pieceCount}p` : ''}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                            <select style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit' }} value={pickStudy}
+                              onChange={e => { setPickStudy(e.target.value); setPickChapter(''); }}>
+                              <option value="">Choose a study…</option>
+                              {studies.map(st => <option key={st.id} value={st.id}>{st.name}</option>)}
+                            </select>
+                            <select style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit' }} value={pickChapter}
+                              disabled={!pickStudy}
+                              onChange={e => setPickChapter(e.target.value)}>
+                              <option value="">Choose a chapter…</option>
+                              {(studies.find(st => st.id === pickStudy)?.chapters || []).map(ch => (
+                                <option key={ch.id} value={ch.id}>{ch.name}{ch.count != null ? ` (${ch.count})` : ''}</option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
                       </>
                     )}
 
@@ -2164,12 +2501,56 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     {contentTab === 'games' && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         <div style={s.srcTabs}>
-                          {[['lichess', 'Lichess'], ['chesscom', 'Chess.com']].map(([v, label]) => (
+                          {[['lichess', 'Lichess'], ['chesscom', 'Chess.com'], ['masters', '♛ Masters']].map(([v, label]) => (
                             <button key={v}
                               style={{ ...s.srcTab, ...(gamePlatform === v ? s.srcTabOn : {}) }}
                               onClick={() => setGamePlatform(v)}>{label}</button>
                           ))}
                         </div>
+                        {gamePlatform === 'masters' ? (
+                          <>
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                              <select style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }}
+                                value={mgField} onChange={e => { setMgField(e.target.value); setMgList([]); setMgErr(''); }}>
+                                <option value="player">Player</option>
+                                <option value="opening">Opening</option>
+                              </select>
+                              <input
+                                style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit', minWidth: 140 }}
+                                placeholder={mgField === 'opening' ? 'e.g. Sicilian Defense' : 'e.g. Fischer  ·  or  Fischer vs Spassky'}
+                                value={mgQuery}
+                                onChange={e => setMgQuery(e.target.value)}
+                                onKeyDown={e => { if (e.key === 'Enter') searchMasterGames(); }}
+                              />
+                              <button style={s.loadBtn} onClick={searchMasterGames} disabled={mgLoading || !mgQuery.trim()}>
+                                {mgLoading ? 'Searching…' : 'Search'}
+                              </button>
+                            </div>
+                            {mgErr && <div style={{ color: '#fca5a5', fontSize: 12 }}>{mgErr}</div>}
+                            {mgList.length > 0 && (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 5, maxHeight: 300, overflowY: 'auto' }}>
+                                {mgList.map(g => (
+                                  <div key={g._id} style={{ ...s.gameRow, alignItems: 'flex-start' }}>
+                                    <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, lineHeight: 1.45 }}>
+                                      <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#e2e8f0' }}>
+                                        {g.white}{g.whiteElo ? ` (${g.whiteElo})` : ''}
+                                        <span style={{ color: '#64748b' }}> vs </span>
+                                        {g.black}{g.blackElo ? ` (${g.blackElo})` : ''}
+                                      </span>
+                                      <span style={{ display: 'block', color: '#94a3b8', fontSize: 11.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {g.result || '*'}
+                                        {g.opening ? ` · ${g.opening}` : ''}
+                                        {g.year ? ` · ${g.year}` : ''}
+                                      </span>
+                                    </span>
+                                    <button style={s.tiny} onClick={() => loadMasterGame(g._id)}>Load</button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                        <>
                         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                           <input
                             style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit', minWidth: 120 }}
@@ -2189,16 +2570,31 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                         </div>
                         {gamesErr && <div style={{ color: '#fca5a5', fontSize: 12 }}>{gamesErr}</div>}
                         {fetchedGames.length > 0 && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 5, maxHeight: 200, overflowY: 'auto' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 5, maxHeight: 300, overflowY: 'auto' }}>
                             {fetchedGames.map((g, i) => {
                               const rc = g.result === 'win' ? '#34d399' : g.result === 'loss' ? '#f87171' : '#fbbf24';
                               const rl = g.result === 'win' ? 'Won' : g.result === 'loss' ? 'Lost' : 'Draw';
+                              // Show the pairing as it sat on the board — White first —
+                              // so "who vs who" reads naturally, with both ratings.
+                              const isWhite = g.playerSide === 'white';
+                              const me = { name: g.playerName || gameUser || 'Student', rating: g.playerRating };
+                              const opp = { name: g.opponentName || 'Opponent', rating: g.opponentRating };
+                              const white = isWhite ? me : opp;
+                              const black = isWhite ? opp : me;
+                              const withRating = (p) => `${p.name}${p.rating ? ` (${p.rating})` : ''}`;
                               return (
-                                <div key={i} style={s.gameRow}>
-                                  <span style={{ ...s.gameResult, color: rc, borderColor: rc }}>{rl}</span>
-                                  <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 12.5 }}>
-                                    <b style={{ textTransform: 'capitalize' }}>{g.playerSide}</b> · {g.opening}
-                                    {g.timeClass && g.timeClass !== 'unknown' ? ` · ${g.timeClass}` : ''}
+                                <div key={i} style={{ ...s.gameRow, alignItems: 'flex-start' }}>
+                                  <span style={{ ...s.gameResult, color: rc, borderColor: rc, marginTop: 1 }}>{rl}</span>
+                                  <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, lineHeight: 1.45 }}>
+                                    <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#e2e8f0' }}>
+                                      ⚪ {withRating(white)}
+                                      <span style={{ color: '#64748b' }}> vs </span>
+                                      ⚫ {withRating(black)}
+                                    </span>
+                                    <span style={{ display: 'block', color: '#94a3b8', fontSize: 11.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                      {g.opening}
+                                      {g.timeClass && g.timeClass !== 'unknown' ? ` · ${g.timeClass}` : ''}
+                                    </span>
                                   </span>
                                   <button style={s.tiny} onClick={() => loadFetchedGame(g)}>Load</button>
                                 </div>
@@ -2206,10 +2602,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                             })}
                           </div>
                         )}
+                        </>
+                        )}
                       </div>
                     )}
 
-                    {contentTab !== 'puzzles' && contentTab !== 'games' && (<>
+                    {contentTab !== 'puzzles' && contentTab !== 'games'
+                      && !(contentTab === 'studies' && studySource === 'endgames') && (<>
                       <textarea
                         style={s.loadInput}
                         rows={2}
@@ -2227,7 +2626,6 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     </>)}
                   </div>
                 )}
-              </div>
 
               {/* SAN notation (right of the board) — shared study tree with variations.
                   The host-only Stockfish card sits ABOVE the Moves card and keeps its
@@ -2346,9 +2744,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               {(
                 <div>
                   <div style={{ fontWeight: 700, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
-                    👥 In the class <span style={s.waitBadge}>{tiles.length}</span>
+                    👥 In the class <span style={s.waitBadge}>{allTiles.length}</span>
                   </div>
-                  {tiles.map(p => {
+                  {/* The ROSTER always lists everyone, including me — hiding my own
+                      video tile shouldn't remove me from the participant list. */}
+                  {allTiles.map(p => {
                     const controlling = String(controllerId) === String(p.identity);
                     const sharing = String(screenSharerId) === String(p.identity);
                     return (
@@ -2358,7 +2758,17 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                             ? <img src={p.avatar} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
                             : <span style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 800 }}>{(p.name || '?').charAt(0).toUpperCase()}</span>}
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13 }}>
-                            {raisedHandIds.map(String).includes(String(p.identity)) && <span title="Hand raised" style={{ marginRight: 3 }}>✋</span>}
+                            {raisedHandIds.map(String).includes(String(p.identity)) && (
+                              // Host can click to lower it; for everyone else it's
+                              // just an indicator.
+                              isHost && !p.isLocal
+                                ? <button
+                                    title="Click to lower this hand"
+                                    onClick={(e) => { e.stopPropagation(); lowerStudentHand(p.identity); }}
+                                    style={{ marginRight: 3, background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontSize: 14, lineHeight: 1 }}
+                                  >✋</button>
+                                : <span title="Hand raised" style={{ marginRight: 3 }}>✋</span>
+                            )}
                             {p.name}{p.isLocal ? ' (you)' : ''}{controlling ? ' • presenting' : ''}
                           </span>
                         </span>
@@ -2491,7 +2901,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               window.addEventListener('pointerup', up);
             }}
           >
-            <span style={s.vFloatTitle}>📹 Class video <span style={{ color: '#6b7280', fontWeight: 600 }}>· {tiles.length}</span></span>
+            <span style={s.vFloatTitle}>📹 Class video <span style={{ color: '#6b7280', fontWeight: 600 }}>· {allTiles.length}</span></span>
             <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
               <button style={s.vfBtn} title="Pin videos back into the panel" onClick={() => setVideoMode('dock')}>📌</button>
               <button style={s.vfBtn} title="Pop out to its own window" onClick={() => setVideoMode('pop')}>⧉</button>
@@ -2697,6 +3107,21 @@ const s = {
   noteClose: { flex: '0 0 auto', width: 24, height: 24, borderRadius: 6, border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.12)', color: '#fcd34d', cursor: 'pointer', fontSize: 12, lineHeight: 1, display: 'grid', placeItems: 'center' },
   body: { display: 'flex', gap: 16, padding: '12px 16px 16px', flexWrap: 'nowrap', alignItems: 'flex-start', justifyContent: 'flex-start', minHeight: 'calc(100vh - 62px)' },
   // Positions list beside the board (from a chosen study/chapter).
+  // Host controls overlaid on a student's video tile — bottom-right, fading in on
+  // hover so they don't clutter the grid while still being one click away.
+  tileCtl: {
+    position: 'absolute', bottom: 8, right: 8, zIndex: 4,
+    display: 'flex', gap: 4, padding: 3, borderRadius: 8,
+    background: 'rgba(10,12,18,0.72)', backdropFilter: 'blur(6px)',
+  },
+  tileBtn: {
+    display: 'grid', placeItems: 'center', width: 26, height: 26, padding: 0,
+    borderRadius: 6, border: '1px solid rgba(255,255,255,0.14)',
+    background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13,
+  },
+  tileBtnOn: { background: 'rgba(6,182,212,0.22)', borderColor: 'rgba(6,182,212,0.55)', color: '#67e8f9' },
+  tileBtnAsk: { background: 'rgba(245,158,11,0.18)', borderColor: 'rgba(245,158,11,0.5)', color: '#fcd34d' },
+  tileBtnAsked: { background: 'rgba(52,211,153,0.20)', borderColor: 'rgba(52,211,153,0.55)', color: '#6ee7b7' },
   posList: { width: 180, flexShrink: 0, maxHeight: '70vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5,
     background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 10 },
   posListTitle: { flexShrink: 0, fontSize: 12, fontWeight: 800, color: '#67e8f9', marginBottom: 2 },
@@ -2713,6 +3138,10 @@ const s = {
   // Host load-position panel under the board.
   loadPanel: { marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8,
     background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 10 },
+  // Spans the FULL stage row (board + Stockfish/Moves column) rather than sitting
+  // inside the board column. `flexBasis: 100%` forces a line break in the wrapping
+  // row, and `order: 1` puts it after both columns regardless of source position.
+  loadPanelSpan: { flexBasis: '100%', width: '100%', minWidth: 0, order: 1, boxSizing: 'border-box' },
   stepRow: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, flexWrap: 'wrap' },
   stepBtn: { padding: '5px 10px', borderRadius: 7, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12.5 },
   loadInput: { width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#e2e8f0', fontSize: 12.5, resize: 'vertical', fontFamily: 'monospace' },

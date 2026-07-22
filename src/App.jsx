@@ -43,6 +43,13 @@ import MastersGamesPage from "./pages/marketing/MastersGamesPage";
 import AnalyseMyChessGamePage from "./pages/marketing/AnalyseMyChessGamePage";
 import ImproveAtChessPage from "./pages/marketing/ImproveAtChessPage";
 import ChessCoachingPage from "./pages/marketing/ChessCoachingPage";
+import CoachGuidePage from "./pages/marketing/CoachGuidePage";
+import CoachPricingPage from "./pages/marketing/CoachPricingPage";
+import LiveClassroomMarketingPage from "./pages/marketing/LiveClassroomPage";
+import EndgameTrainingPage from "./pages/marketing/EndgameTrainingPage";
+import OpeningRepertoirePage from "./pages/marketing/OpeningRepertoirePage";
+import ChessCoursesPage from "./pages/marketing/ChessCoursesPage";
+import ProgressReportsPage from "./pages/marketing/ProgressReportsPage";
 import ArenaTournamentPage from "./pages/marketing/ArenaTournamentPage";
 import ChessStudyPage from "./pages/marketing/ChessStudyPage";
 import ChessCommunityPage from "./pages/marketing/ChessCommunityPage";
@@ -244,6 +251,35 @@ function ProtectedRoute({ children, requiredRole, noGuest, allowCoach }) {
     }
   }
 
+  return children;
+}
+
+/**
+ * CoachRoute — everything under /coach/* except onboarding.
+ *
+ * ProtectedRoute only checks "is logged in", so ANY signed-in student could open
+ * the coach dashboard, batches, assignments and subscription pages just by typing
+ * the URL. The backend does enforce isCoach (requireCoachRole), so no student data
+ * ever leaked — but the shell rendered, which is confusing and looks broken.
+ *
+ * Non-coaches are sent to onboarding, which is the page that actually explains what
+ * coaching is and how to start. Already-onboarded coaches are unaffected.
+ */
+function CoachRoute({ children }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div style={{ textAlign: 'center', padding: 50 }}>Loading…</div>;
+  }
+  if (!user) return <Navigate to="/login" replace />;
+  // Guests can never be coaches — send them to log in properly first.
+  if (user.role === 'guest' || user.isGuest) {
+    return <Navigate to="/login" state={{ message: 'Please log in to access coach tools.' }} replace />;
+  }
+  // Admins keep access for support/testing.
+  if (!user.isCoach && user.role !== 'admin') {
+    return <Navigate to="/coach/onboarding" replace />;
+  }
   return children;
 }
 
@@ -456,6 +492,41 @@ export default function App() {
         <Route path="/chess-coaching" element={
           <MarketingLayout>
             <ChessCoachingPage />
+          </MarketingLayout>
+        } />
+        <Route path="/chess-coach-guide" element={
+          <MarketingLayout>
+            <CoachGuidePage />
+          </MarketingLayout>
+        } />
+        <Route path="/chess-coach-pricing" element={
+          <MarketingLayout>
+            <CoachPricingPage />
+          </MarketingLayout>
+        } />
+        <Route path="/live-chess-classroom" element={
+          <MarketingLayout>
+            <LiveClassroomMarketingPage />
+          </MarketingLayout>
+        } />
+        <Route path="/chess-endgame-training" element={
+          <MarketingLayout>
+            <EndgameTrainingPage />
+          </MarketingLayout>
+        } />
+        <Route path="/chess-opening-repertoire" element={
+          <MarketingLayout>
+            <OpeningRepertoirePage />
+          </MarketingLayout>
+        } />
+        <Route path="/chess-courses" element={
+          <MarketingLayout>
+            <ChessCoursesPage />
+          </MarketingLayout>
+        } />
+        <Route path="/chess-progress-reports" element={
+          <MarketingLayout>
+            <ProgressReportsPage />
           </MarketingLayout>
         } />
         <Route path="/3d-chess-arena-tournament" element={
@@ -961,65 +1032,65 @@ export default function App() {
         } />
         <Route path="/coach/dashboard" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachDashboard />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/students/:studentLinkId" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachStudentDetail />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/assignments" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachAssignments />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/courses" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CourseBuilder />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/library" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachLibrary />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/courses/:courseId/progress" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CourseProgress />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/subscription" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachSubscription />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/attendance" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachAttendancePage />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/schedule" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachSchedulePage />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         {/* Live Classroom — host-only meeting management + live session. Route
@@ -1027,15 +1098,15 @@ export default function App() {
             enforces it server-side (requireLiveClassroomHost). */}
         <Route path="/coach/live" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <MyMeetingsPage />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/live/session/:sessionId" element={
-          <ProtectedRoute>
+          <CoachRoute>
             <LiveClassroomPage mode="host" />
-          </ProtectedRoute>
+          </CoachRoute>
         } />
         {/* Student join-by-shareable-link (server checks student audience). */}
         <Route path="/join/:joinCode" element={
@@ -1045,37 +1116,37 @@ export default function App() {
         } />
         <Route path="/coach/activities" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachActivities />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/batches" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachBatches />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/profile" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachProfile />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/arena/:roomId" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachArenaLive />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
         <Route path="/coach/arena-tournament/:id" element={
           <UserLayout>
-            <ProtectedRoute>
+            <CoachRoute>
               <CoachArenaTournamentLive />
-            </ProtectedRoute>
+            </CoachRoute>
           </UserLayout>
         } />
 

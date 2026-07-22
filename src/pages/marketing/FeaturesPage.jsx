@@ -92,6 +92,13 @@ export default function FeaturesPage() {
               </span>
             </li>
             <li>
+              <span className="mkt-feat-ic" aria-hidden="true">🎥</span>
+              <span className="mkt-feat-tx">
+                <strong>Teach live, in the app</strong>
+                <span>A built-in classroom: HD video, screen share and one shared board. Give a student control, load studies, endgames or puzzles onto the board, and attendance marks itself. No Zoom needed.</span>
+              </span>
+            </li>
+            <li>
               <span className="mkt-feat-ic" aria-hidden="true">🎓</span>
               <span className="mkt-feat-tx">
                 <strong>Coach an academy</strong>

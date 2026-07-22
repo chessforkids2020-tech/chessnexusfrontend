@@ -1,8 +1,74 @@
+# ─── AI / LLM crawlers ────────────────────────────────────────────────────────
+# These are listed FIRST and explicitly. robots.txt gives a bot only the single
+# most specific User-agent block that matches it — so without these, every AI
+# crawler fell through to the generic block below and inherited its Disallow list
+# with no Allow of its own. Public marketing + feature pages are open to them;
+# private/app routes stay closed (repeated per group, since rules don't inherit).
+#
+# See also /llms.txt for a plain-text summary of what this site offers.
+
+# OpenAI — ChatGPT browsing + search, and training
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+# Anthropic — Claude
+User-agent: ClaudeBot
+User-agent: Claude-Web
+User-agent: anthropic-ai
+# Perplexity
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+# Google (Gemini / AI Overviews), Apple, Meta, Common Crawl, Bing/You/Cohere
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: meta-externalagent
+User-agent: FacebookBot
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: cohere-ai
+User-agent: YouBot
+User-agent: Diffbot
+User-agent: Amazonbot
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /admin-*
+Disallow: /dashboard
+Disallow: /my-reports
+Disallow: /attendance
+Disallow: /report
+Disallow: /waiting-room
+Disallow: /arena-waiting
+Disallow: /arena-lobby
+Disallow: /team-lobby
+Disallow: /race
+Disallow: /scoreboard
+Disallow: /round-scoreboard
+Disallow: /arena-result
+Disallow: /study-duel
+Disallow: /coaching-room
+Disallow: /verify-email
+Disallow: /resend-verification
+
+# ─── Everyone else ────────────────────────────────────────────────────────────
 User-agent: *
 
 # Allow public pages
 Allow: /
 Allow: /features
+# Coach-facing marketing (these were missing — /chess-coaching is a main page)
+Allow: /chess-coaching
+Allow: /chess-coach-guide
+Allow: /chess-coach-pricing
+Allow: /live-chess-classroom
+Allow: /chess-endgame-training
+Allow: /chess-opening-repertoire
+Allow: /chess-courses
+Allow: /chess-progress-reports
+# Legal
+Allow: /privacy-policy
+Allow: /terms
+Allow: /refund-policy
 Allow: /chess-puzzles
 Allow: /chess-tactics-race
 Allow: /play-chess-online
