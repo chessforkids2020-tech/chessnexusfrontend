@@ -45,13 +45,15 @@ function getISTDayOfWeek(utcMs) {
   return new Date(utcMs + IST_OFFSET_MS).getUTCDay();
 }
 
-// Expand recurring items into IST date strings (730-day window).
+// Expand recurring items into IST date strings.
+// Window spans a year back and two years forward so the monthly calendar can
+// navigate to past months (a -1 day start left every earlier month empty).
 // Non-recurring items just return their stored dates array.
 function expandItemDates(item) {
   if (!item.isRecurring) return item.dates || [];
   const dates = [];
   const now = Date.now();
-  for (let i = -1; i < 730; i++) {
+  for (let i = -365; i < 730; i++) {
     const utcMs = now + i * 86400000;
     const dow = getISTDayOfWeek(utcMs);
     const rdArr = item.recurringDays || [];
@@ -71,10 +73,6 @@ function parseIstOccurrence(dateStr, timeValue) {
   const [hh, mm] = timeValue.split(':').map(Number);
   const utcMs = Date.UTC(yy, (mo || 1) - 1, dd || 1, hh || 0, mm || 0) - IST_OFFSET_MINUTES * 60000;
   return new Date(utcMs);
-}
-
-function localDateKey(dateObj) {
-  return `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
 }
 
 function formatLocalTimeFromIst(item) {
@@ -396,7 +394,7 @@ function MonthCalendar({ byDateMap }) {
 function TodayTimetable({ byDateMap, items, tick }) {
   const navigate = useNavigate();
   const now = new Date();
-  const todayKey = localDateKey(now);
+  const todayKey = getISTDateStr(now.getTime());
   // Sort: live first, then upcoming (by start time), then ended (by start time) at the bottom
   const todayItems = (byDateMap[todayKey] || []).slice().sort((a, b) => {
     const startA = parseIstOccurrence(a.occurrenceDate, a.timeUTC);
@@ -610,7 +608,10 @@ export default function SchedulePage() {
     dates.forEach((dateStr) => {
       const start = parseIstOccurrence(dateStr, item.timeUTC);
       if (!start) return;
-      const key = localDateKey(start);
+      // Key by the IST date the admin scheduled, not the viewer's converted local
+      // date. The monthly grid looks up cells by calendar date, so converting here
+      // dropped occurrences for viewers whose local date differs from IST.
+      const key = dateStr;
       const occurrence = { ...item, occurrenceDate: dateStr, occurrenceStartMs: start.getTime() };
       if (!byDateMap[key]) byDateMap[key] = [];
       // Avoid duplicate entries for the same item on the same day (e.g. multiple date-matches)
@@ -634,8 +635,9 @@ export default function SchedulePage() {
     });
   };
   const weekDates = getWeekDates();
-  const weekDateStrs = weekDates.map(d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
-  const todayStr = weekDateStrs[new Date().getDay()];
+  // Keys must match byDateMap, which is keyed by the admin's IST date.
+  const weekDateStrs = weekDates.map(d => getISTDateStr(d.getTime()));
+  const todayStr = getISTDateStr(Date.now());
 
   // Find next activity across all items (only those with a future date)
   const itemsWithFuture = items.filter(it => msUntilNext(it) < Infinity);
