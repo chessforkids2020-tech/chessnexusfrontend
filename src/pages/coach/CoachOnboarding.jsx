@@ -20,7 +20,7 @@ export default function CoachOnboarding() {
   const [form, setForm] = useState({
     coachName: user?.displayName || '',
     coachCountry: user?.country || '',
-    coachType: 'individual',
+    coachType: 'individual',   // 'individual' | 'academy' (academy = you're the head)
     academyName: '',
     socialPlatform: 'facebook', // 'facebook' | 'instagram'
     socialUsername: '',         // used by the Nexus team to verify the coach
@@ -191,19 +191,27 @@ export default function CoachOnboarding() {
                   <span className="radio-icon">👤</span>
                   <span className="radio-label">Individual coach</span>
                 </label>
-                <label className="radio-card is-disabled" title="Academy / institute accounts are coming soon">
+                <label className={`radio-card ${form.coachType === 'academy' ? 'active' : ''}`}>
                   <input
                     type="radio"
                     name="coachType"
                     value="academy"
-                    disabled
+                    checked={form.coachType === 'academy'}
+                    onChange={() => update('coachType', 'academy')}
                   />
                   <span className="radio-icon">🏛️</span>
                   <span className="radio-label">Academy / institute</span>
-                  <span className="radio-soon">Coming soon</span>
                 </label>
               </div>
             </div>
+
+            {form.coachType === 'academy' && (
+              <div className="coach-onboard-social-hint">
+                You're setting up an academy — you'll be the head coach. After signup, share your
+                academy join link (from the Academy dashboard) so your coaches can join, and you
+                approve them. Your academy can then pay for their plans.
+              </div>
+            )}
 
             <label className="field">
               <span>Academy / brand name *</span>

@@ -47,6 +47,8 @@ import CoachGuidePage from "./pages/marketing/CoachGuidePage";
 import CoachPricingPage from "./pages/marketing/CoachPricingPage";
 import CoachReferralPage from "./pages/marketing/CoachReferralPage";
 import CoachFaqPage from "./pages/marketing/CoachFaqPage";
+import AcademyDashboard from "./pages/academy/AcademyDashboard";
+import JoinAcademy from "./pages/academy/JoinAcademy";
 import LiveClassroomMarketingPage from "./pages/marketing/LiveClassroomPage";
 import EndgameTrainingPage from "./pages/marketing/EndgameTrainingPage";
 import OpeningRepertoirePage from "./pages/marketing/OpeningRepertoirePage";
@@ -1046,6 +1048,20 @@ export default function App() {
           <UserLayout>
             <CoachRoute>
               <CoachDashboard />
+            </CoachRoute>
+          </UserLayout>
+        } />
+        <Route path="/academy/dashboard" element={
+          <UserLayout>
+            <CoachRoute>
+              <AcademyDashboard />
+            </CoachRoute>
+          </UserLayout>
+        } />
+        <Route path="/join-academy/:code" element={
+          <UserLayout>
+            <CoachRoute>
+              <JoinAcademy />
             </CoachRoute>
           </UserLayout>
         } />

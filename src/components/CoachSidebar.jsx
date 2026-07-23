@@ -21,6 +21,8 @@ const NAV = [
 
 // Live Class is host-only (the 2 allowed accounts). Appended conditionally below.
 const LIVE_NAV = { icon: '🔴', label: 'Classroom', path: '/coach/live' };
+// Academy entry — shown only to members of an academy (head/managing/coach).
+const ACADEMY_NAV = { icon: '🏛️', label: 'Academy', path: '/academy/dashboard' };
 
 export default function CoachSidebar({ onNavigate }) {
   const location = useLocation();
@@ -36,7 +38,11 @@ export default function CoachSidebar({ onNavigate }) {
   // (this sidebar only renders for coaches) to avoid the "hidden until reload" race.
   const hostState = plan?.liveClassroomHostState;
   const showClassroom = isAdmin || authCanHost || (hostState ? hostState !== 'no' : true);
-  const navItems = showClassroom ? [...NAV, LIVE_NAV] : NAV;
+  // Academy membership (drives the Academy nav entry).
+  const [academy, setAcademy] = useState(null); // { academy, role, status, isOwner } | null
+  const isAcademyMember = academy?.academy && academy?.status === 'active';
+  let navItems = showClassroom ? [...NAV, LIVE_NAV] : [...NAV];
+  if (isAcademyMember) navItems = [...navItems, ACADEMY_NAV];
   // Students online (mirrors the main sidebar's "friends online").
   const [onlineStudents, setOnlineStudents] = useState([]);
   const [showOnline, setShowOnline] = useState(false);
@@ -48,6 +54,8 @@ export default function CoachSidebar({ onNavigate }) {
     api.get('/api/coach/status')
       .then(r => { if (alive) setPlan(r.data || null); })
       .catch(() => {});
+    // Academy membership (for the Academy nav entry).
+    api.get('/api/academy/me').then(r => { if (alive) setAcademy(r.data || null); }).catch(() => {});
     return () => { alive = false; };
   }, []);
 
@@ -250,6 +258,11 @@ const styles = {
     height: '1px', margin: '8px 12px',
     background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.3), transparent)',
   },
+  inviteBanner: { margin: '0 10px 8px', padding: '10px 12px', borderRadius: 10, background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.35)' },
+  inviteText: { fontSize: 12, color: '#fcd34d', fontWeight: 600, marginBottom: 8, lineHeight: 1.35 },
+  inviteBtns: { display: 'flex', gap: 6 },
+  inviteAccept: { flex: 1, padding: '5px 0', borderRadius: 7, border: 'none', background: '#10b981', color: '#04211d', fontWeight: 700, fontSize: 12, cursor: 'pointer' },
+  inviteDecline: { flex: 1, padding: '5px 0', borderRadius: 7, border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: '#cbd5e1', fontWeight: 600, fontSize: 12, cursor: 'pointer' },
   navMenu: { display: 'flex', flexDirection: 'column', gap: '6px', padding: '0 10px', flex: 1, overflowY: 'auto' },
   navItem: baseItem,
   navItemActive: {

@@ -247,6 +247,34 @@ export default function CoachSubscription() {
   // at downgrade time; this is only to pre-warn the coach.
   const activeStudents = status?.coachProfile?.studentsCount ?? null;
 
+  // Academy-sponsored coach — their plan is paid for by their academy. Hide the
+  // buy UI; show a "provided by your academy" panel instead.
+  const sponsoredByAcademy = !!status?.coachSubscription?.sponsoredByAcademy;
+  if (sponsoredByAcademy) {
+    const planName = plansById[currentPlan]?.name || String(currentPlan || '').toUpperCase();
+    return (
+      <div className="coach-dash">
+        <div className="coach-dash-header">
+          <div>
+            <h1>💎 Coach Subscription</h1>
+            <p className="coach-dash-sub">Your plan is provided by your academy.</p>
+          </div>
+          <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
+        </div>
+        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(6,182,212,0.15),rgba(16,185,129,0.08))', border: '1px solid rgba(6,182,212,0.4)', borderRadius: 12, padding: '24px 28px' }}>
+          <div>
+            <div className="cs-current-label" style={{ color: '#67e8f9' }}>🏛️ Academy-sponsored</div>
+            <div className="cs-current-name" style={{ color: '#a5f3fc', fontSize: 22 }}>{planName} plan — provided by your academy</div>
+            <div className="cs-current-meta" style={{ marginTop: 8, lineHeight: 1.6 }}>
+              Your academy pays for your subscription. You don't need to buy a plan yourself.
+              If anything looks off, ask your academy head.
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Admins — unlimited free, hide purchase UI.
   if (isAdmin) {
     return (
