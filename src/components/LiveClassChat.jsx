@@ -15,6 +15,7 @@ export default function LiveClassChat({ sessionId, isHost }) {
   const [unread, setUnread] = useState(0);
   const [blocked, setBlocked] = useState(false); // host disabled student chat
   const endRef = useRef(null);
+  const inputRef = useRef(null); // textarea, to reset its auto-grown height after send
   const openRef = useRef(open);
   openRef.current = open;
 
@@ -40,6 +41,7 @@ export default function LiveClassChat({ sessionId, isHost }) {
     if (!text || !sessionId) return;
     socket.emit('liveclass:chat', { sessionId, message: text });
     setInput('');
+    if (inputRef.current) inputRef.current.style.height = 'auto';
   }, [input, sessionId]);
 
   const toggleBlock = () => {
@@ -101,12 +103,19 @@ export default function LiveClassChat({ sessionId, isHost }) {
           </div>
           {canPost ? (
             <form onSubmit={send} style={s.inputRow}>
-              <input
+              <textarea
+                ref={inputRef}
                 style={s.input}
                 value={input}
                 maxLength={300}
-                placeholder={isHost && blocked ? 'Chat is blocked for students…' : 'Type a message…'}
-                onChange={e => setInput(e.target.value)}
+                rows={1}
+                placeholder={isHost && blocked ? 'Chat is blocked for students…' : 'Type a message… (Shift+Enter for a new line)'}
+                onChange={e => {
+                  setInput(e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(e); } }}
               />
               <button type="submit" disabled={!input.trim()} style={{ ...s.sendBtn, ...(input.trim() ? {} : s.sendOff) }}>Send</button>
             </form>
@@ -141,12 +150,14 @@ const s = {
   body: { flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 8 },
   empty: { color: '#6b7280', fontSize: 13, textAlign: 'center', margin: 'auto' },
   msg: { maxWidth: '85%', display: 'flex' },
-  bubble: { background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '7px 11px', borderRadius: 12, fontSize: 13.5, lineHeight: 1.4, wordBreak: 'break-word' },
+  bubble: { background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', padding: '7px 11px', borderRadius: 12, fontSize: 13.5, lineHeight: 1.4, wordBreak: 'break-word', whiteSpace: 'pre-wrap' },
   bubbleMine: { background: 'rgba(6,182,212,0.22)', color: '#e0f7ff' },
   who: { fontSize: 11, fontWeight: 700, color: '#67e8f9', marginBottom: 2 },
-  inputRow: { display: 'flex', gap: 8, padding: 10, borderTop: '1px solid rgba(255,255,255,0.06)' },
+  inputRow: { display: 'flex', gap: 8, padding: 10, borderTop: '1px solid rgba(255,255,255,0.06)', alignItems: 'flex-end' },
   input: { flex: 1, padding: '10px 12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)',
-    background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 13.5, outline: 'none' },
+    background: 'rgba(255,255,255,0.05)', color: '#fff', fontSize: 13.5, outline: 'none',
+    resize: 'none', fontFamily: 'inherit', lineHeight: 1.4, maxHeight: 100, overflowY: 'auto',
+    whiteSpace: 'pre-wrap', wordBreak: 'break-word' },
   sendBtn: { padding: '10px 16px', borderRadius: 10, border: 'none', background: 'rgba(6,182,212,0.2)', color: '#67e8f9', fontWeight: 700, cursor: 'pointer' },
   sendOff: { opacity: 0.5, cursor: 'not-allowed' },
 };

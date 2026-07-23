@@ -179,8 +179,9 @@
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0; /* never collapse — always visible at the bottom */
   background: #0f0f0f;
+  align-items: flex-end; /* keep Send pinned as the textarea grows */
 }
-.cchat-compose input {
+.cchat-compose textarea {
   flex: 1;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -189,6 +190,13 @@
   padding: 10px 14px;
   font-size: 14px;
   outline: none;
+  resize: none;
+  font-family: inherit;
+  line-height: 1.4;
+  max-height: 120px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 .cchat-compose button {
   background: linear-gradient(135deg, #059669, #10b981);

@@ -68,6 +68,7 @@ const Chat = () => {
   // threads the user hasn't replied to yet. Only shown to admins.
   const [chatTab, setChatTab] = useState('conversations');
   const messagesEndRef = useRef(null);
+  const messageInputRef = useRef(null); // textarea, so we can reset its auto-grown height
   const messagesAreaRef = useRef(null); // scroll container; inbox-style = keep at top (newest)
 
   const isAdmin = user?.role === 'admin';
@@ -306,6 +307,7 @@ const Chat = () => {
     
     setMessages((prev) => [...prev, optimisticMessage]);
     setNewMessage('');
+    if (messageInputRef.current) messageInputRef.current.style.height = 'auto'; // reset grown textarea
     scrollToBottom();
 
     // Immediately bubble this chat to the top of the list (sender side)
@@ -626,12 +628,25 @@ const Chat = () => {
 
         {/* Always render input but disable when no chat selected */}
         <form className="message-input-area" onSubmit={handleSendMessage}>
-          <input
-            type="text"
+          <textarea
+            ref={messageInputRef}
             className="message-input"
-            placeholder={selectedChat ? 'Type a message...' : 'Select a chat to start messaging'}
+            placeholder={selectedChat ? 'Type a message... (Shift+Enter for a new line)' : 'Select a chat to start messaging'}
             value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
+            onChange={(e) => {
+              setNewMessage(e.target.value);
+              // Auto-grow to fit content (CSS caps it at max-height, then scrolls).
+              e.target.style.height = 'auto';
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
+            onKeyDown={(e) => {
+              // Enter sends; Shift+Enter inserts a new line (standard chat behaviour).
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage(e);
+              }
+            }}
+            rows={1}
             disabled={!selectedChat}
           />
           <button type="submit" className="send-button" disabled={!selectedChat || !newMessage.trim()}>

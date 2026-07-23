@@ -53,6 +53,7 @@ export default function CoachChat({ mode = 'student' }) {
   const [err, setErr] = useState('');
 
   const messagesRef = useRef(null);
+  const composeRef = useRef(null); // textarea, to reset its auto-grown height after send
   // Scroll ONLY the messages container (not scrollIntoView, which would also
   // scroll ancestor containers and push the header/pane out of view).
   const scrollToBottom = () => {
@@ -169,6 +170,7 @@ export default function CoachChat({ mode = 'student' }) {
     };
     setMessages(prev => [...prev, optimistic]);
     setDraft('');
+    if (composeRef.current) composeRef.current.style.height = 'auto';
     scrollToBottom();
     try {
       await api.post(`/api/chat/${selected._id}/messages`, { content });
@@ -290,11 +292,17 @@ export default function CoachChat({ mode = 'student' }) {
             {err && <div className="cchat-err">{err}</div>}
 
             <div className="cchat-compose">
-              <input
+              <textarea
+                ref={composeRef}
                 value={draft}
-                onChange={e => setDraft(e.target.value)}
+                onChange={e => {
+                  setDraft(e.target.value);
+                  e.target.style.height = 'auto';
+                  e.target.style.height = `${e.target.scrollHeight}px`;
+                }}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-                placeholder="Type a message…"
+                placeholder="Type a message… (Shift+Enter for a new line)"
+                rows={1}
               />
               <button onClick={send} disabled={!draft.trim() || sending}>Send</button>
             </div>
