@@ -30,17 +30,24 @@ export default function CoachSubscription() {
   const [loading, setLoading] = useState(true);
   const [activating, setActivating] = useState(null); // plan id while activating
   const [history, setHistory] = useState([]);
+  const [wallet, setWallet] = useState(null);          // { homeCurrency, balances[], maxDiscountPct }
+  const [referrals, setReferrals] = useState(null);    // { myCoachCode, total, pending, granted, earnedByCurrency, referrals[] }
+  const [applyCredit, setApplyCredit] = useState(true); // use wallet credit at checkout
+  const [copied, setCopied] = useState(false);
   const [msg, setMsg] = useState('');
   const [err, setErr] = useState('');
 
   const loadAll = async () => {
     setLoading(true);
     try {
-      const [p, st, h] = await Promise.all([
+      const [p, st, h, w] = await Promise.all([
         api.get('/api/coach/plans'),
         api.get('/api/coach/status'),
-        api.get('/api/coach-subscription/history').catch(() => ({ data: { payments: [] } }))
+        api.get('/api/coach-subscription/history').catch(() => ({ data: { payments: [] } })),
+        api.get('/api/coach-subscription/wallet').catch(() => ({ data: null }))
       ]);
+      api.get('/api/coach-subscription/referrals')
+        .then(r => setReferrals(r.data)).catch(() => setReferrals(null));
       const raw = p.data?.plans || {};
       const byId = Array.isArray(raw) ? Object.fromEntries(raw.map(pl => [pl.id, pl])) : raw;
       setPlansById(byId);
@@ -58,6 +65,7 @@ export default function CoachSubscription() {
       setMonths(prev => (durs.includes(prev) ? prev : (p.data?.defaultMonths || 3)));
       setStatus(st.data);
       setHistory(h.data?.payments || []);
+      setWallet(w.data || null);
     } catch (e) {
       setErr(e.response?.data?.message || 'Failed to load plans.');
     } finally {
@@ -68,10 +76,11 @@ export default function CoachSubscription() {
   useEffect(() => { loadAll(); }, []); // eslint-disable-line
 
   const subscribe = async (planId) => {
+    if (activating) return; // guard against double-click / concurrent checkout
     setErr(''); setMsg('');
     setActivating(planId);
     try {
-      const orderRes = await api.post('/api/coach-subscription/order', { plan: planId, currency, months });
+      const orderRes = await api.post('/api/coach-subscription/order', { plan: planId, currency, months, applyCredit });
       const data = orderRes.data;
 
       // Dev fallback: backend returns { devMode: true } when keys aren't configured
@@ -112,7 +121,15 @@ export default function CoachSubscription() {
           }
         },
         modal: {
-          ondismiss: () => setActivating(null)
+          ondismiss: () => {
+            // Coach closed checkout without paying — refund the reserved credit
+            // so it isn't stuck on an unfinished order.
+            if (data.creditApplied > 0 && data.paymentRecordId) {
+              api.post('/api/coach-subscription/release', { paymentRecordId: data.paymentRecordId })
+                .then(() => loadAll()).catch(() => {});
+            }
+            setActivating(null);
+          }
         }
       };
 
@@ -120,6 +137,25 @@ export default function CoachSubscription() {
       rzp.open();
     } catch (e) {
       setErr(e.response?.data?.message || e.message || 'Could not start payment.');
+    } finally {
+      setActivating(null);
+    }
+  };
+
+  // Voluntary downgrade to a lower plan (incl. Free). Server blocks it if the
+  // coach's current roster won't fit the target cap.
+  const downgrade = async (planId, planName, targetCap) => {
+    if (activating) return;
+    if (!window.confirm(`Switch to the ${planName} plan (up to ${targetCap} students)? You'll keep your students, but can't add past ${targetCap}.`)) return;
+    setErr(''); setMsg('');
+    setActivating(planId);
+    try {
+      const res = await api.post('/api/coach-subscription/downgrade', { plan: planId });
+      setMsg(`✅ ${res.data?.message || `Switched to ${planName}.`}`);
+      await loadAll();
+    } catch (e) {
+      // 409 with blocked=true → too many students for the target cap.
+      setErr(e.response?.data?.message || 'Could not downgrade.');
     } finally {
       setActivating(null);
     }
@@ -148,6 +184,19 @@ export default function CoachSubscription() {
   // Total charge for the selected duration, formatted.
   const totalFor = (p) => fmt(monthlyMinor(p) * months);
   const perMonthFor = (p) => fmt(monthlyMinor(p));
+
+  // Referral-wallet credit available in the currently selected currency.
+  const walletBalanceMinor = (() => {
+    const b = wallet?.balances?.find(x => x.currency === currency);
+    return b ? b.amount : 0;
+  })();
+  const maxDiscountPct = wallet?.maxDiscountPct ?? 0.5;
+  // Estimated discount for a plan at the current duration (capped), for preview.
+  const previewDiscount = (p) => {
+    if (!applyCredit || walletBalanceMinor <= 0) return 0;
+    const gross = monthlyMinor(p) * months;
+    return Math.min(walletBalanceMinor, Math.floor(gross * maxDiscountPct));
+  };
 
   // Per-tier presentation: a ribbon badge + a one-line tagline of the offer.
   const TIER = {
@@ -180,6 +229,23 @@ export default function CoachSubscription() {
   // free window with manual renewal), so it is NOT treated as unlimited here.
   const isAdmin = access.reason === 'privileged' && !isElite;
   const isEliteFree = isElite || access.reason === 'elite_free' || currentPlan === 'elite_free';
+
+  // Is plan `p` a downgrade from the coach's CURRENT active plan? Mirrors the
+  // server's isDowngrade: smaller student cap, or same cap but cheaper. Only
+  // meaningful when the coach is on an active PAID plan (not free/downgraded).
+  const currentPlanObj = plansById[currentPlan];
+  const onActivePaid = currentPlanObj && !isOnFreePlan && !access.downgraded && !isEliteFree && !isAdmin;
+  const isDowngradeCard = (p) => {
+    if (!onActivePaid || !currentPlanObj || p.id === currentPlan) return false;
+    const curCap = currentPlanObj.maxStudents ?? 0;
+    const curPrice = currentPlanObj.monthlyPrice ?? 0;
+    const tgtCap = p.maxStudents ?? 0;
+    const tgtPrice = p.monthlyPrice ?? 0;
+    return tgtCap < curCap || (tgtCap === curCap && tgtPrice < curPrice);
+  };
+  // Roster size hint for the UI warning. The server does the AUTHORITATIVE count
+  // at downgrade time; this is only to pre-warn the coach.
+  const activeStudents = status?.coachProfile?.studentsCount ?? null;
 
   // Admins — unlimited free, hide purchase UI.
   if (isAdmin) {
@@ -283,6 +349,31 @@ export default function CoachSubscription() {
         </div>
       )}
 
+      {walletBalanceMinor > 0 && (
+        <div className="cs-credit-row">
+          <label className="cs-credit-toggle">
+            <input
+              type="checkbox"
+              checked={applyCredit}
+              onChange={e => setApplyCredit(e.target.checked)}
+            />
+            <span>
+              Apply referral credit — you have{' '}
+              <strong>{curSymbol}{fmt(walletBalanceMinor)}</strong> in {currency}
+            </span>
+          </label>
+          <span className="cs-currency-hint">
+            Credit covers up to {Math.round(maxDiscountPct * 100)}% of a purchase.
+          </span>
+        </div>
+      )}
+      {wallet?.balances?.length > 0 && walletBalanceMinor === 0 && (
+        <div className="cs-currency-hint" style={{ marginBottom: 8 }}>
+          You have referral credit in {wallet.balances.filter(b => b.amount > 0).map(b => `${b.currency} ${fmt(b.amount)}`).join(', ')}.
+          Switch "Pay in" to that currency to use it.
+        </div>
+      )}
+
       <div className="cs-duration-row">
         <label>Subscribe for</label>
         <div className="cs-duration-pills">
@@ -360,21 +451,61 @@ export default function CoachSubscription() {
                     <ul className="cs-plan-features">
                       {(p.features || []).map(f => <li key={f}>✓ {f}</li>)}
                     </ul>
-                    {isFreeCard ? (
-                      <button className="btn-ghost" disabled>
-                        {isCurrent ? 'Current plan' : 'Included free'}
-                      </button>
-                    ) : (
-                      <button
-                        className={isCurrent ? 'btn-ghost' : 'btn-primary'}
-                        disabled={isCurrent || activating === p.id}
-                        onClick={() => subscribe(p.id)}
-                      >
-                        {isCurrent ? 'Current plan' :
-                          activating === p.id ? 'Starting…' :
-                            access.downgraded ? 'Renew plan' : 'Upgrade'}
-                      </button>
-                    )}
+                    {(() => {
+                      const canDowngrade = isDowngradeCard(p);
+                      const tooMany = canDowngrade && activeStudents != null && activeStudents > (p.maxStudents ?? 0);
+                      if (isFreeCard) {
+                        // Free card: current plan, or a downgrade target for a paid coach.
+                        if (isCurrent) return <button className="btn-ghost" disabled>Current plan</button>;
+                        if (onActivePaid) {
+                          return (
+                            <>
+                              <button
+                                className="btn-ghost"
+                                disabled={activating === p.id || tooMany}
+                                onClick={() => downgrade(p.id, p.name, p.maxStudents)}
+                              >
+                                {activating === p.id ? 'Switching…' : `Downgrade to Free`}
+                              </button>
+                              {tooMany && (
+                                <div className="cs-downgrade-warn">
+                                  You have {activeStudents} students — remove {activeStudents - p.maxStudents} to fit {p.maxStudents}.
+                                </div>
+                              )}
+                            </>
+                          );
+                        }
+                        return <button className="btn-ghost" disabled>Included free</button>;
+                      }
+                      if (isCurrent) return <button className="btn-ghost" disabled>Current plan</button>;
+                      if (canDowngrade) {
+                        return (
+                          <>
+                            <button
+                              className="btn-ghost"
+                              disabled={activating === p.id || tooMany}
+                              onClick={() => downgrade(p.id, p.name, p.maxStudents)}
+                            >
+                              {activating === p.id ? 'Switching…' : 'Downgrade'}
+                            </button>
+                            {tooMany && (
+                              <div className="cs-downgrade-warn">
+                                You have {activeStudents} students — remove {activeStudents - p.maxStudents} to fit {p.maxStudents}.
+                              </div>
+                            )}
+                          </>
+                        );
+                      }
+                      return (
+                        <button
+                          className="btn-primary"
+                          disabled={activating === p.id}
+                          onClick={() => subscribe(p.id)}
+                        >
+                          {activating === p.id ? 'Starting…' : access.downgraded ? 'Renew plan' : 'Upgrade'}
+                        </button>
+                      );
+                    })()}
                   </div>
                 );
               })}
@@ -382,6 +513,67 @@ export default function CoachSubscription() {
           </div>
         );
       })}
+
+      {referrals?.myCoachCode && (
+        <div className="coach-section">
+          <div className="coach-section-head"><h2>Refer coaches & earn credit</h2></div>
+          <div className="cs-refer">
+            <p className="cs-refer-lead">
+              Invite another coach with your code. When they make their first paid
+              subscription, you earn <strong>{Math.round((referrals.rewardPct ?? 0.2) * 100)}%</strong> of
+              what they pay as wallet credit — spendable on your own plan.
+            </p>
+
+            <div className="cs-refer-code-row">
+              <div className="cs-refer-code">
+                <span className="cs-refer-code-label">Your code</span>
+                <strong>{referrals.myCoachCode}</strong>
+              </div>
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => {
+                  const link = `${window.location.origin}/coach/onboarding?ref=${referrals.myCoachCode}`;
+                  navigator.clipboard?.writeText(link).then(() => {
+                    setCopied(true); setTimeout(() => setCopied(false), 2000);
+                  });
+                }}
+              >
+                {copied ? '✓ Link copied' : 'Copy invite link'}
+              </button>
+            </div>
+
+            <div className="cs-refer-stats">
+              <div className="cs-refer-stat"><strong>{referrals.total}</strong><span>Referred</span></div>
+              <div className="cs-refer-stat"><strong>{referrals.granted}</strong><span>Subscribed</span></div>
+              <div className="cs-refer-stat"><strong>{referrals.pending}</strong><span>Pending</span></div>
+              <div className="cs-refer-stat">
+                <strong>
+                  {Object.keys(referrals.earnedByCurrency || {}).length
+                    ? Object.entries(referrals.earnedByCurrency).map(([c, a]) => `${c} ${fmt(a)}`).join(' · ')
+                    : '—'}
+                </strong>
+                <span>Earned</span>
+              </div>
+            </div>
+
+            {referrals.referrals?.length > 0 && (
+              <div className="cs-refer-list">
+                {referrals.referrals.map(r => (
+                  <div key={r.id} className="cs-refer-list-row">
+                    <span>{r.coach?.name || 'A coach'}{r.coach?.academy ? ` · ${r.coach.academy}` : ''}</span>
+                    <span className={`pill pill-${r.status === 'granted' ? 'completed' : 'pending'}`}>
+                      {r.status === 'granted'
+                        ? `+${r.rewardCurrency} ${fmt(r.rewardAmount)}`
+                        : 'Awaiting first payment'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {history.length > 0 && (
         <div className="coach-section">

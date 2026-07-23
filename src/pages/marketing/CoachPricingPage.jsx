@@ -31,6 +31,10 @@ const FAQ = [
     q: "What happens if my paid plan expires?",
     a: "You're moved back to the free plan's limits rather than losing access. Your students, courses and history stay exactly where they are.",
   },
+  {
+    q: "Can I earn credit toward my subscription?",
+    a: "Yes. Refer another coach and, when they take their first paid plan, you earn 20% of it as wallet credit toward your own subscription — in your own currency, with no limit on referrals. See the coach referral program for details.",
+  },
 ];
 
 // This PUBLIC page quotes USD — it's the SEO landing page and most of its
@@ -191,12 +195,22 @@ export default function CoachPricingPage() {
         </div>
       </section>
 
+      <section className="mkt-section" aria-label="Referral program">
+        <h2>Lower your cost — refer a coach</h2>
+        <p className="mkt-p">
+          Refer another coach and earn <strong>20%</strong> of their first paid
+          subscription as wallet credit toward your own plan — in your own currency,
+          with no limit on referrals. See how the{" "}
+          <Link to="/chess-coach-referral">coach referral program</Link> works.
+        </p>
+      </section>
+
       <section className="mkt-section mkt-cta-section" aria-label="Start">
         <h2>Start free, upgrade only if you outgrow it</h2>
         <p className="mkt-section-lead">Up to 30 students, no card required.</p>
         <div className="mkt-cta-row">
           <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Start coaching free</Link>
-          <Link to="/chess-coach-guide" className="mkt-btn">Read the coach guide</Link>
+          <Link to="/chess-coach-referral" className="mkt-btn">Refer & earn</Link>
         </div>
       </section>
     </FeaturePageLayout>

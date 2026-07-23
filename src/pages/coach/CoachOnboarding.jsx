@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 import './CoachOnboarding.css';
@@ -13,6 +13,7 @@ const COUNTRIES = [
 
 export default function CoachOnboarding() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, refreshUser } = useAuth();
 
   const [step, setStep] = useState('prompt'); // 'prompt' | 'form'
@@ -24,8 +25,20 @@ export default function CoachOnboarding() {
     socialPlatform: 'facebook', // 'facebook' | 'instagram'
     socialUsername: '',         // used by the Nexus team to verify the coach
     bio: '',
-    specialization: ''
+    specialization: '',
+    referredByCoachCode: '',    // optional — another coach's code (referral)
   });
+
+  // Prefill referral code from a shared link (?ref=CODE). Persist it so it
+  // survives the login/signup redirect (ProtectedRoute drops the query when it
+  // bounces a logged-out invitee to /login). Falls back to the stored value.
+  useEffect(() => {
+    const ref = searchParams.get('ref');
+    const stored = (() => { try { return localStorage.getItem('coachRefCode') || ''; } catch { return ''; } })();
+    const code = (ref || stored || '').trim().toUpperCase();
+    if (ref) { try { localStorage.setItem('coachRefCode', code); } catch {} }
+    if (code) setForm(prev => (prev.referredByCoachCode ? prev : { ...prev, referredByCoachCode: code }));
+  }, [searchParams]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [agreedTerms, setAgreedTerms] = useState(false);
@@ -60,6 +73,7 @@ export default function CoachOnboarding() {
     setSubmitting(true);
     try {
       await api.post('/api/coach/onboard', { ...form, socialUsername });
+      try { localStorage.removeItem('coachRefCode'); } catch {} // don't leak to next coach on shared browser
       if (refreshUser) await refreshUser();
       navigate('/coach/dashboard', { replace: true });
     } catch (err) {
@@ -246,6 +260,21 @@ export default function CoachOnboarding() {
                 placeholder="Tell students about your coaching style..."
                 maxLength={600}
               />
+            </label>
+
+            <label className="field">
+              <span>Referral code (optional)</span>
+              <input
+                type="text"
+                value={form.referredByCoachCode}
+                onChange={e => update('referredByCoachCode', e.target.value.toUpperCase())}
+                placeholder="Were you invited by another coach? Enter their code"
+                maxLength={20}
+                autoCapitalize="characters"
+              />
+              <div className="coach-onboard-social-hint">
+                If a coach referred you, add their code — they'll earn wallet credit when you first subscribe.
+              </div>
             </label>
 
             <label className="coach-onboard-terms">

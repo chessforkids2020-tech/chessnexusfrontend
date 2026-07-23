@@ -109,10 +109,30 @@ export default function AdminCoaches() {
     try {
       const res = await api.get("/api/admin/coaches");
       setCoachList(res.data?.coaches || []);
+      setReferralSummary(res.data?.referralSummary || null);
     } catch {
       setCoachList([]);
     } finally {
       setCoachListLoading(false);
+    }
+  };
+
+  // Referral program: summary strip + per-coach drill-down.
+  const [referralSummary, setReferralSummary] = useState(null);
+  const [refExpandId, setRefExpandId] = useState(null);
+  const [refDetail, setRefDetail] = useState(null);
+  const [refDetailLoading, setRefDetailLoading] = useState(false);
+
+  const toggleReferralDetail = async (coachId) => {
+    if (refExpandId === coachId) { setRefExpandId(null); setRefDetail(null); return; }
+    setRefExpandId(coachId); setRefDetail(null); setRefDetailLoading(true);
+    try {
+      const res = await api.get(`/api/admin/coaches/${coachId}/referrals`);
+      setRefDetail(res.data || { referrals: [], transactions: [] });
+    } catch {
+      setRefDetail({ referrals: [], transactions: [] });
+    } finally {
+      setRefDetailLoading(false);
     }
   };
 
@@ -282,6 +302,16 @@ export default function AdminCoaches() {
           ) : coachList.length === 0 ? (
             <p style={{ color: "#94a3b8", fontSize: 13, margin: 0 }}>No coaches or applicants yet.</p>
           ) : (
+            <>
+            {referralSummary && referralSummary.totalReferred > 0 && (
+              <div style={{ background: "#ecfeff", border: "1px solid #a5f3fc", borderRadius: 12, padding: "12px 16px", marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 20 }}>
+                <div style={{ fontWeight: 800, color: "#0e7490" }}>🎁 Referral program</div>
+                <div style={{ fontSize: 13, color: "#155e63" }}><strong>{referralSummary.totalReferred}</strong> referred · <strong>{referralSummary.totalSubscribed}</strong> converted · <strong>{referralSummary.totalPending}</strong> pending</div>
+                <div style={{ fontSize: 13, color: "#155e63" }}>Credit issued: <strong>{totalsLabel(referralSummary.creditIssuedByCurrency)}</strong></div>
+                <div style={{ fontSize: 13, color: "#155e63" }}>Redeemed: <strong>{totalsLabel(referralSummary.creditRedeemedByCurrency)}</strong></div>
+                <div style={{ fontSize: 13, color: "#b45309" }}>Outstanding (unspent): <strong>{totalsLabel(referralSummary.outstandingCreditByCurrency)}</strong></div>
+              </div>
+            )}
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
@@ -293,13 +323,15 @@ export default function AdminCoaches() {
                     <th style={{ padding: "8px 10px" }}>Applied</th>
                     <th style={{ padding: "8px 10px" }}>Last paid</th>
                     <th style={{ padding: "8px 10px" }}>Total paid</th>
+                    <th style={{ padding: "8px 10px" }}>Referrals</th>
                     <th style={{ padding: "8px 10px" }}>Status</th>
                     <th style={{ padding: "8px 10px" }}>Verify</th>
                   </tr>
                 </thead>
                 <tbody>
                   {coachList.map(c => (
-                    <tr key={c.id} style={{ borderBottom: "1px solid #f1f5f9", color: "#1f2937" }}>
+                    <React.Fragment key={c.id}>
+                    <tr style={{ borderBottom: "1px solid #f1f5f9", color: "#1f2937" }}>
                       <td style={{ padding: "8px 10px" }}>
                         <div style={{ fontWeight: 700 }}>{c.coachName || c.displayName}</div>
                         <div style={{ color: "#94a3b8", fontSize: 11 }}>@{c.username}{c.email ? ` · ${c.email}` : ""}</div>
@@ -313,6 +345,27 @@ export default function AdminCoaches() {
                       <td style={{ padding: "8px 10px" }}>{fmtDate(c.appliedAt)}</td>
                       <td style={{ padding: "8px 10px" }}>{fmtDate(c.lastPaidAt)}</td>
                       <td style={{ padding: "8px 10px" }}>{c.totalPaid ? `₹${Math.round(c.totalPaid / 100)}` : "—"}</td>
+                      <td style={{ padding: "8px 10px" }}>
+                        {c.referred > 0 ? (
+                          <button
+                            onClick={() => toggleReferralDetail(c.id)}
+                            title="Show referral detail"
+                            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}
+                          >
+                            <div style={{ fontWeight: 700, color: "#0891b2" }}>
+                              {refExpandId === c.id ? "▾" : "▸"} {c.referred} referred · {c.referredSubscribed} paid
+                            </div>
+                            <div style={{ fontSize: 11, color: "#059669" }}>
+                              Earned {totalsLabel(c.referralEarnedByCurrency)}
+                            </div>
+                            <div style={{ fontSize: 11, color: "#94a3b8" }}>
+                              Balance {totalsLabel(c.creditBalanceByCurrency)} · Redeemed {totalsLabel(c.creditRedeemedByCurrency)}
+                            </div>
+                          </button>
+                        ) : (
+                          <span style={{ color: "#cbd5e1" }}>—</span>
+                        )}
+                      </td>
                       <td style={{ padding: "8px 10px" }}>
                         {c.verified
                           ? <span style={{ color: "#10b981", fontWeight: 700 }}>✓ Verified</span>
@@ -346,10 +399,42 @@ export default function AdminCoaches() {
                         </div>
                       </td>
                     </tr>
+                    {refExpandId === c.id && (
+                      <tr>
+                        <td colSpan={10} style={{ padding: "10px 14px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+                          {refDetailLoading ? (
+                            <span style={{ color: "#94a3b8", fontSize: 12 }}>Loading referral detail…</span>
+                          ) : !refDetail?.referrals?.length ? (
+                            <span style={{ color: "#94a3b8", fontSize: 12 }}>No referrals.</span>
+                          ) : (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                              <div style={{ fontWeight: 700, fontSize: 12, color: "#475569", marginBottom: 2 }}>Coaches referred by {c.coachName || c.displayName}</div>
+                              {refDetail.referrals.map(r => (
+                                <div key={r.id} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 12.5, color: "#334155", padding: "3px 0", borderBottom: "1px dashed #e2e8f0" }}>
+                                  <span>{r.coach?.name || "A coach"}{r.coach?.country ? ` · ${r.coach.country}` : ""}</span>
+                                  <span>
+                                    {r.status === "granted" ? (
+                                      <>
+                                        <span style={{ color: "#059669", fontWeight: 700 }}>+{money(r.rewardAmount, r.rewardCurrency)}</span>
+                                        <span style={{ color: "#94a3b8" }}> (from {money(r.sourceAmount, r.sourceCurrency)} paid · {fmtDate(r.grantedAt)})</span>
+                                      </>
+                                    ) : (
+                                      <span style={{ color: "#f59e0b", fontWeight: 700 }}>Pending first payment</span>
+                                    )}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </div>
       </div>

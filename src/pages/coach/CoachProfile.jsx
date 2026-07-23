@@ -36,20 +36,24 @@ function Row({ label, children }) {
 export default function CoachProfile() {
   const [status, setStatus] = useState(null);
   const [counts, setCounts] = useState(null);
+  const [wallet, setWallet] = useState(null);   // { balances[], homeCurrency, maxDiscountPct }
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({});
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [codeCopied, setCodeCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const load = async () => {
     try {
-      const [s, d] = await Promise.all([
+      const [s, d, w] = await Promise.all([
         api.get('/api/coach/status'),
         api.get('/api/coach/dashboard').catch(() => ({ data: null })), // needs access; may 403
+        api.get('/api/coach-subscription/wallet').catch(() => ({ data: null })),
       ]);
       setStatus(s.data);
       setCounts(d.data);
+      setWallet(w.data || null);
     } catch {
       setError('Could not load your profile.');
     }
@@ -91,6 +95,16 @@ export default function CoachProfile() {
     if (await copyText(p.coachCode)) {
       setCodeCopied(true);
       setTimeout(() => setCodeCopied(false), 1800);
+    }
+  };
+
+  // Full shareable referral link — an invited coach lands on onboarding with the
+  // code prefilled (?ref=CODE).
+  const referralLink = p.coachCode ? `${window.location.origin}/coach/onboarding?ref=${p.coachCode}` : '';
+  const copyReferralLink = async () => {
+    if (await copyText(referralLink)) {
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 1800);
     }
   };
 
@@ -163,6 +177,72 @@ export default function CoachProfile() {
           </div>
         </div>
       )}
+
+      {/* ── Referral wallet ──────────────────────── */}
+      {/* Always shown (even at 0) so new coaches discover they can earn credit. */}
+      {(() => {
+        const balances = (wallet?.balances || []).filter(b => b.amount > 0);
+        const hasCredit = balances.length > 0;
+        const rewardPct = Math.round((wallet?.rewardPct ?? 0.2) * 100);
+        const maxPct = Math.round((wallet?.maxDiscountPct ?? 0.5) * 100);
+        return (
+          <div className="cp-card cp-wallet">
+            <div className="cp-card-head">
+              <span className="cp-card-ic" aria-hidden="true">💰</span>
+              <h2>Referral wallet</h2>
+            </div>
+
+            {hasCredit ? (
+              <>
+                <div className="cp-wallet-balances">
+                  {balances.map(b => {
+                    const sym = b.currency === 'INR' ? '₹' : b.currency === 'USD' ? '$' : b.currency === 'EUR' ? '€' : b.currency === 'GBP' ? '£' : b.currency + ' ';
+                    return (
+                      <div key={b.currency} className="cp-wallet-amount">
+                        {sym}{(b.amount / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                        <span className="cp-wallet-cur">{b.currency}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="cp-wallet-note">
+                  Store credit earned from coaches you referred. Spendable toward your own
+                  subscription — covers up to {maxPct}% of a purchase.
+                </p>
+                <Link to="/coach/subscription" className="btn-ghost">Use credit →</Link>
+              </>
+            ) : (
+              <>
+                <div className="cp-wallet-zero">
+                  <span className="cp-wallet-amount cp-wallet-amount--zero">₹0</span>
+                  <span className="cp-wallet-zero-tag">No credit yet</span>
+                </div>
+                <p className="cp-wallet-note">
+                  Invite another coach with your code below. When they make their first paid
+                  subscription, you earn <strong>{rewardPct}%</strong> of what they pay as wallet
+                  credit — spendable on your own plan (covers up to {maxPct}% of a purchase).
+                </p>
+                <div className="cp-wallet-share">
+                  {p.coachCode && (
+                    <div className="cp-wallet-code">
+                      <span className="cp-wallet-code-label">Your referral link</span>
+                      <span className="cp-wallet-link" title={referralLink}>{referralLink}</span>
+                    </div>
+                  )}
+                  <div className="cp-wallet-actions">
+                    {p.coachCode && (
+                      <button type="button" className="btn-primary" onClick={copyReferralLink}>
+                        {linkCopied ? '✓ Link copied' : '🔗 Copy referral link'}
+                      </button>
+                    )}
+                    <Link to="/coach/subscription" className="btn-ghost">See referral details →</Link>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ── Profile details ──────────────────────── */}
       <div className="cp-card">

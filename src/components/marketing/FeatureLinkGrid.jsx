@@ -122,6 +122,22 @@ export const FEATURES = [
       "How everything works, step by step — onboarding, students, batches, assignments, courses, schedule, attendance, parent reports and the built-in live classroom.",
   },
   {
+    slug: "/chess-coach-referral",
+    appPath: "/coach/profile",
+    icon: "💰",
+    title: "Coach Referral Program",
+    blurb:
+      "Refer another coach and earn 20% of their first subscription as wallet credit toward your own plan — in your own currency, with no limit on referrals.",
+  },
+  {
+    slug: "/chess-coaching-questions",
+    appPath: "/coach/onboarding",
+    icon: "❓",
+    title: "Coaching Questions Answered",
+    blurb:
+      "Straight answers for coaches — managing students, running online classes, organizing batches, homework, tracking progress and starting an academy.",
+  },
+  {
     slug: "/3d-chess-arena-tournament",
     appPath: "/3d-chess-arena-tournament",
     icon: "🏟️",

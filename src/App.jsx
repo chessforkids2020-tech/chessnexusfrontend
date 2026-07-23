@@ -45,6 +45,8 @@ import ImproveAtChessPage from "./pages/marketing/ImproveAtChessPage";
 import ChessCoachingPage from "./pages/marketing/ChessCoachingPage";
 import CoachGuidePage from "./pages/marketing/CoachGuidePage";
 import CoachPricingPage from "./pages/marketing/CoachPricingPage";
+import CoachReferralPage from "./pages/marketing/CoachReferralPage";
+import CoachFaqPage from "./pages/marketing/CoachFaqPage";
 import LiveClassroomMarketingPage from "./pages/marketing/LiveClassroomPage";
 import EndgameTrainingPage from "./pages/marketing/EndgameTrainingPage";
 import OpeningRepertoirePage from "./pages/marketing/OpeningRepertoirePage";
@@ -502,6 +504,16 @@ export default function App() {
         <Route path="/chess-coach-pricing" element={
           <MarketingLayout>
             <CoachPricingPage />
+          </MarketingLayout>
+        } />
+        <Route path="/chess-coach-referral" element={
+          <MarketingLayout>
+            <CoachReferralPage />
+          </MarketingLayout>
+        } />
+        <Route path="/chess-coaching-questions" element={
+          <MarketingLayout>
+            <CoachFaqPage />
           </MarketingLayout>
         } />
         <Route path="/live-chess-classroom" element={

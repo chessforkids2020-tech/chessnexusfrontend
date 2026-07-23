@@ -45,6 +45,8 @@ const ROUTES = [
   '/chess-coaching',
   '/chess-coach-guide',
   '/chess-coach-pricing',
+  '/chess-coach-referral',
+  '/chess-coaching-questions',
   '/live-chess-classroom',
   '/chess-endgame-training',
   '/chess-opening-repertoire',

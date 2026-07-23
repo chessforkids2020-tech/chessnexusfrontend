@@ -57,6 +57,10 @@ const FAQ = [
     q: "How do students find out about a new class or activity?",
     a: "Whenever you change the schedule or start an activity, a notice is posted automatically into each affected student's coach chat, which raises their Messages badge. Students also see upcoming classes and activities on their My Coach page.",
   },
+  {
+    q: "Can I earn credit by referring other coaches?",
+    a: "Yes. Every coach has a personal referral link on their profile. Refer another coach and, when they take their first paid subscription, you earn 20% of it as wallet credit toward your own plan — in your own currency, with no limit on referrals.",
+  },
 ];
 
 function Section({ id, icon, title, lead, children }) {
