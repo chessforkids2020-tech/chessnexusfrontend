@@ -993,6 +993,14 @@ function TabPayments() {
 
   return (
     <div>
+      <div style={{
+        background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.3)',
+        borderRadius: 12, padding: '12px 16px', marginBottom: 18, fontSize: 13.5, lineHeight: 1.6, color: 'rgba(226,232,240,0.85)'
+      }}>
+        💰 <strong>Parents pay you directly.</strong> In ChessNexus you simply track and verify these
+        payments yourself — the payment stays entirely between you and the parent. It goes straight to
+        your account: no middleman, no delays, no deductions.
+      </div>
       <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
         <button className="cap-btn cap-btn-cyan" onClick={() => { setShowForm(s => !s); setMsg(''); }}>
           {showForm ? '✕ Cancel' : '+ Add Payment'}

@@ -9,8 +9,8 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 const CANONICAL = "/chess-coach-referral";
 
 // Reward figures — keep in step with backend/config/coachPlans.js
-// (REFERRAL_REWARD_PCT = 0.20, REFERRAL_MAX_DISCOUNT_PCT = 0.50).
-const REWARD_PCT = 20;
+// (REFERRAL_REWARD_PCT = 0.25, REFERRAL_MAX_DISCOUNT_PCT = 0.50).
+const REWARD_PCT = 25;
 const MAX_DISCOUNT_PCT = 50;
 
 const STEPS = [

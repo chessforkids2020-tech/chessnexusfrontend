@@ -13,6 +13,12 @@
   color: #ffffff;
 }
 
+/* Chat-only view: header/tabs are hidden, so pull the chat box up to the top
+   instead of leaving the hub's normal 28px top padding as empty space. */
+.sh-page-chatonly {
+  padding-top: 8px;
+}
+
 .sh-page::before {
   content: '';
   position: fixed;

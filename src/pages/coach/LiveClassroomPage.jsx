@@ -248,15 +248,22 @@ function MediaTile({ track, audioTrack, muted, label, isScreen, avatarUrl, speak
 }
 
 function Countdown({ endsAt, onExpire }) {
-  const [left, setLeft] = useState(() => Math.max(0, new Date(endsAt) - Date.now()));
+  // Zoom-style: endsAt is null until the first student arrives — the class clock
+  // hasn't started, so show a paused indicator instead of counting down from 0.
+  const hasClock = !!endsAt;
+  const [left, setLeft] = useState(() => hasClock ? Math.max(0, new Date(endsAt) - Date.now()) : 0);
   useEffect(() => {
+    if (!hasClock) return; // don't tick until the clock has started
     const id = setInterval(() => {
       const ms = Math.max(0, new Date(endsAt) - Date.now());
       setLeft(ms);
       if (ms <= 0) { clearInterval(id); onExpire && onExpire(); }
     }, 1000);
     return () => clearInterval(id);
-  }, [endsAt, onExpire]);
+  }, [endsAt, onExpire, hasClock]);
+  if (!hasClock) {
+    return <span style={{ fontWeight: 700, color: '#94a3b8', fontSize: 13 }}>⏸ waiting for students</span>;
+  }
   const m = Math.floor(left / 60000), sec = Math.floor((left % 60000) / 1000);
   const low = left <= 60000;
   return <span style={{ fontWeight: 800, color: low ? '#ef4444' : '#e2e8f0', fontVariantNumeric: 'tabular-nums' }}>
@@ -400,8 +407,11 @@ const nt = {
   // scrolling VERTICALLY only — never widening the card or scrolling sideways.
   body: { flex: 1, minWidth: 0, minHeight: 0, padding: 10, overflowY: 'auto', overflowX: 'hidden',
     lineHeight: 1.9, fontSize: 13.5, wordBreak: 'break-word', overflowWrap: 'anywhere' },
-  num: { color: '#6b7280', marginRight: 3, marginLeft: 4 },
-  mv: { color: '#e2e8f0', padding: '1px 5px', borderRadius: 5, marginRight: 2 },
+  num: { color: '#6b7280', marginRight: 3, marginLeft: 4, whiteSpace: 'nowrap' },
+  // A SAN move is atomic — "O-O", "O-O-O", "Bxc3+" must never break INSIDE the token
+  // (the container's overflowWrap:anywhere was splitting "O-O" into "O-" / "O").
+  // inline-block + nowrap keeps each move whole; wrapping still happens between moves.
+  mv: { color: '#e2e8f0', padding: '1px 5px', borderRadius: 5, marginRight: 2, display: 'inline-block', whiteSpace: 'nowrap' },
   mvOn: { background: 'rgba(6,182,212,0.3)', color: '#fff', fontWeight: 700 },
   variation: { color: '#9ca3af', fontSize: 12, margin: '2px 0 2px 12px', borderLeft: '2px solid rgba(255,255,255,0.1)', paddingLeft: 6 },
 };
@@ -581,11 +591,588 @@ const wr = {
   lbHint: { marginTop: 8, fontSize: 11.5, color: '#9fb4c4', textAlign: 'center' },
 };
 
+// mm:ss for a clock in seconds. Under 20s shows a tenths-free red-ready value.
+function fmtClock(sec) {
+  const s = Math.max(0, Math.floor(sec || 0));
+  const m = Math.floor(s / 60);
+  return `${m}:${String(s % 60).padStart(2, '0')}`;
+}
+
+// A small clock row above/below a board (white + black, side-to-move highlighted).
+function ClockRow({ game, hasClock }) {
+  if (!hasClock) return null;
+  const turn = game.turn || 'white';
+  const pill = (color) => (
+    <span style={{
+      fontVariantNumeric: 'tabular-nums', fontWeight: 800, fontSize: 14,
+      padding: '3px 10px', borderRadius: 8, minWidth: 62, textAlign: 'center',
+      background: color === 'white' ? '#f1f5f9' : '#1f2937',
+      color: color === 'white' ? '#0f172a' : '#e2e8f0',
+      border: game.status === 'active' && turn === color ? '2px solid #22c55e' : '2px solid transparent',
+      opacity: game.status === 'active' && turn === color ? 1 : 0.75,
+    }}>{fmtClock(game.clocks?.[color])}</span>
+  );
+  return (
+    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, width: '100%' }}>
+      {pill('white')}{pill('black')}
+    </div>
+  );
+}
+
+// The result label for a finished game.
+function resultLabel(g) {
+  if (g.status !== 'finished') return null;
+  if (!g.winnerColor) return `½–½ ${g.result || 'Draw'}`;
+  const name = g.winnerColor === 'white' ? g.white?.name : g.black?.name;
+  return `${name} won · ${g.result}`;
+}
+
+// Build the student's result popup from their colour + the game outcome.
+// outcome: 'win' | 'loss' | 'draw'. reason is the how (Checkmate/Timeout/…).
+function buildGameOverPopup(myColor, result, winnerColor) {
+  const reason = result || 'Game over';
+  if (!winnerColor) {
+    return { outcome: 'draw', emoji: '🤝', title: "It's a draw!", reason };
+  }
+  const iWon = winnerColor === myColor;
+  return iWon
+    ? { outcome: 'win', emoji: '🎉', title: 'You won!', reason }
+    : { outcome: 'loss', emoji: '😔', title: 'You lost', reason };
+}
+
+// ── ♟ Play in class (coach): pair the admitted class into games, then watch all
+//    boards live in a grid + spotlight one for the spectators. ──
+function ClassPlaySection({ participants = [], classGames = [], classSpotlightId, classHasClock, onStartGames, onSpotlight, onEndGames, onReview }) {
+  const admitted = React.useMemo(
+    () => (participants || []).filter(p => p.state === 'admitted' && p.studentId)
+      .map(p => ({ id: String(p.studentId), name: p.name || p.username || 'Student' })),
+    [participants]
+  );
+  const [tc, setTc] = useState('5+0');
+  // Custom time control (minutes base + increment seconds), used when tc === 'custom'.
+  // The backend accepts either a preset key or a { base, increment } object (seconds).
+  const [customMin, setCustomMin] = useState(10);
+  const [customInc, setCustomInc] = useState(0);
+  // Pairings the coach is building: [{whiteId, blackId}] before Start.
+  const [pairs, setPairs] = useState([]);
+  const nameOf = (id) => admitted.find(a => a.id === id)?.name || '';
+  const usedIds = new Set(pairs.flatMap(p => [p.whiteId, p.blackId]).filter(Boolean));
+  const freeStudents = admitted.filter(a => !usedIds.has(a.id));
+
+  const autoPair = () => {
+    const next = [];
+    for (let i = 0; i + 1 < admitted.length; i += 2) {
+      next.push({ whiteId: admitted[i].id, blackId: admitted[i + 1].id });
+    }
+    setPairs(next);
+  };
+  const addGame = () => setPairs(p => [...p, { whiteId: '', blackId: '' }]);
+  const removeGame = (i) => setPairs(p => p.filter((_, idx) => idx !== i));
+  const setSide = (i, side, id) => setPairs(p => p.map((pr, idx) => idx === i ? { ...pr, [side]: id } : pr));
+
+  const start = () => {
+    const valid = pairs.filter(p => p.whiteId && p.blackId && p.whiteId !== p.blackId)
+      .map(p => ({ whiteId: p.whiteId, whiteName: nameOf(p.whiteId), blackId: p.blackId, blackName: nameOf(p.blackId) }));
+    if (valid.length === 0) return;
+    // Custom → send { base, increment } in seconds. Clamp to the backend's accepted
+    // range (base ≤ 3600 s = 60 min, inc 0–60 s) so the UI never promises more.
+    const timeControl = tc === 'custom'
+      ? { base: Math.max(1, Math.min(60, Number(customMin) || 10)) * 60, increment: Math.max(0, Math.min(60, Number(customInc) || 0)) }
+      : tc;
+    onStartGames && onStartGames(timeControl, valid);
+  };
+
+  // Live grid once games are running.
+  if (classGames.length > 0) {
+    return (
+      <div style={cg.section}>
+        <div style={cg.secHead}>
+          <div style={{ fontSize: 15, fontWeight: 800 }}>♟ Games in play <span style={{ color: '#9ca3af', fontWeight: 600 }}>({classGames.length})</span></div>
+          <button style={cg.endBtn} onClick={() => { onEndGames && onEndGames(); setPairs([]); }}>■ End games</button>
+        </div>
+        <div style={cg.hint}>Click <b>Spotlight</b> on any board — every non-playing student watches that board.</div>
+        <div style={cg.grid}>
+          {classGames.map(g => {
+            const spot = g.id === classSpotlightId;
+            return (
+              <div key={g.id} style={{ ...cg.card, ...(spot ? cg.cardSpot : {}) }}>
+                <div style={cg.players}>
+                  <span title={g.white?.name}>♙ {g.white?.name}</span>
+                  <span title={g.black?.name}>{g.black?.name} ♟</span>
+                </div>
+                <ClockRow game={g} hasClock={classHasClock} />
+                <div style={{ margin: '8px 0' }}>
+                  <Chessboard position={g.fen} lastMove={g.lastMove} boardWidth={210} draggable={false} />
+                </div>
+                {g.status === 'finished' && <div style={cg.result}>🏁 {resultLabel(g)}</div>}
+                <div style={{ display: 'flex', gap: 6, marginTop: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+                  {g.status !== 'finished' && (
+                    <button style={{ ...cg.spotBtn, ...(spot ? cg.spotBtnOn : {}) }} onClick={() => onSpotlight && onSpotlight(g.id)}>
+                      {spot ? '★ Spotlighted' : '☆ Spotlight'}
+                    </button>
+                  )}
+                  {/* Push this game's moves onto the shared teaching board to analyze
+                      it with the class (works for finished OR in-progress games). */}
+                  {(g.moves?.length > 0) && (
+                    <button style={cg.reviewBtn} onClick={() => onReview && onReview(g)} title="Load this game on the teaching board to analyze">
+                      🔎 Review on board
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // Setup UI (no games yet).
+  return (
+    <div style={cg.section}>
+      <div style={cg.secHead}>
+        <div style={{ fontSize: 15, fontWeight: 800 }}>♟ Play in class</div>
+      </div>
+      {admitted.length < 2 ? (
+        <div style={as.empty}>Admit at least 2 students to start games. Currently admitted: {admitted.length}.</div>
+      ) : (
+        <>
+          <div style={cg.hint}>Pair students into games — the whole class can play at once. Each plays their own board; you watch them all.</div>
+          <div style={cg.controls}>
+            <label style={cg.lbl}>Time
+              <select value={tc} onChange={e => setTc(e.target.value)} style={cg.select}>
+                <option value="3+2">3 + 2</option>
+                <option value="5+0">5 + 0</option>
+                <option value="10+0">10 + 0</option>
+                <option value="15+10">15 + 10</option>
+                <option value="none">No clock</option>
+                <option value="custom">Custom…</option>
+              </select>
+            </label>
+            {tc === 'custom' && (
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#cbd5e1' }}>
+                <input type="number" min={1} max={60} value={customMin}
+                  onChange={e => setCustomMin(e.target.value)} style={{ ...cg.select, width: 58 }} /> min
+                <span style={{ color: '#6b7280' }}>+</span>
+                <input type="number" min={0} max={60} value={customInc}
+                  onChange={e => setCustomInc(e.target.value)} style={{ ...cg.select, width: 58 }} /> sec
+              </span>
+            )}
+            <button style={cg.ghostBtn} onClick={autoPair}>⚡ Auto-pair all</button>
+            <button style={cg.ghostBtn} onClick={addGame}>＋ Add game</button>
+          </div>
+          {pairs.length === 0 ? (
+            <div style={{ ...as.empty, marginTop: 8 }}>No games yet — click <b>Auto-pair all</b> or <b>Add game</b>.</div>
+          ) : (
+            <div style={cg.pairList}>
+              {pairs.map((p, i) => (
+                <div key={i} style={cg.pairRow}>
+                  <span style={cg.pairNo}>Game {i + 1}</span>
+                  <select value={p.whiteId} onChange={e => setSide(i, 'whiteId', e.target.value)} style={cg.select}>
+                    <option value="">♙ White…</option>
+                    {admitted.filter(a => a.id === p.whiteId || !usedIds.has(a.id)).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                  </select>
+                  <span style={{ color: '#9ca3af' }}>vs</span>
+                  <select value={p.blackId} onChange={e => setSide(i, 'blackId', e.target.value)} style={cg.select}>
+                    <option value="">♟ Black…</option>
+                    {admitted.filter(a => a.id === p.blackId || !usedIds.has(a.id)).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                  </select>
+                  <button style={cg.rmBtn} title="Remove game" onClick={() => removeGame(i)}>✕</button>
+                </div>
+              ))}
+            </div>
+          )}
+          {freeStudents.length > 0 && (
+            <div style={cg.free}>Not yet paired: {freeStudents.map(a => a.name).join(', ')}</div>
+          )}
+          <button style={cg.startBtn} onClick={start} disabled={pairs.every(p => !(p.whiteId && p.blackId && p.whiteId !== p.blackId))}>
+            ▶ Start games
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+// A big Lichess-style clock for one player: name + large mono time, side-to-move lit.
+function PlayerClock({ name, color, game, hasClock, active }) {
+  const time = game.clocks?.[color];
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
+      padding: '8px 14px', borderRadius: 10, width: '100%', boxSizing: 'border-box',
+      background: active ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.04)',
+      border: active ? '1px solid rgba(34,197,94,0.5)' : '1px solid rgba(255,255,255,0.08)',
+    }}>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700, color: '#e2e8f0', minWidth: 0 }}>
+        <span style={{ width: 12, height: 12, borderRadius: 3, flex: '0 0 auto',
+          background: color === 'white' ? '#f1f5f9' : '#111827', border: '1px solid rgba(255,255,255,0.3)' }} />
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+      </span>
+      {hasClock && (
+        <span style={{ fontVariantNumeric: 'tabular-nums', fontSize: 26, fontWeight: 800, letterSpacing: 1,
+          color: active ? '#6ee7b7' : '#cbd5e1' }}>{fmtClock(time)}</span>
+      )}
+    </div>
+  );
+}
+
+// Move notation as numbered pairs (1. e4 e5  2. Nf3 …), from the SAN move list.
+// Optional: viewPly (1-based ply currently shown) highlights that move, and onJump(ply)
+// lets clicking a move step the board to that position.
+function MoveNotation({ moves = [], viewPly, onJump }) {
+  const rows = [];
+  for (let i = 0; i < moves.length; i += 2) {
+    rows.push({ n: i / 2 + 1, wPly: i + 1, bPly: i + 2, w: moves[i], b: moves[i + 1] });
+  }
+  const cell = (san, ply) => {
+    if (!san) return <span style={{ flex: 1 }} />;
+    const on = viewPly === ply;
+    return (
+      <span onClick={onJump ? () => onJump(ply) : undefined}
+        style={{ flex: 1, color: on ? '#fff' : '#e2e8f0', fontWeight: 600, cursor: onJump ? 'pointer' : 'default',
+          borderRadius: 5, padding: '0 5px', background: on ? 'rgba(6,182,212,0.35)' : 'transparent',
+          display: 'inline-block', whiteSpace: 'nowrap' }}>{san}</span>
+    );
+  };
+  return (
+    <div style={{ flex: 1, minHeight: 120, maxHeight: 300, overflowY: 'auto', width: '100%',
+      background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '8px 6px' }}>
+      {rows.length === 0
+        ? <div style={{ color: '#6b7280', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>No moves yet</div>
+        : rows.map(r => (
+          <div key={r.n} style={{ display: 'flex', fontSize: 14, fontVariantNumeric: 'tabular-nums', lineHeight: 1.7 }}>
+            <span style={{ width: 34, color: '#6b7280', textAlign: 'right', paddingRight: 8 }}>{r.n}.</span>
+            {cell(r.w, r.wPly)}
+            {cell(r.b, r.bPly)}
+          </div>
+        ))}
+    </div>
+  );
+}
+
+// Move navigation for a live board driven by a SAN move list. Reconstructs the FEN
+// at any ply by replaying moves (no per-ply data needed from the server). While the
+// viewer is at the latest ply, new live moves keep it live; if they step back to
+// review, live moves DON'T yank them forward (identity of `moves` change is tracked).
+function useMoveNav(moves, liveFen) {
+  const total = moves.length;
+  const [ply, setPly] = React.useState(total);       // 1-based; == total means "live"
+  const atLiveRef = React.useRef(true);
+  React.useEffect(() => {
+    // A new move arrived. If the viewer was watching the latest position, follow it;
+    // otherwise leave them where they were reviewing.
+    if (atLiveRef.current) setPly(total);
+    else setPly(p => Math.min(p, total)); // clamp if moves somehow shrank
+  }, [total]);
+  const setPlyClamped = (p) => {
+    const np = Math.max(0, Math.min(total, p));
+    atLiveRef.current = np >= total;
+    setPly(np);
+  };
+  const atLive = ply >= total;
+  // FEN at `ply`: replay the first `ply` SAN moves. At live ply, prefer the server's
+  // authoritative fen (handles the very last position exactly).
+  const fen = React.useMemo(() => {
+    if (atLive && liveFen) return liveFen;
+    try {
+      const c = new Chess();
+      for (let i = 0; i < ply; i++) c.move(moves[i]);
+      return c.fen();
+    } catch { return liveFen || undefined; }
+  }, [ply, moves, liveFen, atLive]);
+  return {
+    ply, fen, atLive, total,
+    first: () => setPlyClamped(0),
+    prev: () => setPlyClamped(ply - 1),
+    next: () => setPlyClamped(ply + 1),
+    last: () => setPlyClamped(total),
+    jumpTo: (p) => setPlyClamped(p),
+  };
+}
+
+// Prev/next/first/last board controls (Lichess-style).
+function NavControls({ nav }) {
+  const btn = (label, onClick, disabled, title) => (
+    <button onClick={onClick} disabled={disabled} title={title}
+      style={{ padding: '5px 10px', borderRadius: 7, border: '1px solid rgba(255,255,255,0.14)',
+        background: disabled ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)',
+        color: disabled ? '#4b5563' : '#e2e8f0', cursor: disabled ? 'default' : 'pointer', fontSize: 14, fontWeight: 700 }}>
+      {label}
+    </button>
+  );
+  return (
+    <div style={{ display: 'flex', gap: 6, justifyContent: 'center', alignItems: 'center' }}>
+      {btn('⏮', nav.first, nav.ply === 0, 'Start')}
+      {btn('◀', nav.prev, nav.ply === 0, 'Back')}
+      {btn('▶', nav.next, nav.atLive, 'Forward')}
+      {btn('⏭', nav.last, nav.atLive, 'Latest')}
+      {!nav.atLive && <span style={{ fontSize: 11, color: '#fcd34d', fontWeight: 700 }}>reviewing</span>}
+    </div>
+  );
+}
+
+// ── Student stage: play your own board, or watch the coach's spotlighted board.
+//    Lichess-style: board LEFT, [clock · notation · clock + names] MIDDLE. Videos
+//    are shown by the class's right rail (railHasThumbs includes games). ──
+function ClassGameStudentStage({ myGame, myColor, spotlightGame, hasClock, boardWidth, onMove, onResign }) {
+  const game = myGame || spotlightGame;
+  const nav = useMoveNav(game?.moves || [], game?.fen); // hook before any early return
+  if (!game) return <div style={as.empty}>Waiting for the coach to start a game…</div>;
+  const iAmPlayer = !!myGame;
+  // Only move on the LIVE position (not while reviewing) and on my turn.
+  const myTurn = iAmPlayer && game.status === 'active' && game.turn === myColor && nav.atLive;
+  const onDrop = (from, to, promotion) => {
+    if (!myTurn) return false;
+    onMove && onMove(game.id, from, to, promotion);
+    return true; // optimistic; server broadcast is authoritative and will correct
+  };
+  // Orientation: a player sees from their own side; a spectator from White.
+  const orient = iAmPlayer ? myColor : 'white';
+  // "Top" player is the opponent (or Black for a spectator); "bottom" is me/White.
+  const topColor = orient === 'white' ? 'black' : 'white';
+  const botColor = orient === 'white' ? 'white' : 'black';
+  const nameOf = (c) => c === 'white' ? game.white?.name : game.black?.name;
+  const bw = Math.min(boardWidth, 520);
+  return (
+    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap', width: '100%', justifyContent: 'center' }}>
+      {/* LEFT — the board (shows the position at the currently-viewed ply) */}
+      <div style={{ flex: '0 0 auto' }}>
+        <Chessboard
+          position={nav.fen}
+          lastMove={nav.atLive ? game.lastMove : undefined}
+          boardWidth={bw}
+          draggable={myTurn}
+          onDrop={iAmPlayer ? onDrop : undefined}
+          orientation={orient}
+        />
+      </div>
+
+      {/* MIDDLE — top clock, notation, nav, bottom clock + names + status */}
+      <div style={{ flex: '1 1 240px', minWidth: 240, maxWidth: 340, display: 'flex', flexDirection: 'column', gap: 8, alignSelf: 'stretch' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#9ca3af' }}>
+          {iAmPlayer ? '♟ Your game' : `👀 Watching ${game.white?.name} vs ${game.black?.name}`}
+        </div>
+        <PlayerClock name={nameOf(topColor)} color={topColor} game={game} hasClock={hasClock}
+          active={game.status === 'active' && game.turn === topColor} />
+        <MoveNotation moves={game.moves} viewPly={nav.ply} onJump={nav.jumpTo} />
+        <NavControls nav={nav} />
+        <PlayerClock name={nameOf(botColor)} color={botColor} game={game} hasClock={hasClock}
+          active={game.status === 'active' && game.turn === botColor} />
+        {game.status === 'finished'
+          ? <div style={cg.result}>🏁 {resultLabel(game)}</div>
+          : iAmPlayer
+            ? <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center' }}>
+                <span style={{ color: myTurn ? '#6ee7b7' : '#9ca3af', fontSize: 13, fontWeight: 700 }}>
+                  {game.turn === myColor ? (nav.atLive ? 'Your move' : 'Reviewing — go to Latest to move') : 'Waiting for opponent…'}
+                </span>
+                <button style={cg.rmBtn2} onClick={() => onResign && onResign(game.id)}>Resign</button>
+              </div>
+            : <div style={{ color: '#9ca3af', fontSize: 13 }}>Your coach chooses which game everyone watches.</div>}
+      </div>
+    </div>
+  );
+}
+
+// ── SIMUL — coach's play surface: one big active board + a strip of small boards
+//    below. Click any small board to swap it into the big one (Lichess-style). ──
+function SimulCoachStage({ simul, activeBoard, boardWidth, onMove, onFocus, onEnd }) {
+  // Move nav for the CURRENTLY-focused board (notation of the active chessboard).
+  const nav = useMoveNav(activeBoard?.moves || [], activeBoard?.fen);
+  if (!simul || !activeBoard) return <div style={as.empty}>Starting the simul…</div>;
+  const coachColor = simul.coachColor;
+  // Move only on the live position + coach's turn (not while reviewing history).
+  const coachTurn = activeBoard.status === 'active' && activeBoard.turn === coachColor && nav.atLive;
+  const onDrop = (from, to, promotion) => {
+    if (!coachTurn) return false;
+    onMove && onMove(activeBoard.id, from, to, promotion);
+    return true;
+  };
+  const boards = simul.boards || [];
+  const waiting = boards.filter(b => b.status === 'active' && b.turn === coachColor).length;
+  const big = Math.min(boardWidth, 480);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 10, flexWrap: 'wrap' }}>
+        <div style={{ fontSize: 14, fontWeight: 800, color: '#e2e8f0' }}>
+          ♟ Simul — you play <b style={{ color: '#67e8f9' }}>{coachColor}</b> · vs {activeBoard.studentName}
+        </div>
+        <button style={cg.endBtn} onClick={() => onEnd && onEnd()}>■ End simul</button>
+      </div>
+      {waiting > 0 && (
+        <div style={{ fontSize: 12.5, color: '#fcd34d' }}>{waiting} board{waiting === 1 ? '' : 's'} waiting for your move — click one below to play it.</div>
+      )}
+      {/* Big active board LEFT + notation/nav on the RIGHT (of the board). */}
+      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap', justifyContent: 'center', width: '100%' }}>
+        <div style={{ flex: '0 0 auto' }}>
+          <Chessboard position={nav.fen} lastMove={nav.atLive ? activeBoard.lastMove : undefined} boardWidth={big}
+            draggable={coachTurn} onDrop={onDrop} orientation={coachColor} />
+        </div>
+        <div style={{ flex: '1 1 220px', minWidth: 220, maxWidth: 320, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#9ca3af' }}>vs {activeBoard.studentName}</div>
+          <MoveNotation moves={activeBoard.moves} viewPly={nav.ply} onJump={nav.jumpTo} />
+          <NavControls nav={nav} />
+          <div style={{ textAlign: 'center', fontSize: 13, fontWeight: 700,
+            color: activeBoard.status === 'finished' ? '#6ee7b7' : coachTurn ? '#6ee7b7' : '#9ca3af' }}>
+            {activeBoard.status === 'finished' ? `🏁 ${resultLabel(activeBoard)}`
+              : activeBoard.turn === coachColor ? (nav.atLive ? 'Your move' : 'Reviewing — go to Latest to move')
+              : `${activeBoard.studentName} to move`}
+          </div>
+        </div>
+      </div>
+      {/* Strip of small boards — click to swap into the big one. */}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', width: '100%', paddingTop: 6 }}>
+        {boards.map(b => {
+          const isActive = b.id === activeBoard.id;
+          const yourTurn = b.status === 'active' && b.turn === coachColor;
+          return (
+            <button key={b.id} onClick={() => onFocus && onFocus(b.id)} title={`Play ${b.studentName}`}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', position: 'relative' }}>
+              <div style={{ borderRadius: 6, padding: 2, border: isActive ? '2px solid #22c55e' : '2px solid transparent',
+                boxShadow: isActive ? '0 0 0 2px rgba(34,197,94,0.25)' : 'none' }}>
+                <Chessboard position={b.fen} lastMove={b.lastMove} boardWidth={104} draggable={false} orientation={coachColor} />
+              </div>
+              <div style={{ fontSize: 11, color: '#cbd5e1', marginTop: 2, maxWidth: 108, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {b.status === 'finished' ? '🏁 ' : yourTurn ? '🟢 ' : ''}{b.studentName}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── SIMUL — student's view (Play-in-class layout): board LEFT, [players · notation ·
+//    nav · status] MIDDLE. Videos come from the class right rail. Play your own board,
+//    or (if you didn't join) watch the coach's active board. Untimed → no clocks. ──
+function SimulStudentStage({ myBoard, myColor, activeBoard, boardWidth, onMove, onResign }) {
+  const board = myBoard || activeBoard;
+  const nav = useMoveNav(board?.moves || [], board?.fen);
+  if (!board) return <div style={as.empty}>Waiting for the coach's simul…</div>;
+  const iAmPlayer = !!myBoard;
+  // Can only move on the LIVE position (not while reviewing history) and on my turn.
+  const myTurn = iAmPlayer && board.status === 'active' && board.turn === myColor && nav.atLive;
+  const bw = Math.min(boardWidth, 520);
+  const orient = iAmPlayer ? myColor : 'white';
+  const onDrop = (from, to, promotion) => {
+    if (!myTurn) return false;
+    onMove && onMove(board.id, from, to, promotion);
+    return true;
+  };
+  const topName = orient === 'white' ? board.black?.studentName : board.white?.studentName;
+  // In a simul the opponent is always "the coach" for a player; for a spectator show the student's name.
+  const oppLabel = iAmPlayer ? 'your coach' : board.studentName;
+  return (
+    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap', width: '100%', justifyContent: 'center' }}>
+      {/* LEFT — the board */}
+      <div style={{ flex: '0 0 auto' }}>
+        <Chessboard position={nav.fen} lastMove={nav.atLive ? board.lastMove : undefined} boardWidth={bw}
+          draggable={myTurn} onDrop={iAmPlayer ? onDrop : undefined} orientation={orient} />
+      </div>
+      {/* MIDDLE — you vs coach, notation, nav, status */}
+      <div style={{ flex: '1 1 240px', minWidth: 240, maxWidth: 340, display: 'flex', flexDirection: 'column', gap: 8, alignSelf: 'stretch' }}>
+        <div style={{ fontSize: 14, fontWeight: 700, color: '#e2e8f0' }}>
+          {iAmPlayer
+            ? <>♟ You are <b style={{ color: myColor === 'white' ? '#f1f5f9' : '#93c5fd' }}>{myColor}</b> vs your coach</>
+            : <>👀 Watching the coach play {board.studentName}</>}
+        </div>
+        <MoveNotation moves={board.moves} viewPly={nav.ply} onJump={nav.jumpTo} />
+        <NavControls nav={nav} />
+        {board.status === 'finished'
+          ? <div style={cg.result}>🏁 {resultLabel(board)}</div>
+          : iAmPlayer
+            ? <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'center' }}>
+                <span style={{ color: myTurn ? '#6ee7b7' : '#9ca3af', fontSize: 13, fontWeight: 700 }}>
+                  {board.turn === myColor ? (nav.atLive ? 'Your move' : 'Reviewing — go to Latest to move') : 'Waiting for your coach…'}
+                </span>
+                <button style={cg.rmBtn2} onClick={() => onResign && onResign(board.id)}>Resign</button>
+              </div>
+            : <div style={{ color: '#9ca3af', fontSize: 13 }}>Your coach chooses which board everyone watches.</div>}
+      </div>
+    </div>
+  );
+}
+
+// ── SIMUL setup (coach): create a simul + lobby, shown in Activities below tournaments. ──
+function SimulSetupSection({ participants = [], simul, onCreate, onStart, onEnd }) {
+  const [color, setColor] = useState('white');
+  const admitted = (participants || []).filter(p => p.state === 'admitted' && p.studentId)
+    .map(p => ({ id: String(p.studentId), name: p.name || p.username || 'Student' }));
+  const status = simul?.status;
+
+  // Active simul → a compact note (the play surface is on the stage, not here).
+  if (status === 'active') {
+    return (
+      <div style={cg.section}>
+        <div style={cg.secHead}><div style={{ fontSize: 15, fontWeight: 800 }}>♟ Simul in progress</div>
+          <button style={cg.endBtn} onClick={() => onEnd && onEnd()}>■ End simul</button></div>
+        <div style={cg.hint}>Your simul boards are live on the stage.</div>
+      </div>
+    );
+  }
+
+  // Lobby → roster with Joined / Waiting + Start.
+  if (status === 'lobby') {
+    const joined = new Set((simul.joined || []).map(String));
+    const nJoined = admitted.filter(a => joined.has(a.id)).length;
+    return (
+      <div style={cg.section}>
+        <div style={cg.secHead}><div style={{ fontSize: 15, fontWeight: 800 }}>♟ Simul lobby</div>
+          <button style={cg.endBtn} onClick={() => onEnd && onEnd()}>Cancel</button></div>
+        <div style={cg.hint}>Request sent to the class. Students who accept appear as <b style={{ color: '#6ee7b7' }}>Joined</b>. Start when ready.</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+          {admitted.map(a => (
+            <div key={a.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 13, padding: '4px 0' }}>
+              <span style={{ color: '#e2e8f0' }}>{a.name}</span>
+              {joined.has(a.id)
+                ? <span style={{ color: '#6ee7b7', fontWeight: 700 }}>✓ Joined</span>
+                : <span style={{ color: '#9ca3af' }}>… waiting</span>}
+            </div>
+          ))}
+        </div>
+        <button style={{ ...cg.startBtn, ...(nJoined === 0 ? { opacity: 0.5, cursor: 'not-allowed' } : {}) }}
+          disabled={nJoined === 0} onClick={() => onStart && onStart()}>
+          ▶ Start simul ({nJoined} joined)
+        </button>
+      </div>
+    );
+  }
+
+  // Not created yet → create card.
+  return (
+    <div style={cg.section}>
+      <div style={cg.secHead}><div style={{ fontSize: 15, fontWeight: 800 }}>♟ Simul (play the whole class)</div></div>
+      {admitted.length < 1 ? (
+        <div style={as.empty}>Admit at least 1 student to run a simul.</div>
+      ) : (
+        <>
+          <div style={cg.hint}>You play every student at once. Pick your colour, send the request, then start once students join.</div>
+          <div style={cg.controls}>
+            <label style={cg.lbl}>You play
+              <select value={color} onChange={e => setColor(e.target.value)} style={cg.select}>
+                <option value="white">White on all boards</option>
+                <option value="black">Black on all boards</option>
+              </select>
+            </label>
+            <button style={cg.startBtn} onClick={() => onCreate && onCreate(color)}>Send simul request →</button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // Activities view shown ON the class stage (host-only). Lists the coach's races +
 // tournaments with live status; "Watch"/"Results" opens the leaderboard EMBEDDED here
 // (no navigation, class video keeps running). Only "Create new" opens a new tab.
-function ActivitiesStage({ races, tournaments, loading, onReload, onClose }) {
+// ALSO hosts "♟ Play in class" (coach-run student games) at the top, above races.
+function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
+  participants = [], classGames = [], classSpotlightId, classHasClock,
+  onStartGames, onSpotlight, onEndGames, onReview,
+  simul, onSimulCreate, onSimulStart, onSimulEnd }) {
   const [watch, setWatch] = useState(null); // { kind:'race'|'tournament', roomId, id }
+  const [actTab, setActTab] = useState('play'); // 'play' | 'simul' | 'arena'
   const chip = (s) => {
     const m = {
       waiting: ['⏳ Waiting', '#fcd34d'], active: ['🔴 Live', '#f87171'],
@@ -607,6 +1194,14 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose }) {
     );
   }
 
+  // Tabs so Play in class / Simul / Arena aren't stacked in one long scroll — the
+  // coach picks one and sees only it (Simul was hidden way at the bottom before).
+  const TABS = [
+    { id: 'play', label: '♟ Play in class' },
+    { id: 'simul', label: '♟ Simul' },
+    { id: 'arena', label: '🏁 Races & Tournaments' },
+  ];
+
   return (
     <div style={as.wrap}>
       <div style={as.head}>
@@ -620,34 +1215,69 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose }) {
         </div>
       </div>
 
-      {loading ? (
-        <div style={as.empty}>Loading your activities…</div>
-      ) : (races.length === 0 && tournaments.length === 0) ? (
-        <div style={as.empty}>No activities yet. Click <b>＋ Create Race</b> — it opens in a new tab; once created it shows here.</div>
-      ) : (
-        <div style={as.grid}>
-          {races.map(r => (
-            <div key={r._id} style={as.card}>
-              <div style={as.cardName}>🏁 {r.name || 'Race'}</div>
-              <div style={as.cardMeta}>{r.topic} · {r.timeLimit} min · {chip(r.status)}</div>
-              <div style={as.cardSub}>{r.joined ?? 0}/{r.invited ?? 0} students joined</div>
-              <button style={as.watch} onClick={() => setWatch({ kind: 'race', roomId: r.roomId })}>
-                {r.status === 'completed' ? '📊 Results' : '👀 Watch live'}
-              </button>
-            </div>
-          ))}
-          {tournaments.map(t => (
-            <div key={t._id} style={as.card}>
-              <div style={as.cardName}>🏆 {t.name || 'Tournament'}</div>
-              <div style={as.cardMeta}>{chip(t.status)} · {t.participantCount || 0} joined</div>
-              {/* Tournament live view stays a route for now — opens in a new tab. */}
-              <a style={as.watch} href={`/coach/arena-tournament/${t._id}`} target="_blank" rel="noopener noreferrer">
-                {t.status === 'finished' ? '📊 Results ↗' : '👀 Watch ↗'}
-              </a>
-            </div>
-          ))}
-        </div>
+      {/* Tab bar — switch between the three activity kinds without scrolling. */}
+      <div style={as.tabs}>
+        {TABS.map(t => (
+          <button key={t.id} style={{ ...as.tab, ...(actTab === t.id ? as.tabOn : {}) }} onClick={() => setActTab(t.id)}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {actTab === 'play' && (
+        <ClassPlaySection
+          participants={participants}
+          classGames={classGames}
+          classSpotlightId={classSpotlightId}
+          classHasClock={classHasClock}
+          onStartGames={onStartGames}
+          onSpotlight={onSpotlight}
+          onEndGames={onEndGames}
+          onReview={onReview}
+        />
       )}
+
+      {actTab === 'simul' && (
+        <SimulSetupSection
+          participants={participants}
+          simul={simul}
+          onCreate={onSimulCreate}
+          onStart={onSimulStart}
+          onEnd={onSimulEnd}
+        />
+      )}
+
+      {actTab === 'arena' && (
+        loading ? (
+          <div style={as.empty}>Loading your activities…</div>
+        ) : (races.length === 0 && tournaments.length === 0) ? (
+          <div style={as.empty}>No activities yet. Click <b>＋ Create Race</b> — it opens in a new tab; once created it shows here.</div>
+        ) : (
+          <div style={as.grid}>
+            {races.map(r => (
+              <div key={r._id} style={as.card}>
+                <div style={as.cardName}>🏁 {r.name || 'Race'}</div>
+                <div style={as.cardMeta}>{r.topic} · {r.timeLimit} min · {chip(r.status)}</div>
+                <div style={as.cardSub}>{r.joined ?? 0}/{r.invited ?? 0} students joined</div>
+                <button style={as.watch} onClick={() => setWatch({ kind: 'race', roomId: r.roomId })}>
+                  {r.status === 'completed' ? '📊 Results' : '👀 Watch live'}
+                </button>
+              </div>
+            ))}
+            {tournaments.map(t => (
+              <div key={t._id} style={as.card}>
+                <div style={as.cardName}>🏆 {t.name || 'Tournament'}</div>
+                <div style={as.cardMeta}>{chip(t.status)} · {t.participantCount || 0} joined</div>
+                {/* Tournament live view stays a route for now — opens in a new tab. */}
+                <a style={as.watch} href={`/coach/arena-tournament/${t._id}`} target="_blank" rel="noopener noreferrer">
+                  {t.status === 'finished' ? '📊 Results ↗' : '👀 Watch ↗'}
+                </a>
+              </div>
+            ))}
+          </div>
+        )
+      )}
+
       <div style={as.foot}>Students join from the link you share in class chat — they stay in this class in their own tab.</div>
     </div>
   );
@@ -666,6 +1296,36 @@ const as = {
   cardSub: { fontSize: 12, color: 'rgba(226,232,240,0.6)', marginBottom: 10 },
   watch: { display: 'inline-block', padding: '7px 14px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 700, fontSize: 13, cursor: 'pointer', textDecoration: 'none' },
   foot: { marginTop: 14, fontSize: 12, color: '#6b7280', textAlign: 'center' },
+  tabs: { display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 12 },
+  tab: { padding: '8px 16px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: 'rgba(226,232,240,0.75)', cursor: 'pointer', fontSize: 14, fontWeight: 700 },
+  tabOn: { background: 'rgba(6,182,212,0.16)', border: '1px solid #06b6d4', color: '#67e8f9' },
+};
+
+// Styles for "♟ Play in class" (coach setup + live grid).
+const cg = {
+  section: { background: 'rgba(6,182,212,0.06)', border: '1px solid rgba(6,182,212,0.22)', borderRadius: 12, padding: 14, marginBottom: 6 },
+  secHead: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 8, color: '#e2e8f0' },
+  hint: { fontSize: 12.5, color: 'rgba(226,232,240,0.7)', marginBottom: 10, lineHeight: 1.5 },
+  controls: { display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 },
+  lbl: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#cbd5e1' },
+  select: { padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', fontSize: 13 },
+  ghostBtn: { padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13, fontWeight: 600 },
+  pairList: { display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 },
+  pairRow: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  pairNo: { fontSize: 12.5, fontWeight: 700, color: '#9ca3af', minWidth: 56 },
+  rmBtn: { width: 26, height: 26, borderRadius: 6, border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.12)', color: '#fca5a5', cursor: 'pointer', fontSize: 13 },
+  rmBtn2: { padding: '4px 12px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.12)', color: '#fca5a5', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 },
+  free: { fontSize: 12, color: '#fcd34d', marginBottom: 10 },
+  startBtn: { padding: '9px 20px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: 'pointer' },
+  endBtn: { padding: '6px 14px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.14)', color: '#fca5a5', cursor: 'pointer', fontSize: 13, fontWeight: 700 },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 12 },
+  card: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  cardSpot: { border: '2px solid #22c55e', boxShadow: '0 0 0 3px rgba(34,197,94,0.18)' },
+  players: { display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: 12.5, fontWeight: 700, color: '#e2e8f0', gap: 8, marginBottom: 6 },
+  result: { fontSize: 13, fontWeight: 800, color: '#6ee7b7', marginTop: 6, textAlign: 'center' },
+  spotBtn: { marginTop: 6, padding: '6px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 },
+  spotBtnOn: { border: '1px solid #22c55e', background: 'rgba(34,197,94,0.15)', color: '#6ee7b7' },
+  reviewBtn: { padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(139,92,246,0.5)', background: 'rgba(139,92,246,0.14)', color: '#c4b5fd', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 },
 };
 
 export default function LiveClassroomPage({ mode = 'host' }) {
@@ -765,6 +1425,29 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       setActTournaments(tr.data?.tournaments || []);
     } finally { setActLoading(false); }
   };
+  // ── Play in class: coach-run student games (multi-board, live). ──
+  // classGames = [{ id, white:{userId,name}, black:{userId,name}, fen, lastMove,
+  //   clocks:{white,black}, turn, status, result, winnerColor }]. Ephemeral —
+  // driven entirely by the classgame:* socket events (see the listener effect).
+  const [classGames, setClassGames] = useState([]);
+  const [classSpotlightId, setClassSpotlightId] = useState(null);
+  const [classHasClock, setClassHasClock] = useState(true);
+  const classGamesRef = useRef([]);
+  useEffect(() => { classGamesRef.current = classGames; }, [classGames]);
+  // ── Simul: coach vs the whole class at once (untimed). ──
+  // simul = { status:'lobby'|'active'|'ended', coachColor, activeBoardId,
+  //   boards:[{ id, studentId, studentName, fen, lastMove, turn, status, result, winnerColor }],
+  //   invited:[], joined:[] }. Driven by the simul:* socket events.
+  const [simul, setSimul] = useState(null);
+  const [simulJoinRequest, setSimulJoinRequest] = useState(false); // student "Join simul?" popup
+  const myIdForSimul = user && (user.id || user._id);
+  // When a STUDENT's own game/board finishes, show a clear result popup so beginners
+  // know their game ended. { outcome:'win'|'loss'|'draw', reason, title }.
+  const [gameOverPopup, setGameOverPopup] = useState(null);
+  // After a student's own game ends and they tap OK, they LEAVE the game view and
+  // rejoin normal class mode (video / coach's teaching board) — WITHOUT the coach
+  // having to end everyone's games. Reset when a fresh game session starts.
+  const [leftClassGame, setLeftClassGame] = useState(false);
   // Training puzzles in the classroom (practice, no ratings written).
   const [puzzle, setPuzzle] = useState(null);        // { id, fen, solution:[SAN] } (host only)
   const [puzzleStep, setPuzzleStep] = useState(0);   // index into solution (solver moves at even steps)
@@ -1071,6 +1754,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     const onWaiting = () => { const { isHost: h, session: se } = hostStateRef.current; if (h && se) refreshWaitingRef.current?.(); };
     // The coach controls the stage — students follow whether the teaching board is shown.
     const onStage = ({ boardShown }) => { if (!hostStateRef.current.isHost) setShowBoard(!!boardShown); };
+    // Zoom-style clock start: the first student arrived → the class clock began.
+    // Update endsAt so the "Ends in" countdown starts ticking for everyone.
+    const onClockStarted = ({ endsAt }) => {
+      if (!endsAt) return;
+      setSession(prev => prev ? { ...prev, endsAt, clockStarted: true } : prev);
+    };
+    socket.on('liveclass:clock-started', onClockStarted);
     socket.on('liveclass:tree', onTree);
     socket.on('liveclass:draw', onDraw);
     socket.on('liveclass:control', onControl);
@@ -1086,15 +1776,109 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     socket.on('liveclass:hand', onHand);
     socket.on('liveclass:camera-off', onCameraOff);
     socket.on('liveclass:camera-request', onCameraRequest);
+    // ── Play in class (classroom games) ──
+    // Full state snapshot (start / join-resync): games + spotlight + clock flag.
+    const onCgState = ({ games, spotlightGameId, hasClock }) => {
+      const list = Array.isArray(games) ? games : [];
+      setClassGames(list);
+      setClassSpotlightId(spotlightGameId || null);
+      setClassHasClock(!!hasClock);
+      setGameOverPopup(null); // fresh game session → clear any stale result popup
+      // Re-enter the game view ONLY if I'm a player in an ACTIVE game now (a real new
+      // round). A resync that still shows my game finished must NOT drag me back in.
+      const meId = String(myIdRef.current);
+      const iHaveActiveGame = list.some(g => g.status === 'active' &&
+        (String(g.white?.userId) === meId || String(g.black?.userId) === meId));
+      if (iHaveActiveGame) setLeftClassGame(false);
+    };
+    // One game advanced (a move) — patch just that game for a live, no-flash update.
+    const onCgGame = ({ gameId, fen, lastMove, clocks, moves, turn }) => {
+      setClassGames(prev => prev.map(g => g.id === gameId
+        ? { ...g, fen, lastMove, clocks: clocks || g.clocks, moves: moves || g.moves, turn: turn || g.turn }
+        : g));
+    };
+    // Clock tick only (no move) — patch clocks so countdown stays live like lichess.
+    const onCgClock = ({ gameId, clocks }) => {
+      setClassGames(prev => prev.map(g => g.id === gameId ? { ...g, clocks } : g));
+    };
+    const onCgSpotlight = ({ gameId }) => setClassSpotlightId(gameId || null);
+    const onCgOver = ({ gameId, result, winnerColor }) => {
+      setClassGames(prev => prev.map(g => g.id === gameId
+        ? { ...g, status: 'finished', result, winnerColor: winnerColor || null } : g));
+      // If THIS finished game is one the current student is playing, pop a clear
+      // result modal — beginners otherwise miss the tiny inline "game over" line.
+      if (hostStateRef.current.isHost) return;
+      const g = (classGamesRef.current || []).find(x => x.id === gameId);
+      if (!g) return;
+      const meId = String(myIdRef.current);
+      const myC = String(g.white?.userId) === meId ? 'white'
+        : String(g.black?.userId) === meId ? 'black' : null;
+      if (!myC) return; // I'm a spectator of this game — no popup
+      setGameOverPopup(buildGameOverPopup(myC, result, winnerColor));
+    };
+    const onCgEnded = () => { setClassGames([]); setClassSpotlightId(null); setGameOverPopup(null); setLeftClassGame(false); };
+    socket.on('classgame:state', onCgState);
+    socket.on('classgame:game', onCgGame);
+    socket.on('classgame:clock', onCgClock);
+    socket.on('classgame:spotlight', onCgSpotlight);
+    socket.on('classgame:over', onCgOver);
+    socket.on('classgame:ended', onCgEnded);
+    // ── Simul ──
+    const myId = myIdRef.current;
+    // Lobby update — coach sees roster; a student who is invited but hasn't joined
+    // gets the "Join simul?" popup.
+    const onSimLobby = (payload) => {
+      setSimul(payload);
+      if (!hostStateRef.current.isHost) {
+        const invited = (payload?.invited || []).map(String).includes(String(myIdRef.current));
+        const joined = (payload?.joined || []).map(String).includes(String(myIdRef.current));
+        setSimulJoinRequest(payload?.status === 'lobby' && invited && !joined);
+      }
+    };
+    const onSimState = (payload) => { setSimul(payload); setSimulJoinRequest(false); };
+    // One board advanced — patch just that board (no-flash live update).
+    const onSimBoard = ({ boardId, fen, lastMove, moves, turn }) => {
+      setSimul(prev => prev ? { ...prev, boards: prev.boards.map(b => b.id === boardId
+        ? { ...b, fen, lastMove, moves: moves || b.moves, turn: turn || b.turn } : b) } : prev);
+    };
+    const onSimOver = ({ boardId, result, winnerColor }) => {
+      setSimul(prev => {
+        if (!prev) return prev;
+        const board = prev.boards.find(b => b.id === boardId);
+        // Popup only for the student whose OWN board just finished (not the coach,
+        // not spectators). The student plays the opposite of the coach's colour.
+        if (board && !hostStateRef.current.isHost && String(board.studentId) === String(myIdRef.current)) {
+          const myC = prev.coachColor === 'white' ? 'black' : 'white';
+          setGameOverPopup(buildGameOverPopup(myC, result, winnerColor));
+        }
+        return { ...prev, boards: prev.boards.map(b => b.id === boardId
+          ? { ...b, status: 'finished', result, winnerColor: winnerColor || null } : b) };
+      });
+    };
+    const onSimFocus = ({ boardId }) => setSimul(prev => prev ? { ...prev, activeBoardId: boardId } : prev);
+    const onSimEnded = () => { setSimul(null); setSimulJoinRequest(false); setGameOverPopup(null); };
+    socket.on('simul:lobby', onSimLobby);
+    socket.on('simul:state', onSimState);
+    socket.on('simul:board', onSimBoard);
+    socket.on('simul:over', onSimOver);
+    socket.on('simul:focus', onSimFocus);
+    socket.on('simul:ended', onSimEnded);
     return () => {
       socket.off('liveclass:tree', onTree); socket.off('liveclass:draw', onDraw); socket.off('liveclass:control', onControl);
       socket.off('liveclass:screenshare', onScreenShare);
       socket.off('liveclass:admitted', onAdmitted); socket.off('liveclass:removed', onRemoved);
       socket.off('liveclass:ended', onEnded); socket.off('liveclass:waiting-updated', onWaiting);
       socket.off('liveclass:stage', onStage);
+      socket.off('liveclass:clock-started', onClockStarted);
       socket.off('liveclass:muted', onMuted); socket.off('liveclass:unmute-request', onUnmuteRequest);
       socket.off('liveclass:mic-state', onMicState); socket.off('liveclass:hand', onHand);
       socket.off('liveclass:camera-off', onCameraOff); socket.off('liveclass:camera-request', onCameraRequest);
+      socket.off('classgame:state', onCgState); socket.off('classgame:game', onCgGame);
+      socket.off('classgame:clock', onCgClock); socket.off('classgame:spotlight', onCgSpotlight);
+      socket.off('classgame:over', onCgOver); socket.off('classgame:ended', onCgEnded);
+      socket.off('simul:lobby', onSimLobby); socket.off('simul:state', onSimState);
+      socket.off('simul:board', onSimBoard); socket.off('simul:over', onSimOver);
+      socket.off('simul:focus', onSimFocus); socket.off('simul:ended', onSimEnded);
     };
   }, [mode, params.joinCode, enterRoom, lk]);
 
@@ -1396,11 +2180,67 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     if (session) socket.emit('liveclass:stage', { sessionId: session.id, boardShown: next });
   };
 
+  // ── Play in class: socket emit helpers + derived views ──
+  const cgStart = (timeControl, pairings) => {
+    if (session) socket.emit('classgame:start', { sessionId: session.id, timeControl, pairings });
+  };
+  const cgMove = (gameId, from, to, promotion) => {
+    if (session) socket.emit('classgame:move', { sessionId: session.id, gameId, from, to, promotion });
+  };
+  const cgSpotlight = (gameId) => {
+    if (session) socket.emit('classgame:spotlight', { sessionId: session.id, gameId });
+  };
+  const cgResign = (gameId) => {
+    if (session) socket.emit('classgame:resign', { sessionId: session.id, gameId });
+  };
+  const cgEndAll = () => {
+    if (session) socket.emit('classgame:end-all', { sessionId: session.id });
+  };
+  // Games are live when at least one exists; the class is "in a game session".
+  const classGamesActive = classGames.length > 0;
+  // The game THIS user is a player in (student view). null for coach/spectators.
+  const myGame = !isHost ? classGames.find(g =>
+    String(g.white?.userId) === String(myId) || String(g.black?.userId) === String(myId)) : null;
+  const myColor = myGame ? (String(myGame.white?.userId) === String(myId) ? 'white' : 'black') : null;
+  // The board non-players (and the class at large) watch — the coach's spotlight.
+  const spotlightGame = classGames.find(g => g.id === classSpotlightId) || classGames[0] || null;
+
+  // ── Simul: emit helpers + derived views ──
+  const simulCreate = (coachColor) => { if (session) socket.emit('simul:create', { sessionId: session.id, coachColor }); };
+  const simulJoin = () => { if (session) socket.emit('simul:join', { sessionId: session.id }); setSimulJoinRequest(false); };
+  const simulStart = () => { if (session) socket.emit('simul:start', { sessionId: session.id }); };
+  const simulMove = (boardId, from, to, promotion) => { if (session) socket.emit('simul:move', { sessionId: session.id, boardId, from, to, promotion }); };
+  const simulFocus = (boardId) => { if (session) socket.emit('simul:focus', { sessionId: session.id, boardId }); };
+  const simulResign = (boardId) => { if (session) socket.emit('simul:resign', { sessionId: session.id, boardId }); };
+  const simulEnd = () => { if (session) socket.emit('simul:end', { sessionId: session.id }); };
+  const simulActive = simul?.status === 'active';
+  // The student's own board (they joined), or null → they spectate.
+  const mySimulBoard = (!isHost && simul?.boards)
+    ? simul.boards.find(b => String(b.studentId) === String(myId)) : null;
+  // Coach plays coachColor on every board; a joined student plays the other color.
+  const myStudentColor = simul?.coachColor === 'white' ? 'black' : 'white';
+  // The board on the coach's/spectators' stage — the coach's active board.
+  const simulActiveBoard = simul?.boards?.find(b => b.id === simul.activeBoardId) || simul?.boards?.[0] || null;
+
   // Load a PGN (a game) as a fresh study tree — coach can then free-style/branch.
   const loadPgnIntoTree = (pgn) => {
     const t = buildTreeFromPgn(pgn || '');
     applyTree(t, []); // start at the initial position; step forward through the game
     if (!showBoard) toggleBoard();
+  };
+  // Review a finished Play-in-class game on the shared teaching board: turn its SAN
+  // move list into PGN movetext, load it onto the synced board (whole class sees it),
+  // and close the Activities panel so the board is front and centre.
+  const reviewClassGame = (game) => {
+    if (!game || !Array.isArray(game.moves) || game.moves.length === 0) return;
+    let movetext = '';
+    for (let i = 0; i < game.moves.length; i++) {
+      if (i % 2 === 0) movetext += `${i / 2 + 1}. `;
+      movetext += `${game.moves[i]} `;
+    }
+    const tags = `[White "${game.white?.name || 'White'}"]\n[Black "${game.black?.name || 'Black'}"]\n\n`;
+    loadPgnIntoTree(`${tags}${movetext.trim()} *`);
+    setShowActivities(false); // leave the Activities view so the board is the focus
   };
   // Load a single FEN position as a fresh tree rooted at that position.
   const setBoardFen = (fen) => {
@@ -1845,10 +2685,22 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // each candidate column count, compute the resulting tile size and keep the count
   // that yields the largest tile. Re-measured on resize. (bestGrid is module-scoped.)
   const { cols: stageCols, tileW: stageTileW } = bestGrid(tiles.length, stageSize.w, stageSize.h, 16 / 9, 10);
-  // Activities view wins the stage when the host opened it (host-only; a remote screen
-  // still takes priority so screen-share isn't hidden).
-  const activitiesOnStage = isHost && showActivities && !remoteScreen;
-  const boardOnStage = showBoard && !remoteScreen && !activitiesOnStage;
+  // SIMUL: an ACTIVE simul takes the stage for EVERYONE — the coach plays the big
+  // board + strip; a student plays their own board; a non-joiner spectates the
+  // coach's active board. Yields only to a remote screen share.
+  const simulOnStage = simulActive && !remoteScreen;
+  // Activities view wins the stage when the host opened it — BUT once a simul is
+  // running, the coach's simul boards must take over (the coach can't play a simul
+  // while the Activities panel covers the stage). Simul beats Activities for the host.
+  const activitiesOnStage = isHost && showActivities && !remoteScreen && !simulOnStage;
+  // STUDENT: when classroom games are running, their own board (player) or the
+  // coach's spotlighted board (spectator) takes the stage — like the teaching board,
+  // it wins over the idle video view but yields to a remote screen share.
+  // A student who finished their game and tapped OK (leftClassGame) drops back to
+  // normal class mode even while other games are still running — so they can watch
+  // the coach's review/teaching board without waiting for "End games".
+  const classGameOnStage = !isHost && classGamesActive && !remoteScreen && !leftClassGame;
+  const boardOnStage = showBoard && !remoteScreen && !activitiesOnStage && !classGameOnStage && !simulOnStage;
 
   // ── Video placement (host only) ─────────────────────────────────────────────
   // videoMode moves the class videos without unmounting the tracks. Students always
@@ -1860,7 +2712,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const videosPopped = vMode === 'pop';      // in their own window
   // When videos are floated/popped/hidden, the big Zoom grid must NOT own the stage —
   // the board (or a placeholder) takes it so faces never eat the whole page.
-  const videoOnStage = videosDocked && !boardOnStage && !remoteScreen && !activitiesOnStage;
+  const videoOnStage = videosDocked && !boardOnStage && !remoteScreen && !activitiesOnStage && !classGameOnStage && !simulOnStage;
 
   // Does the RIGHT RAIL actually have anything to show? It holds two things: the
   // docked video thumbnails (only when videos are docked AND a board/screen is on
@@ -1869,7 +2721,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // expand into that blank gutter (the "board won't take the whole page" bug when
   // videos are detached). When videos are re-attached, the rail fills again and the
   // board reflows around it — which is exactly the behaviour that already worked.
-  const railHasThumbs = videosDocked && (boardOnStage || remoteScreen);
+  // Also show the video thumbnails during a Play-in-class game or a simul, so
+  // students keep seeing the class faces beside their board (Lichess-style: board
+  // left, video right). Previously only boardOnStage/remoteScreen kept the rail,
+  // so students lost all video the moment a game started.
+  const railHasThumbs = videosDocked && (boardOnStage || remoteScreen || classGameOnStage || simulOnStage);
   const railHasContent = railHasThumbs || showParticipants;
 
   const renderTile = (p, { small = false, width = '100%' } = {}) => (
@@ -2184,6 +3040,48 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         </div>
       )}
 
+      {/* Coach started a simul — student decides whether to join (same consent model). */}
+      {simulJoinRequest && !isHost && (
+        <div style={s.unmuteOverlay}>
+          <div style={s.unmuteCard}>
+            <div style={{ fontSize: 40 }}>♟</div>
+            <h3 style={{ margin: '8px 0 4px', fontSize: 18, fontWeight: 800 }}>Your coach started a simul</h3>
+            <p style={{ fontSize: 13.5, color: 'rgba(226,232,240,0.75)', margin: '0 0 16px' }}>
+              Play a game against your coach along with the rest of the class. Join?
+            </p>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+              <button style={s.unmuteYes} onClick={simulJoin}>♟ Join simul</button>
+              <button style={s.unmuteNo} onClick={() => setSimulJoinRequest(false)}>Not now</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Student's own game finished → clear win/loss/draw popup, so beginners don't
+          miss the tiny inline "game over" line on the board. */}
+      {gameOverPopup && !isHost && (() => {
+        // Tapping OK returns the student to normal class mode (video / coach's board)
+        // even while other games run — no need for the coach to end everyone's games.
+        const backToClass = () => { setGameOverPopup(null); setLeftClassGame(true); };
+        return (
+        <div style={s.unmuteOverlay} onClick={backToClass}>
+          <div style={{ ...s.unmuteCard, borderTop: `4px solid ${
+            gameOverPopup.outcome === 'win' ? '#22c55e' : gameOverPopup.outcome === 'loss' ? '#ef4444' : '#eab308'
+          }` }} onClick={e => e.stopPropagation()}>
+            <div style={{ fontSize: 52 }}>{gameOverPopup.emoji}</div>
+            <h3 style={{ margin: '8px 0 4px', fontSize: 22, fontWeight: 800, color:
+              gameOverPopup.outcome === 'win' ? '#6ee7b7' : gameOverPopup.outcome === 'loss' ? '#fca5a5' : '#fde047' }}>
+              {gameOverPopup.title}
+            </h3>
+            <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.75)', margin: '0 0 16px' }}>
+              Your game has ended · <b>{gameOverPopup.reason}</b>
+            </p>
+            <button style={s.unmuteYes} onClick={backToClass}>OK — back to class</button>
+          </div>
+        </div>
+        );
+      })()}
+
       {/* When I'm the presenter, a slim banner confirms I'm sharing — my controls
           stay right above it (Zoom-style), instead of my screen taking over. */}
       {iAmSharing && (
@@ -2203,6 +3101,51 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               loading={actLoading}
               onReload={loadActivities}
               onClose={() => setShowActivities(false)}
+              // Play in class (coach): the admitted roster + live game state + emit helpers.
+              participants={waiting}
+              classGames={classGames}
+              classSpotlightId={classSpotlightId}
+              classHasClock={classHasClock}
+              onStartGames={cgStart}
+              onSpotlight={cgSpotlight}
+              onEndGames={cgEndAll}
+              onReview={reviewClassGame}
+              // Simul (coach): create + lobby, below the tournaments.
+              simul={simul}
+              onSimulCreate={simulCreate}
+              onSimulStart={simulStart}
+              onSimulEnd={simulEnd}
+            />
+          ) : simulOnStage && isHost ? (
+            // COACH simul: one big active board + a strip of small boards to swap.
+            <SimulCoachStage
+              simul={simul}
+              activeBoard={simulActiveBoard}
+              boardWidth={Math.min(boardWidth, Math.max(360, (stageSize.w || 520) - 40))}
+              onMove={simulMove}
+              onFocus={simulFocus}
+              onEnd={simulEnd}
+            />
+          ) : simulOnStage ? (
+            // STUDENT simul: play your own board, or (didn't join) watch the coach's active board.
+            <SimulStudentStage
+              myBoard={mySimulBoard}
+              myColor={myStudentColor}
+              activeBoard={simulActiveBoard}
+              boardWidth={Math.min(boardWidth, Math.max(360, (stageSize.w || 520) - 40))}
+              onMove={simulMove}
+              onResign={simulResign}
+            />
+          ) : classGameOnStage ? (
+            // STUDENT stage: play your own board, or watch the spotlighted board.
+            <ClassGameStudentStage
+              myGame={myGame}
+              myColor={myColor}
+              spotlightGame={spotlightGame}
+              hasClock={classHasClock}
+              boardWidth={Math.min(boardWidth, Math.max(360, (stageSize.w || 520) - 40))}
+              onMove={cgMove}
+              onResign={cgResign}
             />
           ) : remoteScreen ? (
             <MediaTile track={remoteScreen.screenTrack} muted label={`${remoteScreen.name}'s screen`} isScreen />

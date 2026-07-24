@@ -127,7 +127,7 @@ export const FEATURES = [
     icon: "💰",
     title: "Coach Referral Program",
     blurb:
-      "Refer another coach and earn 20% of their first subscription as wallet credit toward your own plan — in your own currency, with no limit on referrals.",
+      "Refer another coach and earn 25% of their first subscription as wallet credit toward your own plan — in your own currency, with no limit on referrals.",
   },
   {
     slug: "/chess-coaching-questions",

@@ -24,7 +24,7 @@ export default function CoachSubscription() {
   const [activeFamily, setActiveFamily] = useState('noLive'); // which tab is showing
   const [currencies, setCurrencies] = useState([]);   // [{ code, symbol, label }]
   const [currency, setCurrency] = useState('INR');     // coach-selected checkout currency
-  const [durations, setDurations] = useState([1, 3, 6, 12]); // offered month options
+  const [durations, setDurations] = useState([1, 3]); // offered month options
   const [months, setMonths] = useState(1);             // coach-selected duration (default 1)
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -59,8 +59,9 @@ export default function CoachSubscription() {
       const curs = p.data?.currencies || [];
       setCurrencies(curs);
       // Default the dropdown to the server's default (INR) the first time.
-      setCurrency(prev => (curs.some(c => c.code === prev) ? prev : (p.data?.defaultCurrency || 'INR')));
-      const durs = p.data?.durations || [1, 3, 6, 12];
+      // Currency is fixed by the coach's country (from /status) — not chosen here.
+      setCurrency(st.data?.billingCurrency || p.data?.defaultCurrency || 'USD');
+      const durs = p.data?.durations || [1, 3];
       setDurations(durs);
       setMonths(prev => (durs.includes(prev) ? prev : (p.data?.defaultMonths || 3)));
       setStatus(st.data);
@@ -213,7 +214,7 @@ export default function CoachSubscription() {
   const liveSummary = (p) => {
     const lc = p.liveClass || {};
     const per = lc.meetingsPerDay === -1 ? 'Unlimited' : `${lc.meetingsPerDay}/day`;
-    return `${per} · ${lc.durationMin} min · up to ${lc.maxStudents} students`;
+    return `${per} · up to ${lc.durationMin} min · up to ${lc.maxStudents} students (+ coach)`;
   };
 
   if (loading) return <div className="coach-loading">Loading plans…</div>;
@@ -338,6 +339,20 @@ export default function CoachSubscription() {
       {msg && <div className="cs-ok">{msg}</div>}
       {err && <div className="cs-err">{err}</div>}
 
+      {access.reason === 'exit_trial' && (
+        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.06))', border: '1px solid rgba(245,158,11,0.45)', borderRadius: 12, padding: '18px 24px', marginBottom: 16 }}>
+          <div>
+            <div className="cs-current-label" style={{ color: '#fbbf24' }}>⏳ Academy trial</div>
+            <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 20 }}>
+              You left your academy — {access.daysRemaining} day{access.daysRemaining === 1 ? '' : 's'} left on your current plan
+            </div>
+            <div className="cs-current-meta" style={{ marginTop: 6, lineHeight: 1.6 }}>
+              Pick a plan below to keep your access. When the trial ends you'll move to the Free plan
+              (your students stay, but you can't add new ones past the free limit until you subscribe).
+            </div>
+          </div>
+        </div>
+      )}
       {currentPlan && (
         <div className="cs-current">
           <div>
@@ -360,22 +375,10 @@ export default function CoachSubscription() {
         </div>
       )}
 
-      {currencies.length > 1 && (
-        <div className="cs-currency-row">
-          <label htmlFor="cs-currency">Pay in</label>
-          <select
-            id="cs-currency"
-            className="cs-currency-select"
-            value={currency}
-            onChange={e => setCurrency(e.target.value)}
-          >
-            {currencies.map(c => (
-              <option key={c.code} value={c.code}>{c.code} — {c.label}</option>
-            ))}
-          </select>
-          <span className="cs-currency-hint">Choose the currency you'd like to be charged in.</span>
-        </div>
-      )}
+      {/* Currency is fixed by the coach's country — shown, not chosen. */}
+      <div className="cs-currency-row">
+        <span className="cs-currency-hint">Prices shown in <strong>{currency}</strong> (based on your country).</span>
+      </div>
 
       {walletBalanceMinor > 0 && (
         <div className="cs-credit-row">
@@ -412,7 +415,7 @@ export default function CoachSubscription() {
               className={`cs-duration-pill ${months === m ? 'is-active' : ''}`}
               onClick={() => setMonths(m)}
             >
-              {m} month{m === 1 ? '' : 's'}
+              {m} month{m === 1 ? '' : 's'}{m === 3 ? ' · save 10%' : ''}
             </button>
           ))}
         </div>
@@ -548,7 +551,7 @@ export default function CoachSubscription() {
           <div className="cs-refer">
             <p className="cs-refer-lead">
               Invite another coach with your code. When they make their first paid
-              subscription, you earn <strong>{Math.round((referrals.rewardPct ?? 0.2) * 100)}%</strong> of
+              subscription, you earn <strong>{Math.round((referrals.rewardPct ?? 0.25) * 100)}%</strong> of
               what they pay as wallet credit — spendable on your own plan.
             </p>
 

@@ -17,6 +17,9 @@ const EDITABLE = ['coachName', 'coachCountry', 'hourlyRate', 'rateCurrency',
 
 const NOT_SET = <span className="cp-not-set">Not set</span>;
 
+// Pretty label for the verification-handle platform (stored as a short enum).
+const SOCIAL_LABEL = { facebook: 'Facebook', instagram: 'Instagram', chesscom: 'Chess.com', lichess: 'Lichess' };
+
 // Initials for the avatar (up to 2 letters).
 function initials(name) {
   if (!name) return '🎓';
@@ -43,22 +46,37 @@ export default function CoachProfile() {
   const [error, setError] = useState('');
   const [codeCopied, setCodeCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [walletHelp, setWalletHelp] = useState(false); // wallet "?" explainer popup
+  const [academyInfo, setAcademyInfo] = useState(null); // { academy, role } if a member
 
   const load = async () => {
     try {
-      const [s, d, w] = await Promise.all([
+      const [s, d, w, am] = await Promise.all([
         api.get('/api/coach/status'),
         api.get('/api/coach/dashboard').catch(() => ({ data: null })), // needs access; may 403
         api.get('/api/coach-subscription/wallet').catch(() => ({ data: null })),
+        api.get('/api/academy/me').catch(() => ({ data: null })),
       ]);
       setStatus(s.data);
       setCounts(d.data);
       setWallet(w.data || null);
+      setAcademyInfo(am.data?.academy ? am.data : null);
     } catch {
       setError('Could not load your profile.');
     }
   };
   useEffect(() => { load(); }, []);
+
+  const requestLeaveAcademy = async () => {
+    if (!window.confirm('Ask your academy to release you as an individual coach? Your students and data stay with you. The academy will review and confirm.')) return;
+    try {
+      const r = await api.post('/api/academy/leave');
+      setAcademyInfo(prev => prev ? { ...prev, leaveRequested: true } : prev);
+      alert(r.data?.message || 'Request sent.');
+    } catch (e) {
+      alert(e.response?.data?.message || 'Could not send the request.');
+    }
+  };
 
   if (error && !status) return <div className="coach-dash"><div className="coach-error">⚠️ {error}</div></div>;
   if (!status) return <div className="coach-dash"><div className="coach-empty">Loading your profile…</div></div>;
@@ -129,12 +147,12 @@ export default function CoachProfile() {
             {p.onboardedAt ? ` · Coaching since ${new Date(p.onboardedAt).toLocaleDateString()}` : ''}
           </p>
           <div className="cp-hero-chips">
-            <span className="cp-chip" style={{ textTransform: 'capitalize' }}>⭐ {access.plan || 'free'} plan</span>
             {rate && <span className="cp-chip">💵 {rate}</span>}
             {p.coachCode && (
               <span className="cp-code">
                 {p.coachCode}
                 <button onClick={copyCode}>{codeCopied ? '✓ Copied' : 'Copy'}</button>
+                <button onClick={copyReferralLink}>{linkCopied ? '✓ Copied' : '🔗 Copy referral link'}</button>
               </span>
             )}
           </div>
@@ -164,85 +182,47 @@ export default function CoachProfile() {
             <div className="stat-foot">{counts.studentsRemaining ?? 0} slots remaining</div>
           </div>
           <div className="coach-stat-card">
-            <div className="stat-label">Active assignments</div>
-            <div className="stat-value">{counts.assignmentsCount ?? 0}</div>
-          </div>
-          <div className="coach-stat-card">
-            <div className="stat-label">Activities</div>
-            <div className="stat-value">{counts.activitiesCount ?? 0}</div>
-          </div>
-          <div className="coach-stat-card">
             <div className="stat-label">Plan</div>
             <div className="stat-value" style={{ textTransform: 'capitalize' }}>{access.plan || 'free'}</div>
           </div>
+          {/* Wallet card with a "?" that pops the referral explainer. */}
+          {(() => {
+            const balances = (wallet?.balances || []).filter(b => b.amount > 0);
+            const rewardPct = Math.round((wallet?.rewardPct ?? 0.25) * 100);
+            const maxPct = Math.round((wallet?.maxDiscountPct ?? 0.5) * 100);
+            const sym = (c) => c === 'INR' ? '₹' : c === 'USD' ? '$' : c === 'EUR' ? '€' : c === 'GBP' ? '£' : c + ' ';
+            const display = balances.length > 0
+              ? balances.map(b => `${sym(b.currency)}${(b.amount / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}`).join(' · ')
+              : '₹0';
+            return (
+              <div className="coach-stat-card cp-wallet-stat">
+                <div className="stat-label">
+                  Wallet
+                  <button
+                    type="button"
+                    className="cp-wallet-help-btn"
+                    aria-label="How the referral wallet works"
+                    onClick={() => setWalletHelp(v => !v)}
+                  >?</button>
+                  {walletHelp && (
+                    <>
+                      <div className="cp-wallet-help-backdrop" onClick={() => setWalletHelp(false)} />
+                      <div className="cp-wallet-help-pop" role="dialog">
+                        Invite another coach with your code. When they make their first paid
+                        subscription, you earn <strong>{rewardPct}%</strong> of what they pay as
+                        wallet credit — spendable on your own plan (covers up to {maxPct}% of a purchase).
+                        <Link to="/coach/subscription" className="cp-wallet-help-link">Use credit →</Link>
+                      </div>
+                    </>
+                  )}
+                </div>
+                <div className="stat-value">{display}</div>
+                <div className="stat-foot">{balances.length > 0 ? 'referral credit' : 'No credit yet'}</div>
+              </div>
+            );
+          })()}
         </div>
       )}
-
-      {/* ── Referral wallet ──────────────────────── */}
-      {/* Always shown (even at 0) so new coaches discover they can earn credit. */}
-      {(() => {
-        const balances = (wallet?.balances || []).filter(b => b.amount > 0);
-        const hasCredit = balances.length > 0;
-        const rewardPct = Math.round((wallet?.rewardPct ?? 0.2) * 100);
-        const maxPct = Math.round((wallet?.maxDiscountPct ?? 0.5) * 100);
-        return (
-          <div className="cp-card cp-wallet">
-            <div className="cp-card-head">
-              <span className="cp-card-ic" aria-hidden="true">💰</span>
-              <h2>Referral wallet</h2>
-            </div>
-
-            {hasCredit ? (
-              <>
-                <div className="cp-wallet-balances">
-                  {balances.map(b => {
-                    const sym = b.currency === 'INR' ? '₹' : b.currency === 'USD' ? '$' : b.currency === 'EUR' ? '€' : b.currency === 'GBP' ? '£' : b.currency + ' ';
-                    return (
-                      <div key={b.currency} className="cp-wallet-amount">
-                        {sym}{(b.amount / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })}
-                        <span className="cp-wallet-cur">{b.currency}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-                <p className="cp-wallet-note">
-                  Store credit earned from coaches you referred. Spendable toward your own
-                  subscription — covers up to {maxPct}% of a purchase.
-                </p>
-                <Link to="/coach/subscription" className="btn-ghost">Use credit →</Link>
-              </>
-            ) : (
-              <>
-                <div className="cp-wallet-zero">
-                  <span className="cp-wallet-amount cp-wallet-amount--zero">₹0</span>
-                  <span className="cp-wallet-zero-tag">No credit yet</span>
-                </div>
-                <p className="cp-wallet-note">
-                  Invite another coach with your code below. When they make their first paid
-                  subscription, you earn <strong>{rewardPct}%</strong> of what they pay as wallet
-                  credit — spendable on your own plan (covers up to {maxPct}% of a purchase).
-                </p>
-                <div className="cp-wallet-share">
-                  {p.coachCode && (
-                    <div className="cp-wallet-code">
-                      <span className="cp-wallet-code-label">Your referral link</span>
-                      <span className="cp-wallet-link" title={referralLink}>{referralLink}</span>
-                    </div>
-                  )}
-                  <div className="cp-wallet-actions">
-                    {p.coachCode && (
-                      <button type="button" className="btn-primary" onClick={copyReferralLink}>
-                        {linkCopied ? '✓ Link copied' : '🔗 Copy referral link'}
-                      </button>
-                    )}
-                    <Link to="/coach/subscription" className="btn-ghost">See referral details →</Link>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        );
-      })()}
 
       {/* ── Profile details ──────────────────────── */}
       <div className="cp-card">
@@ -324,7 +304,7 @@ export default function CoachProfile() {
                 : <span style={{ color: '#fcd34d' }}>⏳ Awaiting verification</span>}
             </Row>
             {p.socialUsername && (
-              <Row label="Social">{p.socialPlatform} · @{p.socialUsername}</Row>
+              <Row label="Social">{SOCIAL_LABEL[p.socialPlatform] || p.socialPlatform} · @{p.socialUsername}</Row>
             )}
             {p.onboardedAt && (
               <Row label="Coaching since">{new Date(p.onboardedAt).toLocaleDateString()}</Row>
@@ -345,15 +325,53 @@ export default function CoachProfile() {
             <Row label="Student limit">{access.maxStudents ?? '—'}</Row>
             {counts && <Row label="Slots remaining">{counts.studentsRemaining ?? '—'}</Row>}
             {access.daysRemaining != null && <Row label="Days remaining">{access.daysRemaining}</Row>}
-            {access.downgraded && (
+            {status?.coachSubscription?.sponsoredByAcademy && academyInfo?.academy && (
+              <Row label="Academy">
+                <span style={{ color: '#67e8f9' }}>🏛️ Member of {academyInfo.academy.name}</span>
+              </Row>
+            )}
+            {access.downgraded && !status?.coachSubscription?.sponsoredByAcademy && (
               <Row label="Status">
                 <span style={{ color: '#fcd34d' }}>Your paid plan lapsed — you're on the free tier.</span>
               </Row>
             )}
           </div>
-          <div style={{ marginTop: 16 }}>
-            <Link to="/coach/subscription" className="btn-primary">Manage subscription</Link>
-          </div>
+          {status?.coachSubscription?.sponsoredByAcademy && academyInfo?.academy ? (
+            <div className="cp-academy-block">
+              <div className="cp-academy-line">
+                🏛️ You were added by <strong>{academyInfo.academy.name}</strong>
+                {academyInfo.role && academyInfo.role !== 'coach' ? ` · ${academyInfo.role}` : ''}
+              </div>
+              {academyInfo.academy.planName && (
+                <div className="cp-academy-line">
+                  Plan bought for you: <strong style={{ color: '#67e8f9' }}>{academyInfo.academy.planName}</strong>
+                  {academyInfo.academy.planStudentsPerCoach ? ` · up to ${academyInfo.academy.planStudentsPerCoach} students` : ''}
+                </div>
+              )}
+              {academyInfo.academy.planFeatures?.length > 0 && (
+                <ul className="cp-academy-feats">
+                  {academyInfo.academy.planFeatures.map(f => <li key={f}>✓ {f}</li>)}
+                </ul>
+              )}
+              <div className="cp-academy-note">
+                Your academy pays for your subscription — you don't buy a plan yourself.
+              </div>
+              {/* Members (not the head) can ask to leave and go independent. */}
+              {!academyInfo.isOwner && (
+                academyInfo.leaveRequested ? (
+                  <div className="cp-academy-pending">⏳ Your request to become an individual coach is pending with the academy.</div>
+                ) : (
+                  <button className="btn-ghost" style={{ marginTop: 12 }} onClick={requestLeaveAcademy}>
+                    Become an individual coach
+                  </button>
+                )
+              )}
+            </div>
+          ) : (
+            <div style={{ marginTop: 16 }}>
+              <Link to="/coach/subscription" className="btn-primary">Manage subscription</Link>
+            </div>
+          )}
         </div>
       )}
     </div>

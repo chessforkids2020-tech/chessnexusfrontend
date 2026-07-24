@@ -18,10 +18,11 @@ const CANONICAL = "/chess-coach-guide";
 
 // Live-class caps per plan — mirrors config/coachPlans.js (liveClass block).
 const PLAN_ROWS = [
-  { plan: "Free / Pro / Coach", perDay: "1 a day", mins: "30 min", students: "4" },
-  { plan: "Live Basic", perDay: "5 a day", mins: "40 min", students: "4" },
-  { plan: "Live Pro", perDay: "Unlimited", mins: "40 min", students: "5" },
-  { plan: "Live Coach", perDay: "Unlimited", mins: "60 min", students: "10" },
+  { plan: "Free", perDay: "1 a day", mins: "up to 40 min", students: "4" },
+  { plan: "Pro / Coach", perDay: "1 a day", mins: "up to 60 min", students: "4" },
+  { plan: "Live Basic", perDay: "5 a day", mins: "up to 60 min", students: "4" },
+  { plan: "Live Pro", perDay: "Unlimited", mins: "up to 60 min", students: "5" },
+  { plan: "Live Coach", perDay: "Unlimited", mins: "up to 120 min", students: "10" },
 ];
 
 const FAQ = [
@@ -43,7 +44,7 @@ const FAQ = [
   },
   {
     q: "How many students can join a live class?",
-    a: "On the free plan you get one 30-minute class a day with up to 4 students. Paid live plans raise that to unlimited classes a day, up to 60 minutes, with up to 10 students.",
+    a: "On the free plan you get one class a day (up to 40 minutes) with up to 4 students plus you, the coach. Paid plans raise that to up to 60 minutes, and the top live plan to unlimited classes a day of up to 120 minutes with up to 10 students plus the coach.",
   },
   {
     q: "How do parents see their child's progress?",
@@ -59,7 +60,7 @@ const FAQ = [
   },
   {
     q: "Can I earn credit by referring other coaches?",
-    a: "Yes. Every coach has a personal referral link on their profile. Refer another coach and, when they take their first paid subscription, you earn 20% of it as wallet credit toward your own plan — in your own currency, with no limit on referrals.",
+    a: "Yes. Every coach has a personal referral link on their profile. Refer another coach and, when they take their first paid subscription, you earn 25% of it as wallet credit toward your own plan — in your own currency, with no limit on referrals.",
   },
 ];
 
@@ -314,6 +315,9 @@ export default function CoachGuidePage() {
             { icon: "🎙️", t: "Mic & camera control", d: "Mute a student or turn their camera off in one click, straight from their video tile. To turn either back on you send a request — the student accepts. A child's mic or camera is never forced on." },
             { icon: "📋", t: "Attendance writes itself", d: "Admitting a student records their attendance for that class automatically." },
             { icon: "💬", t: "Class chat", d: "A chat panel for the session — good for links and quick questions without interrupting." },
+            { icon: "♟️", t: "Play in class", d: "Pair students into real games from the Activities panel — the whole class can play at once, each on their own board with live clocks. You watch every board live, spotlight one for everyone to follow, and load any finished game onto the teaching board to review it together." },
+            { icon: "🎲", t: "Simul — play the whole class", d: "Run a simultaneous exhibition against every student at once. Send a join request; once they accept you get one big active board plus a strip of all the others — click any board to swap to it and move, just like the Lichess simul page." },
+            { icon: "🏁", t: "Activities in the room", d: "Launch a private Arena race or tournament for the class without leaving the room — only your own students can join." },
           ]}
         />
 
@@ -325,7 +329,7 @@ export default function CoachGuidePage() {
                 <th>Plan</th>
                 <th>Classes per day</th>
                 <th>Length</th>
-                <th>Students per class</th>
+                <th>Students per class (+ coach)</th>
               </tr>
             </thead>
             <tbody>

@@ -95,6 +95,10 @@ const Chat = () => {
   // Fetch chats
   useEffect(() => {
     fetchChats();
+    // Refresh periodically so the online dots (lastActivity-based) stay current
+    // without a manual reload. Messages themselves arrive live via socket.
+    const presenceTimer = setInterval(fetchChats, 60 * 1000);
+    return () => clearInterval(presenceTimer);
   }, []);
 
   // Auto-open chat with a specific user when navigated with ?userId=
@@ -125,6 +129,16 @@ const Chat = () => {
       });
     }
   }, [chats]);
+
+  // Keep the open chat's participant data (incl. lastActivity for the online dot)
+  // in sync with the periodic chat-list refresh, without disturbing selection.
+  useEffect(() => {
+    if (!selectedChat) return;
+    const fresh = chats.find(c => c._id === selectedChat._id);
+    if (fresh && fresh.participants !== selectedChat.participants) {
+      setSelectedChat(prev => (prev ? { ...prev, participants: fresh.participants } : prev));
+    }
+  }, [chats]); // eslint-disable-line
 
   // Ref for chat list to preserve scroll position when selecting
   const chatListRef = useRef(null);
@@ -463,6 +477,21 @@ const Chat = () => {
     return other ? (other.role === 'admin' ? 'chessnexus' : (other.displayName || other.username)) : 'Unknown';
   };
 
+  // The other participant of a 1:1 chat (null for groups).
+  const getOtherParticipant = (chat) => {
+    if (!chat || chat.type === 'group' || !user || !Array.isArray(chat.participants)) return null;
+    const userId = user._id || user.id;
+    return chat.participants.find(p => String(p._id) !== String(userId)) || null;
+  };
+
+  // Online = lastActivity within 5 min — the app-wide presence convention
+  // (same cutoff used by friends-online / coach-students-online).
+  const ONLINE_WINDOW_MS = 5 * 60 * 1000;
+  const isOnline = (participant) => {
+    if (!participant || !participant.lastActivity) return false;
+    return Date.now() - new Date(participant.lastActivity).getTime() < ONLINE_WINDOW_MS;
+  };
+
   const getSenderName = (sender) => {
     if (!sender) return 'Unknown';
     if (sender.role === 'admin') return 'chessnexus';
@@ -545,6 +574,9 @@ const Chat = () => {
               }}
             >
               <div className="chat-item-name-row">
+                {isOnline(getOtherParticipant(chat)) && (
+                  <span className="chat-online-dot" title="Online" />
+                )}
                 <div className="chat-item-name" title={getChatName(chat)}>{getChatName(chat)}</div>
                 {(chat.unreadCount || 0) > 0 && selectedChat?._id !== chat._id && (
                   <span className="unread-badge">{chat.unreadCount}</span>
@@ -580,6 +612,9 @@ const Chat = () => {
                 >
                   ‹
                 </button>
+              )}
+              {selectedChat && isOnline(getOtherParticipant(selectedChat)) && (
+                <span className="chat-online-dot" title="Online" />
               )}
               <div className="chat-header-name">{selectedChat ? getChatName(selectedChat) : 'Select a chat'}</div>
             </div>

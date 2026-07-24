@@ -1420,10 +1420,10 @@ export default function Sidebar({ user, onNavigate }) {
                   <div style={{ color: '#64748b', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
                     None of your friends are online right now.
                     <div
-                      onClick={() => { handleNavigate('/social'); setShowFriends(false); }}
+                      onClick={() => { handleNavigate('/social/chat'); setShowFriends(false); }}
                       style={{ fontSize: '11.5px', color: '#34d399', fontWeight: 600, marginTop: '10px', cursor: 'pointer' }}
                     >
-                      Go to Social Hub →
+                      Go to Chat →
                     </div>
                   </div>
                 ) : (
@@ -1465,10 +1465,10 @@ export default function Sidebar({ user, onNavigate }) {
                       </div>
                     ))}
                     <div
-                      onClick={() => { handleNavigate('/social'); setShowFriends(false); }}
+                      onClick={() => { handleNavigate('/social/chat'); setShowFriends(false); }}
                       style={{ fontSize: '11.5px', color: '#34d399', fontWeight: 600, textAlign: 'right', cursor: 'pointer', marginTop: '2px' }}
                     >
-                      Open Social Hub →
+                      Go to Chat →
                     </div>
                   </>
                 )}

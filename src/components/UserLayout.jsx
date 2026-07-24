@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Sidebar from './Sidebar';
 import CoachSidebar from './CoachSidebar';
+import AcademySidebar from './AcademySidebar';
 import StudyPuzzleSidebar from './StudyPuzzleSidebar';
 import Footer from './Footer';
 import FeedbackPromptGate from './FeedbackPromptGate';
@@ -29,6 +30,13 @@ export default function UserLayout({ children, showFooter = true }) {
   const inCoachArea = location.pathname.startsWith('/coach/') &&
     location.pathname !== '/coach/onboarding';
 
+  // Academy workspace gets its own dedicated sidebar.
+  const inAcademyArea = location.pathname.startsWith('/academy/');
+
+  // NOTE: the "no-tools academy owner → academy" redirect used to live here, but
+  // it raced with CoachDashboard's own redirect and made the page flip. It now
+  // lives in CoachRoute (App.jsx), which resolves it once before rendering.
+
   // Slim icon rail on cramped pages. It renders its own fixed 60px bar (and its
   // own hamburger on mobile portrait), so it needs no onNavigate.
   const useNarrowSidebar = NARROW_SIDEBAR_PATHS.includes(location.pathname);
@@ -40,9 +48,11 @@ export default function UserLayout({ children, showFooter = true }) {
   const renderSidebar = (onNavigate) =>
     useNarrowSidebar
       ? <StudyPuzzleSidebar />
-      : inCoachArea
-        ? <CoachSidebar onNavigate={onNavigate} />
-        : <Sidebar user={user} onNavigate={onNavigate} />;
+      : inAcademyArea
+        ? <AcademySidebar onNavigate={onNavigate} />
+        : inCoachArea
+          ? <CoachSidebar onNavigate={onNavigate} />
+          : <Sidebar user={user} onNavigate={onNavigate} />;
 
   // Detect screen size changes
   useEffect(() => {

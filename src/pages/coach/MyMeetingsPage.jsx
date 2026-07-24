@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 
-const DURATIONS = [10, 20, 30, 40, 60];
+const DURATIONS = [10, 20, 30, 40, 60, 90, 120];
 // Colours aligned to the rest of the coach app (CoachDashboard.css): body text
 // #e2e8f0, muted rgba(226,232,240,0.6), cyan/emerald accents. Keeps this page from
 // looking like a different product.
@@ -59,11 +59,14 @@ export default function MyMeetingsPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
+      // The meetings call 403s for an unverified coach — catch it here so it does
+      // NOT short-circuit the status call. Otherwise hostState never resolves to
+      // 'pending' and the coach sees a raw error instead of the friendly wait screen.
       const [r, st] = await Promise.all([
-        api.get('/api/coach-live/meetings'),
+        api.get('/api/coach-live/meetings').catch(() => null),
         api.get('/api/coach/status').catch(() => null),
       ]);
-      setMeetings(Array.isArray(r.data) ? r.data : []);
+      setMeetings(Array.isArray(r?.data) ? r.data : []);
       if (st?.data) {
         setHostState(st.data.liveClassroomHostState || (st.data.canHostLiveClassroom ? 'yes' : 'no'));
       }
@@ -74,7 +77,9 @@ export default function MyMeetingsPage() {
         setDuration(d => Math.min(d, lc.durationMin || 30));
       }
     } catch (e) {
-      if (e.response?.status === 403) setMsg('Live classroom hosting is not enabled for this account.');
+      // Fallback only — the 'pending' screen above is the primary path for unverified
+      // coaches. Keep the wording friendly (not "not enabled", which sounds fixable).
+      if (e.response?.status === 403) setMsg('Please wait for the Nexus team to verify you. Once verified, you can start your live classroom.');
     } finally { setLoading(false); }
   }, []);
   useEffect(() => { load(); }, [load]);
@@ -123,11 +128,11 @@ export default function MyMeetingsPage() {
           <div style={s.pendingIcon}><IconVideo size={30} /></div>
           <h1 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#67e8f9' }}>Verification in progress</h1>
           <p style={{ color: C.dim, fontSize: 14.5, lineHeight: 1.6, marginTop: 12 }}>
-            Live classrooms are available to <b style={{ color: C.text }}>verified coaches</b> only.
-            The ChessNexus team is reviewing your onboarding — we’ll verify your account shortly.
+            Please <b style={{ color: C.text }}>wait for the Nexus team to verify you</b>.
+            Once verified, you can start your live classroom.
           </p>
           <p style={{ color: C.dim, fontSize: 13, marginTop: 10 }}>
-            You’ll be able to host live classes as soon as you’re verified. Thanks for your patience! 🙏
+            Thanks for your patience! 🙏
           </p>
           <div style={s.pendingHint}>
             💡 Meanwhile, you can set up your courses, assignments, batches and schedule — everything’s ready for your first class.
@@ -219,9 +224,9 @@ export default function MyMeetingsPage() {
               {creating ? 'Creating…' : 'Create meeting'}
             </button>
           </div>
-          {limits && limits.durationMin < 60 && (
+          {limits && limits.durationMin < 120 && (
             <p style={s.upsell}>
-              💡 Longer classes (up to 60 min) and more per day come with the{' '}
+              💡 Longer classes (up to 120 min) and more per day come with the{' '}
               <a href="/coach/subscription" style={s.upsellLink}>With Live Classroom</a> plans.
             </p>
           )}
@@ -257,7 +262,7 @@ export default function MyMeetingsPage() {
                       <div style={s.meetingName}>{m.title || 'Untitled meeting'}</div>
                       <div style={s.meetingMeta}>
                         <span style={s.pill}><IconClock size={13} />{m.durationMinutes} min</span>
-                        {limits && <span style={s.pill}><IconUsers size={13} />up to {limits.maxStudents} students</span>}
+                        {limits && <span style={s.pill}><IconUsers size={13} />up to {limits.maxStudents} students (+ coach)</span>}
                       </div>
                     </div>
                   </div>

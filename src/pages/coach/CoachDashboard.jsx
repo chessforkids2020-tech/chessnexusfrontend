@@ -4,6 +4,7 @@ import api from '../../api';
 import socket from '../../socket';
 import CoachChatFab from '../../components/coach/CoachChatFab';
 import CoachNotificationBell from '../../components/coach/CoachNotificationBell';
+import ExpiryReminder from '../../components/ExpiryReminder';
 import './CoachDashboard.css';
 import './CoachOnboarding.css'; // shared button styles
 
@@ -140,6 +141,7 @@ export default function CoachDashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [summary, setSummary] = useState(null);
+  const [coachStatus, setCoachStatus] = useState(null); // /api/coach/status (has access + sponsored)
   const [students, setStudents] = useState([]);
   const [pending, setPending] = useState([]);
   const [error, setError] = useState('');
@@ -182,6 +184,7 @@ export default function CoachDashboard() {
         navigate('/coach/onboarding', { replace: true });
         return;
       }
+      setCoachStatus(status.data);
       // One-time "you're a verified coach" welcome — verified but not yet seen.
       const cp = status.data?.coachProfile;
       if (cp?.verified && !cp?.verifiedNoticeSeenAt) setShowVerifiedPopup(true);
@@ -293,8 +296,23 @@ export default function CoachDashboard() {
   const count = students.length;
   const remaining = Math.max(0, max - count);
 
+  // Renewal reminder — only for individual coaches on a real paid plan (not
+  // academy-sponsored: their billing is the academy's concern, not theirs).
+  const cs = coachStatus?.access;
+  const showRenewal = cs && !coachStatus?.coachSubscription?.sponsoredByAcademy
+    && cs.reason !== 'free' && cs.reason !== 'elite_free' && cs.reason !== 'privileged' && cs.reason !== 'comped'
+    && !cs.downgraded;
+
   return (
     <div className="coach-dash">
+      {showRenewal && (
+        <ExpiryReminder
+          daysRemaining={cs.daysRemaining}
+          what={cs.reason === 'exit_trial' ? 'academy trial' : 'coach plan'}
+          to="/coach/subscription"
+          ctaLabel={cs.reason === 'exit_trial' ? 'Set up your plan' : 'Renew now'}
+        />
+      )}
       {/* Live update notice — appears without a reload, fades after 4s. */}
       {toast && (
         <div style={{

@@ -1453,10 +1453,14 @@ export default function SocialHubPage() {
     );
   }
 
-  return (
-    <div className="sh-page">
+  // On the Chat tab, show ONLY the chat box — hide the hub header, tabs and CTA.
+  const chatOnly = activeTab === 'chat';
 
-      {/* Header */}
+  return (
+    <div className={`sh-page${chatOnly ? ' sh-page-chatonly' : ''}`}>
+
+      {/* Header — hidden in chat-only mode */}
+      {!chatOnly && (
       <div className="sh-header">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
@@ -1491,8 +1495,10 @@ export default function SocialHubPage() {
           </button>
         </div>
       </div>
+      )}
 
-      {/* Top-level Tabs */}
+      {/* Top-level Tabs — hidden in chat-only mode */}
+      {!chatOnly && (
       <div className="sh-tabs">
         {TABS.map(t => (
           <button
@@ -1504,6 +1510,7 @@ export default function SocialHubPage() {
           </button>
         ))}
       </div>
+      )}
 
       {/* Content */}
       {activeTab === 'players' && <PlayersTab />}
@@ -1512,9 +1519,11 @@ export default function SocialHubPage() {
       {activeTab === 'clubs'   && <ClubsTab   />}
       {activeTab === 'chat'    && <Chat />}
 
+      {!chatOnly && (
       <AboutFeatureCTA
         links={[{ label: "About Social Hub", to: "/chess-community" }]}
       />
+      )}
     </div>
   );
 }

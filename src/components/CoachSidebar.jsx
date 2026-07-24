@@ -87,7 +87,9 @@ export default function CoachSidebar({ onNavigate }) {
   const isFree = !plan || planId === 'free' || planId === 'trial' || plan?.access?.downgraded;
   const reason = plan?.access?.reason;
   const isPrivileged = isAdmin || reason === 'privileged' || reason === 'elite_free' || reason === 'comped';
-  const upgradeLabel = isPrivileged ? null : (isFree ? '⚡ Upgrade' : '💳 Manage plan');
+  // Academy-sponsored coaches don't buy their own plan — hide upgrade/manage.
+  const sponsoredByAcademy = !!plan?.coachSubscription?.sponsoredByAcademy;
+  const upgradeLabel = (isPrivileged || sponsoredByAcademy) ? null : (isFree ? '⚡ Upgrade' : '💳 Manage plan');
 
   return (
     <div style={styles.sidebar}>

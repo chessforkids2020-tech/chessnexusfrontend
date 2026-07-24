@@ -11,6 +11,20 @@ const COUNTRIES = [
   'Vietnam', 'Indonesia', 'Japan', 'South Korea', 'China', 'Other'
 ];
 
+// Referral wallet figures — keep in step with backend/config/coachPlans.js
+// (REFERRAL_REWARD_PCT = 0.25, REFERRAL_MAX_DISCOUNT_PCT = 0.50).
+const REWARD_PCT = 25;
+const MAX_DISCOUNT_PCT = 50;
+
+// Per-platform input placeholder for the verification handle. Values must match
+// the socialPlatform enum in backend/models/User.js.
+const SOCIAL_PLACEHOLDER = {
+  facebook: 'your facebook username',
+  instagram: 'your instagram username',
+  chesscom: 'your chess.com username',
+  lichess: 'your lichess username',
+};
+
 export default function CoachOnboarding() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -21,6 +35,7 @@ export default function CoachOnboarding() {
     coachName: user?.displayName || '',
     coachCountry: user?.country || '',
     coachType: 'individual',   // 'individual' | 'academy' (academy = you're the head)
+    usesCoachingTools: true,   // academy owner: will they also teach (show coach tools)?
     academyName: '',
     socialPlatform: 'facebook', // 'facebook' | 'instagram'
     socialUsername: '',         // used by the Nexus team to verify the coach
@@ -44,10 +59,21 @@ export default function CoachOnboarding() {
   const [agreedTerms, setAgreedTerms] = useState(false);
 
   useEffect(() => {
-    // If already a coach, jump straight to dashboard
-    api.get('/api/coach/status').then(r => {
-      if (r.data?.isCoach) navigate('/coach/dashboard', { replace: true });
+    // If already a coach, jump straight to their workspace. An academy OWNER goes
+    // to the academy area (a "just manage" owner has no coach dashboard); everyone
+    // else goes to the coach dashboard. Resolve academy membership FIRST so we
+    // don't send a manager to /coach/dashboard only to be bounced out again.
+    let alive = true;
+    api.get('/api/coach/status').then(async (r) => {
+      if (!alive || !r.data?.isCoach) return;
+      let dest = '/coach/dashboard';
+      try {
+        const me = await api.get('/api/academy/me');
+        if (me.data?.isOwner) dest = '/academy/overview'; // AcademyGate sends to billing if unpaid
+      } catch { /* not an academy member → coach dashboard */ }
+      if (alive) navigate(dest, { replace: true });
     }).catch(() => {});
+    return () => { alive = false; };
   }, [navigate]);
 
   const update = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
@@ -58,14 +84,17 @@ export default function CoachOnboarding() {
     if (!form.coachName.trim()) return setError('Please enter your coach name.');
     if (!form.coachCountry) return setError('Please pick your country.');
     if (!form.academyName.trim()) return setError('Please enter your academy / brand name.');
-    if (!form.socialUsername.trim()) return setError('Please add your Facebook or Instagram username — the Nexus team uses it to verify you.');
+    if (!form.socialUsername.trim()) return setError('Please add your Facebook, Instagram, Chess.com or Lichess username — the Nexus team uses it to verify you.');
     if (!agreedTerms) return setError('Please accept the coach terms to continue.');
 
-    // Normalise the social handle: drop a leading @ and any pasted profile URL,
-    // keep just the username the Nexus team will look up.
+    // Normalise the social handle: drop a pasted profile URL (Facebook/Instagram,
+    // chess.com/member/<user>, lichess.org/@/<user>) and a leading @, keeping just
+    // the username the Nexus team will look up.
     const socialUsername = form.socialUsername
       .trim()
       .replace(/^https?:\/\/(www\.)?(facebook|instagram|fb)\.com\//i, '')
+      .replace(/^https?:\/\/(www\.)?chess\.com\/(member\/)?/i, '')
+      .replace(/^https?:\/\/(www\.)?lichess\.org\/@\//i, '')
       .replace(/^@/, '')
       .replace(/[/?#].*$/, '')
       .slice(0, 80);
@@ -75,7 +104,8 @@ export default function CoachOnboarding() {
       await api.post('/api/coach/onboard', { ...form, socialUsername });
       try { localStorage.removeItem('coachRefCode'); } catch {} // don't leak to next coach on shared browser
       if (refreshUser) await refreshUser();
-      navigate('/coach/dashboard', { replace: true });
+      // A new academy must buy a plan before anything unlocks → straight to billing.
+      navigate(form.coachType === 'academy' ? '/academy/billing' : '/coach/dashboard', { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Could not complete onboarding.');
     } finally {
@@ -133,8 +163,36 @@ export default function CoachOnboarding() {
               </div>
             </div>
 
+            {/* Referral wallet — earn 25% as store credit for referring coaches.
+                Figures mirror backend/config/coachPlans.js (REFERRAL_REWARD_PCT
+                = 0.25, REFERRAL_MAX_DISCOUNT_PCT = 0.50). */}
+            <div className="coach-onboard-wallet">
+              <div className="coach-onboard-wallet-title">💰 Refer coaches, earn wallet credit</div>
+              <div className="coach-onboard-wallet-note">
+                Every coach gets a personal referral link. When a coach you invite takes
+                their <strong>first paid subscription</strong>, you earn{' '}
+                <strong>{REWARD_PCT}% of what they paid</strong> as credit in your referral
+                wallet — in <strong>your own currency</strong>.
+              </div>
+              <div className="coach-onboard-wallet-note">
+                That credit is spendable as a discount toward your own subscription (covers
+                up to {MAX_DISCOUNT_PCT}% of a purchase). No cap on referrals, no cost to invite.
+              </div>
+            </div>
+
             <div className="coach-onboard-verify-note">
               🛡️ New coaches are verified by the Nexus team (usually within 12 hours) before adding students — this keeps the community safe for kids.
+            </div>
+
+            {/* Coach reference pages — open in a new tab so onboarding isn't lost. */}
+            <div className="coach-onboard-refs">
+              <div className="coach-onboard-refs-title">📚 Learn more before you start</div>
+              <div className="coach-onboard-refs-links">
+                <a href="/chess-coach-guide" target="_blank" rel="noopener noreferrer">Coach Guide</a>
+                <a href="/chess-coach-referral" target="_blank" rel="noopener noreferrer">Referral &amp; Wallet</a>
+                <a href="/chess-coach-pricing" target="_blank" rel="noopener noreferrer">Pricing</a>
+                <a href="/chess-coaching-questions" target="_blank" rel="noopener noreferrer">Coach FAQ</a>
+              </div>
             </div>
 
             <div className="coach-onboard-actions">
@@ -206,11 +264,43 @@ export default function CoachOnboarding() {
             </div>
 
             {form.coachType === 'academy' && (
-              <div className="coach-onboard-social-hint">
-                You're setting up an academy — you'll be the head coach. After signup, share your
-                academy join link (from the Academy dashboard) so your coaches can join, and you
-                approve them. Your academy can then pay for their plans.
-              </div>
+              <>
+                <div className="coach-onboard-social-hint">
+                  You're setting up an academy — you'll be the head. After signup, share your
+                  academy join link so coaches can join (you approve them), and your academy
+                  can pay for their plans.
+                </div>
+                <div className="field">
+                  <span>Will you also teach? *</span>
+                  <div className="radio-row">
+                    <label className={`radio-card ${form.usesCoachingTools ? 'active' : ''}`}>
+                      <input
+                        type="radio"
+                        name="usesCoachingTools"
+                        checked={form.usesCoachingTools === true}
+                        onChange={() => update('usesCoachingTools', true)}
+                      />
+                      <span className="radio-icon">🎓</span>
+                      <span className="radio-label">Yes, I coach too</span>
+                      <span className="radio-hint">Full coaching tools + academy</span>
+                    </label>
+                    <label className={`radio-card ${!form.usesCoachingTools ? 'active' : ''}`}>
+                      <input
+                        type="radio"
+                        name="usesCoachingTools"
+                        checked={form.usesCoachingTools === false}
+                        onChange={() => update('usesCoachingTools', false)}
+                      />
+                      <span className="radio-icon">🏛️</span>
+                      <span className="radio-label">Just manage</span>
+                      <span className="radio-hint">Only the academy dashboard</span>
+                    </label>
+                  </div>
+                  <div className="coach-onboard-social-hint">
+                    You can turn coaching tools on later from Academy settings.
+                  </div>
+                </div>
+              </>
             )}
 
             <label className="field">
@@ -234,17 +324,19 @@ export default function CoachOnboarding() {
                 >
                   <option value="facebook">Facebook</option>
                   <option value="instagram">Instagram</option>
+                  <option value="chesscom">Chess.com</option>
+                  <option value="lichess">Lichess</option>
                 </select>
                 <input
                   type="text"
                   value={form.socialUsername}
                   onChange={e => update('socialUsername', e.target.value)}
-                  placeholder={form.socialPlatform === 'instagram' ? 'your instagram username' : 'your facebook username'}
+                  placeholder={SOCIAL_PLACEHOLDER[form.socialPlatform] || 'your username'}
                   required
                 />
               </div>
               <div className="coach-onboard-social-hint">
-                Nexus wants to keep one account per coach. Please give us your Facebook name — only to verify and make sure accounts are created in a fair way.
+                Nexus wants to keep one account per coach. Give us your Facebook, Instagram, Chess.com or Lichess username — only to verify you and keep account creation fair.
               </div>
             </div>
 
@@ -281,7 +373,7 @@ export default function CoachOnboarding() {
                 autoCapitalize="characters"
               />
               <div className="coach-onboard-social-hint">
-                If a coach referred you, add their code — they'll earn wallet credit when you first subscribe.
+                If a coach referred you, add their code — they'll earn {REWARD_PCT}% wallet credit when you first subscribe.
               </div>
             </label>
 

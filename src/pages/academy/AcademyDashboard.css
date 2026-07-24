@@ -81,3 +81,77 @@
 .acad-req-btns { display: flex; gap: 6px; }
 .acad-req-approve { font-size: 12px; font-weight: 700; color: #04211d; background: #10b981; border: none; border-radius: 7px; padding: 5px 12px; cursor: pointer; }
 .acad-req-decline { font-size: 12px; font-weight: 600; color: #cbd5e1; background: none; border: 1px solid rgba(255,255,255,0.15); border-radius: 7px; padding: 5px 12px; cursor: pointer; }
+
+/* Academy plan cards (billing page) */
+.acad-fam-tabs { display: inline-flex; gap: 6px; margin-left: auto; }
+.acad-fam-tabs button { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(226,232,240,0.7); border-radius: 10px; padding: 7px 14px; font-weight: 700; font-size: 13px; cursor: pointer; }
+.acad-fam-tabs button.is-active { background: linear-gradient(135deg,#06b6d4,#10b981); color: #04211d; border-color: transparent; }
+.acad-plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 18px; align-items: stretch; }
+.acad-plan-card { background: rgba(20,20,30,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; height: 100%; }
+.acad-plan-card.is-current { border-color: rgba(6,182,212,0.5); box-shadow: 0 0 16px rgba(6,182,212,0.15); }
+.acad-plan-name { font-size: 17px; font-weight: 800; color: #fff; }
+.acad-plan-price { font-size: 26px; font-weight: 800; color: #67e8f9; margin: 6px 0; }
+.acad-plan-price span { font-size: 12px; color: rgba(226,232,240,0.5); font-weight: 600; }
+.acad-plan-cap { font-size: 12.5px; color: rgba(226,232,240,0.7); margin-bottom: 10px; }
+.acad-plan-feats { list-style: none; padding: 0; margin: 0 0 14px; }
+.acad-plan-feats li { font-size: 12.5px; color: rgba(226,232,240,0.8); padding: 3px 0; }
+/* The green "Every coach gets" box is a FIXED height so it's identical on every
+   card — even when cards wrap onto separate grid rows (grid stretch only equalises
+   WITHIN a row, so a wrapped/solo card would otherwise size to its own content).
+   The total line + buy button below it are pushed to the card bottom via the
+   spacer (margin-top:auto on .acad-plan-total), so buttons still line up. */
+.acad-plan-card .acad-plan-percoach { flex: 0 0 auto; }
+.acad-plan-card .acad-plan-total { margin-top: auto; }
+.acad-plan-card .btn-primary, .acad-plan-card .btn-ghost {
+  width: 100%; padding: 9px 14px; font-size: 13.5px; border-radius: 9px;
+}
+.acad-plan-warn { font-size: 11.5px; color: #f59e0b; margin-top: 8px; text-align: center; }
+
+/* Settings */
+.acad-set-field { margin-bottom: 18px; }
+.acad-set-field > label { display: block; font-size: 13px; color: rgba(226,232,240,0.7); margin-bottom: 6px; font-weight: 600; }
+.acad-set-field input[type=text], .acad-set-field > input { width: 100%; padding: 9px 12px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.3); color: #fff; outline: none; }
+.acad-toggle { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #e2e8f0; cursor: pointer; }
+.acad-toggle input { margin-top: 3px; width: 16px; height: 16px; accent-color: #06b6d4; }
+
+/* Overview period toggle */
+.acad-period-toggle { display: inline-flex; gap: 6px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 4px; }
+.acad-period-toggle button { border: none; background: transparent; color: rgba(226,232,240,0.65); border-radius: 9px; padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.acad-period-toggle button.is-active { background: linear-gradient(135deg,#06b6d4,#10b981); color: #04211d; }
+@media (max-width: 560px) { .acad-head { flex-direction: column; align-items: flex-start; gap: 12px; } .acad-period-toggle { width: 100%; } .acad-period-toggle button { flex: 1; } }
+
+/* Settings: current plan status card */
+.acad-plan-status { background: linear-gradient(135deg, rgba(6,182,212,0.08), rgba(16,185,129,0.05)); border: 1px solid rgba(6,182,212,0.25); border-radius: 16px; padding: 18px; margin-bottom: 22px; }
+.acad-plan-status-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: rgba(226,232,240,0.6); font-weight: 700; }
+.acad-plan-status-link { color: #67e8f9; font-size: 12.5px; font-weight: 700; text-decoration: none; }
+.acad-plan-status-name { font-size: 22px; font-weight: 800; color: #67e8f9; margin: 6px 0 12px; }
+.acad-plan-status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+.acad-plan-status-grid > div { text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px 6px; }
+.acad-plan-status-grid strong { display: block; font-size: 22px; font-weight: 800; color: #e2e8f0; }
+.acad-plan-status-grid span { font-size: 11.5px; color: rgba(226,232,240,0.55); }
+.acad-plan-status-warn { margin-top: 12px; font-size: 12.5px; color: #fcd34d; }
+.acad-plan-status-renew { margin-top: 10px; font-size: 12px; color: rgba(226,232,240,0.55); }
+.acad-plan-status-none { color: rgba(226,232,240,0.8); font-size: 14px; }
+
+/* Message-a-coach button (Coaches page) */
+.acad-msg-btn { font-size: 12px; font-weight: 700; color: #67e8f9; background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.4); border-radius: 7px; padding: 4px 10px; cursor: pointer; }
+.acad-msg-btn:hover { background: rgba(6,182,212,0.22); }
+
+/* Academy plan card — per-coach clarity */
+.acad-plan-coaches { font-size: 13px; color: rgba(226,232,240,0.75); margin-bottom: 12px; }
+.acad-plan-coaches strong { color: #e2e8f0; }
+/* Fixed height (fits the fullest plan's ~7 feature rows, incl. a wrapped live-class
+   line) so the green box is the same size on every card in every layout — sparse
+   plans show a little empty green, which is fine. It's a min-height (NOT a fixed
+   height), so if a plan ever has MORE content it grows to show it all — never a
+   scrollbar; the whole card grows instead. */
+.acad-plan-percoach { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.25); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; min-height: 272px; }
+.acad-plan-percoach-head { font-size: 12.5px; font-weight: 800; color: #6ee7b7; margin-bottom: 8px; letter-spacing: 0.02em; }
+.acad-plan-percoach .acad-plan-feats { margin: 0; }
+.acad-plan-percoach .acad-plan-feats li { color: rgba(226,232,240,0.85); }
+.acad-plan-percoach .acad-plan-feats li strong { color: #6ee7b7; }
+/* Reserve a fixed height (≈2 wrapped lines) so the total line is the same size on
+   every card — otherwise a card whose total wraps to 2 lines pushes its button
+   lower than a card whose total fits 1 line. min-height keeps the buttons aligned. */
+.acad-plan-total { font-size: 12px; color: rgba(226,232,240,0.6); margin-bottom: 12px; line-height: 1.5; min-height: 36px; }
+.acad-plan-total strong { color: #67e8f9; }

@@ -11,10 +11,11 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 const CANONICAL = "/live-chess-classroom";
 
 const PLAN_ROWS = [
-  { plan: "Free / Pro / Coach", perDay: "1 a day", mins: "30 min", students: "4" },
-  { plan: "Live Basic", perDay: "5 a day", mins: "40 min", students: "4" },
-  { plan: "Live Pro", perDay: "Unlimited", mins: "40 min", students: "5" },
-  { plan: "Live Coach", perDay: "Unlimited", mins: "60 min", students: "10" },
+  { plan: "Free", perDay: "1 a day", mins: "up to 40 min", students: "4" },
+  { plan: "Pro / Coach", perDay: "1 a day", mins: "up to 60 min", students: "4" },
+  { plan: "Live Basic", perDay: "5 a day", mins: "up to 60 min", students: "4" },
+  { plan: "Live Pro", perDay: "Unlimited", mins: "up to 60 min", students: "5" },
+  { plan: "Live Coach", perDay: "Unlimited", mins: "up to 120 min", students: "10" },
 ];
 
 const FEATURES = [
@@ -29,7 +30,10 @@ const FEATURES = [
   { icon: "🎙️", t: "Mic & camera controls", d: "Mute a student or turn their camera off in one click from their video tile. Turning either back on is always a request the student accepts — a child's mic or camera is never forced on." },
   { icon: "📋", t: "Attendance writes itself", d: "Admitting a student records their attendance for that class. No separate register to fill in afterwards." },
   { icon: "💬", t: "Class chat", d: "A chat panel for the session — good for links and quick questions without interrupting the lesson." },
-  { icon: "🏁", t: "Activities on the stage", d: "Launch a private race or tournament for the class without leaving the room." },
+  { icon: "🎯", t: "Activities on the stage", d: "One Activities panel, right inside the class: Play in class, a coach Simul, and private Arena races & tournaments — all launched without leaving the room." },
+  { icon: "♟️", t: "Play in class", d: "Pair students into real games — the whole class can play at once, each on their own board with live clocks like a Lichess broadcast. You watch every board live, spotlight one for everyone to follow, and load any finished game onto the teaching board to review it together." },
+  { icon: "🎲", t: "Simul — play the whole class", d: "Run a simultaneous exhibition: you play every student at once. Send a join request, and once they accept you see one big active board plus a strip of all the others — click any board to swap to it and make your move, exactly like the Lichess simul page." },
+  { icon: "🏁", t: "Private races & tournaments", d: "Launch a private Arena race or tournament for your class without leaving the room — only your own students can join, results shown right on the stage." },
 ];
 
 const FAQ = [
@@ -39,11 +43,15 @@ const FAQ = [
   },
   {
     q: "Is the live chess classroom free?",
-    a: "Yes. Every coach on Chess Nexus gets the live classroom, including free coaches — one 30-minute class a day with up to 4 students. Paid live plans raise that to unlimited classes a day, up to 60 minutes, with up to 10 students.",
+    a: "Yes. Every coach on Chess Nexus gets the live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. Paid plans raise that to up to 60 minutes, and the top live plan to unlimited classes a day of up to 120 minutes with up to 10 students plus the coach.",
   },
   {
     q: "Can students move pieces on the shared board?",
     a: "Only when you let them. The coach controls the board by default; you can hand control to any student so they play their move in front of the class, then take it back with one click.",
+  },
+  {
+    q: "Can students play games during a live class?",
+    a: "Yes, two ways from the Activities panel. Play in class pairs students into real games — the whole class can play at once, each on their own board with live clocks, and you watch every board live and spotlight one for the rest to follow. A Simul lets you play every student at once, swapping between their boards like the Lichess simul page. Any finished game can be loaded onto the teaching board to review together.",
   },
   {
     q: "How is attendance recorded in an online chess class?",
@@ -124,7 +132,7 @@ export default function LiveClassroomMarketingPage() {
                 <th>Plan</th>
                 <th>Classes per day</th>
                 <th>Length</th>
-                <th>Students per class</th>
+                <th>Students per class (+ coach)</th>
               </tr>
             </thead>
             <tbody>

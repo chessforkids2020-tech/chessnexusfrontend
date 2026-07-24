@@ -243,3 +243,76 @@
   .cp-wallet-share { flex-direction: column; align-items: stretch; }
   .cp-wallet-actions { flex-wrap: wrap; }
 }
+
+/* ── Wallet stat card (in the stat row, next to Plan) with "?" popup ── */
+.cp-wallet-stat { overflow: visible; }
+.cp-wallet-stat .stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  position: relative; /* anchor for the "?" popup */
+}
+.cp-wallet-stat .stat-value {
+  color: #6ee7b7;
+}
+.cp-wallet-help-btn {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(6, 182, 212, 0.5);
+  background: rgba(6, 182, 212, 0.12);
+  color: #67e8f9;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.cp-wallet-help-btn:hover { background: rgba(6, 182, 212, 0.25); }
+
+/* Full-screen invisible backdrop so a click anywhere closes the popup. */
+.cp-wallet-help-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.cp-wallet-help-pop {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 50;
+  width: 260px;
+  max-width: 78vw;
+  background: #14141e;
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  border-radius: 10px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+  padding: 12px 14px;
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(226, 232, 240, 0.8);
+}
+.cp-wallet-help-pop strong { color: #6ee7b7; font-weight: 700; }
+.cp-wallet-help-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #67e8f9;
+  text-decoration: none;
+}
+.cp-wallet-help-link:hover { text-decoration: underline; }
+
+/* Academy membership block (coach profile) */
+.cp-academy-block { margin-top: 16px; padding: 14px 16px; background: rgba(6,182,212,0.06); border: 1px solid rgba(6,182,212,0.25); border-radius: 12px; }
+.cp-academy-line { font-size: 13.5px; color: rgba(226,232,240,0.85); margin-bottom: 6px; }
+.cp-academy-feats { list-style: none; padding: 0; margin: 8px 0; }
+.cp-academy-feats li { font-size: 12.5px; color: rgba(226,232,240,0.7); padding: 2px 0; }
+.cp-academy-note { font-size: 12.5px; color: rgba(226,232,240,0.6); margin-top: 6px; }
+.cp-academy-pending { margin-top: 12px; font-size: 12.5px; color: #fcd34d; }

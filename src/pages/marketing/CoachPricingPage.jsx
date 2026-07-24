@@ -25,7 +25,7 @@ const FAQ = [
   },
   {
     q: "Do I need a paid plan to teach live?",
-    a: "No. Every coach gets the built-in live classroom, including free coaches — one 30-minute class a day with up to 4 students. Paid live plans raise those limits, up to unlimited classes of 60 minutes with 10 students.",
+    a: "No. Every coach gets the built-in live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. Paid plans raise those limits — up to 60-minute classes, and up to unlimited classes of 120 minutes with 10 students plus the coach on the top plan.",
   },
   {
     q: "What happens if my paid plan expires?",
@@ -33,7 +33,7 @@ const FAQ = [
   },
   {
     q: "Can I earn credit toward my subscription?",
-    a: "Yes. Refer another coach and, when they take their first paid plan, you earn 20% of it as wallet credit toward your own subscription — in your own currency, with no limit on referrals. See the coach referral program for details.",
+    a: "Yes. Refer another coach and, when they take their first paid plan, you earn 25% of it as wallet credit toward your own subscription — in your own currency, with no limit on referrals. See the coach referral program for details.",
   },
 ];
 
@@ -152,7 +152,7 @@ export default function CoachPricingPage() {
                       {p.liveClass
                         ? `${p.liveClass.meetingsPerDay < 0 || p.liveClass.meetingsPerDay == null
                             ? "Unlimited classes"
-                            : `${p.liveClass.meetingsPerDay}/day`} · ${p.liveClass.durationMin} min · ${p.liveClass.maxStudents} students`
+                            : `${p.liveClass.meetingsPerDay}/day`} · up to ${p.liveClass.durationMin} min · ${p.liveClass.maxStudents} students (+ coach)`
                         : "—"}
                     </td>
                   </tr>
@@ -198,7 +198,7 @@ export default function CoachPricingPage() {
       <section className="mkt-section" aria-label="Referral program">
         <h2>Lower your cost — refer a coach</h2>
         <p className="mkt-p">
-          Refer another coach and earn <strong>20%</strong> of their first paid
+          Refer another coach and earn <strong>25%</strong> of their first paid
           subscription as wallet credit toward your own plan — in your own currency,
           with no limit on referrals. See how the{" "}
           <Link to="/chess-coach-referral">coach referral program</Link> works.

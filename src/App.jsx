@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import api from "./api";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
@@ -48,6 +49,10 @@ import CoachPricingPage from "./pages/marketing/CoachPricingPage";
 import CoachReferralPage from "./pages/marketing/CoachReferralPage";
 import CoachFaqPage from "./pages/marketing/CoachFaqPage";
 import AcademyDashboard from "./pages/academy/AcademyDashboard";
+import AcademyCoaches from "./pages/academy/AcademyCoaches";
+import AcademyBilling from "./pages/academy/AcademyBilling";
+import AcademyPayments from "./pages/academy/AcademyPayments";
+import AcademySettings from "./pages/academy/AcademySettings";
 import JoinAcademy from "./pages/academy/JoinAcademy";
 import LiveClassroomMarketingPage from "./pages/marketing/LiveClassroomPage";
 import EndgameTrainingPage from "./pages/marketing/EndgameTrainingPage";
@@ -271,19 +276,73 @@ function ProtectedRoute({ children, requiredRole, noGuest, allowCoach }) {
  */
 function CoachRoute({ children }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
+  const inCoachArea = location.pathname.startsWith('/coach/') && location.pathname !== '/coach/onboarding';
 
-  if (loading) {
-    return <div style={{ textAlign: 'center', padding: 50 }}>Loading…</div>;
-  }
+  // The auth-context `user.isCoach` can be briefly stale right after navigation,
+  // which made this guard bounce a real coach to /coach/onboarding while the page
+  // itself (fresh /api/coach/status) disagreed → the screen flickered. To avoid
+  // that, resolve coach + academy state from the SAME fresh API here, once, and
+  // hold a loading state until we know. Never redirect on the stale context flag.
+  const [checked, setChecked] = React.useState(false);
+  const [state, setState] = React.useState({ isCoach: false, noToolsOwner: false });
+
+  React.useEffect(() => {
+    // Only guests / logged-out are decided synchronously below; everyone else
+    // waits for the fresh status.
+    if (!user || user.isGuest || user.role === 'guest') { setChecked(true); return; }
+    if (user.role === 'admin') { setState({ isCoach: true, noToolsOwner: false }); setChecked(true); return; }
+    let alive = true;
+    (async () => {
+      let isCoach = false, noToolsOwner = false;
+      try {
+        const s = await api.get('/api/coach/status');
+        isCoach = !!s.data?.isCoach;
+        if (isCoach && inCoachArea) {
+          try {
+            const me = await api.get('/api/academy/me');
+            noToolsOwner = !!(me.data?.isOwner && me.data?.usesCoachingTools === false);
+          } catch { /* not an academy member */ }
+        }
+      } catch { /* status failed — treat as not-a-coach */ }
+      if (alive) { setState({ isCoach, noToolsOwner }); setChecked(true); }
+    })();
+    return () => { alive = false; };
+  }, [user, inCoachArea]);
+
+  if (loading) return <div style={{ textAlign: 'center', padding: 50 }}>Loading…</div>;
   if (!user) return <Navigate to="/login" replace />;
-  // Guests can never be coaches — send them to log in properly first.
   if (user.role === 'guest' || user.isGuest) {
     return <Navigate to="/login" state={{ message: 'Please log in to access coach tools.' }} replace />;
   }
-  // Admins keep access for support/testing.
-  if (!user.isCoach && user.role !== 'admin') {
-    return <Navigate to="/coach/onboarding" replace />;
-  }
+  // Hold until the fresh status resolves — prevents redirecting on stale data.
+  if (!checked) return <div style={{ textAlign: 'center', padding: 50 }}>Loading…</div>;
+  if (!state.isCoach && user.role !== 'admin') return <Navigate to="/coach/onboarding" replace />;
+  if (state.noToolsOwner) return <Navigate to="/academy/overview" replace />;
+  return children;
+}
+
+// AcademyGate: academy pages require an ACTIVE academy plan. Until the academy
+// pays, everything except Billing + Settings redirects to Billing (pay first).
+// `allowUnpaid` pages (Billing, Settings) render regardless so they can pay /
+// see status.
+function AcademyGate({ children, allowUnpaid = false }) {
+  const { user, loading } = useAuth();
+  const [me, setMe] = React.useState(undefined); // undefined = loading
+
+  React.useEffect(() => {
+    let alive = true;
+    api.get('/api/academy/me').then(r => { if (alive) setMe(r.data || null); }).catch(() => { if (alive) setMe(null); });
+    return () => { alive = false; };
+  }, []);
+
+  if (loading || me === undefined) return <div style={{ textAlign: 'center', padding: 50 }}>Loading…</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  // Not an academy owner at all → shouldn't be here; send to coach dashboard.
+  if (!me?.academy || !me?.isOwner) return <Navigate to="/coach/dashboard" replace />;
+
+  const paid = me.academy.planStatus === 'active';
+  if (!paid && !allowUnpaid) return <Navigate to="/academy/billing" replace />;
   return children;
 }
 
@@ -1051,12 +1110,21 @@ export default function App() {
             </CoachRoute>
           </UserLayout>
         } />
-        <Route path="/academy/dashboard" element={
-          <UserLayout>
-            <CoachRoute>
-              <AcademyDashboard />
-            </CoachRoute>
-          </UserLayout>
+        <Route path="/academy/dashboard" element={<Navigate to="/academy/overview" replace />} />
+        <Route path="/academy/overview" element={
+          <UserLayout><CoachRoute><AcademyGate><AcademyDashboard /></AcademyGate></CoachRoute></UserLayout>
+        } />
+        <Route path="/academy/coaches" element={
+          <UserLayout><CoachRoute><AcademyGate><AcademyCoaches /></AcademyGate></CoachRoute></UserLayout>
+        } />
+        <Route path="/academy/billing" element={
+          <UserLayout><CoachRoute><AcademyGate allowUnpaid><AcademyBilling /></AcademyGate></CoachRoute></UserLayout>
+        } />
+        <Route path="/academy/payments" element={
+          <UserLayout><CoachRoute><AcademyGate><AcademyPayments /></AcademyGate></CoachRoute></UserLayout>
+        } />
+        <Route path="/academy/settings" element={
+          <UserLayout><CoachRoute><AcademyGate allowUnpaid><AcademySettings /></AcademyGate></CoachRoute></UserLayout>
         } />
         <Route path="/join-academy/:code" element={
           <UserLayout>
