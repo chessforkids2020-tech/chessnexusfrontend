@@ -301,7 +301,7 @@ export default function CoachChat({ mode = 'student' }) {
                   e.target.style.height = `${e.target.scrollHeight}px`;
                 }}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-                placeholder="Type a message… (Shift+Enter for a new line)"
+                placeholder="Type a message…"
                 rows={1}
               />
               <button onClick={send} disabled={!draft.trim() || sending}>Send</button>

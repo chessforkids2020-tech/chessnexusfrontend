@@ -79,26 +79,10 @@ Allow: /improve-at-chess
 Allow: /3d-chess-arena-tournament
 Allow: /chess-study
 Allow: /chess-community
-Allow: /puzzles
-Allow: /puzzles-hub
-Allow: /arena
-Allow: /arena-race
-Allow: /puzzle-tournament
-Allow: /individual-race
-Allow: /team-race
-Allow: /monthly-focus
-Allow: /leaderboard
-Allow: /study
-Allow: /games
-Allow: /arcade
-Allow: /social
-Allow: /events
-Allow: /schedule
+Allow: /chess-coaching-questions
+Allow: /chess-coach-referral
 Allow: /contact
-Allow: /report
-Allow: /login
 Allow: /signup-request
-Allow: /best-racers
 
 # Block private / admin / in-game routes
 Disallow: /api/
@@ -120,6 +104,28 @@ Disallow: /arena-lobby
 Disallow: /team-lobby
 Disallow: /study-duel
 Disallow: /coaching-room
+# App / dynamic routes: they all serve the same SPA index.html shell, which Google
+# flags as "Duplicate without user-selected canonical". Keep them out of the index
+# (removed from sitemap.xml too). They still work in the app — just not crawled.
+Disallow: /login
+Disallow: /report
+Disallow: /schedule
+Disallow: /puzzles
+Disallow: /puzzles-hub
+Disallow: /leaderboard
+Disallow: /best-racers
+Disallow: /arena
+Disallow: /arena-race
+Disallow: /puzzle-tournament
+Disallow: /individual-race
+Disallow: /team-race
+Disallow: /monthly-focus
+Disallow: /study
+Disallow: /study/selection
+Disallow: /games
+Disallow: /arcade
+Disallow: /social
+Disallow: /events
 
 Sitemap: https://www.chessnexus.in/sitemap.xml
 Host: https://www.chessnexus.in

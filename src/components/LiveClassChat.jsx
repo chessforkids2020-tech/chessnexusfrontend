@@ -109,7 +109,7 @@ export default function LiveClassChat({ sessionId, isHost }) {
                 value={input}
                 maxLength={300}
                 rows={1}
-                placeholder={isHost && blocked ? 'Chat is blocked for students…' : 'Type a message… (Shift+Enter for a new line)'}
+                placeholder={isHost && blocked ? 'Chat is blocked for students…' : 'Type a message…'}
                 onChange={e => {
                   setInput(e.target.value);
                   e.target.style.height = 'auto';
