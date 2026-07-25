@@ -129,6 +129,7 @@ import EventSubmissions from './pages/EventSubmissions';
 import StudyOverview from './pages/study/StudyOverview';
 import StudyEndgamesPage from './pages/study/StudyEndgamesPage';
 import EndgameChallengesPage from './pages/study/EndgameChallengesPage';
+import BeginnersAcademyPage from './pages/study/beginners/BeginnersAcademyPage';
 import StudySelection from './pages/study/StudySelection';
 import StudyChapterSelection from './pages/study/StudyChapterSelection';
 import StudyPuzzleView from './pages/study/StudyPuzzleView';
@@ -1664,6 +1665,13 @@ export default function App() {
         <Route path="/study" element={
           <UserLayout>
             <StudyOverview />
+          </UserLayout>
+        } />
+        <Route path="/study/beginners" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <BeginnersAcademyPage />
+            </ProtectedRoute>
           </UserLayout>
         } />
         <Route path="/study/endgames" element={

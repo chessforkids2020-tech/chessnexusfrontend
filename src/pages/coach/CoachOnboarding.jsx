@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 import './CoachOnboarding.css';
@@ -127,6 +127,21 @@ export default function CoachOnboarding() {
             <div className="coach-onboard-perks">
               <div className="perk">✅ Free forever — no trial, no time limit</div>
               <div className="perk">✅ No card required</div>
+            </div>
+
+            {/* Collab offer — streamers/bloggers/titled players get all coach
+                features free on any plan by reaching out to the Nexus team. */}
+            <div className="coach-onboard-collab">
+              <div className="coach-onboard-collab-text">
+                🤝 <strong>Streamers, bloggers &amp; titled players</strong> can collaborate
+                with Nexus to access <strong>all coach features for free on any plan</strong>.
+              </div>
+              <Link to="/contact" className="coach-onboard-collab-link">
+                Contact Nexus →
+              </Link>
+              <div className="coach-onboard-collab-note">
+                The Nexus team will contact you shortly.
+              </div>
             </div>
 
             {/* Everything a free coach already gets, grouped so each capability is

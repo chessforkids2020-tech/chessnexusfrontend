@@ -202,6 +202,40 @@
 .coach-onboard-wallet-note:last-child { margin-bottom: 0; }
 .coach-onboard-wallet-note strong { color: #fcd34d; }
 
+/* Collab offer — streamers / bloggers / titled players */
+.coach-onboard-collab {
+  background: linear-gradient(135deg, rgba(45, 212, 191, 0.10), rgba(45, 212, 191, 0.03));
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 4px 0 16px;
+  text-align: left;
+}
+.coach-onboard-collab-text {
+  font-size: 12.5px;
+  color: rgba(226, 232, 240, 0.82);
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+.coach-onboard-collab-text strong { color: #5eead4; }
+.coach-onboard-collab-link {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  background: #2dd4bf;
+  padding: 7px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+.coach-onboard-collab-link:hover { background: #5eead4; }
+.coach-onboard-collab-note {
+  font-size: 11.5px;
+  color: rgba(226, 232, 240, 0.6);
+  margin-top: 8px;
+}
+
 /* Coach reference page links */
 .coach-onboard-refs {
   text-align: left;

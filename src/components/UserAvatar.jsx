@@ -78,6 +78,14 @@ export default function UserAvatar({
     return (
       <div className={className} style={box}>
         <model-viewer
+          ref={(el) => {
+            if (!el || el.__cnDbg) return;
+            el.__cnDbg = true;
+            const r = el.getBoundingClientRect();
+            console.log('[CN model-viewer] mounted', { src, w: r.width, h: r.height });
+            el.addEventListener('load', (e) => console.log('[CN model-viewer] LOAD ok', e.detail));
+            el.addEventListener('error', (e) => console.log('[CN model-viewer] ERROR', e.detail));
+          }}
           src={src}
           camera-controls={false}
           disable-zoom
@@ -86,7 +94,7 @@ export default function UserAvatar({
           interaction-prompt="none"
           auto-rotate={live ? true : undefined}
           rotation-per-second={live ? '24deg' : undefined}
-          loading="lazy"
+          loading="eager"
           reveal="auto"
           style={{ width: '100%', height: '100%', backgroundColor: 'transparent', '--poster-color': 'transparent' }}
           onError={() => setModel3dFailed(true)}
