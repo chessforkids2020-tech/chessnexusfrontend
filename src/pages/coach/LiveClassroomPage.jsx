@@ -1484,6 +1484,19 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const [pickChapter, setPickChapter] = useState('');
   const [positions, setPositions] = useState([]); // [{ fen, title }]
   const [posLoading, setPosLoading] = useState(false);
+
+  // ── Save the current teaching position into ONE OF THE COACH'S OWN studies, so
+  //    the FEN can be reused in a later class. Public/Nexus studies stay read-only;
+  //    this panel only ever targets "My studies". ──
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [saveStudyId, setSaveStudyId] = useState('');   // '' → new study (newStudyName)
+  const [saveNewStudy, setSaveNewStudy] = useState('');
+  const [saveChapterId, setSaveChapterId] = useState(''); // '' → new chapter (newChapterName)
+  const [saveNewChapter, setSaveNewChapter] = useState('');
+  const [saveTitle, setSaveTitle] = useState('');
+  const [myStudies, setMyStudies] = useState([]); // coach's own studies for the picker
+  const [saveBusy, setSaveBusy] = useState(false);
+  const [saveMsg, setSaveMsg] = useState('');     // success/error feedback
   // Courses + Library
   const [courses, setCourses] = useState([]);
   const [pickCourse, setPickCourse] = useState('');
@@ -2367,6 +2380,45 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     setLoadErr('');
     setBoardFen(editorChess.fen());
     setEditorOpen(false);
+  };
+
+  // ── Save the current board position into one of the coach's own studies ──────
+  // Open the save panel and (re)load the coach's own studies to pick from.
+  const openSavePanel = () => {
+    setSaveMsg(''); setSaveOpen(true);
+    api.get('/api/coach-live/studies?source=mine')
+      .then(r => setMyStudies(r.data?.studies || []))
+      .catch(() => setMyStudies([]));
+  };
+  const saveCurrentPosition = async () => {
+    setSaveMsg(''); setSaveBusy(true);
+    try {
+      const body = { fen: curFen, title: saveTitle.trim() };
+      if (saveStudyId) {
+        body.studyId = saveStudyId;
+        if (saveChapterId) body.chapterId = saveChapterId;
+        else body.newChapterName = saveNewChapter.trim();
+      } else {
+        body.newStudyName = saveNewStudy.trim();
+        body.newChapterName = saveNewChapter.trim();
+      }
+      if (!body.studyId && !body.newStudyName) { setSaveMsg('Pick a study or name a new one.'); setSaveBusy(false); return; }
+      const r = await api.post('/api/coach-live/studies/save-position', body);
+      setSaveMsg(`✓ Saved to “${r.data.studyName} › ${r.data.chapterName}” (${r.data.count})`);
+      // Refresh my-studies so the new study/chapter shows up, and stick to it for the
+      // next save so a run of positions piles into the same chapter.
+      const list = await api.get('/api/coach-live/studies?source=mine').then(x => x.data?.studies || []).catch(() => []);
+      setMyStudies(list);
+      setSaveStudyId(r.data.studyId); setSaveChapterId(r.data.chapterId);
+      setSaveNewStudy(''); setSaveNewChapter(''); setSaveTitle('');
+      // If the coach is browsing "My studies" for this same chapter, refresh the list.
+      if (studySource === 'mine' && pickStudy === r.data.studyId && pickChapter === r.data.chapterId) {
+        api.get(`/api/coach-live/studies/mine/${r.data.studyId}/${r.data.chapterId}/positions`)
+          .then(x => setPositions(x.data?.positions || [])).catch(() => {});
+      }
+    } catch (e) {
+      setSaveMsg(e.response?.data?.message || 'Could not save the position.');
+    } finally { setSaveBusy(false); }
   };
 
   // ── Host actions ─────────────────────────────────────────────────────────────
@@ -3564,7 +3616,63 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                         <button style={s.loadBtn} onClick={loadPosition}>Load onto board</button>
                         <button style={s.ghostSm} onClick={resetBoard}>Reset board</button>
                         <button style={s.ghostSm} onClick={openEditor}>🎨 Edit position</button>
+                        {/* Author-while-you-teach: save the current position into one of
+                            the coach's OWN studies for reuse next class. */}
+                        <button style={s.ghostSm} onClick={() => (saveOpen ? setSaveOpen(false) : openSavePanel())}>
+                          💾 Save to my study
+                        </button>
                       </div>
+
+                      {saveOpen && (
+                        <div style={s.savePanel}>
+                          <div style={{ fontSize: 12.5, fontWeight: 800, color: '#67e8f9' }}>
+                            Save this position to your study
+                          </div>
+                          <div style={{ fontSize: 11.5, color: '#9ca3af' }}>
+                            Saved into <b>your own studies</b> only — reuse it in your next class from the “My studies” tab.
+                          </div>
+
+                          <label style={s.saveLbl}>Study
+                            <select style={{ ...s.loadInput, fontFamily: 'inherit' }} value={saveStudyId}
+                              onChange={e => { setSaveStudyId(e.target.value); setSaveChapterId(''); }}>
+                              <option value="">➕ New study…</option>
+                              {myStudies.map(st => <option key={st.id} value={st.id}>{st.name}</option>)}
+                            </select>
+                          </label>
+                          {!saveStudyId && (
+                            <input style={s.loadInput} placeholder="New study name" value={saveNewStudy}
+                              onChange={e => setSaveNewStudy(e.target.value)} />
+                          )}
+
+                          <label style={s.saveLbl}>Chapter
+                            {saveStudyId ? (
+                              <select style={{ ...s.loadInput, fontFamily: 'inherit' }} value={saveChapterId}
+                                onChange={e => setSaveChapterId(e.target.value)}>
+                                <option value="">➕ New chapter…</option>
+                                {(myStudies.find(st => st.id === saveStudyId)?.chapters || [])
+                                  .map(ch => <option key={ch.id} value={ch.id}>{ch.name}{ch.count != null ? ` (${ch.count})` : ''}</option>)}
+                              </select>
+                            ) : null}
+                          </label>
+                          {!saveChapterId && (
+                            <input style={s.loadInput} placeholder="New chapter name (default: Class positions)"
+                              value={saveNewChapter} onChange={e => setSaveNewChapter(e.target.value)} />
+                          )}
+
+                          <input style={s.loadInput} placeholder="Position label (optional)"
+                            value={saveTitle} onChange={e => setSaveTitle(e.target.value)} />
+
+                          {saveMsg && (
+                            <div style={{ fontSize: 12, color: saveMsg.startsWith('✓') ? '#6ee7b7' : '#fca5a5' }}>{saveMsg}</div>
+                          )}
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <button style={s.loadBtn} onClick={saveCurrentPosition} disabled={saveBusy}>
+                              {saveBusy ? 'Saving…' : '💾 Save position'}
+                            </button>
+                            <button style={s.ghostSm} onClick={() => setSaveOpen(false)}>Close</button>
+                          </div>
+                        </div>
+                      )}
 
                     </>)}
                   </div>
@@ -4090,6 +4198,10 @@ const s = {
   loadInput: { width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#e2e8f0', fontSize: 12.5, resize: 'vertical', fontFamily: 'monospace' },
   loadBtn: { flex: 1, padding: '7px 12px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 700, cursor: 'pointer', fontSize: 13 },
   ghostSm: { padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13 },
+  // "Save to my study" inline panel on the teaching board.
+  savePanel: { display: 'flex', flexDirection: 'column', gap: 7, marginTop: 8, padding: 12, borderRadius: 10,
+    border: '1px solid rgba(45,212,191,0.3)', background: 'rgba(45,212,191,0.06)' },
+  saveLbl: { display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#cbd5e1', fontWeight: 600 },
   editorOverlay: { position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.72)', backdropFilter: 'blur(3px)',
     display: 'grid', placeItems: 'center', zIndex: 9500, padding: 16 },
   // Student "coach wants you to unmute" consent popup.
