@@ -232,7 +232,7 @@ export default function CoachOnboarding() {
                 type="text"
                 value={form.coachName}
                 onChange={e => update('coachName', e.target.value)}
-                placeholder="e.g. Coach Saranya"
+                placeholder="e.g. Coach Queen"
                 maxLength={100}
                 required
               />
@@ -324,7 +324,7 @@ export default function CoachOnboarding() {
                 type="text"
                 value={form.academyName}
                 onChange={e => update('academyName', e.target.value)}
-                placeholder="e.g. Saranya's Chess Academy"
+                placeholder="e.g. Queen's Chess Academy"
                 required
               />
             </label>
