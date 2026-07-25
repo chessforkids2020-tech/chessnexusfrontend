@@ -129,11 +129,11 @@ export default function CoachOnboarding() {
               <div className="perk">✅ No card required</div>
             </div>
 
-            {/* Collab offer — streamers/bloggers/titled players get all coach
-                features free on any plan by reaching out to the Nexus team. */}
+            {/* Collab offer — streamers/bloggers get all coach features free on
+                any plan by reaching out to the Nexus team. */}
             <div className="coach-onboard-collab">
               <div className="coach-onboard-collab-text">
-                🤝 <strong>Streamers, bloggers &amp; titled players</strong> can collaborate
+                🤝 <strong>Streamers &amp; bloggers</strong> can collaborate
                 with Nexus to access <strong>all coach features for free on any plan</strong>.
               </div>
               <Link to="/contact" className="coach-onboard-collab-link">
