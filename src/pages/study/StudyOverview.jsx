@@ -378,12 +378,12 @@ const StudyOverview = () => {
 
         {/* Quick-access feature cards — top row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 32 }}>
-          {/* Beginners Academy — for absolute newbies: how pieces move, square names, etc. */}
+          {/* Beginners Academy — for absolute newbies: how pieces move, square names, etc.
+              Coming soon: card is shown but disabled until the module is ready. */}
           <motion.div
-            style={{ background: 'rgba(45,212,191,0.06)', border: '1px solid rgba(45,212,191,0.25)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
-            whileHover={{ scale: 1.03, background: 'rgba(45,212,191,0.1)', boxShadow: '0 12px 40px rgba(45,212,191,0.14)' }}
-            onClick={() => navigate('/study/beginners')}
+            style={{ position: 'relative', background: 'rgba(45,212,191,0.06)', border: '1px solid rgba(45,212,191,0.25)', borderRadius: 18, padding: '24px 22px', cursor: 'default', opacity: 0.7 }}
           >
+            <div style={{ position: 'absolute', top: 12, right: 12, fontSize: 11, fontWeight: 800, letterSpacing: 0.5, textTransform: 'uppercase', color: '#2dd4bf', background: 'rgba(45,212,191,0.14)', border: '1px solid rgba(45,212,191,0.35)', borderRadius: 999, padding: '3px 10px' }}>Coming Soon</div>
             <div style={{ fontSize: 32, marginBottom: 10 }}>🎓</div>
             <div style={{ fontSize: 17, fontWeight: 800, color: '#2dd4bf', marginBottom: 6 }}>Beginners Academy</div>
             <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Brand new to chess? Learn how every piece moves, square names, captures and more — step by step with your Nexus Coach.</div>
