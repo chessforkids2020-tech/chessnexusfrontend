@@ -2421,6 +2421,30 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     } finally { setSaveBusy(false); }
   };
 
+  // Quick-save the current board straight into the CURRENTLY LOADED chapter of the
+  // coach's own study — no study/chapter picker needed (that context is already the
+  // loaded pickStudy/pickChapter). Mirrors "Create Position" in the study view: set
+  // up the board, click, it appends to this chapter and refreshes the left list.
+  const [quickSaveBusy, setQuickSaveBusy] = useState(false);
+  const [quickSaveMsg, setQuickSaveMsg] = useState('');
+  const quickSaveToLoadedChapter = async () => {
+    if (!(studySource === 'mine' && pickStudy && pickChapter)) return;
+    setQuickSaveBusy(true); setQuickSaveMsg('');
+    try {
+      const title = window.prompt('Label for this position (optional):', '') ?? '';
+      await api.post('/api/coach-live/studies/save-position', {
+        fen: curFen, studyId: pickStudy, chapterId: pickChapter, title: title.trim(),
+      });
+      const r = await api.get(`/api/coach-live/studies/mine/${pickStudy}/${pickChapter}/positions`);
+      setPositions(r.data?.positions || []);
+      setQuickSaveMsg('✓ Saved');
+      setTimeout(() => setQuickSaveMsg(''), 2500);
+    } catch (e) {
+      setQuickSaveMsg(e.response?.data?.message || 'Could not save.');
+      setTimeout(() => setQuickSaveMsg(''), 4000);
+    } finally { setQuickSaveBusy(false); }
+  };
+
   // ── Host actions ─────────────────────────────────────────────────────────────
   const admit = async (studentId, outcome) => {
     try { await api.post(`/api/coach-live/sessions/${session.id}/admit`, { studentId, outcome }); refreshWaiting(); }
@@ -3246,17 +3270,38 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 // Study positions — ONLY on the Studies tab. Guarding on contentTab
                 // means switching to Puzzles/Courses/Library/Games hides this list
                 // (the positions state is kept, so returning to Studies restores it).
-                if (contentTab === 'studies' && positions.length > 0) {
+                // The coach owns the loaded chapter when browsing "My studies" with a
+                // study+chapter chosen → they get a "Save current position here" button
+                // AND the list shows even when the chapter is still empty.
+                const ownLoadedChapter = studySource === 'mine' && !!pickStudy && !!pickChapter;
+                if (contentTab === 'studies' && (positions.length > 0 || ownLoadedChapter)) {
                   return (
                     <div style={s.posList}>
                       <div style={s.posListTitle}>Positions ({positions.length})</div>
-                      {posLoading ? <div style={{ color: '#9ca3af', fontSize: 12 }}>Loading…</div> :
-                        positions.map((p, i) => (
+                      {posLoading ? <div style={{ color: '#9ca3af', fontSize: 12 }}>Loading…</div> : (<>
+                        {positions.map((p, i) => (
                           <button key={i} style={s.posItem} title={p.title} onClick={() => setBoardFen(p.fen)}>
                             <b>{i + 1}.</b> {p.title || `Position ${i + 1}`}
                           </button>
-                        ))
-                      }
+                        ))}
+                        {positions.length === 0 && ownLoadedChapter && (
+                          <div style={{ fontSize: 12, color: '#9ca3af', padding: '2px 0' }}>
+                            No positions yet — set up the board and save it here.
+                          </div>
+                        )}
+                        {/* Author-in-place: only for the coach's OWN loaded chapter.
+                            Public/Nexus studies never show this — they can't be edited. */}
+                        {ownLoadedChapter && (
+                          <>
+                            <button style={s.createPosBtn} onClick={quickSaveToLoadedChapter} disabled={quickSaveBusy}>
+                              {quickSaveBusy ? 'Saving…' : '➕ Save current position here'}
+                            </button>
+                            {quickSaveMsg && (
+                              <div style={{ fontSize: 11.5, color: quickSaveMsg.startsWith('✓') ? '#6ee7b7' : '#fca5a5', textAlign: 'center' }}>{quickSaveMsg}</div>
+                            )}
+                          </>
+                        )}
+                      </>)}
                     </div>
                   );
                 }
@@ -4202,6 +4247,10 @@ const s = {
   savePanel: { display: 'flex', flexDirection: 'column', gap: 7, marginTop: 8, padding: 12, borderRadius: 10,
     border: '1px solid rgba(45,212,191,0.3)', background: 'rgba(45,212,191,0.06)' },
   saveLbl: { display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#cbd5e1', fontWeight: 600 },
+  // "Save current position here" — pinned under the loaded chapter's positions list.
+  createPosBtn: { flexShrink: 0, marginTop: 6, padding: '9px', borderRadius: 10,
+    border: '1px solid rgba(45,212,191,0.4)', background: 'rgba(45,212,191,0.12)',
+    color: '#5eead4', fontSize: 12.5, fontWeight: 700, cursor: 'pointer' },
   editorOverlay: { position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.72)', backdropFilter: 'blur(3px)',
     display: 'grid', placeItems: 'center', zIndex: 9500, padding: 16 },
   // Student "coach wants you to unmute" consent popup.
