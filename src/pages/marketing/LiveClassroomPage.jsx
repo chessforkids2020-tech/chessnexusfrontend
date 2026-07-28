@@ -43,7 +43,7 @@ const FAQ = [
   },
   {
     q: "Is the live chess classroom free?",
-    a: "Yes. Every coach on Chess Nexus gets the live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. Paid plans raise that to up to 60 minutes, and the top live plan to unlimited classes a day of up to 120 minutes with up to 10 students plus the coach.",
+    a: "Yes. Every coach on Chess Nexus gets the live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. The live plans give you unlimited classes a day with up to 10 students plus the coach, and the top live plan raises that to 120-minute classes with up to 25 students plus the coach.",
   },
   {
     q: "Can students move pieces on the shared board?",

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
+import EnginePanel from '../components/EnginePanel';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
 import { trackEvent } from '../lib/analytics';
@@ -37,6 +38,28 @@ const playSound = (type) => {
 
 // normalize a SAN string for comparison (strip + # and lowercase)
 const normSan = (s) => (s || '').toLowerCase().replace(/[+#]/g, '').trim();
+
+// The opponent's move that produced this position, for the "last move" highlight.
+// Preferred source is the stored `setupMove` (set by the importer / backfill).
+// Fallback: if the fen carries an en-passant target square, the last move MUST have
+// been the double pawn push that created it, so we can derive from/to exactly — this
+// covers puzzles imported before setupMove existed, which is the case that matters
+// most since en passant is impossible to spot without seeing the previous move.
+// Any other move type leaves no trace in the fen, so it stays un-highlighted.
+function setupHighlight(puzzle, fen) {
+  const sm = puzzle?.setupMove;
+  if (sm?.from && sm?.to) return { from: sm.from, to: sm.to };
+  const ep = (fen || '').split(' ')[3];
+  if (ep && ep !== '-' && ep.length === 2) {
+    const file = ep[0];
+    const rank = Number(ep[1]);
+    // The ep target sits BEHIND the pawn that just advanced two squares:
+    // rank 6 → black played f7→f5; rank 3 → white played f2→f4.
+    if (rank === 6) return { from: `${file}7`, to: `${file}5` };
+    if (rank === 3) return { from: `${file}2`, to: `${file}4` };
+  }
+  return null;
+}
 
 // Moves list + back/forward navigation. Rendered TWICE — right of the board on
 // desktop (hidden on mobile) and below the controls on mobile (hidden on desktop) —
@@ -182,6 +205,12 @@ export default function HealthyMix() {
   const [message, setMessage] = useState('Loading…');
   const [botThinking, setBotThinking] = useState(false);
   const [lastMove, setLastMove] = useState(null); // { from, to } for highlight
+
+  // Post-puzzle Stockfish panel (top 3 lines). Only offered once the puzzle is over
+  // — never while solving, or it would just hand the answer over. Starts OFF every
+  // time (including on each new puzzle, see the reset in `renderPuzzle`) so the
+  // engine costs nothing unless the user opts in.
+  const [engineOn, setEngineOn] = useState(false);
 
   // Rating + session stats
   // Session counters persist across page reloads via sessionStorage, and reset
@@ -334,8 +363,12 @@ export default function HealthyMix() {
     if (typeof window === 'undefined') return preferred;
     const w = window.innerWidth;
     if (w <= 960) {
-      // Single-column layout: board can use almost the full width, minus page padding.
-      return Math.max(MIN_BOARD, Math.min(preferred, w - 48 - FRAME_CHROME));
+      // Single-column layout: board fills the width. On a phone we use the SAME
+      // 16px total inset as the Daily Puzzles board (Puzzles.jsx) so both pages
+      // show an identically sized board; wider single-column screens keep a
+      // slightly roomier 48px gutter.
+      const inset = w <= 480 ? 16 : 48;
+      return Math.max(MIN_BOARD, Math.min(preferred, w - inset - FRAME_CHROME));
     }
     // Desktop 3-column layout. These MUST match the grid track widths and gap in
     // .hm-layout (HealthyMix.css) or the board will overflow into the moves card.
@@ -372,8 +405,13 @@ export default function HealthyMix() {
       // is left after the chrome. This is exact — no percentage fudge factor.
       const avail = el.clientWidth - FRAME_CHROME;
       if (window.innerWidth <= 960) {
-        // Single-column layout: fill the column, bounded by the viewport.
-        setBoardSize(Math.max(MIN_BOARD, Math.min(avail, window.innerWidth - 48 - FRAME_CHROME)));
+        // Single-column layout: fill the column, bounded by the viewport. Phones
+        // use the same 16px inset as Daily Puzzles (see fitToViewport above), and
+        // we take the LARGER of column/viewport-derived width so a narrow parent
+        // column can't hold the board below full width.
+        const inset = window.innerWidth <= 480 ? 16 : 48;
+        const byViewport = window.innerWidth - inset - FRAME_CHROME;
+        setBoardSize(Math.max(MIN_BOARD, Math.min(Math.max(avail, byViewport), byViewport)));
       } else {
         // Desktop: capped by the column AND by viewport height (leaving room for the
         // page chrome + session strip below) so a tall board never scrolls off.
@@ -414,10 +452,16 @@ export default function HealthyMix() {
     setPuzzle(p);
     puzzleRef.current = p;
     setFen(game.fen());
+    // Highlight the opponent's setup move that produced this position. The stored
+    // fen is already AFTER that move, so without this the solver has no way to see
+    // what was just played — which makes en passant in particular unfair to spot.
+    setLastMove(setupHighlight(p, game.fen()));
     // Reset move history to just the starting position (ply 0).
     setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
     setViewIdx(null);
     clearVariations();
+    // Engine always starts off on a fresh puzzle / retry — the user opts in each time.
+    setEngineOn(false);
     setOrientation(game.turn() === 'w' ? 'white' : 'black');
     setStatusSynced('solving');
     setMessage('Your turn — find the best move.');
@@ -798,11 +842,14 @@ export default function HealthyMix() {
     chessRef.current = game;
     moveIndexRef.current = 0;
     setFen(game.fen());
-    setLastMove(null);
+    // Back to the starting position → restore the setup-move highlight (not null,
+    // or a retry would hide the very hint the first attempt had).
+    setLastMove(setupHighlight(puzzle, game.fen()));
     // Retry replays from the start — clear the moves card back to the start position.
     setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
     setViewIdx(null);
     clearVariations();
+    setEngineOn(false);   // back to solving → engine hidden and off again
     setStatusSynced('solving');
     setMessage(failedRef.current ? 'Retry — find the right line (no points).' : 'Your turn — find the best move.');
   }, [puzzle, setStatusSynced, clearVariations]);
@@ -881,6 +928,30 @@ export default function HealthyMix() {
     if (curVar) { setVarViewIdx(null); return; }
     setViewIdx(null);
   }, [curVar]);
+
+  // Keyboard move navigation (←/→ step, Home/End jump). The moves card buttons call
+  // the same callbacks; this just adds the shortcut everyone expects from a board.
+  // Bound to `window` so it works without clicking the moves list first — but it must
+  // stay out of the way of typing and of the rating modal, hence the guards below.
+  useEffect(() => {
+    const handler = (e) => {
+      // Never hijack an editable field, and let modifier combos (browser back, etc.)
+      // through untouched.
+      const t = e.target;
+      const tag = t?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || t?.isContentEditable) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      // While the rating picker is open the arrows belong to it, not the board.
+      if (showRatingModal) return;
+
+      if (e.key === 'ArrowLeft')       { e.preventDefault(); navPrev(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); navNext(); }
+      else if (e.key === 'Home')       { e.preventDefault(); navFirst(); }
+      else if (e.key === 'End')        { e.preventDefault(); navLast(); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [navPrev, navNext, navFirst, navLast, showRatingModal]);
 
   // Once the puzzle is over the board becomes a free analysis board: playable from
   // ANY position in the line, including a browsed-back one (moving there forks the
@@ -1015,6 +1086,15 @@ export default function HealthyMix() {
               )}
             </div>
             <div className="hm-rating-note">{toMoveLabel}</div>
+            {/* Straight to the user's OWN puzzle dashboard (auth-protected route —
+                not the public /player/:displayName one, which shows someone else's). */}
+            <button
+              className="hm-dash-btn"
+              onClick={() => navigate('/puzzle-dashboard')}
+              title="Open your Puzzle Dashboard"
+            >
+              📊 My Puzzle Dashboard
+            </button>
           </div>
 
           {/* Session stats */}
@@ -1140,6 +1220,17 @@ export default function HealthyMix() {
 
         {/* ── RIGHT: moves card + controls ── */}
         <div className="hm-right-col">
+          {/* Stockfish (top 3 lines) — only AFTER the puzzle is over, so it can't be
+              used as a hint while solving. Default off; the panel's own switch turns
+              it on. It follows `displayFen`, so browsing the line or a variation
+              re-analyses that exact position. */}
+          {puzzleOver && (
+            <EnginePanel
+              fen={displayFen}
+              enabled={engineOn}
+              onToggle={() => setEngineOn(v => !v)}
+            />
+          )}
           <MovesPanel {...{ plies, shownPlyIdx, atLive, atStart, navFirst, navPrev, navNext,
                             navLast, goToPly, variations, activeVar, varViewIdx, goToVarPly }} />
           <div className="hm-controls">

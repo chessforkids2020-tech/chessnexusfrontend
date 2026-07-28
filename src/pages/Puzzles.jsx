@@ -114,7 +114,11 @@ export default function Puzzles() {
       const byHeight = Math.floor(window.innerHeight * 0.78);
       let byWidth;
       if (width <= 480) {
-        byWidth = Math.min(320, width - 40);
+        // Phone: the board IS the page — give it the full screen width. It was
+        // capped at 320px, which left ~70px of dead space either side on a 390px
+        // phone and made the pieces needlessly small. 8px each side keeps it off
+        // the very edge without wasting room.
+        byWidth = width - 16;
       } else if (width <= 768) {
         byWidth = Math.min(450, width - 60);
       } else if (width <= 1024) {

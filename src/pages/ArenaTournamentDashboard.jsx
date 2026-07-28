@@ -213,6 +213,55 @@ export default function ArenaTournamentDashboard() {
 
   return (
     <div style={S.page}>
+      {/* Responsive rules. This page styles everything inline, and an inline
+          gridTemplateColumns can't be overridden by a media query — which is why
+          the two columns stayed "70% 30%" on a phone (251px / 107px on a 390px
+          screen) and squeezed every card until the text was cut off. */}
+      <style>{`
+        @media (max-width: 900px) {
+          /* One column: the 30% rail is unusable at phone width. */
+          .atd-cols { grid-template-columns: 1fr !important; }
+          /* "Upcoming | Recent" side by side gave each card only 170px on a
+             390px screen, which is what crushed the tournament rows. Stack. */
+          .atd-pair { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 640px) {
+          /* Recent tournaments: 3 medals per row instead of one per line. */
+          /* Three equal tiles. The parent Card is a flex column, so the grid must
+             be told to fill it — otherwise it shrink-wraps to ~37px per tile. */
+          .atd-recent-list {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            width: 100%;
+            align-self: stretch;
+          }
+          .atd-recent-list > * { min-width: 0; }
+          .atd-recent-row {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center;
+            gap: 4px !important;
+            padding: 10px 4px !important;
+            border-bottom: 0 !important;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+          }
+          /* Shrink the medal so three fit comfortably. */
+          .atd-recent-row > :first-child {
+            transform: scale(0.72);
+            margin: -6px 0;
+          }
+          .atd-recent-row > :nth-child(2) { width: 100%; }
+          .atd-recent-row > :nth-child(2) > :first-child { font-size: 11px !important; }
+          .atd-recent-row > :nth-child(2) > :last-child  { font-size: 10px !important; }
+          .atd-recent-row > :last-child {
+            text-align: center !important;
+            width: 100%;
+          }
+          .atd-recent-row > :last-child > * { font-size: 10.5px !important; }
+        }
+      `}</style>
       {/* obsidian background glows */}
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
         <div style={{ position: "absolute", top: "-20%", left: "-10%", width: "50%", height: "50%", background: "radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%)", borderRadius: "50%" }} />
@@ -226,7 +275,7 @@ export default function ArenaTournamentDashboard() {
         ) : tab === "games" ? (
           <GamesPanel name={ownerName} onBack={() => setTab("overview")} />
         ) : (
-          <div style={S.cols}>
+          <div className="atd-cols" style={S.cols}>
 
             {/* ════════════════ MAIN (LEFT) COLUMN ════════════════ */}
             <div style={S.colMain}>
@@ -503,7 +552,7 @@ export default function ArenaTournamentDashboard() {
               </div>
 
               {/* Upcoming + Recent */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+              <div className="atd-pair" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
                   <Card>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                       <SectionLabel>Upcoming Tournaments</SectionLabel>
@@ -551,8 +600,8 @@ export default function ArenaTournamentDashboard() {
                   </div>
                   {finished.length === 0
                     ? <Empty text="No recently played tournaments." />
-                    : finished.slice(0, 4).map((t) => (
-                      <div key={t._id} style={S.recentRow}>
+                    : <div className="atd-recent-list">{finished.slice(0, 4).map((t) => (
+                      <div key={t._id} className="atd-recent-row" style={S.recentRow}>
                         {/* Circular rank medal */}
                         <RankCircle rank={t.myRank} />
                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -565,7 +614,7 @@ export default function ArenaTournamentDashboard() {
                           <div style={{ color: "#34d399", fontSize: 12.5, fontWeight: 700 }}>{t.myScore} pts</div>
                         </div>
                       </div>
-                    ))}
+                    ))}</div>}
                   <button onClick={() => setTab("games")} style={{ ...S.footerBtn, border: "none", cursor: "pointer", width: "100%" }}>
                     🎮 Tournament Games
                   </button>

@@ -224,6 +224,33 @@
   letter-spacing: 0.2px;
 }
 
+/* Link out to the user's own puzzle dashboard. `position: relative` is required —
+   the card's ::before gradient overlays anything static, which would swallow clicks. */
+.hm-dash-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 14px;
+  padding: 8px 16px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(167, 139, 250, 0.3);
+  background: rgba(167, 139, 250, 0.1);
+  color: #c4b5fd;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.hm-dash-btn:hover {
+  background: rgba(167, 139, 250, 0.18);
+  border-color: rgba(167, 139, 250, 0.5);
+  color: #ddd6fe;
+}
+
 /* ── Stats row ── */
 .hm-stats {
   display: grid;
@@ -931,6 +958,13 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
 .hm-right-col .hm-controls {
   flex: 0 0 auto;
   overflow-y: auto;
+}
+
+/* Post-puzzle Stockfish panel sits ABOVE the moves card. Like the controls it keeps
+   its natural height (default flex-shrink would squash the 3 PV rows); the moves
+   list is the flexible one and gives up the space instead. */
+.hm-right-col .gr-engine {
+  flex: 0 0 auto;
 }
 
 /* Head is just the "Moves" title now — kept slim so the list gets the space. */

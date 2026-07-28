@@ -46,6 +46,8 @@ import ImproveAtChessPage from "./pages/marketing/ImproveAtChessPage";
 import ChessCoachingPage from "./pages/marketing/ChessCoachingPage";
 import CoachGuidePage from "./pages/marketing/CoachGuidePage";
 import CoachPricingPage from "./pages/marketing/CoachPricingPage";
+import ChessAcademyPage from "./pages/marketing/ChessAcademyPage";
+import ChessAcademyPricingPage from "./pages/marketing/ChessAcademyPricingPage";
 import CoachReferralPage from "./pages/marketing/CoachReferralPage";
 import CoachFaqPage from "./pages/marketing/CoachFaqPage";
 import AcademyDashboard from "./pages/academy/AcademyDashboard";
@@ -566,6 +568,19 @@ export default function App() {
         <Route path="/chess-coach-pricing" element={
           <MarketingLayout>
             <CoachPricingPage />
+          </MarketingLayout>
+        } />
+        {/* Academies / institutes: the feature story + public pricing. The in-app
+            /academy/* pages are owner-gated, so these are the only way a
+            prospective academy can see how it works and what it costs. */}
+        <Route path="/chess-academy-software" element={
+          <MarketingLayout>
+            <ChessAcademyPage />
+          </MarketingLayout>
+        } />
+        <Route path="/chess-academy-pricing" element={
+          <MarketingLayout>
+            <ChessAcademyPricingPage />
           </MarketingLayout>
         } />
         <Route path="/chess-coach-referral" element={

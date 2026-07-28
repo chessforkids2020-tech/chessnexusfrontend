@@ -1312,7 +1312,7 @@ export default function Sidebar({ user, onNavigate }) {
                 border: '1px solid rgba(6,182,212,0.3)',
                 borderRadius: '12px',
                 boxShadow: '0 -8px 32px rgba(0,0,0,0.65)',
-                zIndex: 9999,
+                zIndex: 100002,
                 backdropFilter: 'blur(16px)',
                 maxHeight: '320px',
                 overflowY: 'auto',
@@ -1370,6 +1370,13 @@ export default function Sidebar({ user, onNavigate }) {
       }
 
       {/* ── Friends-online panel — overlay anchored to the friends button ── */}
+      {/* NOTE ON z-index: these fly-out panels (friends online, notifications,
+          quick search) are `position: fixed` and MUST sit above the mobile
+          sidebar drawer, which is z-index 100000 (.sidebar-mobile in
+          UserLayout.css). They used to be 9999/9998, so on a phone they opened
+          BEHIND the drawer and looked like nothing happened. Backdrops are
+          100001, panels 100002 — keep them above .sidebar-mobile if that
+          changes. */}
       {showFriends && isAuthenticated &&
         (() => {
           const rect = friendsRef.current?.getBoundingClientRect();
@@ -1379,7 +1386,7 @@ export default function Sidebar({ user, onNavigate }) {
               {/* click-away backdrop */}
               <div
                 onClick={() => setShowFriends(false)}
-                style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'transparent' }}
+                style={{ position: 'fixed', inset: 0, zIndex: 100001, background: 'transparent' }}
               />
               <div
                 style={{
@@ -1393,7 +1400,7 @@ export default function Sidebar({ user, onNavigate }) {
                   border: '1px solid rgba(16,185,129,0.3)',
                   borderRadius: '14px',
                   boxShadow: '0 -8px 32px rgba(0,0,0,0.65)',
-                  zIndex: 9999,
+                  zIndex: 100002,
                   backdropFilter: 'blur(16px)',
                   maxHeight: '60vh',
                   overflowY: 'auto',
@@ -1489,7 +1496,7 @@ export default function Sidebar({ user, onNavigate }) {
               {/* click-away backdrop */}
               <div
                 onClick={() => setShowNotifications(false)}
-                style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'transparent' }}
+                style={{ position: 'fixed', inset: 0, zIndex: 100001, background: 'transparent' }}
               />
               <div
                 style={{
@@ -1503,7 +1510,7 @@ export default function Sidebar({ user, onNavigate }) {
                   border: '1px solid rgba(6,182,212,0.3)',
                   borderRadius: '14px',
                   boxShadow: '0 -8px 32px rgba(0,0,0,0.65)',
-                  zIndex: 9999,
+                  zIndex: 100002,
                   backdropFilter: 'blur(16px)',
                   maxHeight: '60vh',
                   overflowY: 'auto',

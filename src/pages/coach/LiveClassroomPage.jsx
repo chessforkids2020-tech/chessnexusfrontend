@@ -15,6 +15,7 @@ import { buildTreeFromPgn, nodeAtPath, addMove, getMainlinePath } from '../../co
 import EditableBoard from '../../components/PositionEditor/EditableBoard';
 import PieceSelector from '../../components/PositionEditor/PieceSelector';
 import EnginePanel from '../../components/EnginePanel';
+import { copyText } from '../../utils/clipboard';
 import { renderFrame } from '../../lib/videoEffects';
 import CoachArenaLive from './CoachArenaLive';
 
@@ -627,6 +628,31 @@ function resultLabel(g) {
   return `${name} won · ${g.result}`;
 }
 
+// A Play-in-class game → PGN. Shared by "Review on board" (loads it onto the
+// teaching board) and "Copy PGN" (clipboard), so both always agree.
+// The PGN result tag uses the standard 1-0 / 0-1 / 1/2-1/2 / * codes.
+function classGameToPgn(game) {
+  if (!game || !Array.isArray(game.moves) || game.moves.length === 0) return '';
+  let movetext = '';
+  for (let i = 0; i < game.moves.length; i++) {
+    if (i % 2 === 0) movetext += `${i / 2 + 1}. `;
+    movetext += `${game.moves[i]} `;
+  }
+  const res = game.status !== 'finished' ? '*'
+    : game.winnerColor === 'white' ? '1-0'
+    : game.winnerColor === 'black' ? '0-1'
+    : '1/2-1/2';
+  const tags =
+    `[Event "Play in class"]\n` +
+    `[Date "${new Date().toISOString().slice(0, 10).replace(/-/g, '.')}"]\n` +
+    `[White "${game.white?.name || 'White'}"]\n` +
+    `[Black "${game.black?.name || 'Black'}"]\n` +
+    `[Result "${res}"]\n` +
+    (game.result ? `[Termination "${game.result}"]\n` : '') +
+    `\n`;
+  return `${tags}${movetext.trim()} ${res}`;
+}
+
 // Build the student's result popup from their colour + the game outcome.
 // outcome: 'win' | 'loss' | 'draw'. reason is the how (Checkmate/Timeout/…).
 function buildGameOverPopup(myColor, result, winnerColor) {
@@ -642,7 +668,7 @@ function buildGameOverPopup(myColor, result, winnerColor) {
 
 // ── ♟ Play in class (coach): pair the admitted class into games, then watch all
 //    boards live in a grid + spotlight one for the spectators. ──
-function ClassPlaySection({ participants = [], classGames = [], classSpotlightId, classHasClock, onStartGames, onSpotlight, onEndGames, onReview }) {
+function ClassPlaySection({ participants = [], classGames = [], classSpotlightId, classHasClock, onStartGames, onSpotlight, onEndGames, onReview, playEnded = false }) {
   const admitted = React.useMemo(
     () => (participants || []).filter(p => p.state === 'admitted' && p.studentId)
       .map(p => ({ id: String(p.studentId), name: p.name || p.username || 'Student' })),
@@ -655,6 +681,14 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
   const [customInc, setCustomInc] = useState(0);
   // Pairings the coach is building: [{whiteId, blackId}] before Start.
   const [pairs, setPairs] = useState([]);
+  // Which game's PGN was just copied (shows "✓ Copied" on that card only).
+  const [copiedId, setCopiedId] = useState(null);
+  const copyGamePgn = async (g) => {
+    const pgn = classGameToPgn(g);
+    if (!pgn) return;
+    const ok = await copyText(pgn);
+    if (ok) { setCopiedId(g.id); setTimeout(() => setCopiedId(c => (c === g.id ? null : c)), 1500); }
+  };
   const nameOf = (id) => admitted.find(a => a.id === id)?.name || '';
   const usedIds = new Set(pairs.flatMap(p => [p.whiteId, p.blackId]).filter(Boolean));
   const freeStudents = admitted.filter(a => !usedIds.has(a.id));
@@ -687,10 +721,19 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
     return (
       <div style={cg.section}>
         <div style={cg.secHead}>
-          <div style={{ fontSize: 15, fontWeight: 800 }}>♟ Games in play <span style={{ color: '#9ca3af', fontWeight: 600 }}>({classGames.length})</span></div>
-          <button style={cg.endBtn} onClick={() => { onEndGames && onEndGames(); setPairs([]); }}>■ End games</button>
+          <div style={{ fontSize: 15, fontWeight: 800 }}>
+            {playEnded ? '♟ Games to review' : '♟ Games in play'}
+            <span style={{ color: '#9ca3af', fontWeight: 600 }}> ({classGames.length})</span>
+          </div>
+          {!playEnded && (
+            <button style={cg.endBtn} onClick={() => { onEndGames && onEndGames(); setPairs([]); }}>■ End games</button>
+          )}
         </div>
-        <div style={cg.hint}>Click <b>Spotlight</b> on any board — every non-playing student watches that board.</div>
+        <div style={cg.hint}>
+          {playEnded
+            ? <>Play is over. Hit <b>🔎 Review on board</b> on any game to walk through it — the whole class follows your board. These games stay until the class ends.</>
+            : <>Click <b>Spotlight</b> on any board — every non-playing student watches that board.</>}
+        </div>
         <div style={cg.grid}>
           {classGames.map(g => {
             const spot = g.id === classSpotlightId;
@@ -716,6 +759,17 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
                   {(g.moves?.length > 0) && (
                     <button style={cg.reviewBtn} onClick={() => onReview && onReview(g)} title="Load this game on the teaching board to analyze">
                       🔎 Review on board
+                    </button>
+                  )}
+                  {/* Take the game out of the class — paste into a study, an
+                      assignment, or the teaching board later. */}
+                  {(g.moves?.length > 0) && (
+                    <button
+                      style={cg.reviewBtn}
+                      onClick={() => copyGamePgn(g)}
+                      title="Copy this game's PGN to the clipboard"
+                    >
+                      {copiedId === g.id ? '✓ Copied' : '📋 Copy PGN'}
                     </button>
                   )}
                 </div>
@@ -915,7 +969,8 @@ function NavControls({ nav }) {
 // ── Student stage: play your own board, or watch the coach's spotlighted board.
 //    Lichess-style: board LEFT, [clock · notation · clock + names] MIDDLE. Videos
 //    are shown by the class's right rail (railHasThumbs includes games). ──
-function ClassGameStudentStage({ myGame, myColor, spotlightGame, hasClock, boardWidth, onMove, onResign }) {
+function ClassGameStudentStage({ myGame, myColor, spotlightGame, hasClock, boardWidth, onMove, onResign,
+                                finishedMyGame = false, watchableGames = [], onWatch }) {
   const game = myGame || spotlightGame;
   const nav = useMoveNav(game?.moves || [], game?.fen); // hook before any early return
   if (!game) return <div style={as.empty}>Waiting for the coach to start a game…</div>;
@@ -968,7 +1023,27 @@ function ClassGameStudentStage({ myGame, myColor, spotlightGame, hasClock, board
                 </span>
                 <button style={cg.rmBtn2} onClick={() => onResign && onResign(game.id)}>Resign</button>
               </div>
-            : <div style={{ color: '#9ca3af', fontSize: 13 }}>Your coach chooses which game everyone watches.</div>}
+            : <div style={{ color: '#9ca3af', fontSize: 13 }}>
+                {finishedMyGame
+                  ? 'Your game is done — watching a classmate until everyone finishes.'
+                  : 'Your coach chooses which game everyone watches.'}
+              </div>}
+        {/* Finished early and more than one game is still running → let me choose
+            which to follow, instead of being stuck on whatever is first. */}
+        {!iAmPlayer && finishedMyGame && watchableGames.length > 1 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {watchableGames.map(g => (
+              <button
+                key={g.id}
+                style={{ ...cg.rmBtn2, ...(g.id === game.id ? { borderColor: '#06b6d4', color: '#67e8f9' } : {}) }}
+                onClick={() => onWatch && onWatch(g.id)}
+                title={`Watch ${g.white?.name} vs ${g.black?.name}`}
+              >
+                {g.white?.name} v {g.black?.name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1169,7 +1244,7 @@ function SimulSetupSection({ participants = [], simul, onCreate, onStart, onEnd 
 // ALSO hosts "♟ Play in class" (coach-run student games) at the top, above races.
 function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
   participants = [], classGames = [], classSpotlightId, classHasClock,
-  onStartGames, onSpotlight, onEndGames, onReview,
+  onStartGames, onSpotlight, onEndGames, onReview, playEnded = false,
   simul, onSimulCreate, onSimulStart, onSimulEnd }) {
   const [watch, setWatch] = useState(null); // { kind:'race'|'tournament', roomId, id }
   const [actTab, setActTab] = useState('play'); // 'play' | 'simul' | 'arena'
@@ -1234,6 +1309,7 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
           onSpotlight={onSpotlight}
           onEndGames={onEndGames}
           onReview={onReview}
+          playEnded={playEnded}
         />
       )}
 
@@ -1448,6 +1524,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // rejoin normal class mode (video / coach's teaching board) — WITHOUT the coach
   // having to end everyone's games. Reset when a fresh game session starts.
   const [leftClassGame, setLeftClassGame] = useState(false);
+  // Coach hit "End games": play is over but the finished games are KEPT for review
+  // until the class ends. Nobody's game board holds the stage any more, so the
+  // teaching board (and the coach's review of these games) is visible to everyone.
+  const [playEnded, setPlayEnded] = useState(false);
+  // A student who finished early can pick WHICH classmate's game to follow. Null =
+  // follow the coach's spotlight. Cleared whenever a new round starts.
+  const [watchGameId, setWatchGameId] = useState(null);
   // Training puzzles in the classroom (practice, no ratings written).
   const [puzzle, setPuzzle] = useState(null);        // { id, fen, solution:[SAN] } (host only)
   const [puzzleStep, setPuzzleStep] = useState(0);   // index into solution (solver moves at even steps)
@@ -1763,7 +1846,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       });
     };
     const onRemoved = () => { setPhase('error'); setNote('The coach didn\'t admit you to this class.'); };
-    const onEnded = () => { setPhase('ended'); lkDisconnectRef.current?.(); };
+    // Class over → the kept-for-review games go too (server drops them in the same
+    // breath via clearSession in routes/coachLive.js). Nothing from the board or the
+    // games is persisted.
+    const onEnded = () => {
+      setClassGames([]); setClassSpotlightId(null); setPlayEnded(false); setLeftClassGame(false);
+      setWatchGameId(null);
+      setPhase('ended'); lkDisconnectRef.current?.();
+    };
     const onWaiting = () => { const { isHost: h, session: se } = hostStateRef.current; if (h && se) refreshWaitingRef.current?.(); };
     // The coach controls the stage — students follow whether the teaching board is shown.
     const onStage = ({ boardShown }) => { if (!hostStateRef.current.isHost) setShowBoard(!!boardShown); };
@@ -1803,6 +1893,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       const iHaveActiveGame = list.some(g => g.status === 'active' &&
         (String(g.white?.userId) === meId || String(g.black?.userId) === meId));
       if (iHaveActiveGame) setLeftClassGame(false);
+      // A genuinely new round (anything active again) re-opens the game stage; a
+      // resync of already-finished games must leave `playEnded` alone.
+      if (list.some(g => g.status === 'active')) { setPlayEnded(false); setWatchGameId(null); }
     };
     // One game advanced (a move) — patch just that game for a live, no-flash update.
     const onCgGame = ({ gameId, fen, lastMove, clocks, moves, turn }) => {
@@ -1829,7 +1922,20 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       if (!myC) return; // I'm a spectator of this game — no popup
       setGameOverPopup(buildGameOverPopup(myC, result, winnerColor));
     };
-    const onCgEnded = () => { setClassGames([]); setClassSpotlightId(null); setGameOverPopup(null); setLeftClassGame(false); };
+    // Play is over, but the games STAY so the coach can review them with the class
+    // (and students can watch). `leftClassGame: true` is what moves everyone off
+    // their own game board and back onto the shared teaching board — without it the
+    // finished games would keep the stage and nobody would see the review.
+    // The games are discarded when the CLASS ends (liveclass:ended → onEnded).
+    const onCgEnded = ({ games } = {}) => {
+      if (Array.isArray(games) && games.length) setClassGames(games);
+      else setClassGames(prev => prev.map(g => g.status === 'active'
+        ? { ...g, status: 'finished', result: g.result || 'Stopped by coach' } : g));
+      setClassSpotlightId(null);
+      setGameOverPopup(null);
+      setLeftClassGame(true);
+      setPlayEnded(true);
+    };
     socket.on('classgame:state', onCgState);
     socket.on('classgame:game', onCgGame);
     socket.on('classgame:clock', onCgClock);
@@ -2212,11 +2318,29 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // Games are live when at least one exists; the class is "in a game session".
   const classGamesActive = classGames.length > 0;
   // The game THIS user is a player in (student view). null for coach/spectators.
-  const myGame = !isHost ? classGames.find(g =>
-    String(g.white?.userId) === String(myId) || String(g.black?.userId) === String(myId)) : null;
+  // Only an ACTIVE game counts: once my game is over I stop being "a player with a
+  // board" and become a spectator, so I fall through to the watch view below and can
+  // follow a classmate's game while they finish. Without the status check a student
+  // stayed pinned to their own dead board until the coach ended every game.
+  const iAmIn = (g) => String(g.white?.userId) === String(myId) || String(g.black?.userId) === String(myId);
+  const myGame = !isHost ? classGames.find(g => iAmIn(g) && g.status === 'active') : null;
   const myColor = myGame ? (String(myGame.white?.userId) === String(myId) ? 'white' : 'black') : null;
+  // My own game once it's over — used to offer "watch a classmate" after finishing.
+  const myFinishedGame = !isHost ? classGames.find(g => iAmIn(g) && g.status !== 'active') : null;
   // The board non-players (and the class at large) watch — the coach's spotlight.
-  const spotlightGame = classGames.find(g => g.id === classSpotlightId) || classGames[0] || null;
+  // Never offer MY OWN finished game as the thing to watch: prefer the coach's
+  // spotlight, else any other game that is still running.
+  // My own pick (if I chose one and it's still around) wins over the coach's
+  // spotlight; otherwise follow the spotlight, then any other live game.
+  const spotlightGame = (watchGameId && classGames.find(g => g.id === watchGameId))
+    || classGames.find(g => g.id === classSpotlightId)
+    || classGames.find(g => g.status === 'active' && !iAmIn(g))
+    || classGames.find(g => !iAmIn(g))
+    || null;
+  // Other people's games I can watch while waiting (live ones first).
+  const watchableGames = classGames.filter(g => !iAmIn(g) && g.status === 'active');
+  // Are any games still running? Drives the "watch until everyone finishes" view.
+  const anyGameActive = classGames.some(g => g.status === 'active');
 
   // ── Simul: emit helpers + derived views ──
   const simulCreate = (coachColor) => { if (session) socket.emit('simul:create', { sessionId: session.id, coachColor }); };
@@ -2245,14 +2369,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // move list into PGN movetext, load it onto the synced board (whole class sees it),
   // and close the Activities panel so the board is front and centre.
   const reviewClassGame = (game) => {
-    if (!game || !Array.isArray(game.moves) || game.moves.length === 0) return;
-    let movetext = '';
-    for (let i = 0; i < game.moves.length; i++) {
-      if (i % 2 === 0) movetext += `${i / 2 + 1}. `;
-      movetext += `${game.moves[i]} `;
-    }
-    const tags = `[White "${game.white?.name || 'White'}"]\n[Black "${game.black?.name || 'Black'}"]\n\n`;
-    loadPgnIntoTree(`${tags}${movetext.trim()} *`);
+    const pgn = classGameToPgn(game);
+    if (!pgn) return;
+    loadPgnIntoTree(pgn);
     setShowActivities(false); // leave the Activities view so the board is the focus
   };
   // Load a single FEN position as a fresh tree rooted at that position.
@@ -2775,7 +2894,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // A student who finished their game and tapped OK (leftClassGame) drops back to
   // normal class mode even while other games are still running — so they can watch
   // the coach's review/teaching board without waiting for "End games".
-  const classGameOnStage = !isHost && classGamesActive && !remoteScreen && !leftClassGame;
+  // `playEnded` (coach hit End games) releases the stage for EVERY student at once,
+  // regardless of whether they dismissed their own game-over popup — otherwise a
+  // student who never tapped OK stays stuck on their finished board and cannot see
+  // the coach's review.
+  const classGameOnStage = !isHost && classGamesActive && !remoteScreen && !leftClassGame && !playEnded;
   const boardOnStage = showBoard && !remoteScreen && !activitiesOnStage && !classGameOnStage && !simulOnStage;
 
   // ── Video placement (host only) ─────────────────────────────────────────────
@@ -2801,7 +2924,12 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // students keep seeing the class faces beside their board (Lichess-style: board
   // left, video right). Previously only boardOnStage/remoteScreen kept the rail,
   // so students lost all video the moment a game started.
-  const railHasThumbs = videosDocked && (boardOnStage || remoteScreen || classGameOnStage || simulOnStage);
+  // Activities is on the same footing: it takes the STAGE, so the docked videos must
+  // keep their home in the rail. Without `activitiesOnStage` here every term went
+  // false the moment the coach opened Activities (boardOnStage is itself gated on
+  // !activitiesOnStage), so pinned videos vanished — while float/pop kept working
+  // only because they render outside the stage tree entirely.
+  const railHasThumbs = videosDocked && (boardOnStage || remoteScreen || classGameOnStage || simulOnStage || activitiesOnStage);
   const railHasContent = railHasThumbs || showParticipants;
 
   const renderTile = (p, { small = false, width = '100%' } = {}) => (
@@ -3136,11 +3264,17 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       {/* Student's own game finished → clear win/loss/draw popup, so beginners don't
           miss the tiny inline "game over" line on the board. */}
       {gameOverPopup && !isHost && (() => {
-        // Tapping OK returns the student to normal class mode (video / coach's board)
-        // even while other games run — no need for the coach to end everyone's games.
+        // Two ways out. If classmates are still playing, the DEFAULT is to keep
+        // watching (kids who finish first would otherwise sit on a dead board or be
+        // dumped out of the games entirely). Staying just closes the popup —
+        // `myGame` is now null (my game isn't active), so the stage falls through to
+        // the spectator view of a live game.
+        const watchOthers = () => { setGameOverPopup(null); setLeftClassGame(false); };
         const backToClass = () => { setGameOverPopup(null); setLeftClassGame(true); };
+        // Only offer "watch" when there is actually another live game to watch.
+        const canWatch = anyGameActive && !!spotlightGame;
         return (
-        <div style={s.unmuteOverlay} onClick={backToClass}>
+        <div style={s.unmuteOverlay} onClick={canWatch ? watchOthers : backToClass}>
           <div style={{ ...s.unmuteCard, borderTop: `4px solid ${
             gameOverPopup.outcome === 'win' ? '#22c55e' : gameOverPopup.outcome === 'loss' ? '#ef4444' : '#eab308'
           }` }} onClick={e => e.stopPropagation()}>
@@ -3152,7 +3286,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.75)', margin: '0 0 16px' }}>
               Your game has ended · <b>{gameOverPopup.reason}</b>
             </p>
-            <button style={s.unmuteYes} onClick={backToClass}>OK — back to class</button>
+            {canWatch ? (
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button style={s.unmuteYes} onClick={watchOthers}>👀 Watch the other games</button>
+                <button style={s.unmuteNo} onClick={backToClass}>Back to class</button>
+              </div>
+            ) : (
+              <button style={s.unmuteYes} onClick={backToClass}>OK — back to class</button>
+            )}
           </div>
         </div>
         );
@@ -3185,6 +3326,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               onStartGames={cgStart}
               onSpotlight={cgSpotlight}
               onEndGames={cgEndAll}
+              playEnded={playEnded}
               onReview={reviewClassGame}
               // Simul (coach): create + lobby, below the tournaments.
               simul={simul}
@@ -3222,6 +3364,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               boardWidth={Math.min(boardWidth, Math.max(360, (stageSize.w || 520) - 40))}
               onMove={cgMove}
               onResign={cgResign}
+              finishedMyGame={!!myFinishedGame}
+              watchableGames={watchableGames}
+              onWatch={setWatchGameId}
             />
           ) : remoteScreen ? (
             <MediaTile track={remoteScreen.screenTrack} muted label={`${remoteScreen.name}'s screen`} isScreen />

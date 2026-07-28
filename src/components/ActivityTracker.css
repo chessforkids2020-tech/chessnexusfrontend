@@ -295,6 +295,14 @@
   min-height: 220px;
 }
 
+/* The chart is a fixed 620x210 viewBox scaled by `width:100%`, so on a narrow
+   container it shrinks proportionally — at 390px the SVG renders only ~86px tall
+   while min-height held the frame at 220px, leaving ~134px of dead space between
+   the day dots and the caption. Let the frame follow the SVG instead. */
+@media (max-width: 900px) {
+  .at-chart-frame { min-height: 0; }
+}
+
 .at-chart-svg {
   display: block;
   width: 100%;
@@ -302,13 +310,10 @@
   overflow: visible;
 }
 
-.at-empty {
-  margin-top: 6px;
-  padding: 8px 0 2px;
-  text-align: center;
-  color: rgba(203, 213, 225, 0.44);
-  font-size: 12px;
-}
+/* (The `.at-empty` caption was removed from ActivityTracker.jsx — the chart
+   badge already says "No activity yet", so it was duplicated. Its styles are
+   deleted with it; ArenaTournamentLobby.css keeps its own unrelated
+   `.at-empty`, which no longer collides with anything here.) */
 
 .at-loading {
   position: relative;
@@ -320,16 +325,36 @@
 }
 
 @media (max-width: 640px) {
+  /* Now that each row is just icon + value, all three fit across the width —
+     stacking them 1-per-line would waste the space the labels used to need. */
   .at-metric-list--below-chart {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
   }
+  /* ONE inset on a phone, not three. The outer wrapper and the inner chart card
+     both used to add their own padding + border on top of .at-shell's, so the
+     content sat inside three concentric cards. Now: wrapper 0, shell 10px (the
+     single visible card), inner card flattened — content width = screen − 20px. */
+  /* 10px each side is the ONLY inset left between the screen edge and the card,
+     so content width = screen − 20px (e.g. 370 on a 390px iPhone). The page
+     layout above now contributes nothing. */
   .activity-tracker {
     padding: 0 10px;
   }
 
   .at-shell {
-    padding: 12px;
-    border-radius: 20px;
+    padding: 10px;
+    border-radius: 16px;
+  }
+
+  /* The chart card is INSIDE the shell — on a phone it doesn't need its own
+     border, background or radius. Flattening it removes the nested-card look
+     and gives its padding back to the content. */
+  .at-chart-card {
+    padding: 0;
+    border: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .at-shell-header,
@@ -358,6 +383,62 @@
   .at-metric-label--inline {
     grid-column: 2;
   }
+
+  /* Current Streak / Time Spent / Days Active are SECONDARY stats — they don't
+     deserve the same visual weight as the chart. Keep them on ONE compact line
+     (icon · label · value) instead of stacking label above value, which was
+     making each card ~80px tall on a phone. */
+  .at-metric-row {
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 10px;
+  }
+  .at-metric-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    box-shadow: none;          /* the heavy glow reads as "important" */
+  }
+  .at-metric-icon svg { width: 14px; height: 14px; }
+  /* PHONE: icon + value only. "Current Streak / Time Spent / Days Active" are
+     self-evident from their icons, and the words were the widest thing in the
+     row. Tablet, laptop and desktop keep the full label (see the base rules
+     above — this override only applies at <=640px).
+     The label is kept in the DOM and hidden with clip rather than
+     `display:none`, so screen readers still announce what each number means. */
+  .at-metric-label-wrap {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .at-metric-row {
+    /* icon | value — no label column. Tighter padding + gap so the widest
+       value ("0 min") fits inside a third of the width without clipping. */
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 6px;
+    padding: 7px 8px;
+  }
+  .at-metric-icon { width: 24px; height: 24px; }
+  .at-metric-row > .at-metric-value {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: start;
+    font-size: 15px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .at-metric-value,
+  .at-metric-value--compact {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .at-metric-list { gap: 6px; }
 
   .at-week-strip {
     gap: 8px;

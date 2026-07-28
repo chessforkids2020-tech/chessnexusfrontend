@@ -134,6 +134,18 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://www.chessnexus.in/chess-academy-software</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.90</priority>
+  </url>
+  <url>
+    <loc>https://www.chessnexus.in/chess-academy-pricing</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://www.chessnexus.in/chess-coach-referral</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>weekly</changefreq>

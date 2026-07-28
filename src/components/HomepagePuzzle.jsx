@@ -82,6 +82,12 @@ export default function HomepagePuzzle() {
     // this keeps the whole board visible with no overflow (Lichess-style fit).
     const compute = (containerWidth) => {
       let size = Math.min(Math.floor(containerWidth), 420);
+      // Phones: match the Daily Puzzles board exactly (viewport - 16px). The
+      // container is inset by the cards around it, so measuring it alone gave a
+      // noticeably smaller board than /daily-puzzles on the same screen.
+      if (window.innerWidth <= 480) {
+        size = Math.max(size, window.innerWidth - 16);
+      }
       if (window.innerWidth <= 1024) {
         size = Math.min(size, Math.floor(window.innerHeight * 0.72));
       }

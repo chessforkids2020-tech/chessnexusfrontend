@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api";
 import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
+import AudienceSplit from "../../components/marketing/AudienceSplit";
 
 const CANONICAL = "/chess-coach-pricing";
 
@@ -25,7 +26,7 @@ const FAQ = [
   },
   {
     q: "Do I need a paid plan to teach live?",
-    a: "No. Every coach gets the built-in live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. Paid plans raise those limits — up to 60-minute classes, and up to unlimited classes of 120 minutes with 10 students plus the coach on the top plan.",
+    a: "No. Every coach gets the built-in live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. The live plans give you unlimited classes a day with up to 10 students plus the coach, and the top live plan raises that to 120-minute classes with up to 25 students plus the coach.",
   },
   {
     q: "What happens if my paid plan expires?",
@@ -107,11 +108,27 @@ export default function CoachPricingPage() {
       jsonLd={faqSchema}
       excludeSlug={CANONICAL}
     >
+      {/* Two different products — say so before the price list, or a school with
+          several coaches reads solo pricing and never finds the academy tier. */}
+      <section className="mkt-section" aria-label="Coach or academy">
+        <h2>First — are you one coach, or an academy?</h2>
+        <p className="mkt-section-lead">
+          Chess Nexus is sold two ways. This page covers <strong>individual coaches</strong>.
+          If several coaches teach under one name, the academy plans are cheaper per coach
+          and add a dashboard over all of them.
+        </p>
+        <AudienceSplit current="solo" />
+      </section>
+
       <section className="mkt-section" aria-label="Plans">
-        <h2>Plans</h2>
+        <h2>Plans for individual coaches</h2>
         <p className="mkt-section-lead">
           Two families: one without the live classroom limits raised, one with. Every
           plan — including Free — includes the built-in classroom.
+        </p>
+        <p className="mkt-p">
+          ⭐ <strong>Every plan in the "With Live Classroom" family is an elite coach plan</strong>{" "}
+          — unlimited Team Race events and unlimited Monthly Focus challenges, on all three.
         </p>
 
         {families.length > 1 && (
@@ -192,6 +209,24 @@ export default function CoachPricingPage() {
               <p>{a}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="mkt-section" aria-label="Academies">
+        <div className="mkt-callout">
+          <div className="mkt-callout-icon" aria-hidden="true">🏫</div>
+          <div>
+            <h2>More than one coach? Look at academy plans</h2>
+            <p>
+              If you run a chess academy, school or institute with several coaches, you
+              don't buy a plan each. One academy plan covers <strong>5, 10 or 25 coaches</strong>{" "}
+              — up to <strong>3,750 students</strong> — on a single bill, with one dashboard
+              over every coach and student, and bulk discounts of up to 20%. The head of the
+              academy still keeps their own students and teaches like any other coach.{" "}
+              <Link to="/chess-academy-pricing">See academy pricing</Link> or read{" "}
+              <Link to="/chess-academy-software">how academies work</Link>.
+            </p>
+          </div>
         </div>
       </section>
 

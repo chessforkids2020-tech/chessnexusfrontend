@@ -490,6 +490,21 @@
   overflow: hidden;
 }
 
+/* Phone: let the board reach the full screen width so it matches the Daily
+   Puzzles board. The cards around it are inset, so without this the board is
+   boxed into a narrower column and renders visibly smaller on the same device. */
+@media (max-width: 480px) {
+  .hp-potd-board,
+  .homepage-puzzle-container,
+  .homepage-puzzle-container .puzzle-board-container {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+  .hp-potd-board { min-height: 0; }
+}
+
 .hp-potd-tagline {
   font-size: 11px;
   color: var(--t2);

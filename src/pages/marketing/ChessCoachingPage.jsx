@@ -167,9 +167,32 @@ export default function ChessCoachingPage() {
           <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">
             Start coaching free
           </Link>
+          <Link to="/chess-coach-pricing" className="mkt-btn mkt-btn-ghost">
+            See coach pricing
+          </Link>
           <Link to="/improve-at-chess" className="mkt-btn mkt-btn-ghost">
             See student-side training
           </Link>
+        </div>
+      </section>
+
+      {/* This page speaks to a SOLO coach. Academies are a separate product, so
+          point them there explicitly rather than leaving "academy" ambiguous. */}
+      <section className="mkt-section" aria-label="Academies">
+        <div className="mkt-callout">
+          <div className="mkt-callout-icon" aria-hidden="true">🏫</div>
+          <div>
+            <h2>Running an academy with several coaches?</h2>
+            <p>
+              Everything above is for one coach and their own students. If you have a team of
+              coaches, an academy plan covers <strong>5, 10 or 25 coaches</strong> on a single
+              bill — up to <strong>3,750 students</strong> — with one dashboard over every
+              coach, student and class, and bulk discounts of up to 20%. You still coach your
+              own students as head of the academy.{" "}
+              <Link to="/chess-academy-software">See how academies work</Link> or{" "}
+              <Link to="/chess-academy-pricing">compare academy pricing</Link>.
+            </p>
+          </div>
         </div>
       </section>
 

@@ -334,6 +334,110 @@ a.mkt-card:hover {
   .mkt-callout { flex-direction: column; gap: 10px; padding: 20px; }
 }
 
+/* ---------- Audience split: solo coach vs academy ----------
+   Used on the coach and academy pricing/feature pages so a visitor immediately
+   sees which of the TWO products they want. The two cards are deliberately
+   different colours (cyan = one coach, violet = academy) so the split reads at a
+   glance instead of looking like one long price list. */
+.mkt-audience {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  margin: 26px 0 8px;
+}
+
+.mkt-aud {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px 24px 22px;
+  border-radius: 18px;
+  background: var(--mkt-card);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  text-decoration: none;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.mkt-aud:hover { transform: translateY(-3px); }
+
+/* ONE COACH — cyan */
+.mkt-aud-solo {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(6, 182, 212, 0.04));
+  border-color: rgba(6, 182, 212, 0.32);
+}
+.mkt-aud-solo:hover { border-color: rgba(6, 182, 212, 0.6); box-shadow: 0 20px 48px rgba(6, 182, 212, 0.16); }
+
+/* ACADEMY — violet, so it never reads as "the same thing but bigger" */
+.mkt-aud-academy {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.14), rgba(139, 92, 246, 0.05));
+  border-color: rgba(167, 139, 250, 0.34);
+}
+.mkt-aud-academy:hover { border-color: rgba(167, 139, 250, 0.62); box-shadow: 0 20px 48px rgba(139, 92, 246, 0.18); }
+
+.mkt-aud-badge {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+}
+.mkt-aud-solo .mkt-aud-badge { color: #67e8f9; }
+.mkt-aud-academy .mkt-aud-badge { color: #c4b5fd; }
+
+.mkt-aud-icon { font-size: 34px; line-height: 1; }
+
+.mkt-aud h3 {
+  font-family: 'Orbitron', 'Poppins', sans-serif;
+  font-size: clamp(18px, 2.4vw, 22px);
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
+
+.mkt-aud-for {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.mkt-aud p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.mkt-aud ul {
+  margin: 2px 0 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 5px;
+}
+.mkt-aud li {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.mkt-aud-price {
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+.mkt-aud-price span {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+}
+
 /* ---------- FAQ ---------- */
 .mkt-faq {
   display: grid;

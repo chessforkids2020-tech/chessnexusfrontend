@@ -47,6 +47,8 @@ const ROUTES = [
   '/chess-coach-pricing',
   '/chess-coach-referral',
   '/chess-coaching-questions',
+  '/chess-academy-software',
+  '/chess-academy-pricing',
   '/live-chess-classroom',
   '/chess-endgame-training',
   '/chess-opening-repertoire',

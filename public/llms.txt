@@ -32,6 +32,31 @@ Two audiences:
   step-by-step guide — onboarding, adding students, batches, assignments,
   courses, schedule, activities, attendance, parent reports, live classroom,
   with the live-class limits for each plan.
+- [Coach pricing](https://www.chessnexus.in/chess-coach-pricing): every coach
+  plan with prices, student caps and live-class limits.
+- [Coach FAQ](https://www.chessnexus.in/chess-coaching-questions): common
+  questions coaches ask before signing up.
+- [Refer a coach](https://www.chessnexus.in/chess-coach-referral): earn 25% of a
+  referred coach's first paid subscription as credit toward your own.
+- [Course builder](https://www.chessnexus.in/chess-courses): build a syllabus
+  from studies, videos, master games and endgame positions.
+- [Progress reports](https://www.chessnexus.in/chess-progress-reports):
+  shareable parent reports — no account needed for parents.
+- [Endgame training](https://www.chessnexus.in/chess-endgame-training):
+  structured endgame positions, free and premium.
+- [Opening repertoire](https://www.chessnexus.in/chess-opening-repertoire):
+  build and drill a repertoire, saved in the cloud.
+
+Individual coach plans (monthly, USD; billed in your own currency at checkout):
+
+| Plan                | Price | Students | Live classes                         |
+|---------------------|-------|----------|--------------------------------------|
+| Free                | $0    | 30       | 1/day · 40 min · 4 students (+ coach)|
+| Pro                 | $29   | 70       | 1/day · 60 min · 4 students (+ coach)|
+| Coach               | $49   | 150      | 1/day · 60 min · 4 students (+ coach)|
+| Live Basic          | $79   | 50       | Unlimited · 60 min · 10 (+ coach)    |
+| Live Pro            | $119  | 100      | Unlimited · 60 min · 10 (+ coach)    |
+| Live Coach          | $244  | 150      | Unlimited · 120 min · 25 (+ coach)   |
 
 Key coach facts:
 
@@ -54,6 +79,44 @@ Key coach facts:
   student in their own timezone. Schedule changes auto-post a notice into each
   affected student's coach chat.
 
+## For academies and institutes (multiple coaches)
+
+An academy is an overlay over normal coach accounts: the head of the academy
+invites coaches in, pays for all of their plans centrally, and oversees every
+coach, student, class and assignment from one aggregated dashboard. Member
+coaches keep their own students and workspace, and never handle billing.
+
+- [Academy software](https://www.chessnexus.in/chess-academy-software): how a
+  multi-coach academy works — inviting coaches, central billing, the dashboard.
+- [Academy pricing](https://www.chessnexus.in/chess-academy-pricing): every
+  academy plan with prices, coach counts, students per coach and live limits.
+
+Key academy facts:
+
+- The **academy head is also a full coach** — own students, own courses, own
+  live classes — plus the academy dashboard, all from one login. No second
+  account is needed.
+- The academy pays **one bill for every coach**. Coaches never enter a card.
+- **Bulk discount** on paying for several coaches at once: 10% from 3 coaches,
+  15% from 6, 20% from 11 or more. Paying 3 months up front takes a further 10%.
+- If an academy plan expires, coaches are **not locked out** — each keeps their
+  plan on a short exit trial, and all students and data stay in place.
+
+Academy plans (monthly, USD; students per coach are NOT shared between coaches):
+
+| Plan             | Price  | Coaches | Students/coach | Total students | Live classes per coach          |
+|------------------|--------|---------|----------------|----------------|---------------------------------|
+| Starter          | $88    | 5       | 50             | 250            | 1/day · 60 min · 4 (+ coach)    |
+| Growth           | $144   | 10      | 100            | 1,000          | 1/day · 60 min · 4 (+ coach)    |
+| Institute        | $266   | 25      | 150            | 3,750          | 1/day · 120 min · 4 (+ coach)   |
+| Starter Live     | $237   | 5       | 50             | 250            | Unlimited · 60 min · 10 (+ coach)|
+| Growth Live      | $777   | 10      | 100            | 1,000          | Unlimited · 60 min · 15 (+ coach)|
+| Institute Live   | $1,777 | 25      | 150            | 3,750          | Unlimited · 120 min · 25 (+ coach)|
+
+Every coach in an academy gets a full coach workspace: their own student roster
+and batches, course builder, assignments, class schedule, automatic attendance,
+shareable parent progress reports, and the built-in live classroom.
+
 ## Built-in live classroom
 
 Coaches teach inside Chess Nexus — no Zoom or third-party app required.
@@ -71,16 +134,22 @@ Coaches teach inside Chess Nexus — no Zoom or third-party app required.
   never forced.
 - Attendance marked automatically as students are admitted.
 
-Live class limits by plan:
+Live class limits by plan (students are PER ROOM, and the coach is extra — a
+10-student room holds 10 students plus the coach, 11 people in total. The limit
+is enforced strictly by the server; an over-limit student cannot join):
 
-| Plan                | Classes per day | Length | Students |
-|---------------------|-----------------|--------|----------|
-| Free / Pro / Coach  | 1               | 30 min | 4        |
-| Live Basic          | 5               | 40 min | 4        |
-| Live Pro            | Unlimited       | 40 min | 5        |
-| Live Coach          | Unlimited       | 60 min | 10       |
+| Plan                | Classes per day | Length  | Students (+ coach) |
+|---------------------|-----------------|---------|--------------------|
+| Free                | 1               | 40 min  | 4                  |
+| Pro / Coach         | 1               | 60 min  | 4                  |
+| Live Basic ($79)    | Unlimited       | 60 min  | 10                 |
+| Live Pro ($119)     | Unlimited       | 60 min  | 10                 |
+| Live Coach ($244)   | Unlimited       | 120 min | 25                 |
 
 Every coach, including free ones, gets the live classroom.
+
+- [Live classroom](https://www.chessnexus.in/live-chess-classroom): what the
+  built-in classroom does and how a live lesson runs.
 
 ## For players
 
@@ -116,3 +185,9 @@ Every coach, including free ones, gets the live classroom.
   and consent-based mic/camera controls exist for that reason.
 - "Nexus Elite" is the paid membership for players; coach plans are separate and
   are what raise the live-class limits above.
+- "Elite coach" is a different thing again: EVERY paid plan that includes the live
+  classroom (Live Basic, Live Pro and Live Coach, and the academy Starter Live,
+  Growth Live and Institute Live plans) makes that coach an elite coach, which
+  grants unlimited Team Race events and unlimited Monthly Focus challenges. Plans
+  without the live classroom do not include elite coach features; any coach may
+  still create one Monthly Focus once, as a free trial.

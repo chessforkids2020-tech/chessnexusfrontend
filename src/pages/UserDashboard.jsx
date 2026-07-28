@@ -1627,13 +1627,12 @@ export default function UserDashboard() {
           <>
             {!isPublicView && <TodayStrip />}
 
-            {/* Two-column card: 65% Practice Activity | 35% right panel (TBD) */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '65fr 35fr',
-              gap: 16,
-              margin: '0 0 18px 0',
-            }}>
+            {/* Two-column card: 65% Practice Activity | 35% right panel.
+                The columns live in CSS (.dash-two-col), NOT inline: an inline
+                gridTemplateColumns can't be overridden by a media query, so on a
+                390px phone this stayed 2-up and squeezed Practice Activity into a
+                ~65px column — that's what broke the text into one word per line. */}
+            <div className="dash-two-col">
               <div style={{ overflow: 'hidden' }}>
                 <ActivityTracker publicData={publicView?.activity || null} />
               </div>
@@ -1694,9 +1693,11 @@ export default function UserDashboard() {
               </div>
             </div>
 
-            {/* Combined card — Puzzle Stats | Tournament Stats | Daily Puzzles */}
-            <div style={{
-              display: 'flex',
+            {/* Combined card — Puzzle Stats | Tournament Stats | Daily Puzzles.
+                `display:flex` lives in CSS (.dash-triple) so a media query can
+                stack it: three side-by-side panels in 390px gave each ~120px,
+                which is what overlapped the headings on top of each other. */}
+            <div className="dash-triple" style={{
               background: 'var(--obsidian-surface-elevated, rgba(23,23,23,0.7))',
               border: '1px solid var(--obsidian-border, rgba(148,163,184,0.16))',
               borderRadius: 24,
@@ -1759,7 +1760,7 @@ export default function UserDashboard() {
                           <Link to={viewedDN ? `/player/${encodeURIComponent(viewedDN)}/puzzle-dashboard` : '/puzzle-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 5, background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
                         </div>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                      <div className="dash-ring-row" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                         {/* Circle */}
                         <div style={{ position: 'relative', width: 170, height: 170, flexShrink: 0 }}>
                           <svg viewBox="0 0 170 170" width="170" height="170" style={{ transform: 'rotate(-90deg)' }}>
@@ -1779,7 +1780,7 @@ export default function UserDashboard() {
                             { label: 'Accuracy',      value: accuracy != null ? `${accuracy}%` : '—', extra: null, valueColor: '#a78bfa', spark: mkSpark(ps?.series?.accuracy, '#a78bfa') },
                             { label: 'Best Streak',   value: streak, extra: null, valueColor: '#f59e0b', spark: mkSpark(ps?.series?.solved, '#f59e0b') },
                           ].map((row, i) => (
-                            <div key={i} style={{ display: 'grid', gridTemplateColumns: '90px 60px 1fr', alignItems: 'center', gap: '0 8px' }}>
+                            <div key={i} className="dash-stat-row" style={{ display: 'grid', alignItems: 'center', gap: '0 8px' }}>
                               <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(203,213,225,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{row.label}</span>
                               <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
                                 <span style={{ fontSize: 17, fontWeight: 900, color: row.valueColor }}>{row.value}</span>

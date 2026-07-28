@@ -643,6 +643,11 @@
 
 .sh-ref-link {
   flex: 1;
+  /* Without min-width:0 a `nowrap` flex child refuses to shrink below its
+     content width, so the long invite URL forced .sh-ref-box to 503px inside a
+     390px screen and made the WHOLE PAGE scroll sideways. This lets the
+     ellipsis actually do its job. */
+  min-width: 0;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.55);
   font-family: 'Courier New', monospace;
@@ -1195,10 +1200,50 @@
 @media (max-width: 768px) {
   .sh-page, .sh-detail-page { padding: 14px 12px 40px; }
   .sh-title { font-size: 26px; }
+
+  /* The floating hamburger is `position: fixed` at left:12 and ~42px wide, so it
+     sat directly on top of the page title — "Social Hub" rendered as "…ial Hub".
+     Indent the heading past it. Only the title needs this; the content below
+     starts lower than the button. */
+  .sh-title { padding-left: 52px; }
+  .sh-subtitle { padding-left: 52px; }
   .sh-tabs  { width: 100%; overflow-x: auto; }
   .sh-tab   { padding: 8px 14px; font-size: 13px; }
+
+  /* Phone: fit all four tabs on screen instead of scrolling them sideways.
+     "🔓 Invite to Unlock" is 148px on its own, which pushed the Clubs tab off
+     the right edge (it ended at x=436 on a 390px screen). Sharing the width
+     equally and allowing the label to wrap keeps every tab reachable. */
+  @media (max-width: 480px) {
+    .sh-tabs {
+      overflow-x: visible;
+      padding: 4px;
+      gap: 2px;
+    }
+    .sh-tab {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 7px 4px;
+      font-size: 11px;
+      letter-spacing: 0;
+      white-space: normal;   /* let long labels wrap rather than overflow */
+      line-height: 1.25;
+      text-align: center;
+    }
+  }
   .sh-invite-layout { flex-direction: column; }
-  .sh-invite-sidebar { width: 100%; position: static; }
+  /* In a COLUMN flex container `min-width: 0` no longer constrains the children
+     (it governs the main axis, which is now vertical), so .sh-invite-main sized
+     itself to its widest content — the long invite URL — and grew to 553px
+     inside a 390px screen, pushing the link and its description off the card.
+     An explicit max-width pins it to the container. */
+  .sh-invite-main,
+  .sh-invite-sidebar {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .sh-invite-sidebar { position: static; }
   .sh-stat-grid { grid-template-columns: repeat(2, 1fr); }
   .sh-clubs-grid { grid-template-columns: repeat(2, 1fr); }
   .sh-detail-header { flex-direction: column; }

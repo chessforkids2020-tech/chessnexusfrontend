@@ -60,6 +60,8 @@ Allow: /features
 Allow: /chess-coaching
 Allow: /chess-coach-guide
 Allow: /chess-coach-pricing
+Allow: /chess-academy-software
+Allow: /chess-academy-pricing
 Allow: /live-chess-classroom
 Allow: /chess-endgame-training
 Allow: /chess-opening-repertoire

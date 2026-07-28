@@ -44,7 +44,7 @@ const FAQ = [
   },
   {
     q: "How many students can join a live class?",
-    a: "On the free plan you get one class a day (up to 40 minutes) with up to 4 students plus you, the coach. Paid plans raise that to up to 60 minutes, and the top live plan to unlimited classes a day of up to 120 minutes with up to 10 students plus the coach.",
+    a: "On the free plan you get one class a day (up to 40 minutes) with up to 4 students plus you, the coach. The live plans give you unlimited classes a day with up to 10 students plus the coach, and the top live plan raises that to 120-minute classes with up to 25 students plus the coach.",
   },
   {
     q: "How do parents see their child's progress?",

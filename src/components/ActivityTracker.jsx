@@ -109,9 +109,12 @@ function DaysIcon() {
   );
 }
 
-function LineChart({ points, yMax, labels }) {
+// `compact` shortens the plot area when there's nothing to plot. With no
+// activity every point sits on the baseline, so a full-height chart is just a
+// tall empty box above the day labels — the wasted space under the dots.
+function LineChart({ points, yMax, labels, compact = false }) {
   const width = 620;
-  const height = 210;
+  const height = compact ? 120 : 210;
   const padLeft = 36;
   const padRight = 18;
   const padTop = 16;
@@ -323,14 +326,13 @@ export default function ActivityTracker({ publicData = null }) {
             </div>
 
             <div className="at-chart-frame">
-              <LineChart points={points} yMax={yMax} labels={labels} />
+              <LineChart points={points} yMax={yMax} labels={labels}
+                         compact={activeDates.length === 0} />
             </div>
 
-            {activeDates.length === 0 && (
-              <div className="at-empty">
-                No activity yet - play any puzzle or game to start tracking.
-              </div>
-            )}
+            {/* The "No activity yet" caption that used to sit here was removed:
+                the chart badge above already says exactly that, so it was the
+                same message twice in one card. */}
 
             <div className="at-metric-list at-metric-list--below-chart">
               <MetricRow

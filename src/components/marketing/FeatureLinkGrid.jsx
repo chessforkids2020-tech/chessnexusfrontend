@@ -74,6 +74,14 @@ export const FEATURES = [
       "A free toolkit for chess coaches and academies — student roster & batches, assignments, course builder, private class races and parent reports.",
   },
   {
+    slug: "/chess-academy-software",
+    appPath: "/coach/onboarding",
+    icon: "🏫",
+    title: "Chess Academy Software",
+    blurb:
+      "Run a multi-coach academy from one place — invite your coaches, pay for everyone centrally, and oversee every coach, student and class while still coaching your own.",
+  },
+  {
     slug: "/live-chess-classroom",
     appPath: "/coach/onboarding",
     icon: "🎥",

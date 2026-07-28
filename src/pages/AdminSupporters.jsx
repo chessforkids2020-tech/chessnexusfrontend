@@ -87,6 +87,15 @@ export default function AdminSupporters() {
   const [total, setTotal] = useState(0);
   const [busyId, setBusyId] = useState(null);
 
+  // ── Manually add a supporter ────────────────────────────────────────────────
+  // For people who supported outside checkout: a streamer or blogger who featured
+  // the app, a bank-transfer sponsor, a partner. Amount may be 0 — they're credited
+  // for the promotion, not a payment. The ☕ badge runs for `months`; the name stays
+  // on the public wall permanently. (Handler lives below `load`, which it calls.)
+  const [showAdd, setShowAdd] = useState(false);
+  const [addForm, setAddForm] = useState({ username: "", amount: "", currency: "INR", months: 1, note: "" });
+  const [adding, setAdding] = useState(false);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -111,6 +120,30 @@ export default function AdminSupporters() {
   }, [page, status, search, nav]);
 
   useEffect(() => { load(); }, [load]);
+
+  const submitAdd = async (e) => {
+    e.preventDefault();
+    if (!addForm.username.trim()) return alert("Enter the supporter's username.");
+    setAdding(true);
+    try {
+      const res = await api.post("/api/coffee/admin/add", {
+        username: addForm.username.trim(),
+        amount: addForm.amount === "" ? 0 : Number(addForm.amount),
+        currency: addForm.currency,
+        months: Number(addForm.months),
+        note: addForm.note.trim(),
+      });
+      const u = res.data?.user;
+      alert(`Added ${u?.displayName || u?.username} as a supporter.`);
+      setAddForm({ username: "", amount: "", currency: "INR", months: 1, note: "" });
+      setShowAdd(false);
+      await load();
+    } catch (err) {
+      alert("Could not add: " + (err?.response?.data?.message || err.message));
+    } finally {
+      setAdding(false);
+    }
+  };
 
   // Reset to page 1 whenever the filter or search changes.
   useEffect(() => { setPage(1); }, [status, search]);
@@ -197,7 +230,78 @@ export default function AdminSupporters() {
           <option value="rejected">Rejected</option>
         </select>
         <span style={styles.muted}>{total} record{total === 1 ? "" : "s"}</span>
+        <button
+          type="button"
+          style={{ ...styles.primaryBtn, marginLeft: "auto" }}
+          onClick={() => setShowAdd(v => !v)}
+        >
+          {showAdd ? "Cancel" : "➕ Add supporter"}
+        </button>
       </div>
+
+      {/* Manual add — streamers, bloggers, bank transfers, partners. */}
+      {showAdd && (
+        <form
+          onSubmit={submitAdd}
+          style={{
+            background: "#fff", border: "1px solid #e6f1e6", borderRadius: 12,
+            padding: 16, marginBottom: 16, boxShadow: "0 6px 16px rgba(0,0,0,0.04)",
+          }}
+        >
+          <div style={{ fontWeight: 800, color: "#064f28", marginBottom: 4 }}>
+            Add a supporter manually
+          </div>
+          <div style={{ ...styles.muted, marginBottom: 12 }}>
+            For someone who supported outside checkout — a streamer or blogger who
+            featured the app, a bank transfer, a partner. Leave the amount empty (or 0)
+            if they're credited for promotion rather than a payment. The ☕ badge lasts
+            for the months you pick; their name stays on the public page permanently.
+          </div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+            <input
+              style={styles.input}
+              placeholder="Username or display name *"
+              value={addForm.username}
+              onChange={(e) => setAddForm(f => ({ ...f, username: e.target.value }))}
+            />
+            <input
+              style={{ ...styles.input, minWidth: 120 }}
+              type="number"
+              min="0"
+              placeholder="Amount (0 = promo)"
+              value={addForm.amount}
+              onChange={(e) => setAddForm(f => ({ ...f, amount: e.target.value }))}
+            />
+            <select
+              style={styles.select}
+              value={addForm.currency}
+              onChange={(e) => setAddForm(f => ({ ...f, currency: e.target.value }))}
+            >
+              <option value="INR">INR</option>
+              <option value="USD">USD</option>
+            </select>
+            <select
+              style={styles.select}
+              value={addForm.months}
+              onChange={(e) => setAddForm(f => ({ ...f, months: e.target.value }))}
+            >
+              <option value={1}>Badge: 1 month</option>
+              <option value={3}>Badge: 3 months</option>
+              <option value={6}>Badge: 6 months</option>
+              <option value={12}>Badge: 12 months</option>
+            </select>
+            <input
+              style={{ ...styles.input, minWidth: 220 }}
+              placeholder="Note (e.g. YouTube feature) — internal"
+              value={addForm.note}
+              onChange={(e) => setAddForm(f => ({ ...f, note: e.target.value }))}
+            />
+            <button type="submit" style={styles.primaryBtn} disabled={adding}>
+              {adding ? "Adding…" : "Add supporter"}
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Table */}
       <div style={styles.tableWrap}>

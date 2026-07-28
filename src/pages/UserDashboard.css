@@ -231,6 +231,64 @@ button[style*="closeButton"]:hover {
    ==================================== */
 
 /* Dashboard Container */
+/* Practice Activity (65%) + right panel (35%). Was an inline style, which a
+   media query cannot override — so on phones it stayed 2-up and crushed the
+   left column to ~65px. Below 900px it stacks. */
+.dash-two-col {
+  display: grid;
+  grid-template-columns: 65fr 35fr;
+  gap: 16px;
+  margin: 0 0 18px 0;
+}
+/* min-width:0 lets a grid child actually shrink; without it the chart's
+   intrinsic width forces the column wider than the screen (the 30 horizontal
+   overflows in the audit). */
+.dash-two-col > * { min-width: 0; }
+
+@media (max-width: 900px) {
+  .dash-two-col {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+/* The 170px accuracy ring sits beside the stat rows. On a phone that leaves the
+   stats only ~98px, squeezing "Puzzle Rating" to 38px — so stack them instead. */
+@media (max-width: 600px) {
+  .dash-ring-row {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  .dash-ring-row > :first-child { align-self: center; }
+}
+
+/* Label | value | sparkline rows inside Puzzle Stats. */
+.dash-stat-row { grid-template-columns: 90px 60px 1fr; }
+
+/* On a phone the 1fr sparkline column computes to 0px and the trailing SVG
+   spills out of the card. The sparkline is decorative, so drop it and give the
+   space back to the label + value. */
+@media (max-width: 480px) {
+  .dash-stat-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .dash-stat-row > :last-child { display: none; }
+}
+
+/* Puzzle Stats | Tournament Stats | Daily Puzzles — one row on desktop. */
+.dash-triple { display: flex; }
+
+/* Below 900px three panels can't share the width (they land at ~120px each and
+   their headings overlap), so stack them and let each take the full width. */
+@media (max-width: 900px) {
+  .dash-triple { flex-direction: column; }
+  /* The flex ratios (38/32/30) are inline on the children; once stacked they'd
+     still fight over height, so neutralise them here. */
+  .dash-triple > * { flex: 1 1 auto !important; width: 100%; }
+  /* Separate the stacked panels, which lost the vertical dividers. */
+  .dash-triple > * + * {
+    border-top: 1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16));
+  }
+}
+
 .dashboard-container {
   --obsidian-surface: rgba(23, 23, 23, 0.7);
   --obsidian-surface-elevated: rgba(23, 23, 23, 0.7);
@@ -279,6 +337,18 @@ button[style*="closeButton"]:hover {
   padding: 24px;
   position: relative;
   z-index: 1;
+}
+
+/* ── Phone: give the cards the whole screen ──────────────────────────────────
+   Five nested boxes each added inset (page 8px → main-content 24px →
+   activity-tracker 10px → at-shell 12px → at-chart-card 12px), turning a 390px
+   screen into 258px of usable content — 34% lost to gutters, and the "card
+   inside a card inside a card" look.
+   Below 640px we drop every OUTER gutter to 0 and keep exactly ONE 10px pad on
+   the card itself, so content width = screen − 20px on any phone. */
+@media (max-width: 640px) {
+  .main-content { padding: 0; }
+  .dashboard-container { padding-left: 0; padding-right: 0; }
 }
 
 /* Page */
