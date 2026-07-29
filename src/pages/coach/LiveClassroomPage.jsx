@@ -1606,6 +1606,17 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // ── Save the current teaching position into ONE OF THE COACH'S OWN studies, so
   //    the FEN can be reused in a later class. Public/Nexus studies stay read-only;
   //    this panel only ever targets "My studies". ──
+  // ── Homework: capture positions WHILE teaching, send at the end ─────────────
+  // The coach hits "Add to homework" whenever the board shows something worth
+  // practising. Each capture stores the CURRENT fen. At the end they send the
+  // whole set as ONE fen_solution assignment (play it out vs Stockfish) to the
+  // students who are in the meeting right now.
+  const [hwPositions, setHwPositions] = useState([]);  // [{ fen, tag, moves }]
+  const [hwOpen, setHwOpen] = useState(false);
+  const [hwTitle, setHwTitle] = useState('');
+  const [hwBusy, setHwBusy] = useState(false);
+  const [hwMsg, setHwMsg] = useState('');
+
   const [saveOpen, setSaveOpen] = useState(false);
   const [saveStudyId, setSaveStudyId] = useState('');   // '' → new study (newStudyName)
   const [saveNewStudy, setSaveNewStudy] = useState('');
@@ -1785,11 +1796,18 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     const id = setInterval(() => {
       if (phaseRef.current !== 'waiting') return;
       api.get(`/api/coach-live/join/${params.joinCode}`)
-        .then(r => { if (r.data?.live) tryJoinWaiting(); })
+        .then(r => {
+          if (!r.data?.live) return;
+          // If the coach has ALREADY admitted us, go straight in instead of
+          // calling /wait again. Re-announcing ourselves here is what used to
+          // race with the coach's click and bounce us back to the waiting room.
+          if (r.data.admitted) { enterRoom(params.joinCode); return; }
+          tryJoinWaiting();
+        })
         .catch(() => {});
     }, 5000);
     return () => { socket.off('liveclass:started', onStarted); clearInterval(id); };
-  }, [mode, params.joinCode, tryJoinWaiting]);
+  }, [mode, params.joinCode, tryJoinWaiting, enterRoom]);
 
   // ── Socket wiring: board sync, control, admit/remove, ended ──────────────────
   // Subscribe ONCE (stable deps). Handlers reach live values via refs so this
@@ -2327,6 +2345,34 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const goStart = () => goToPath([]);
   const goEnd = () => goToPath(getMainlinePath(tree));
 
+  // ── Keyboard move navigation (←/→ step, Home/End jump) ──────────────────────
+  // The on-screen ⏮ ◀ ▶ ⏭ buttons were the ONLY way to walk the line, so a coach
+  // teaching a game had to keep clicking. These call the same handlers.
+  // Only whoever controls the board (host, or a student given control) can move
+  // it — the same `iControl` gate the buttons use — so a student pressing an
+  // arrow never drags the class off the coach's position.
+  // The handlers are re-created every render, so they're read through a ref and
+  // the listener itself is attached once.
+  const navRef = useRef({});
+  navRef.current = { stepBack, stepFwd, goStart, goEnd, iControl };
+  useEffect(() => {
+    const onKey = (e) => {
+      if (!navRef.current.iControl) return;
+      // Never hijack typing (chat, FEN/PGN box, study names) or browser shortcuts.
+      const t = e.target;
+      const tag = t?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || t?.isContentEditable) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      if (e.key === 'ArrowLeft')       { e.preventDefault(); navRef.current.stepBack(); }
+      else if (e.key === 'ArrowRight') { e.preventDefault(); navRef.current.stepFwd(); }
+      else if (e.key === 'Home')       { e.preventDefault(); navRef.current.goStart(); }
+      else if (e.key === 'End')        { e.preventDefault(); navRef.current.goEnd(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   // Host-only: show/hide the teaching board for EVERYONE (broadcast via socket).
   const toggleBoard = () => {
     const next = !showBoard;
@@ -2544,6 +2590,58 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       .then(r => setMyStudies(r.data?.studies || []))
       .catch(() => setMyStudies([]));
   };
+  // ── Homework capture ────────────────────────────────────────────────────────
+  // Snapshot whatever is on the board right now. Cheap and non-blocking so the
+  // coach can keep teaching; nothing is sent until they hit Send.
+  const addPositionToHomework = () => {
+    const fen = curFen;
+    if (!fen) return;
+    setHwPositions(prev => (
+      prev.some(p => p.fen === fen)                 // don't add the same board twice
+        ? prev
+        : [...prev, { fen, tag: '', moves: 1 }]
+    ));
+    setHwMsg('');
+  };
+  const removeHwPosition = (i) => setHwPositions(prev => prev.filter((_, idx) => idx !== i));
+  const updateHwPosition = (i, patch) =>
+    setHwPositions(prev => prev.map((p, idx) => (idx === i ? { ...p, ...patch } : p)));
+
+  // Students who are in the meeting RIGHT NOW — the assignment audience. Read
+  // from the same roster the waiting-room panel uses (refreshed every 8s), so a
+  // student who never joined or was removed is not included.
+  const inClassStudents = (waiting || [])
+    .filter(p => p.state === 'admitted' && p.studentId)
+    .map(p => ({ id: String(p.studentId), name: p.name || p.username || 'Student' }));
+
+  const sendHomework = async () => {
+    if (!hwPositions.length) { setHwMsg('Add at least one position first.'); return; }
+    if (!inClassStudents.length) { setHwMsg('No students are in the class right now.'); return; }
+    setHwBusy(true); setHwMsg('');
+    try {
+      await api.post('/api/coach/assignments', {
+        title: hwTitle.trim() || 'Class homework — play these positions',
+        assignmentType: 'fen_solution',
+        studentIds: inClassStudents.map(s => s.id),
+        fenTask: {
+          positions: hwPositions.map(p => ({
+            fen: p.fen,
+            tag: (p.tag || '').trim(),
+            // 0 is meaningful here (play to the end) — don't clamp it up to 1.
+            userMoveCount: Number(p.moves) === 0 ? 0 : Math.max(1, Number(p.moves) || 1),
+          })),
+        },
+      });
+      setHwMsg(`✓ Sent to ${inClassStudents.length} student${inClassStudents.length === 1 ? '' : 's'}.`);
+      setHwPositions([]);
+      setHwTitle('');
+    } catch (e) {
+      setHwMsg(e?.response?.data?.message || 'Could not send homework.');
+    } finally {
+      setHwBusy(false);
+    }
+  };
+
   const saveCurrentPosition = async () => {
     setSaveMsg(''); setSaveBusy(true);
     try {
@@ -3694,7 +3792,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     {/* PUZZLES: 4 mode cards + rating-range picker (practice, no ratings) */}
                     {contentTab === 'puzzles' && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {/* Rating range for the whole class */}
+                        {/* Row 1 — Puzzle level and Healthy Mix side by side: pick the
+                            difficulty, then start straight away. */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                           <span style={{ fontSize: 12, color: '#9ca3af' }}>Puzzle level:</span>
                           <select style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }}
@@ -3704,28 +3803,32 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                               <option key={a} value={`${a}-${b}`}>{a}–{b}</option>
                             ))}
                           </select>
+                          <button style={{ ...s.puzCard, flex: 1, minWidth: 140 }}
+                            onClick={() => loadPuzzle('healthymix')}>🥗 Healthy Mix</button>
                         </div>
-                        {/* 4 mode cards */}
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
-                          <button style={s.puzCard} onClick={() => loadPuzzle('healthymix')}>🥗 Healthy Mix</button>
-                          <button style={{ ...s.puzCard, ...(puzzleMode === 'pieces' ? s.srcTabOn : {}) }} onClick={() => { setContentTab('puzzles'); loadPuzzle('pieces'); }} disabled={!puzzlePieces} title={!puzzlePieces ? 'Pick a piece count first' : ''}>♟ Pieces</button>
-                          <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 6 }}>
-                            <select style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit' }} value={puzzleTheme}
-                              onChange={e => setPuzzleTheme(e.target.value)}>
-                              <option value="">🎯 Themes — pick one…</option>
-                              {puzzleThemes.map(t => <option key={t.key} value={t.key}>{t.label}</option>)}
-                            </select>
-                            <button style={s.loadBtn} disabled={!puzzleTheme} onClick={() => loadPuzzle('theme')}>Load theme</button>
-                          </div>
-                          <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 6, alignItems: 'center' }}>
-                            <span style={{ fontSize: 12, color: '#9ca3af' }}>♟ Pieces on board:</span>
-                            <select style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }} value={puzzlePieces}
-                              onChange={e => setPuzzlePieces(e.target.value)}>
-                              <option value="">any</option>
-                              {[3,4,5,6,7,8,10,12,16,20,24,32].map(n => <option key={n} value={n}>{n}</option>)}
-                            </select>
-                            <button style={s.ghostSm} disabled={!puzzlePieces} onClick={() => loadPuzzle('pieces')}>Load pieces</button>
-                          </div>
+
+                        {/* Row 2 — Theme picker + its own Load button. */}
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <select style={{ ...s.loadInput, flex: 1, minWidth: 150, fontFamily: 'inherit' }} value={puzzleTheme}
+                            onChange={e => setPuzzleTheme(e.target.value)}>
+                            <option value="">🎯 Themes — pick one…</option>
+                            {puzzleThemes.map(t => <option key={t.key} value={t.key}>{t.label}</option>)}
+                          </select>
+                          <button style={s.loadBtn} disabled={!puzzleTheme} onClick={() => loadPuzzle('theme')}>Load theme</button>
+                        </div>
+
+                        {/* Row 3 — Pieces: the mode button, the count, then Load. */}
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                          <button style={{ ...s.puzCard, width: 'auto', ...(puzzleMode === 'pieces' ? s.srcTabOn : {}) }}
+                            onClick={() => { setContentTab('puzzles'); loadPuzzle('pieces'); }}
+                            disabled={!puzzlePieces} title={!puzzlePieces ? 'Pick a piece count first' : ''}>♟ Pieces</button>
+                          <span style={{ fontSize: 12, color: '#9ca3af' }}>Pieces on board:</span>
+                          <select style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }} value={puzzlePieces}
+                            onChange={e => setPuzzlePieces(e.target.value)}>
+                            <option value="">any</option>
+                            {[3,4,5,6,7,8,10,12,16,20,24,32].map(n => <option key={n} value={n}>{n}</option>)}
+                          </select>
+                          <button style={s.ghostSm} disabled={!puzzlePieces} onClick={() => loadPuzzle('pieces')}>Load pieces</button>
                         </div>
                         {/* Active-puzzle status + Next/Exit now live in a compact bar
                             directly below the Moves card (no scrolling). */}
@@ -3868,7 +3971,86 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                         <button style={s.ghostSm} onClick={() => (saveOpen ? setSaveOpen(false) : openSavePanel())}>
                           💾 Save to my study
                         </button>
+                        {/* Capture-as-you-teach: grab the board into the homework set.
+                            One click, no dialog, so it doesn't interrupt the lesson. */}
+                        <button style={s.ghostSm} onClick={addPositionToHomework}
+                          title="Add the position on the board to this class's homework">
+                          📌 Add to homework
+                        </button>
+                        <button
+                          style={{ ...s.ghostSm, ...(hwPositions.length ? { borderColor: 'rgba(6,182,212,0.5)', color: '#67e8f9' } : {}) }}
+                          onClick={() => setHwOpen(v => !v)}
+                          title="Review and send the homework you've collected">
+                          📚 Homework{hwPositions.length ? ` (${hwPositions.length})` : ''}
+                        </button>
                       </div>
+
+                      {hwOpen && (
+                        <div style={s.savePanel}>
+                          <div style={{ fontSize: 12.5, fontWeight: 800, color: '#67e8f9' }}>
+                            Homework — play vs Stockfish
+                          </div>
+                          <div style={{ fontSize: 11.5, color: '#9ca3af' }}>
+                            Students play each position out against the engine. Add positions
+                            with <b>📌 Add to homework</b> while you teach.
+                          </div>
+
+                          {hwPositions.length === 0 ? (
+                            <div style={{ fontSize: 12, color: '#9ca3af', padding: '6px 0' }}>
+                              No positions yet.
+                            </div>
+                          ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 200, overflowY: 'auto' }}>
+                              {hwPositions.map((p, i) => (
+                                <div key={p.fen + i} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                                  <span style={{ fontSize: 11, color: '#9ca3af', width: 18 }}>{i + 1}.</span>
+                                  <input
+                                    style={{ ...s.loadInput, flex: 1, minWidth: 0 }}
+                                    placeholder="Label (optional) — e.g. Win the rook"
+                                    value={p.tag}
+                                    onChange={e => updateHwPosition(i, { tag: e.target.value })}
+                                  />
+                                  <select
+                                    style={{ ...s.loadInput, width: 'auto', fontFamily: 'inherit' }}
+                                    value={p.moves}
+                                    onChange={e => updateHwPosition(i, { moves: Number(e.target.value) })}
+                                    title="How many good moves the student must find — or play the position out to the end (endgames)"
+                                  >
+                                    {/* 0 = play to the end: for endgames, where a fixed
+                                        move count is meaningless ("play out this rook
+                                        endgame" isn't 3 moves, it's a conversion). */}
+                                    <option value={0}>♚ Play to the end</option>
+                                    {[1, 2, 3, 4, 5, 6, 8, 10, 12].map(n => (
+                                      <option key={n} value={n}>{n} move{n === 1 ? '' : 's'}</option>
+                                    ))}
+                                  </select>
+                                  <button style={s.ghostSm} onClick={() => removeHwPosition(i)} title="Remove">✕</button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          <input style={s.loadInput} placeholder="Homework title (optional)"
+                            value={hwTitle} onChange={e => setHwTitle(e.target.value)} />
+
+                          <div style={{ fontSize: 11.5, color: '#9ca3af' }}>
+                            {inClassStudents.length
+                              ? `Will be sent to ${inClassStudents.length} student${inClassStudents.length === 1 ? '' : 's'} in this class: ${inClassStudents.map(s2 => s2.name).join(', ')}`
+                              : 'No students are in the class right now.'}
+                          </div>
+
+                          {hwMsg && (
+                            <div style={{ fontSize: 12, color: hwMsg.startsWith('✓') ? '#6ee7b7' : '#fca5a5' }}>{hwMsg}</div>
+                          )}
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            <button style={s.loadBtn} onClick={sendHomework}
+                              disabled={hwBusy || !hwPositions.length || !inClassStudents.length}>
+                              {hwBusy ? 'Sending…' : `📤 Send homework${hwPositions.length ? ` (${hwPositions.length})` : ''}`}
+                            </button>
+                            <button style={s.ghostSm} onClick={() => setHwOpen(false)}>Close</button>
+                          </div>
+                        </div>
+                      )}
 
                       {saveOpen && (
                         <div style={s.savePanel}>

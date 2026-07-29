@@ -434,6 +434,36 @@ export default function CoachAssignments() {
     return `${m}:${String(sec).padStart(2, '0')}`;
   };
 
+  // ── Edit who an assignment is for ───────────────────────────────────────────
+  // Coaches miss a student when tagging, or tag one who shouldn't get the work.
+  // Deleting and recreating was the only fix before, which threw away everyone's
+  // progress. Only the recipient list is editable — the task itself is frozen.
+  const [editingIds, setEditingIds] = useState(null);   // assignment _id being edited
+  const [editSel, setEditSel] = useState([]);           // studentIds being chosen
+  const [editBusy, setEditBusy] = useState(false);
+
+  const openEditStudents = (a) => {
+    setEditingIds(a._id);
+    setEditSel((a.studentIds || []).map(String));
+  };
+  const toggleEditStudent = (id) =>
+    setEditSel(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
+
+  const saveEditStudents = async (id) => {
+    if (!editSel.length) { alert('Select at least one student.'); return; }
+    setEditBusy(true);
+    try {
+      const r = await api.put(`/api/coach/assignments/${id}/students`, { studentIds: editSel });
+      // Reflect the new recipient list without a full refetch.
+      setAssignments(prev => prev.map(a => (a._id === id ? r.data.assignment : a)));
+      setEditingIds(null);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Could not update students.');
+    } finally {
+      setEditBusy(false);
+    }
+  };
+
   const removeAssignment = async (id) => {
     if (!window.confirm('Delete this assignment?')) return;
     try {
@@ -507,8 +537,49 @@ export default function CoachAssignments() {
                       {a.dueDate && <span>· due {new Date(a.dueDate).toLocaleDateString()}</span>}
                     </div>
                   </div>
-                  <button className="btn-danger" onClick={() => removeAssignment(a._id)}>Delete</button>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <button
+                      className="btn-secondary"
+                      onClick={() => (editingIds === a._id ? setEditingIds(null) : openEditStudents(a))}
+                      title="Add or remove students for this assignment"
+                    >
+                      👥 Students ({(a.studentIds || []).length})
+                    </button>
+                    <button className="btn-danger" onClick={() => removeAssignment(a._id)}>Delete</button>
+                  </div>
                 </div>
+
+                {editingIds === a._id && (
+                  <div className="ca-edit-students">
+                    <div className="ca-edit-students-head">
+                      Who gets this assignment?
+                      <span className="ca-edit-hint">
+                        Removing a student hides it from them — their progress is kept if you add them back.
+                      </span>
+                    </div>
+                    <div className="ca-edit-students-list">
+                      {students.map((s) => {
+                        const sid = String(s.studentId?._id || '');
+                        if (!sid) return null;
+                        const on = editSel.includes(sid);
+                        const name = s.studentId?.displayName || s.studentId?.username || s.studentName || 'Student';
+                        return (
+                          <label key={sid} className={`ca-edit-student ${on ? 'on' : ''}`}>
+                            <input type="checkbox" checked={on} onChange={() => toggleEditStudent(sid)} />
+                            <span>{name}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <div className="ca-edit-students-foot">
+                      <span className="ca-edit-count">{editSel.length} selected</span>
+                      <button className="btn-primary" disabled={editBusy} onClick={() => saveEditStudents(a._id)}>
+                        {editBusy ? 'Saving…' : 'Save students'}
+                      </button>
+                      <button className="btn-secondary" onClick={() => setEditingIds(null)}>Cancel</button>
+                    </div>
+                  </div>
+                )}
                 {a.description && <p className="ca-desc">{a.description}</p>}
                 <div className="ca-progress">
                   <div className="ca-progress-label">

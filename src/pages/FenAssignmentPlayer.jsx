@@ -54,7 +54,11 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
     try { return new Chess(cur?.fen || START_FEN).turn() === 'w' ? 'white' : 'black'; }
     catch { return 'white'; }
   }, [cur]);
-  const requiredMoves = cur?.userMoveCount || 1;
+  // userMoveCount === 0 means PLAY TO THE END: keep playing vs Stockfish until
+  // checkmate/stalemate/draw. Used for endgames, where "N good moves" is
+  // meaningless — the coach wants the position converted, not counted.
+  const playToEnd = cur?.userMoveCount === 0;
+  const requiredMoves = playToEnd ? Infinity : (cur?.userMoveCount || 1);
   const done = verdicts[idx] != null;
 
   // Boot Stockfish once.
@@ -145,14 +149,26 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
         if (rm) {
           setFen(chessAfter.fen());
           setLastMove({ from: rm.from, to: rm.to });
-          if (chessAfter.isGameOver()) { finish(true); return; }
+          if (chessAfter.isGameOver()) {
+            // The ENGINE's reply ended the game. If it just mated the student,
+            // that's a loss — only a draw or the student's own mate is a pass.
+            const lost = chessAfter.isCheckmate();
+            finish(!lost);
+            return;
+          }
         }
       }
-      setFeedback(`Good — ${requiredMoves - played} more good move${requiredMoves - played > 1 ? 's' : ''} to go.`);
+      // In play-to-the-end mode there's no countdown to report — every move has
+      // already been engine-checked, so just tell them to keep converting.
+      setFeedback(playToEnd
+        ? 'Good — keep going until the game ends.'
+        : `Good — ${requiredMoves - played} more good move${requiredMoves - played > 1 ? 's' : ''} to go.`);
       setThinking(false);
     } catch {
-      // Never block the student on an engine glitch.
-      if (played >= requiredMoves) { finish(true); return; }
+      // Never block the student on an engine glitch. In play-to-the-end mode
+      // `requiredMoves` is Infinity, so this check can never pass — let them
+      // carry on playing rather than freezing the position.
+      if (!playToEnd && played >= requiredMoves) { finish(true); return; }
       setThinking(false);
     }
   };
@@ -234,7 +250,9 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
                 {!engineReady ? '⏳ Loading engine…'
                   : thinking ? '🤔 Stockfish is checking…'
                   : cur?.tag ? `🎯 ${cur.tag}`
-                  : `Find ${requiredMoves} good move${requiredMoves > 1 ? 's' : ''} for ${orientation === 'white' ? 'White' : 'Black'}.`}
+                  : playToEnd
+                    ? `Play this position out to the end as ${orientation === 'white' ? 'White' : 'Black'} — win it, or hold the draw.`
+                    : `Find ${requiredMoves} good move${requiredMoves > 1 ? 's' : ''} for ${orientation === 'white' ? 'White' : 'Black'}.`}
               </div>
               {feedback && <div className={`fap-feedback ${verdicts[idx] === 'pass' ? 'ok' : verdicts[idx] === 'fail' ? 'bad' : ''}`}>{feedback}</div>}
               {done && (
