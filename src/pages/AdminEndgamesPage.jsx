@@ -285,6 +285,16 @@ const styles = {
   modalHead: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 16 },
   analyzeBtn: { background: "rgba(0,0,0,0.4)", color: "#06b6d4", border: "1px solid rgba(6,182,212,0.4)", borderRadius: 999, padding: "6px 16px", cursor: "pointer", fontWeight: 700, fontSize: 13, alignSelf: "center" },
   analyzeBtnOn: { background: "linear-gradient(135deg,#06b6d4 0%,#10b981 100%)", color: "#fff", border: "1px solid rgba(6,182,212,0.6)", borderRadius: 999, padding: "6px 16px", cursor: "pointer", fontWeight: 700, fontSize: 13, alignSelf: "center", boxShadow: "0 4px 16px rgba(6,182,212,0.4)" },
+  // ── Play vs Stockfish panel ───────────────────────────────────────────────
+  playPanel: { border: "1px solid rgba(52,211,153,0.3)", background: "rgba(16,185,129,0.06)", borderRadius: 12, padding: 14, marginBottom: 12 },
+  playHead: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 },
+  lvlBtn: { flex: 1, padding: "6px 0", borderRadius: 8, border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "#cbd5e1", cursor: "pointer", fontSize: 12.5, fontWeight: 700 },
+  lvlBtnOn: { flex: 1, padding: "6px 0", borderRadius: 8, border: "1px solid rgba(52,211,153,0.55)", background: "rgba(16,185,129,0.16)", color: "#6ee7b7", cursor: "pointer", fontSize: 12.5, fontWeight: 800 },
+  playResult: { padding: "8px 10px", borderRadius: 8, background: "rgba(255,255,255,0.06)", color: "#e6e8ee", fontSize: 13, fontWeight: 700, marginBottom: 8 },
+  playMoves: { maxHeight: 140, overflowY: "auto", lineHeight: 1.9, marginBottom: 10 },
+  playAgainBtn: { width: "100%", padding: "8px 0", borderRadius: 8, border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "#cbd5e1", cursor: "pointer", fontSize: 12.5, fontWeight: 700 },
+  playNote: { padding: "8px 10px", borderRadius: 8, background: "rgba(245,196,81,0.10)", border: "1px solid rgba(245,196,81,0.3)", color: "#f5c451", fontSize: 12.5, marginBottom: 10 },
+
   // Board on the left, everything else (controls + moves + meta) in the right column.
   modalBody: { display: "flex", gap: 28, alignItems: "flex-start", flexWrap: "wrap" },
   boardCol: { flex: "0 0 auto", display: "flex", flexDirection: "column", alignItems: "center" },
@@ -327,6 +337,29 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
 
   // Engine analysis panel toggle (Analyze button).
   const [analyzing, setAnalyzing] = useState(false);
+
+  // ── Play vs Stockfish (20 XP unlock; free for coaches & supporters) ────────
+  // Deliberately NO best-move hints here — this is "play it out", not a lesson.
+  // The premium trainer keeps the coaching aids; this is the plain challenge.
+  const [playAccess, setPlayAccess] = useState(null);  // {playable,free,unlocked,xpPrice,walletXp}
+  const [playing, setPlaying] = useState(false);
+  const [playSide, setPlaySide] = useState("w");       // colour the user plays
+  const [playLevel, setPlayLevel] = useState("medium");
+  const [playThinking, setPlayThinking] = useState(false);
+  const [playMsg, setPlayMsg] = useState("");
+  const [unlockBusy, setUnlockBusy] = useState(false);
+  // Own game object so play-out never mutates the replay tree above.
+  const playRef = useRef(null);
+  const [playFen, setPlayFen] = useState(null);
+  const [playHistory, setPlayHistory] = useState([]);   // [{san, by}]
+  const [playOver, setPlayOver] = useState(null);       // result text
+
+  // Same difficulty ladder as the premium trainer, so "Hard" means one thing.
+  const PLAY_LEVELS = {
+    easy:   { label: "Easy",   skill: 3,  depth: 6,  moveTime: 300 },
+    medium: { label: "Medium", skill: 9,  depth: 10, moveTime: 600 },
+    hard:   { label: "Hard",   skill: 18, depth: 16, moveTime: 1000 },
+  };
 
   // Admin "Add to Trainer" form — captures the CURRENTLY SHOWN board position as a
   // premium play-out endgame pick (goal/side/title/idea/xpPrice).
@@ -378,6 +411,114 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
   // The node currently shown on the board.
   const nodes = tree?.nodes || { root: { id: "root", san: null, fen: fens[0].fen, from: null, to: null, parentId: null, childIds: [] } };
   const current = nodes[currentId] || nodes.root;
+
+  // Ask the server whether this user may play the CURRENT position out. Runs
+  // whenever the board moves, because the unlock is per position, not per game.
+  useEffect(() => {
+    let alive = true;
+    if (!current?.fen) return;
+    (async () => {
+      try {
+        const r = await api.get("/api/endgame-play/status", { params: { fen: current.fen } });
+        if (alive) setPlayAccess(r.data);
+      } catch {
+        if (alive) setPlayAccess(null);
+      }
+    })();
+    return () => { alive = false; };
+  }, [current?.fen]);
+
+  // Spend 20 XP to unlock play-out on this position.
+  const unlockPlay = useCallback(async () => {
+    if (unlockBusy) return;
+    setUnlockBusy(true); setPlayMsg("");
+    try {
+      const r = await api.post("/api/endgame-play/unlock", { fen: current.fen });
+      setPlayAccess((p) => ({ ...(p || {}), ...r.data, free: p?.free || false }));
+      setPlayMsg("Unlocked — play it out!");
+    } catch (e) {
+      const d = e?.response?.data;
+      setPlayMsg(
+        d?.shortfall != null
+          ? `Not enough XP — you need ${d.shortfall} more.`
+          : d?.message || "Could not unlock."
+      );
+    } finally {
+      setUnlockBusy(false);
+    }
+  }, [current?.fen, unlockBusy]);
+
+  // Terminal states, described from the user's point of view.
+  // Declared BEFORE playEngineReply, which calls it.
+  const checkPlayOver = useCallback((g) => {
+    if (g.isCheckmate()) {
+      // The side to move has been mated, so the WINNER is the other one.
+      const loser = g.turn();
+      setPlayOver(loser === playSide ? "Checkmate — you lost." : "Checkmate — you won! ♛");
+      return true;
+    }
+    if (g.isStalemate()) { setPlayOver("Stalemate — drawn."); return true; }
+    if (g.isInsufficientMaterial()) { setPlayOver("Draw — insufficient material."); return true; }
+    if (g.isDraw()) { setPlayOver("Draw (50-move or repetition)."); return true; }
+    return false;
+  }, [playSide]);
+
+  // Engine reply for the side the user is NOT playing.
+  const playEngineReply = useCallback(async (g) => {
+    setPlayThinking(true);
+    try {
+      if (!stockfishService.isReady()) {
+        try { await stockfishService.init(); } catch { /* reported below */ }
+      }
+      const cfg = PLAY_LEVELS[playLevel] || PLAY_LEVELS.medium;
+      const r = await stockfishService.getBestMove(g.fen(), {
+        skill: cfg.skill, depth: cfg.depth, moveTime: cfg.moveTime,
+      });
+      if (!r?.bestMove) { setPlayMsg("Engine unavailable — try again."); return; }
+      const mv = g.move({
+        from: r.bestMove.slice(0, 2),
+        to: r.bestMove.slice(2, 4),
+        promotion: r.bestMove.length > 4 ? r.bestMove[4] : undefined,
+      });
+      if (mv) setPlayHistory((h) => [...h, { san: mv.san, by: "bot" }]);
+      setPlayFen(g.fen());
+      checkPlayOver(g);
+    } catch {
+      setPlayMsg("Engine error — try again.");
+    } finally {
+      setPlayThinking(false);
+    }
+  }, [playLevel]);
+
+  // Start playing from whatever position is on the board right now.
+  const startPlay = useCallback(async () => {
+    const g = new Chess(current.fen);
+    playRef.current = g;
+    const side = g.turn();          // the user takes the side to move
+    setPlaySide(side);
+    setPlayFen(g.fen());
+    setPlayHistory([]);
+    setPlayOver(null);
+    setPlayMsg("");
+    setPlaying(true);
+  }, [current?.fen]);
+
+  // A user move during play-out, followed by the engine's reply.
+  const onPlayDrop = useCallback((from, to) => {
+    const g = playRef.current;
+    if (!g || playOver || playThinking) return false;
+    if (g.turn() !== playSide) return false;
+    const piece = g.get(from);
+    const promotion = piece && piece.type === "p" && (to[1] === "8" || to[1] === "1") ? "q" : undefined;
+    let mv;
+    try { mv = g.move({ from, to, promotion }); } catch { return false; }
+    if (!mv) return false;
+    setPlayHistory((h) => [...h, { san: mv.san, by: "you" }]);
+    setPlayFen(g.fen());
+    if (checkPlayOver(g)) return true;
+    playEngineReply(g);
+    return true;
+  }, [playOver, playThinking, playSide, checkPlayOver, playEngineReply]);
   const endgameNodeId = tree?.endgameNodeId || "root";
 
   const shownFen = current.fen;
@@ -551,15 +692,19 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
   }, [game.fen]);
 
   // Arrow keys step along the current branch; Esc closes.
+  // Disabled while playing: the arrows walk the GAME's moves, so they would both
+  // reveal the winning continuation and yank the board away mid-game. Esc still
+  // closes the modal.
   useEffect(() => {
     const onKey = (e) => {
+      if (e.key === "Escape") { onClose(); return; }
+      if (playing) return;
       if (e.key === "ArrowRight") goForward();
       else if (e.key === "ArrowLeft") goBack();
-      else if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [goForward, goBack, onClose]);
+  }, [goForward, goBack, onClose, playing]);
 
   const atEndgame = currentId === endgameNodeId;
 
@@ -586,6 +731,34 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
           >
             {analyzing ? "✓ Analyzing" : "🐟 Analyze"}
           </button>
+          {/* Play the position out vs the engine. Free for coaches/supporters,
+              otherwise a one-off 20 XP unlock for THIS position. */}
+          {playing ? (
+            <button
+              style={styles.analyzeBtn}
+              onClick={() => { setPlaying(false); setPlayOver(null); setPlayMsg(""); }}
+              title="Stop playing and go back to the replay"
+            >
+              ← Back to replay
+            </button>
+          ) : playAccess?.playable ? (
+            <button
+              style={{ ...styles.analyzeBtn, color: "#34d399", borderColor: "rgba(52,211,153,0.5)" }}
+              onClick={startPlay}
+              title="Play this position out against Stockfish"
+            >
+              ▶ Play vs Stockfish{playAccess.free ? "" : " ✓"}
+            </button>
+          ) : playAccess ? (
+            <button
+              style={{ ...styles.analyzeBtn, color: "#f5c451", borderColor: "rgba(245,196,81,0.5)" }}
+              onClick={unlockPlay}
+              disabled={unlockBusy}
+              title={`Unlock play vs Stockfish for this position (${playAccess.xpPrice} XP). You have ${playAccess.walletXp} XP.`}
+            >
+              {unlockBusy ? "Unlocking…" : `🔓 Play vs Stockfish · ${playAccess.xpPrice} XP`}
+            </button>
+          ) : null}
           {isAdmin && (
             <button
               style={{ ...styles.analyzeBtn, color: "#f5c451", borderColor: "rgba(245,196,81,0.5)" }}
@@ -647,12 +820,15 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
               labelled sides (bottom+left), so cropping the top clips rank 8. */}
           <div style={compact ? { ...styles.boardColCompact, marginBottom: -20 } : styles.boardCol}>
             <Chessboard
-              position={shownFen}
+              /* While playing, the board follows the play-out game, not the
+                 replay tree — so browsing the game's moves can't disturb a
+                 game in progress (and vice versa). */
+              position={playing && playFen ? playFen : shownFen}
               boardWidth={compact ? boardWidth : 440}
-              orientation={orientation}
-              draggable={compact}
-              onDrop={compact ? onUserMove : undefined}
-              lastMove={shownLastMove}
+              orientation={playing ? (playSide === "b" ? "black" : "white") : orientation}
+              draggable={playing ? !playOver && !playThinking : compact}
+              onDrop={playing ? onPlayDrop : (compact ? onUserMove : undefined)}
+              lastMove={playing ? undefined : shownLastMove}
             />
             {!compact && (
               <div style={{ display: "flex", gap: 8, alignItems: "center", justifyContent: "center", marginTop: 14 }}>
@@ -681,7 +857,54 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
 
           {/* RIGHT: move list + all game details */}
           <div style={compact ? styles.rightColCompact : styles.rightCol}>
-            {analyzing && <EnginePanel fen={shownFen} />}
+            {/* PLAY-OUT panel. No engine eval and no best-move hints on purpose:
+                this is a challenge, not a lesson. Analyze stays available for
+                the replay when you're not playing. */}
+            {playing && (
+              <div style={styles.playPanel}>
+                <div style={styles.playHead}>
+                  <span style={{ fontWeight: 800, fontSize: 14 }}>
+                    You play {playSide === "w" ? "White" : "Black"}
+                  </span>
+                  {playThinking && <span style={{ color: "#94a3b8", fontSize: 12 }}>Stockfish is thinking…</span>}
+                </div>
+                <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+                  {Object.entries(PLAY_LEVELS).map(([k, v]) => (
+                    <button
+                      key={k}
+                      onClick={() => setPlayLevel(k)}
+                      style={playLevel === k ? styles.lvlBtnOn : styles.lvlBtn}
+                      title={`Skill ${v.skill}, depth ${v.depth}`}
+                    >
+                      {v.label}
+                    </button>
+                  ))}
+                </div>
+                {playOver && (
+                  <div style={styles.playResult}>{playOver}</div>
+                )}
+                <div style={styles.playMoves}>
+                  {playHistory.length === 0
+                    ? <span style={{ color: "#94a3b8", fontSize: 12.5 }}>Your move — play it out.</span>
+                    : playHistory.map((m, i) => (
+                        <span key={i} style={{ color: m.by === "you" ? "#e6e8ee" : "#94a3b8", marginRight: 8, fontSize: 13 }}>
+                          {i % 2 === 0 ? `${Math.floor(i / 2) + 1}.` : ""} {m.san}
+                        </span>
+                      ))}
+                </div>
+                <button style={styles.playAgainBtn} onClick={startPlay}>↺ Restart from this position</button>
+              </div>
+            )}
+            {playMsg && !playing && (
+              <div style={styles.playNote}>{playMsg}</div>
+            )}
+            {analyzing && !playing && <EnginePanel fen={shownFen} />}
+            {/* The game's own moves are the ANSWER: they show how the position
+                was actually won. Hiding them while playing keeps the play-out an
+                honest test — otherwise the student can just copy the winning
+                method off the panel below their board. The play panel above
+                shows their own moves instead. Leaving play restores this. */}
+            {!playing && (
             <div style={compact
               ? { ...styles.moveList, flex: "1 1 auto", minHeight: 0, height: "auto", maxHeight: "none", display: "block", marginTop: analyzing ? 12 : 0 }
               : { ...styles.moveList, display: "block", marginTop: 0 }}>
@@ -694,7 +917,8 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
               </span>
               {nodes.root?.childIds?.[0] ? renderLine(nodes.root.childIds[0], 0) : null}
             </div>
-            {compact && (
+            )}
+            {compact && !playing && (
               <div style={{ flex: "0 0 auto", display: "flex", gap: 6, alignItems: "center", justifyContent: "center", marginTop: 10 }}>
                 <button style={styles.navBtn} onClick={goStart} disabled={!hasParent} title="Start">«</button>
                 <button style={styles.navBtn} onClick={goBack} disabled={!hasParent} title="Previous (←)">‹</button>
@@ -710,7 +934,9 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
               </div>
             )}
 
-            {!compact && (
+            {/* Admin-only meta. Also hidden during play — it states the game's
+                Result, which gives away whether the position is winnable. */}
+            {!compact && !playing && (
             <div style={{ ...styles.metaBox, marginTop: 18 }}>
             <div style={styles.metaRow}><span style={styles.metaKey}>White</span><span style={styles.metaVal}>{game.white}</span></div>
             <div style={styles.metaRow}><span style={styles.metaKey}>Black</span><span style={styles.metaVal}>{game.black}</span></div>

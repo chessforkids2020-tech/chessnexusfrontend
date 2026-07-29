@@ -1280,7 +1280,9 @@ function SimulSetupSection({ participants = [], simul, onCreate, onStart, onEnd 
 function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
   participants = [], classGames = [], classSpotlightId, classHasClock,
   onStartGames, onSpotlight, onEndGames, onReview, playEnded = false,
-  simul, onSimulCreate, onSimulStart, onSimulEnd }) {
+  simul, onSimulCreate, onSimulStart, onSimulEnd,
+  // Needed so the embedded race view can post its join link into class chat.
+  sessionId = null }) {
   const [watch, setWatch] = useState(null); // { kind:'race'|'tournament', roomId, id }
   const [actTab, setActTab] = useState('play'); // 'play' | 'simul' | 'arena'
   const chip = (s) => {
@@ -1299,7 +1301,9 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
   if (watch?.kind === 'race') {
     return (
       <div style={as.wrap}>
-        <CoachArenaLive roomId={watch.roomId} embedded onBack={() => setWatch(null)} />
+        {/* sessionId enables "💬 Send link to class" — one click posts the join
+            link into class chat instead of the coach copying and pasting it. */}
+        <CoachArenaLive roomId={watch.roomId} embedded onBack={() => setWatch(null)} sessionId={sessionId} />
       </div>
     );
   }
@@ -3473,6 +3477,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               loading={actLoading}
               onReload={loadActivities}
               onClose={() => setShowActivities(false)}
+              sessionId={session?.id || null}
               // Play in class (coach): the admitted roster + live game state + emit helpers.
               participants={waiting}
               classGames={classGames}

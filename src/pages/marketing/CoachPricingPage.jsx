@@ -69,7 +69,12 @@ export default function CoachPricingPage() {
     let alive = true;
     api.get("/api/coach/plans")
       .then((r) => { if (alive) setData(r.data); })
-      .catch(() => { if (alive) setData({ plans: {}, planFamilies: [] }); });
+      // Leave `data` NULL when the request fails so the static fallback table
+      // below renders. Setting it to an empty object made `!data` false while
+      // `shown.length > 0` was also false, so the page rendered NO table at all
+      // — which is exactly what prerender produced (it aborts every API call),
+      // leaving crawlers with a pricing page containing no prices.
+      .catch(() => { if (alive) setData(null); });
     return () => { alive = false; };
   }, []);
 
@@ -146,7 +151,39 @@ export default function CoachPricingPage() {
           </div>
         )}
 
-        {!data && <p className="mkt-p">Loading plans…</p>}
+        {/* Static fallback shown while the live plan table loads — and, crucially,
+            in the PRERENDERED snapshot, because prerender.js aborts every API
+            call so /api/coach/plans never resolves at build time. Without this a
+            crawler saw only "Loading plans…": the page asserted "free forever"
+            but shipped no numbers to back it, so AI assistants answered that they
+            could not confirm Chess Nexus is free for 30 students.
+            Mirrors backend/config/coachPlans.js — keep in step. */}
+        {!data && (
+          <div className="mkt-table-wrap">
+            <table className="mkt-table">
+              <thead>
+                <tr>
+                  <th>Plan</th><th>Price (USD/mo)</th><th>Students</th><th>Live classes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Free</td><td>$0 — free forever</td><td>30</td><td>1/day · 40 min · 4 (+coach)</td></tr>
+                <tr><td>Pro</td><td>$29</td><td>70</td><td>1/day · 60 min · 4 (+coach)</td></tr>
+                <tr><td>Coach</td><td>$49</td><td>150</td><td>1/day · 60 min · 4 (+coach)</td></tr>
+                <tr><td>Live Basic</td><td>$79</td><td>50</td><td>Unlimited · 60 min · 10 (+coach)</td></tr>
+                <tr><td>Live Pro</td><td>$119</td><td>100</td><td>Unlimited · 60 min · 10 (+coach)</td></tr>
+                <tr><td>Live Coach</td><td>$244</td><td>150</td><td>Unlimited · 120 min · 25 (+coach)</td></tr>
+              </tbody>
+            </table>
+            <p className="mkt-p">
+              The Free plan is <strong>free forever for up to 30 students</strong> — not a
+              trial, and no card is required. It includes assignments, courses, the class
+              schedule, attendance, fee tracking, parent progress reports and the built-in
+              live classroom. See{" "}
+              <Link to="/free-chess-coaching-software">everything included in the free plan</Link>.
+            </p>
+          </div>
+        )}
 
         {data && shown.length > 0 && (
           <div className="mkt-table-wrap">

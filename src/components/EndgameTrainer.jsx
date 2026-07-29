@@ -189,7 +189,11 @@ function StudyView({ pick, onPlay }) {
     (async () => {
       setLoadingLine(true);
       try {
-        const l = await tablebase.bestLine(pick.fen, Chess, 24);
+        // Pass the trainee's colour so THEIR moves convert the win, while the
+        // opponent still defends perfectly. Without it both sides were played
+        // as defenders and the "perfect line" dawdled instead of winning.
+        const heroSide = pick.side === 'black' ? 'b' : 'w';
+        const l = await tablebase.bestLine(pick.fen, Chess, 24, heroSide);
         if (!alive) return;
         setTree(buildTreeFromGame((l || []).map(m => m.san), [], pick.fen));
       } catch {
@@ -347,11 +351,25 @@ function PlayView({ pick, onResult, onBack }) {
     return { uci: r?.bestMove || null, cp, mate };
   }, [ensureEngine, level, trainerSide]);
 
-  // Show the engine's read of the starting position (from the trainee's POV).
+  // Show the engine's read of the starting position (from the trainee's POV) —
+  // and, when the position starts on the OPPONENT's move, let Stockfish play it.
+  //
+  // Many curated picks are stored one ply early: the FEN has the opponent to
+  // move while `side`/`goal`/`title` all say the trainee plays the other colour.
+  // Without this the board just sat there: onUserMove's turn guard rejected
+  // every move the trainee tried (so their own pieces looked frozen while the
+  // opponent's could be dragged), and Stockfish never replied either, because
+  // it only moves from opponentReply() AFTER a legal user move. The position is
+  // authored correctly — the engine simply owns the first move.
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
+        if (sideToMoveNow() !== trainerSide) {
+          // Engine's turn: play it, which also refreshes the eval readout.
+          if (alive) await opponentReply();
+          return;
+        }
         const r = await engineMove(game.fen());
         if (alive) setEvalInfo({ cp: r.cp, mate: r.mate });
       } catch { /* ignore */ }

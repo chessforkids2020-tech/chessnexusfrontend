@@ -58,6 +58,7 @@ Allow: /
 Allow: /features
 # Coach-facing marketing (these were missing — /chess-coaching is a main page)
 Allow: /chess-coaching
+Allow: /free-chess-coaching-software
 Allow: /chess-coach-guide
 Allow: /chess-coach-pricing
 Allow: /chess-academy-software

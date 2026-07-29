@@ -517,8 +517,16 @@ export default function Sidebar({ user, onNavigate }) {
     return tzMap[tz] || tz;
   };
 
+  // Skip the inline stylesheet in the prerendered snapshot. Text extractors
+  // (crawlers, AI readers) treat <style> contents as page text, so ~4.8k
+  // characters of keyframes and a font @import were being served as the opening
+  // text of EVERY prerendered page — 27–62% of each page's extractable text,
+  // sitting ahead of the actual product copy. Browsers are unaffected.
+  const skipInlineCss = typeof window !== 'undefined' && window.__PRERENDER__;
+
   return (
     <>
+      {!skipInlineCss && (
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Oleo+Script+Swash+Caps&family=Poppins:wght@400;500;600;700&display=swap');
@@ -546,6 +554,7 @@ export default function Sidebar({ user, onNavigate }) {
           }
         `}
       </style>
+      )}
 
       {/* Mobile Hamburger Menu Button - Only show if not controlled by parent */}
       {!onNavigate && (isMobile && !isLandscape) && !isExpanded && (

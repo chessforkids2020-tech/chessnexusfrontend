@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import BackToClassBanner from '../../../components/BackToClassBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../api';
 import socket from '../../socket';
@@ -493,7 +494,9 @@ export default function ArenaWaiting() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.background}></div>
+      {/* Only renders when the tab was opened from a live class. */}
+      <BackToClassBanner />
+      <div style={{styles.background}}></div>
       
       <div style={styles.content}>
         {/* Status Card - Moved to Top */}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import BackToClassBanner from '../../../components/BackToClassBanner';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, Filler } from 'chart.js';
@@ -438,7 +439,9 @@ export default function ArenaResult() {
 
   return (
     <div style={styles.page}>
-      <div style={styles.background}></div>
+      {/* Only renders when the tab was opened from a live class. */}
+      <BackToClassBanner />
+      <div style={{styles.background}}></div>
       
       <canvas ref={canvasRef} style={{...styles.confettiCanvas, opacity: showConfetti ? 1 : 0}} />
       

@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect, useCallback, useRef, useContext } from 'react';
 import { Chess } from 'chess.js';
 import { useParams, useNavigate } from 'react-router-dom';
+import BackToClassBanner from '../../../components/BackToClassBanner';
 import api from '../../api';
 import Chessboard from '../../components/Chessboard';
 import { useAuth } from '../../contexts/AuthContext';
@@ -958,7 +959,9 @@ export default function ArenaRace() {
 
   return (
     <div style={styles.page}>
-      <div style={styles.background}></div>
+      {/* Only renders when the tab was opened from a live class. */}
+      <BackToClassBanner />
+      <div style={{styles.background}}></div>
       
       {/* Debug indicator - remove after confirming fix */}
       {/* Performance Debug Window */}

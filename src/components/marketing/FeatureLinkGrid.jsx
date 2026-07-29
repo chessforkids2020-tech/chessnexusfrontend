@@ -74,6 +74,14 @@ export const FEATURES = [
       "A free toolkit for chess coaches and academies — student roster & batches, assignments, course builder, private class races and parent reports.",
   },
   {
+    slug: "/free-chess-coaching-software",
+    appPath: "/coach/onboarding",
+    icon: "🆓",
+    title: "Free Coach Plan",
+    blurb:
+      "Free forever for up to 30 students — no trial, no card. Exactly what is included, and exactly where the limits are.",
+  },
+  {
     slug: "/chess-academy-software",
     appPath: "/coach/onboarding",
     icon: "🏫",

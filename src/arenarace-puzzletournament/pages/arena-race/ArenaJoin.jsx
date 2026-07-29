@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import BackToClassBanner from '../../../components/BackToClassBanner';
 import { motion } from 'framer-motion';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
@@ -450,7 +451,9 @@ export default function ArenaJoin() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.background}></div>
+      {/* Only renders when the tab was opened from a live class. */}
+      <BackToClassBanner />
+      <div style={{styles.background}}></div>
       
       <div style={styles.content}>
         {/* Header */}

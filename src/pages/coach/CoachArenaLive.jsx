@@ -7,23 +7,40 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../api';
 import socket from '../../socket';
-import RoomCodeBadge from '../../components/RoomCodeBadge';
+import RoomCodeBadge, { joinLinkForCode } from '../../components/RoomCodeBadge';
 import './CoachDashboard.css';
 
 // Works BOTH as a route (/coach/arena/:roomId) and EMBEDDED inside the live class
 // stage: pass `roomId` + `embedded` + `onBack` as props and it renders inline with a
 // "back" affordance instead of a route <Link>. When used as a route, params drive it.
-export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, onBack }) {
+export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, onBack, sessionId = null }) {
   const params = useParams();
   const roomId = roomIdProp || params.roomId;
+
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [now, setNow] = useState(Date.now());   // ticks for the "starts in" countdown
+  const [sentToClass, setSentToClass] = useState(false);
   const [starting, setStarting] = useState(false);
   const [startErr, setStartErr] = useState('');
   const tickRef = useRef(null);
+
+  // Post the join link into class chat. Uses the SAME socket event the chat box
+  // uses, so it arrives as a normal coach message — already clickable via
+  // utils/linkify, and it opens in a new tab so the class tab stays connected.
+  // Declared after the state above, which it reads.
+  const sendLinkToClass = () => {
+    const code = data?.roomId || roomId;
+    if (!sessionId || !code) return;
+    socket.emit('liveclass:chat', {
+      sessionId,
+      message: `🏁 Join the race: ${joinLinkForCode(code)}`,
+    });
+    setSentToClass(true);
+    setTimeout(() => setSentToClass(false), 2500);
+  };
 
   const load = async () => {
     try {
@@ -150,7 +167,32 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
           </p>
           {/* Students find this race in their Activities tab, but a coach mid-class
               needs to be able to read the code out or paste it into chat. */}
-          {!isDone && <RoomCodeBadge code={data?.roomId || roomId} style={{ marginTop: 10 }} />}
+          {/* showLink: students kept asking for the waiting-room LINK, and the
+              badge only offered the bare code — so the coach had to read the
+              code out and explain where to type it, mid-class. */}
+          {!isDone && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginTop: 10 }}>
+              <RoomCodeBadge code={data?.roomId || roomId} showLink />
+              {/* One click beats "copy link, open chat, paste, send" while a
+                  class of kids waits. Chat links are already clickable and open
+                  in a new tab, so the class tab stays connected behind it. */}
+              {sessionId && (
+                <button
+                  onClick={sendLinkToClass}
+                  title="Post the join link into class chat for every student"
+                  style={{
+                    padding: '6px 14px', borderRadius: 8, fontSize: 12.5, fontWeight: 700,
+                    cursor: 'pointer', whiteSpace: 'nowrap',
+                    background: sentToClass ? 'rgba(16,185,129,0.2)' : 'rgba(6,182,212,0.15)',
+                    border: `1px solid ${sentToClass ? 'rgba(16,185,129,0.5)' : 'rgba(6,182,212,0.35)'}`,
+                    color: sentToClass ? '#6ee7b7' : '#67e8f9',
+                  }}
+                >
+                  {sentToClass ? '✓ Sent to class' : '💬 Send link to class'}
+                </button>
+              )}
+            </div>
+          )}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="btn-ghost" onClick={load}>↻ Refresh</button>

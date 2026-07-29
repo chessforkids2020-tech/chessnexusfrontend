@@ -44,6 +44,7 @@ import MastersGamesPage from "./pages/marketing/MastersGamesPage";
 import AnalyseMyChessGamePage from "./pages/marketing/AnalyseMyChessGamePage";
 import ImproveAtChessPage from "./pages/marketing/ImproveAtChessPage";
 import ChessCoachingPage from "./pages/marketing/ChessCoachingPage";
+import FreeCoachPlanPage from "./pages/marketing/FreeCoachPlanPage";
 import CoachGuidePage from "./pages/marketing/CoachGuidePage";
 import CoachPricingPage from "./pages/marketing/CoachPricingPage";
 import ChessAcademyPage from "./pages/marketing/ChessAcademyPage";
@@ -558,6 +559,11 @@ export default function App() {
         <Route path="/chess-coaching" element={
           <MarketingLayout>
             <ChessCoachingPage />
+          </MarketingLayout>
+        } />
+        <Route path="/free-chess-coaching-software" element={
+          <MarketingLayout>
+            <FreeCoachPlanPage />
           </MarketingLayout>
         } />
         <Route path="/chess-coach-guide" element={

@@ -2,8 +2,16 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
+  // The footer's inline stylesheet is ~4.8k characters and renders on EVERY
+  // page. Text extractors (search crawlers, AI readers) treat <style> contents
+  // as page text, so those 4.8k chars counted as 27–62% of each prerendered
+  // page's extractable text — pure noise competing with the actual copy. Skip
+  // it in the snapshot only; real browsers still get it.
+  const skipInlineCss = typeof window !== 'undefined' && window.__PRERENDER__;
+
   return (
     <>
+      {!skipInlineCss && (
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -182,6 +190,7 @@ export default function Footer() {
           }
         `}
       </style>
+      )}
 
       <footer className="site-footer">
         <div className="footer-content">

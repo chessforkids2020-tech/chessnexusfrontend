@@ -53,6 +53,7 @@ const ROUTES = [
   '/analyse-my-chess-game',
   '/improve-at-chess',
   '/chess-coaching',
+  '/free-chess-coaching-software',
   '/chess-coach-guide',
   '/chess-coach-pricing',
   '/chess-coach-referral',

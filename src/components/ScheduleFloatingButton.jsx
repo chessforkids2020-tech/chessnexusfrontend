@@ -73,10 +73,17 @@ export default function ScheduleFloatingButton() {
 
   return (
     <>
+      {/* Omitted from the prerendered snapshot. Text extractors read <style>
+          bodies as page text, so these keyframes were being served to crawlers
+          and AI readers as the FIRST few hundred characters of every page —
+          ahead of any product copy. Real browsers still get them; only the
+          static snapshot skips them. */}
+      {!(typeof window !== 'undefined' && window.__PRERENDER__) && (
       <style>{`
         @keyframes sfbPulse { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5)} 70%{box-shadow:0 0 0 10px rgba(34,197,94,0)} }
         @keyframes sfbLiveDot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
       `}</style>
+      )}
 
       <div
         style={{

@@ -8,14 +8,36 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { copyText } from '../utils/clipboard';
 
-export default function RoomCodeBadge({ code, label = 'Room code', style }) {
-  const [state, setState] = useState('idle'); // 'idle' | 'copied' | 'failed'
-  const timer = useRef(null);
+// Build the full waiting-room URL for a race code. /arena/join already reads
+// ?code= and pre-fills the box (see ArenaJoin.jsx), so this needs no new route —
+// the link just wasn't being offered anywhere.
+export function joinLinkForCode(code) {
+  const origin = typeof window !== 'undefined' && window.location
+    ? window.location.origin
+    : 'https://www.chessnexus.in';
+  return `${origin}/arena/join?code=${encodeURIComponent(String(code).toUpperCase())}`;
+}
 
-  useEffect(() => () => clearTimeout(timer.current), []);
-  useEffect(() => { setState('idle'); }, [code]);
+export default function RoomCodeBadge({ code, label = 'Room code', style, showLink = false }) {
+  const [state, setState] = useState('idle'); // 'idle' | 'copied' | 'failed'
+  // Separate state so the two buttons report their own result independently.
+  const [linkState, setLinkState] = useState('idle');
+  const timer = useRef(null);
+  const linkTimer = useRef(null);
+
+  useEffect(() => () => { clearTimeout(timer.current); clearTimeout(linkTimer.current); }, []);
+  useEffect(() => { setState('idle'); setLinkState('idle'); }, [code]);
 
   if (!code) return null;
+
+  // Copying the CODE alone means the coach still has to explain where to type
+  // it. Copying the LINK gives students something they can just open.
+  const onCopyLink = async () => {
+    const ok = await copyText(joinLinkForCode(code));
+    setLinkState(ok ? 'copied' : 'failed');
+    clearTimeout(linkTimer.current);
+    linkTimer.current = setTimeout(() => setLinkState('idle'), 1800);
+  };
 
   const onCopy = async () => {
     const ok = await copyText(code);
@@ -61,6 +83,21 @@ export default function RoomCodeBadge({ code, label = 'Room code', style }) {
       >
         {btnLabel}
       </button>
+      {showLink && (
+        <button
+          onClick={onCopyLink}
+          title="Copy the full waiting-room link to paste into class chat"
+          style={{
+            padding: '6px 14px', borderRadius: 8, fontSize: 12.5, fontWeight: 600,
+            cursor: 'pointer', whiteSpace: 'nowrap',
+            background: linkState === 'copied' ? 'rgba(16,185,129,0.2)' : 'rgba(139,92,246,0.15)',
+            border: `1px solid ${linkState === 'copied' ? 'rgba(16,185,129,0.5)' : 'rgba(167,139,250,0.4)'}`,
+            color: linkState === 'copied' ? '#6ee7b7' : '#c4b5fd',
+          }}
+        >
+          {linkState === 'copied' ? '✓ Link copied' : linkState === 'failed' ? 'Copy failed' : '🔗 Copy join link'}
+        </button>
+      )}
     </div>
   );
 }

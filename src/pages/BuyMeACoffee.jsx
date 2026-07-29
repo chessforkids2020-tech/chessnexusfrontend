@@ -355,6 +355,31 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
           )}
         </div>
 
+        {/* Supporter XP perk — shown to EVERYONE, not just people mid-purchase
+            and not only Elite (6+ months). Any active ☕ supporter gets it.
+            Wording is scoped to "locked activities" deliberately: every XP-gated
+            FEATURE waives its cost for supporters (books, premium endgames,
+            endgame play-out vs Stockfish, opening repertoire — all check
+            CoffeeSupporter.isActive), but avatar unlocks still charge XP, since
+            routes/auth.js keeps "no privileged free pass for cosmetics". Saying
+            "everything" here would be a promise the backend does not keep. */}
+        <div style={styles.xpPerkCard}>
+          <span style={styles.xpPerkIcon}>🔓</span>
+          <div>
+            <div style={styles.xpPerkTitle}>
+              Supporters never spend XP on locked activities
+            </div>
+            <p style={styles.xpPerkText}>
+              While your ☕ badge is active, every locked activity opens for free — no XP needed.
+              <strong style={{ color: C.text }}> Premium endgames</strong>,
+              <strong style={{ color: C.text }}> playing endgames out against Stockfish</strong>,
+              the <strong style={{ color: C.text }}>opening repertoire trainer</strong> and
+              all <strong style={{ color: C.text }}>Nexus books</strong> unlock instantly.
+              Save your XP — or never earn it at all.
+            </p>
+          </div>
+        </div>
+
         {/* Elite membership — our little gratitude to supporters */}
         <div style={styles.eliteCard}>
           <div style={styles.eliteHeader}>
@@ -764,6 +789,32 @@ const styles = {
     fontSize: 13,
     fontWeight: 600
   },
+  // Supporter XP perk band (sits between the hero and the Elite card).
+  xpPerkCard: {
+    marginTop: 22,
+    display: 'flex',
+    gap: 16,
+    alignItems: 'flex-start',
+    background: 'linear-gradient(135deg, rgba(16,185,129,0.10), rgba(6,182,212,0.07))',
+    border: '1px solid rgba(52,211,153,0.34)',
+    borderRadius: 16,
+    padding: '18px 20px',
+  },
+  xpPerkIcon: {
+    flex: 'none',
+    fontSize: 22,
+    lineHeight: 1,
+    width: 44,
+    height: 44,
+    display: 'grid',
+    placeItems: 'center',
+    borderRadius: 12,
+    background: 'rgba(16,185,129,0.14)',
+    border: '1px solid rgba(52,211,153,0.3)',
+  },
+  xpPerkTitle: { color: '#6ee7b7', fontWeight: 800, fontSize: 15, marginBottom: 6 },
+  xpPerkText: { color: '#94a3b8', fontSize: 13.5, lineHeight: 1.65, margin: 0 },
+
   eliteCard: {
     marginTop: 22,
     background: 'linear-gradient(135deg, rgba(245,158,11,0.10), rgba(139,92,246,0.08))',

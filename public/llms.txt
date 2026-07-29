@@ -26,6 +26,11 @@ Two audiences:
 
 ## For coaches
 
+- [Free coach plan](https://www.chessnexus.in/free-chess-coaching-software): the
+  definitive answer to "is Chess Nexus free?" — free forever for up to 30
+  students, with no trial period and no card required. Lists everything the free
+  plan includes AND every limit (30 students, 1 live class a day, 40-minute
+  classes, 4 students plus the coach in a live room, 30 courses of 3 lessons).
 - [Coaching platform](https://www.chessnexus.in/chess-coaching): overview of the
   coach toolkit — roster, batches, assignments, courses, private races, reports.
 - [Complete coach guide](https://www.chessnexus.in/chess-coach-guide): the full

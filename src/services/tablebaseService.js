@@ -67,6 +67,59 @@ export async function bestDefense(fen) {
 }
 
 /**
+ * The tablebase-perfect move for whoever is to move in `fen`, playing to WIN
+ * rather than to resist.
+ *
+ * bestDefense() is a *defender's* heuristic: it maximises its own outcome and
+ * then maximises |dtz| to drag the game out. That is right for the losing side
+ * and actively wrong for the winning side — dragging a win out is how you let
+ * the 50-move rule turn it into a draw, and the "best outcome" tie-break can
+ * even prefer a move that hands the opponent a win.
+ *
+ * Each move's `category` is reported from the OPPONENT's point of view (the
+ * position after the move), so for the mover:
+ *     opponent 'loss'  → we win   (best)
+ *     opponent 'draw'  → we draw
+ *     opponent 'win'   → we lose  (worst)
+ * Among winning moves, the SMALLEST |dtz| converts fastest.
+ *
+ * Returns { uci, san, category } (category = ours, not the opponent's) or null.
+ */
+export async function bestWinningMove(fen) {
+  const data = await probe(fen);
+  const moves = Array.isArray(data.moves) ? data.moves : [];
+  if (moves.length === 0) return null;
+
+  // Our outcome is the inverse of the opponent's category after the move.
+  const ourRank = (cat) => {
+    const c = normCategory(cat);
+    if (c === 'loss') return 2;  // opponent loses → we win
+    if (c === 'draw') return 1;
+    return 0;                    // opponent wins → we lose
+  };
+
+  let best = null;
+  let bestRank = -1;
+  let bestDtz = Infinity;
+  for (const m of moves) {
+    const rank = ourRank(m.category);
+    const dtzMag = Math.abs(Number(m.dtz) || 0);
+    // Higher rank always wins. Within the same rank, convert (or hold) FASTEST
+    // when we're winning; when we're losing this still prefers the shortest
+    // path, so fall back to bestDefense for genuinely lost positions.
+    if (rank > bestRank || (rank === bestRank && dtzMag < bestDtz)) {
+      bestRank = rank; bestDtz = dtzMag; best = m;
+    }
+  }
+  if (!best) return null;
+
+  // Convert the opponent-POV category into ours for the caller.
+  const oppCat = normCategory(best.category);
+  const ours = oppCat === 'loss' ? 'win' : oppCat === 'win' ? 'loss' : 'draw';
+  return { uci: best.uci, san: best.san, category: ours };
+}
+
+/**
  * The result category of `fen` from the SIDE-TO-MOVE's point of view
  * ('win' | 'draw' | 'loss'), plus dtz/dtm. Used to detect a technique slip.
  * Returns { category, dtz, dtm } or null if out of range / error.
@@ -108,12 +161,27 @@ export async function categoryForSide(fen, side) {
  * @param {number} maxPlies     safety cap on line length (default 24)
  * @returns {Promise<Array<{ san, uci, fenAfter }>>} the moves of the perfect line
  */
-export async function bestLine(fen, ChessCtor, maxPlies = 24) {
+/**
+ * The tablebase-perfect line from `fen`, `maxPlies` deep.
+ *
+ * `heroSide` ('w' | 'b') is the side trying to WIN — normally the trainee. Its
+ * moves are chosen with bestWinningMove (convert fastest); the opponent's with
+ * bestDefense (resist longest). Omit it and the whole line is played as defence,
+ * which is what this used to do for BOTH sides: the "perfect line" then showed
+ * the winner dawdling, and the tie-break could even pick a move handing the
+ * opponent the win — so a won position looked drawn. That is the bug behind
+ * "the tablebase line basically makes this position a draw, not a win".
+ */
+export async function bestLine(fen, ChessCtor, maxPlies = 24, heroSide = null) {
   const out = [];
   let cur = fen;
   for (let i = 0; i < maxPlies; i++) {
     let move;
-    try { move = await bestDefense(cur); } catch { break; }
+    const toMove = cur.split(' ')[1];              // 'w' | 'b'
+    const heroToMove = heroSide && toMove === heroSide;
+    try {
+      move = heroToMove ? await bestWinningMove(cur) : await bestDefense(cur);
+    } catch { break; }
     if (!move || !move.uci) break;
     let game;
     try {
