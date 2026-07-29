@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const styles = {
   pageWrapper: {
@@ -226,6 +227,14 @@ export default function ContestRules() {
 
   return (
     <div style={styles.pageWrapper}>
+      {/* See BuyMeACoffee.jsx — without an explicit canonical the prerendered
+          page inherits index.html's, which points at '/'. */}
+      <SEO
+        title="Global Chess Puzzle Contest — Rules"
+        description="Full rules for the Chess Nexus global online chess puzzle contest: who can enter, how scoring and tie-breaks work, the schedule, and the fair-play rules every entrant agrees to."
+        keywords="chess puzzle contest rules, online chess competition, chess tactics contest, chess contest fair play"
+        canonical="/contest-rules"
+      />
       <div style={styles.background}></div>
       
       <div style={styles.container}>

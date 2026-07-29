@@ -67,6 +67,14 @@ const ROUTES = [
   '/3d-chess-arena-tournament',
   '/chess-study',
   '/chess-community',
+  // Public, content-stable app pages. Verified logged-out: each renders real
+  // standalone content (2.6k–3.7k chars) rather than redirecting to /login or
+  // rendering an empty data-driven shell — unlike /clubs, /public-studies,
+  // /daily-puzzles and /invite, which all bounce to /login and would be
+  // soft-404s if indexed.
+  '/members',
+  '/buy-coffee',
+  '/contest-rules',
   '/contact',
   '/privacy-policy',
   '/terms',
@@ -153,10 +161,25 @@ async function run() {
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
       // Ensure React has painted real content into #root.
+      // Wait for BOTH the app to paint AND react-helmet-async to write the
+      // per-page <link rel="canonical"> into the head.
+      //
+      // Waiting on #root alone is a race. Helmet flushes its head mutations in
+      // an effect AFTER the first paint, so a snapshot taken the instant #root
+      // fills can capture index.html's default head — whose canonical points at
+      // '/'. Google then folds the page into the homepage as a duplicate and
+      // never indexes it. Pages under MarketingLayout happened to win this race;
+      // /members (UserLayout) lost it, shipping the homepage's canonical AND
+      // description. Depending on paint order for correctness is not something
+      // to leave in place, so wait for the actual tag.
       await page.waitForFunction(
         () => {
           const root = document.getElementById('root');
-          return root && root.children.length > 0;
+          if (!root || root.children.length === 0) return false;
+          const link = document.querySelector('link[rel="canonical"]');
+          // '/' legitimately carries the site-root canonical; every other route
+          // must have had it rewritten away from the default before we snapshot.
+          return !!link && (location.pathname === '/' || !link.href.replace(/\/$/, '').endsWith('chessnexus.in'));
         },
         { timeout: 15000 }
       );

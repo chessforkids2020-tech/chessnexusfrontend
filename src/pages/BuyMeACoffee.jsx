@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useSupporterRefresh } from '../context/SupporterContext';
+import SEO from '../components/SEO';
 
 const C = {
   base: '#0a0a0a',
@@ -315,6 +316,15 @@ export default function BuyMeACoffee() {
 
   return (
     <div style={styles.page}>
+      {/* Without this the prerendered page inherits index.html's canonical,
+          which points at '/' — Google would fold this page into the homepage
+          as a duplicate and never index it. */}
+      <SEO
+        title="Support Chess Nexus — Buy Us a Coffee"
+        description="Chess Nexus is free with no ads. If it has helped you or your students, you can support it with a one-off coffee and get a ☕ supporter badge — plus free premium endgames and the opening repertoire trainer."
+        keywords="support chess nexus, buy me a coffee chess, donate chess platform, chess supporter badge"
+        canonical="/buy-coffee"
+      />
       <div style={styles.bgGlow} />
 
       <div style={styles.container}>

@@ -8,7 +8,8 @@
        user-selected canonical". They stay reachable in the app, just not indexed.
        Keep this list in step with the ROUTES array in prerender.js. -->
 
-  <!-- Homepage (client-rendered; SPA sets its own canonical) -->
+  <!-- Homepage (prerendered since 2026-07; previously shipped an empty #root
+       to crawlers, so nothing on it could be read or cited) -->
   <url>
     <loc>https://www.chessnexus.in/</loc>
     <lastmod>2026-07-24</lastmod>
@@ -182,6 +183,31 @@
     <lastmod>2026-05-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.30</priority>
+  </url>
+
+  <!-- Public app pages that are now prerendered with their own canonical.
+       Verified logged-out before adding: each returns real standalone content
+       (5.6k-12k chars). Other public routes stay OUT on purpose — /clubs,
+       /public-studies, /daily-puzzles, /invite and /study/books all redirect to
+       /login, and /bestracers, /scoreboard and the leaderboards render under
+       300 chars without live data. Both would be soft-404s if indexed. -->
+  <url>
+    <loc>https://www.chessnexus.in/members</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+  <url>
+    <loc>https://www.chessnexus.in/buy-coffee</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.50</priority>
+  </url>
+  <url>
+    <loc>https://www.chessnexus.in/contest-rules</loc>
+    <lastmod>2026-07-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.40</priority>
   </url>
 
 </urlset>

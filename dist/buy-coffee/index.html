@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+      Per-page SEO tags (title, description, keywords, canonical, robots,
+      Open Graph, Twitter) are managed at runtime by react-helmet-async via
+      src/components/SEO.jsx, and are baked into each prerendered page by
+      prerender.js. They are intentionally NOT hardcoded here — duplicating
+      them would produce two <title>/canonical/og:* tags on prerendered pages.
+      A default title (below) prevents an empty tab title before hydration.
+    -->
+    <title>Support Chess Nexus — Buy Us a Coffee | Chess Nexus</title>
+    <meta name="author" content="Chess Nexus">
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo.png">
+    <meta name="theme-color" content="#06b6d4">
+    <meta name="msapplication-TileColor" content="#06b6d4">
+
+    <!-- Performance hints -->
+    <link rel="preconnect" href="https://www.chessnexus.in">
+    <link rel="dns-prefetch" href="https://www.chessnexus.in">
+
+    <!-- JSON-LD: WebApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Chess Nexus",
+      "url": "https://www.chessnexus.in/",
+      "description": "Free online chess platform for solving puzzles, practicing tactics, and competing in live arena races.",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires JavaScript",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "featureList": [
+        "Daily Chess Puzzles",
+        "Live Arena Races",
+        "Chess Tactics Training",
+        "Monthly Focus Challenges",
+        "Global Leaderboard",
+        "Team Race Mode",
+        "Chess Study System"
+      ],
+      "screenshot": "https://www.chessnexus.in/logo.png",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <!-- JSON-LD: Organization — 'alternateName' + 'sameAs' help Google treat
+         "chessnexus" and "chess nexus" as the SAME brand entity and consolidate
+         search results. Fill in every official profile URL under sameAs; the more
+         verified profiles, the stronger the brand signal. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Chess Nexus",
+      "alternateName": ["ChessNexus", "Chess Nexus Academy", "chessnexus.in"],
+      "url": "https://www.chessnexus.in/",
+      "logo": "https://www.chessnexus.in/logo.png",
+      "sameAs": [
+        "https://www.instagram.com/chessnexus.in/",
+        "https://www.facebook.com/profile.php?id=100064068341481"
+      ],
+      "description": "Chess Nexus is a free online chess training and competition platform offering puzzles, tactics, live races, and leaderboards."
+    }
+    </script>
+
+    <!-- JSON-LD: WebSite — helps Google understand the site as a single entity -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Chess Nexus",
+      "alternateName": "ChessNexus",
+      "url": "https://www.chessnexus.in/"
+    }
+    </script>
+
+    <!-- JSON-LD: SiteNavigationElement — the strongest signal Google uses to
+         build sitelinks. Order matters: Google favours the earliest items, and
+         typically shows ~4-6. The priority quick-actions (Sign up, Coach, Learn,
+         Tournaments, Analyze) are listed FIRST so they're the strongest sitelink
+         candidates. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "Chess Nexus main navigation",
+      "itemListElement": [
+        { "@type": "SiteNavigationElement", "position": 1, "name": "Sign Up", "description": "Create a free Chess Nexus account and start training.", "url": "https://www.chessnexus.in/signup-request" },
+        { "@type": "SiteNavigationElement", "position": 2, "name": "Sign In", "description": "Log in to your Chess Nexus account.", "url": "https://www.chessnexus.in/login" },
+        { "@type": "SiteNavigationElement", "position": 3, "name": "Coach", "description": "Coach-led chess training and academy tools for coaches.", "url": "https://www.chessnexus.in/chess-coaching" },
+        { "@type": "SiteNavigationElement", "position": 4, "name": "Learn Chess", "description": "Solve puzzles, train tactics and improve at chess.", "url": "https://www.chessnexus.in/improve-at-chess" },
+        { "@type": "SiteNavigationElement", "position": 5, "name": "Live Tournaments", "description": "Compete in live 3D arena chess tournaments and races.", "url": "https://www.chessnexus.in/3d-chess-arena-tournament" },
+        { "@type": "SiteNavigationElement", "position": 6, "name": "Analyze Game", "description": "Analyse your chess games with Stockfish and accuracy scores.", "url": "https://www.chessnexus.in/analyse-my-chess-game" },
+        { "@type": "SiteNavigationElement", "position": 7, "name": "Chess Puzzles", "description": "Solve daily chess puzzles and train tactics.", "url": "https://www.chessnexus.in/chess-puzzles" },
+        { "@type": "SiteNavigationElement", "position": 8, "name": "Play Chess Online", "description": "Play live chess against people or the Stockfish engine.", "url": "https://www.chessnexus.in/play-chess-online" },
+        { "@type": "SiteNavigationElement", "position": 9, "name": "Chess Study", "description": "Learn with structured chess study lessons.", "url": "https://www.chessnexus.in/chess-study" },
+        { "@type": "SiteNavigationElement", "position": 10, "name": "Leaderboard", "description": "See the top players on the global leaderboard.", "url": "https://www.chessnexus.in/leaderboard" }
+      ]
+    }
+    </script>
+
+    <!-- JSON-LD: FAQPage for SEO rich results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Chess Nexus free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Chess Nexus is completely free. All core features including daily puzzles, tactics training, and live arena races are available at no cost."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What chess features does Chess Nexus offer?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Chess Nexus offers daily chess puzzles, live arena races, team race mode, monthly focus challenges, a global leaderboard, chess study system, and tactics training."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I improve my chess rating on Chess Nexus?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Solve daily puzzles, participate in arena races, complete monthly focus challenges, and use the study system to improve your chess rating on Chess Nexus."
+          }
+        }
+      ]
+    }
+    </script>
+    <script type="module" crossorigin="" src="/assets/index-BiVDnaY9.js"></script>
+    <link rel="stylesheet" crossorigin="" href="/assets/index-B8rEEwcQ.css">
+  <style data-shake-animation="true">
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(30px); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0); 
+    opacity: 1; 
+  }
+}
+
+@keyframes glassGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 30px rgba(99, 102, 241, 0.5); }
+}
+</style><style data-responsive-styles="true">
+/* Desktop styles - Submit button to the right of chessboard */
+@media (min-width: 769px) {
+  .tournament-layout {
+    gap: 8px !important;
+  }
+  
+  .tournament-center {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 30px !important;
+  }
+  
+  .chessboard-container {
+    flex: 1 !important;
+  }
+  
+  .submit-button-container {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tournament-layout {
+    flex-direction: column !important;
+    gap: 16px !important;
+    align-items: center !important;
+  }
+  
+  .tournament-sidebar {
+    width: 100% !important;
+    max-width: 500px !important;
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+  
+  .tournament-center {
+    order: 2 !important;
+    width: 100% !important;
+    flex-direction: column !important;
+  }
+  
+  .tournament-timer {
+    font-size: 28px !important;
+  }
+  
+  .tournament-notation {
+    max-height: 200px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .tournament-layout {
+    gap: 16px !important;
+  }
+  
+  .tournament-sidebar {
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+  
+  .tournament-timer {
+    font-size: 24px !important;
+  }
+  
+  .tournament-notation-list {
+    max-height: 150px !important;
+  }
+  
+  .tournament-action-buttons {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  .tournament-mode-button {
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+  
+  .tournament-submit-button {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+  }
+}
+</style><style data-spin-animation="true">
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style><meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" data-rh="true"><meta property="og:image" content="https://www.chessnexus.in/logo.png" data-rh="true"><meta property="og:type" content="website" data-rh="true"><meta property="og:site_name" content="Chess Nexus" data-rh="true"><meta name="twitter:card" content="summary_large_image" data-rh="true"><meta name="twitter:image" content="https://www.chessnexus.in/logo.png" data-rh="true"><link rel="canonical" href="https://www.chessnexus.in/buy-coffee" data-rh="true"><meta name="description" content="Chess Nexus is free with no ads. If it has helped you or your students, you can support it with a one-off coffee and get a ☕ supporter badge — plus free premium endgames and the opening repertoire trainer." data-rh="true"><meta name="keywords" content="support chess nexus, buy me a coffee chess, donate chess platform, chess supporter badge" data-rh="true"><meta property="og:title" content="Support Chess Nexus — Buy Us a Coffee | Chess Nexus" data-rh="true"><meta property="og:description" content="Chess Nexus is free with no ads. If it has helped you or your students, you can support it with a one-off coffee and get a ☕ supporter badge — plus free premium endgames and the opening repertoire trainer." data-rh="true"><meta property="og:image:alt" content="Support Chess Nexus — Buy Us a Coffee | Chess Nexus" data-rh="true"><meta property="og:url" content="https://www.chessnexus.in/buy-coffee" data-rh="true"><meta name="twitter:title" content="Support Chess Nexus — Buy Us a Coffee | Chess Nexus" data-rh="true"><meta name="twitter:description" content="Chess Nexus is free with no ads. If it has helped you or your students, you can support it with a one-off coffee and get a ☕ supporter badge — plus free premium endgames and the opening repertoire trainer." data-rh="true"></head>
+  <body class="no-header-padding">
+    <div id="root"><div class="user-layout-container"><div class="user-content-wrapper"><style>
+          @import url('https://fonts.googleapis.com/css2?family=Oleo+Script+Swash+Caps&family=Poppins:wght@400;500;600;700&display=swap');
+          
+          @keyframes slideIn {
+            from {
+              opacity: 0;
+              transform: scale(0.95);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+
+          @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+          }
+
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+        </style><div style="width: 170px; background: rgba(10, 10, 10, 0.95); position: fixed; top: 0px; left: 0px; height: 100vh; box-shadow: rgba(0, 0, 0, 0.5) 2px 0px 20px; z-index: 100; display: flex; flex-direction: column; font-family: Poppins, sans-serif; border-right: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); transform: translateX(0px); opacity: 1; visibility: visible; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);"><div style="display: flex; flex-direction: column; height: 100%; padding: 20px 0px; position: relative;"><nav style="display: flex; flex-direction: column; gap: 8px; padding: 0px 10px 0px 3px; flex: 1 1 0%; overflow-y: auto;"><div title="Chess Nexus" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 25px; font-weight: 500; font-family: &quot;Oleo Script Swash Caps&quot;, cursive; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="flex: 1 1 0%; font-weight: 600;">Chess Nexus</span></div><div title="Dashboard" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏠</span><span style="flex: 1 1 0%; font-weight: 600;">Dashboard</span></div><div title="Puzzles Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏛️</span><span style="flex: 1 1 0%; font-weight: 600;">Puzzles Hub</span></div><div title="Race Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🏁</span><span style="flex: 1 1 0%; font-weight: 600;">Race Hub</span></div><div title="Study" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">📚</span><span style="flex: 1 1 0%; font-weight: 600;">Study</span></div><div title="Play" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🎮</span><span style="flex: 1 1 0%; font-weight: 600;">Play</span></div><div title="3D Arena" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🎮</span><span style="flex: 1 1 0%; font-weight: 600;">3D Arena</span></div><div title="Analyse My Games" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🔍</span><span style="flex: 1 1 0%; font-weight: 600;">Analysis</span></div><div title="Social Hub" style="display: flex; align-items: center; gap: 10px; padding: 3px 12px 3px 8px; color: rgb(255, 255, 255); cursor: pointer; border-radius: 12px; transition: 0.3s; font-size: 14px; font-weight: 500; font-family: Poppins, sans-serif; justify-content: flex-start; white-space: nowrap; overflow: hidden; background: transparent; border: 1px solid transparent;"><span style="font-size: 18px; flex-shrink: 0; filter: drop-shadow(rgba(0, 0, 0, 0.3) 0px 2px 4px);">🌐</span><span style="flex: 1 1 0%; font-weight: 600;">Social Hub</span></div></nav><div style="margin-top: auto; padding: 0px 10px;"><div style="display: flex; align-items: center; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; margin: 10px 0px 20px; overflow: hidden;"><button title="Search Players" style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; padding: 11px 0px; background: transparent; border: none; cursor: pointer; color: rgb(148, 163, 184); transition: background 0.2s, color 0.2s;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button><div style="width: 1px; height: 20px; background: rgba(255, 255, 255, 0.13); flex-shrink: 0;"></div><button title="Login" style="flex: 1 1 0%; display: flex; align-items: center; justify-content: center; padding: 11px 0px; background: transparent; border: none; cursor: pointer; color: rgb(148, 163, 184); transition: background 0.2s, color 0.2s;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg></button></div></div></div></div><div class="user-main-content with-sidebar  desktop "><div style="position: relative; min-height: 100vh; background: rgb(10, 10, 10); color: rgb(229, 231, 235); font-family: Poppins, sans-serif; overflow: hidden;"><div style="position: absolute; inset: 0px; background: radial-gradient(circle at 20% 10%, rgba(6, 182, 212, 0.1), transparent 40%), radial-gradient(circle at 85% 0%, rgba(16, 185, 129, 0.1), transparent 45%), radial-gradient(circle at 50% 100%, rgba(245, 158, 11, 0.1), transparent 50%); pointer-events: none;"></div><div style="position: relative; max-width: 1080px; margin: 0px auto; padding: 36px 22px;"><div style="background: rgba(23, 23, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; padding: 28px 26px; backdrop-filter: blur(14px);"><div style="display: inline-block; padding: 6px 12px; border-radius: 999px; background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.45); color: rgb(253, 230, 138); font-size: 12px; font-weight: 600; letter-spacing: 0.4px;">☕ Support ChessNexus</div><h1 style="margin: 14px 0px 10px; font-size: 30px; line-height: 1.2; font-weight: 700;">Your support keeps  <span style="color: rgb(6, 182, 212);">ChessNexus</span> alive</h1><p style="margin: 0px; color: rgba(229, 231, 235, 0.7); line-height: 1.6; font-size: 15px;">People say chess is a lonely game. ChessNexus says otherwise. Every coffee helps build real-time arenas, tournaments, puzzles, and the future of multiplayer chess.</p><div style="margin-top: 16px; display: inline-block; padding: 8px 14px; border-radius: 999px; background: rgba(245, 158, 11, 0.14); border: 1px solid rgba(245, 158, 11, 0.45); color: rgb(253, 230, 138); font-size: 13px; font-weight: 600;">👑 Founding Supporter — our first 100 backers get a <strong>permanent</strong> badge that never expires.</div></div><div style="margin-top: 22px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(139, 92, 246, 0.08)); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 20px; padding: 22px 24px; backdrop-filter: blur(14px);"><div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;"><span style="display: inline-block; padding: 5px 12px; border-radius: 999px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.45); color: rgb(253, 230, 138); font-size: 12px; font-weight: 800; letter-spacing: 0.8px;">✨ ELITE MEMBERSHIP</span><span style="color: rgba(229, 231, 235, 0.7); font-size: 13px; font-weight: 500;">Our little gratitude towards our supporters 💛</span></div><p style="margin: 0px 0px 16px; color: rgba(229, 231, 235, 0.7); font-size: 14.5px; line-height: 1.6;">Support ChessNexus for <strong style="color: rgb(253, 230, 138);">6 months or more</strong> and become <strong style="color: rgb(229, 231, 235);">an Elite member</strong> — creator tools and perks reserved for the people who keep ChessNexus alive.</p><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px;"><div style="display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 11px 14px;"><span style="font-size: 20px; line-height: 1; flex-shrink: 0;">🎯</span><span style="color: rgb(229, 231, 235); font-size: 13.5px; line-height: 1.4; font-weight: 500;">Create your own Monthly Focus challenges</span></div><div style="display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 11px 14px;"><span style="font-size: 20px; line-height: 1; flex-shrink: 0;">🏁</span><span style="color: rgb(229, 231, 235); font-size: 13.5px; line-height: 1.4; font-weight: 500;">Host and run your own Team Races</span></div><div style="display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 11px 14px;"><span style="font-size: 20px; line-height: 1; flex-shrink: 0;">🏟️</span><span style="color: rgb(229, 231, 235); font-size: 13.5px; line-height: 1.4; font-weight: 500;">Launch 3D Arena Tournaments</span></div><div style="display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 11px 14px;"><span style="font-size: 20px; line-height: 1; flex-shrink: 0;">🧑‍🏫</span><span style="color: rgb(229, 231, 235); font-size: 13.5px; line-height: 1.4; font-weight: 500;">ChessNexus Coach free for 6 months</span></div><div style="display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 11px 14px;"><span style="font-size: 20px; line-height: 1; flex-shrink: 0;">☁️</span><span style="color: rgb(229, 231, 235); font-size: 13.5px; line-height: 1.4; font-weight: 500;">Save your opening repertoire to the cloud — free</span></div><div style="display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 11px 14px;"><span style="font-size: 20px; line-height: 1; flex-shrink: 0;">♟️</span><span style="color: rgb(229, 231, 235); font-size: 13.5px; line-height: 1.4; font-weight: 500;">Study endgames unlimited — full Endgame Mastery access</span></div></div><p style="margin: 14px 0px 0px; color: rgba(229, 231, 235, 0.7); font-size: 13px; line-height: 1.55;">💛 Once you support for 6 months or more, we'll add your <strong style="color: rgb(253, 230, 138);">Elite badge shortly</strong> — our team reviews and enrolls Elite members personally, so it may take a little while after payment.</p></div><div style="display: flex; align-items: center; justify-content: space-between; margin-top: 36px; margin-bottom: 14px; gap: 12px; flex-wrap: wrap;"><h2 style="margin: 0px; font-size: 22px; font-weight: 700;">Pick a coffee</h2><div style="display: inline-flex; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 999px; padding: 4px;"><button style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(16, 185, 129, 0.2)); border: none; padding: 6px 14px; border-radius: 999px; color: rgb(229, 231, 235); font-weight: 600; font-size: 13px; cursor: pointer; box-shadow: rgba(6, 182, 212, 0.4) 0px 0px 0px 1px;">₹ INR</button><button style="background: transparent; border: none; padding: 6px 14px; border-radius: 999px; color: rgba(229, 231, 235, 0.7); font-weight: 600; font-size: 13px; cursor: pointer;">$ USD</button></div></div><div style="margin-bottom: 18px;"><div style="color: rgba(229, 231, 235, 0.7); font-size: 13px; font-weight: 600; margin-bottom: 8px;">How long should your ☕ badge last?</div><div style="display: flex; flex-wrap: wrap; gap: 8px;"><button type="button" style="flex: 1 1 auto; min-width: 90px; background: rgba(23, 23, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 10px 14px; color: rgba(229, 231, 235, 0.7); font-weight: 600; font-size: 14px; cursor: pointer; font-family: Poppins, sans-serif;">1 Month</button><button type="button" style="flex: 1 1 auto; min-width: 90px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.08)); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 10px 14px; color: rgb(229, 231, 235); font-weight: 600; font-size: 14px; cursor: pointer; font-family: Poppins, sans-serif; box-shadow: rgba(245, 158, 11, 0.45) 0px 0px 0px 1px;">3 Months</button><button type="button" style="flex: 1 1 auto; min-width: 90px; background: rgba(23, 23, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 10px 14px; color: rgba(229, 231, 235, 0.7); font-weight: 600; font-size: 14px; cursor: pointer; font-family: Poppins, sans-serif;">6 Months</button><button type="button" style="flex: 1 1 auto; min-width: 90px; background: rgba(23, 23, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 10px 14px; color: rgba(229, 231, 235, 0.7); font-weight: 600; font-size: 14px; cursor: pointer; font-family: Poppins, sans-serif;">12 Months</button></div><div style="color: rgba(229, 231, 235, 0.45); font-size: 12px; margin-top: 8px;">One-time payment, no auto-renewal. Your coffee price × 3 months.</div></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;"><button type="button" style="cursor: pointer; background: rgba(23, 23, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 18px; text-align: center; color: rgb(229, 231, 235); font-family: Poppins, sans-serif; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; position: relative;"><div style="font-size: 36px; margin-bottom: 6px;">☕</div><div style="font-weight: 700;">Black Coffee</div><div style="font-size: 22px; font-weight: 800; color: rgb(245, 158, 11); margin-top: 4px;">₹447</div><div style="margin-top: 8px; font-size: 12px; color: rgba(229, 231, 235, 0.7); line-height: 1.4;">A warm thank-you. Fuels one bug fix.</div></button><button type="button" style="cursor: pointer; background: linear-gradient(160deg, rgba(60, 48, 16, 0.55) 0%, rgba(28, 22, 8, 0.8) 100%); border: 1px solid rgb(245, 196, 81); border-radius: 16px; padding: 24px 18px 18px; text-align: center; color: rgb(229, 231, 235); font-family: Poppins, sans-serif; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; box-shadow: rgba(245, 196, 81, 0.28) 0px 10px 32px, rgba(245, 196, 81, 0.4) 0px 0px 0px 1px inset; transform: translateY(-2px); position: relative;"><span style="position: absolute; top: 8px; right: 8px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.5px; color: rgb(26, 18, 6); background: linear-gradient(135deg, rgb(245, 196, 81), rgb(224, 169, 46)); padding: 2px 8px; border-radius: 999px;">👑 ELITE</span><div style="font-size: 36px; margin-bottom: 6px;">🥃</div><div style="font-weight: 700; color: rgb(253, 230, 138);">American Espresso</div><div style="font-size: 22px; font-weight: 800; color: rgb(245, 196, 81); margin-top: 4px;">₹750</div><div style="margin-top: 8px; font-size: 12px; color: rgba(229, 231, 235, 0.7); line-height: 1.4;">A jolt of focus. Pays for a feature sprint.</div><div style="margin-top: 8px; font-size: 11.5px; font-weight: 700; color: rgb(245, 196, 81);">✨ 6 months → become an Elite member</div></button><button type="button" style="cursor: pointer; background: rgba(23, 23, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 18px; text-align: center; color: rgb(229, 231, 235); font-family: Poppins, sans-serif; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; position: relative;"><div style="font-size: 36px; margin-bottom: 6px;">🍵</div><div style="font-weight: 700;">Cafe Latte</div><div style="font-size: 22px; font-weight: 800; color: rgb(245, 158, 11); margin-top: 4px;">₹1500</div><div style="margin-top: 8px; font-size: 12px; color: rgba(229, 231, 235, 0.7); line-height: 1.4;">Helps cover a day of server bills.</div></button><div style="cursor: default; background: rgba(23, 23, 23, 0.7); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 16px; padding: 18px; text-align: center; color: rgb(229, 231, 235); font-family: Poppins, sans-serif; transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;"><div style="font-size: 36px;">✏️</div><div style="font-weight: 700;">Your Amount</div><div style="display: inline-flex; align-items: center; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 10px; padding: 6px 10px;"><span style="color: rgba(229, 231, 235, 0.7); margin-right: 6px; font-weight: 600;">₹</span><input type="number" min="299" placeholder="e.g. 300" value="" style="background: transparent; border: none; outline: none; color: rgb(229, 231, 235); width: 120px; font-size: 14px; font-family: Poppins, sans-serif;"><span style="color: rgba(229, 231, 235, 0.45); font-size: 12px; margin-left: 6px;">/ mo</span></div><div style="margin-top: 8px; font-size: 12px; color: rgba(229, 231, 235, 0.7); line-height: 1.4; text-align: center;">Any amount — min ₹299/mo.</div></div></div><div style="display: flex; justify-content: center; margin-top: 22px;"><button type="button" disabled="" style="background: linear-gradient(135deg, rgb(245, 158, 11), rgb(217, 119, 6)); color: rgb(31, 41, 55); border: none; padding: 13px 32px; border-radius: 14px; font-weight: 700; cursor: not-allowed; font-family: Poppins, sans-serif; font-size: 15px; opacity: 0.5;">Continue · ₹750 for 3 months →</button></div><div style="margin-top: 26px;"><div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;"><div style="flex: 1 1 0%; height: 1px; background: rgba(255, 255, 255, 0.07);"></div><span style="color: rgb(253, 230, 138); font-size: 13px; font-weight: 700; letter-spacing: 0.5px; white-space: nowrap;">☕ WHERE YOUR COFFEE GOES</span><div style="flex: 1 1 0%; height: 1px; background: rgba(255, 255, 255, 0.07);"></div></div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 22px;"><div style="background: rgba(6, 182, 212, 0.18); border: 1px solid rgba(6, 182, 212, 0.25); border-radius: 14px; padding: 16px; position: relative; overflow: hidden;"><div style="position: absolute; top: 10px; right: 12px; font-size: 11px; font-weight: 800; color: rgba(255, 255, 255, 0.1); letter-spacing: 1px; font-family: monospace;">01</div><div style="font-size: 28px; margin-bottom: 10px;">🖥️</div><div style="font-weight: 700; color: rgb(229, 231, 235); margin-bottom: 6px; font-size: 14px;">Always-On Servers</div><div style="color: rgba(229, 231, 235, 0.7); font-size: 13px; line-height: 1.55;">Every cup helps keep ChessNexus.in running 24 × 7. No downtime, no slow nights — just fast, reliable chess for everyone, always.</div></div><div style="background: rgba(16, 185, 129, 0.18); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 14px; padding: 16px; position: relative; overflow: hidden;"><div style="position: absolute; top: 10px; right: 12px; font-size: 11px; font-weight: 800; color: rgba(255, 255, 255, 0.1); letter-spacing: 1px; font-family: monospace;">02</div><div style="font-size: 28px; margin-bottom: 10px;">🗄️</div><div style="font-weight: 700; color: rgb(229, 231, 235); margin-bottom: 6px; font-size: 14px;">Your Progress, Remembered</div><div style="color: rgba(229, 231, 235, 0.7); font-size: 13px; line-height: 1.55;">Your games, ratings, streaks, and puzzle history need a home. Coffee keeps our databases healthy so every move you make is recorded and learned from.</div></div><div style="background: rgba(139, 92, 246, 0.18); border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 14px; padding: 16px; position: relative; overflow: hidden;"><div style="position: absolute; top: 10px; right: 12px; font-size: 11px; font-weight: 800; color: rgba(255, 255, 255, 0.1); letter-spacing: 1px; font-family: monospace;">03</div><div style="font-size: 28px; margin-bottom: 10px;">👨‍💻</div><div style="font-weight: 700; color: rgb(229, 231, 235); margin-bottom: 6px; font-size: 14px;">Full-Time Developers</div><div style="color: rgba(229, 231, 235, 0.7); font-size: 13px; line-height: 1.55;">The people who build arenas, 3D rooms, team races, and everything in between work full time for ChessNexus. Your coffee is what keeps them here — building for you.</div></div><div style="background: rgba(245, 158, 11, 0.18); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 14px; padding: 16px; position: relative; overflow: hidden;"><div style="position: absolute; top: 10px; right: 12px; font-size: 11px; font-weight: 800; color: rgba(255, 255, 255, 0.1); letter-spacing: 1px; font-family: monospace;">04</div><div style="font-size: 28px; margin-bottom: 10px;">🧑‍🏫</div><div style="font-weight: 700; color: rgb(229, 231, 235); margin-bottom: 6px; font-size: 14px;">Live Classroom</div><div style="color: rgba(229, 231, 235, 0.7); font-size: 13px; line-height: 1.55;">Real-time video classes where coaches teach on a shared board — the servers, video, and tools that let every lesson happen live keep running on your coffee.</div></div></div></div><h2 style="margin: 40px 0px 0px; font-size: 22px; font-weight: 700;">Recent supporters</h2><div style="text-align: center; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(139, 92, 246, 0.07)); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 18px; padding: 30px 24px; backdrop-filter: blur(14px);"><div style="font-size: 40px; margin-bottom: 6px;">👑☕</div><div style="font-weight: 800; color: rgb(229, 231, 235); font-size: 19px;">Be our very first supporter</div><p style="color: rgba(229, 231, 235, 0.7); font-size: 14px; line-height: 1.6; margin: 10px auto 0px; max-width: 460px;">ChessNexus is brand new and built by a tiny team. Our <strong style="color: rgb(253, 230, 138);">first 100 supporters</strong> get a permanent <strong style="color: rgb(253, 230, 138);">👑 Founding Supporter</strong> badge — it never expires, as a thank-you for believing early.</p><button type="button" style="background: linear-gradient(135deg, rgb(245, 158, 11), rgb(217, 119, 6)); color: rgb(31, 41, 55); border: none; padding: 11px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; font-family: Poppins, sans-serif; margin-top: 16px; font-size: 14px;">Claim Founding Supporter ☕</button></div><div style="height: 60px;"></div></div></div></div></div><style>
+          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+          .site-footer {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+          }
+
+          .footer-content {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+          }
+
+          .footer-logo {
+            height: 32px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0.9);
+          }
+
+          .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #06b6d4;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            transition: all 0.3s ease;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          }
+
+          .contact-link:hover {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: rgba(6, 182, 212, 0.4);
+            color: #67e8f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+          }
+
+          .contact-icon {
+            font-size: 16px;
+            filter: drop-shadow(0 1px 2px rgba(6, 182, 212, 0.3));
+          }
+
+          .footer-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+
+          .footer-nav a {
+            color: #06b6d4;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.25s ease;
+          }
+
+          .footer-nav a:hover {
+            color: #67e8f9;
+            text-decoration: underline;
+          }
+
+          .footer-sep {
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 13px;
+          }
+
+          .footer-social {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+          }
+
+          .footer-social a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            color: #06b6d4;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            transition: all 0.3s ease;
+          }
+
+          .footer-social a:hover {
+            color: #ffffff;
+            background: rgba(6, 182, 212, 0.25);
+            border-color: rgba(6, 182, 212, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+          }
+
+          .footer-social svg {
+            width: 18px;
+            height: 18px;
+          }
+
+          .footer-text {
+            margin: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+          }
+
+          .footer-text-logo {
+            height: 22px;
+            width: auto;
+            object-fit: contain;
+            filter: brightness(0.9);
+          }
+
+          /* Subtle gradient overlay effect */
+          .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg,
+              transparent,
+              rgba(6, 182, 212, 0.3) 30%,
+              rgba(16, 185, 129, 0.3) 70%,
+              transparent
+            );
+          }
+
+          /* Responsive adjustments */
+          @media (max-width: 768px) {
+            .site-footer {
+              padding: 16px;
+            }
+
+            .footer-content {
+              flex-direction: column;
+              gap: 10px;
+            }
+
+            .contact-link {
+              font-size: 13px;
+              padding: 6px 12px;
+            }
+
+            .footer-text {
+              font-size: 12px;
+            }
+          }
+        </style><footer class="site-footer"><div class="footer-content"><img src="/logo.png" alt="Chess Nexus Logo" class="footer-logo"><nav class="footer-nav"><a href="/">Home</a><span class="footer-sep">|</span><a href="/features">Features</a><span class="footer-sep">|</span><a href="/members">Members</a><span class="footer-sep">|</span><a href="/contact">Contact Us</a><span class="footer-sep">|</span><a href="/report">Report</a><span class="footer-sep">|</span><a href="/privacy-policy">Privacy Policy</a><span class="footer-sep">|</span><a href="/terms">Terms</a><span class="footer-sep">|</span><a href="/refund-policy">Refund</a></nav><div class="footer-social"><a href="https://www.instagram.com/chessnexus.in/" target="_blank" rel="noopener noreferrer me" aria-label="Chess Nexus on Instagram" title="Chess Nexus on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a><a href="https://www.facebook.com/profile.php?id=100064068341481" target="_blank" rel="noopener noreferrer me" aria-label="Chess Nexus on Facebook" title="Chess Nexus on Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"></path></svg></a></div><p class="footer-text">© 2026 CHESS NEXUS<img src="/logo.png" alt="Chess Nexus Logo" class="footer-text-logo"></p></div></footer></div></div>
+  
+
+</body></html>
