@@ -82,12 +82,10 @@ export default function HomepagePuzzle() {
     // this keeps the whole board visible with no overflow (Lichess-style fit).
     const compute = (containerWidth) => {
       let size = Math.min(Math.floor(containerWidth), 420);
-      // Phones: match the Daily Puzzles board exactly (viewport - 16px). The
-      // container is inset by the cards around it, so measuring it alone gave a
-      // noticeably smaller board than /daily-puzzles on the same screen.
-      if (window.innerWidth <= 480) {
-        size = Math.max(size, window.innerWidth - 16);
-      }
+      // The board deliberately stays INSIDE its card — it isn't full-bleed on
+      // phones. This is a one-puzzle teaser, not a training board, so it doesn't
+      // need the screen edge-to-edge; sizing it to the viewport pushed the rank
+      // digits under the board's left edge and clipped them.
       if (window.innerWidth <= 1024) {
         size = Math.min(size, Math.floor(window.innerHeight * 0.72));
       }
@@ -496,11 +494,13 @@ export default function HomepagePuzzle() {
           }}
           orientation={puzzle?.orientation || 'white'}
           boardWidth={boardSize}
-          // Coordinates INSIDE on every device: this board sits in a tight homepage
-          // card, so outside gutters would eat width that the board needs. Scaled
-          // down because the default inside size reads oversized at this board width.
-          coordinatesInside
-          coordinateScale={0.72}
+          // No coordinate overrides — same as the Daily Puzzles and Healthy Mix
+          // boards, which render their labels legibly. This board used to pass
+          // `coordinatesInside` + `coordinateScale={0.72}`; the scale made its
+          // labels 28% smaller than every other board (10px vs 14px at the same
+          // board width), which is why the ranks/files were hard to read here and
+          // fine elsewhere. Chessboard already places coordinates inside on any
+          // touch viewport, so the explicit prop was redundant anyway.
           draggable={!botThinking && !judging}
         />
 

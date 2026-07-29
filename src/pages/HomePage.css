@@ -490,29 +490,13 @@
   overflow: hidden;
 }
 
-/* Phone: let the board reach the full screen width so it matches the Daily
-   Puzzles board. The cards around it are inset, so without this the board is
-   boxed into a narrower column and renders visibly smaller on the same device.
-   The full-bleed break-out (margin-left:50% + translateX(-50%)) is applied to
-   ONE element only — the outermost. Applying it to nested elements as well made
-   each level re-offset the next: the container ended up 195px (half the screen)
-   with overflow:hidden, which clipped the board in half. The inner elements just
-   fill their (now full-width) parent. */
+/* Phone: the homepage board stays INSIDE its card — no full-bleed break-out.
+   It's a one-puzzle teaser, so it doesn't need the full screen width, and
+   letting it reach the screen edge clipped the rank digits (the board draws
+   coordinates inside the squares on touch viewports, positioned from its own
+   left edge). Only min-height is relaxed so the card hugs the board. */
 @media (max-width: 480px) {
-  .hp-potd-board {
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: 50%;
-    transform: translateX(-50%);
-    min-height: 0;
-  }
-  .homepage-puzzle-container,
-  .homepage-puzzle-container .puzzle-board-container {
-    width: 100%;
-    max-width: 100%;
-    margin-left: 0;
-    transform: none;
-  }
+  .hp-potd-board { min-height: 0; }
 }
 
 .hp-potd-tagline {

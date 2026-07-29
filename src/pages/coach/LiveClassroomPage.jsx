@@ -187,13 +187,46 @@ function FxPreview({ effects, blurOn, deviceId }) {
   );
 }
 
+// ── Remote audio playback ────────────────────────────────────────────────────
+// One hidden <audio> per remote participant, rendered ONCE at page level and
+// never inside a video tile. Audio must not depend on layout: tiles unmount
+// whenever the videos are floated/popped/hidden, the board or activities take
+// the stage, or a tile scrolls out of the rail — and the voice used to unmount
+// with them. The speaking indicator kept working (it comes from LiveKit's data
+// channel, which needs no element), which is why a student could visibly be
+// talking with a green border while nobody could hear them.
+// Local audio is deliberately never played back — that would be an echo.
+function RemoteAudio({ participants }) {
+  return (
+    <div aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
+      {participants
+        .filter((p) => !p.isLocal && p.audioTrack)
+        .map((p) => <RemoteAudioTrack key={p.identity} track={p.audioTrack} />)}
+    </div>
+  );
+}
+
+function RemoteAudioTrack({ track }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !track) return;
+    track.attach(el);
+    // Some browsers leave a freshly attached element paused; nudge it. Failures
+    // are expected when autoplay is still blocked — the page-level prompt
+    // (lk.audioBlocked) is what recovers that case.
+    el.play?.().catch(() => { /* autoplay blocked — prompt handles it */ });
+    return () => { try { track.detach(el); } catch { /* ignore */ } };
+  }, [track]);
+  return <audio ref={ref} autoPlay playsInline />;
+}
+
 // never your own, to avoid echo).
 // `local` marks YOUR own tile: we render the RAW camera MediaStreamTrack directly
 // (bypassing the encode/simulcast path) so the self-view is instant and full-res —
 // exactly how Zoom shows your own preview. Remote tiles still attach the LiveKit track.
-function MediaTile({ track, audioTrack, muted, label, isScreen, avatarUrl, speaking, ratio, local }) {
+function MediaTile({ track, muted, label, isScreen, avatarUrl, speaking, ratio, local }) {
   const ref = useRef(null);
-  const audioRef = useRef(null);
   useEffect(() => {
     const el = ref.current;
     if (!el || !track) return;
@@ -222,10 +255,12 @@ function MediaTile({ track, audioTrack, muted, label, isScreen, avatarUrl, speak
     track.attach(el);
     return () => { try { track.detach(el); } catch { /* */ } };
   }, [track, local]);
-  useEffect(() => {
-    const el = audioRef.current;
-    if (el && audioTrack && !muted) { audioTrack.attach(el); return () => { try { audioTrack.detach(el); } catch { /* */ } }; }
-  }, [audioTrack, muted]);
+  // NOTE: remote audio is NOT played here. It used to be, and that was the cause
+  // of "I can see the green speaking border but hear nothing": the <audio> lived
+  // inside this tile, so whenever the tile unmounted (videos floated/popped/
+  // hidden, board or activities on stage, tile scrolled out of the rail) the
+  // student's voice went with it. Playback now lives in <RemoteAudio/>, rendered
+  // once at page level and independent of any layout. See below.
   return (
     <div style={{
       position: 'relative', background: '#111', borderRadius: isScreen ? 10 : 12, overflow: 'hidden',
@@ -241,8 +276,8 @@ function MediaTile({ track, audioTrack, muted, label, isScreen, avatarUrl, speak
               : <AvatarFallback name={label} speaking={speaking} />}
           </div>
         )}
-      {/* Remote audio playback (invisible). Local audio is never played back. */}
-      {audioTrack && !muted && <audio ref={audioRef} autoPlay />}
+      {/* Audio is NOT rendered here — see the note above. <RemoteAudio/> at page
+          level owns playback so it survives any layout change. */}
       {label && <div style={{ position: 'absolute', bottom: 6, left: 8, fontSize: 12, color: '#fff', background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: 6 }}>{label}</div>}
     </div>
   );
@@ -2952,7 +2987,6 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       <MediaTile
         track={p.videoTrack}
         local={p.isLocal}
-        audioTrack={p.audioTrack}
         muted={p.isLocal}
         label={p.name + (p.isLocal ? ' (you)' : '')}
         avatarUrl={p.avatar || (p.isLocal ? user?.profilePhotoUrl : null)}
@@ -3298,6 +3332,29 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         </div>
         );
       })()}
+
+      {/* Remote voices. Mounted here, at page level, so playback NEVER depends on
+          whether a participant's tile happens to be rendered. */}
+      <RemoteAudio participants={lk.participants || []} />
+
+      {/* Browsers block audio until the page gets a real user gesture. When that
+          happens every remote voice is silent with no error, so offer one tap to
+          turn sound on rather than leaving the coach wondering. */}
+      {lk.audioBlocked && (
+        <button
+          type="button"
+          onClick={() => lk.enableAudio?.()}
+          style={{
+            position: 'fixed', bottom: 90, left: '50%', transform: 'translateX(-50%)',
+            zIndex: 100003, padding: '10px 18px', borderRadius: 999,
+            border: '1px solid rgba(6,182,212,0.5)', background: 'rgba(10,15,30,0.96)',
+            color: '#67e8f9', fontWeight: 700, fontSize: 14, cursor: 'pointer',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+          }}
+        >
+          🔊 Tap to enable sound
+        </button>
+      )}
 
       {/* When I'm the presenter, a slim banner confirms I'm sharing — my controls
           stay right above it (Zoom-style), instead of my screen taking over. */}

@@ -180,6 +180,11 @@ export default function useLiveKitRoom() {
   const [participants, setParticipants] = useState([]); // [{ identity, name, isLocal, isSpeaking, videoTrack, audioTrack, screenTrack }]
   const [activeSpeaker, setActiveSpeaker] = useState(null);
   const [error, setError] = useState('');
+  // Browsers block audio playback until the page has had a real user gesture.
+  // LiveKit reports this via canPlaybackAudio / AudioPlaybackStatusChanged and
+  // unblocks with room.startAudio(). Without it, EVERY remote voice is silent
+  // with no error and no clue — the coach just hears nothing.
+  const [audioBlocked, setAudioBlocked] = useState(false);
   // Why the camera/mic failed to start, if they did. The join path deliberately does
   // NOT block on device setup (see the fast path in connect()), so without this the
   // failure was swallowed entirely and the student sat in a dead, silent class with
@@ -208,9 +213,12 @@ export default function useLiveKitRoom() {
   const [effects, setEffects] = useState(() => loadEffects());
   const [blurOn, setBlurOn] = useState(false);
   // Free AI noise suppression (RNNoise). Persisted so "set once, always used".
-  // Default OFF until the coach turns it on and confirms it sounds good.
+  // Defaults ON: this is the only thing standing between a class and a student's
+  // kitchen/TV/sibling noise, and nobody thinks to switch it on before joining —
+  // it was previously opt-in, so in practice it was off for everyone. Anyone who
+  // dislikes it can still turn it off, and that choice is remembered ('off').
   const [noiseSuppression, setNoiseSuppressionState] = useState(() => {
-    try { return localStorage.getItem('cn_noise_suppression') === 'on'; } catch { return false; }
+    try { return localStorage.getItem('cn_noise_suppression') !== 'off'; } catch { return true; }
   });
   const noiseSuppressionRef = useRef(noiseSuppression);
   noiseSuppressionRef.current = noiseSuppression;
@@ -244,10 +252,15 @@ export default function useLiveKitRoom() {
       let videoTrack = null, audioTrack = null, screenTrack = null;
       p.trackPublications?.forEach((pub) => {
         const isScreen = pub.source === 'screen_share' || pub.source === 'screen_share_audio';
-        // Ensure remote screen-share tracks are actually subscribed. With
-        // adaptiveStream, a remote track may stay unsubscribed until requested,
-        // so the host would never receive the student's screen. Force it.
-        if (!isLocal && isScreen && pub.isSubscribed === false && typeof pub.setSubscribed === 'function') {
+        // Force-subscribe EVERY remote track, not just screen share. With
+        // adaptiveStream, LiveKit leaves a track unsubscribed until its video
+        // element is actually visible — so a student whose tile isn't rendered
+        // (videos floated/popped/hidden, board on stage, tile scrolled out of the
+        // rail) never gets subscribed, and the coach sees "camera on" but no
+        // picture and hears nothing. Audio must ALWAYS be subscribed: it has no
+        // video element to become visible, so adaptiveStream can otherwise leave
+        // a talking student permanently silent.
+        if (!isLocal && pub.isSubscribed === false && typeof pub.setSubscribed === 'function') {
           try { pub.setSubscribed(true); } catch { /* ignore */ }
         }
         const t = pub.track;
@@ -334,9 +347,23 @@ export default function useLiveKitRoom() {
         setActiveSpeaker(speakers?.[0]?.identity || null);
         onChange();
       })
-      .on(RoomEvent.Disconnected, () => { setConnected(false); });
+      .on(RoomEvent.Disconnected, () => { setConnected(false); })
+      // Autoplay policy: fires when the browser blocks (or later allows) audio.
+      .on(RoomEvent.AudioPlaybackStatusChanged, () => {
+        setAudioBlocked(!r.canPlaybackAudio);
+      });
 
     await r.connect(url, token);
+
+    // Unblock audio as early as possible. Joining the class is itself a user
+    // gesture in most flows, so this usually succeeds silently; if the browser
+    // still refuses, `audioBlocked` drives a "tap to enable sound" prompt.
+    try {
+      await r.startAudio();
+      setAudioBlocked(false);
+    } catch {
+      setAudioBlocked(!r.canPlaybackAudio);
+    }
 
     // ── FAST PATH: get the coach INTO the room ASAP ──────────────────────────────
     // Enable mic + camera in PARALLEL (not serially), then immediately mark connected
@@ -552,6 +579,21 @@ export default function useLiveKitRoom() {
     if (r && !KRISP_ENABLED) await applyNoiseSuppression(r, next);
   }, []);
 
+  // Call from a real user gesture (click/tap) to satisfy the browser's autoplay
+  // policy and start playing remote audio.
+  const enableAudio = useCallback(async () => {
+    const r = roomRef.current;
+    if (!r) return false;
+    try {
+      await r.startAudio();
+      setAudioBlocked(!r.canPlaybackAudio);
+      return r.canPlaybackAudio !== false;
+    } catch {
+      setAudioBlocked(true);
+      return false;
+    }
+  }, []);
+
   const disconnect = useCallback(async () => {
     try { await roomRef.current?.disconnect(); } catch { /* ignore */ }
     roomRef.current = null;
@@ -633,5 +675,8 @@ export default function useLiveKitRoom() {
     noiseSuppression, toggleNoiseSuppression,
     connect, disconnect, toggleMic, toggleCam, toggleScreen,
     camInfo,
+    // Autoplay-blocked audio: `audioBlocked` is true when the browser is refusing
+    // to play remote voices; call enableAudio() from a click to unblock.
+    audioBlocked, enableAudio,
   };
 }
