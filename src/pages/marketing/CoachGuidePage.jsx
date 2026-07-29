@@ -20,9 +20,9 @@ const CANONICAL = "/chess-coach-guide";
 const PLAN_ROWS = [
   { plan: "Free", perDay: "1 a day", mins: "up to 40 min", students: "4" },
   { plan: "Pro / Coach", perDay: "1 a day", mins: "up to 60 min", students: "4" },
-  { plan: "Live Basic", perDay: "5 a day", mins: "up to 60 min", students: "4" },
-  { plan: "Live Pro", perDay: "Unlimited", mins: "up to 60 min", students: "5" },
-  { plan: "Live Coach", perDay: "Unlimited", mins: "up to 120 min", students: "10" },
+  { plan: "Live Basic", perDay: "Unlimited", mins: "up to 60 min", students: "10" },
+  { plan: "Live Pro", perDay: "Unlimited", mins: "up to 60 min", students: "10" },
+  { plan: "Live Coach", perDay: "Unlimited", mins: "up to 120 min", students: "25" },
 ];
 
 const FAQ = [
@@ -313,6 +313,7 @@ export default function CoachGuidePage() {
             { icon: "⏳", t: "Waiting room", d: "Students wait until you admit them, so nobody wanders in mid-explanation." },
             { icon: "✋", t: "Raise hand", d: "Students raise a hand and their tile jumps to the front of your grid. You can lower it for them when it's dealt with." },
             { icon: "🎙️", t: "Mic & camera control", d: "Mute a student or turn their camera off in one click, straight from their video tile. To turn either back on you send a request — the student accepts. A child's mic or camera is never forced on." },
+            { icon: "📌", t: "One-click homework", d: "Press Add to homework and the position on the board is captured instantly — no dialog, no typing a FEN, so the lesson keeps moving. Collect positions all through the class, then send them as one assignment to exactly the students who were in the room. They play each one out against Stockfish at home." },
             { icon: "📋", t: "Attendance writes itself", d: "Admitting a student records their attendance for that class automatically." },
             { icon: "💬", t: "Class chat", d: "A chat panel for the session — good for links and quick questions without interrupting." },
             { icon: "♟️", t: "Play in class", d: "Pair students into real games from the Activities panel — the whole class can play at once, each on their own board with live clocks. You watch every board live, spotlight one for everyone to follow, and load any finished game onto the teaching board to review it together." },

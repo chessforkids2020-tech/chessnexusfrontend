@@ -27,13 +27,23 @@ const DIST = join(__dirname, 'dist');
 const PORT = 5055;
 
 // Public routes worth prerendering. No auth, no :params, content-stable.
-// NOTE: '/' is intentionally NOT prerendered — the homepage renders the dynamic,
-// data-driven app dashboard (live contests, a puzzle widget, "Good Afternoon…"),
-// none of which is available at build time (prerender aborts all API calls). The
-// snapshot only captured the floating button, so real clients hydrated against a
-// near-empty #root and threw React hydration errors #418/#423/#425. Shipping an
-// empty #root for '/' makes main.jsx do a clean client render instead.
+//
+// '/' IS prerendered. It was excluded while the app used hydrateRoot: the
+// homepage's data-driven parts (live contests, testimonials) can't be fetched at
+// build time because prerender aborts all API calls, so the snapshot didn't
+// match the client's first render and React threw #418/#423/#425. main.jsx no
+// longer hydrates — it clears #root and does a clean createRoot render — so a
+// snapshot that differs from the client render is harmless by construction.
+//
+// Prerendering '/' matters because the homepage is what an AI assistant reads
+// when someone asks about chessnexus.in. Without it the crawler got an empty
+// <div id="root"> and no meta description, so the product's core facts (free
+// forever up to 30 students, the built-in classroom, fee tracking) were
+// invisible no matter what the page said. The data-driven sections degrade
+// safely at build time: contests render "No schedule" rows and testimonials
+// fall back to the built-in quotes. Everything an AI needs is static copy.
 const ROUTES = [
+  '/',
   '/features',
   '/chess-puzzles',
   '/chess-tactics-race',

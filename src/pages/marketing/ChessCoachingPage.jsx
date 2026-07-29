@@ -101,7 +101,7 @@ export default function ChessCoachingPage() {
                 <span className="mkt-feat-ic" aria-hidden="true">📅</span>
                 <span className="mkt-feat-tx">
                   <strong>Class schedule &amp; attendance</strong>
-                  <span>Set a weekly schedule with day, time and Zoom link per batch, and mark attendance with catch-ups and CSV export.</span>
+                  <span>Set a weekly schedule per batch — shown to every student in their own timezone — and mark attendance with catch-ups and CSV export.</span>
                 </span>
               </li>
               <li>

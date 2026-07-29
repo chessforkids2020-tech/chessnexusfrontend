@@ -3143,3 +3143,358 @@
   .hp-showcase-cta { flex-direction: column; }
   .hp-showcase-btn { width: 100%; justify-content: center; }
 }
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   FREE FOREVER â€” the single most-asked question, answered in full
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+.hp-free {
+  padding: 34px 32px;
+  margin: 0 0 44px;
+  border-radius: 22px;
+  border: 1px solid rgba(52, 211, 153, 0.34);
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(16, 185, 129, 0.14) 0%, transparent 62%),
+    var(--glass-bg);
+}
+.hp-free-head { text-align: center; max-width: 760px; margin: 0 auto; }
+.hp-free-badge {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6ee7b7;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  background: rgba(16, 185, 129, 0.12);
+}
+.hp-free-title {
+  margin: 14px 0 10px;
+  font-size: clamp(23px, 3.4vw, 34px);
+  font-weight: 800;
+  line-height: 1.22;
+  color: var(--t1);
+}
+.hp-free-title em { font-style: normal; color: #34d399; }
+.hp-free-sub {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.62;
+  color: var(--t2);
+}
+.hp-free-list {
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px 22px;
+}
+.hp-free-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14.5px;
+  font-weight: 550;
+  color: var(--t1);
+}
+.hp-free-tick {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  color: #04211d;
+  background: linear-gradient(135deg, #34d399, #06b6d4);
+}
+.hp-free-note {
+  margin: 24px auto 0;
+  max-width: 780px;
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--t2);
+}
+.hp-free-btns {
+  margin-top: 22px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.hp-free-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14.5px;
+  font-weight: 650;
+  padding: 12px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform 0.22s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+.hp-free-btn-primary {
+  color: #04211d;
+  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  box-shadow: 0 10px 26px rgba(52, 211, 153, 0.3);
+}
+.hp-free-btn-ghost {
+  color: var(--t1);
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+}
+.hp-free-btn:hover { transform: translateY(-2px); }
+.hp-free-btn:focus-visible { outline: 2px solid var(--cyan-hi); outline-offset: 3px; }
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   INSIDE THE LIVE CLASSROOM
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+.hp-lcgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 14px;
+}
+.hp-lccard {
+  display: flex;
+  gap: 13px;
+  padding: 17px 18px;
+  border-radius: 16px;
+  transition: transform 0.22s ease, border-color 0.28s ease;
+}
+.hp-lccard:hover { transform: translateY(-3px); border-color: rgba(239, 68, 68, 0.34); }
+.hp-lc-ic {
+  flex: none;
+  font-size: 19px;
+  line-height: 1;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(239, 68, 68, 0.11);
+  border: 1px solid rgba(239, 68, 68, 0.24);
+}
+.hp-lccard h3 {
+  margin: 0 0 5px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--t1);
+}
+.hp-lccard p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--t2);
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   THE COACH WORKSPACE
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+.hp-wsgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 44px;
+}
+.hp-wscard {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 22px 18px;
+  border-radius: 18px;
+  transition: transform 0.22s ease, border-color 0.28s ease;
+}
+.hp-wscard:hover { transform: translateY(-3px); border-color: rgba(34, 211, 238, 0.34); }
+.hp-ws-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 14px;
+}
+.hp-ws-ic {
+  flex: none;
+  font-size: 18px;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: rgba(6, 182, 212, 0.11);
+  border: 1px solid rgba(34, 211, 238, 0.26);
+}
+.hp-wscard h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 750;
+  color: var(--t1);
+}
+.hp-ws-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.hp-ws-list li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--t2);
+}
+.hp-ws-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #34d399, #06b6d4);
+}
+.hp-ws-link {
+  align-self: flex-start;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #67e8f9;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(103, 232, 249, 0.3);
+  padding-bottom: 2px;
+}
+.hp-ws-link:hover { border-bottom-color: #67e8f9; }
+.hp-ws-link:focus-visible { outline: 2px solid var(--cyan-hi); outline-offset: 3px; }
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   ACADEMIES
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+.hp-acad {
+  display: flex;
+  gap: 22px;
+  padding: 30px 30px;
+  margin-bottom: 44px;
+  border-radius: 22px;
+  border: 1px solid rgba(167, 139, 250, 0.32);
+  background:
+    radial-gradient(110% 130% at 100% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 60%),
+    var(--glass-bg);
+}
+.hp-acad-ic {
+  flex: none;
+  font-size: 26px;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  background: rgba(139, 92, 246, 0.14);
+  border: 1px solid rgba(167, 139, 250, 0.3);
+}
+.hp-acad-tx { min-width: 0; }
+.hp-acad-tx > p {
+  margin: 0 0 14px;
+  font-size: 14.5px;
+  line-height: 1.62;
+  color: var(--t2);
+  max-width: 760px;
+}
+.hp-acad-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 8px 20px;
+}
+.hp-acad-list li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--t2);
+}
+.hp-acad-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+}
+.hp-acad-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   EVERY FEATURE â€” link grid to the SEO pages
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+.hp-deep { margin-bottom: 44px; }
+.hp-deep-title {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--t2);
+  text-align: center;
+}
+.hp-deep-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+/* ONE horizontal line — never wraps. Overflow scrolls under the arrows, the
+   same way the testimonials row does. */
+.hp-deep-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;          /* lets the flex child shrink so the row can scroll */
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px;
+}
+.hp-deep-row::-webkit-scrollbar { display: none; }
+.hp-deep-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;   /* a pill must never break across two lines */
+  flex: none;
+  color: var(--t2);
+  text-decoration: none;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  transition: color 0.22s ease, border-color 0.22s ease;
+}
+.hp-deep-link:hover { color: var(--t1); border-color: rgba(34, 211, 238, 0.42); }
+.hp-deep-link:focus-visible { outline: 2px solid var(--cyan-hi); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hp-lccard, .hp-wscard, .hp-deep-link, .hp-free-btn { transition: none; }
+}
+
+/* â”€â”€ Responsive â”€â”€ */
+@media (max-width: 760px) {
+  .hp-free { padding: 26px 18px; }
+  .hp-free-list { grid-template-columns: 1fr 1fr; gap: 9px 14px; }
+  .hp-free-list li { font-size: 13px; }
+  .hp-free-btn { width: 100%; justify-content: center; }
+  .hp-acad { flex-direction: column; gap: 16px; padding: 24px 18px; }
+  .hp-acad-btns .hp-cshow-btn,
+  .hp-acad-btns .hp-cshow-btn2 { width: 100%; justify-content: center; text-align: center; }
+}
+@media (max-width: 480px) {
+  .hp-free-list { grid-template-columns: 1fr; }
+  .hp-lccard, .hp-wscard { padding: 16px; }
+  .hp-deep-link { font-size: 12.5px; padding: 7px 12px; }
+}

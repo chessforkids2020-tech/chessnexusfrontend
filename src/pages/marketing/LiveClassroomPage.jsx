@@ -13,9 +13,9 @@ const CANONICAL = "/live-chess-classroom";
 const PLAN_ROWS = [
   { plan: "Free", perDay: "1 a day", mins: "up to 40 min", students: "4" },
   { plan: "Pro / Coach", perDay: "1 a day", mins: "up to 60 min", students: "4" },
-  { plan: "Live Basic", perDay: "5 a day", mins: "up to 60 min", students: "4" },
-  { plan: "Live Pro", perDay: "Unlimited", mins: "up to 60 min", students: "5" },
-  { plan: "Live Coach", perDay: "Unlimited", mins: "up to 120 min", students: "10" },
+  { plan: "Live Basic", perDay: "Unlimited", mins: "up to 60 min", students: "10" },
+  { plan: "Live Pro", perDay: "Unlimited", mins: "up to 60 min", students: "10" },
+  { plan: "Live Coach", perDay: "Unlimited", mins: "up to 120 min", students: "25" },
 ];
 
 const FEATURES = [
@@ -28,6 +28,7 @@ const FEATURES = [
   { icon: "⏳", t: "Waiting room", d: "Students wait until you admit them, so nobody wanders in halfway through an explanation." },
   { icon: "✋", t: "Raise hand", d: "A student raises their hand and their tile jumps to the front of your grid. You can lower it for them once it's dealt with." },
   { icon: "🎙️", t: "Mic & camera controls", d: "Mute a student or turn their camera off in one click from their video tile. Turning either back on is always a request the student accepts — a child's mic or camera is never forced on." },
+  { icon: "📌", t: "One-click homework", d: "Teaching a position worth practising? Hit Add to homework and the board is captured — one click, no dialog, so the lesson never stops. Collect as many positions as you like through the class, then send them all as a single assignment to exactly the students who were in the room. They play each position out against Stockfish at home." },
   { icon: "📋", t: "Attendance writes itself", d: "Admitting a student records their attendance for that class. No separate register to fill in afterwards." },
   { icon: "💬", t: "Class chat", d: "A chat panel for the session — good for links and quick questions without interrupting the lesson." },
   { icon: "🎯", t: "Activities on the stage", d: "One Activities panel, right inside the class: Play in class, a coach Simul, and private Arena races & tournaments — all launched without leaving the room." },
@@ -52,6 +53,10 @@ const FAQ = [
   {
     q: "Can students play games during a live class?",
     a: "Yes, two ways from the Activities panel. Play in class pairs students into real games — the whole class can play at once, each on their own board with live clocks, and you watch every board live and spotlight one for the rest to follow. A Simul lets you play every student at once, swapping between their boards like the Lichess simul page. Any finished game can be loaded onto the teaching board to review together.",
+  },
+  {
+    q: "Can I set homework from a live chess class?",
+    a: "Yes, in one click. While you teach, press Add to homework whenever the board shows a position worth practising — it is captured instantly with no dialog, so the lesson isn't interrupted. Capture as many positions as you like across the class, then send the whole set as a single assignment. It goes only to the students who were actually in the room at that moment, and they play each position out against Stockfish at home. You never have to type a FEN or rebuild the position afterwards.",
   },
   {
     q: "How is attendance recorded in an online chess class?",

@@ -78,6 +78,15 @@ Key coach facts:
 - **Schedule:** weekly class slots per batch, stored in UTC and shown to every
   student in their own timezone. Schedule changes auto-post a notice into each
   affected student's coach chat.
+- **Fees and payments:** coaches record enrollment, the monthly fee, the number
+  of classes per month, the currency and the class type (private or group) per
+  student, and mark payments — so attendance and fees stay in step in the same
+  place. Included on the free plan.
+- **Batches:** unlimited. Assignments, courses, schedules and private activities
+  can all be targeted at a whole batch at once.
+- **Templates and library:** coaches save their best assignments as reusable
+  templates (10 on free, 50 on paid plans) and keep positions, games and
+  templates in a coach library to drop into any assignment or course later.
 
 ## For academies and institutes (multiple coaches)
 
@@ -133,6 +142,19 @@ Coaches teach inside Chess Nexus — no Zoom or third-party app required.
   student's mic or camera back ON is always a request the student accepts —
   never forced.
 - Attendance marked automatically as students are admitted.
+- One-click homework: while teaching, the coach presses "Add to homework" and the
+  position currently on the board is captured instantly — no dialog and no typing
+  a FEN, so the lesson is not interrupted. Positions can be collected throughout
+  the class and sent as ONE assignment to exactly the students who were in the
+  room at that time; they play each position out against Stockfish at home.
+- Play in class: pair students into real games — the whole class can play at once,
+  each on their own board with live clocks. The coach watches every board, can
+  spotlight one for everyone to follow, and can load any finished game onto the
+  teaching board to review it together.
+- Simul: the coach plays every student at once, swapping between boards.
+- Private Arena races and tournaments launched from inside the room; only the
+  coach's own students can join.
+- Class chat panel for links and quick questions.
 
 Live class limits by plan (students are PER ROOM, and the coach is extra — a
 10-student room holds 10 students plus the coach, 11 people in total. The limit
