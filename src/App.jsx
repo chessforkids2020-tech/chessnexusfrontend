@@ -45,8 +45,6 @@ import AnalyseMyChessGamePage from "./pages/marketing/AnalyseMyChessGamePage";
 import ImproveAtChessPage from "./pages/marketing/ImproveAtChessPage";
 import ChessCoachingPage from "./pages/marketing/ChessCoachingPage";
 import FreeCoachPlanPage from "./pages/marketing/FreeCoachPlanPage";
-import FreeChessClassesPage from "./pages/marketing/FreeChessClassesPage";
-import AdminFreeClassRequests from "./pages/AdminFreeClassRequests";
 import CoachGuidePage from "./pages/marketing/CoachGuidePage";
 import CoachPricingPage from "./pages/marketing/CoachPricingPage";
 import ChessAcademyPage from "./pages/marketing/ChessAcademyPage";
@@ -568,11 +566,6 @@ export default function App() {
             <FreeCoachPlanPage />
           </MarketingLayout>
         } />
-        <Route path="/free-chess-classes-for-kids" element={
-          <MarketingLayout>
-            <FreeChessClassesPage />
-          </MarketingLayout>
-        } />
         <Route path="/chess-coach-guide" element={
           <MarketingLayout>
             <CoachGuidePage />
@@ -676,16 +669,6 @@ export default function App() {
             <div style={styles.content}>
               <ProtectedRoute requiredRole="admin">
                 <AdminDashboard />
-              </ProtectedRoute>
-            </div>
-            <Footer />
-          </div>
-        } />
-        <Route path="/admin/free-class-requests" element={
-          <div style={styles.container}>
-            <div style={styles.content}>
-              <ProtectedRoute requiredRole="admin">
-                <AdminFreeClassRequests />
               </ProtectedRoute>
             </div>
             <Footer />
