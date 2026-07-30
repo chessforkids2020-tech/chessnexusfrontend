@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import Sidebar from "../components/Sidebar";
 import HomepagePuzzle from "../components/HomepagePuzzle";
 import BookDemoModal from "../components/BookDemoModal";
+import FreeClassModal from "../components/FreeClassModal";
 import FoundingSupporterCard from "../components/FoundingSupporterCard";
 // Single source of truth for the public SEO pages — reused here so the homepage
 // links to every one of them (they were previously unreachable from "/").
@@ -537,6 +538,7 @@ export default function HomePage() {
   const [activePlayers,     setActivePlayers]     = useState(getActivePlayers);
   const [arenaTarget]                             = useState(getArenaTarget);
   const [demoOpen,          setDemoOpen]          = useState(false);
+  const [freeClassOpen,     setFreeClassOpen]     = useState(false);
   // Admin-featured testimonials (null = still loading → use fallback).
   const [featuredQuotes,    setFeaturedQuotes]    = useState(null);
 
@@ -629,6 +631,35 @@ export default function HomePage() {
           onStartCoach={() => navigate((user && user.role !== 'guest') ? '/coach/onboarding' : '/login')}
           onBookDemo={() => setDemoOpen(true)}
         />
+
+        {/* ── FREE BEGINNER CLASSES ──
+            Sits directly under the hero, above Puzzle of the Day: it is the
+            strongest thing on the page for a parent who has never heard of us,
+            and it needs no account to act on. */}
+        <div className="hp-freeclass">
+          <div className="hp-fc-tx">
+            <span className="hp-fc-badge">🎁 Free for every child</span>
+            <h2 className="hp-fc-title">
+              Every kid should learn chess — we'll teach the basics <em>free</em>.
+            </h2>
+            <p className="hp-fc-sub">
+              Chess builds focus, patience and problem-solving at an age when it matters most.
+              Tell us about your child and <b>ChessNexus will arrange a professional coach</b> to
+              teach them the basics — at no cost, whatever their age. Classes are taught in <b>English</b>.
+            </p>
+            <div className="hp-fc-cta">
+              <button type="button" className="hp-fc-btn" onClick={() => setFreeClassOpen(true)}>
+                Book a free class →
+              </button>
+              <Link to="/free-chess-classes-for-kids" className="hp-fc-btn2">How it works</Link>
+            </div>
+            <div className="hp-fc-trust">
+              <span>✓ Taught by a real coach</span><span>•</span>
+              <span>✓ No account needed</span><span>•</span>
+              <span>✓ Completely free</span>
+            </div>
+          </div>
+        </div>
 
         {/* ── TOP ROW: Puzzle + Right Column ── */}
         <div className="hp-top-row">
@@ -1033,6 +1064,7 @@ export default function HomePage() {
       </div>
 
       <BookDemoModal open={demoOpen} onClose={() => setDemoOpen(false)} />
+      <FreeClassModal open={freeClassOpen} onClose={() => setFreeClassOpen(false)} />
     </div>
   );
 }

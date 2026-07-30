@@ -136,7 +136,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2>4. Children’s privacy</h2>
+            <h2 id="children">4. Children’s privacy</h2>
             <p>
               Chess Nexus is a general-audience service intended for chess players
               of all levels. It is <strong>not directed to children under 13</strong>{" "}
@@ -150,6 +150,40 @@ export default function PrivacyPolicyPage() {
               applicable minimum age has provided us with personal information,
               please <Link to="/contact">contact us</Link> and we will
               delete it promptly.
+            </p>
+
+            <h3>Free beginner classes</h3>
+            <p>
+              There is one exception, and it exists only because a parent asks us
+              for it. When you request our{" "}
+              <Link to="/free-chess-classes-for-kids">free beginner chess classes</Link>,
+              the form asks for your child’s first name and age, your country, your
+              WhatsApp number, and whether your child already knows how the pieces
+              move. <strong>The form is completed by a parent or guardian, not by a
+              child.</strong>
+            </p>
+            <p>
+              We ask for these details for one reason: we cannot arrange a class
+              without being able to contact you and place your child in a group that
+              matches their age and level. We use your WhatsApp number{" "}
+              <strong>only</strong> to arrange and confirm the classes. We do not use
+              it for marketing, and we never sell or share it.
+            </p>
+            <p>
+              <strong>
+                Once your child has finished the free classes, we delete their
+                request and the details you gave us.
+              </strong>{" "}
+              We do not keep children’s names, ages or parents’ phone numbers on file
+              after the classes they were collected for have ended. Requests that we
+              never take forward are deleted too. If you want your details removed
+              sooner — at any point, including before the classes start — just{" "}
+              <Link to="/contact">contact us</Link> and we will delete them.
+            </p>
+            <p>
+              If your child goes on to use Chess Nexus after the classes, that is a
+              normal account governed by the rest of this policy; it does not keep the
+              class request alive.
             </p>
           </section>
 
@@ -322,6 +356,14 @@ export default function PrivacyPolicyPage() {
               or anonymise your personal information within a reasonable period,
               except where we must keep certain records to comply with the law,
               resolve disputes, or enforce our agreements.
+            </p>
+            <p>
+              <strong>Free beginner class requests are kept only as long as they are
+              needed.</strong> Once a child has finished the free classes — or once we
+              decide a request will not go ahead — we delete the request, including the
+              child’s name and age and the parent’s WhatsApp number. We do not keep
+              these details on file afterwards. See{" "}
+              <a href="#children">Children’s privacy</a> above.
             </p>
           </section>
 

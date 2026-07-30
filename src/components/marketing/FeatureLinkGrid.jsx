@@ -74,6 +74,14 @@ export const FEATURES = [
       "A free toolkit for chess coaches and academies — student roster & batches, assignments, course builder, private class races and parent reports.",
   },
   {
+    slug: "/free-chess-classes-for-kids",
+    appPath: "/free-chess-classes-for-kids",
+    icon: "🎁",
+    title: "Free Classes for Kids",
+    blurb:
+      "We arrange a professional coach to teach your child the basics of chess — free, any age, taught in English. No account needed to ask.",
+  },
+  {
     slug: "/free-chess-coaching-software",
     appPath: "/coach/onboarding",
     icon: "🆓",
