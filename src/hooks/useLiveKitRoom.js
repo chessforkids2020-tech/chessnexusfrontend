@@ -229,6 +229,8 @@ export default function useLiveKitRoom() {
   const blurProcRef = useRef(null);  // @livekit/track-processors BackgroundBlur
   const applyVideoRef = useRef(() => {}); // latest applyVideoProcessor (avoids ordering issues)
   const roomRef = useRef(null);
+  // Interval that re-requests any still-unsubscribed remote publication.
+  const resubTimerRef = useRef(null);
 
   const loadCameras = useCallback(async () => {
     try {
@@ -252,6 +254,11 @@ export default function useLiveKitRoom() {
       let videoTrack = null, audioTrack = null, screenTrack = null;
       // The camera track even while MUTED — see the note where it is set.
       let videoTrackRaw = null, audioTrackRaw = null;
+      // Is a camera PUBLISHED and unmuted, regardless of whether we have
+      // subscribed to it yet? A remote publication exists (and reports its mute
+      // state) well before `pub.track` is populated, so this is the only honest
+      // answer to "is this student's camera on?" during the subscribe window.
+      let camPublished = false;
       p.trackPublications?.forEach((pub) => {
         const isScreen = pub.source === 'screen_share' || pub.source === 'screen_share_audio';
         // Force-subscribe EVERY remote track, not just screen share. With
@@ -265,6 +272,14 @@ export default function useLiveKitRoom() {
         if (!isLocal && pub.isSubscribed === false && typeof pub.setSubscribed === 'function') {
           try { pub.setSubscribed(true); } catch { /* ignore */ }
         }
+        // Record "camera is publishing" BEFORE the `!t` bail below. A remote
+        // publication reports kind/source/isMuted immediately, but `pub.track`
+        // stays null until TrackSubscribed lands. Bailing out first made a
+        // student whose subscription was still in flight — or never completed —
+        // indistinguishable from one who had switched their camera off: the
+        // coach saw a black tile and the "ask them to turn the camera on"
+        // button for a child whose camera was in fact on the whole time.
+        if (!isLocal && !isScreen && pub.kind === 'video' && !pub.isMuted) camPublished = true;
         const t = pub.track;
         if (!t) return;
         if (isScreen) { if (pub.kind !== 'audio') screenTrack = t; }
@@ -287,7 +302,7 @@ export default function useLiveKitRoom() {
       // camera is off.
       let avatar = null;
       try { avatar = p.metadata ? (JSON.parse(p.metadata).avatar || null) : null; } catch { /* ignore */ }
-      list.push({ identity: p.identity, name: p.name || p.identity, isLocal, isSpeaking: p.isSpeaking, videoTrack, videoTrackRaw, audioTrack, audioTrackRaw, screenTrack, avatar });
+      list.push({ identity: p.identity, name: p.name || p.identity, isLocal, isSpeaking: p.isSpeaking, videoTrack, videoTrackRaw, audioTrack, audioTrackRaw, screenTrack, avatar, camPublished });
     };
     if (r.localParticipant) pack(r.localParticipant, true);
     r.remoteParticipants?.forEach((p) => pack(p, false));
@@ -375,6 +390,33 @@ export default function useLiveKitRoom() {
       });
 
     await r.connect(url, token);
+
+    // SUBSCRIPTION REPAIR SWEEP.
+    //
+    // Force-subscribing once on TrackPublished is not enough in practice: the
+    // request can be dropped, deferred by adaptiveStream, or lost across a brief
+    // reconnect, and nothing retries it. The symptom in class is a student whose
+    // camera is genuinely on but whose tile stays black for everyone — and a
+    // coach cannot tell a child to reload mid-lesson.
+    //
+    // So every few seconds, re-request any remote publication that is still
+    // unsubscribed. It is a no-op once everything is subscribed (the common
+    // case), and it is what makes recovery automatic rather than manual.
+    if (resubTimerRef.current) clearInterval(resubTimerRef.current);
+    resubTimerRef.current = setInterval(() => {
+      const room = roomRef.current;
+      if (!room) return;
+      let repaired = false;
+      room.remoteParticipants?.forEach((p) => {
+        p.trackPublications?.forEach((pub) => {
+          if (pub.isSubscribed === false && typeof pub.setSubscribed === 'function') {
+            try { pub.setSubscribed(true); repaired = true; } catch { /* ignore */ }
+          }
+        });
+      });
+      // Only re-render when we actually asked for something new.
+      if (repaired) refresh(room);
+    }, 4000);
 
     // Unblock audio as early as possible. Joining the class is itself a user
     // gesture in most flows, so this usually succeeds silently; if the browser
@@ -616,6 +658,7 @@ export default function useLiveKitRoom() {
   }, []);
 
   const disconnect = useCallback(async () => {
+    if (resubTimerRef.current) { clearInterval(resubTimerRef.current); resubTimerRef.current = null; }
     try { await roomRef.current?.disconnect(); } catch { /* ignore */ }
     roomRef.current = null;
     setRoom(null); setConnected(false); setParticipants([]); setScreenOn(false);

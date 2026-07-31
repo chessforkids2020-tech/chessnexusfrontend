@@ -256,7 +256,7 @@ function RemoteAudioTrack({ track }) {
 // `local` marks YOUR own tile: we render the RAW camera MediaStreamTrack directly
 // (bypassing the encode/simulcast path) so the self-view is instant and full-res —
 // exactly how Zoom shows your own preview. Remote tiles still attach the LiveKit track.
-function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl, speaking, ratio, local }) {
+function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl, speaking, ratio, local, camConnecting }) {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current;
@@ -347,10 +347,15 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       {track
         ? <video ref={ref} autoPlay playsInline muted={muted} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: (local && !isScreen) ? 'scaleX(-1)' : 'none' }} />
         : (
-          <div style={{ display: 'grid', placeItems: 'center', height: '100%' }}>
+          <div style={{ display: 'grid', placeItems: 'center', height: '100%', gap: 8 }}>
             {avatarUrl
               ? <img src={avatarUrl} alt={label} style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', boxShadow: speaking ? '0 0 0 3px #22c55e' : 'none' }} />
               : <AvatarFallback name={label} speaking={speaking} />}
+            {camConnecting && (
+              <div style={{ fontSize: 11, color: '#facc15', fontWeight: 600 }}>
+                Camera on — connecting…
+              </div>
+            )}
           </div>
         )}
       {/* Audio is NOT rendered here — see the note above. <RemoteAudio/> at page
@@ -3244,6 +3249,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         avatarUrl={p.avatar || (p.isLocal ? user?.profilePhotoUrl : null)}
         speaking={p.isSpeaking || String(lk.activeSpeaker) === String(p.identity)}
         ratio={small ? '4/3' : '16/9'}
+        /* Their camera is on but the video has not arrived yet. Showing the
+           avatar here would claim "camera off", which is wrong and sends the
+           coach chasing a student who did nothing. Say "connecting" instead. */
+        camConnecting={!p.isLocal && !p.videoTrack && p.camPublished}
       />
       {/* HOST-ONLY tile controls, overlaid on the video so they cost no layout space.
           One click each: mute / camera off / give board control. Muted or camera-off
@@ -3259,7 +3268,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 <MicIcon off={false} size={15} />
               </button>}
 
-          {p.videoTrack
+          {/* `camPublished` means their camera IS on even if we have not finished
+              subscribing to it yet. Keying this off `videoTrack` alone showed the
+              "ask them to turn their camera on" prompt for a child whose camera
+              was already on — the coach then nags a student who did nothing wrong. */}
+          {(p.videoTrack || p.camPublished)
             ? <button style={s.tileBtn} title="Turn this student's camera off"
                 onClick={(e) => { e.stopPropagation(); cameraOffStudent(p.identity); }}>
                 <CamIcon off={false} size={15} />
