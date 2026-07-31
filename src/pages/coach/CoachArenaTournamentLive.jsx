@@ -130,7 +130,8 @@ export default function CoachArenaTournamentLive() {
   const status = tournament?.status;
   const notStarted = status === 'scheduled' || status === 'lobby';
   const isFinished = status === 'finished';
-  const humans = participants.filter(p => !p.isBot);
+  // The API already returns students only (filler players are filtered server-side).
+  const humans = participants;
   const activeGames = games.filter(g => g.status === 'active');
   const finishedGames = games.filter(g => g.status === 'finished');
 

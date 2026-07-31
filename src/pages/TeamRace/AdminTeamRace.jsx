@@ -322,7 +322,7 @@ function AdminTeamRace() {
               </div>
 
               <div className="form-group">
-                <label>🤖 Number of Bots (0–10)</label>
+                <label>♟️ Filler players (0–10)</label>
                 <input
                   type="number"
                   value={newRace.botCount}
@@ -331,7 +331,7 @@ function AdminTeamRace() {
                   max="10"
                   placeholder="0"
                 />
-                <small>Bots will automatically solve puzzles during the race. Only add bots if no real players are in that position.</small>
+                <small>Filler players automatically solve puzzles during the race. Only add them if no real players are in that position.</small>
               </div>
 
               <div className="modal-actions">

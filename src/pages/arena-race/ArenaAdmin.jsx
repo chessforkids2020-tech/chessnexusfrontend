@@ -708,7 +708,7 @@ export default function ArenaAdmin() {
               )}
 
               <div style={styles.formGroup}>
-                <label style={styles.label}>🤖 Number of Bots (0–10)</label>
+                <label style={styles.label}>♟️ Filler players (0–10)</label>
                 <input
                   type="number"
                   min="0"
@@ -717,7 +717,7 @@ export default function ArenaAdmin() {
                   onChange={(e) => setFormData({ ...formData, botCount: Math.min(10, Math.max(0, parseInt(e.target.value) || 0)) })}
                   style={styles.input}
                 />
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Bots automatically solve puzzles during the race. Only add if you need filler participants (0 = no bots).</small>
+                <small style={{ color: '#6c757d', fontSize: '12px' }}>Filler players automatically solve puzzles during the race. Only add if the race needs padding (0 = none).</small>
               </div>
             </div>
 

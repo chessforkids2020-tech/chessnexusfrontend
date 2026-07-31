@@ -99,7 +99,7 @@ export default function ArcadeGame() {
   // determine opponent name; if room has no other human yet treat as bot
   const initialOpp = players?.find(p => p.playerNum !== playerNum)?.displayName || players?.find(p => p.playerNum !== playerNum)?.username;
   // opponent name state: use initial from room or default to bot until a human joins
-  const [oppName, setOppName] = useState(initialOpp || "bot");
+  const [oppName, setOppName] = useState(initialOpp || "Opponent");
 
   const playerColors  = { 1: T.p1, 2: T.p2 };
   const playerSymbols = { 1: "✕", 2: "○" };
@@ -235,8 +235,8 @@ export default function ArcadeGame() {
     });
 
     // ── NEW PUZZLE FLOW: server-managed bot-user-bot-user ──────────────────────
-    socket.on("puzzle_started", ({ fen, originalFen, hint, theme, themes, totalMoves, botMove, lastMove: serverLastMove, playerMoveIndex, currentTurn: srvTurn, isReconnect }) => {
-      console.log('[ArcadeGame] puzzle_started', { fen: fen?.substring(0,30), botMove, totalMoves, isReconnect, playerMoveIndex, themes });
+    socket.on("puzzle_started", ({ fen, originalFen, hint, theme, themes, totalMoves, openingMove: botMove, lastMove: serverLastMove, playerMoveIndex, currentTurn: srvTurn, isReconnect }) => {
+      console.log('[ArcadeGame] puzzle_started', { fen: fen?.substring(0,30), openingMove: botMove, totalMoves, isReconnect, playerMoveIndex, themes });
       if (!fen) {
         console.warn('[ArcadeGame] puzzle_started missing fen — ignoring');
         return;
@@ -287,9 +287,9 @@ export default function ArcadeGame() {
         setCurrentFen(fen);
         setLastMove(null);
         setPhase(srvTurn === playerNum ? "bot_moving" : "opponent_turn");
-        setFeedback(srvTurn === playerNum ? "🤖 Bot is making a move..." : `⏳ ${oppName}'s turn — watch the puzzle!`);
+        setFeedback(srvTurn === playerNum ? "♟️ Opponent is making a move..." : `⏳ ${oppName}'s turn — watch the puzzle!`);
         setTimeout(() => {
-          try { game.move({ from: botMove.slice(0,2), to: botMove.slice(2,4), promotion: botMove[4] || undefined }); } catch(e) { console.warn('bot move error', e); }
+          try { game.move({ from: botMove.slice(0,2), to: botMove.slice(2,4), promotion: botMove[4] || undefined }); } catch(e) { console.warn('opponent move error', e); }
           setCurrentFen(game.fen());
           setLastMove(botMove);
           if (srvTurn === playerNum) {
@@ -306,14 +306,14 @@ export default function ArcadeGame() {
       }
     });
 
-    socket.on("bot_move", ({ botMove, isFinal, remainingMoves }) => {
-      console.log('[ArcadeGame] bot_move', { botMove, isFinal });
+    socket.on("engine_move", ({ move: botMove, isFinal, remainingMoves }) => {
+      console.log('[ArcadeGame] engine_move', { move: botMove, isFinal });
       const game = chessGameRef.current;
       if (!game) return;
       setPhase("bot_moving");
-      setFeedback("🤖 Bot responds...");
+      setFeedback("♟️ Opponent responds...");
       setTimeout(() => {
-        try { game.move({ from: botMove.slice(0,2), to: botMove.slice(2,4), promotion: botMove[4] || undefined }); } catch(e) { console.warn('bot move error', e); }
+        try { game.move({ from: botMove.slice(0,2), to: botMove.slice(2,4), promotion: botMove[4] || undefined }); } catch(e) { console.warn('opponent move error', e); }
         setCurrentFen(game.fen());
         setLastMove(botMove);
         if (!isFinal) {
@@ -611,7 +611,7 @@ export default function ArcadeGame() {
                 boardWidth={chessBoardWidth}
               />
               {!isMyTurn && <div style={{ color:T.textDim, fontSize:12 }}>Watch {oppName} solve...</div>}
-              {phase === "bot_moving" && isMyTurn && <div style={{ color:T.accent1, fontSize:12 }}>🤖 Bot making move...</div>}
+              {phase === "bot_moving" && isMyTurn && <div style={{ color:T.accent1, fontSize:12 }}>♟️ Opponent making move...</div>}
               {feedback && (
                 <div style={{ fontSize:13, fontWeight:600, color: feedback.startsWith("❌") ? T.wrong : T.correct, textAlign:"center" }}>
                   {feedback}
@@ -629,7 +629,7 @@ export default function ArcadeGame() {
 
               {/* Turn banner */}
               <div style={{ width:"100%", background:`${playerColors[currentTurn]}12`, border:`1px solid ${playerColors[currentTurn]}35`, borderRadius:10, padding:"8px 16px", color:playerColors[currentTurn], fontWeight:600, fontSize:14, textAlign:"center" }}>
-                {phase === "bot_moving"      ? "🤖 Bot is making a move..."
+                {phase === "bot_moving"      ? "♟️ Opponent is making a move..."
                 : phase === "waiting_puzzle" ? "⏳ Loading next puzzle..."
                 : isMyTurn
                   ? phase === "pending_cell"  ? "✅ Puzzle solved! Claim your square"

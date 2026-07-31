@@ -193,7 +193,7 @@ function TournamentPuzzle() {
     }
 
     setIsThinking(true);
-    setStatusMsg("🤖 Bot following admin solution...");
+    setStatusMsg("♟️ Opponent replying...");
 
     try {
       let nextMove = null;
@@ -236,10 +236,10 @@ function TournamentPuzzle() {
           }
         }
         
-        setStatusMsg("✅ Bot following admin solution...");
+        setStatusMsg("✅ Opponent replying...");
       } else {
         // No admin solution available - use Stockfish analysis
-        setStatusMsg("🤖 Bot analyzing with Stockfish...");
+        setStatusMsg("♟️ Opponent thinking...");
         
         // Get Stockfish move
         const fen = chess.fen();
@@ -248,7 +248,7 @@ function TournamentPuzzle() {
         
         if (botMove) {
           nextMove = botMove;
-          setStatusMsg("✅ Bot move calculated...");
+          setStatusMsg("✅ Opponent moved...");
         } else {
           // Stockfish failed - use any legal move as fallback
           const legalMoves = chess.moves();
@@ -277,7 +277,7 @@ function TournamentPuzzle() {
         if (moveObj) {
           setChess(new Chess(chess.fen()));
           setAutoMoves(prev => [...prev, moveObj.san]);
-          setAllMoves(prev => [...prev, `Bot: ${moveObj.san}`]);
+          setAllMoves(prev => [...prev, `Opponent: ${moveObj.san}`]);
 
           // Update last move highlighting
           setLastMove({
@@ -320,14 +320,14 @@ function TournamentPuzzle() {
             }
           }
         } else {
-          throw new Error('Failed to apply bot move');
+          throw new Error('Failed to apply opponent move');
         }
       } else {
         // Bot has no legal moves (game over) - show message but don't auto-submit
         setStatusMsg("🏁 Game ended - use Submit button when ready!");
       }
     } catch (error) {
-      setStatusMsg("❌ Bot error - use Submit button when ready!");
+      setStatusMsg("❌ Couldn’t reply — use Submit when ready!");
     } finally {
       setIsThinking(false);
     }
@@ -656,7 +656,7 @@ function TournamentPuzzle() {
   const onPieceDrop = (sourceSquare, targetSquare) => {
     // In Stockfish mode, only allow moves on user's turn
     if (gameMode === 'user-vs-stockfish' && !isUserTurn) {
-      setStatusMsg("Wait for the bot to make its move!");
+      setStatusMsg("Wait for the reply!");
       return false;
     }
 
@@ -800,12 +800,12 @@ function TournamentPuzzle() {
       setIsUserTurn(false);
       if (competitionMode) {
         if (usingAdminSolution) {
-          setStatusMsg("✅ Following solution! Bot responding with admin move...");
+          setStatusMsg("✅ Following solution! Opponent replying...");
         } else {
-          setStatusMsg("🤖 Bot thinking... (using Stockfish since you deviated)");
+          setStatusMsg("♟️ Opponent thinking...");
         }
       } else {
-        setStatusMsg("Bot is thinking...");
+        setStatusMsg("Opponent is thinking...");
       }
       
       // Delay bot move slightly to allow UI update

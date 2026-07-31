@@ -29,6 +29,9 @@ function SignupRequestForm() {
     confirmPassword: "",
 
     country: "",
+    // Kept in the payload (not asked for): User.chessExperience is an enum
+    // and routes/auth.js defaults it to "Beginner" anyway. Dropping it from
+    // the form does not need a schema change.
     chessExperience: "Beginner",
     lichessUsername: "",
     chessComUsername: "",
@@ -245,27 +248,16 @@ function SignupRequestForm() {
             </div>
           </div>
 
+          {/* The "Experience Level" dropdown was removed: it was a required
+              field answering a question nobody used, and a beginner picking
+              their own level is guesswork anyway. The linked accounts below are
+              optional and actually useful (they import real games). */}
           <div className="form-section">
-            <h3>Chess Experience</h3>
-
-            <div className="form-group">
-              <label htmlFor="chessExperience">Experience Level *</label>
-              <select
-                id="chessExperience"
-                name="chessExperience"
-                value={formData.chessExperience}
-                onChange={handleChange}
-              >
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-                <option value="Master">Master</option>
-              </select>
-            </div>
+            <h3>Chess Accounts <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></h3>
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="lichessUsername">Lichess Username (Optional)</label>
+                <label htmlFor="lichessUsername">Lichess Username</label>
                 <input
                   type="text"
                   id="lichessUsername"
@@ -277,7 +269,7 @@ function SignupRequestForm() {
               </div>
 
               <div className="form-group">
-                <label htmlFor="chessComUsername">Chess.com Username (Optional)</label>
+                <label htmlFor="chessComUsername">Chess.com Username</label>
                 <input
                   type="text"
                   id="chessComUsername"

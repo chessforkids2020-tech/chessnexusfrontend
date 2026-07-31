@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import CoachChatFab from '../../components/coach/CoachChatFab';
 import InlineBoardEditor from '../../components/PositionEditor/InlineBoardEditor';
+import AssignmentReview from '../../components/coach/AssignmentReview';
 import './CoachDashboard.css';
 import './CoachOnboarding.css';
 import './CoachStudentDetail.css';
@@ -40,6 +41,8 @@ export default function CoachAssignments() {
   const location = useLocation();
   const navigate = useNavigate();
   const [assignments, setAssignments] = useState([]);
+  // Which assignment is open in the board review (null = none).
+  const [reviewing, setReviewing] = useState(null);
   const [students, setStudents] = useState([]);
   const [groups, setGroups] = useState([]); // named batches, for one-click assign
   const [templates, setTemplates] = useState([]); // coach's saved reusable templates
@@ -602,9 +605,20 @@ export default function CoachAssignments() {
                   </div>
                 )}
 
-                <button className="ca-results-toggle" onClick={() => toggleExpand(a._id)}>
-                  {isOpen ? '▾ Hide student results' : `▸ View student results (${withResults.length})`}
-                </button>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <button className="ca-results-toggle" onClick={() => toggleExpand(a._id)}>
+                    {isOpen ? '▾ Hide student results' : `▸ View student results (${withResults.length})`}
+                  </button>
+                  {/* Board review. Only for the two types where a position means
+                      something: Play vs Stockfish (which class homework uses) and
+                      find-the-blunders. The table shows WHETHER a student finished;
+                      this shows WHICH position and WHAT they played. */}
+                  {(a.assignmentType === 'fen_solution' || isBlunder) && (
+                    <button className="ca-results-toggle" onClick={() => setReviewing(a)}>
+                      ♟️ Show assignment
+                    </button>
+                  )}
+                </div>
 
                 {isOpen && (
                   <div className="ca-results">
@@ -1376,6 +1390,7 @@ export default function CoachAssignments() {
       )}
 
       {/* Floating message button (opens coach chat popup). */}
+      {reviewing && <AssignmentReview assignment={reviewing} onClose={() => setReviewing(null)} />}
       <CoachChatFab />
     </div>
   );

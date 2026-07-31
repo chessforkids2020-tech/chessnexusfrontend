@@ -541,7 +541,7 @@ const UserTestResult = () => {
                       <>
                         <div style={styles.moveSection}>
                           <div style={{ ...styles.moveLabel, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ background: 'rgba(239,68,68,0.2)', color: '#f87171', borderRadius: '4px', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>BOT</span>
+                            <span style={{ background: 'rgba(239,68,68,0.2)', color: '#f87171', borderRadius: '4px', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>OPENING</span>
                             Opening Move:
                           </div>
                           <div style={{ ...styles.moveCode, color: '#f87171' }}>{botMove}</div>

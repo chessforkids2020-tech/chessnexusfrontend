@@ -522,12 +522,12 @@ export default function FocusTaskPage() {
         if (completed) setPuzzleDone(prev => { const n = [...prev]; n[puzzleIndex] = true; return n; });
         pendingServerMoves.current[puzzleIndex] = botMove;
       } catch (err) {
-        console.warn('monthlyFocusBotMove handler error', err);
+        console.warn('monthlyFocusEngineMove handler error', err);
       }
     };
 
-    socket.on('monthlyFocusBotMove', handler);
-    return () => { socket.off('monthlyFocusBotMove', handler); };
+    socket.on('monthlyFocusEngineMove', handler);
+    return () => { socket.off('monthlyFocusEngineMove', handler); };
   }, [dayNumber]);
   // ── End interactive puzzle board handlers ───────────────────────────────────
 

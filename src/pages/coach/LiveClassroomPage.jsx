@@ -14,7 +14,9 @@ import LiveClassChat from '../../components/LiveClassChat';
 import { buildTreeFromPgn, nodeAtPath, addMove, getMainlinePath } from '../../components/gameTree';
 import EditableBoard from '../../components/PositionEditor/EditableBoard';
 import PieceSelector from '../../components/PositionEditor/PieceSelector';
+import { SideToMoveControl, CastlingControl, EnPassantControl } from '../../components/PositionEditor/SetupControls';
 import EnginePanel from '../../components/EnginePanel';
+import ClassOpeningExplorer from '../../components/coach/ClassOpeningExplorer';
 import { copyText } from '../../utils/clipboard';
 import { renderFrame } from '../../lib/videoEffects';
 import CoachArenaLive from './CoachArenaLive';
@@ -200,8 +202,14 @@ function RemoteAudio({ participants }) {
   return (
     <div aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
       {participants
-        .filter((p) => !p.isLocal && p.audioTrack)
-        .map((p) => <RemoteAudioTrack key={p.identity} track={p.audioTrack} />)}
+        // Filter on the RAW track, not `audioTrack`. `audioTrack` goes null the
+        // moment someone mutes, which unmounted the <audio> entirely — and since
+        // LiveKit returns the SAME track object on unmute, React saw no change
+        // and never re-attached. That is the "mic was allowed but I still can't
+        // hear the coach, fixed by rejoining" report. Staying mounted across the
+        // mute lets the element recover on its own.
+        .filter((p) => !p.isLocal && (p.audioTrackRaw || p.audioTrack))
+        .map((p) => <RemoteAudioTrack key={p.identity} track={p.audioTrackRaw || p.audioTrack} />)}
     </div>
   );
 }
@@ -211,12 +219,35 @@ function RemoteAudioTrack({ track }) {
   useEffect(() => {
     const el = ref.current;
     if (!el || !track) return;
-    track.attach(el);
-    // Some browsers leave a freshly attached element paused; nudge it. Failures
-    // are expected when autoplay is still blocked — the page-level prompt
-    // (lk.audioBlocked) is what recovers that case.
-    el.play?.().catch(() => { /* autoplay blocked — prompt handles it */ });
-    return () => { try { track.detach(el); } catch { /* ignore */ } };
+
+    const doAttach = () => {
+      try { track.attach(el); } catch { /* ignore */ }
+      // Some browsers leave a freshly attached element paused; nudge it. Failures
+      // are expected when autoplay is still blocked — the page-level prompt
+      // (lk.audioBlocked) is what recovers that case.
+      el.play?.().catch(() => { /* autoplay blocked — prompt handles it */ });
+    };
+    doAttach();
+
+    // Re-attach when the speaker unmutes. The element stays mounted through the
+    // mute now, so this listener is still alive to hear it.
+    let off = () => {};
+    try {
+      track.on?.('unmuted', doAttach);
+      off = () => { try { track.off?.('unmuted', doAttach); } catch { /* */ } };
+    } catch { /* older livekit — best effort */ }
+
+    // Recovery net: if the element ended up with no stream (a race on join, or a
+    // subscription that landed late), re-attach. Two checks, then it stops.
+    const recheck = [500, 2000].map(ms => setTimeout(() => {
+      if (el.isConnected && !el.srcObject) doAttach();
+    }, ms));
+
+    return () => {
+      off();
+      recheck.forEach(clearTimeout);
+      try { track.detach(el); } catch { /* ignore */ }
+    };
   }, [track]);
   return <audio ref={ref} autoPlay playsInline />;
 }
@@ -225,7 +256,7 @@ function RemoteAudioTrack({ track }) {
 // `local` marks YOUR own tile: we render the RAW camera MediaStreamTrack directly
 // (bypassing the encode/simulcast path) so the self-view is instant and full-res —
 // exactly how Zoom shows your own preview. Remote tiles still attach the LiveKit track.
-function MediaTile({ track, muted, label, isScreen, avatarUrl, speaking, ratio, local }) {
+function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl, speaking, ratio, local }) {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current;
@@ -252,9 +283,55 @@ function MediaTile({ track, muted, label, isScreen, avatarUrl, speaking, ratio, 
       } catch { /* older livekit — best effort */ }
       return () => { off(); try { el.srcObject = null; } catch { /* */ } };
     }
-    track.attach(el);
-    return () => { try { track.detach(el); } catch { /* */ } };
+    // Remote tile. Attach, then keep it attached across mute/unmute.
+    //
+    // The bug this guards against: a student turns their camera off and on
+    // again and their tile stays BLACK for everyone else. LiveKit mutes the
+    // publication rather than destroying the track, so on unmute the SAME track
+    // object comes back — React sees identical deps, skips this effect, and the
+    // <video> that was detached on mute is never re-attached.
+    //
+    // The unmute listener lives in its own effect below, keyed on `rawTrack` —
+    // it has to survive `track` going null on mute, which is exactly when this
+    // effect tears down.
+    const doAttach = () => { try { track.attach(el); } catch { /* */ } };
+    doAttach();
+
+    // Belt AND braces. A coach cannot tell a child to reload mid-class, so
+    // recovery must not hinge on one event firing. If the element still has no
+    // picture shortly after mount, re-attach. Two cheap checks, then it stops —
+    // a recovery net, not a polling loop.
+    const recheck = [400, 1500].map(ms => setTimeout(() => {
+      if (!el.isConnected) return;
+      if (el.videoWidth === 0 || !el.srcObject) doAttach();
+    }, ms));
+
+    return () => {
+      recheck.forEach(clearTimeout);
+      try { track.detach(el); } catch { /* */ }
+    };
   }, [track, local]);
+
+  // Camera off → on must recover WITHOUT a page reload.
+  //
+  // LiveKit mutes the publication rather than destroying the track, and returns
+  // the SAME object on unmute. buildParticipants maps a muted camera to
+  // `videoTrack: null`, so the effect above unmounts and — the object being
+  // unchanged — never re-runs when the camera comes back. The tile stayed black
+  // until reload, which is not something a coach can ask a child to do.
+  //
+  // `rawTrack` is the same publication INCLUDING while muted, so this listener
+  // survives the whole off→on cycle and re-attaches the instant it unmutes.
+  useEffect(() => {
+    if (local || !rawTrack) return;
+    const onUnmuted = () => {
+      const el = ref.current;
+      if (el) { try { rawTrack.attach(el); } catch { /* */ } }
+    };
+    try { rawTrack.on?.('unmuted', onUnmuted); } catch { return undefined; }
+    return () => { try { rawTrack.off?.('unmuted', onUnmuted); } catch { /* */ } };
+  }, [rawTrack, local]);
+
   // NOTE: remote audio is NOT played here. It used to be, and that was the cause
   // of "I can see the green speaking border but hear nothing": the <audio> lived
   // inside this tile, so whenever the tile unmounted (videos floated/popped/
@@ -278,6 +355,27 @@ function MediaTile({ track, muted, label, isScreen, avatarUrl, speaking, ratio, 
         )}
       {/* Audio is NOT rendered here — see the note above. <RemoteAudio/> at page
           level owns playback so it survives any layout change. */}
+
+      {/* Muted badge. A camera-off student is obvious (the tile shows an avatar),
+          but a MUTED one looked identical to someone who simply wasn't talking —
+          the mic state only appeared in the participants list, which a coach
+          isn't looking at while teaching. Same MicIcon the roster uses, so the
+          two agree. */}
+      {micOff && !isScreen && (
+        <div
+          title="Microphone off"
+          style={{
+            position: 'absolute', top: 6, right: 6,
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: 24, height: 24, borderRadius: '50%',
+            background: 'rgba(0,0,0,0.62)', color: '#f87171',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.5)',
+          }}
+        >
+          <MicIcon off size={14} />
+        </div>
+      )}
+
       {label && <div style={{ position: 'absolute', bottom: 6, left: 8, fontSize: 12, color: '#fff', background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: 6 }}>{label}</div>}
     </div>
   );
@@ -1584,9 +1682,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // Host-only in-browser Stockfish (top 3 lines) — private to the host, never
   // broadcast to students, nothing saved. Off by default.
   const [engineOn, setEngineOn] = useState(false);
+  // Opening explorer — host-only and OFF by default, same rule as the engine
+  // above: a coach asking "what would you play here?" doesn't want the answer
+  // already on every student's screen.
+  const [explorerOn, setExplorerOn] = useState(false);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editorChess, setEditorChess] = useState(() => new Chess());
   const [editorPiece, setEditorPiece] = useState(undefined); // undefined=drag, null=erase, string=place
+  // Editor board orientation — independent of the class board, so a coach can
+  // set up a black-side position without flipping what students see.
+  const [editorFlip, setEditorFlip] = useState(false);
   // Host: load a position/game onto the shared board (paste FEN or PGN, like Quick Analyze).
   const [loadText, setLoadText] = useState('');
   const [loadErr, setLoadErr] = useState('');
@@ -1663,6 +1768,28 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // Current position derived from the shared tree + path.
   const curNode = nodeAtPath(tree, treePath);
   const curFen = curNode?.fen || new Chess().fen();
+
+  // SAN moves from the start of the tree to the current node — the prefix the
+  // opening explorer matches on. Walks the same path nodeAtPath does.
+  // Only meaningful from the standard start position: a loaded puzzle or a
+  // set-up FEN has no move history for a database to match, so the explorer is
+  // hidden in those cases rather than showing a misleading "out of book".
+  const sanPrefix = React.useMemo(() => {
+    const out = [];
+    let cur = tree;
+    for (const id of treePath) {
+      const next = cur.children?.find(c => c.id === id);
+      if (!next) break;
+      if (next.san) out.push(next.san);
+      cur = next;
+    }
+    return out;
+  }, [tree, treePath]);
+
+  // The explorer only makes sense when the tree actually starts from the initial
+  // position — otherwise the SAN prefix describes moves the database never saw.
+  const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  const explorerApplies = (tree?.fen || START_FEN) === START_FEN;
   const lastMove = curNode && curNode.from ? { from: curNode.from, to: curNode.to } : null;
 
   // Board orientation follows the side to move at the ROOT of the loaded position,
@@ -2337,6 +2464,22 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     const { root, path } = addMove(cloned, treePath, { san: mv.san, fen: c.fen(), from: mv.from, to: mv.to });
     applyTree(root, path);
     return true;
+  };
+
+  // Play a move the coach clicked in the opening explorer onto the SHARED board,
+  // so the class sees it like any other move. Takes SAN because that is what the
+  // explorer returns; chess.js resolves it to from/to for the move tree.
+  const playExplorerMove = (san) => {
+    if (!iControl) return;
+    let c, mv;
+    try {
+      c = new Chess(curFen);
+      mv = c.move(san);
+    } catch { return; }
+    if (!mv) return;
+    const cloned = JSON.parse(JSON.stringify(tree));
+    const { root, path } = addMove(cloned, treePath, { san: mv.san, fen: c.fen(), from: mv.from, to: mv.to });
+    applyTree(root, path);
   };
 
   // Jump to any node (clicking the SAN notation) — syncs to everyone.
@@ -3088,6 +3231,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       )}
       <MediaTile
         track={p.videoTrack}
+        /* The camera track even while muted. MediaTile listens to ITS mute/unmute
+           events so a student toggling their camera recovers without a reload —
+           `track` alone goes null on mute and tears the listener down with it. */
+        rawTrack={p.videoTrackRaw}
+        /* Mic state for the badge. `audioTrack` is null while muted — the same
+           test the participants list uses, so tile and roster never disagree. */
+        micOff={!p.isLocal && !p.audioTrack}
         local={p.isLocal}
         muted={p.isLocal}
         label={p.name + (p.isLocal ? ' (you)' : '')}
@@ -4124,6 +4274,18 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   // so the two stacked cards had visibly different edges.
                   <div style={{ width: movesCardW }}>
                     <EnginePanel fen={curFen} numLines={3} enabled={engineOn} onToggle={() => setEngineOn(v => !v)} />
+                    {/* Opening explorer: host-only, off by default. Hidden when the
+                        tree doesn't start from the initial position, since the SAN
+                        prefix would then describe moves no database can match. */}
+                    {explorerApplies && (
+                      <ClassOpeningExplorer
+                        sanPrefix={sanPrefix}
+                        enabled={explorerOn}
+                        onToggle={() => setExplorerOn(v => !v)}
+                        canPlay={iControl}
+                        onPlayMove={playExplorerMove}
+                      />
+                    )}
                   </div>
                 )}
                 <MoveTreeNotation tree={tree} path={treePath} onJump={goToPath} canNavigate={iControl} height={boardBoxSize}
@@ -4231,6 +4393,21 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   <div style={{ fontWeight: 700, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
                     👥 In the class <span style={s.waitBadge}>{allTiles.length}</span>
                   </div>
+
+                  {/* Column headings for the icon buttons below. Without these the
+                      three emoji are a guessing game; with them the row reads like
+                      a small table. Host-only, since students have no controls. */}
+                  {isHost && allTiles.some(p => !p.isLocal) && (
+                    <div style={s.partHead}>
+                      <span style={{ flex: 1, minWidth: 0 }} />
+                      <span style={s.partHeadIcons}>Mic&nbsp;·&nbsp;Cam</span>
+                      <span style={s.ctrlCell}>
+                        <span style={s.ctrlHead}>Mute</span>
+                        <span style={s.ctrlHead}>Board</span>
+                        <span style={s.ctrlHead}>Screen</span>
+                      </span>
+                    </div>
+                  )}
                   {/* The ROSTER always lists everyone, including me — hiding my own
                       video tile shouldn't remove me from the participant list. */}
                   {allTiles.map(p => {
@@ -4264,19 +4441,25 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                         <span title={p.videoTrack ? 'Camera on' : 'Camera off'} style={{ display: 'inline-flex', color: p.videoTrack ? '#9ca3af' : '#f87171' }}>
                           <CamIcon off={!p.videoTrack} size={16} />
                         </span>
-                        {/* host: two SEPARATE grants — board control (moves) and screen share */}
+                        {/* Host controls: mic / board / screen.
+                            ICON-ONLY and fixed-width, in the same order as the
+                            column headings above. The old text buttons ("🔇 Mute",
+                            "🎯 Give board", "🖥️ Give share") wrapped onto two lines
+                            and squeezed the name column down to the avatar circle,
+                            so a coach couldn't read who was who — the one thing
+                            this list exists for. Colour carries the state: amber =
+                            currently granted, grey = available to grant. */}
                         {isHost && !p.isLocal && (
-                          <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                            {/* Mic control: hard-mute a student, or ask a muted one to unmute. */}
+                          <span style={s.ctrlCell}>
                             {coachMutedIds.map(String).includes(String(p.identity))
-                              ? <button style={s.tiny} onClick={() => requestUnmute(p.identity)} title="Ask this student to unmute">🎙️ Ask to unmute</button>
-                              : <button style={s.tiny} onClick={() => muteStudent(p.identity)} title="Mute this student (they can't unmute until you ask)">🔇 Mute</button>}
+                              ? <button style={{ ...s.ctrlBtn, ...s.ctrlBtnOn }} onClick={() => requestUnmute(p.identity)} title={`Ask ${p.name} to unmute`}>🎙️</button>
+                              : <button style={s.ctrlBtn} onClick={() => muteStudent(p.identity)} title={`Mute ${p.name} (they can't unmute until you ask)`}>🔇</button>}
                             {controlling
-                              ? <button style={s.tiny} onClick={revoke} title="Take back board control">🎯 Take board</button>
-                              : <button style={s.tiny} onClick={() => grant(p.identity)} title="Let this student move the board">🎯 Give board</button>}
+                              ? <button style={{ ...s.ctrlBtn, ...s.ctrlBtnOn }} onClick={revoke} title={`Take board control back from ${p.name}`}>🎯</button>
+                              : <button style={s.ctrlBtn} onClick={() => grant(p.identity)} title={`Let ${p.name} move the board`}>🎯</button>}
                             {sharing
-                              ? <button style={s.tiny} onClick={revokeShare} title="Stop this student sharing">🖥️ Take share</button>
-                              : <button style={s.tiny} onClick={() => grantShare(p.identity)} title="Let this student share their screen">🖥️ Give share</button>}
+                              ? <button style={{ ...s.ctrlBtn, ...s.ctrlBtnOn }} onClick={revokeShare} title={`Stop ${p.name} sharing`}>🖥️</button>
+                              : <button style={s.ctrlBtn} onClick={() => grantShare(p.identity)} title={`Let ${p.name} share their screen`}>🖥️</button>}
                           </span>
                         )}
                       </div>
@@ -4338,7 +4521,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   chess={editorChess}
                   selectedPiece={editorPiece}
                   onFenChange={editorFenChange}
-                  orientation="white"
+                  orientation={editorFlip ? 'black' : 'white'}
                   boardWidth={320}
                 />
               </div>
@@ -4347,7 +4530,19 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <button style={s.ghostSm} onClick={editorStart}>Start position</button>
                   <button style={s.ghostSm} onClick={editorClear}>Clear board</button>
+                  <button style={s.ghostSm} onClick={() => setEditorFlip(v => !v)} title="Flip the editor board">
+                    ⇅ Flip board
+                  </button>
                 </div>
+
+                {/* Side to move / castling / en passant. These are FEN fields the
+                    drag-and-drop board can't express, so without them a coach
+                    could only ever set up "white to move, all castling intact".
+                    Reused from PositionEditor so behaviour matches the study
+                    editor exactly. */}
+                <SideToMoveControl chess={editorChess} onFenChange={editorFenChange} />
+                <CastlingControl chess={editorChess} onFenChange={editorFenChange} />
+                <EnPassantControl chess={editorChess} onFenChange={editorFenChange} />
               </div>
             </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
@@ -4699,6 +4894,27 @@ const s = {
   catchup: { padding: '5px 10px', borderRadius: 6, border: '1px solid rgba(245,158,11,0.4)', background: 'rgba(245,158,11,0.14)', color: '#fcd34d', fontWeight: 700, cursor: 'pointer', fontSize: 12 },
   remove: { padding: '5px 10px', borderRadius: 6, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.12)', color: '#fca5a5', fontWeight: 600, cursor: 'pointer', fontSize: 12 },
   tiny: { padding: '3px 8px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 11 },
+  // ── Participants list: table-style header + icon-only host controls ────────
+  // Each control column is a FIXED 30px so the heading above lines up with the
+  // button below, and the name column keeps every remaining pixel.
+  partHead: {
+    display: 'flex', alignItems: 'center', gap: 8, padding: '0 0 4px',
+    fontSize: 9.5, fontWeight: 700, letterSpacing: '.3px',
+    textTransform: 'uppercase', color: 'rgba(226,232,240,0.42)',
+  },
+  partHeadIcons: { width: 40, textAlign: 'center', flex: '0 0 auto' },
+  ctrlCell: { display: 'flex', gap: 4, flex: '0 0 auto' },
+  ctrlHead: { width: 30, textAlign: 'center', display: 'inline-block' },
+  ctrlBtn: {
+    width: 30, height: 26, padding: 0, borderRadius: 7, cursor: 'pointer',
+    border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)',
+    fontSize: 13, lineHeight: 1, display: 'grid', placeItems: 'center', flex: '0 0 auto',
+  },
+  // Amber = this student currently HAS the grant (or is hard-muted), so the
+  // button now takes it away. Matches the "on" styling used elsewhere.
+  ctrlBtnOn: {
+    border: '1px solid rgba(245,158,11,0.55)', background: 'rgba(245,158,11,0.16)',
+  },
   iconBtn: { padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer', fontSize: 15 },
   // Host video-placement segmented control (dock / float / pop / hide).
   vmodeGroup: { display: 'inline-flex', gap: 2, padding: 2, borderRadius: 9, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)' },

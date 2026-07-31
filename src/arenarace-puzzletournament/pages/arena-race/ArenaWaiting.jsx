@@ -15,6 +15,26 @@ export default function ArenaWaiting() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Phone layout. The page had a `responsiveNote` style holding an
+  // '@media (max-width: 1024px)' key, but this file styles everything with
+  // INLINE style objects — a media query inside one is dead code the browser
+  // never sees. So the two-column '400px 1fr' grid stayed put on a phone and
+  // ran off the side of the screen, which is why the player list was cut off.
+  // Tracking the width in state is the only way to branch inline styles.
+  const [isPhone, setIsPhone] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= 640 : false
+  );
+  useEffect(() => {
+    const onResize = () => setIsPhone(window.innerWidth <= 640);
+    onResize();
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, []);
+
   useEffect(() => {
     if (!roomId) {
       setError('Invalid room ID');
@@ -180,7 +200,13 @@ export default function ArenaWaiting() {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       background: '#0a0a0a',
       minHeight: '100vh',
-      padding: '20px',
+      // 20px each side is a lot of a 390px screen — give the content the room.
+      padding: isPhone ? '12px 10px 40px' : '20px',
+      // Without this the padding is ADDED to the width, so on a 320px iPhone SE
+      // the content measured 336px and ran off the screen. Measured, not guessed.
+      boxSizing: 'border-box',
+      width: '100%',
+      maxWidth: '100%',
       position: 'relative',
       overflow: 'hidden',
     },
@@ -230,21 +256,42 @@ export default function ArenaWaiting() {
     },
     twoColumnGrid: {
       display: 'grid',
-      gridTemplateColumns: '400px 1fr',
-      gap: '24px',
+      // Grid items default to min-width:auto and will grow past their track
+      // to fit content. Forcing every direct child to min-width:0 is what
+      // actually stops the overflow — box-sizing alone did NOT (measured on
+      // a 320px iPhone SE: card stayed 336px inside a 300px track).
+
+      // Phone: one column, or the fixed 400px track pushes the player list
+      // off the right edge of the screen.
+      gridTemplateColumns: isPhone ? 'minmax(0, 1fr)' : 'minmax(0, 400px) minmax(0, 1fr)',
+      gap: isPhone ? '14px' : '24px',
       alignItems: 'start',
     },
     leftColumn: {
+      minWidth: 0,
+      // border-box: padding must fit INSIDE the grid track. Without this the
+      // 20px padding was added to the 300px track = 336px on a 320px iPhone SE.
+      boxSizing: 'border-box',
+      maxWidth: '100%',
       display: 'flex',
       flexDirection: 'column',
       gap: '24px',
     },
     rightColumn: {
+      minWidth: 0,
+      // border-box: padding must fit INSIDE the grid track. Without this the
+      // 20px padding was added to the 300px track = 336px on a 320px iPhone SE.
+      boxSizing: 'border-box',
+      maxWidth: '100%',
       display: 'flex',
       flexDirection: 'column',
       gap: '24px',
     },
     card: {
+      // border-box: padding must fit INSIDE the grid track. Without this the
+      // 20px padding was added to the 300px track = 336px on a 320px iPhone SE.
+      boxSizing: 'border-box',
+      maxWidth: '100%',
       background: 'rgba(23, 23, 23, 0.7)',
       border: '1px solid rgba(255, 255, 255, 0.05)',
       borderRadius: '20px',
@@ -253,6 +300,10 @@ export default function ArenaWaiting() {
       boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
     },
     statItem: {
+      // border-box: padding must fit INSIDE the grid track. Without this the
+      // 20px padding was added to the 300px track = 336px on a 320px iPhone SE.
+      boxSizing: 'border-box',
+      maxWidth: '100%',
       padding: '20px',
       background: 'rgba(0, 0, 0, 0.3)',
       border: '1px solid rgba(255, 255, 255, 0.05)',
@@ -299,6 +350,10 @@ export default function ArenaWaiting() {
       lineHeight: '1.6',
     },
     playersCard: {
+      // border-box: padding must fit INSIDE the grid track. Without this the
+      // 20px padding was added to the 300px track = 336px on a 320px iPhone SE.
+      boxSizing: 'border-box',
+      maxWidth: '100%',
       background: 'rgba(23, 23, 23, 0.7)',
       border: '1px solid rgba(255, 255, 255, 0.05)',
       borderRadius: '20px',
@@ -432,11 +487,48 @@ export default function ArenaWaiting() {
       transition: 'all 0.3s ease',
       boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
     },
-    responsiveNote: {
-      '@media (max-width: 1024px)': {
-        gridTemplateColumns: '1fr',
-      }
-    }
+    // Compact phone summary: one small card with Topic · Duration · Players,
+    // instead of four full-width stat rows. Puzzle count and "planned start"
+    // are dropped on phones — they push the player list below the fold, and
+    // what a student needs here is which race this is and who else is in it.
+    phoneSummary: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: '8px',
+      padding: '12px 14px',
+      background: 'rgba(23, 23, 23, 0.7)',
+      border: '1px solid rgba(255, 255, 255, 0.06)',
+      borderRadius: '14px',
+      marginBottom: '14px',
+    },
+    phoneSummaryItem: {
+      flex: '1 1 0',
+      minWidth: 0,          // lets long topic names ellipsize instead of overflowing
+      textAlign: 'center',
+    },
+    phoneSummaryLabel: {
+      fontSize: '10px',
+      fontWeight: 700,
+      letterSpacing: '0.6px',
+      textTransform: 'uppercase',
+      color: 'rgba(226, 232, 240, 0.45)',
+      marginBottom: '3px',
+    },
+    phoneSummaryValue: {
+      fontSize: '14px',
+      fontWeight: 800,
+      color: '#e6e8ee',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    },
+    phoneSummaryDivider: {
+      width: '1px',
+      alignSelf: 'stretch',
+      background: 'rgba(255, 255, 255, 0.08)',
+      flex: '0 0 auto',
+    },
   };
 
   if (loading) {
@@ -551,10 +643,29 @@ export default function ArenaWaiting() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
+            {isPhone ? (
+              /* Phone: Topic · Duration · Players in one small card. */
+              <div style={styles.phoneSummary}>
+                <div style={styles.phoneSummaryItem}>
+                  <div style={styles.phoneSummaryLabel}>📚 Topic</div>
+                  <div style={styles.phoneSummaryValue}>{getTopicTitle(roomData?.topic)}</div>
+                </div>
+                <div style={styles.phoneSummaryDivider} />
+                <div style={styles.phoneSummaryItem}>
+                  <div style={styles.phoneSummaryLabel}>⏱️ Time</div>
+                  <div style={styles.phoneSummaryValue}>{roomData?.timeLimit} min</div>
+                </div>
+                <div style={styles.phoneSummaryDivider} />
+                <div style={styles.phoneSummaryItem}>
+                  <div style={styles.phoneSummaryLabel}>👥 Players</div>
+                  <div style={styles.phoneSummaryValue}>{roomData?.playerCount}</div>
+                </div>
+              </div>
+            ) : (
             <div style={styles.card}>
-              <motion.div 
+              <motion.div
                 style={styles.statItem}
-                whileHover={{ 
+                whileHover={{
                   y: -2,
                   boxShadow: '0 4px 16px rgba(6, 182, 212, 0.2)',
                   border: '1px solid rgba(6, 182, 212, 0.2)'
@@ -580,21 +691,10 @@ export default function ArenaWaiting() {
                 <div style={styles.statValue}>{roomData?.timeLimit} min</div>
               </motion.div>
 
-              <motion.div 
-                style={styles.statItem}
-                whileHover={{ 
-                  y: -2,
-                  boxShadow: '0 4px 16px rgba(6, 182, 212, 0.2)',
-                  border: '1px solid rgba(6, 182, 212, 0.2)'
-                }}
-              >
-                <div style={styles.statLabel}>
-                  <span>🧩</span> Puzzles
-                </div>
-                <div style={styles.statValue}>{roomData?.puzzleCount}</div>
-              </motion.div>
-
-              <motion.div 
+              {/* Puzzle count removed on every arena race view: a student never
+                  reaches the end of the set (the clock ends the race), so the
+                  number only competes with Topic / Duration / Players. */}
+              <motion.div
                 style={styles.statItem}
                 whileHover={{ 
                   y: -2,
@@ -608,6 +708,7 @@ export default function ArenaWaiting() {
                 <div style={styles.statValue}>{roomData?.playerCount}</div>
               </motion.div>
             </div>
+            )}
           </motion.div>
 
           {/* RIGHT COLUMN - Players */}

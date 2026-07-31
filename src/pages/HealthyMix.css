@@ -863,7 +863,10 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
   .hm-side .hm-rating-card { order: 3; }
   .hm-board-col { order: 4; }
   .hm-side .hm-stats { order: 5; }
-  .hm-side .hm-controls { order: 6; }
+  /* NOTE: .hm-controls is NOT inside .hm-side — it lives in .hm-right-col, so
+     the old `.hm-side .hm-controls` rule here never matched anything. The real
+     ordering for phones/tablets is in the v2 patch block at the end of this
+     file, which supersedes every order set here. */
   .hm-side .hm-modes-wrap { order: 7; }
 
   .hm-moves {
@@ -1065,15 +1068,37 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
 /* Mobile: collapse to a single column */
 @media (max-width: 960px) {
   .hm-layout { grid-template-columns: minmax(0, 1fr) !important; }
-  .hm-right-col { order: 3; }
   .hm-board-outer { width: 100% !important; }
   /* Single column: the board fills the width, so centre it again. */
   .hm-board-col { align-items: center; }
-  /* Stacked vertically there is nothing to line up with, so drop the fixed height
-     and let both cards take their natural size instead of clipping. */
-  .hm-right-col { height: auto; }
   .hm-moves { max-height: 60vh; }
   .hm-right-col .hm-controls { overflow-y: visible; }
+
+  /* ── PHONE / TABLET READING ORDER ──────────────────────────────────────
+     What a solver needs, in the order they need it:
+        1 rating  →  2 BOARD  →  3 Next puzzle  →  4 score  →  5 moves
+     The moves list used to sit ABOVE the board, pushing it down the page.
+     Now it is last: you only read the move list after you have played.
+
+     .hm-right-col is a single grid child holding engine + moves + controls,
+     so ordering it as one block cannot put "Next puzzle" above the score and
+     the moves below it. `display: contents` removes the wrapper from the
+     layout so its children become grid items in their own right and can each
+     take an order. It keeps its own height:auto behaviour implicitly, since
+     the box no longer generates a frame. */
+  .hm-right-col { display: contents; }
+
+  .hm-side .hm-brand        { order: 1; }
+  .hm-side .hm-band-badge   { order: 2; }
+  .hm-side .hm-rating-card  { order: 3; }
+  .hm-board-col             { order: 4; }
+  /* Controls carry the primary "Next puzzle → " action: directly under the
+     board, where the thumb already is. */
+  .hm-right-col .hm-controls { order: 5; }
+  .hm-side .hm-stats        { order: 6; }   /* Solved · Failed · Streak */
+  .hm-right-col .gr-engine  { order: 7; }
+  .hm-moves                 { order: 8; }
+  .hm-side .hm-modes-wrap   { order: 9; }
 }
 
 /* ---------- Wide screens: extend the layout ----------

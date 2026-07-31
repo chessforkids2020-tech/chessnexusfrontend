@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import api from '../../api';
 import Chessboard from '../Chessboard';
+import EnginePanel from '../EnginePanel';
 import {
   buildTreeFromGame, applyMove, pathToNode,
   firstNode, nextNode, prevNode, lastNode, fenAt, lastMoveAt,
@@ -42,6 +43,9 @@ export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
   const [analyzing, setAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0); // 0..1
   const [analyzeError, setAnalyzeError] = useState(null);
+
+  // Live in-browser engine toggle (top 3 lines for the current position).
+  const [engineOn, setEngineOn] = useState(false);
 
   // Guard so the save effect doesn't fire before the tree is first built.
   const hydratedRef = useRef(false);
@@ -272,6 +276,20 @@ export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
             {/* ── RIGHT: notation panel (scrolls) + footer nav bar ── */}
             <div style={st.right}>
               {analyzeError && <div style={st.analyzeErr}>{analyzeError}</div>}
+
+              {/* Live engine, OFF by default. This is the in-browser Stockfish
+                  (WASM) — separate from the server-side "Analyze" button above,
+                  which grades the whole game once. This one follows whatever
+                  position the user is looking at and shows its top 3 lines, so
+                  they can ask "what should have been played here?" at any point,
+                  including inside their own variations. Costs the server nothing.
+                  Off by default so the modal stays light until asked for. */}
+              <EnginePanel
+                fen={fen}
+                enabled={engineOn}
+                onToggle={() => setEngineOn(v => !v)}
+                numLines={3}
+              />
 
               <div style={st.notation}>
                 <Notation

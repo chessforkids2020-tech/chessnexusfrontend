@@ -216,6 +216,24 @@ export default function AvatarStudio() {
         >
           {opt.imageUrl ? (
             <img src={resolveApiAssetUrl(opt.imageUrl)} alt="avatar option" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : opt.modelPath ? (
+            /* 3D options carry no thumbnail, so every tile used to render the
+               SAME emoji and the user had to choose blind. Render the real model.
+               NOTE ON SIZING: UserAvatar takes a FIXED pixel `size` and applies
+               flexShrink:0, so passing pickerMinTile (102) drew a 102px circle
+               inside a tile that the grid stretches to ~216px — a small dark disc
+               on a dark tile, which read as "no preview at all". The tile is
+               already square (aspectRatio 1/1), so the preview is stretched to
+               fill it instead of being pinned to a fixed size.
+               pointerEvents:none keeps the whole tile a single click target. */
+            <div style={{ width: '100%', height: '100%', pointerEvents: 'none', display: 'flex' }}>
+              <UserAvatar
+                active3dModel={opt.key}
+                size={pickerMinTile}
+                live
+                style={{ width: '100%', height: '100%', borderRadius: 0, background: 'transparent' }}
+              />
+            </div>
           ) : (
             <span>{opt.emoji || '🧩'}</span>
           )}

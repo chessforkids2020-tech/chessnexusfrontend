@@ -250,6 +250,8 @@ export default function useLiveKitRoom() {
     const list = [];
     const pack = (p, isLocal) => {
       let videoTrack = null, audioTrack = null, screenTrack = null;
+      // The camera track even while MUTED — see the note where it is set.
+      let videoTrackRaw = null, audioTrackRaw = null;
       p.trackPublications?.forEach((pub) => {
         const isScreen = pub.source === 'screen_share' || pub.source === 'screen_share_audio';
         // Force-subscribe EVERY remote track, not just screen share. With
@@ -267,14 +269,25 @@ export default function useLiveKitRoom() {
         if (!t) return;
         if (isScreen) { if (pub.kind !== 'audio') screenTrack = t; }
         // A muted camera counts as "no video" so the UI can show the avatar tile.
-        else if (pub.kind === 'video') videoTrack = pub.isMuted ? null : t;
-        else if (pub.kind === 'audio') audioTrack = pub.isMuted ? null : t;
+        //
+        // We ALSO keep the track itself in `videoTrackRaw`. Nulling it was the
+        // whole cause of "student turns camera off and on, tile stays black":
+        // the tile unmounted its <video>, and because LiveKit hands back the
+        // SAME track object on unmute, React saw unchanged props and never
+        // re-attached. Exposing the raw track lets the tile stay subscribed to
+        // that track's own mute/unmute events across the whole cycle.
+        else if (pub.kind === 'video') { videoTrackRaw = t; videoTrack = pub.isMuted ? null : t; }
+        // Same reasoning as video above: keep the track even while muted so the
+        // player can listen for ITS unmute and re-attach. A student reported
+        // "mic allowed but I can't hear the coach", fixed only by rejoining —
+        // the same stale-attach bug, on the audio path.
+        else if (pub.kind === 'audio') { audioTrackRaw = t; audioTrack = pub.isMuted ? null : t; }
       });
       // Token metadata carries { avatar } — the profile photo to show when the
       // camera is off.
       let avatar = null;
       try { avatar = p.metadata ? (JSON.parse(p.metadata).avatar || null) : null; } catch { /* ignore */ }
-      list.push({ identity: p.identity, name: p.name || p.identity, isLocal, isSpeaking: p.isSpeaking, videoTrack, audioTrack, screenTrack, avatar });
+      list.push({ identity: p.identity, name: p.name || p.identity, isLocal, isSpeaking: p.isSpeaking, videoTrack, videoTrackRaw, audioTrack, audioTrackRaw, screenTrack, avatar });
     };
     if (r.localParticipant) pack(r.localParticipant, true);
     r.remoteParticipants?.forEach((p) => pack(p, false));
@@ -338,8 +351,16 @@ export default function useLiveKitRoom() {
       // a student's screen share and force-subscribe it.
       .on(RoomEvent.TrackPublished, onChange)
       .on(RoomEvent.TrackUnpublished, onChange)
-      .on(RoomEvent.TrackMuted, syncLocal)
-      .on(RoomEvent.TrackUnmuted, syncLocal)
+      // Mute/unmute must run the FULL refresh, not just syncLocal.
+      //
+      // Turning a camera off MUTES the publication (the track object survives);
+      // turning it back on unmutes the SAME object. buildParticipants maps a
+      // muted video publication to `videoTrack: null`, so on unmute the list has
+      // to be rebuilt or the tile keeps its stale null and stays black. syncLocal
+      // only touches the local mic/cam state, so a REMOTE student's unmute never
+      // reached the participant list at all.
+      .on(RoomEvent.TrackMuted, onChange)
+      .on(RoomEvent.TrackUnmuted, onChange)
       .on(RoomEvent.LocalTrackPublished, syncLocal)
       .on(RoomEvent.LocalTrackUnpublished, syncLocal)
       .on(RoomEvent.ParticipantMetadataChanged, onChange)

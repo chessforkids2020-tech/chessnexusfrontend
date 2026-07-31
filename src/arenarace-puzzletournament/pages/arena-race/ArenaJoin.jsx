@@ -511,13 +511,13 @@ export default function ArenaJoin() {
                       <div style={styles.statLabel}>Topic</div>
                       <div style={styles.statValue}>📚 {room.topic || 'N/A'}</div>
                     </div>
+                    {/* Puzzle count removed on purpose: it means nothing to a
+                        student before the race (they never finish the set — the
+                        clock decides), and it crowds the three facts that do
+                        matter: which race, how long, who else is in. */}
                     <div style={styles.statBox}>
                       <div style={styles.statLabel}>Players</div>
                       <div style={styles.statValue}>👥 {room.playerCount}</div>
-                    </div>
-                    <div style={styles.statBox}>
-                      <div style={styles.statLabel}>Puzzles</div>
-                      <div style={styles.statValue}>🧩 {room.puzzleCount}</div>
                     </div>
                     <div style={styles.statBox}>
                       <div style={styles.statLabel}>Time Limit</div>

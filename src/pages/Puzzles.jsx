@@ -653,7 +653,7 @@ export default function Puzzles() {
       return;
     }
 
-    setMessage('Bot is thinking...');
+    setMessage('Opponent is thinking...');
     
     try {
       let move = null;
@@ -750,10 +750,10 @@ export default function Puzzles() {
         setTurn('user');
         setMessage('Your Turn');
       } else {
-        setMessage("Bot failed to move.");
+        setMessage("Couldn’t reply.");
       }
     } catch (err) {
-      setMessage('Bot failed to move');
+      setMessage('Couldn’t reply');
     }
   };
 
@@ -992,7 +992,7 @@ export default function Puzzles() {
     } else {
       // Puzzle not complete - bot's turn
       setTurn('bot');
-      setMessage('Bot thinking...');
+      setMessage('Opponent thinking...');
     }
     
     processingRef.current = false;
@@ -1466,7 +1466,7 @@ export default function Puzzles() {
                   borderRadius: '50%',
                   animation: 'spin 1s linear infinite'
                 }}></div>
-                <div>Bot is thinking...</div>
+                <div>Opponent is thinking...</div>
               </div>
             )}
             

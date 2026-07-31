@@ -906,7 +906,7 @@ export default function ArenaRace({ isAdminView = false }) {
 
     // USER-FIRST: user plays EVEN indices (0,2,4…), bot replies at ODD (1,3,5…).
     if (moveIndex % 2 === 1) {
-      addLog(`Blocked — bot turn (moveIndex ${moveIndex})`);
+      addLog(`Blocked — opponent turn (moveIndex ${moveIndex})`);
       setError("Not your turn");
       setTimeout(() => setError(''), 1200);
       return false;

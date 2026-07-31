@@ -119,7 +119,7 @@ export default function FeedbackModal({ open, onClose, onSubmitted }) {
                   value={form.wantedFeature}
                   disabled={submitting}
                   maxLength={1000}
-                  placeholder="e.g. game analysis, a study plan, harder bots, coaching…"
+                  placeholder="e.g. game analysis, a study plan, tougher opponents, coaching…"
                   onChange={(e) => setForm({ ...form, wantedFeature: e.target.value })}
                 />
               </div>

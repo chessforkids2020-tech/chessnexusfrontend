@@ -143,6 +143,11 @@ export default function CoachDashboard() {
   const [summary, setSummary] = useState(null);
   const [coachStatus, setCoachStatus] = useState(null); // /api/coach/status (has access + sponsored)
   const [students, setStudents] = useState([]);
+  // Roster search. A coach on the top plan can have 150 students, and the table
+  // was a single unfiltered scroll — finding one child meant hunting by eye.
+  // Filtering is client-side because the full roster is already loaded.
+  const [studentSearch, setStudentSearch] = useState('');
+  const [batchFilter, setBatchFilter] = useState('');   // '' = all batches
   const [pending, setPending] = useState([]);
   const [error, setError] = useState('');
   const [showVerifiedPopup, setShowVerifiedPopup] = useState(false); // one-time verified welcome
@@ -295,6 +300,20 @@ export default function CoachDashboard() {
   const max = summary?.maxStudents || 0;
   const count = students.length;
   const remaining = Math.max(0, max - count);
+
+  // Every batch currently in use, for the filter dropdown.
+  const batches = [...new Set(students.map(s => s.groupTag).filter(Boolean))].sort();
+
+  // Match on the same fields a coach would think to type: the name they gave the
+  // student, the student's own display name, and their username.
+  const q = studentSearch.trim().toLowerCase();
+  const visibleStudents = students.filter(s => {
+    if (batchFilter && s.groupTag !== batchFilter) return false;
+    if (!q) return true;
+    const u = s.studentId;
+    return [s.studentName, u?.displayName, u?.username, s.studentUsername, s.groupTag]
+      .some(v => (v || '').toLowerCase().includes(q));
+  });
 
   // Renewal reminder — only for individual coaches on a real paid plan (not
   // academy-sponsored: their billing is the academy's concern, not theirs).
@@ -481,7 +500,55 @@ export default function CoachDashboard() {
           </div>
         )}
 
-        {students.length > 0 && (
+        {/* Search + batch filter. Only worth showing once the roster is big
+            enough to scroll — under 8 students you can see everyone at once. */}
+        {students.length >= 8 && (
+          <div className="coach-roster-tools">
+            <input
+              className="coach-roster-search"
+              type="search"
+              value={studentSearch}
+              onChange={e => setStudentSearch(e.target.value)}
+              placeholder="Search students by name or username…"
+              aria-label="Search students"
+            />
+            {batches.length > 0 && (
+              <select
+                className="coach-roster-batch"
+                value={batchFilter}
+                onChange={e => setBatchFilter(e.target.value)}
+                aria-label="Filter by batch"
+              >
+                <option value="">All batches</option>
+                {batches.map(b => <option key={b} value={b}>{b}</option>)}
+              </select>
+            )}
+            <span className="coach-roster-count">
+              {visibleStudents.length === students.length
+                ? `${students.length} students`
+                : `${visibleStudents.length} of ${students.length} students`}
+            </span>
+            {(q || batchFilter) && (
+              <button
+                type="button"
+                className="coach-roster-clear"
+                onClick={() => { setStudentSearch(''); setBatchFilter(''); }}
+              >
+                Clear
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* A search that matches nobody must say so — an empty table reads as
+            "your students vanished". */}
+        {students.length > 0 && visibleStudents.length === 0 && (
+          <div className="coach-empty">
+            No students match “{studentSearch || batchFilter}”.
+          </div>
+        )}
+
+        {visibleStudents.length > 0 && (
           <div className="coach-students-table-wrap">
             <table className="coach-students-table">
               <thead>
@@ -495,7 +562,7 @@ export default function CoachDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {students.map(s => {
+                {visibleStudents.map(s => {
                   const u = s.studentId;
                   const name = s.studentName || u?.displayName || u?.username || 'Unnamed';
                   const r = s.ratings || {};

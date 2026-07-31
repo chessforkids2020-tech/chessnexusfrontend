@@ -465,6 +465,7 @@ function AdminDashboard() {
   const [expandedRounds, setExpandedRounds] = useState({}); // Track which rounds are expanded
   // Signup & payment requests state
   const [pendingSignupCount, setPendingSignupCount] = useState(0);
+  const [freeClassNewCount, setFreeClassNewCount] = useState(0);
   const [pendingPaymentCount, setPendingPaymentCount] = useState(0);
   // "Needs attention" counts for the top nav badges (like chat unread pips):
   // open reports, pending supporters, unverified coaches. Polled for a
@@ -582,6 +583,7 @@ function AdminDashboard() {
 
     const handleNewSignupRequest = () => {
       fetchSignupRequestsCount();
+      fetchFreeClassCount();
     };
     const handlePendingPaymentCount = (count) => {
       setPendingPaymentCount(typeof count === 'object' ? (count.count || 0) : (count || 0));
@@ -641,6 +643,15 @@ function AdminDashboard() {
     try {
       const res = await api.get(`/api/admin/signup-requests/count`);
       setPendingSignupCount(res.data.count || 0);
+    } catch (err) {
+    }
+  }
+
+  // New (uncontacted) free-class requests, for the quick-link badge.
+  async function fetchFreeClassCount() {
+    try {
+      const res = await api.get('/api/free-class/admin/requests', { params: { status: 'new' } });
+      setFreeClassNewCount(res.data?.counts?.new || 0);
     } catch (err) {
     }
   }
@@ -917,7 +928,7 @@ function AdminDashboard() {
   }
 
   async function deleteArenaTournament(tournamentId, name) {
-    if (!confirm(`Delete tournament "${name}"?\n\nThis will release all reserved bots, kick connected users out of the lobby/live page, and permanently remove participants, games and chat.`)) return;
+    if (!confirm(`Delete tournament "${name}"?\n\nThis will release all reserved opponents, kick connected users out of the lobby/live page, and permanently remove participants, games and chat.`)) return;
     try {
       await api.delete(`/api/arenatournament/${tournamentId}`);
       setArenaTournaments(list => list.filter(t => t._id !== tournamentId));
@@ -1688,7 +1699,7 @@ function AdminDashboard() {
               )}
             </h3>
             <p style={{ margin: '4px 0 0', color: '#475569', fontSize: 13 }}>
-              Admin-created tournaments auto-reserve 5 bots. Deleting a tournament releases those bots so they're free for the next one.
+              Admin-created tournaments auto-reserve 5 filler players. Deleting a tournament releases them for the next one.
             </p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -1782,6 +1793,19 @@ function AdminDashboard() {
             <p style={styles.quickLinkText}>Pending signups: <strong>{pendingSignupCount}</strong></p>
           </div>
           <div style={styles.quickLinkFooter}>View Signup Requests →</div>
+        </button>
+
+        {/* Parents asking for the free beginner classes. Every row is a family
+            waiting on a WhatsApp message, so it sits next to signup requests. */}
+        <button
+          onClick={() => nav('/admin/free-class-requests')}
+          style={styles.quickLinkCard}
+        >
+          <div>
+            <h4 style={styles.quickLinkTitle}>🎁 Free Class Requests</h4>
+            <p style={styles.quickLinkText}>New requests: <strong>{freeClassNewCount}</strong></p>
+          </div>
+          <div style={styles.quickLinkFooter}>View Free Class Requests →</div>
         </button>
 
         <button
@@ -2179,7 +2203,7 @@ function AdminDashboard() {
               </div>
 
               <p style={{ margin: '0 0 16px', fontSize: 12, color: '#475569' }}>
-                As admin, 5 bots will auto-join when the tournament is created.
+                As admin, 5 filler players will auto-join when the tournament is created.
               </p>
 
               {arenaCreateError && (

@@ -27,6 +27,11 @@ export default function TimedRace() {
   const chessRef = useRef(null);
   const [availablePuzzles, setAvailablePuzzles] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
+  // Viewport dimensions, so the phone board re-sizes on rotate (see updateSize).
+  const [viewport, setViewport] = useState(() => ({
+    w: typeof window !== 'undefined' ? window.innerWidth : 0,
+    h: typeof window !== 'undefined' ? window.innerHeight : 0,
+  }));
   // Two separate refs — one per layout — so each ResizeObserver always
   // watches its own stable DOM element (avoids stale-ref bug on layout switch)
   const mobileBoardRef = useRef(null);
@@ -36,9 +41,23 @@ export default function TimedRace() {
   // coordinateSize = 20 if boardWidth < 400, else 32
   // Container >= 440 means board will end up >= 400 → use 64 offset, else 40
   // Subtract 30 less than full coord space (clips outer dead padding) → +30px chess squares
-  const effectiveMobileWidth = mobileBoardWidth >= 440
+  // PHONES: size the board from the VIEWPORT, not from the measured container.
+  //
+  // Measuring the container meant the board inherited every wrapper's padding —
+  // container 4px + glassCard 12px on each side, then another 10px shaved off
+  // here — so a 390px phone rendered a ~348px board with dead space either side.
+  // Daily Puzzles (pages/Puzzles.jsx) gives the board `innerWidth - 16` on a
+  // phone and looks right, so match that: the board IS the page at this size.
+  //
+  // 78% of viewport height matches Daily Puzzles too, and keeps the timer and
+  // score above the board visible instead of pushing them off screen.
+  const phoneBoardWidth = viewport.w > 0 && viewport.w <= 480
+    ? Math.max(260, Math.min(viewport.w - 16, Math.floor(viewport.h * 0.78)))
+    : null;
+
+  const effectiveMobileWidth = phoneBoardWidth ?? (mobileBoardWidth >= 440
     ? Math.max(220, mobileBoardWidth - 34)
-    : Math.max(220, mobileBoardWidth - 10);
+    : Math.max(220, mobileBoardWidth - 10));
   const effectiveDesktopWidth = desktopBoardWidth >= 440
     ? Math.max(220, desktopBoardWidth - 64)
     : Math.max(220, desktopBoardWidth - 40);
@@ -376,10 +395,19 @@ export default function TimedRace() {
   useEffect(() => {
     const updateSize = () => {
       setIsMobile(window.innerWidth < 768);
+      // Track the viewport too, not just the mobile/desktop flag. The phone
+      // board is sized from innerWidth/innerHeight, and a rotate that stays
+      // under 768px would not change `isMobile` — so without this the component
+      // never re-renders and the board keeps its old (wrong) size.
+      setViewport({ w: window.innerWidth, h: window.innerHeight });
     };
     updateSize();
     window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
+    window.addEventListener('orientationchange', updateSize);
+    return () => {
+      window.removeEventListener('resize', updateSize);
+      window.removeEventListener('orientationchange', updateSize);
+    };
   }, []);
 
 

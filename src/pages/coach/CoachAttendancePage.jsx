@@ -92,14 +92,14 @@ export default function CoachAttendancePage() {
       <div className="cap-header">
         <div>
           <h1 className="cap-title">📋 Coach Attendance</h1>
-          <p className="cap-sub">Track your players' classes, payments and progress</p>
+          <p className="cap-sub">Track your students' classes, payments and progress</p>
         </div>
       </div>
 
       <div className="cap-tabs">
         {[
           { id: 'dashboard', label: '📊 Dashboard' },
-          { id: 'players',   label: '👥 Players' },
+          { id: 'players',   label: '👥 Students' },
           { id: 'attendance',label: '📝 Attendance' },
           { id: 'payments',  label: '💰 Payments' },
           { id: 'requests',  label: '📋 Requests' },
@@ -213,7 +213,7 @@ function TabDashboard() {
         <div className="cap-stat-row">
           <div className="cap-stat-card cap-stat-cyan">
             <div className="cap-stat-num">{stats.totalPlayers}</div>
-            <div className="cap-stat-lbl">Total Players</div>
+            <div className="cap-stat-lbl">Total Students</div>
           </div>
           <div className="cap-stat-card cap-stat-green">
             <div className="cap-stat-num">{stats.paidThisMonth}</div>
@@ -236,12 +236,12 @@ function TabDashboard() {
         {loading ? (
           <p className="cap-muted">Loading…</p>
         ) : !data || !sortedSummary.length ? (
-          <p className="cap-muted">No enrolled players found.</p>
+          <p className="cap-muted">No enrolled students found.</p>
         ) : (
           <div className="cap-table-wrap">
             <table className="cap-table">
               <thead><tr>
-                <th className="cap-th-sort" onClick={() => toggleSort('name')}>Player{sortArrow('name')}</th>
+                <th className="cap-th-sort" onClick={() => toggleSort('name')}>Student{sortArrow('name')}</th>
                 <th className="cap-th-sort" onClick={() => toggleSort('attended')} title="Present + Catch-up this month">Classes{sortArrow('attended')}</th>
                 <th className="cap-th-sort" onClick={() => toggleSort('remaining')}>Remaining{sortArrow('remaining')}</th>
                 <th className="cap-th-sort" onClick={() => toggleSort('paid')}>Fees{sortArrow('paid')}</th>
@@ -293,7 +293,7 @@ function TabPlayers() {
       const r = await api.get('/api/coach-attendance/players');
       setPlayers(r.data);
     } catch (e) {
-      setError(e?.response?.data?.error || `Could not load players (${e?.response?.status || 'network error'})`);
+      setError(e?.response?.data?.error || `Could not load students (${e?.response?.status || 'network error'})`);
       setPlayers([]);
     } finally {
       setLoading(false);
@@ -342,7 +342,7 @@ function TabPlayers() {
   // link (active:false + archivedAt) — attendance and payment history are kept,
   // and the coach's student count is decremented. It is not a data wipe.
   const removePlayer = async (p) => {
-    const name = p.studentName || 'this player';
+    const name = p.studentName || 'this student';
     if (!window.confirm(
       `Remove ${name} from your roster?\n\n` +
       `Their past attendance and payments are kept, but they will no longer ` +
@@ -353,7 +353,7 @@ function TabPlayers() {
       if (editing === p._id) setEditing(null);
       await load();
     } catch (e) {
-      alert(e?.response?.data?.message || e?.response?.data?.error || 'Could not remove player');
+      alert(e?.response?.data?.message || e?.response?.data?.error || 'Could not remove student');
     }
   };
 
@@ -366,12 +366,12 @@ function TabPlayers() {
     )
   );
 
-  if (loading) return <p className="cap-muted">Loading players…</p>;
+  if (loading) return <p className="cap-muted">Loading students…</p>;
 
   return (
     <div>
       <div style={{ marginBottom: 16, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-        <input className="cap-input" placeholder="Search players…" value={search}
+        <input className="cap-input" placeholder="Search students…" value={search}
           onChange={e => setSearch(e.target.value)} style={{ maxWidth: 260 }} />
         <span className="cap-muted" style={{ fontSize: 13 }}>
           {players.filter(p => p.enrolled && !p.onBreak).length} active
@@ -392,13 +392,13 @@ function TabPlayers() {
         </div>
       )}
 
-      {!error && !filtered.length && <p className="cap-muted">No players found. Add students via the main Coach Dashboard first.</p>}
+      {!error && !filtered.length && <p className="cap-muted">No students found. Add students via the main Coach Dashboard first.</p>}
 
       {!!filtered.length && (
         <div className="cap-table-wrap">
           <table className="cap-table">
             <thead><tr>
-              <th>Player</th>
+              <th>Student</th>
               <th>Status</th>
               <th>Classes/mo</th>
               <th>Fee</th>
@@ -584,7 +584,7 @@ function PasteMarker({ selDate, onApplied }) {
         <div style={{ marginTop: 14 }}>
           <div style={{ fontSize: 12.5, color: '#94a3b8', marginBottom: 12 }}>
             Paste student names (one per line). They’ll be marked <strong>only for {selDate}</strong>.
-            Names are matched exactly to a player’s display name or username — anything that doesn’t
+            Names are matched exactly to a student’s display name or username — anything that doesn’t
             match is shown but never marked. Review the preview before confirming.
           </div>
 
@@ -646,7 +646,7 @@ function PasteMarker({ selDate, onApplied }) {
               </div>
               <div className="cap-table-wrap">
                 <table className="cap-table">
-                  <thead><tr><th>Pasted</th><th>Matched player</th><th>Result</th></tr></thead>
+                  <thead><tr><th>Pasted</th><th>Matched student</th><th>Result</th></tr></thead>
                   <tbody>
                     {preview.results.map((r, i) => {
                       const meta = OUTCOME_META[r.outcome] || { label: r.outcome, color: '#94a3b8', icon: '•' };
@@ -675,7 +675,7 @@ function PasteMarker({ selDate, onApplied }) {
               </div>
               <div className="cap-table-wrap">
                 <table className="cap-table">
-                  <thead><tr><th>Pasted</th><th>Matched player</th><th>Result</th></tr></thead>
+                  <thead><tr><th>Pasted</th><th>Matched student</th><th>Result</th></tr></thead>
                   <tbody>
                     {applied.results.map((r, i) => {
                       const meta = OUTCOME_META[r.outcome] || { label: r.outcome, color: '#94a3b8', icon: '•' };
@@ -808,7 +808,7 @@ function TabAttendance() {
       </div>
 
       {!players.length ? (
-        <p className="cap-muted">No players found. Add students in the main Coach Dashboard, then come back here.</p>
+        <p className="cap-muted">No students found. Add students in the main Coach Dashboard, then come back here.</p>
       ) : (
         <div className="cap-card">
           <h3 className="cap-card-title">Mark Attendance — {new Date(selDate + 'T00:00:00').toLocaleDateString('en-IN', { dateStyle: 'full' })}</h3>
@@ -871,7 +871,7 @@ function TabAttendance() {
               <div className="cap-table-wrap">
                 <table className="cap-table">
                   <thead><tr>
-                    <th>Player</th>
+                    <th>Student</th>
                     <th>Status</th>
                     <th>Class</th>
                     <th>Entered</th>
@@ -1007,7 +1007,7 @@ function TabPayments() {
         </button>
         <select className="cap-input" style={{ maxWidth: 220 }} value={filterP}
           onChange={e => setFilterP(e.target.value)}>
-          <option value="">All Players</option>
+          <option value="">All Students</option>
           {players.map(p => (
             <option key={p._id} value={p.studentId}>
               {p.studentName}{p.onBreak ? ' (on break)' : ''}
@@ -1021,13 +1021,13 @@ function TabPayments() {
           <h3 className="cap-card-title">Record Payment</h3>
           <div className="cap-form-grid">
             <div className="cap-form-row">
-              <label>Player *</label>
+              <label>Student *</label>
               <select className="cap-input" value={form.studentId}
                 onChange={e => {
                   const p = players.find(x => x.studentId.toString() === e.target.value);
                   setForm(f => ({ ...f, studentId: e.target.value, currency: p?.currency || f.currency, amount: p?.fees || f.amount }));
                 }}>
-                <option value="">Select player…</option>
+                <option value="">Select student…</option>
                 {activePlayers.map(p => <option key={p._id} value={p.studentId}>{p.studentName}</option>)}
               </select>
             </div>
@@ -1091,7 +1091,7 @@ function TabPayments() {
           <div className="cap-table-wrap" style={{ marginBottom: 18 }}>
             <table className="cap-table">
               <thead><tr>
-                <th>Player</th><th>Classes/mo</th><th>Fee</th><th>Type</th><th>Since</th>
+                <th>Student</th><th>Classes/mo</th><th>Fee</th><th>Type</th><th>Since</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr></thead>
               <tbody>
@@ -1133,7 +1133,7 @@ function PaymentTable({ rows, playerName, onDelete }) {
     <div className="cap-table-wrap">
       <table className="cap-table">
         <thead><tr>
-          <th>Player</th><th>Amount</th><th>Date Paid</th>
+          <th>Student</th><th>Amount</th><th>Date Paid</th>
           <th>Covers From</th><th>Covers Until</th><th>Notes</th><th></th>
         </tr></thead>
         <tbody>
@@ -1296,9 +1296,9 @@ function TabHistory() {
   return (
     <div>
       <div style={{ marginBottom: 20 }}>
-        <label className="cap-label">Select Player</label>
+        <label className="cap-label">Select Student</label>
         <select className="cap-input" style={{ maxWidth: 280 }} value={selId} onChange={onSelect}>
-          <option value="">Choose a player…</option>
+          <option value="">Choose a student…</option>
           {players.map(p => <option key={p._id} value={p.studentId}>{p.studentName}</option>)}
         </select>
       </div>
@@ -1306,7 +1306,7 @@ function TabHistory() {
       {selPlayer && (
         <div className="cap-card" style={{ marginBottom: 16 }}>
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-            <div><span className="cap-muted">Player:</span> <strong>{selPlayer.studentName}</strong></div>
+            <div><span className="cap-muted">Student:</span> <strong>{selPlayer.studentName}</strong></div>
             <div><span className="cap-muted">Classes/mo:</span> <strong>{selPlayer.classesPerMonth}</strong></div>
             <div><span className="cap-muted">Type:</span> <strong>{selPlayer.classType}</strong></div>
             {selPlayer.enrollmentDate && <div><span className="cap-muted">Since:</span> <strong>{fmtIST(selPlayer.enrollmentDate)}</strong></div>}
@@ -1317,7 +1317,7 @@ function TabHistory() {
       {loading && <p className="cap-muted">Loading…</p>}
 
       {!loading && selId && !history.length && (
-        <p className="cap-muted">No attendance records found for this player.</p>
+        <p className="cap-muted">No attendance records found for this student.</p>
       )}
 
       {Object.entries(grouped).sort((a, b) => b[0].localeCompare(a[0])).map(([key, recs]) => {

@@ -199,7 +199,7 @@ function TournamentPuzzle() {
     }
 
     setIsThinking(true);
-    setStatusMsg("🤖 Bot following admin solution...");
+    setStatusMsg("♟️ Opponent replying...");
 
     try {
       // STRICTLY USE ADMIN SOLUTION ONLY
@@ -255,7 +255,7 @@ function TournamentPuzzle() {
         setStatusMsg("Your turn! Make your next move.");
       }
     } catch (error) {
-      setStatusMsg("❌ Bot error - please refresh the page.");
+      setStatusMsg("❌ Something went wrong — please refresh the page.");
     } finally {
       setIsThinking(false);
     }
@@ -629,7 +629,7 @@ function TournamentPuzzle() {
   const onPieceDrop = (sourceSquare, targetSquare) => {
     // In Stockfish mode, only allow moves on user's turn
     if (gameMode === 'user-vs-stockfish' && !isUserTurn) {
-      setStatusMsg("Wait for the bot to make its move!");
+      setStatusMsg("Wait for the reply!");
       return false;
     }
 
@@ -772,12 +772,12 @@ function TournamentPuzzle() {
             setIsUserTurn(false);
             if (competitionMode) {
               if (usingAdminSolution) {
-                setStatusMsg("✅ Following solution! Bot responding with admin move...");
+                setStatusMsg("✅ Following solution! Opponent replying...");
               } else {
-                setStatusMsg("🤖 Bot thinking... (using Stockfish since you deviated)");
+                setStatusMsg("♟️ Opponent thinking...");
               }
             } else {
-              setStatusMsg("Bot is thinking...");
+              setStatusMsg("Opponent is thinking...");
             }
           }
           
@@ -811,7 +811,7 @@ function TournamentPuzzle() {
 
     // Check if user has reached their move limit
     if (puzzle && userMoveNumber > puzzle.moveLimit) {
-      setStatusMsg(`You've made ${puzzle.moveLimit} moves. Bot will complete the solution.`);
+      setStatusMsg(`You've made ${puzzle.moveLimit} moves. The rest of the solution will play out.`);
     }
     setUserAttempts(prev => [...prev, { move: normalizedMove, correct: true, fen: chess.fen() }]);
     setChess(new Chess(chess.fen()));
@@ -836,12 +836,12 @@ function TournamentPuzzle() {
       setIsUserTurn(false);
       if (competitionMode) {
         if (usingAdminSolution) {
-          setStatusMsg("✅ Following solution! Bot responding with admin move...");
+          setStatusMsg("✅ Following solution! Opponent replying...");
         } else {
-          setStatusMsg("🤖 Bot thinking... (using Stockfish since you deviated)");
+          setStatusMsg("♟️ Opponent thinking...");
         }
       } else {
-        setStatusMsg("Bot is thinking...");
+        setStatusMsg("Opponent is thinking...");
       }
       
       // Bot move will be triggered automatically by useEffect when isUserTurn changes
@@ -1139,8 +1139,8 @@ function TournamentPuzzle() {
                   (() => {
                     const movePairs = [];
                     for (let i = 0; i < allMoves.length; i += 2) {
-                      const whiteMove = allMoves[i]?.replace(/^(You:|User:|Bot:)\s*/, '') || '';
-                      const blackMove = allMoves[i + 1]?.replace(/^(You:|User:|Bot:)\s*/, '') || '';
+                      const whiteMove = allMoves[i]?.replace(/^(You:|User:|Bot:|Opponent:)\s*/, '') || '';
+                      const blackMove = allMoves[i + 1]?.replace(/^(You:|User:|Bot:|Opponent:)\s*/, '') || '';
                       movePairs.push({ moveNum: Math.floor(i / 2) + 1, whiteMove, blackMove });
                     }
                     return movePairs.map((pair, index) => (

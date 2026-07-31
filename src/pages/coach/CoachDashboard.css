@@ -710,3 +710,71 @@
   border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
   padding: 12px; margin: 10px 0; background: rgba(255,255,255,0.02);
 }
+
+/* â”€â”€ Roster search + batch filter â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+   Shown only once the roster is long enough to scroll (>= 8 students). */
+.coach-roster-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 0 14px;
+}
+.coach-roster-search {
+  flex: 1 1 260px;
+  min-width: 0;
+  max-width: 360px;
+  padding: 9px 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e6e8ee;
+  font-size: 13.5px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.coach-roster-search::placeholder { color: rgba(226, 232, 240, 0.38); }
+.coach-roster-search:focus {
+  outline: none;
+  border-color: rgba(6, 182, 212, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+}
+.coach-roster-batch {
+  flex: 0 0 auto;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #e6e8ee;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.coach-roster-batch:focus { outline: none; border-color: rgba(6, 182, 212, 0.5); }
+.coach-roster-count {
+  flex: 0 0 auto;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.5);
+}
+.coach-roster-clear {
+  flex: 0 0 auto;
+  padding: 7px 13px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(226, 232, 240, 0.75);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+}
+.coach-roster-clear:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #e6e8ee;
+}
+
+@media (max-width: 640px) {
+  /* Phone: the search takes the full row, the filter and count sit under it. */
+  .coach-roster-search { flex: 1 1 100%; max-width: none; }
+}
