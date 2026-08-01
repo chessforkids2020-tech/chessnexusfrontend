@@ -1,4 +1,5 @@
 ﻿import React, { useState } from 'react';
+import CustomBoardColors from '../components/CustomBoardColors';
 import { BOARD_THEMES, useBoardTheme } from '../contexts/BoardThemeContext';
 import { PIECE_THEMES, usePieceTheme } from '../contexts/PieceThemeContext';
 import AvatarStudio from '../components/AvatarStudio';
@@ -260,6 +261,9 @@ export default function SettingsPage() {
                 </div>
               </div>
             </div>
+
+            {/* Paid picker — sits under the free presets. */}
+            <CustomBoardColors />
           </section>
         )}
 

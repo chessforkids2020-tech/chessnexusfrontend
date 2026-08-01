@@ -1057,8 +1057,6 @@ function TournamentPuzzle() {
                     orientation={boardOrientation}
                     draggable={gameMode === 'manual' || isUserTurn}
                     transitionDuration={200}
-                    lightSquareStyle={{ backgroundColor: '#EEEED2' }}
-                    darkSquareStyle={{ backgroundColor: '#769656' }}
                     showCoordinates={false}
                   />
                 </div>

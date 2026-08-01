@@ -73,14 +73,16 @@ export default function AvatarStudio() {
   }, []);
 
   // Spend wallet XP to unlock a customization tier (customPhoto | 3d).
-  const unlockWithXp = async (tier) => {
+  // `key` is only used for 3D, where avatars are bought ONE AT A TIME. Passing
+  // it buys that single model; customPhoto is still a whole-tier unlock.
+  const unlockWithXp = async (tier, key) => {
     if (unlockTier) return;
-    setUnlockTier(tier);
+    setUnlockTier(key || tier);
     setAvatarError('');
     try {
-      await api.post('/api/auth/avatar/unlock', { tier });
+      await api.post('/api/auth/avatar/unlock', key ? { tier, key } : { tier });
       await refreshUser();        // user.unlockedAvatarTier now raised
-      await loadAvatarOptions();  // refresh wallet + prices
+      await loadAvatarOptions();  // refresh wallet + prices + per-item `owned`
     } catch (error) {
       const d = error.response?.data;
       if (d?.shortfall) setAvatarError(`Not enough XP — you need ${d.shortfall} more.`);
@@ -192,19 +194,30 @@ export default function AvatarStudio() {
       gap: 12,
       marginTop: 10,
     }}>
-      {items.map((opt) => (
+      {items.map((opt) => {
+        // 3D avatars are owned individually. `owned` comes from the server
+        // (/avatar-options decorates each option), so the tile shows a price
+        // instead of silently letting the user pick something they don't have
+        // and getting a 403 back from the save.
+        const locked = type === '3d' && opt.owned === false;
+        const price = xpPrices?.['3d'] ?? 0;
+        const busy = unlockTier === opt.key;
+        return (
         <button
           key={opt.key}
           type="button"
-          onClick={() => chooseFromGrid(type, opt.key)}
-          disabled={avatarSaving}
+          onClick={() => (locked ? unlockWithXp('3d', opt.key) : chooseFromGrid(type, opt.key))}
+          disabled={avatarSaving || busy || (locked && walletXp < price)}
+          title={locked ? `Unlock this avatar for ${price} XP` : undefined}
           style={{
             width: '100%',
             aspectRatio: '1 / 1',
             borderRadius: 12,
             border: activeKey === opt.key ? `2px solid ${accentColor}` : '1px solid rgba(255,255,255,0.18)',
             background: 'rgba(0,0,0,0.35)',
-            cursor: avatarSaving ? 'not-allowed' : 'pointer',
+            cursor: avatarSaving || (locked && walletXp < price) ? 'not-allowed' : 'pointer',
+            position: 'relative',
+            opacity: locked ? 0.55 : 1,
             overflow: 'hidden',
             padding: 0,
             display: 'flex',
@@ -237,8 +250,23 @@ export default function AvatarStudio() {
           ) : (
             <span>{opt.emoji || '🧩'}</span>
           )}
+
+          {/* Locked 3D avatar: show the price on the tile so the cost is
+              obvious before clicking, and clicking buys THIS avatar. */}
+          {locked && (
+            <span style={{
+              position: 'absolute', left: 0, right: 0, bottom: 0,
+              background: 'rgba(0,0,0,0.72)',
+              color: walletXp < price ? '#fca5a5' : '#fde68a',
+              fontSize: 11, fontWeight: 800, padding: '4px 0',
+              letterSpacing: 0.2,
+            }}>
+              {busy ? '…' : `🔒 ${price} XP`}
+            </span>
+          )}
         </button>
-      ))}
+        );
+      })}
     </div>
   );
 

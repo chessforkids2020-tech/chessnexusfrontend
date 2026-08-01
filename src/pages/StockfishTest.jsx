@@ -305,8 +305,6 @@ export default function StockfishTest() {
                     orientation="white"
                     draggable={true}
                     transitionDuration={200}
-                    lightSquareStyle={{ backgroundColor: '#EEEED2' }}
-                    darkSquareStyle={{ backgroundColor: '#769656' }}
                     lastMove={lastMove}
                   />
                 );
