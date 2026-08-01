@@ -59,34 +59,45 @@ export default function PuzzlesHub() {
           )}
         </div>
 
-        {/* RIGHT: Daily Puzzles hero */}
+        {/* RIGHT: Puzzles hero.
+            Daily Puzzles used to live here as a second, separate card, which
+            meant "Puzzles" and "Daily Puzzles" looked like rival destinations
+            and a user had to guess which one they wanted. Daily Puzzles is now
+            the first card INSIDE Puzzles (see Training.jsx PUZZLE_MODES), so
+            this hero points at the one place that holds every puzzle mode. */}
         <div className="hub-daily-hero">
           <div className="hub-daily-badge">⭐ Featured</div>
           <div className="hub-daily-icon">🧩</div>
           <div className="hub-daily-body">
-            <h2 className="hub-daily-title">Daily Puzzles</h2>
+            <h2 className="hub-daily-title">Puzzles</h2>
             <p className="hub-daily-desc">
-              Positions handpicked from <strong>World Champion games</strong> — learn tactics the way the masters played them.
+              <strong>Daily Puzzles</strong> from World Champion games, plus Healthy Mix,
+              Themes, Pieces and Rating — every way to train, in one place.
             </p>
             <div className="hub-daily-stats">
               <span className="hub-daily-stat">👑 From Champion Games</span>
               <span className="hub-daily-stat">🔥 New every day</span>
             </div>
           </div>
-          <Link to="/puzzles" className="hub-daily-cta">Solve Now →</Link>
+          <Link to="/training" className="hub-daily-cta">Start Solving →</Link>
         </div>
 
       </div>
 
-      {/* ── ROW 2: Puzzles (wider) + TTT + Bingo ── */}
+      {/* ── ROW 2: Find the Blunder (wider) + TTT + Bingo ──
+          The "Puzzles" mini-card that used to sit here has moved up into the
+          hero above, so puzzles are advertised once rather than twice. Find
+          the Blunder takes the wide 1.6fr slot that column reserved. */}
       <div className="hub-bottom-row">
 
-        <Link to="/training" className="hub-mini-card hub-mini--puzzles hub-mini--wide">
-          <div className="hub-mini-icon">🧩</div>
+        {/* Find the Blunder — the admin blunder library, now open to every
+            player rather than only to coaches' students. */}
+        <Link to="/training/find-the-blunder" className="hub-mini-card hub-mini--blunder hub-mini--wide">
+          <div className="hub-mini-icon">🔎</div>
           <div className="hub-mini-body">
-            <span className="hub-mini-tag">Training</span>
-            <h3 className="hub-mini-title">Puzzles</h3>
-            <p className="hub-mini-desc">Sharpen your chess skills</p>
+            <span className="hub-mini-tag">Analysis</span>
+            <h3 className="hub-mini-title">Find the Blunder</h3>
+            <p className="hub-mini-desc">Spot the losing move in a real game</p>
           </div>
           <span className="hub-mini-arrow">→</span>
         </Link>

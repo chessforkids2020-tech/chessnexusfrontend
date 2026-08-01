@@ -54,6 +54,13 @@
   animation: fadeInUp 0.7s ease-out;
 }
 
+/* Row 2 without the Puzzles card: two equal game cards instead of the old
+   1.6fr wide slot + 2 columns. Kept as a modifier so the base .hub-bottom-row
+   rule (and its media queries) stay untouched. */
+.hub-bottom-row--games {
+  grid-template-columns: 1fr 1fr;
+}
+
 /* ── Row 2: Puzzles (wider) + TTT + Bingo ── */
 .hub-bottom-row {
   display: grid;
@@ -124,11 +131,11 @@
 .hub-daily-hero {
   height: 280px;
   border-radius: 24px;
-  background: linear-gradient(145deg, rgba(20,14,0,0.85), rgba(30,20,0,0.9));
-  border: 1px solid rgba(245,158,11,0.25);
+  background: linear-gradient(145deg, rgba(6,20,15,0.85), rgba(8,28,20,0.9));
+  border: 1px solid rgba(16,185,129,0.25);
   box-shadow:
-    0 20px 50px -10px rgba(245,158,11,0.2),
-    inset 0 0 60px rgba(245,158,11,0.04);
+    0 20px 50px -10px rgba(16,185,129,0.2),
+    inset 0 0 60px rgba(16,185,129,0.04);
   padding: 28px 30px;
   color: #ffffff;
   display: flex;
@@ -141,7 +148,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(251,191,36,0.04) 100%);
+  background: linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(52,211,153,0.04) 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -151,8 +158,8 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  background: linear-gradient(135deg, #f59e0b, #fbbf24);
-  color: #000;
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: #ffffff;
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.8px;
@@ -167,7 +174,7 @@
   margin-bottom: 6px;
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 0 20px rgba(245,158,11,0.5));
+  filter: drop-shadow(0 0 20px rgba(16,185,129,0.5));
   line-height: 1;
 }
 
@@ -182,7 +189,7 @@
   font-size: 30px;
   font-weight: 900;
   margin: 0 0 10px;
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 60%, #fde68a 100%);
+  background: linear-gradient(135deg, #10b981 0%, #34d399 60%, #a7f3d0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -203,9 +210,9 @@
 }
 
 .hub-daily-stat {
-  background: rgba(245,158,11,0.12);
-  border: 1px solid rgba(245,158,11,0.2);
-  color: #fbbf24;
+  background: rgba(16,185,129,0.12);
+  border: 1px solid rgba(16,185,129,0.2);
+  color: #34d399;
   padding: 4px 12px;
   border-radius: 999px;
   font-size: 12px;
@@ -217,8 +224,8 @@
   display: block;
   cursor: pointer;
   text-decoration: none;
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-  color: #000;
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  color: #ffffff;
   font-weight: 800;
   font-size: 15px;
   letter-spacing: 0.5px;
@@ -228,12 +235,12 @@
   position: relative;
   z-index: 1;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 8px 24px rgba(245,158,11,0.4);
+  box-shadow: 0 8px 24px rgba(16,185,129,0.4);
 }
 
 .hub-daily-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(245,158,11,0.55);
+  box-shadow: 0 12px 32px rgba(16,185,129,0.55);
 }
 
 /* ══════════════════════════════════════
@@ -285,6 +292,10 @@
   background: linear-gradient(135deg, rgba(16,185,129,0.14), rgba(52,211,153,0.08));
 }
 
+.hub-mini--blunder::before {
+  background: linear-gradient(135deg, rgba(245,158,11,0.14), rgba(251,191,36,0.08));
+}
+
 .hub-mini-card:hover::before { opacity: 1; }
 
 .hub-mini--ttt:hover {
@@ -297,6 +308,12 @@
   transform: translateY(-5px);
   border-color: rgba(6,182,212,0.35);
   box-shadow: 0 16px 40px rgba(6,182,212,0.25);
+}
+
+.hub-mini--blunder:hover {
+  transform: translateY(-5px);
+  border-color: rgba(245,158,11,0.35);
+  box-shadow: 0 16px 40px rgba(245,158,11,0.25);
 }
 
 .hub-mini--puzzles:hover {
@@ -330,6 +347,7 @@
 }
 
 .hub-mini--ttt .hub-mini-tag { color: #fb7185; }
+.hub-mini--blunder .hub-mini-tag { color: #fbbf24; }
 .hub-mini--bingo .hub-mini-tag { color: #38bdf8; }
 .hub-mini--puzzles .hub-mini-tag { color: #34d399; }
 
@@ -357,6 +375,7 @@
 }
 
 .hub-mini--ttt:hover .hub-mini-arrow     { color: #fb7185; transform: translateX(4px); }
+.hub-mini--blunder:hover .hub-mini-arrow { color: #fbbf24; transform: translateX(4px); }
 .hub-mini--bingo:hover .hub-mini-arrow   { color: #38bdf8; transform: translateX(4px); }
 .hub-mini--puzzles:hover .hub-mini-arrow { color: #34d399; transform: translateX(4px); }
 

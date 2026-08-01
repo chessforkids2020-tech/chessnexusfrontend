@@ -117,6 +117,29 @@ export default function Training() {
         </Link>
       </div>
 
+      {/* ── Daily Puzzles banner ──
+          Full-width and above the grid, not one of the mode cards. Daily
+          Puzzles is the only mode that changes every day, so it gets its own
+          band rather than competing for attention beside Healthy Mix, Themes,
+          Pieces and Rating. It used to be a separate hero on the Puzzles Hub,
+          which made "Puzzles" and "Daily Puzzles" look like rival destinations. */}
+      {/* The banner itself is a plain <div>, NOT a link: only the Solve Now
+          button navigates. Wrapping the whole band in a <Link> made every
+          click — including on the text — jump to the puzzles, which is easy
+          to trigger by accident. */}
+      <div className="pz-daily-banner">
+        <span className="pz-daily-icon">🧩</span>
+        <span className="pz-daily-text">
+          <span className="pz-daily-badge">🔥 New every day</span>
+          <span className="pz-daily-title">Daily Puzzles</span>
+          <span className="pz-daily-desc">
+            Five positions handpicked from <strong>World Champion games</strong> —
+            learn tactics the way the masters played them.
+          </span>
+        </span>
+        <Link to="/puzzles" className="pz-daily-cta">Solve Now →</Link>
+      </div>
+
       {/* ── Cards Grid ── */}
       <div className="pz-grid">
         {PUZZLE_MODES.map(mode => (

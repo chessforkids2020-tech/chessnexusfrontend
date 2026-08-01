@@ -1,0 +1,478 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+
+/* ═══════════════════════════════════════════════════════════
+   OBSIDIAN GLASS — Find the Blunder
+   Same shell language as HealthyMix (base #05060a, violet
+   accent) with amber kept as the feature signature colour.
+   Tighter vertical rhythm: the old build spent most of the
+   page on padding, so every surface here is denser and the
+   board column carries the weight.
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  --bh-bg: #05060a;
+  --bh-panel: rgba(255, 255, 255, 0.028);
+  --bh-panel-hi: rgba(255, 255, 255, 0.055);
+  --bh-stroke: rgba(255, 255, 255, 0.07);
+  --bh-stroke-hi: rgba(255, 255, 255, 0.14);
+  --bh-text: #e6e8ee;
+  --bh-dim: rgba(230, 232, 238, 0.55);
+  --bh-mute: rgba(230, 232, 238, 0.34);
+  --bh-accent: #fbbf24;       /* amber — feature signature */
+  --bh-accent-2: #a78bfa;     /* violet — shared shell accent */
+  --bh-good: #34d399;
+  --bh-bad: #f87171;
+  --bh-r: 16px;
+  --bh-r-sm: 11px;
+  --bh-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.9),
+               0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+/* ── Page shell ── */
+.bh-page {
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 8px 22px 40px;
+  max-width: 1560px;
+  color: var(--bh-text);
+  background: var(--bh-bg);
+  background-image:
+    radial-gradient(1100px 640px at 10% -12%, rgba(251, 191, 36, 0.09), transparent 60%),
+    radial-gradient(900px 560px at 100% 4%, rgba(167, 139, 250, 0.07), transparent 58%),
+    linear-gradient(180deg, #06070c 0%, #04050a 100%);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+.bh-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  background: var(--bh-panel);
+  border: 1px solid var(--bh-stroke);
+  border-radius: var(--bh-r);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+}
+/* Player header: one compact row, not a stacked card. */
+.bh-header--row {
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  margin-bottom: 10px;
+}
+.bh-header--row .bh-title {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+/* Position in the level, e.g. 3/48 */
+.bh-head-count {
+  flex-shrink: 0;
+  font: 700 11.5px 'JetBrains Mono', monospace;
+  color: var(--bh-accent);
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+/* The players. Allowed to shrink and ellipsis rather than wrap to a 2nd line. */
+.bh-head-game {
+  min-width: 0;
+  flex: 1;
+  font-size: 12.5px;
+  color: var(--bh-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bh-header--row .bh-back {
+  min-width: 34px;
+  padding: 6px 10px;
+  font-size: 14px;
+  line-height: 1;
+}
+.bh-head-main { min-width: 0; }
+.bh-title {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #f4f6fb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bh-sub {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: var(--bh-dim);
+  line-height: 1.5;
+  max-width: 720px;
+}
+.bh-back {
+  flex-shrink: 0;
+  background: var(--bh-panel-hi);
+  border: 1px solid var(--bh-stroke-hi);
+  color: var(--bh-text);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font: 600 12.5px 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+.bh-back:hover { background: rgba(251, 191, 36, 0.12); border-color: rgba(251, 191, 36, 0.4); }
+
+/* Header now sits inside the right column, so it is narrower than before —
+   shrink the level name and let the game title take the remaining space. */
+.bh-right .bh-header--row {
+  margin-bottom: 0;
+  flex-wrap: nowrap;
+}
+.bh-right .bh-title { font-size: 14px; }
+.bh-right .bh-head-game { font-size: 12px; }
+
+.bh-empty {
+  padding: 56px 0;
+  text-align: center;
+  color: var(--bh-mute);
+  font-size: 13.5px;
+}
+
+/* ── Level picker ── */
+.bh-levels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 860px;
+}
+.bh-level {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  padding: 16px 18px;
+  border-radius: var(--bh-r);
+  background: var(--bh-panel);
+  border: 1px solid var(--bh-stroke);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  box-shadow: var(--bh-shadow);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.bh-level:hover {
+  transform: translateY(-2px);
+  background: var(--bh-panel-hi);
+  border-color: rgba(251, 191, 36, 0.38);
+  box-shadow: 0 20px 44px -22px rgba(251, 191, 36, 0.5);
+}
+.bh-level-icon {
+  font-size: 22px;
+  line-height: 1;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.18);
+}
+.bh-level-body { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.bh-level-name { font-size: 15.5px; font-weight: 700; color: #f4f6fb; letter-spacing: -0.01em; }
+.bh-level-meta { font-size: 12px; color: var(--bh-mute); }
+.bh-level-progress { font-size: 11.5px; color: var(--bh-good); font-weight: 700; }
+.bh-level-arrow { color: var(--bh-mute); font-size: 16px; transition: color 0.2s ease, transform 0.2s ease; }
+.bh-level:hover .bh-level-arrow { color: var(--bh-accent); transform: translateX(3px); }
+
+/* ── Player layout ──
+   Board is the anchor and sizes off the viewport height so the
+   whole hunt fits on one screen with no page scroll. */
+.bh-body {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(340px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.bh-left {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bh-right {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: sticky;
+  top: 18px;
+}
+
+/* Board frame */
+.bh-board-wrap {
+  padding: 10px;
+  border-radius: var(--bh-r);
+  background: var(--bh-panel);
+  border: 1px solid var(--bh-stroke);
+  box-shadow: var(--bh-shadow);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  line-height: 0;
+}
+
+/* Playback bar sits directly under the board */
+.bh-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: var(--bh-r-sm);
+  background: var(--bh-panel);
+  border: 1px solid var(--bh-stroke);
+}
+.bh-nav button {
+  background: var(--bh-panel-hi);
+  border: 1px solid var(--bh-stroke);
+  color: var(--bh-text);
+  border-radius: 9px;
+  min-width: 38px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 12.5px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.bh-nav button:hover:not(:disabled) {
+  background: rgba(251, 191, 36, 0.14);
+  border-color: rgba(251, 191, 36, 0.36);
+}
+.bh-nav button:disabled { opacity: 0.3; cursor: default; }
+/* Tells the user the arrow keys work, without a paragraph of instructions. */
+.bh-keys {
+  font: 600 10.5px 'JetBrains Mono', monospace;
+  color: var(--bh-mute);
+  border: 1px solid var(--bh-stroke);
+  border-radius: 6px;
+  padding: 3px 7px;
+  letter-spacing: 0.06em;
+}
+
+.bh-ply {
+  margin-left: auto;
+  font: 600 11.5px 'JetBrains Mono', monospace;
+  color: var(--bh-dim);
+  letter-spacing: 0.02em;
+}
+
+.bh-hint {
+  font-size: 11.5px;
+  color: var(--bh-accent);
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: var(--bh-r-sm);
+  padding: 8px 11px;
+  line-height: 1.5;
+}
+
+/* ── Move list ── */
+.bh-moves {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  align-items: baseline;
+  gap: 2px 3px;
+  padding: 12px;
+  border-radius: var(--bh-r);
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--bh-stroke);
+  box-shadow: var(--bh-shadow);
+  max-height: min(38vh, 320px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+.bh-moves::-webkit-scrollbar { width: 7px; }
+.bh-moves::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 99px; }
+.bh-movenum {
+  color: var(--bh-mute);
+  font: 500 11.5px 'JetBrains Mono', monospace;
+  margin-left: 6px;
+}
+.bh-move {
+  background: none;
+  border: none;
+  color: var(--bh-text);
+  font: 600 12.5px 'JetBrains Mono', monospace;
+  padding: 3px 6px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+.bh-move:hover { background: rgba(255, 255, 255, 0.08); }
+.bh-move.on {
+  background: linear-gradient(180deg, rgba(167, 139, 250, 0.9), rgba(139, 92, 246, 0.9));
+  color: #0b0b13;
+  font-weight: 800;
+}
+.bh-move.blunder { color: var(--bh-bad); font-weight: 800; }
+
+/* ── Answers ── */
+.bh-answers,
+.bh-result {
+  padding: 14px;
+  border-radius: var(--bh-r);
+  background: var(--bh-panel);
+  border: 1px solid var(--bh-stroke);
+  box-shadow: var(--bh-shadow);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.bh-answers-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bh-mute);
+  line-height: 1.5;
+}
+/* Answer boxes: a grid of small fields rather than one full-width box per
+   blunder. auto-fill with a 96px minimum gives 3 across in the right column on
+   a desktop, 2 when it narrows, and 1 on a phone — without a media query. */
+.bh-inputs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 420px;
+}
+/* Numbered so a player still knows which slot is which now that the
+   "Blunder N" placeholder text is gone. */
+.bh-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(0, 0, 0, 0.34);
+  border: 1px solid var(--bh-stroke-hi);
+  border-radius: var(--bh-r-sm);
+  padding: 0 10px;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.bh-input-wrap:focus-within {
+  border-color: rgba(251, 191, 36, 0.55);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.13);
+}
+.bh-input-n {
+  flex-shrink: 0;
+  font: 700 10.5px 'JetBrains Mono', monospace;
+  color: var(--bh-mute);
+}
+
+.bh-input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  padding: 9px 0;
+  color: #f4f6fb;
+  font: 600 14px 'JetBrains Mono', monospace;
+}
+.bh-input::placeholder { color: var(--bh-mute); font-weight: 500; }
+.bh-input:focus { outline: none; }
+.bh-submit {
+  margin-top: 2px;
+  /* Sized to its own text, not stretched across the panel — a full-bleed bar
+     under the compact boxes looked unbalanced. Overridden to full width on
+     phones, where a wide tap target is the right call. */
+  align-self: flex-start;
+  min-width: 160px;
+  background: linear-gradient(180deg, #fbbf24, #f59e0b);
+  color: #16120a;
+  border: none;
+  border-radius: var(--bh-r-sm);
+  padding: 11px 18px;
+  font: 800 14px 'Inter', sans-serif;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+}
+.bh-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow: 0 14px 30px -14px rgba(251, 191, 36, 0.8);
+}
+.bh-submit:disabled { opacity: 0.35; cursor: default; }
+.bh-err { color: var(--bh-bad); font-size: 12.5px; }
+
+/* ── Result ── */
+.bh-result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.bh-result-head.ok { color: var(--bh-good); }
+.bh-result-head.no { color: var(--bh-accent); }
+.bh-result-score {
+  font: 600 11.5px 'JetBrains Mono', monospace;
+  color: var(--bh-dim);
+}
+.bh-xp {
+  align-self: flex-start;
+  background: rgba(52, 211, 153, 0.13);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  color: var(--bh-good);
+  font: 800 11px 'Inter', sans-serif;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  padding: 3px 11px;
+}
+.bh-reveal {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--bh-stroke);
+  border-left: 2px solid var(--bh-bad);
+  border-radius: var(--bh-r-sm);
+  padding: 9px 12px;
+}
+.bh-reveal-move { font: 800 13px 'JetBrains Mono', monospace; color: var(--bh-bad); }
+.bh-reveal-better { margin-left: 8px; font: 800 13px 'JetBrains Mono', monospace; color: var(--bh-good); }
+.bh-reveal-why { margin-top: 4px; font-size: 12px; color: var(--bh-dim); line-height: 1.55; }
+
+/* ── Responsive ── */
+@media (max-width: 1080px) {
+  .bh-body { grid-template-columns: 1fr; }
+  .bh-right { position: static; }
+  .bh-left { align-items: center; }
+  .bh-board-wrap, .bh-nav, .bh-hint { width: 100%; max-width: 560px; }
+}
+@media (max-width: 640px) {
+  .bh-page { padding: 14px 12px 48px; }
+  .bh-header { flex-direction: column; align-items: flex-start; }
+  .bh-levels { grid-template-columns: 1fr; }
+  .bh-moves { max-height: 220px; }
+}
+
+
+/* Two per row on a narrow right column, one on phones. */
+@media (max-width: 1180px) {
+  .bh-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 300px; }
+}
+
+/* Phones: one box per row. Must come after the 1180px rule above, or that
+   wider media query overrides this one and phones get two cramped boxes. */
+@media (max-width: 620px) {
+  .bh-inputs { grid-template-columns: 1fr; max-width: none; }
+}
+
+@media (max-width: 620px) {
+  .bh-submit { align-self: stretch; }
+}

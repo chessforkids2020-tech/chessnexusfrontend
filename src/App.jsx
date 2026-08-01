@@ -173,6 +173,7 @@ import ClubsPage from './pages/ClubsPage';
 import ClubDetailPage from './pages/ClubDetailPage';
 import Puzzles from './pages/Puzzles';
 import PuzzlesHub from './pages/PuzzlesHub';
+import BlunderHunt from './pages/BlunderHunt';
 import Training from './pages/Training';
 import MyMoments from './pages/MyMoments';
 import HealthyMix from './pages/HealthyMix';
@@ -1466,6 +1467,13 @@ export default function App() {
           <UserLayout>
             <ProtectedRoute>
               <Training />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        <Route path="/training/find-the-blunder" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <BlunderHunt />
             </ProtectedRoute>
           </UserLayout>
         } />
