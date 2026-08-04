@@ -243,18 +243,36 @@ export default function AdminCoaches() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
             <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 10, padding: 20, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
               <h4 style={{ margin: "0 0 14px", color: "#072b05", fontSize: 14 }}>Coaches by Plan</h4>
+              {/* Built from whatever plans actually appear in the data. This used
+                  to hardcode ["starter","pro","pro_plus","academy",null] — all
+                  LEGACY ids (coachPlans.js calls them exactly that) — so real
+                  coaches on free/trial/live1/live2/live3 were invisible and every
+                  bar read 0. Never hardcode the plan list again: it changes. */}
               <Bar
-                data={{
-                  labels: ["Starter", "Pro", "Pro Plus", "Academy", "None"],
-                  datasets: [{
-                    label: "Coaches",
-                    data: ["starter", "pro", "pro_plus", "academy", null].map(plan =>
-                      coachAnalytics.planBreakdown.find(p => p._id === plan)?.count || 0
-                    ),
-                    backgroundColor: ["#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#94a3b8"],
-                    borderRadius: 5,
-                  }]
-                }}
+                data={(() => {
+                  const LABEL = {
+                    free: 'Free', trial: 'Trial', elite_free: 'Elite (free)',
+                    live1: 'Live Basic', live2: 'Live Pro', live3: 'Live Max',
+                    starter: 'Starter', pro: 'Pro', pro_plus: 'Pro Plus',
+                    coach: 'Coach', academy: 'Academy',
+                  };
+                  const COLOR = {
+                    free: '#94a3b8', trial: '#f59e0b', elite_free: '#a855f7',
+                    live1: '#3b82f6', live2: '#10b981', live3: '#06b6d4',
+                  };
+                  const rows = [...(coachAnalytics.planBreakdown || [])]
+                    .filter(p => (p.count || 0) > 0)
+                    .sort((a, b) => (b.count || 0) - (a.count || 0));
+                  return {
+                    labels: rows.map(p => LABEL[p._id] || p._id || 'None'),
+                    datasets: [{
+                      label: 'Coaches',
+                      data: rows.map(p => p.count || 0),
+                      backgroundColor: rows.map(p => COLOR[p._id] || '#8b5cf6'),
+                      borderRadius: 5,
+                    }],
+                  };
+                })()}
                 options={{ responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }}
               />
             </div>
@@ -335,8 +353,27 @@ export default function AdminCoaches() {
                       <td style={{ padding: "8px 10px" }}>
                         <div style={{ fontWeight: 700 }}>{c.coachName || c.displayName}</div>
                         <div style={{ color: "#94a3b8", fontSize: 11 }}>@{c.username}{c.email ? ` · ${c.email}` : ""}</div>
+                        {/* country + coach code were already in the API payload but
+                            were never rendered — the admin could not see where a
+                            coach is from or their referral code. */}
+                        <div style={{ color: "#64748b", fontSize: 11, marginTop: 2 }}>
+                          {c.country ? `🌍 ${c.country}` : ""}
+                          {c.coachCode ? `${c.country ? " · " : ""}🔑 ${c.coachCode}` : ""}
+                        </div>
+                        {(c.specialization || c.bio) && (
+                          <div style={{ color: "#94a3b8", fontSize: 11, marginTop: 2, maxWidth: 320 }}>
+                            {c.specialization ? <b>{c.specialization}</b> : null}
+                            {c.specialization && c.bio ? " — " : ""}
+                            {c.bio ? (c.bio.length > 90 ? c.bio.slice(0, 90) + "…" : c.bio) : ""}
+                          </div>
+                        )}
                       </td>
-                      <td style={{ padding: "8px 10px" }}>{c.coachType === "academy" ? `🏫 ${c.academyName || "Academy"}` : "👤 Individual"}</td>
+                      <td style={{ padding: "8px 10px" }}>
+                        {c.coachType === "academy" ? `🏫 ${c.academyName || "Academy"}` : "👤 Individual"}
+                        {c.coachType === "academy" && !c.usesCoachingTools && (
+                          <div style={{ color: "#94a3b8", fontSize: 11 }}>manages only — no coach tools</div>
+                        )}
+                      </td>
                       <td style={{ padding: "8px 10px" }}>
                         {c.plan || "—"}{c.subStatus ? ` (${c.subStatus})` : ""}
                         {c.comped && <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 700, color: "#7c3aed", background: "#f3e8ff", padding: "1px 6px", borderRadius: 6 }}>🎁 Comped</span>}

@@ -175,7 +175,9 @@ export default function MyCoachPortal() {
   // "Marked entries" table. `updatedAt` wins so an edited status shows the edit
   // time. Records predate `slot`/timestamps in a few cases, hence the guards.
   const fmtEntryTime = (r) => {
-    const t = r.updatedAt || r.createdAt;
+    // joinedAt (the real "walked into class" moment) wins when the record came
+    // from a live class; otherwise fall back to when the coach marked it.
+    const t = r.joinedAt || r.updatedAt || r.createdAt;
     if (!t) return '—';
     return new Date(t).toLocaleString('en-IN', {
       timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short',

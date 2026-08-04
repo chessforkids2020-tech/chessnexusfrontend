@@ -235,8 +235,28 @@ export default function useLiveKitRoom() {
   const loadCameras = useCallback(async () => {
     try {
       const devs = await navigator.mediaDevices.enumerateDevices();
-      setCameras(devs.filter((d) => d.kind === 'videoinput'));
+      const cams = devs.filter((d) => d.kind === 'videoinput');
+      setCameras(cams);
       setMics(devs.filter((d) => d.kind === 'audioinput'));
+
+      // Re-sync WHICH device is active, not just the list.
+      //
+      // activeCameraId was previously read once at join and never again, so
+      // after a camera was toggled off (LiveKit releases the device) the
+      // dropdown showed NOTHING selected — the exact symptom seen in a real
+      // class — and toggleCam then retried with an id that could be stale.
+      const r = roomRef.current;
+      if (r && typeof r.getActiveDevice === 'function') {
+        try {
+          const cam = r.getActiveDevice('videoinput');
+          if (typeof cam === 'string' && cam) setActiveCameraId(cam);
+          const mic = r.getActiveDevice('audioinput');
+          if (typeof mic === 'string' && mic) setActiveMicId(mic);
+        } catch { /* not connected yet */ }
+      }
+      // Drop a remembered id that no longer matches any real device, so the
+      // next camera start asks for the default rather than a ghost.
+      setActiveCameraId(prev => (prev && !cams.some(c => c.deviceId === prev) ? '' : prev));
     } catch { /* permissions not granted yet */ }
   }, []);
 
@@ -441,13 +461,32 @@ export default function useLiveKitRoom() {
         .then(() => null).catch((e) => e),
       r.localParticipant.setCameraEnabled(true).then(() => null).catch((e) => e),
     ]);
-    if (micRes || camRes) {
+    // ONE RETRY for the camera, on its own.
+    //
+    // Mic and camera are requested in PARALLEL above (for speed), and some
+    // machines cannot serve both getUserMedia calls at once — the camera loses
+    // the race and comes back NotReadableError/TrackStartError even though the
+    // permission was granted and the device is perfectly fine. That is the
+    // "browser says camera is allowed and available, but the classroom cannot
+    // open it" case, and it hits ONE student on ONE machine while everyone else
+    // is fine, which is exactly the reported symptom.
+    //
+    // Retrying alone, after the mic has finished, costs nothing when the first
+    // attempt worked (this block does not run) and rescues that student.
+    let camFinal = camRes;
+    if (camRes) {
+      await new Promise(res => setTimeout(res, 500));
+      camFinal = await r.localParticipant.setCameraEnabled(true)
+        .then(() => null).catch((e) => e);
+    }
+
+    if (micRes || camFinal) {
       // Permission is asked for both at once, so a block usually fails both. Report the
       // most actionable cause: a hard block outranks a missing/busy device.
-      const kinds = [micRes && classifyDeviceError(micRes), camRes && classifyDeviceError(camRes)].filter(Boolean);
+      const kinds = [micRes && classifyDeviceError(micRes), camFinal && classifyDeviceError(camFinal)].filter(Boolean);
       setDeviceIssue({
         mic: !!micRes,
-        cam: !!camRes,
+        cam: !!camFinal,
         kind: kinds.includes('blocked') ? 'blocked' : kinds[0],
       });
     } else {
@@ -698,6 +737,13 @@ export default function useLiveKitRoom() {
         try {
           await r.localParticipant.setCameraEnabled(true, opts);
         } catch {
+          // The remembered deviceId is STALE. Windows reassigns camera ids
+          // fairly readily, especially with two cameras, so a saved id can point
+          // at a device that no longer exists — and the retry then failed the
+          // same way every time, which is why pressing the button repeatedly did
+          // nothing in a real class. Forget it before falling back, so the next
+          // press asks for any camera instead of the dead one again.
+          setActiveCameraId('');
           await r.localParticipant.setCameraEnabled(true); // default device
         }
       }

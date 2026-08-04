@@ -45,6 +45,10 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
   // Per-position running state (refs so async engine callbacks read fresh values).
   const chessRef = useRef(new Chess(positions[0]?.fen || START_FEN));
   const userMovesRef = useRef(positions.map(() => []));      // accepted SAN by the student
+  // The full line as PLAYED — student and engine moves interleaved — so the
+  // coach's review can replay the real game rather than a list of orphaned
+  // student moves. [{ san, by: 'student' | 'engine' }]
+  const lineRef = useRef(positions.map(() => []));
   const verdictsRef = useRef(positions.map(() => null));     // 'pass' | 'fail' | null (unattempted)
   const bestHintRef = useRef(positions.map(() => ''));       // engine's best SAN when a move is rejected
   const [verdicts, setVerdicts] = useState(positions.map(() => null));
@@ -92,6 +96,11 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
   // logic as Monthly Focus judgeEngineMove, adapted to per-position local state.
   const judge = async (fenBefore, chessAfter, userSan) => {
     userMovesRef.current[idx] = [...(userMovesRef.current[idx] || []), userSan];
+    // FULL line — student AND engine, in the order actually played. The
+    // user-only list above cannot be replayed on a board (move 2 is illegal
+    // from the position after move 1, because the engine's reply is missing),
+    // which is why the coach's review could only ever show one move.
+    lineRef.current[idx] = [...(lineRef.current[idx] || []), { san: userSan, by: 'student' }];
     const played = userMovesRef.current[idx].length;
 
     const finish = (passed) => {
@@ -149,6 +158,7 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
         if (rm) {
           setFen(chessAfter.fen());
           setLastMove({ from: rm.from, to: rm.to });
+          lineRef.current[idx] = [...(lineRef.current[idx] || []), { san: rm.san, by: 'engine' }];
           if (chessAfter.isGameOver()) {
             // The ENGINE's reply ended the game. If it just mated the student,
             // that's a loss — only a draw or the student's own mate is a pass.
@@ -188,6 +198,7 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
 
   const retry = () => {
     userMovesRef.current[idx] = [];
+    lineRef.current[idx] = [];
     verdictsRef.current[idx] = null;
     bestHintRef.current[idx] = '';
     setVerdicts(prev => { const n = [...prev]; n[idx] = null; return n; });
@@ -200,6 +211,8 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
       const results = positions.map((_, i) => ({
         passed: verdictsRef.current[i] === 'pass',
         moves: userMovesRef.current[i] || [],
+        // The full played line so the coach can step through the real game.
+        line: lineRef.current[i] || [],
         engineBestMove: bestHintRef.current[i] || '',
       }));
       const res = await api.post(`/api/coach/my-assignments/${assignment._id}/submit-fen`, { results });

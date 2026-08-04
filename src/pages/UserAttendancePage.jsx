@@ -949,7 +949,12 @@ const UserAttendancePage = () => {
                   })}
                 </td>
                 <td style={styles.td}>
-                  {record.createdAt ? formatTimeIST(record.createdAt) : 'N/A'}
+                  {/* joinedAt = when the student actually walked into the live class.
+                      createdAt is only when the row was written, which is the
+                      same thing for a live class but NOT when a coach marks the
+                      register hours later. Prefer the real join time. */}
+                  {record.joinedAt ? formatTimeIST(record.joinedAt)
+                    : record.createdAt ? formatTimeIST(record.createdAt) : 'N/A'}
                 </td>
                 <td style={styles.td}>
                   <span style={{

@@ -70,6 +70,11 @@ export default function AssignmentReview({ assignment, onClose }) {
     if (!item) return [];
     if (item.kind === 'fen') {
       const r = student?.fenResults?.[item.idx];
+      // Prefer the FULL line (student + engine interleaved) — it is a real,
+      // legal sequence so the board can be stepped through move by move.
+      // `moves` is the student's half only and cannot be replayed; it stays as
+      // the fallback for runs recorded before the line was captured.
+      if (r?.line?.length) return r.line.map(x => x.san);
       return r?.moves || [];
     }
     // Blunder game: replay the PGN so the coach can see the position in question.
@@ -95,9 +100,22 @@ export default function AssignmentReview({ assignment, onClose }) {
     }
     if (item?.kind === 'fen') {
       const base = item.fen || START_FEN;
-      if (ply === 0) return { fen: base, lastSan: '', replayable: false };
+      const full = !!student?.fenResults?.[item.idx]?.line?.length;
+      if (ply === 0) return { fen: base, lastSan: '', replayable: full };
       let c;
-      try { c = new Chess(base); } catch { return { fen: START_FEN, lastSan: '', replayable: false }; }
+      try { c = new Chess(base); } catch { return { fen: START_FEN, lastSan: '', replayable: full }; }
+      if (full) {
+        // Real game: walk the whole line up to this ply.
+        let san = '';
+        for (let i = 0; i < ply && i < line.length; i++) {
+          try { const m = c.move(line[i], { sloppy: true }); san = m ? m.san : san; }
+          catch { break; }
+        }
+        return { fen: c.fen(), lastSan: san, replayable: true };
+      }
+      // LEGACY run: only the student's moves were stored, so each is shown from
+      // the start position — move 2 is illegal after move 1 without the engine's
+      // reply in between.
       let san = '';
       try { const m = c.move(line[ply - 1], { sloppy: true }); san = m ? m.san : ''; }
       catch { /* not legal from the start — show the start position */ }
@@ -234,7 +252,34 @@ function FenAnswer({ student, item, onJump, ply }) {
           <span style={S.muted}> · engine wanted <b style={{ color: '#e6e8ee' }}>{r.engineBestMove}</b></span>
         )}
       </div>
-      {moves.length === 0 ? (
+      {/* Prefer the FULL line — student and engine moves interleaved — so the
+          coach sees the real game, not a list of orphaned student moves. */}
+      {r.line?.length ? (
+        <>
+          <div style={S.answerHead}>The game — click any move to jump</div>
+          <div style={S.moveRow}>
+            {r.line.map((mv, i) => (
+              <button
+                key={i}
+                style={{
+                  ...S.move,
+                  ...(mv.by === 'engine' ? S.moveEngine : S.moveStudent),
+                  ...(ply === i + 1 ? S.moveOn : {}),
+                }}
+                title={mv.by === 'engine' ? 'Stockfish' : student.studentName}
+                onClick={() => onJump(i + 1)}
+              >
+                {mv.san}
+              </button>
+            ))}
+          </div>
+          <div style={{ ...S.muted, marginTop: 6, fontSize: 11 }}>
+            <span style={S.legendStudent}>●</span> {student.studentName}
+            {'   '}
+            <span style={S.legendEngine}>●</span> Stockfish
+          </div>
+        </>
+      ) : moves.length === 0 ? (
         <div style={S.muted}>No moves recorded.</div>
       ) : (
         <>
@@ -245,6 +290,12 @@ function FenAnswer({ student, item, onJump, ply }) {
                 {i + 1}. {m}
               </button>
             ))}
+          </div>
+          {/* Older run: the engine's replies were never stored, so these cannot
+              be replayed as a game. */}
+          <div style={{ ...S.muted, marginTop: 6, fontSize: 11 }}>
+            Each move is shown from the starting position — this run predates
+            recording the engine's replies.
           </div>
         </>
       )}
@@ -364,6 +415,12 @@ function BlunderAnswer({ student, item, allItems, gameIndex = 0 }) {
 }
 
 const S = {
+  // Student moves vs Stockfish replies — a coach must be able to tell at a
+  // glance which side played what.
+  moveStudent: { borderColor: 'rgba(52,211,153,0.45)', color: '#6ee7b7' },
+  moveEngine:  { borderColor: 'rgba(148,163,184,0.35)', color: '#94a3b8' },
+  legendStudent: { color: '#6ee7b7' },
+  legendEngine:  { color: '#94a3b8' },
   backdrop: { position: 'fixed', inset: 0, zIndex: 4000, background: 'rgba(2,6,12,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflowY: 'auto' },
   modal: { width: '100%', maxWidth: 940, maxHeight: '94vh', overflowY: 'auto', background: '#0b111a', border: '1px solid rgba(255,255,255,0.10)', borderRadius: 16, padding: 18 },
   head: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 14 },

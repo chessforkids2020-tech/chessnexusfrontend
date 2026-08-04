@@ -13,6 +13,7 @@ import useLiveKitRoom from '../../hooks/useLiveKitRoom';
 import LiveClassChat from '../../components/LiveClassChat';
 import { buildTreeFromPgn, nodeAtPath, addMove, getMainlinePath } from '../../components/gameTree';
 import EditableBoard from '../../components/PositionEditor/EditableBoard';
+import { EngineCoachStage, EngineStudentStage } from '../../components/coach/EngineGameStage';
 import PieceSelector from '../../components/PositionEditor/PieceSelector';
 import { SideToMoveControl, CastlingControl, EnPassantControl } from '../../components/PositionEditor/SetupControls';
 import EnginePanel from '../../components/EnginePanel';
@@ -256,7 +257,7 @@ function RemoteAudioTrack({ track }) {
 // `local` marks YOUR own tile: we render the RAW camera MediaStreamTrack directly
 // (bypassing the encode/simulcast path) so the self-view is instant and full-res —
 // exactly how Zoom shows your own preview. Remote tiles still attach the LiveKit track.
-function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl, speaking, ratio, local, camConnecting }) {
+function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl, speaking, ratio, local, camConnecting, onFixVideo }) {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current;
@@ -294,23 +295,48 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
     // The unmute listener lives in its own effect below, keyed on `rawTrack` —
     // it has to survive `track` going null on mute, which is exactly when this
     // effect tears down.
-    const doAttach = () => { try { track.attach(el); } catch { /* */ } };
+    const doAttach = () => {
+      try { track.attach(el); } catch { /* */ }
+      // A freshly attached element is sometimes left paused; nudge it. Autoplay
+      // rejections are expected and harmless here — the tile is muted.
+      el.play?.().catch(() => { /* ignore */ });
+    };
     doAttach();
 
-    // Belt AND braces. A coach cannot tell a child to reload mid-class, so
-    // recovery must not hinge on one event firing. If the element still has no
-    // picture shortly after mount, re-attach. Two cheap checks, then it stops —
-    // a recovery net, not a polling loop.
-    const recheck = [400, 1500].map(ms => setTimeout(() => {
-      if (!el.isConnected) return;
-      if (el.videoWidth === 0 || !el.srcObject) doAttach();
-    }, ms));
+    // WATCHDOG. A coach cannot tell a child to reload mid-class, so recovery
+    // must not depend on one event firing or on a frame arriving quickly.
+    //
+    // This used to be two fixed timeouts (400ms, 1500ms) and then it gave up
+    // forever. That is too short and too final: a camera can take several
+    // seconds to produce its first frame on a slow device, and a subscription
+    // that lands late — or a track that silently stops after a network blip —
+    // arrives long after the last check has expired. The tile then stayed black
+    // permanently and only a page reload fixed it, which is exactly the
+    // complaint from real classes.
+    //
+    // Instead: keep checking every second until the element is genuinely
+    // painting (videoWidth > 0), then stop. A healthy tile stops the interval
+    // after one tick, so this costs nothing in the normal case.
+    let tries = 0;
+    const watchdog = setInterval(() => {
+      if (!el.isConnected) return;                 // unmounted — cleanup will clear
+      if (el.videoWidth > 0) { clearInterval(watchdog); return; }   // painting, done
+      if (++tries > 20) { clearInterval(watchdog); return; }        // ~20s, then give up
+      // No picture yet. Re-attach, and re-request the subscription if the
+      // publication was dropped — a detached element and an unsubscribed
+      // publication produce the same black tile.
+      doAttach();
+      try {
+        const pub = rawTrack?.publication || track?.publication;
+        if (pub && pub.isSubscribed === false) pub.setSubscribed?.(true);
+      } catch { /* best effort */ }
+    }, 1000);
 
     return () => {
-      recheck.forEach(clearTimeout);
+      clearInterval(watchdog);
       try { track.detach(el); } catch { /* */ }
     };
-  }, [track, local]);
+  }, [track, rawTrack, local]);
 
   // Camera off → on must recover WITHOUT a page reload.
   //
@@ -355,6 +381,23 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
               <div style={{ fontSize: 11, color: '#facc15', fontWeight: 600 }}>
                 Camera on — connecting…
               </div>
+            )}
+            {/* Self-repair, on the student's OWN tile only.
+                A child cannot be told to "reload the page" — they do not know
+                what that means and end up fetching a parent mid-lesson. One
+                obvious button they can press themselves republishes the camera
+                and fixes a stuck tile without leaving the class. */}
+            {local && onFixVideo && (
+              <button
+                onClick={onFixVideo}
+                style={{
+                  background: '#facc15', color: '#111', border: 'none',
+                  borderRadius: 8, padding: '6px 12px', fontSize: 12,
+                  fontWeight: 800, cursor: 'pointer',
+                }}
+              >
+                🔄 Fix my video
+              </button>
             )}
           </div>
         )}
@@ -1380,10 +1423,41 @@ function SimulSetupSection({ participants = [], simul, onCreate, onStart, onEnd 
 // tournaments with live status; "Watch"/"Results" opens the leaderboard EMBEDDED here
 // (no navigation, class video keeps running). Only "Create new" opens a new tab.
 // ALSO hosts "♟ Play in class" (coach-run student games) at the top, above races.
+// Coach picks who moves first and how strong the computer is, then sends the
+// CURRENT teaching-board position to the class. Reusing the board they are
+// already looking at means there is no second editor to learn.
+function EngineSetup({ currentFen, onCreate }) {
+  const [studentColor, setStudentColor] = useState('white');
+  const [skill, setSkill] = useState('medium');
+  return (
+    <div style={as.lobbyBox}>
+      <div style={as.setupRow}>
+        <span style={as.setupLabel}>Students play</span>
+        <select style={as.select} value={studentColor} onChange={e => setStudentColor(e.target.value)}>
+          <option value="white">White</option>
+          <option value="black">Black</option>
+        </select>
+        <span style={as.setupLabel}>Computer</span>
+        <select style={as.select} value={skill} onChange={e => setSkill(e.target.value)}>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+      <button type="button" style={as.primaryBtn}
+        onClick={() => onCreate?.(currentFen, studentColor, skill)}>
+        Send this position to the class
+      </button>
+    </div>
+  );
+}
+
 function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
   participants = [], classGames = [], classSpotlightId, classHasClock,
   onStartGames, onSpotlight, onEndGames, onReview, playEnded = false,
   simul, onSimulCreate, onSimulStart, onSimulEnd,
+  // Whole-class-vs-Stockfish: the coach sets one position and watches.
+  engineGame, onEngineCreate, onEngineStart, onEngineEnd, boardFen,
   // Needed so the embedded race view can post its join link into class chat.
   sessionId = null }) {
   const [watch, setWatch] = useState(null); // { kind:'race'|'tournament', roomId, id }
@@ -1416,6 +1490,7 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
   const TABS = [
     { id: 'play', label: '♟ Play in class' },
     { id: 'simul', label: '♟ Simul' },
+    { id: 'engine', label: '🤖 Vs Computer' },
     { id: 'arena', label: '🏁 Races & Tournaments' },
   ];
 
@@ -1453,6 +1528,38 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
           onReview={onReview}
           playEnded={playEnded}
         />
+      )}
+
+      {actTab === 'engine' && (
+        <div style={as.pane}>
+          <div style={as.paneHead}>🤖 Whole class vs Computer</div>
+          <div style={as.paneNote}>
+            Set a position on the teaching board, then send it to the class — every
+            student plays it against the computer on their own device. You just watch.
+          </div>
+
+          {!engineGame || engineGame.status === 'ended' ? (
+            <EngineSetup currentFen={boardFen} onCreate={onEngineCreate} />
+          ) : engineGame.status === 'lobby' ? (
+            <div style={as.lobbyBox}>
+              <div style={as.lobbyLine}>
+                {engineGame.joined?.length || 0} student(s) joined · {engineGame.skill}
+              </div>
+              <button type="button" style={as.primaryBtn}
+                onClick={onEngineStart} disabled={!(engineGame.joined?.length)}>
+                Start — everyone plays
+              </button>
+              <button type="button" style={as.ghostBtn} onClick={onEngineEnd}>Cancel</button>
+            </div>
+          ) : (
+            <div style={as.lobbyBox}>
+              <div style={as.lobbyLine}>
+                Running · {engineGame.boards?.length || 0} boards
+              </div>
+              <button type="button" style={as.ghostBtn} onClick={onEngineEnd}>End activity</button>
+            </div>
+          )}
+        </div>
       )}
 
       {actTab === 'simul' && (
@@ -1527,7 +1634,17 @@ const cg = {
   controls: { display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 },
   lbl: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#cbd5e1' },
   select: { padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', fontSize: 13 },
-  ghostBtn: { padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13, fontWeight: 600 },
+  ghostBtn: { padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13, fontWeight: 600 },
+  // ── Vs Computer panel ──
+  pane: { display: 'flex', flexDirection: 'column', gap: 10, padding: '4px 2px' },
+  paneHead: { fontSize: 14, fontWeight: 800, color: '#f8fafc' },
+  paneNote: { fontSize: 12.5, color: '#9ca3af', lineHeight: 1.55 },
+  lobbyBox: { display: 'flex', flexDirection: 'column', gap: 9, alignItems: 'flex-start' },
+  lobbyLine: { fontSize: 13, color: '#e2e8f0', fontWeight: 600 },
+  primaryBtn: { padding: '9px 16px', borderRadius: 10, border: 'none', background: '#22c55e', color: '#052e16', cursor: 'pointer', fontSize: 13.5, fontWeight: 800 },
+  setupRow: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' },
+  setupLabel: { fontSize: 12, color: '#9ca3af', fontWeight: 600 },
+  select: { padding: '7px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(0,0,0,0.3)', color: '#e2e8f0', fontSize: 13 },
   pairList: { display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 },
   pairRow: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   pairNo: { fontSize: 12.5, fontWeight: 700, color: '#9ca3af', minWidth: 56 },
@@ -1657,6 +1774,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   //   boards:[{ id, studentId, studentName, fen, lastMove, turn, status, result, winnerColor }],
   //   invited:[], joined:[] }. Driven by the simul:* socket events.
   const [simul, setSimul] = useState(null);
+  // ENGINE GAME — the whole class plays one coach-set position vs Stockfish.
+  // Same shape as `simul`, but the opponent is the engine in each student's
+  // own browser rather than the coach, so the coach only watches.
+  const [engineGame, setEngineGame] = useState(null);
   const [simulJoinRequest, setSimulJoinRequest] = useState(false); // student "Join simul?" popup
   const myIdForSimul = user && (user.id || user._id);
   // When a STUDENT's own game/board finishes, show a clear result popup so beginners
@@ -2027,6 +2148,29 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       if (hostStateRef.current.isHost) return;
       setCameraRequest(true);
     };
+
+    // Coach pressed "Fix video" on my tile.
+    //
+    // THE PROBLEM THIS SOLVES: when a student's tile goes black the only cure
+    // used to be a page reload — and these students are children. They do not
+    // know what "reload" means, so they fetch a parent, and the lesson stops.
+    //
+    // This republishes their camera from scratch (off, then on) without a
+    // reload, without a permission prompt, and without the child doing
+    // ANYTHING. No consent popup: it is not turning a camera on that was off,
+    // it is repairing one that is already meant to be on — so it deliberately
+    // does nothing if their camera is genuinely off.
+    const onCameraRestart = () => {
+      if (hostStateRef.current.isHost) return;
+      if (!lk.camOn) return;            // camera is off by choice — leave it alone
+      (async () => {
+        try {
+          await lk.toggleCam();          // stop and unpublish
+          await new Promise(r => setTimeout(r, 400));  // let the device settle
+          await lk.toggleCam();          // republish — new track, fresh subscription
+        } catch { /* best effort; the watchdog is still running underneath */ }
+      })();
+    };
     const onHand = ({ studentId, raised }) => {
       setRaisedHandIds(prev => {
         const s = new Set(prev.map(String));
@@ -2068,6 +2212,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     socket.on('liveclass:hand', onHand);
     socket.on('liveclass:camera-off', onCameraOff);
     socket.on('liveclass:camera-request', onCameraRequest);
+    socket.on('liveclass:camera-restart', onCameraRestart);
     // ── Play in class (classroom games) ──
     // Full state snapshot (start / join-resync): games + spotlight + clock flag.
     const onCgState = ({ games, spotlightGameId, hasClock }) => {
@@ -2135,6 +2280,36 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     const myId = myIdRef.current;
     // Lobby update — coach sees roster; a student who is invited but hasn't joined
     // gets the "Join simul?" popup.
+    const onEngLobby = (payload) => {
+      setEngineGame(payload);
+      // Students opt in automatically. The coach already decided the class is
+      // doing this, and a child who dismissed a "join?" popup by accident would
+      // silently sit out the whole activity.
+      if (!hostStateRef.current.isHost && payload?.status === 'lobby') {
+        const joined = (payload.joined || []).map(String).includes(String(myIdRef.current));
+        if (payload.sessionId && !joined) socket.emit('engine:join', { sessionId: payload.sessionId });
+      }
+    };
+    const onEngState = (payload) => setEngineGame(payload);
+    // Patch one board so the grid updates without re-rendering every board.
+    const onEngBoard = ({ boardId, fen, lastMove, moves, turn }) => {
+      setEngineGame(prev => prev ? { ...prev, boards: prev.boards.map(b => b.id === boardId
+        ? { ...b, fen, lastMove, moves: moves || b.moves, turn: turn || b.turn } : b) } : prev);
+    };
+    const onEngOver = ({ boardId, result, winnerColor }) => {
+      setEngineGame(prev => {
+        if (!prev) return prev;
+        const board = prev.boards.find(b => b.id === boardId);
+        // Result popup only for the student whose OWN board finished.
+        if (board && !hostStateRef.current.isHost && String(board.studentId) === String(myIdRef.current)) {
+          setGameOverPopup(buildGameOverPopup(prev.studentColor, result, winnerColor));
+        }
+        return { ...prev, boards: prev.boards.map(b => b.id === boardId
+          ? { ...b, status: 'finished', result, winnerColor: winnerColor || null } : b) };
+      });
+    };
+    const onEngFocus = ({ boardId }) => setEngineGame(prev => prev ? { ...prev, spotlightBoardId: boardId } : prev);
+
     const onSimLobby = (payload) => {
       setSimul(payload);
       if (!hostStateRef.current.isHost) {
@@ -2165,6 +2340,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     };
     const onSimFocus = ({ boardId }) => setSimul(prev => prev ? { ...prev, activeBoardId: boardId } : prev);
     const onSimEnded = () => { setSimul(null); setSimulJoinRequest(false); setGameOverPopup(null); };
+    socket.on('engine:lobby', onEngLobby);
+    socket.on('engine:state', onEngState);
+    socket.on('engine:board', onEngBoard);
+    socket.on('engine:over', onEngOver);
+    socket.on('engine:focus', onEngFocus);
     socket.on('simul:lobby', onSimLobby);
     socket.on('simul:state', onSimState);
     socket.on('simul:board', onSimBoard);
@@ -2180,10 +2360,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       socket.off('liveclass:clock-started', onClockStarted);
       socket.off('liveclass:muted', onMuted); socket.off('liveclass:unmute-request', onUnmuteRequest);
       socket.off('liveclass:mic-state', onMicState); socket.off('liveclass:hand', onHand);
-      socket.off('liveclass:camera-off', onCameraOff); socket.off('liveclass:camera-request', onCameraRequest);
+      socket.off('liveclass:camera-off', onCameraOff); socket.off('liveclass:camera-request', onCameraRequest); socket.off('liveclass:camera-restart', onCameraRestart);
       socket.off('classgame:state', onCgState); socket.off('classgame:game', onCgGame);
       socket.off('classgame:clock', onCgClock); socket.off('classgame:spotlight', onCgSpotlight);
       socket.off('classgame:over', onCgOver); socket.off('classgame:ended', onCgEnded);
+      socket.off('engine:lobby', onEngLobby); socket.off('engine:state', onEngState);
+      socket.off('engine:board', onEngBoard); socket.off('engine:over', onEngOver);
+      socket.off('engine:focus', onEngFocus);
       socket.off('simul:lobby', onSimLobby); socket.off('simul:state', onSimState);
       socket.off('simul:board', onSimBoard); socket.off('simul:over', onSimOver);
       socket.off('simul:focus', onSimFocus); socket.off('simul:ended', onSimEnded);
@@ -2576,6 +2759,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const anyGameActive = classGames.some(g => g.status === 'active');
 
   // ── Simul: emit helpers + derived views ──
+  // ── Engine game (whole class vs Stockfish from one position) ──
+  // `startFen` comes from the board editor already on this page.
+  const engineCreate = (startFen, studentColor, skill) => {
+    if (session) socket.emit('engine:create', { sessionId: session.id, startFen, studentColor, skill });
+  };
+  const engineJoin  = () => { if (session) socket.emit('engine:join',  { sessionId: session.id }); };
+  const engineStart = () => { if (session) socket.emit('engine:start', { sessionId: session.id }); };
+  const engineFocus = (boardId) => { if (session) socket.emit('engine:focus', { sessionId: session.id, boardId }); };
+  const engineEnd   = () => { if (session) socket.emit('engine:end',   { sessionId: session.id }); setEngineGame(null); };
+
   const simulCreate = (coachColor) => { if (session) socket.emit('simul:create', { sessionId: session.id, coachColor }); };
   const simulJoin = () => { if (session) socket.emit('simul:join', { sessionId: session.id }); setSimulJoinRequest(false); };
   const simulStart = () => { if (session) socket.emit('simul:start', { sessionId: session.id }); };
@@ -2870,6 +3063,32 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const [camAskedIds, setCamAskedIds] = useState([]);
   const cameraOffStudent = async (studentId) => {
     try { await api.post(`/api/coach-live/sessions/${session.id}/camera-off`, { studentId }); } catch { /* */ }
+  };
+  // Student repairs their OWN stuck video. Same republish the coach can trigger
+  // remotely, but self-served — a child who notices their own tile is black can
+  // press one button instead of finding a parent to reload the page for them.
+  const [fixingVideo, setFixingVideo] = useState(false);
+  const fixMyVideo = async () => {
+    if (fixingVideo) return;
+    setFixingVideo(true);
+    try {
+      if (lk.camOn) {
+        await lk.toggleCam();
+        await new Promise(r => setTimeout(r, 400));
+        await lk.toggleCam();
+      }
+    } catch { /* the watchdog is still running underneath */ }
+    finally { setTimeout(() => setFixingVideo(false), 1500); }
+  };
+
+  // "Fix video" — repair a black tile without the child touching anything.
+  // `camFixedIds` briefly marks the button so the coach can see it registered.
+  const [camFixedIds, setCamFixedIds] = useState([]);
+  const restartCamera = async (studentId) => {
+    const id = String(studentId);
+    setCamFixedIds(prev => (prev.includes(id) ? prev : [...prev, id]));
+    setTimeout(() => setCamFixedIds(prev => prev.filter(x => x !== id)), 6000);
+    try { await api.post(`/api/coach-live/sessions/${session.id}/restart-camera`, { studentId: id }); } catch { /* */ }
   };
   const requestCamera = async (studentId) => {
     const id = String(studentId);
@@ -3169,10 +3388,18 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // board + strip; a student plays their own board; a non-joiner spectates the
   // coach's active board. Yields only to a remote screen share.
   const simulOnStage = simulActive && !remoteScreen;
+  // ENGINE GAME: an active whole-class-vs-Stockfish activity takes the stage the
+  // same way a simul does — the coach watches every board, a student plays their
+  // own. Sits beside simul in precedence; both yield to a screen share.
+  const engineActive = engineGame?.status === 'active';
+  const engineOnStage = engineActive && !remoteScreen && !simulOnStage;
+  // My own board, when I am a student in an engine game.
+  const myEngineBoard = (engineGame?.boards || []).find(
+    b => String(b.studentId) === String(myIdRef.current)) || null;
   // Activities view wins the stage when the host opened it — BUT once a simul is
   // running, the coach's simul boards must take over (the coach can't play a simul
   // while the Activities panel covers the stage). Simul beats Activities for the host.
-  const activitiesOnStage = isHost && showActivities && !remoteScreen && !simulOnStage;
+  const activitiesOnStage = isHost && showActivities && !remoteScreen && !simulOnStage && !engineOnStage;
   // STUDENT: when classroom games are running, their own board (player) or the
   // coach's spotlighted board (spectator) takes the stage — like the teaching board,
   // it wins over the idle video view but yields to a remote screen share.
@@ -3184,7 +3411,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // student who never tapped OK stays stuck on their finished board and cannot see
   // the coach's review.
   const classGameOnStage = !isHost && classGamesActive && !remoteScreen && !leftClassGame && !playEnded;
-  const boardOnStage = showBoard && !remoteScreen && !activitiesOnStage && !classGameOnStage && !simulOnStage;
+  const boardOnStage = showBoard && !remoteScreen && !activitiesOnStage && !classGameOnStage && !simulOnStage && !engineOnStage;
 
   // ── Video placement (host only) ─────────────────────────────────────────────
   // videoMode moves the class videos without unmounting the tracks. Students always
@@ -3196,7 +3423,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const videosPopped = vMode === 'pop';      // in their own window
   // When videos are floated/popped/hidden, the big Zoom grid must NOT own the stage —
   // the board (or a placeholder) takes it so faces never eat the whole page.
-  const videoOnStage = videosDocked && !boardOnStage && !remoteScreen && !activitiesOnStage && !classGameOnStage && !simulOnStage;
+  const videoOnStage = videosDocked && !boardOnStage && !remoteScreen && !activitiesOnStage && !classGameOnStage && !simulOnStage && !engineOnStage;
 
   // Does the RIGHT RAIL actually have anything to show? It holds two things: the
   // docked video thumbnails (only when videos are docked AND a board/screen is on
@@ -3253,6 +3480,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
            avatar here would claim "camera off", which is wrong and sends the
            coach chasing a student who did nothing. Say "connecting" instead. */
         camConnecting={!p.isLocal && !p.videoTrack && p.camPublished}
+        // Own tile only: offered when their camera is meant to be on but no
+        // picture has arrived, which is exactly the stuck case.
+        onFixVideo={p.isLocal && lk.camOn ? fixMyVideo : undefined}
       />
       {/* HOST-ONLY tile controls, overlaid on the video so they cost no layout space.
           One click each: mute / camera off / give board control. Muted or camera-off
@@ -3273,10 +3503,20 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               "ask them to turn their camera on" prompt for a child whose camera
               was already on — the coach then nags a student who did nothing wrong. */}
           {(p.videoTrack || p.camPublished)
-            ? <button style={s.tileBtn} title="Turn this student's camera off"
-                onClick={(e) => { e.stopPropagation(); cameraOffStudent(p.identity); }}>
-                <CamIcon off={false} size={15} />
-              </button>
+            ? <>
+                <button style={s.tileBtn} title="Turn this student's camera off"
+                  onClick={(e) => { e.stopPropagation(); cameraOffStudent(p.identity); }}>
+                  <CamIcon off={false} size={15} />
+                </button>
+                {/* Repairs a black tile remotely. Shown only when their camera is
+                    meant to be ON — that is exactly when a black tile is wrong. */}
+                <button
+                  style={{ ...s.tileBtn, ...(camFixedIds.includes(String(p.identity)) ? s.tileBtnAsked : {}) }}
+                  title="Fix this student's video (no reload needed)"
+                  onClick={(e) => { e.stopPropagation(); restartCamera(p.identity); }}>
+                  🔄
+                </button>
+              </>
             : <button style={{ ...s.tileBtn, ...(camAskedIds.includes(String(p.identity)) ? s.tileBtnAsked : s.tileBtnAsk) }}
                 title="Ask this student to turn their camera on"
                 onClick={(e) => { e.stopPropagation(); requestCamera(p.identity); }}>
@@ -3605,6 +3845,48 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       {/* Browsers block audio until the page gets a real user gesture. When that
           happens every remote voice is silent with no error, so offer one tap to
           turn sound on rather than leaving the coach wondering. */}
+      {/* CAMERA / MIC PROBLEM BANNER.
+          The hook has classified device failures into blocked / missing / busy /
+          failed since day one, and exposes `retryDevices` — but NOTHING ever
+          rendered either. So when a camera would not turn on, the user pressed
+          the button repeatedly and got no feedback at all, which is exactly what
+          happened in a real class. Silence is the worst possible response: it
+          reads as "the app is broken" when the actual cause is usually another
+          program holding the camera. */}
+      {lk.deviceIssue && (
+        <div style={{
+          position: 'fixed', bottom: 150, left: '50%', transform: 'translateX(-50%)',
+          zIndex: 100003, padding: '12px 18px', borderRadius: 14, maxWidth: 460,
+          border: '1px solid rgba(248,113,113,0.5)', background: 'rgba(30,10,10,0.97)',
+          color: '#fecaca', fontSize: 13, lineHeight: 1.5, textAlign: 'center',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+        }}>
+          <div style={{ fontWeight: 800, marginBottom: 4 }}>
+            {lk.deviceIssue.kind === 'blocked' ? (lk.deviceIssue.cam && lk.deviceIssue.mic ? '🚫 Camera and mic are blocked' : lk.deviceIssue.cam ? '🚫 Camera is blocked' : '🚫 Microphone is blocked')
+              : lk.deviceIssue.kind === 'missing' ? '🔌 No camera or mic found'
+              : lk.deviceIssue.kind === 'busy' ? '📷 Camera is in use by another app'
+              : '⚠️ Could not start camera or mic'}
+          </div>
+          <div style={{ opacity: 0.9 }}>
+            {lk.deviceIssue.kind === 'blocked' ? 'Click the 🔒 icon in the address bar, allow camera and microphone, then press Try again.'
+              : lk.deviceIssue.kind === 'missing' ? 'Check that your camera is plugged in, then try again.'
+              : lk.deviceIssue.kind === 'busy' ? 'Close Zoom, Teams or any other app using the camera, then try again.'
+              : 'Something stopped the camera starting. Try again.'}
+          </div>
+          <button
+            type="button"
+            onClick={() => lk.retryDevices?.()}
+            style={{
+              marginTop: 9, padding: '7px 16px', borderRadius: 999, border: 'none',
+              background: '#f87171', color: '#180a0a', fontWeight: 800,
+              fontSize: 13, cursor: 'pointer',
+            }}
+          >
+            🔄 Try again
+          </button>
+        </div>
+      )}
+
       {lk.audioBlocked && (
         <button
           type="button"
@@ -3656,6 +3938,30 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               onSimulCreate={simulCreate}
               onSimulStart={simulStart}
               onSimulEnd={simulEnd}
+              // Vs Computer: the coach sends the CURRENT teaching-board position,
+              // so there is no second editor to learn.
+              engineGame={engineGame}
+              onEngineCreate={engineCreate}
+              onEngineStart={engineStart}
+              onEngineEnd={engineEnd}
+              boardFen={curFen}
+            />
+          ) : engineOnStage && isHost ? (
+            // COACH: watch every student's board; click one to spotlight it.
+            <EngineCoachStage
+              game={engineGame}
+              boardWidth={Math.min(boardWidth, Math.max(360, (stageSize.w || 520) - 40))}
+              onFocus={engineFocus}
+              onEnd={engineEnd}
+            />
+          ) : engineOnStage ? (
+            // STUDENT: play your own board against Stockfish in YOUR browser.
+            <EngineStudentStage
+              game={engineGame}
+              myBoard={myEngineBoard}
+              socket={socket}
+              sessionId={session?.id}
+              boardWidth={Math.min(boardWidth, Math.max(360, (stageSize.w || 520) - 40))}
             />
           ) : simulOnStage && isHost ? (
             // COACH simul: one big active board + a strip of small boards to swap.
