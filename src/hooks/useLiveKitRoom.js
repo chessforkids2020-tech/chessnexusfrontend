@@ -723,11 +723,16 @@ export default function useLiveKitRoom() {
     refresh(r);
   }, [refresh]);
 
-  const toggleCam = useCallback(async () => {
+  // Set the camera to an EXPLICIT state. `toggleCam` flips whatever is current;
+  // this says exactly what you want, which matters for repair flows — two
+  // toggles in a row can race (each reads the live published state) and leave a
+  // student's camera OFF, with a black tile and no way back.
+  const setCam = useCallback(async (want) => {
     const r = roomRef.current; if (!r) return;
     const isOn = r.localParticipant.isCameraEnabled;
+    if (isOn === want) return;          // already there
     try {
-      if (isOn) {
+      if (!want) {
         await r.localParticipant.setCameraEnabled(false);
       } else {
         // Turning ON: another app (e.g. Zoom) may have grabbed the webcam while
@@ -746,6 +751,16 @@ export default function useLiveKitRoom() {
           setActiveCameraId('');
           await r.localParticipant.setCameraEnabled(true); // default device
         }
+        // VERIFY, don't assume. setCameraEnabled(true) can resolve while the
+        // camera is still not actually publishing — the device may not have
+        // been released yet by the track we just stopped, which is exactly the
+        // case in a repair flow (off → 400ms → on). Without this check the
+        // student is left with the camera OFF and a black tile, which is how
+        // the coach's "fix video" button ended up making things worse.
+        if (!r.localParticipant.isCameraEnabled) {
+          await new Promise(res => setTimeout(res, 600));
+          try { await r.localParticipant.setCameraEnabled(true); } catch { /* reported below */ }
+        }
       }
       setCamOn(r.localParticipant.isCameraEnabled);
       // Turning the camera back on creates a fresh track — re-apply hint + auto-adjust + effects.
@@ -758,8 +773,16 @@ export default function useLiveKitRoom() {
     } catch {
       setError('Camera is in use by another app. Close it (e.g. Zoom) and try again.');
     }
+    // Resync participant state here rather than in toggleCam, so the repair
+    // flows (which call setCam directly) get it too.
     refresh(r);
   }, [refresh, activeCameraId]);
+
+  // Flip the camera. Delegates to setCam so both paths share one implementation.
+  const toggleCam = useCallback(async () => {
+    const r = roomRef.current; if (!r) return;
+    await setCam(!r.localParticipant.isCameraEnabled);
+  }, [setCam]);
 
   // Host/controller only (server also enforces via token grants).
   const toggleScreen = useCallback(async () => {
@@ -783,7 +806,7 @@ export default function useLiveKitRoom() {
     mics, activeMicId, switchMic,
     effects, updateEffects, blurOn, toggleBlur,
     noiseSuppression, toggleNoiseSuppression,
-    connect, disconnect, toggleMic, toggleCam, toggleScreen,
+    connect, disconnect, toggleMic, toggleCam, setCam, toggleScreen,
     camInfo,
     // Autoplay-blocked audio: `audioBlocked` is true when the browser is refusing
     // to play remote voices; call enableAudio() from a click to unblock.

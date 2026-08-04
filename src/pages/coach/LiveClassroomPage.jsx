@@ -1634,7 +1634,7 @@ const cg = {
   controls: { display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 },
   lbl: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#cbd5e1' },
   select: { padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', fontSize: 13 },
-  ghostBtn: { padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13, fontWeight: 600 },
+  ghostBtn: { padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13, fontWeight: 600 },
   // ── Vs Computer panel ──
   pane: { display: 'flex', flexDirection: 'column', gap: 10, padding: '4px 2px' },
   paneHead: { fontSize: 14, fontWeight: 800, color: '#f8fafc' },
@@ -2163,12 +2163,23 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     const onCameraRestart = () => {
       if (hostStateRef.current.isHost) return;
       if (!lk.camOn) return;            // camera is off by choice — leave it alone
+      // Republish via an EXPLICIT off→on, never two toggles.
+      //
+      // The first version called lk.toggleCam() twice. toggleCam derives its
+      // target from the ACTUAL published state each time, so if the second call
+      // ran before the first had finished unpublishing — or simply failed — the
+      // camera was left OFF and the student's tile stayed black with no way back.
+      // A coach pressing "fix video" must never be able to switch a camera off.
       (async () => {
         try {
-          await lk.toggleCam();          // stop and unpublish
-          await new Promise(r => setTimeout(r, 400));  // let the device settle
-          await lk.toggleCam();          // republish — new track, fresh subscription
-        } catch { /* best effort; the watchdog is still running underneath */ }
+          await lk.setCam(false);
+          await new Promise(r => setTimeout(r, 400));   // let the device settle
+          await lk.setCam(true);
+        } catch {
+          // Whatever happened, make sure we do not leave them dark: one last
+          // attempt to turn the camera back on.
+          try { await lk.setCam(true); } catch { /* watchdog still running */ }
+        }
       })();
     };
     const onHand = ({ studentId, raised }) => {
@@ -3073,11 +3084,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     setFixingVideo(true);
     try {
       if (lk.camOn) {
-        await lk.toggleCam();
+        // Explicit off→on, not two toggles — see onCameraRestart. Two toggles
+        // race and can leave the camera OFF, which is the opposite of a fix.
+        await lk.setCam(false);
         await new Promise(r => setTimeout(r, 400));
-        await lk.toggleCam();
+        await lk.setCam(true);
       }
-    } catch { /* the watchdog is still running underneath */ }
+    } catch {
+      try { await lk.setCam(true); } catch { /* watchdog still running */ }
+    }
     finally { setTimeout(() => setFixingVideo(false), 1500); }
   };
 
