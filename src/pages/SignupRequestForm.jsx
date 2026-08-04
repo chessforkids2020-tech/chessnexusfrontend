@@ -33,8 +33,6 @@ function SignupRequestForm() {
     // and routes/auth.js defaults it to "Beginner" anyway. Dropping it from
     // the form does not need a schema change.
     chessExperience: "Beginner",
-    lichessUsername: "",
-    chessComUsername: "",
     referralCode: referralCodeFromUrl
   });
 
@@ -252,35 +250,12 @@ function SignupRequestForm() {
               field answering a question nobody used, and a beginner picking
               their own level is guesswork anyway. The linked accounts below are
               optional and actually useful (they import real games). */}
-          <div className="form-section">
-            <h3>Chess Accounts <span style={{ fontWeight: 400, opacity: 0.6 }}>(optional)</span></h3>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="lichessUsername">Lichess Username</label>
-                <input
-                  type="text"
-                  id="lichessUsername"
-                  name="lichessUsername"
-                  value={formData.lichessUsername}
-                  onChange={handleChange}
-                  placeholder="Your Lichess username"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="chessComUsername">Chess.com Username</label>
-                <input
-                  type="text"
-                  id="chessComUsername"
-                  name="chessComUsername"
-                  value={formData.chessComUsername}
-                  onChange={handleChange}
-                  placeholder="Your Chess.com username"
-                />
-              </div>
-            </div>
-          </div>
+          {/* The "Chess Accounts" section (Lichess + Chess.com usernames) was
+              removed from signup. Asking a beginner for accounts on two rival
+              sites before they have seen a single board is friction at exactly
+              the wrong moment — and most of the audience does not have them.
+              Both fields still exist in the profile for anyone who wants to
+              link them later, and the backend still accepts them. */}
 
           <div className="form-actions">
             <button type="button" className="btn-secondary" onClick={() => nav("/")}>

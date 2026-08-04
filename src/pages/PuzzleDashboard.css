@@ -173,3 +173,60 @@
   .pd-summary-grid { grid-template-columns: repeat(2, 1fr); }
   .pd-hist-grid    { grid-template-columns: 1fr; }
 }
+
+/* ── Attempt review ─────────────────────────────────────────────────────────
+   "Show attempt" sits beside Redo on each history card and opens a modal with
+   the user's moves against the engine's line. */
+.pd-hist-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.pd-attempt-btn {
+  background: rgba(167, 139, 250, 0.14);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  color: #c4b5fd;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pd-attempt-btn:hover { background: rgba(167, 139, 250, 0.24); }
+
+.pd-modal-back {
+  position: fixed; inset: 0; z-index: 9000;
+  background: rgba(2, 6, 23, 0.78);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.pd-modal {
+  background: #161b22;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 18px;
+  width: 100%;
+  max-width: 380px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.pd-modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  font-weight: 800; font-size: 15px; color: #f8fafc;
+}
+.pd-modal-x {
+  background: none; border: none; color: #9ca3af;
+  font-size: 22px; line-height: 1; cursor: pointer;
+}
+.pd-modal-sect { display: flex; flex-direction: column; gap: 6px; }
+.pd-modal-label {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #6b7280;
+}
+.pd-modal-moves { display: flex; flex-wrap: wrap; gap: 5px; }
+.pd-modal-moves span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 700;
+  border-radius: 6px; padding: 3px 8px;
+}
+/* Green = the user's correct move, red = a wrong try, grey = the engine line. */
+.pd-mv-ok  { background: rgba(52, 211, 153, 0.16); color: #34d399; }
+.pd-mv-bad { background: rgba(248, 113, 113, 0.16); color: #f87171; }
+.pd-mv-eng { background: rgba(255, 255, 255, 0.06); color: #cbd5e1; }

@@ -151,3 +151,11 @@
 .bap-result h2 { color: #fff; font-size: 22px; font-weight: 800; margin: 0 0 8px; }
 .bap-result p { color: #9ca3af; margin: 0 0 14px; }
 .bap-correct { color: #34d399; font-weight: 600; margin-bottom: 18px; }
+
+/* Tells the student why Next game is disabled / how many are left. */
+.bap-finds-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #9ca3af;
+  text-align: center;
+}

@@ -16,15 +16,6 @@ const COUNTRIES = [
 const REWARD_PCT = 25;
 const MAX_DISCOUNT_PCT = 50;
 
-// Per-platform input placeholder for the verification handle. Values must match
-// the socialPlatform enum in backend/models/User.js.
-const SOCIAL_PLACEHOLDER = {
-  facebook: 'your facebook username',
-  instagram: 'your instagram username',
-  chesscom: 'your chess.com username',
-  lichess: 'your lichess username',
-};
-
 export default function CoachOnboarding() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -37,8 +28,6 @@ export default function CoachOnboarding() {
     coachType: 'individual',   // 'individual' | 'academy' (academy = you're the head)
     usesCoachingTools: true,   // academy owner: will they also teach (show coach tools)?
     academyName: '',
-    socialPlatform: 'facebook', // 'facebook' | 'instagram'
-    socialUsername: '',         // used by the Nexus team to verify the coach
     bio: '',
     specialization: '',
     referredByCoachCode: '',    // optional — another coach's code (referral)
@@ -84,24 +73,12 @@ export default function CoachOnboarding() {
     if (!form.coachName.trim()) return setError('Please enter your coach name.');
     if (!form.coachCountry) return setError('Please pick your country.');
     if (!form.academyName.trim()) return setError('Please enter your academy / brand name.');
-    if (!form.socialUsername.trim()) return setError('Please add your Facebook, Instagram, Chess.com or Lichess username — the Nexus team uses it to verify you.');
     if (!agreedTerms) return setError('Please accept the coach terms to continue.');
 
-    // Normalise the social handle: drop a pasted profile URL (Facebook/Instagram,
-    // chess.com/member/<user>, lichess.org/@/<user>) and a leading @, keeping just
-    // the username the Nexus team will look up.
-    const socialUsername = form.socialUsername
-      .trim()
-      .replace(/^https?:\/\/(www\.)?(facebook|instagram|fb)\.com\//i, '')
-      .replace(/^https?:\/\/(www\.)?chess\.com\/(member\/)?/i, '')
-      .replace(/^https?:\/\/(www\.)?lichess\.org\/@\//i, '')
-      .replace(/^@/, '')
-      .replace(/[/?#].*$/, '')
-      .slice(0, 80);
 
     setSubmitting(true);
     try {
-      await api.post('/api/coach/onboard', { ...form, socialUsername });
+      await api.post('/api/coach/onboard', form);
       try { localStorage.removeItem('coachRefCode'); } catch {} // don't leak to next coach on shared browser
       if (refreshUser) await refreshUser();
       // A new academy must buy a plan before anything unlocks → straight to billing.
@@ -329,31 +306,11 @@ export default function CoachOnboarding() {
               />
             </label>
 
-            <div className="field">
-              <span>Social profile *</span>
-              <div className="coach-onboard-social">
-                <select
-                  value={form.socialPlatform}
-                  onChange={e => update('socialPlatform', e.target.value)}
-                  className="coach-onboard-social-select"
-                >
-                  <option value="facebook">Facebook</option>
-                  <option value="instagram">Instagram</option>
-                  <option value="chesscom">Chess.com</option>
-                  <option value="lichess">Lichess</option>
-                </select>
-                <input
-                  type="text"
-                  value={form.socialUsername}
-                  onChange={e => update('socialUsername', e.target.value)}
-                  placeholder={SOCIAL_PLACEHOLDER[form.socialPlatform] || 'your username'}
-                  required
-                />
-              </div>
-              <div className="coach-onboard-social-hint">
-                Nexus wants to keep one account per coach. Give us your Facebook, Instagram, Chess.com or Lichess username — only to verify you and keep account creation fair.
-              </div>
-            </div>
+            {/* The "Social profile" field (Facebook / Instagram / Chess.com /
+                Lichess) was removed. It existed so the Nexus team could verify a
+                coach was real, but a throwaway account on any of those platforms
+                takes two minutes to create — so it verified nothing while adding
+                a required step to onboarding. */}
 
             <label className="field">
               <span>Specialization (optional)</span>

@@ -423,3 +423,15 @@
   cursor: pointer; font-size: 12px; padding: 0 2px;
 }
 .ca-reuse-chip button:hover { color: #f87171; }
+
+/* Read-only summary that replaced the free-text "find N" input. */
+.ca-pgn-target {
+  font-size: 13px;
+  color: #9ca3af;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+}
+.ca-pgn-target strong { color: #e6edf3; }

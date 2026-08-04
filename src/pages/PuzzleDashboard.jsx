@@ -115,6 +115,9 @@ export default function PuzzleDashboard() {
     navigate('/training/healthy-mix?redo=1');
   };
 
+  // Which history row's attempt modal is open (null = closed).
+  const [showAttempt, setShowAttempt] = useState(null);
+
   const redoOne = (puzzleId) => {
     sessionStorage.setItem('redoPuzzleIds', JSON.stringify([puzzleId]));
     navigate('/training/healthy-mix?redo=1');
@@ -216,7 +219,14 @@ export default function PuzzleDashboard() {
                   {h.correct ? '✅' : '❌'} {h.themeLabel}
                 </div>
                 <div className="pd-hist-meta">{timeAgo(h.when)} · {h.rating}</div>
-                {!isSpectator && <button onClick={() => redoOne(h.puzzleId)} className="pd-redo-btn">Redo</button>}
+                <div className="pd-hist-actions">
+                  {!isSpectator && <button onClick={() => redoOne(h.puzzleId)} className="pd-redo-btn">Redo</button>}
+                  {/* Hidden when the puzzle predates attempt recording — a button
+                      that opens an empty modal is worse than no button. */}
+                  {h.attempts?.length > 0 && (
+                    <button onClick={() => setShowAttempt(h)} className="pd-attempt-btn">Show attempt</button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
@@ -224,6 +234,45 @@ export default function PuzzleDashboard() {
           <p className="pd-muted">No puzzle history in this window.</p>
         )}
       </div>
+      {/* ── Attempt modal ──
+          Shows what the user actually played next to the engine's line. The
+          user's wrong moves are the point: the dashboard could previously only
+          say a puzzle was failed, never HOW. */}
+      {showAttempt && (
+        <div className="pd-modal-back" onClick={() => setShowAttempt(null)}>
+          <div className="pd-modal" onClick={e => e.stopPropagation()}>
+            <div className="pd-modal-head">
+              <span>{showAttempt.correct ? '✅' : '❌'} {showAttempt.themeLabel}</span>
+              <button className="pd-modal-x" onClick={() => setShowAttempt(null)}>×</button>
+            </div>
+
+            <MiniBoard fen={showAttempt.fen} />
+
+            <div className="pd-modal-sect">
+              <div className="pd-modal-label">You played</div>
+              <div className="pd-modal-moves">
+                {showAttempt.attempts.map((a, i) => (
+                  <span key={i} className={a.correct ? 'pd-mv-ok' : 'pd-mv-bad'}>{a.move}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="pd-modal-sect">
+              <div className="pd-modal-label">Engine line</div>
+              <div className="pd-modal-moves">
+                {(Array.isArray(showAttempt.solution) ? showAttempt.solution : [])
+                  .map((m, i) => <span key={i} className="pd-mv-eng">{m}</span>)}
+              </div>
+            </div>
+
+            {!isSpectator && (
+              <button className="pd-redo-btn" onClick={() => redoOne(showAttempt.puzzleId)}>
+                Try it again
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -53,6 +53,7 @@ export default function CoachAssignments() {
   const [egPremium, setEgPremium] = useState(null); // { fam: [picks] }
   const [egFam, setEgFam] = useState('');
   const [library, setLibrary] = useState([]);     // admin blunder library (read-only)
+  const [themes, setThemes] = useState([]);      // real theme catalogue for the picker
   const [savingTpl, setSavingTpl] = useState(false);
   const [tplMsg, setTplMsg] = useState('');
   const [loading, setLoading] = useState(true);
@@ -74,6 +75,10 @@ export default function CoachAssignments() {
     description: '',
     assignmentType: 'puzzle_topic',
     topicName: '',
+    puzzleMode: 'mix',        // 'mix' | 'theme' | 'rating'
+    puzzleTheme: '',
+    puzzleMinRating: 1000,
+    puzzleMaxRating: 1400,
     studyId: '',
     chapterId: '',
     targetCount: 10,
@@ -104,7 +109,7 @@ export default function CoachAssignments() {
   const loadAll = async () => {
     setLoading(true);
     try {
-      const [a, s, st, rt, g, tpl, lib, status] = await Promise.all([
+      const [a, s, st, rt, g, tpl, lib, status, th] = await Promise.all([
         api.get('/api/coach/assignments'),
         api.get('/api/coach/students'),
         api.get('/api/testpuzzle/studies'),
@@ -112,6 +117,9 @@ export default function CoachAssignments() {
         api.get('/api/coach/groups').catch(() => ({ data: { groups: [] } })),
         api.get('/api/coach/assignment-templates').catch(() => ({ data: { templates: [] } })),
         api.get('/api/coach/blunder-library').catch(() => ({ data: { library: [] } })),
+        // Same catalogue the students see, so the picker can never offer a
+        // theme that does not exist.
+        api.get('/api/public/healthymix/themes').catch(() => ({ data: { themes: [] } })),
         api.get('/api/coach/status').catch(() => ({ data: {} }))
       ]);
       setAssignments(a.data?.assignments || []);
@@ -122,6 +130,7 @@ export default function CoachAssignments() {
       setTemplates(tpl.data?.templates || []);
       setTemplateMax(tpl.data?.max || 10);
       setLibrary(lib.data?.library || []);
+      setThemes(th.data?.themes || []);
       const reason = status.data?.access?.reason;
       setSubscribed(!!status.data?.isElite || reason === 'paid' || reason === 'privileged' || reason === 'elite_free');
       setError('');
@@ -186,7 +195,8 @@ export default function CoachAssignments() {
         }))
       })).filter(g => g.pgn && g.blunders.length > 0);
       if (games.length === 0) return { error: 'Add at least one PGN with a blunder answer first.' };
-      return { pgnTask: { findTarget: Number(form.pgnFindTarget) || 1, games } };
+      const derived = games.reduce((n, g) => n + (g.blunders || []).length, 0) || 1;
+      return { pgnTask: { findTarget: derived, games } };
     }
     if (form.assignmentType === 'fen_solution') {
       const positions = (form.fenPositions || []).map(p => ({
@@ -358,8 +368,8 @@ export default function CoachAssignments() {
         .filter(g => g.pgn && g.blunders.length > 0);
       const totalBlunders = games.reduce((n, g) => n + g.blunders.length, 0);
       if (games.length === 0 || totalBlunders === 0) return setCreateErr('Add at least one PGN with at least one blunder move.');
-      const findTarget = Number(form.pgnFindTarget) || 1;
-      if (findTarget > totalBlunders) return setCreateErr(`Find target (${findTarget}) can't exceed total blunders (${totalBlunders}).`);
+      // Derived, never typed: every blunder in every game must be found.
+      const findTarget = totalBlunders || 1;
       pgnTask = { findTarget, games };
     }
 
@@ -398,8 +408,19 @@ export default function CoachAssignments() {
 
     setCreating(true);
     try {
+      // topicName is still stored so every existing display ("· Mate in 2" on
+      // the card, the student's assignment list) keeps reading naturally — it is
+      // now DERIVED from the picked mode instead of typed.
+      const topicName = form.assignmentType !== 'puzzle_topic' ? form.topicName
+        : form.puzzleMode === 'theme'
+          ? (themes.find(t => t.key === form.puzzleTheme)?.label || form.puzzleTheme)
+          : form.puzzleMode === 'rating'
+            ? `Rating ${form.puzzleMinRating}–${form.puzzleMaxRating}`
+            : 'Healthy Mix';
+
       await api.post('/api/coach/assignments', {
         ...form,
+        topicName,
         targetCount: Number(form.targetCount) || 10,
         rushTopicLabel,
         pgnTask,
@@ -409,6 +430,7 @@ export default function CoachAssignments() {
       setForm({
         title: '', description: '', assignmentType: 'puzzle_topic',
         topicName: '', studyId: '', chapterId: '',
+        puzzleMode: 'mix', puzzleTheme: '', puzzleMinRating: 1000, puzzleMaxRating: 1400,
         targetCount: 10, testTimeLimit: 300, targetGrade: 0,
         rushTopic: 'mixed', rushMinutes: 5, rushTargetSolved: 0,
         arenaTournamentCode: '', targetGames: 0, targetScore: 0, targetRank: 0, targetWins: 0, targetMaxLosses: 0,
@@ -609,11 +631,11 @@ export default function CoachAssignments() {
                   <button className="ca-results-toggle" onClick={() => toggleExpand(a._id)}>
                     {isOpen ? '▾ Hide student results' : `▸ View student results (${withResults.length})`}
                   </button>
-                  {/* Board review. Only for the two types where a position means
-                      something: Play vs Stockfish (which class homework uses) and
-                      find-the-blunders. The table shows WHETHER a student finished;
-                      this shows WHICH position and WHAT they played. */}
-                  {(a.assignmentType === 'fen_solution' || isBlunder) && (
+                  {/* Board review — for every type where a position means something:
+                      Play vs Stockfish (which class homework uses), find-the-blunders,
+                      and puzzle assignments. The table shows WHETHER a student
+                      finished; this shows WHICH position and WHAT they played. */}
+                  {(a.assignmentType === 'fen_solution' || isBlunder || a.assignmentType === 'puzzle_topic') && (
                     <button className="ca-results-toggle" onClick={() => setReviewing(a)}>
                       ♟️ Show assignment
                     </button>
@@ -900,26 +922,73 @@ export default function CoachAssignments() {
               </div>
 
               {form.assignmentType === 'puzzle_topic' && (
-                <div className="field-row">
-                  <label className="field">
-                    <span>Topic name</span>
-                    <input
-                      type="text"
-                      value={form.topicName}
-                      onChange={e => update('topicName', e.target.value)}
-                      placeholder="e.g. Mate in 2"
-                    />
-                  </label>
-                  <label className="field" style={{ maxWidth: 140 }}>
-                    <span>Target count</span>
-                    <input
-                      type="number"
-                      min="1"
-                      value={form.targetCount}
-                      onChange={e => update('targetCount', e.target.value)}
-                    />
-                  </label>
-                </div>
+                <>
+                  {/* Pick HOW the puzzles are chosen. This replaced a free-text
+                      "Topic name" box: the coach had to type a theme exactly, and
+                      the student side fuzzy-matched it — a typo left the student
+                      on the theme picker with no idea what to choose. */}
+                  <div className="field-row">
+                    <label className="field">
+                      <span>Which puzzles</span>
+                      <select
+                        value={form.puzzleMode}
+                        onChange={e => update('puzzleMode', e.target.value)}
+                      >
+                        <option value="mix">Healthy Mix — a bit of everything</option>
+                        <option value="theme">A specific theme</option>
+                        <option value="rating">A rating range</option>
+                      </select>
+                    </label>
+                    <label className="field" style={{ maxWidth: 140 }}>
+                      <span>Target count</span>
+                      <input
+                        type="number"
+                        min="1"
+                        value={form.targetCount}
+                        onChange={e => update('targetCount', e.target.value)}
+                      />
+                    </label>
+                  </div>
+
+                  {form.puzzleMode === 'theme' && (
+                    <label className="field">
+                      <span>Theme</span>
+                      <select
+                        value={form.puzzleTheme}
+                        onChange={e => update('puzzleTheme', e.target.value)}
+                      >
+                        <option value="">Choose a theme…</option>
+                        {themes.map(t => (
+                          <option key={t.key} value={t.key}>
+                            {t.icon ? `${t.icon} ` : ''}{t.label}
+                            {typeof t.count === 'number' ? ` (${t.count})` : ''}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+
+                  {form.puzzleMode === 'rating' && (
+                    <div className="field-row">
+                      <label className="field" style={{ maxWidth: 160 }}>
+                        <span>From rating</span>
+                        <input
+                          type="number" min="400" max="3000" step="50"
+                          value={form.puzzleMinRating}
+                          onChange={e => update('puzzleMinRating', e.target.value)}
+                        />
+                      </label>
+                      <label className="field" style={{ maxWidth: 160 }}>
+                        <span>To rating</span>
+                        <input
+                          type="number" min="400" max="3000" step="50"
+                          value={form.puzzleMaxRating}
+                          onChange={e => update('puzzleMaxRating', e.target.value)}
+                        />
+                      </label>
+                    </div>
+                  )}
+                </>
               )}
 
               {form.assignmentType === 'study_chapter' && (
@@ -1139,14 +1208,17 @@ export default function CoachAssignments() {
               {/* Find the blunders (custom) — PGN games + blunder answers */}
               {form.assignmentType === 'custom' && (
                 <div className="ca-pgn-builder">
-                  <label className="field" style={{ maxWidth: 220 }}>
-                    <span>Blunders students must find</span>
-                    <input
-                      type="number" min="1"
-                      value={form.pgnFindTarget}
-                      onChange={e => update('pgnFindTarget', e.target.value)}
-                    />
-                  </label>
+                  {/* Read-only now. A coach-typed total made no sense once each
+                      game is graded on its own: the student must find every
+                      blunder in every game, so the target IS the content. The
+                      old free-text field is also what produced "find 2" on a
+                      2-game set with 1 blunder each. */}
+                  <div className="ca-pgn-target">
+                    Students must find <strong>every blunder in every game</strong>
+                    {' — '}
+                    {form.pgnGames.reduce((n, g) => n + (g.blunders || []).filter(b => b && b.move.trim()).length, 0)}
+                    {' in total across '}{form.pgnGames.length} game{form.pgnGames.length > 1 ? 's' : ''}.
+                  </div>
 
                   {form.pgnGames.map((g, gi) => (
                     <div key={gi} className="ca-pgn-game">

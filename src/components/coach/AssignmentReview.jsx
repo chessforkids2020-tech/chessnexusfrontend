@@ -25,8 +25,21 @@ export default function AssignmentReview({ assignment, onClose }) {
   const a = assignment;
   const isBlunder = a?.assignmentType === 'custom';
   const isFen = a?.assignmentType === 'fen_solution';
+  // Puzzle assignments: the items are whatever puzzles the STUDENT was served,
+  // so unlike the other two types the list depends on which student is selected.
+  const isPuzzle = a?.assignmentType === 'puzzle_topic';
+
+  const [itemIdx, setItemIdx] = useState(0);
+  const [studentId, setStudentId] = useState(null);
+  // Ply the board is showing while stepping through a student's answer.
+  const [ply, setPly] = useState(0);
+
+  const completions = a?.completions || [];
+  const student = completions.find(c => String(c.studentId) === String(studentId)) || null;
 
   // The items a coach assigned: FEN positions, or whole games for blunder hunts.
+  // For PUZZLE assignments there is no fixed list — each student is served
+  // different puzzles — so the items come from the selected student's results.
   const items = useMemo(() => {
     if (isFen) return (a.fenTask?.positions || []).map((p, i) => ({
       kind: 'fen', idx: i, fen: p.fen, tag: p.tag,
@@ -37,17 +50,17 @@ export default function AssignmentReview({ assignment, onClose }) {
       kind: 'game', idx: i, pgn: g.pgn, blunders: g.blunders || [],
       label: g.title || `Game ${i + 1}`,
     }));
+    if (isPuzzle) return (student?.puzzleResults || []).map((r, i) => ({
+      kind: 'puzzle', idx: i, fen: r.fen,
+      label: `${r.solved ? '✅' : '❌'} Puzzle ${i + 1}`,
+      attempts: r.attempts || [],
+      solution: r.solution || [],
+      solved: !!r.solved,
+    }));
     return [];
-  }, [a, isFen, isBlunder]);
-
-  const [itemIdx, setItemIdx] = useState(0);
-  const [studentId, setStudentId] = useState(null);
-  // Ply the board is showing while stepping through a student's answer.
-  const [ply, setPly] = useState(0);
+  }, [a, isFen, isBlunder, isPuzzle, student]);
 
   const item = items[itemIdx] || null;
-  const completions = a?.completions || [];
-  const student = completions.find(c => String(c.studentId) === String(studentId)) || null;
 
   useEffect(() => { setPly(0); }, [itemIdx, studentId]);
 
@@ -76,6 +89,10 @@ export default function AssignmentReview({ assignment, onClose }) {
   // POSITION: "here is the position, here is the move they chose". That is what a
   // coach is actually judging, and it is honest about the data we have.
   const { fen, lastSan, replayable } = useMemo(() => {
+    if (item?.kind === 'puzzle') {
+      // Puzzle items are a single position — no line to step through.
+      return { fen: item.fen || START_FEN, lastSan: '', replayable: false };
+    }
     if (item?.kind === 'fen') {
       const base = item.fen || START_FEN;
       if (ply === 0) return { fen: base, lastSan: '', replayable: false };
@@ -106,8 +123,9 @@ export default function AssignmentReview({ assignment, onClose }) {
           <div style={{ minWidth: 0 }}>
             <div style={S.title}>{a.title}</div>
             <div style={S.sub}>
-              {isFen ? '♟️ Play vs Stockfish' : '🔎 Find the blunders'} · {items.length}{' '}
-              {isFen ? 'position(s)' : 'game(s)'}
+              {isFen ? '♟️ Play vs Stockfish' : isPuzzle ? '🧩 Puzzles' : '🔎 Find the blunders'}
+              {' · '}{items.length}{' '}
+              {isFen ? 'position(s)' : isPuzzle ? 'puzzle(s)' : 'game(s)'}
             </div>
           </div>
           <button style={S.close} onClick={onClose} aria-label="Close">×</button>
@@ -187,10 +205,12 @@ export default function AssignmentReview({ assignment, onClose }) {
             <div style={S.answer}>
               {!student ? (
                 <div style={S.muted}>Pick a student to see what they played.</div>
+              ) : isPuzzle ? (
+                <PuzzleAnswer item={item} />
               ) : isFen ? (
                 <FenAnswer student={student} item={item} onJump={setPly} ply={ply} />
               ) : (
-                <BlunderAnswer student={student} item={item} allItems={items} />
+                <BlunderAnswer student={student} item={item} allItems={items} gameIndex={itemIdx} />
               )}
             </div>
           </div>
@@ -249,7 +269,37 @@ function FenAnswer({ student, item, onJump, ply }) {
 //     even though the student was credited for it.
 const normalizeMove = (m) => String(m || '').toLowerCase().replace(/[+#!?\s]/g, '');
 
-function BlunderAnswer({ student, item, allItems }) {
+// ── Puzzle assignment: what the student played on ONE puzzle ────────────────
+// Coaches previously saw only a tally ("7 of 10, 70%"). This shows the actual
+// moves, with the engine line beside them so the coach can see how close the
+// student was — a near-miss and a wild guess look identical in a percentage.
+function PuzzleAnswer({ item }) {
+  if (!item) return <div style={S.muted}>Pick a puzzle on the left.</div>;
+  const attempts = item.attempts || [];
+  return (
+    <div>
+      <div style={S.answerHead}>{item.solved ? '✅ Solved' : '❌ Not solved'}</div>
+
+      <div style={{ ...S.answerHead, marginTop: 12 }}>They played</div>
+      <div style={S.moveRow}>
+        {attempts.length === 0
+          ? <span style={S.muted}>No moves recorded.</span>
+          : attempts.map((x, i) => (
+              <span key={i} style={x.correct ? S.moveOkChip : S.moveNoChip}>{x.move}</span>
+            ))}
+      </div>
+
+      <div style={{ ...S.answerHead, marginTop: 12 }}>Engine line</div>
+      <div style={S.moveRow}>
+        {(item.solution || []).length === 0
+          ? <span style={S.muted}>—</span>
+          : item.solution.map((m, i) => <span key={i} style={S.answerChip}>{m}</span>)}
+      </div>
+    </div>
+  );
+}
+
+function BlunderAnswer({ student, item, allItems, gameIndex = 0 }) {
   const history = student.submissionHistory || [];
   const answers = item?.blunders || [];
   // Every acceptable answer in the assignment, for colouring attempts.
@@ -282,20 +332,32 @@ function BlunderAnswer({ student, item, allItems }) {
             : 'No attempts yet.'}
         </div>
       ) : (
-        history.map((h, i) => (
-          <div key={i} style={S.try}>
-            <span style={h.passed ? S.pillOk : S.pillNo}>Try {i + 1}</span>
-            <span style={{ marginLeft: 8 }}>
-              {(h.submittedMoves || []).length
-                ? (h.submittedMoves || []).map((m, j) => {
-                    const right = allKeys.has(normalizeMove(m));
-                    return <span key={j} style={right ? S.moveOkChip : S.moveNoChip}>{m}</span>;
-                  })
-                : <span style={S.muted}>nothing submitted</span>}
-            </span>
-            <span style={{ ...S.muted, marginLeft: 6 }}>found {h.foundCount || 0}</span>
-          </div>
-        ))
+        history.map((h, i) => {
+          // Show THIS game's answers when the submission recorded them per game.
+          // Older records only have the flat list across all games, so fall back
+          // to that rather than showing nothing — but say which it is, so a coach
+          // is never misled about who answered what.
+          const hasPerGame = Array.isArray(h.perGame) && h.perGame.length > 0;
+          const moves = hasPerGame
+            ? (h.perGame[gameIndex] || [])
+            : (h.submittedMoves || []);
+          return (
+            <div key={i} style={S.try}>
+              <span style={h.passed ? S.pillOk : S.pillNo}>Try {i + 1}</span>
+              <span style={{ marginLeft: 8 }}>
+                {moves.length
+                  ? moves.map((m, j) => {
+                      const right = allKeys.has(normalizeMove(m));
+                      return <span key={j} style={right ? S.moveOkChip : S.moveNoChip}>{m}</span>;
+                    })
+                  : <span style={S.muted}>nothing submitted</span>}
+              </span>
+              <span style={{ ...S.muted, marginLeft: 6 }}>
+                {hasPerGame ? `found ${h.foundCount || 0} overall` : `found ${h.foundCount || 0} (all games)`}
+              </span>
+            </div>
+          );
+        })
       )}
     </div>
   );

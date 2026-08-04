@@ -96,10 +96,29 @@ export default function StudentAssignments({ onLoaded, only }) {
       return;
     }
     if (a.assignmentType !== 'puzzle_topic') return;
+
+    // The coach now picks the mode explicitly, so the student lands on the right
+    // puzzles instead of us guessing from typed text.
+    const q = `assignment=${a._id}`;
+    if (a.puzzleMode === 'mix') {
+      navigate(`/training/healthy-mix?${q}`);
+      return;
+    }
+    if (a.puzzleMode === 'theme' && a.puzzleTheme) {
+      navigate(`/training/healthy-mix?theme=${encodeURIComponent(a.puzzleTheme)}&${q}`);
+      return;
+    }
+    if (a.puzzleMode === 'rating' && a.puzzleMinRating && a.puzzleMaxRating) {
+      navigate(`/training/healthy-mix?min=${a.puzzleMinRating}&max=${a.puzzleMaxRating}&${q}`);
+      return;
+    }
+
+    // 'legacy' — assignments created before puzzleMode existed. Keep the old
+    // fuzzy match on the typed topic so nothing a coach already set up breaks.
     const want = norm(a.topicName);
     const match = themes.find(t => norm(t.key) === want || norm(t.label) === want);
-    if (match) navigate(`/training/healthy-mix?theme=${encodeURIComponent(match.key)}&assignment=${a._id}`);
-    else navigate(`/training/themes?assignment=${a._id}`);
+    if (match) navigate(`/training/healthy-mix?theme=${encodeURIComponent(match.key)}&${q}`);
+    else navigate(`/training/themes?${q}`);
   };
 
   if (loading) return null;

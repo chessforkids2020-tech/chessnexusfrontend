@@ -268,7 +268,16 @@ export default function HealthyMix() {
   const reportAssignmentAttempt = useCallback(async (solved) => {
     if (!hasAssignment || assignReachedRef.current) return;
     try {
-      const res = await api.post(`/api/coach/my-assignments/${assignmentId}/progress`, { solved });
+      // Send WHICH puzzle and what was played, not just the outcome. Progress
+      // used to be counts only, so a coach saw "7 of 10" with no way to review
+      // the work. attemptsRef holds every move tried on this puzzle.
+      const res = await api.post(`/api/coach/my-assignments/${assignmentId}/progress`, {
+        solved,
+        puzzleId: puzzleRef.current?._id || puzzleRef.current?.id,
+        fen: puzzleRef.current?.fen,
+        solution: Array.isArray(puzzleRef.current?.solution) ? puzzleRef.current.solution : [],
+        attempts: attemptsRef.current,
+      });
       const d = res.data || {};
       setAssignProgress(d.progress || 0);
       setAssignTarget(d.target || 0);
@@ -311,6 +320,20 @@ export default function HealthyMix() {
   const [viewIdx, setViewIdx] = useState(null); // null = live
   const pushPly = useCallback((san, fen, from, to) => {
     setPlies(prev => [...prev, { san, fen, from, to }]);
+  }, []);
+
+  // EVERY move the user tried on this puzzle, correct or not, with the position
+  // they played it from. `plies` only holds the accepted line — a wrong move is
+  // flashed for 550ms and discarded — but the wrong move is exactly what makes
+  // this useful for review, so it is logged separately and sent on submit.
+  // A ref, not state: it must be readable inside submit without re-rendering.
+  const attemptsRef = useRef([]);
+  const logAttempt = useCallback((san, correct, fen) => {
+    if (!san) return;
+    // Cap it: a user can retry indefinitely, and an unbounded array would grow
+    // without limit on a puzzle someone brute-forces.
+    if (attemptsRef.current.length >= 30) return;
+    attemptsRef.current.push({ move: san, correct: !!correct, fen: fen || '' });
   }, []);
 
   // ── Analysis variations (free play after the puzzle is over) ──
@@ -458,6 +481,7 @@ export default function HealthyMix() {
     setLastMove(setupHighlight(p, game.fen()));
     // Reset move history to just the starting position (ply 0).
     setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
+    attemptsRef.current = [];   // new puzzle → fresh attempt log
     setViewIdx(null);
     clearVariations();
     // Engine always starts off on a fresh puzzle / retry — the user opts in each time.
@@ -564,6 +588,7 @@ export default function HealthyMix() {
       // notation from the moves card). This path doesn't go through renderPuzzle, so
       // it must reset plies/viewIdx itself.
       setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
+    attemptsRef.current = [];   // new puzzle → fresh attempt log
       setViewIdx(null);
       clearVariations();
       setOrientation(game.turn() === 'w' ? 'white' : 'black');
@@ -612,7 +637,11 @@ export default function HealthyMix() {
         selectedTheme: hasTheme ? theme : undefined,
         selectedPieces: hasPieces ? piecesParam : undefined,
         selectedBandMin: hasBand ? bandMin : undefined,
-        selectedBandMax: hasBand ? bandMax : undefined
+        selectedBandMax: hasBand ? bandMax : undefined,
+        // Every move tried on this puzzle, right and wrong, so the student's
+        // dashboard and their coach can see HOW it was solved or missed — not
+        // just whether it was. Was previously thrown away.
+        attempts: attemptsRef.current
       });
       setRating(res.data.newRating);
       setRatingDelta(res.data.pointsChange);
@@ -706,7 +735,10 @@ export default function HealthyMix() {
 
     if (st !== 'solving' || botThinking) return false;
 
-    const game = new Chess(chessRef.current.fen());
+    // Position the user played FROM — logged with the attempt so a reviewer can
+    // set the board up exactly as the student saw it.
+    const fenBeforeAttempt = chessRef.current.fen();
+    const game = new Chess(fenBeforeAttempt);
     let result;
     try {
       result = game.move(move);
@@ -730,6 +762,7 @@ export default function HealthyMix() {
       setFen(game.fen());
       setLastMove({ from: result.from, to: result.to });
       pushPly(result.san, game.fen(), result.from, result.to);
+      logAttempt(result.san, true, fenBeforeAttempt);
       moveIndexRef.current = idx + 1;
 
       // An alternate mate ends the puzzle immediately, even mid-line.
@@ -767,6 +800,7 @@ export default function HealthyMix() {
     } else {
       setMessage('Still not it. Try again, or view the solution.');
     }
+    logAttempt(result.san, false, fenBeforeAttempt);
     playSound('wrong');
     // Briefly show the wrong move, then snap back so they can retry.
     setFen(game.fen());
@@ -776,7 +810,7 @@ export default function HealthyMix() {
       setLastMove(null);
     }, 550);
     return true;
-  }, [botThinking, submitResult, playBotMove, setStatusSynced, pushPly, viewIdx, plies,
+  }, [botThinking, submitResult, playBotMove, setStatusSynced, pushPly, logAttempt, viewIdx, plies,
       activeVar, variations, varViewIdx]);
 
   // ── Reveal solution (after a fail or on demand) ──
@@ -847,6 +881,7 @@ export default function HealthyMix() {
     setLastMove(setupHighlight(puzzle, game.fen()));
     // Retry replays from the start — clear the moves card back to the start position.
     setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
+    attemptsRef.current = [];   // new puzzle → fresh attempt log
     setViewIdx(null);
     clearVariations();
     setEngineOn(false);   // back to solving → engine hidden and off again

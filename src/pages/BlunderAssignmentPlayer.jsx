@@ -13,7 +13,12 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
 
   const [gi, setGi] = useState(0);            // current game index
   const [ply, setPly] = useState(0);          // current half-move index within the game
-  const [found, setFound] = useState(Array(findTarget).fill(''));
+  // ONE ANSWER LIST PER GAME. This used to be a single flat array sized to the
+  // set-wide findTarget, so a 2-game set with 1 blunder each showed "find 2"
+  // and TWO boxes on every game. Each game now gets exactly its own count.
+  const [foundByGame, setFoundByGame] = useState(
+    () => games.map(g => Array(Math.max(1, g.blunderCount || 1)).fill(''))
+  );
   const [result, setResult] = useState(null); // { foundCount, findTarget, passed, correctMoves }
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState('');
@@ -44,13 +49,25 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
   const fen = parsed.fens[ply] || 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
   const lastSan = ply > 0 ? parsed.sans[ply - 1] : null;
 
-  const setSlot = (i, v) => setFound(prev => prev.map((x, j) => (j === i ? v : x)));
+  const gameTarget = Math.max(1, games[gi]?.blunderCount || 1);
+  const found = foundByGame[gi] || [];
+
+  // A game counts as answered once EVERY one of its boxes is filled — a partial
+  // answer must not let the student move on, or they'd submit an incomplete game.
+  const isAnswered = (arr) => (arr || []).length > 0 && arr.every(m => m.trim());
+  const thisGameAnswered = isAnswered(foundByGame[gi]);
+  const allAnswered = games.length > 0 && foundByGame.every(isAnswered);
+  const remainingGames = foundByGame.filter(arr => !isAnswered(arr)).length;
+  const setSlot = (i, v) => setFoundByGame(prev => prev.map(
+    (arr, g) => (g === gi ? arr.map((x, j) => (j === i ? v : x)) : arr)
+  ));
 
   const submit = async () => {
     setErr(''); setSubmitting(true);
     try {
       const res = await api.post(`/api/coach/my-assignments/${assignment._id}/submit-pgn`, {
-        foundMoves: found.filter(m => m.trim()),
+        // Per game now, so the server can grade each game on its own blunders.
+        foundMoves: foundByGame.map(arr => arr.filter(m => m.trim())),
       });
       setResult(res.data);
       if (onGraded) onGraded(res.data);
@@ -67,7 +84,7 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
         <div className="bap-head">
           <div>
             <div className="bap-title">🔍 {assignment.title}</div>
-            <div className="bap-sub">Find {findTarget} blunder{findTarget > 1 ? 's' : ''} · {games.length} game{games.length > 1 ? 's' : ''}</div>
+            <div className="bap-sub">{games.length} game{games.length > 1 ? 's' : ''} · solve every game to finish</div>
           </div>
           <button className="bap-x" onClick={onClose}>✕</button>
         </div>
@@ -85,6 +102,23 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
         ) : (
           <div className="bap-body">
             <div className="bap-board">
+              {/* Game switcher moved ABOVE the board — under it a student had to
+                  scroll past the board to find it, so a 2-game assignment looked
+                  like a 1-game one. A tick marks games already answered. */}
+              {games.length > 1 && (
+                <div className="bap-games">
+                  {games.map((_, i) => {
+                    const answered = isAnswered(foundByGame[i]);
+                    return (
+                      <button
+                        key={i}
+                        className={i === gi ? 'bap-game-active' : ''}
+                        onClick={() => { setGi(i); setPly(0); }}
+                      >{answered ? '✓ ' : ''}Game {i + 1}</button>
+                    );
+                  })}
+                </div>
+              )}
               {/* No onDrop handler → display-only board. */}
               <Chessboard position={fen} />
               <div className="bap-nav">
@@ -94,21 +128,12 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
                 <button onClick={() => setPly(p => Math.min(maxPly, p + 1))} disabled={ply >= maxPly}>▶</button>
                 <button onClick={() => setPly(maxPly)} disabled={ply >= maxPly}>⏭</button>
               </div>
-              {games.length > 1 && (
-                <div className="bap-games">
-                  {games.map((_, i) => (
-                    <button
-                      key={i}
-                      className={i === gi ? 'bap-game-active' : ''}
-                      onClick={() => { setGi(i); setPly(0); }}
-                    >Game {i + 1}</button>
-                  ))}
-                </div>
-              )}
             </div>
 
             <div className="bap-finds">
-              <div className="bap-finds-label">Type the blunder moves you spot</div>
+              <div className="bap-finds-label">
+                Game {gi + 1}: find {gameTarget} blunder{gameTarget > 1 ? 's' : ''}
+              </div>
               {found.map((v, i) => (
                 <input
                   key={i}
@@ -119,9 +144,38 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
                 />
               ))}
               {err && <div className="bap-err">{err}</div>}
-              <button className="bap-btn" disabled={submitting || found.every(m => !m.trim())} onClick={submit}>
-                {submitting ? 'Submitting…' : 'Submit answers'}
-              </button>
+
+              {/* NEXT GAME until every game has an answer, then Submit.
+                  Previously a student saw "Submit answers" on game 1 of 2, so
+                  they submitted after one game and the whole assignment was
+                  graded — game 2 never opened. Submit only appears once there
+                  is nothing left to fill in. */}
+              {!allAnswered ? (
+                <>
+                  <button
+                    className="bap-btn"
+                    disabled={!thisGameAnswered}
+                    onClick={() => {
+                      // Jump to the first game still missing an answer, so the
+                      // student is never dropped on one they've already done.
+                      const next = foundByGame.findIndex(arr => !arr.some(m => m.trim()));
+                      setGi(next === -1 ? Math.min(gi + 1, games.length - 1) : next);
+                      setPly(0);
+                    }}
+                  >
+                    Next game ▶
+                  </button>
+                  <div className="bap-finds-hint">
+                    {thisGameAnswered
+                      ? `${remainingGames} game${remainingGames > 1 ? 's' : ''} left`
+                      : 'Fill in this game to continue'}
+                  </div>
+                </>
+              ) : (
+                <button className="bap-btn" disabled={submitting} onClick={submit}>
+                  {submitting ? 'Submitting…' : 'Submit assignment'}
+                </button>
+              )}
             </div>
           </div>
         )}
