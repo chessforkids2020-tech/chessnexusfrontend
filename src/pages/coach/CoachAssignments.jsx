@@ -109,7 +109,7 @@ export default function CoachAssignments() {
   const loadAll = async () => {
     setLoading(true);
     try {
-      const [a, s, st, rt, g, tpl, lib, status, th] = await Promise.all([
+      const [a, s, st, rt, g, tpl, lib, th, status] = await Promise.all([
         api.get('/api/coach/assignments'),
         api.get('/api/coach/students'),
         api.get('/api/testpuzzle/studies'),
