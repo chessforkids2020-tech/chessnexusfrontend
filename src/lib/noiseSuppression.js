@@ -17,6 +17,7 @@
 // A LiveKit-compatible AUDIO processor. Same public contract as a video processor:
 // { name, init, restart, destroy, processedTrack }.
 export function createNoiseSuppressionProcessor() {
+  let hpNode = null;        // high-pass, kills tablet handling rumble
   let ownCtx = null;         // an AudioContext we created (only if LiveKit didn't give one)
   let node = null;           // RnnoiseWorkletNode
   let srcNode = null;        // MediaStreamAudioSourceNode
@@ -49,10 +50,31 @@ export function createNoiseSuppressionProcessor() {
 
       node = new RnnoiseWorkletNode(ctx, { maxChannels: 1, wasmBinary });
 
-      // Build the graph: mic track → rnnoise → a destination we can publish.
+      // Build the graph: mic → HIGH-PASS → rnnoise → a destination we publish.
+      //
+      // WHY THE HIGH-PASS: RNNoise (and the browser's own suppressor) is trained
+      // on STEADY noise — fans, hum, traffic. It learns a profile and subtracts
+      // it. Handling noise is the opposite: a sudden low-frequency thump when a
+      // hand grips or sets down a tablet. Being transient and loud, it reads as a
+      // real sound and passes straight through — which is the "every time a
+      // student touches their iPad" complaint from live classes. On a tablet the
+      // mic is a hole in the chassis, so touching the case couples vibration
+      // almost directly into it.
+      //
+      // Speech has essentially no energy below ~100 Hz (adult male fundamentals
+      // start ~85 Hz; a child's voice is far higher, ~250-400 Hz), while handling
+      // rumble is concentrated there. Rolling off below 120 Hz removes the thump
+      // and takes nothing audible from a child's voice.
       srcNode = ctx.createMediaStreamSource(new MediaStream([track]));
+      hpNode = ctx.createBiquadFilter();
+      hpNode.type = 'highpass';
+      hpNode.frequency.value = 120;
+      // Butterworth-ish Q: a flat passband, so the filter is inaudible on voice
+      // rather than adding a resonant peak right where speech begins.
+      hpNode.Q.value = 0.707;
       dstNode = ctx.createMediaStreamDestination();
-      srcNode.connect(node);
+      srcNode.connect(hpNode);
+      hpNode.connect(node);
       node.connect(dstNode);
 
       this.processedTrack = dstNode.stream.getAudioTracks()[0];
@@ -62,11 +84,12 @@ export function createNoiseSuppressionProcessor() {
 
     async destroy() {
       try { srcNode?.disconnect(); } catch { /* */ }
+      try { hpNode?.disconnect(); } catch { /* */ }
       try { node?.disconnect(); node?.destroy?.(); } catch { /* */ }
       try { dstNode?.disconnect(); } catch { /* */ }
       // Only close a context WE created — never LiveKit's shared one.
       try { if (ownCtx) await ownCtx.close(); } catch { /* */ }
-      ownCtx = node = srcNode = dstNode = null;
+      ownCtx = node = srcNode = dstNode = hpNode = null;
       this.processedTrack = undefined;
     },
   };
