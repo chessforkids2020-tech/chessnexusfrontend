@@ -641,7 +641,14 @@ export default function HealthyMix() {
         // Every move tried on this puzzle, right and wrong, so the student's
         // dashboard and their coach can see HOW it was solved or missed — not
         // just whether it was. Was previously thrown away.
-        attempts: attemptsRef.current
+        attempts: attemptsRef.current,
+        // How long this puzzle took. The timer already existed for analytics but
+        // was never sent here, so Score.timeTakenSec stayed 0 for every puzzle on
+        // the main trainer — and solve time is what distinguishes a pattern
+        // RECOGNISED from one CALCULATED.
+        timeTakenSec: puzzleStartTimeRef.current
+          ? Math.round((Date.now() - puzzleStartTimeRef.current) / 1000)
+          : 0
       });
       setRating(res.data.newRating);
       setRatingDelta(res.data.pointsChange);

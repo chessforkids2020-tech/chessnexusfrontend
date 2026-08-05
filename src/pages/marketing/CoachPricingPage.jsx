@@ -26,7 +26,7 @@ const FAQ = [
   },
   {
     q: "Do I need a paid plan to teach live?",
-    a: "No. Every coach gets the built-in live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. The live plans give you unlimited classes a day with up to 10 students plus the coach, and the top live plan raises that to 120-minute classes with up to 25 students plus the coach.",
+    a: "No. Every coach gets the built-in live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. The live plans give you unlimited classes a day, unlimited students in the room, and classes up to 120 minutes or with no time limit at all.",
   },
   {
     q: "What happens if my paid plan expires?",
@@ -206,7 +206,7 @@ export default function CoachPricingPage() {
                       {p.liveClass
                         ? `${p.liveClass.meetingsPerDay < 0 || p.liveClass.meetingsPerDay == null
                             ? "Unlimited classes"
-                            : `${p.liveClass.meetingsPerDay}/day`} · up to ${p.liveClass.durationMin} min · ${p.liveClass.maxStudents} students (+ coach)`
+                            : `${p.liveClass.meetingsPerDay}/day`} · ${p.liveClass.meetingsPerDay === -1 ? `up to ${p.liveClass.durationMin} min or unlimited` : `up to ${p.liveClass.durationMin} min`} · ${p.liveClass.maxStudents === -1 ? 'unlimited students' : `${p.liveClass.maxStudents} students (+ coach)`}`
                         : "—"}
                     </td>
                   </tr>

@@ -44,7 +44,7 @@ const FAQ = [
   },
   {
     q: "What is the difference between the two plan families?",
-    a: "The 'Without Live Classroom' plans set how many coaches you have and how many students each coach can teach, and include a single short live class a day. The 'With Live Classroom' plans give every coach unlimited live classes a day with far larger live rooms — up to 25 students plus the coach on the top plan.",
+    a: "The 'Without Live Classroom' plans set how many coaches you have and how many students each coach can teach, and include a single short live class a day. The 'With Live Classroom' plans give every coach unlimited live classes a day, unlimited students in the room, and classes up to 120 minutes or with no time limit at all.",
   },
   {
     q: "What happens if the academy plan expires?",
@@ -78,7 +78,9 @@ function classesPerDay(lc) {
 }
 function liveSentence(lc) {
   if (!lc) return "—";
-  return `${classesPerDay(lc)} · up to ${lc.durationMin} min each · ${lc.maxStudents} students (+ coach) in one room`;
+  const room = isUnlimited(lc.maxStudents) ? "unlimited students in one room" : `${lc.maxStudents} students (+ coach) in one room`;
+  const len = isUnlimited(lc.meetingsPerDay) ? `up to ${lc.durationMin} min each or unlimited` : `up to ${lc.durationMin} min each`;
+  return `${classesPerDay(lc)} · ${len} · ${room}`;
 }
 const totalStudents = (p) => (p.maxCoaches || 0) * (p.studentsPerCoach || 0);
 
@@ -326,7 +328,7 @@ export default function ChessAcademyPricingPage() {
                       <td>{p.maxCoaches}</td>
                       <td>{p.studentsPerCoach}</td>
                       <td><strong>{totalStudents(p).toLocaleString()}</strong></td>
-                      <td>{p.liveClass?.maxStudents} + coach</td>
+                      <td>{isUnlimited(p.liveClass?.maxStudents) ? 'Unlimited' : `${p.liveClass?.maxStudents} + coach`}</td>
                     </tr>
                   ))}
               </tbody>

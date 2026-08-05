@@ -21,7 +21,9 @@ const fmt = (minor, c) => `${curSym(c)}${((minor || 0) / 100).toLocaleString(und
 function liveLine(lc) {
   if (!lc) return 'Live classes included';
   const per = lc.meetingsPerDay === -1 ? 'Unlimited live classes' : `${lc.meetingsPerDay} live class${lc.meetingsPerDay === 1 ? '' : 'es'}/day`;
-  return `${per} · up to ${lc.durationMin} min · up to ${lc.maxStudents} students (+ coach) each`;
+  const room = lc.maxStudents === -1 ? 'unlimited students' : `up to ${lc.maxStudents} students (+ coach)`;
+  const len = lc.meetingsPerDay === -1 ? `up to ${lc.durationMin} min or unlimited` : `up to ${lc.durationMin} min`;
+  return `${per} · ${len} · ${room} each`;
 }
 
 export default function AcademyBilling() {

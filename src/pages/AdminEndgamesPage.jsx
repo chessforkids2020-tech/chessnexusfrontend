@@ -18,7 +18,7 @@
 // moves[] where the endgame begins (board opens there).
 import React, { useEffect, useMemo, useState, useCallback, useRef, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Chess } from "chess.js";
 import api from "../api";
 import Chessboard from "../components/Chessboard";
@@ -40,6 +40,59 @@ function formatEval(line, sideToMove) {
   }
   const cp = (line.score * sign) / 100;
   return (cp > 0 ? "+" : "") + cp.toFixed(2);
+}
+
+// ── Material matching ───────────────────────────────────────────────────────
+// Signature of a position's material, e.g. 'KRPvKR'. Used to open the exact
+// endgame a student lost rather than its whole family. Kept in step with
+// backend/services/endgameMatch.js.
+const MAT_ORDER = 'KQRBNP';
+function materialSignature(fen) {
+  const board = String(fen || '').split(' ')[0];
+  const w = [], b = [];
+  for (const c of board) {
+    if (c >= 'A' && c <= 'Z') w.push(c);
+    else if (c >= 'a' && c <= 'z') b.push(c.toUpperCase());
+  }
+  const srt = (a) => a.sort((x, y) => MAT_ORDER.indexOf(x) - MAT_ORDER.indexOf(y)).join('');
+  return `${srt(w)}v${srt(b)}`;
+}
+// How closely two positions match, 0-5. Kept in step with matchScore() in
+// backend/services/endgameMatch.js.
+//
+// Exact material is too strict on its own: a perfectly ordinary rook + 3 pawns
+// vs rook + 4 pawns has NO exact match in the 400-position rook pool. So it
+// degrades through steps that keep the lesson — most importantly level 4, the
+// same pawn DEFICIT, since being a pawn down is the same problem at 3-v-4 as at
+// 5-v-6.
+function pawnCounts(sig) {
+  const [w, b] = String(sig).split('v');
+  const n = (x) => (x.match(/P/g) || []).length;
+  return [n(w), n(b)];
+}
+function pieceSkeleton(sig) { return String(sig).replace(/P/g, ''); }
+
+function materialMatchScore(a, b) {
+  if (a === b) return 5;
+  const [bw, bb] = String(b).split('v');
+  const mirrored = `${bb}v${bw}`;
+  const sameSkel = pieceSkeleton(a) === pieceSkeleton(b);
+  const mirrorSkel = pieceSkeleton(a) === pieceSkeleton(mirrored);
+
+  if (sameSkel) {
+    const [aw, ab] = pawnCounts(a);
+    const [pw, pb] = pawnCounts(b);
+    if (aw - ab === pw - pb) return 4;                              // same imbalance
+    if (Math.abs(aw - pw) <= 1 && Math.abs(ab - pb) <= 1) return 2; // similar pawn count
+    return 1;
+  }
+  if (mirrorSkel) {
+    const [aw, ab] = pawnCounts(a);
+    const [mw, mb] = pawnCounts(mirrored);
+    if (aw - ab === mw - mb) return 3;
+    return 1;
+  }
+  return 0;
 }
 
 // UCI principal variation → readable SAN with move numbers, from `fen`.
@@ -988,6 +1041,17 @@ export default function AdminEndgamesPage({
   const [error, setError] = useState("");
 
   const [activeFamily, setActiveFamily] = useState(null); // {family,label,count,file}
+  // ?family=rook opens that type straight away, so the weekly report's study
+  // plan can send a student to the endgames they actually lost instead of
+  // dropping them on the type picker to find it themselves.
+  const [searchParams] = useSearchParams();
+  const wantedFamily = searchParams.get('family');
+  // ?near=<fen> narrows to the EXACT material the student lost. 'rook endgames'
+  // lumps rook-and-pawn-vs-rook together with rook-vs-two-pawns, which are
+  // different techniques; matching on material signature gives them the one they
+  // actually got wrong. Mirrors backend/services/endgameMatch.js.
+  const nearFen = searchParams.get('near');
+  const autoOpenedRef = useRef(false);
   const [rows, setRows] = useState([]);
   const [loadingRows, setLoadingRows] = useState(false);
   const [search, setSearch] = useState("");
@@ -1027,10 +1091,46 @@ export default function AdminEndgamesPage({
     }
   }, []);
 
+  // Open the requested family once the index has loaded. Guarded by a ref so it
+  // fires only on arrival — a student pressing "← All types" must not be dragged
+  // straight back into the family the URL asked for.
+  useEffect(() => {
+    if (autoOpenedRef.current || !wantedFamily || !index?.families) return;
+    const fam = index.families.find(f => f.family === wantedFamily);
+    if (!fam) return;                    // unknown family — show the picker
+    autoOpenedRef.current = true;
+    openFamily(fam);
+  }, [wantedFamily, index, openFamily]);
+
   const filtered = useMemo(() => {
-    if (!search.trim()) return rows;
+    let list = rows;
+
+    // Rank by how closely the material matches the position they lost, closest
+    // first. Ranked rather than filtered so a rare endgame still fills the page
+    // with related technique instead of showing almost nothing.
+    if (nearFen) {
+      const target = materialSignature(nearFen);
+      const [tw, tb] = pawnCounts(target);
+      list = [...list]
+        .map((r) => {
+          const sig = materialSignature(r.fen);
+          const [pw, pb] = pawnCounts(sig);
+          return {
+            r,
+            score: materialMatchScore(target, sig),
+            // Two positions can share an imbalance and still feel different:
+            // R v R+P is a theoretical draw, R+4P v R+5P is a practical grind.
+            // Within a level, prefer a similar amount of material.
+            dist: Math.abs(pw - tw) + Math.abs(pb - tb),
+          };
+        })
+        .sort((a, b) => b.score - a.score || a.dist - b.dist)
+        .map((x) => x.r);
+    }
+
+    if (!search.trim()) return list;
     const q = search.toLowerCase();
-    return rows.filter(
+    return list.filter(
       (r) =>
         (r.white || "").toLowerCase().includes(q) ||
         (r.black || "").toLowerCase().includes(q) ||
@@ -1038,7 +1138,7 @@ export default function AdminEndgamesPage({
         (r.year || "").includes(q) ||
         (r.type || "").toLowerCase().includes(q)
     );
-  }, [rows, search]);
+  }, [rows, search, nearFen]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageRows = filtered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);

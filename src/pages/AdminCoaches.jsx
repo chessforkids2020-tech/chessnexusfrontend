@@ -28,6 +28,32 @@ const totalsLabel = (byCurrency) => {
   return entries.map(([cur, minor]) => money(minor, cur)).join(" · ");
 };
 
+// Small presentational pieces for the coach detail drawer. Kept here rather
+// than inline so the drawer markup stays readable — it shows four blocks of
+// roughly ten fields each.
+function DetailBlock({ title, children }) {
+  return (
+    <div>
+      <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 0.6, textTransform: "uppercase", color: "#0284c7", marginBottom: 6 }}>
+        {title}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>{children}</div>
+    </div>
+  );
+}
+
+// A label/value line. Renders nothing when there is no value, so a sparse
+// profile shows a short block instead of a column of dashes.
+function DetailLine({ k, v }) {
+  if (v == null || v === "" || v === "—") return null;
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 12.5 }}>
+      <span style={{ color: "#94a3b8" }}>{k}</span>
+      <span style={{ color: "#1f2937", fontWeight: 600, textAlign: "right" }}>{v}</span>
+    </div>
+  );
+}
+
 const PLAN_LABEL = {
   free: "Free", trial: "Trial (legacy)", elite_free: "Elite (free)", coach: "Coach",
   starter: "Starter", pro: "Pro", pro_plus: "Pro+", academy: "Academy",
@@ -120,6 +146,9 @@ export default function AdminCoaches() {
   // Referral program: summary strip + per-coach drill-down.
   const [referralSummary, setReferralSummary] = useState(null);
   const [refExpandId, setRefExpandId] = useState(null);
+  // Full onboarding + roster + money detail for one coach. Separate from the
+  // referral expander so an admin can open either without losing the other.
+  const [detailId, setDetailId] = useState(null);
   const [refDetail, setRefDetail] = useState(null);
   const [refDetailLoading, setRefDetailLoading] = useState(false);
 
@@ -378,7 +407,18 @@ export default function AdminCoaches() {
                         {c.plan || "—"}{c.subStatus ? ` (${c.subStatus})` : ""}
                         {c.comped && <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 700, color: "#7c3aed", background: "#f3e8ff", padding: "1px 6px", borderRadius: 6 }}>🎁 Comped</span>}
                       </td>
-                      <td style={{ padding: "8px 10px" }}>{c.studentsCount}</td>
+                      <td style={{ padding: "8px 10px" }}>
+                        {/* Active vs on-break, not just a total — a coach with 40
+                            students of whom 30 are paused is a very different
+                            picture from one with 40 learning. */}
+                        <div style={{ fontWeight: 700 }}>{c.rosterActive ?? c.studentsCount}</div>
+                        {c.rosterOnBreak > 0 && (
+                          <div style={{ color: "#f59e0b", fontSize: 11 }}>{c.rosterOnBreak} on break</div>
+                        )}
+                        {c.rosterTotal > 0 && (
+                          <div style={{ color: "#94a3b8", fontSize: 11 }}>{c.rosterTotal} total</div>
+                        )}
+                      </td>
                       <td style={{ padding: "8px 10px" }}>{fmtDate(c.appliedAt)}</td>
                       <td style={{ padding: "8px 10px" }}>{fmtDate(c.lastPaidAt)}</td>
                       <td style={{ padding: "8px 10px" }}>{c.totalPaid ? `₹${Math.round(c.totalPaid / 100)}` : "—"}</td>
@@ -423,6 +463,10 @@ export default function AdminCoaches() {
                               {c.verified ? "Unverify" : "Verify"}
                             </button>
                           )}
+                          <button onClick={() => setDetailId(detailId === c.id ? null : c.id)}
+                            style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #0ea5e9", background: "#fff", color: "#0284c7" }}>
+                            {detailId === c.id ? "▾ Less" : "▸ More"}
+                          </button>
                           <button onClick={() => { setGrantFor(c); setGrantPlan('live3'); setGrantMonths('never'); }}
                             style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #7c3aed", background: "#fff", color: "#7c3aed" }}>
                             🎁 Grant
@@ -436,6 +480,56 @@ export default function AdminCoaches() {
                         </div>
                       </td>
                     </tr>
+                    {detailId === c.id && (
+                      <tr>
+                        <td colSpan={10} style={{ padding: "12px 16px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+                          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
+
+                            <DetailBlock title="Onboarding">
+                              <DetailLine k="Coach name" v={c.coachName} />
+                              <DetailLine k="Type" v={c.coachType === "academy" ? "Academy" : "Individual"} />
+                              <DetailLine k="Academy" v={c.academyName} />
+                              <DetailLine k="Country" v={c.country} />
+                              <DetailLine k="Coach code" v={c.coachCode} />
+                              <DetailLine k="Specialization" v={c.specialization} />
+                              <DetailLine k="Rate" v={c.hourlyRate ? `${c.rateCurrency === "USD" ? "$" : "₹"}${c.hourlyRate}/hr` : ""} />
+                              <DetailLine k="Social" v={c.socialUsername ? `${c.socialPlatform}: ${c.socialUsername}` : ""} />
+                              <DetailLine k="Onboarded" v={fmtDate(c.onboardedAt || c.appliedAt)} />
+                              <DetailLine k="Verified" v={c.verified ? "Yes" : "No"} />
+                            </DetailBlock>
+
+                            <DetailBlock title="Students">
+                              <DetailLine k="Active" v={String(c.rosterActive ?? 0)} />
+                              <DetailLine k="On break" v={String(c.rosterOnBreak ?? 0)} />
+                              <DetailLine k="Total on roster" v={String(c.rosterTotal ?? 0)} />
+                              <DetailLine k="Coach tools" v={c.usesCoachingTools ? "Yes" : "Manages only"} />
+                            </DetailBlock>
+
+                            <DetailBlock title="Money">
+                              <DetailLine k="Plan" v={`${c.plan || "—"}${c.subStatus ? ` (${c.subStatus})` : ""}`} />
+                              <DetailLine k="Lifetime paid" v={c.totalPaid ? `₹${Math.round(c.totalPaid / 100)}` : "—"} />
+                              <DetailLine k="Payments" v={String(c.payCount || 0)} />
+                              <DetailLine k="Last payment" v={fmtDate(c.lastPaidAt)} />
+                              <DetailLine k="Wallet balance" v={totalsLabel(c.creditBalanceByCurrency) || "—"} />
+                              <DetailLine k="Credit redeemed" v={totalsLabel(c.creditRedeemedByCurrency) || "—"} />
+                            </DetailBlock>
+
+                            <DetailBlock title="Referrals">
+                              <DetailLine k="Coaches referred" v={String(c.referred || 0)} />
+                              <DetailLine k="Became paying" v={String(c.referredSubscribed || 0)} />
+                              <DetailLine k="Pending" v={String(c.referredPending || 0)} />
+                              <DetailLine k="Rewards earned" v={totalsLabel(c.referralEarnedByCurrency) || "—"} />
+                            </DetailBlock>
+
+                          </div>
+                          {c.bio && (
+                            <div style={{ marginTop: 12, fontSize: 12.5, color: "#475569", maxWidth: 760, lineHeight: 1.5 }}>
+                              <b style={{ color: "#334155" }}>Bio:</b> {c.bio}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    )}
                     {refExpandId === c.id && (
                       <tr>
                         <td colSpan={10} style={{ padding: "10px 14px", background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>

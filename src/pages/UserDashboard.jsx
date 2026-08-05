@@ -16,6 +16,7 @@ import CoffeeBadge from "../components/CoffeeBadge";
 import FoundingBadge from "../components/FoundingBadge";
 import { useIsFoundingSupporter } from "../context/SupporterContext";
 import UserAvatar from "../components/UserAvatar";
+import StreakMilestoneModal from "../components/StreakMilestoneModal";
 import CoffeeCta from "../components/CoffeeCta";
 
 // ─── Badge Tracks: Starter → Gold → Platinum ────────────────────────────────
@@ -565,21 +566,28 @@ function StatsBar({ ratings }) {
 }
 
 // ─── Today Strip ────────────────────────────────────────────────────────────
-// Slim "come back tomorrow" band under the hero: streak + today's open tasks.
-// Reuses endpoints the dashboard children already call — no new backend.
+// Slim band under the hero: the practice streak, the weekly report, and the
+// student's coach links. Deliberately short - this is a status bar, not a nav.
+//
+// What used to be here and why it went:
+//   - "Daily puzzles N/5" - puzzles are now part of the streak requirement, so
+//     the streak chip covers it and two chips said the same thing.
+//   - "Arena Tournaments" - a hardcoded link with no state. It rendered the same
+//     text whether or not anything was running, so it told nobody anything; that
+//     belongs in the nav, not a status strip.
 function TodayStrip() {
-  const [streak, setStreak] = React.useState(null);     // current streak (days)
-  const [minsToday, setMinsToday] = React.useState(null); // minutes practiced today
-  const [puzzleDone, setPuzzleDone] = React.useState(null); // { done, count }
-  const [focus, setFocus] = React.useState(null);       // { dayNumber, done } | { completed, label }
-  const [hasAdminCoach, setHasAdminCoach] = React.useState(false);   // admin-added → Student Portal
-  const [hasPrivateCoach, setHasPrivateCoach] = React.useState(false); // private coach → My Coach
+  const [streak, setStreak] = React.useState(null);   // { current, today, daysToNextReport }
+  const [report, setReport] = React.useState(null);   // latest generated report, or null
+  const [focus, setFocus] = React.useState(null);
+  const [hasAdminCoach, setHasAdminCoach] = React.useState(false);
+  const [hasPrivateCoach, setHasPrivateCoach] = React.useState(false);
+  const [showHow, setShowHow] = React.useState(false);
+  const [milestone, setMilestone] = React.useState(null);  // streak count to celebrate
+  const [me, setMe] = React.useState(null);                // for the username prompt
 
   React.useEffect(() => {
     let alive = true;
 
-    // Which coach types does this student have? Gates the "My Classes" (admin) and
-    // "My Coach" (private) chips. Uses the enrolled coach list which flags admins.
     api.get('/api/coach-attendance/my/coaches')
       .then(res => {
         if (!alive) return;
@@ -589,29 +597,40 @@ function TodayStrip() {
       })
       .catch(() => {});
 
-    // Streak + minutes today
-    api.get('/api/user/activity-history')
+    // The PRACTICE streak - days meeting the full bar, not days with a page view.
+    api.get('/api/user/streak')
       .then(res => {
         if (!alive) return;
-        const stats = res.data?.stats || {};
-        setStreak(stats.currentStreak || 0);
-        const todayKey = new Date().toISOString().slice(0, 10);
-        const daily = res.data?.dailyMinutes || {};
-        setMinsToday(Math.round(daily[todayKey] || 0));
+        const s = res.data || null;
+        setStreak(s);
+        // Is a report owed? The SERVER decides (reportDue), by comparing
+        // milestones passed against reports actually generated — not a
+        // `current % 5` test here, which would silently skip a student who
+        // reached day 5 and then practised again before opening the dashboard.
+        if (s?.reportDue) {
+          // Once per milestone per browser, so the modal is a reward and not a
+          // nag on every page load. Scoped by user id: coaches sign into many
+          // student accounts on one browser and a global key would leak
+          // between them.
+          const uid = s?.userId || 'me';
+          const key = `streakMilestoneSeen:${uid}:${s.milestoneDay}`;
+          if (!localStorage.getItem(key)) {
+            localStorage.setItem(key, '1');
+            setMilestone(s.milestoneDay || s.current);
+            api.get('/api/auth/me')
+              .then(r => { if (alive) setMe(r.data?.user || r.data || null); })
+              .catch(() => {});
+          }
+        }
       })
       .catch(() => {});
 
-    // Daily puzzle progress (done at 5)
-    api.get('/api/public/training/state')
-      .then(res => {
-        if (!alive) return;
-        const d = res.data || {};
-        const count = (d.correct || 0) + (d.wrong || 0);
-        setPuzzleDone({ done: count >= 5, count });
-      })
-      .catch(() => {});
+    // Most recent report. Stays available until the next one is generated, so a
+    // student can always re-read the last one.
+    api.get('/api/streak-report/latest')
+      .then(res => { if (alive) setReport(res.data?.report || null); })
+      .catch(() => { /* endpoint ships with the report itself; ignore until then */ });
 
-    // Monthly Focus — current running day + whether the user finished it
     api.get('/api/public/monthly-focus/current')
       .then(async res => {
         if (!alive) return;
@@ -636,33 +655,52 @@ function TodayStrip() {
     return () => { alive = false; };
   }, []);
 
-  // Don't render an empty bar before anything loads
-  if (streak === null && puzzleDone === null && focus === null && minsToday === null) return null;
+  // Don't render an empty bar before anything loads.
+  if (streak === null && focus === null) return null;
 
   const chips = [];
 
-  if (streak !== null) {
+  if (streak) {
+    const n = streak.current || 0;
     chips.push(
-      <div key="streak" className={`today-chip ${streak > 0 ? 'today-chip--done' : ''}`}>
-        <span className="today-chip-emoji">🔥</span>
+      <div
+        key="streak"
+        className={`today-chip ${n > 0 ? 'today-chip--done' : ''}`}
+        title={n > 0
+          ? `${streak.daysToNextReport} more day(s) until your next report`
+          : 'Practise today to start a streak'}
+      >
+        <span className="today-chip-emoji">&#128293;</span>
         <span className="today-chip-text">
-          <strong>{streak}</strong>-day streak{streak > 0 ? '' : ' — start one!'}
+          <strong>{n}</strong>-day streak{n > 0 ? '' : ' — start one!'}
         </span>
       </div>
     );
   }
 
-  if (puzzleDone !== null) {
-    chips.push(
-      <Link key="puzzle" to="/puzzles" className={`today-chip ${puzzleDone.done ? 'today-chip--done' : 'today-chip--todo'}`}>
-        <span className="today-chip-emoji">🧩</span>
-        <span className="today-chip-text">
-          {puzzleDone.done ? 'Daily puzzles ✓' : `Daily puzzles ${puzzleDone.count}/5`}
-        </span>
-        {!puzzleDone.done && <span className="today-chip-go">→</span>}
+  // ALWAYS shown. With a report it opens it; without one it explains how to earn
+  // one - the only place a student is told what a streak day actually costs.
+  chips.push(
+    report ? (
+      <Link key="report" to={`/streak-report/${report.id}`} className="today-chip today-chip--done">
+        <span className="today-chip-emoji">&#128202;</span>
+        <span className="today-chip-text">Weekly report</span>
+        <span className="today-chip-go">&rarr;</span>
       </Link>
-    );
-  }
+    ) : (
+      <button
+        key="report"
+        type="button"
+        className="today-chip today-chip--todo"
+        onClick={() => setShowHow(v => !v)}
+        aria-expanded={showHow}
+      >
+        <span className="today-chip-emoji">&#128202;</span>
+        <span className="today-chip-text">Weekly report</span>
+        <span className="today-chip-go">?</span>
+      </button>
+    )
+  );
 
   if (focus) {
     let label, done = false;
@@ -671,45 +709,103 @@ function TodayStrip() {
     else { label = 'Monthly Focus'; }
     chips.push(
       <Link key="focus" to="/monthly-focus" className={`today-chip ${done ? 'today-chip--done' : 'today-chip--todo'}`}>
-        <span className="today-chip-emoji">♟</span>
+        <span className="today-chip-emoji">&#9823;</span>
         <span className="today-chip-text">{label}{done ? ' ✓' : ''}</span>
-        {!done && <span className="today-chip-go">→</span>}
+        {!done && <span className="today-chip-go">&rarr;</span>}
       </Link>
     );
   }
 
-  // Arena Tournaments — quick link to the arena tournament dashboard
-  chips.push(
-    <Link key="arena" to="/arenatournament" className="today-chip today-chip--todo">
-      <span className="today-chip-emoji">🏆</span>
-      <span className="today-chip-text">Arena Tournaments</span>
-      <span className="today-chip-go">→</span>
-    </Link>
-  );
-
-  // Admin-added students → "My Classes" (Student Portal). Private-coach students →
-  // "My Coach". A student with both sees both chips.
   if (hasAdminCoach) {
     chips.push(
       <Link key="myclasses" to="/attendance" className="today-chip today-chip--todo">
-        <span className="today-chip-emoji">🎓</span>
+        <span className="today-chip-emoji">&#127891;</span>
         <span className="today-chip-text">My Classes</span>
-        <span className="today-chip-go">→</span>
+        <span className="today-chip-go">&rarr;</span>
       </Link>
     );
   }
   if (hasPrivateCoach) {
     chips.push(
       <Link key="mycoach" to="/my-coach" className="today-chip today-chip--todo">
-        <span className="today-chip-emoji">🎓</span>
+        <span className="today-chip-emoji">&#127891;</span>
         <span className="today-chip-text">My Coach</span>
-        <span className="today-chip-go">→</span>
+        <span className="today-chip-go">&rarr;</span>
       </Link>
     );
   }
 
   if (chips.length === 0) return null;
-  return <div className="today-strip">{chips}</div>;
+
+  return (
+    <>
+      <div className="today-strip">{chips}</div>
+      {showHow && <StreakHowTo progress={streak?.today} onClose={() => setShowHow(false)} />}
+      {milestone && (
+        <StreakMilestoneModal
+          streak={milestone}
+          user={me}
+          onClose={() => setMilestone(null)}
+        />
+      )}
+    </>
+  );
+}
+
+// "How do I get a report?" - shown when a student clicks the report chip and has
+// no report yet. Lists what a day costs and ticks off what they have already done
+// today, so it reads as progress rather than a list of demands.
+function StreakHowTo({ progress, onClose }) {
+  const done = progress?.done || { puzzles: 0, games: 0, endgames: 0 };
+  const need = progress?.required || { puzzles: 10, games: 1, endgames: 1 };
+
+  // Three requirements, not four. A study is a long sit-down and asking for one
+  // EVERY day made the bar high enough that most students would break the streak
+  // on an ordinary busy evening — and a reward nobody reaches is not a reward.
+  const rows = [
+    { key: 'puzzles',  icon: '\u{1F9E9}', label: 'puzzles, any topic', to: '/training/healthy-mix' },
+    { key: 'games',    icon: '⚔️', label: 'game — Chess Nexus, Chess.com or Lichess',
+      to: '/arenatournament', note: 'blitz, rapid or classical' },
+    { key: 'endgames', icon: '♟️', label: 'endgame against the computer', to: '/study/endgames' },
+  ];
+
+  return (
+    <div className="streak-howto">
+      <div className="streak-howto-head">
+        <strong>Practise 5 days to earn your report</strong>
+        <button type="button" className="streak-howto-x" onClick={onClose} aria-label="Close">&times;</button>
+      </div>
+      <p className="streak-howto-sub">Every day needs all three:</p>
+      <ul className="streak-howto-list">
+        {rows.map(r => {
+          const have = done[r.key] || 0;
+          const want = need[r.key] || 1;
+          const ok = have >= want;
+          return (
+            <li key={r.key} className={ok ? 'is-done' : ''}>
+              <span className="streak-howto-ic">{ok ? '✓' : r.icon}</span>
+              <Link to={r.to}>
+                <b>{want}</b> {r.label}
+                {r.note && <em> ({r.note})</em>}
+              </Link>
+              <span className="streak-howto-count">{Math.min(have, want)}/{want}</span>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="streak-howto-foot">
+        Games you play on Chess.com and Lichess are counted when your report is generated.
+        {' '}Make sure your Chess.com and Lichess usernames are saved in{' '}
+        {/* Settings → Profile: the fields live in ProfilePanel, which
+            SettingsPage renders under its 'profile' tab. ?tab=profile opens it
+            directly rather than landing on Board themes. */}
+        <Link to="/settings?tab=profile" className="streak-howto-link">
+          Settings → Profile
+        </Link>
+        , or those games cannot be included.
+      </p>
+    </div>
+  );
 }
 
 // ─── Dashboard Tabs ─────────────────────────────────────────────────────────

@@ -1,4 +1,5 @@
 ﻿import React, { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import CustomBoardColors from '../components/CustomBoardColors';
 import { BOARD_THEMES, useBoardTheme } from '../contexts/BoardThemeContext';
 import { PIECE_THEMES, usePieceTheme } from '../contexts/PieceThemeContext';
@@ -129,7 +130,13 @@ function OptionCard({ isActive, onClick, defaultBadge, children }) {
 export default function SettingsPage() {
   const { theme: activeTheme, setThemeById } = useBoardTheme();
   const { pieceTheme: activePiece, setPieceThemeById } = usePieceTheme();
-  const [activeTab, setActiveTab] = useState('board'); // 'board' | 'pieces'
+  // ?tab=profile opens the Profile tab directly, so anything that needs a user
+  // to fill in their Chess.com / Lichess usernames can link straight there
+  // instead of dropping them on Board themes to go hunting.
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get('tab') || 'board'   // 'board' | 'pieces' | 'profile' | …
+  );
 
   const TAB_STYLE = (id) => ({
     padding: '10px 24px',

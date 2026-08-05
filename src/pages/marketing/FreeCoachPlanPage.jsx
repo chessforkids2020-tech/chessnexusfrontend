@@ -47,7 +47,7 @@ const LIMITS = [
   { t: "31st student", d: "The roster stops at 30. To add more you move to a paid plan — Pro raises it to 70 and Coach to 150." },
   { t: "A second live class in one day", d: "Free coaches run one live class per calendar day. The plans that include the live classroom lift this to unlimited classes a day." },
   { t: "Classes longer than 40 minutes", d: "A free class is capped at 40 minutes. Paid plans raise this to 60 minutes, and the top live plan to 120." },
-  { t: "A 5th student in the live room", d: "A free live room holds 4 students plus the coach, 5 people in total, enforced by the server. Live plans raise this to 10 students plus the coach, and the top live plan to 25." },
+  { t: "A 5th student in the live room", d: "A free live room holds 4 students plus the coach, 5 people in total, enforced by the server. The live plans remove the cap entirely — unlimited students in the room." },
   { t: "A 31st course, or a 4th lesson in one", d: "Free coaches get 30 courses with up to 3 lessons each. Paid plans make both unlimited." },
   { t: "Team Race & Monthly Focus events", d: "Creating these unlimited is an elite-coach perk on the plans that include the live classroom. Any coach may still create one Monthly Focus once, as a free trial." },
 ];

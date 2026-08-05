@@ -7,7 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 
-const DURATIONS = [10, 20, 30, 40, 60, 90, 120];
+// Meeting lengths a coach may pick. 0 = UNLIMITED (runs until the coach ends
+// it) and is offered only on plans with unlimited classes a day — matching the
+// server's rule in helpers/liveClassLimits.js.
+const UNLIMITED = 0;
+const DURATIONS = [10, 20, 30, 40, 60, 120];
 // Colours aligned to the rest of the coach app (CoachDashboard.css): body text
 // #e2e8f0, muted rgba(226,232,240,0.6), cyan/emerald accents. Keeps this page from
 // looking like a different product.
@@ -74,7 +78,7 @@ export default function MyMeetingsPage() {
       if (lc) {
         setLimits(lc);
         // Clamp the default duration selection to what the plan allows.
-        setDuration(d => Math.min(d, lc.durationMin || 30));
+        setDuration(d => (d === UNLIMITED ? d : Math.min(d, lc.durationMin || 30)));
       }
     } catch (e) {
       // Fallback only — the 'pending' screen above is the primary path for unverified
@@ -86,6 +90,9 @@ export default function MyMeetingsPage() {
 
   // Durations the plan allows (≤ the plan's max). Falls back to all if unknown.
   const allowedDurations = DURATIONS.filter(d => !limits || d <= (limits.durationMin || 60));
+  // Unlimited length rides on the same entitlement as unlimited classes a day
+  // (limitToday === -1), which is exactly what the server checks.
+  const canPickUnlimited = limits?.limitToday === -1;
 
   const create = async () => {
     setCreating(true); setMsg('');
@@ -179,13 +186,17 @@ export default function MyMeetingsPage() {
               </div>
               <div style={s.chip}>
                 <span style={{ ...s.chipIc, ...s.chipIcGreen }}><IconClock size={17} /></span>
-                <span style={s.chipVal}>{limits.durationMin}<small style={s.chipUnit}>min</small></span>
+                <span style={s.chipVal}>
+                  {canPickUnlimited ? '∞' : <>{limits.durationMin}<small style={s.chipUnit}>min</small></>}
+                </span>
                 <span style={s.chipKey}>Per class</span>
-                <span style={{ ...s.chipTag, color: C.green }}>Default duration</span>
+                <span style={{ ...s.chipTag, color: C.green }}>
+                  {canPickUnlimited ? `Up to ${limits.durationMin} min or unlimited` : 'Max length'}
+                </span>
               </div>
               <div style={s.chip}>
                 <span style={{ ...s.chipIc, ...s.chipIcBlue }}><IconUsers size={17} /></span>
-                <span style={s.chipVal}>{limits.maxStudents}</span>
+                <span style={s.chipVal}>{limits.maxStudents === -1 ? '∞' : limits.maxStudents}</span>
                 <span style={s.chipKey}>Students + coach</span>
                 <span style={{ ...s.chipTag, color: '#60a5fa' }}>Per meeting</span>
               </div>
@@ -218,15 +229,17 @@ export default function MyMeetingsPage() {
               <label style={s.label}>Duration</label>
               <select style={s.input} value={duration} onChange={e => setDuration(Number(e.target.value))}>
                 {allowedDurations.map(d => <option key={d} value={d}>{d} min</option>)}
+                {canPickUnlimited && <option value={UNLIMITED}>Unlimited</option>}
               </select>
             </div>
             <button style={{ ...s.primary, ...(creating ? { opacity: 0.6, cursor: 'default' } : {}) }} disabled={creating} onClick={create}>
               {creating ? 'Creating…' : 'Create meeting'}
             </button>
           </div>
-          {limits && limits.durationMin < 120 && (
+          {limits && !canPickUnlimited && (
             <p style={s.upsell}>
-              💡 Longer classes (up to 120 min) and more per day come with the{' '}
+              💡 Unlimited-length classes, unlimited students in the room and more
+              classes per day come with the{' '}
               <a href="/coach/subscription" style={s.upsellLink}>With Live Classroom</a> plans.
             </p>
           )}
@@ -261,8 +274,12 @@ export default function MyMeetingsPage() {
                     <div style={{ minWidth: 0 }}>
                       <div style={s.meetingName}>{m.title || 'Untitled meeting'}</div>
                       <div style={s.meetingMeta}>
-                        <span style={s.pill}><IconClock size={13} />{m.durationMinutes} min</span>
-                        {limits && <span style={s.pill}><IconUsers size={13} />up to {limits.maxStudents} students (+ coach)</span>}
+                        <span style={s.pill}><IconClock size={13} />{m.durationMinutes > 0 ? `${m.durationMinutes} min` : 'Unlimited'}</span>
+                        {limits && (
+                          <span style={s.pill}><IconUsers size={13} />
+                            {limits.maxStudents === -1 ? 'Unlimited students' : `up to ${limits.maxStudents} students (+ coach)`}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

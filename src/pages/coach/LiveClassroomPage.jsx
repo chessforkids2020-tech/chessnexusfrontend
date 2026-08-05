@@ -429,9 +429,13 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
   );
 }
 
-function Countdown({ endsAt, onExpire }) {
+function Countdown({ endsAt, onExpire, unlimited }) {
   // Zoom-style: endsAt is null until the first student arrives — the class clock
   // hasn't started, so show a paused indicator instead of counting down from 0.
+  //
+  // An UNLIMITED class also has endsAt === null, but forever: there is no clock
+  // to wait for. Without `unlimited` those two states are indistinguishable and
+  // the bar would read "waiting for students" for the whole lesson.
   const hasClock = !!endsAt;
   const [left, setLeft] = useState(() => hasClock ? Math.max(0, new Date(endsAt) - Date.now()) : 0);
   useEffect(() => {
@@ -443,6 +447,9 @@ function Countdown({ endsAt, onExpire }) {
     }, 1000);
     return () => clearInterval(id);
   }, [endsAt, onExpire, hasClock]);
+  if (unlimited) {
+    return <span style={{ fontWeight: 700, color: '#94a3b8', fontSize: 13 }}>∞ no time limit</span>;
+  }
   if (!hasClock) {
     return <span style={{ fontWeight: 700, color: '#94a3b8', fontSize: 13 }}>⏸ waiting for students</span>;
   }
@@ -1938,6 +1945,18 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     if (session) socket.emit('liveclass:tree', { sessionId: session.id, tree: t, path: p });
   };
 
+  // Flip the board. The coach/controller turns it for the WHOLE CLASS; a student
+  // only turns their own view. Teaching from Black's side is a normal thing to
+  // want, and a coach-only flip meant they ended up narrating a board the class
+  // could not see.
+  const flipBoard = () => {
+    const next = boardOrientation === 'white' ? 'black' : 'white';
+    setFlipOverride(next);
+    if (iControl && session) {
+      socket.emit('liveclass:orientation', { sessionId: session.id, orientation: next });
+    }
+  };
+
   // Coach/controller drew arrows or highlighted squares → broadcast to everyone.
   const onBoardDrawing = ({ arrows, highlights }) => {
     if (!iControl) return;
@@ -2093,6 +2112,12 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       setTree(t);
       setTreePath(Array.isArray(p) ? p : []);
     };
+    // Coach flipped the teaching board — the class follows.
+    const onOrientation = ({ orientation }) => {
+      if (hostStateRef.current.isHost) return;      // host has the source of truth
+      if (orientation !== 'white' && orientation !== 'black') return;
+      setFlipOverride(orientation);
+    };
     // Coach's drawn arrows + square highlights — everyone follows.
     const onDraw = ({ arrows, highlights }) => {
       if (hostStateRef.current.isHost) return; // host has the source of truth
@@ -2210,6 +2235,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     socket.on('liveclass:clock-started', onClockStarted);
     socket.on('liveclass:tree', onTree);
     socket.on('liveclass:draw', onDraw);
+    socket.on('liveclass:orientation', onOrientation);
     socket.on('liveclass:control', onControl);
     socket.on('liveclass:screenshare', onScreenShare);
     socket.on('liveclass:admitted', onAdmitted);
@@ -2364,6 +2390,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     socket.on('simul:ended', onSimEnded);
     return () => {
       socket.off('liveclass:tree', onTree); socket.off('liveclass:draw', onDraw); socket.off('liveclass:control', onControl);
+      socket.off('liveclass:orientation', onOrientation);
       socket.off('liveclass:screenshare', onScreenShare);
       socket.off('liveclass:admitted', onAdmitted); socket.off('liveclass:removed', onRemoved);
       socket.off('liveclass:ended', onEnded); socket.off('liveclass:waiting-updated', onWaiting);
@@ -3561,7 +3588,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       <div style={s.topbar}>
         <span style={{ fontWeight: 700 }}>🔴 Live class</span>
         {session && <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, color: '#9ca3af' }}>
-          Ends in <Countdown endsAt={session.endsAt} onExpire={autoEnd} />
+          {session.durationMinutes === 0 ? '' : 'Ends in'}
+          <Countdown endsAt={session.endsAt} onExpire={autoEnd} unlimited={session.durationMinutes === 0} />
         </span>}
         {/* Teaching board is HOST-only: the coach decides what everyone sees.
             Toggling it broadcasts to all students so they follow along. */}
@@ -4140,10 +4168,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       <button style={s.zoomBtn} title="End" onClick={goEnd}>⏭</button>
                     </span>
                   )}
-                  {/* Flip is a LOCAL view preference — available to everyone, and it
-                      never broadcasts, so one student flipping doesn't move the class. */}
-                  <button style={s.zoomBtn} title="Flip board"
-                    onClick={() => setFlipOverride(boardOrientation === 'white' ? 'black' : 'white')}>
+                  {/* Flip. For the COACH this turns the whole class's board, so
+                      "let's look at this from Black's side" actually works —
+                      before, the coach flipped alone and then described a board
+                      nobody else was looking at. For a student it stays a local
+                      preference, so one child flipping never moves the class. */}
+                  <button style={s.zoomBtn} title={iControl ? 'Flip board for everyone' : 'Flip board (only you)'}
+                    onClick={() => flipBoard()}>
                     ⇅
                   </button>
                 </div>

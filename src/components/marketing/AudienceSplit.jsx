@@ -26,7 +26,7 @@ export default function AudienceSplit({ current }) {
       <ul>
         <li>Your own student roster, up to 150 students</li>
         <li>Courses, assignments, attendance, parent reports</li>
-        <li>Live classroom — up to 25 students (+ you) on the top plan</li>
+        <li>Live classroom — unlimited students (+ you) on the live plans</li>
         <li>You pay for yourself</li>
       </ul>
       <div className="mkt-aud-price">

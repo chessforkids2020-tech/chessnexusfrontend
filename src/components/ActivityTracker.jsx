@@ -238,7 +238,15 @@ export default function ActivityTracker({ publicData = null }) {
   }
 
   const { activeDates = [], dailyMinutes = {}, stats = {} } = data || {};
-  const { totalDays = 0, currentStreak = 0, longestStreak = 0, totalMinutes = 0 } = stats;
+  const {
+    totalDays = 0, currentStreak = 0, longestStreak = 0, totalMinutes = 0,
+    // The PRACTICE streak — days meeting the full bar (10 puzzles, a game, an
+    // endgame). Preferred over `currentStreak`, which counts any day with a
+    // single puzzle on it, so this card and the dashboard chip agree instead of
+    // showing a visitor a different number from the one the student sees.
+    practiceStreak,
+  } = stats;
+  const shownStreak = practiceStreak != null ? practiceStreak : currentStreak;
 
   const minuteMap = Object.keys(dailyMinutes || {}).length > 0
     ? dailyMinutes
@@ -337,8 +345,8 @@ export default function ActivityTracker({ publicData = null }) {
             <div className="at-metric-list at-metric-list--below-chart">
               <MetricRow
                 icon={<StreakIcon />}
-                value={currentStreak}
-                label="Current Streak"
+                value={shownStreak}
+                label="Practice Streak"
               />
               <MetricRow
                 icon={<TimeIcon />}

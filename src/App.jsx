@@ -172,6 +172,7 @@ import SocialHubPage from './pages/SocialHubPage';
 import ClubsPage from './pages/ClubsPage';
 import ClubDetailPage from './pages/ClubDetailPage';
 import Puzzles from './pages/Puzzles';
+import StreakReportPage from './pages/StreakReportPage';
 import PuzzlesHub from './pages/PuzzlesHub';
 import BlunderHunt from './pages/BlunderHunt';
 import Training from './pages/Training';
@@ -1460,6 +1461,14 @@ export default function App() {
           <UserLayout>
             <ProtectedRoute>
               <Puzzles />
+            </ProtectedRoute>
+          </UserLayout>
+        } />
+        {/* Weekly practice report, earned by a 5-day practice streak. */}
+        <Route path="/streak-report/:id" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <StreakReportPage />
             </ProtectedRoute>
           </UserLayout>
         } />

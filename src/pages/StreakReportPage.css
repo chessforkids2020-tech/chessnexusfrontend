@@ -1,0 +1,294 @@
+/* StreakReportPage.css — the weekly practice report.
+   Uses the app's own cyan→emerald language (see UserDashboard.css) rather than
+   generic slate: this page is a REWARD for five days of work, and it should feel
+   like the thing you unlocked, not a printout. */
+
+.sr-wrap {
+  --sr-cyan: #06b6d4;
+  --sr-emerald: #10b981;
+  --sr-good: #34d399;
+  --sr-bad: #f87171;
+  --sr-warn: #fbbf24;
+  --sr-text: #e6edf3;
+  --sr-dim: #94a3b8;
+  --sr-faint: #64748b;
+  --sr-line: rgba(148, 163, 184, 0.16);
+  --sr-panel: rgba(255, 255, 255, 0.035);
+
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+  color: var(--sr-text);
+}
+
+/* ── Masthead: the reward moment ──────────────────────────────────── */
+.sr-head {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 30px 30px 26px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(6, 182, 212, 0.16) 0%, transparent 55%),
+    radial-gradient(circle at 85% 90%, rgba(16, 185, 129, 0.14) 0%, transparent 55%),
+    rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(6, 182, 212, 0.22);
+  box-shadow: 0 16px 48px rgba(6, 182, 212, 0.10);
+}
+/* Thin animated ribbon across the top — the same device the dashboard hero uses. */
+.sr-head::before {
+  content: '';
+  position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: linear-gradient(90deg, #06b6d4, #10b981, #06b6d4);
+  background-size: 200% 100%;
+  animation: sr-shimmer 6s linear infinite;
+}
+@keyframes sr-shimmer { to { background-position: 200% 0; } }
+@media (prefers-reduced-motion: reduce) { .sr-head::before { animation: none; } }
+
+.sr-streak-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 999px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(16, 185, 129, 0.18));
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  font-size: 12.5px; font-weight: 700; color: #6ee7b7;
+  margin-bottom: 12px;
+}
+.sr-h1 {
+  margin: 0 0 6px;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #e6edf3 0%, #67e8f9 55%, #6ee7b7 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-wrap: balance;
+}
+.sr-meta { color: var(--sr-dim); font-size: 13.5px; font-variant-numeric: tabular-nums; }
+
+/* Quick-glance record chips in the masthead. */
+.sr-record { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.sr-pill {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  padding: 7px 13px; border-radius: 999px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid var(--sr-line);
+  font-size: 12.5px; color: var(--sr-dim);
+}
+.sr-pill b { font-size: 15px; color: var(--sr-text); font-variant-numeric: tabular-nums; }
+.sr-pill.is-win b { color: var(--sr-good); }
+.sr-pill.is-loss b { color: var(--sr-bad); }
+
+/* ── Verdict: the one thing to fix ────────────────────────────────── */
+.sr-verdict {
+  position: relative;
+  margin: 20px 0 6px;
+  padding: 20px 22px 20px 58px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.09), rgba(16, 185, 129, 0.05));
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 14px;
+}
+.sr-verdict::before {
+  content: '🎯';
+  position: absolute; left: 20px; top: 19px; font-size: 20px;
+}
+.sr-verdict p { margin: 0; font-size: 16.5px; line-height: 1.6; color: #f1f5f9; }
+
+.sr-note { margin: 12px 2px 0; font-size: 12.5px; color: var(--sr-faint); }
+
+.sr-section { margin-top: 40px; }
+.sr-h2 {
+  margin: 0 0 4px; font-size: 20px; font-weight: 700; color: #f1f5f9;
+  display: flex; align-items: center; gap: 9px;
+}
+.sr-h2::before {
+  content: ''; width: 3px; height: 18px; border-radius: 2px;
+  background: linear-gradient(180deg, var(--sr-cyan), var(--sr-emerald));
+}
+.sr-sub { margin: 0 0 16px; font-size: 13.5px; color: var(--sr-dim); line-height: 1.55; max-width: 72ch; }
+.sr-muted { color: var(--sr-dim); font-size: 14px; }
+
+/* ── Phase cards ──────────────────────────────────────────────────── */
+.sr-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 760px) { .sr-phases { grid-template-columns: 1fr; } }
+
+.sr-phase {
+  position: relative; overflow: hidden;
+  background: var(--sr-panel);
+  border: 1px solid var(--sr-line);
+  border-radius: 14px;
+  padding: 18px 20px 16px;
+  display: flex; flex-direction: column;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+.sr-phase:hover { transform: translateY(-2px); border-color: rgba(148, 163, 184, 0.34); }
+/* Accent rail keyed to how the phase is going, so the weak one is findable
+   without reading a single number. */
+.sr-phase::before {
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: linear-gradient(90deg, var(--sr-cyan), var(--sr-emerald));
+  opacity: 0.75;
+}
+.sr-phase.is-weak { border-color: rgba(248, 113, 113, 0.4); }
+.sr-phase.is-weak::before { background: linear-gradient(90deg, #f87171, #fb923c); opacity: 1; }
+
+.sr-phase-name {
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.11em;
+  text-transform: uppercase; color: var(--sr-dim);
+}
+.sr-phase-moves { font-size: 11.5px; color: var(--sr-faint); font-variant-numeric: tabular-nums; }
+.sr-phase-acc {
+  font-size: 46px; font-weight: 800; line-height: 1.05; margin: 10px 0 2px;
+  color: #f8fafc; font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+}
+.sr-phase.is-weak .sr-phase-acc { color: #fca5a5; }
+/* Accuracy bar — the fastest read on the page. */
+.sr-bar { height: 5px; border-radius: 3px; background: rgba(148,163,184,0.16); overflow: hidden; margin: 8px 0 12px; }
+.sr-bar > i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--sr-cyan), var(--sr-emerald)); }
+.sr-phase.is-weak .sr-bar > i { background: linear-gradient(90deg, #f87171, #fb923c); }
+
+.sr-errline {
+  display: flex; justify-content: space-between;
+  font-size: 12.5px; padding: 5px 0;
+  border-top: 1px solid var(--sr-line);
+  color: #cbd5e1;
+}
+.sr-errline b { font-variant-numeric: tabular-nums; color: #f1f5f9; }
+.sr-tag {
+  margin-top: 12px; font-size: 11px; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase; color: #fca5a5;
+}
+
+/* ── Stat row ─────────────────────────────────────────────────────── */
+.sr-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 12px;
+}
+.sr-stat {
+  background: var(--sr-panel);
+  border: 1px solid var(--sr-line);
+  border-radius: 12px; padding: 14px 16px;
+}
+.sr-stat-v {
+  font-size: 28px; font-weight: 800; color: #f8fafc;
+  font-variant-numeric: tabular-nums; line-height: 1.15;
+}
+.sr-stat-l { font-size: 11.5px; color: var(--sr-dim); margin-top: 3px; }
+.sr-good { color: var(--sr-good); }
+.sr-bad  { color: var(--sr-bad); }
+
+/* ── Table ────────────────────────────────────────────────────────── */
+.sr-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--sr-line);
+  border-radius: 14px;
+  background: var(--sr-panel);
+}
+.sr-table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 13.5px; }
+.sr-table th, .sr-table td {
+  padding: 11px 14px; text-align: right;
+  border-bottom: 1px solid var(--sr-line);
+  font-variant-numeric: tabular-nums;
+}
+.sr-table tbody tr:last-child th, .sr-table tbody tr:last-child td { border-bottom: none; }
+.sr-table thead th {
+  font-size: 10.5px; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--sr-dim); font-weight: 700; white-space: nowrap;
+  background: rgba(0, 0, 0, 0.2);
+}
+.sr-table th[scope="row"] { text-align: left; font-weight: 600; color: var(--sr-text); white-space: nowrap; }
+.sr-table tbody tr:hover { background: rgba(6, 182, 212, 0.06); }
+
+/* ── Moment categories ────────────────────────────────────────────── */
+.sr-cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(158px, 1fr)); gap: 12px; }
+.sr-cat {
+  position: relative; overflow: hidden;
+  background: var(--sr-panel);
+  border: 1px solid var(--sr-line);
+  border-radius: 14px; padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 2px;
+  text-decoration: none; color: inherit;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.sr-cat::before {
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: linear-gradient(90deg, var(--sr-cyan), var(--sr-emerald));
+  opacity: 0; transition: opacity 0.18s ease;
+}
+.sr-cat:hover {
+  transform: translateY(-3px);
+  border-color: rgba(6, 182, 212, 0.42);
+  box-shadow: 0 12px 32px rgba(6, 182, 212, 0.14);
+}
+.sr-cat:hover::before { opacity: 1; }
+.sr-cat-ic { font-size: 20px; }
+.sr-cat-n {
+  font-size: 30px; font-weight: 800; line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(135deg, #67e8f9, #6ee7b7);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.sr-cat-label { font-size: 13px; color: #cbd5e1; font-weight: 600; }
+.sr-cat-todo { font-size: 11.5px; color: var(--sr-warn); margin-top: 2px; }
+
+/* ── Practice plan ────────────────────────────────────────────────── */
+.sr-plan { display: flex; flex-wrap: wrap; gap: 10px; }
+.sr-day {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.07));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px; padding: 13px 18px; min-width: 112px;
+}
+.sr-day-h { font-size: 13px; font-weight: 800; color: #6ee7b7; }
+.sr-day-n { font-size: 12px; color: var(--sr-dim); font-variant-numeric: tabular-nums; }
+
+/* ── Needs improvement ────────────────────────────────────────────────
+   The payoff of the whole report: each finding above becomes a place to go.
+   Rows rather than tiles, because these are read top-down in priority order —
+   the first one is the thing worth doing. */
+.sr-improve { display: flex; flex-direction: column; gap: 10px; }
+.sr-imp {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--sr-panel);
+  border: 1px solid var(--sr-line);
+  border-radius: 14px;
+  padding: 15px 18px;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.sr-imp:hover { border-color: rgba(6, 182, 212, 0.34); background: rgba(6, 182, 212, 0.045); }
+/* The first row is the one that matters most — give it the accent. */
+.sr-imp:first-child { border-color: rgba(6, 182, 212, 0.3); }
+.sr-imp-ic {
+  flex: none; width: 40px; height: 40px; border-radius: 11px;
+  display: grid; place-items: center; font-size: 19px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.16), rgba(16, 185, 129, 0.13));
+  border: 1px solid rgba(6, 182, 212, 0.22);
+}
+.sr-imp-body { flex: 1; min-width: 0; }
+.sr-imp-title { font-size: 14.5px; font-weight: 700; color: #f1f5f9; }
+.sr-imp-detail { margin: 2px 0 0; font-size: 12.5px; color: var(--sr-dim); line-height: 1.5; }
+.sr-imp-cta {
+  flex: none;
+  padding: 9px 15px; border-radius: 10px;
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  color: #04210f; font-size: 12.5px; font-weight: 800;
+  text-decoration: none; white-space: nowrap;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.sr-imp-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba(6, 182, 212, 0.3); }
+
+@media (max-width: 640px) {
+  .sr-imp { flex-wrap: wrap; }
+  .sr-imp-cta { width: 100%; text-align: center; }
+}
+
+.sr-back {
+  display: inline-block; margin-top: 36px;
+  color: var(--sr-dim); font-size: 13.5px; text-decoration: none;
+}
+.sr-back:hover { color: var(--sr-text); }
+
+@media (max-width: 640px) {
+  .sr-head { padding: 24px 20px 22px; border-radius: 16px; }
+  .sr-verdict { padding: 18px 18px 18px 52px; }
+  .sr-phase-acc { font-size: 40px; }
+}

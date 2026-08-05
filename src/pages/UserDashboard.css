@@ -2333,11 +2333,98 @@ button[style*="closeButton"]:hover {
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
   white-space: nowrap;
 }
-a.today-chip:hover {
+/* The report chip is a <button> when there is no report yet (it opens the
+   how-to panel rather than navigating), so it needs the button defaults reset
+   or it renders with the UA's own font, background and padding. */
+button.today-chip {
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+}
+a.today-chip:hover,
+button.today-chip:hover {
   transform: translateY(-2px);
   border-color: var(--obsidian-border-strong);
   box-shadow: 0 8px 20px rgba(2, 6, 23, 0.28);
 }
+
+/* ── "How do I earn a report?" panel ───────────────────────────────────────
+   Shown under the strip when a student clicks the report chip with no report
+   yet. This is the only surface that tells them what a streak day costs. */
+.streak-howto {
+  margin: -8px 0 18px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--obsidian-pill);
+  border: 1px solid var(--obsidian-border-strong);
+  max-width: 560px;
+}
+.streak-howto-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 15px;
+  color: var(--obsidian-text);
+}
+.streak-howto-x {
+  background: none;
+  border: none;
+  color: var(--obsidian-text-muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.streak-howto-x:hover { color: var(--obsidian-text); }
+.streak-howto-sub {
+  margin: 6px 0 12px;
+  font-size: 13px;
+  color: var(--obsidian-text-muted);
+}
+.streak-howto-list { list-style: none; margin: 0; padding: 0; }
+.streak-howto-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px solid var(--obsidian-border);
+  font-size: 13.5px;
+  color: var(--obsidian-text);
+}
+.streak-howto-list li:first-child { border-top: none; }
+.streak-howto-list a {
+  color: inherit;
+  text-decoration: none;
+  flex: 1;
+}
+.streak-howto-list a:hover { text-decoration: underline; }
+.streak-howto-list em {
+  font-style: normal;
+  color: var(--obsidian-text-muted);
+  font-size: 12.5px;
+}
+.streak-howto-ic { width: 20px; text-align: center; }
+.streak-howto-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--obsidian-text-muted);
+}
+.streak-howto-list li.is-done { color: #10b981; }
+.streak-howto-list li.is-done .streak-howto-count,
+.streak-howto-list li.is-done em { color: #10b981; }
+.streak-howto-foot {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--obsidian-text-muted);
+  line-height: 1.55;
+}
+.streak-howto-link {
+  color: var(--obsidian-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+.streak-howto-link:hover { text-decoration: underline; }
 .today-chip-emoji { font-size: 15px; line-height: 1; }
 .today-chip-text strong { color: var(--obsidian-accent); }
 .today-chip-go { color: var(--obsidian-accent); font-weight: 800; margin-left: 2px; }

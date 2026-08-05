@@ -1,9 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
 import api from '../api';
 import './MyMoments.css';
+
+// The kinds of mistake a moment can be. Mirrors CATEGORIES in
+// backend/services/momentCategories.js — the SERVER decides which moments match
+// (the rules mix phase, theme, line length and eval), so this list only supplies
+// the labels and their order. Adding a bucket means adding it there first.
+const MOMENT_CATEGORIES = [
+  { key: 'tactics',     icon: '⚔',  label: 'Tactics' },
+  { key: 'defence',     icon: '🛡', label: 'Defence' },
+  { key: 'calculation', icon: '🧠', label: 'Calculation' },
+  { key: 'endgames',    icon: '♟',  label: 'Endgames' },
+  { key: 'opening',     icon: '📖', label: 'Opening' },
+];
 
 // Friendly labels for the extractor's snake_case themes (mirrors GameInsightsPanel).
 const THEME_LABEL = {
@@ -23,6 +35,16 @@ const themeLabel = (t) => THEME_LABEL[t] || '♟️ Tactic';
 export default function MyMoments() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState('false'); // 'false' unsolved | 'true' solved | 'all'
+
+  // Which kind of mistake to show. The weekly report's study plan links straight
+  // in with ?category=defence, so "you collapsed in 7 of 13 difficult positions"
+  // opens exactly those positions instead of every moment the student has.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [category, setCategory] = useState(searchParams.get('category') || '');
+  // Only shown once the server has told us what a category is called — the
+  // buckets are defined in one place (services/momentCategories.js) so the tab
+  // labels and the report's counts can never disagree.
+  const [catInfo, setCatInfo] = useState(null);
   const [puzzles, setPuzzles] = useState([]);
   const [counts, setCounts] = useState({ total: 0, unsolved: 0 });
   const [loading, setLoading] = useState(true);
@@ -37,12 +59,22 @@ export default function MyMoments() {
   const [explaining, setExplaining] = useState(false);
   const reloadRef = useRef(null);
 
-  const load = async (which = filter) => {
+  const load = async (which = filter, cat = category) => {
     setLoading(true);
     try {
-      const res = await api.get(`/api/game-insights/puzzles?solved=${which}`);
+      const qs = new URLSearchParams({ solved: which });
+      if (cat) qs.set('category', cat);
+      // Scope to one report's period when the link carries it, so "your
+      // middlegame mistakes" means THIS week's, not every one ever recorded.
+      const since = searchParams.get('since');
+      const until = searchParams.get('until');
+      if (since) qs.set('since', since);
+      if (until) qs.set('until', until);
+
+      const res = await api.get(`/api/game-insights/puzzles?${qs.toString()}`);
       setPuzzles(res.data.puzzles || []);
       setCounts({ total: res.data.total || 0, unsolved: res.data.unsolved || 0 });
+      setCatInfo(res.data.category || null);
     } catch (e) {
       setPuzzles([]);
     } finally {
@@ -50,7 +82,7 @@ export default function MyMoments() {
     }
   };
 
-  useEffect(() => { load(filter); /* eslint-disable-next-line */ }, [filter]);
+  useEffect(() => { load(filter, category); /* eslint-disable-next-line */ }, [filter, category]);
   useEffect(() => () => clearTimeout(reloadRef.current), []);
 
   const openPuzzle = (p) => {
@@ -124,6 +156,36 @@ export default function MyMoments() {
           </p>
         </div>
       </div>
+
+      {/* Category chips. Kept ABOVE the solved/unsolved tabs because they answer
+          a different question — "which kind of mistake" vs "have I done it yet". */}
+      <div className="mm-cats">
+        <button
+          className={`mm-cat${!category ? ' active' : ''}`}
+          onClick={() => { setCategory(''); setSearchParams({}, { replace: true }); }}
+        >
+          All kinds
+        </button>
+        {MOMENT_CATEGORIES.map(c => (
+          <button
+            key={c.key}
+            className={`mm-cat${category === c.key ? ' active' : ''}`}
+            onClick={() => {
+              setCategory(c.key);
+              // Keep the URL honest so the view can be shared or reloaded.
+              const next = new URLSearchParams(searchParams);
+              next.set('category', c.key);
+              setSearchParams(next, { replace: true });
+            }}
+          >
+            <span aria-hidden="true">{c.icon}</span> {c.label}
+          </button>
+        ))}
+      </div>
+
+      {category && catInfo?.blurb && (
+        <p className="mm-cat-blurb">{catInfo.blurb}</p>
+      )}
 
       <div className="mm-tabs">
         <button className={`mm-tab${filter === 'false' ? ' active' : ''}`} onClick={() => setFilter('false')}>

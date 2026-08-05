@@ -162,6 +162,33 @@ export default function Sidebar({ user, onNavigate }) {
     }
   }, [isAuthenticated]);
 
+  // Per-user notifications (currently: "your practice report is ready").
+  // Separate from the admin notifications above, which are a BROADCAST — one row
+  // published to everyone with read state kept in localStorage. That cannot
+  // target a single student, which is what a 30-minute background job needs.
+  const [myNotifs, setMyNotifs] = useState({ unread: 0, notifications: [] });
+  const fetchMyNotifs = React.useCallback(async () => {
+    if (!isAuthenticated) { setMyNotifs({ unread: 0, notifications: [] }); return; }
+    try {
+      const res = await api.get('/api/notifications/mine');
+      setMyNotifs({
+        unread: res.data?.unread || 0,
+        notifications: res.data?.notifications || [],
+      });
+    } catch { /* silent — non-critical */ }
+  }, [isAuthenticated]);
+
+  useEffect(() => { fetchMyNotifs(); }, [fetchMyNotifs]);
+
+  // Live push, so a report that finishes while the user is on the page updates
+  // the bell immediately instead of waiting for the next poll.
+  useEffect(() => {
+    if (!isAuthenticated || !socket) return;
+    const onNew = () => fetchMyNotifs();
+    socket.on('notification:new', onNew);
+    return () => socket.off('notification:new', onNew);
+  }, [isAuthenticated, fetchMyNotifs]);
+
   // Unread admin replies to the user's reports (shown in the bell; full text on /my-reports)
   const [reportReplies, setReportReplies] = useState([]);
   const fetchReportReplies = React.useCallback(async () => {
@@ -268,7 +295,7 @@ export default function Sidebar({ user, onNavigate }) {
   }, [isAuthenticated]);
 
   // Total red badge = unread app notifications + friend messages + report replies + coach requests + game invites
-  const unreadNotifCount = appUnreadCount + friendMsgTotal + reportReplies.length + coachRequests.length + gameInvites.length;
+  const unreadNotifCount = appUnreadCount + friendMsgTotal + reportReplies.length + coachRequests.length + gameInvites.length + myNotifs.unread;
 
   // Load coach status once when authenticated
   useEffect(() => {

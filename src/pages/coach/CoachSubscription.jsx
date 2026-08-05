@@ -214,7 +214,9 @@ export default function CoachSubscription() {
   const liveSummary = (p) => {
     const lc = p.liveClass || {};
     const per = lc.meetingsPerDay === -1 ? 'Unlimited' : `${lc.meetingsPerDay}/day`;
-    return `${per} · up to ${lc.durationMin} min · up to ${lc.maxStudents} students (+ coach)`;
+    const room = lc.maxStudents === -1 ? 'unlimited students' : `up to ${lc.maxStudents} students (+ coach)`;
+    const len = lc.meetingsPerDay === -1 ? `up to ${lc.durationMin} min or unlimited` : `up to ${lc.durationMin} min`;
+    return `${per} · ${len} · ${room}`;
   };
 
   if (loading) return <div className="coach-loading">Loading plans…</div>;
