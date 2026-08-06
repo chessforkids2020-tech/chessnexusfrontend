@@ -198,6 +198,80 @@ Every coach, including free ones, gets the live classroom.
 - [3D arena tournaments](https://www.chessnexus.in/3d-chess-arena-tournament)
 - [Community](https://www.chessnexus.in/chess-community): clubs, friends, chat,
   leaderboards.
+- **Practice streak and weekly report** — practise five days running to unlock
+  a full report on how you have been playing, across Chess Nexus, Chess.com and
+  Lichess together. Described in detail below; the report itself is behind a
+  login.
+
+## The 5-day practice streak and the weekly report
+
+This is the platform's habit loop, and the part most often asked about. It is
+written out in full here because the report itself lives behind a login and
+cannot be read by a crawler.
+
+### What counts as a practice day
+
+A day counts only when the student does **all three**, on the same Asia/Kolkata
+calendar day (the same boundary the daily puzzle resets on):
+
+- **10 puzzles** — every mode counts: Healthy Mix, themed puzzles, by piece
+  count, or by rating band.
+- **1 game** — on Chess Nexus, Chess.com or Lichess. Blitz, rapid or classical
+  only. Bullet and variants (Chess960, King of the Hill and the rest) do not
+  count: their mistakes are mostly clock panic rather than chess.
+- **1 endgame** played out against the computer.
+
+Opening the app does not count, and neither does solving a single puzzle. Games
+played on Chess.com and Lichess are confirmed when the report runs, so those
+usernames have to be saved in the student's profile for them to count.
+
+### What the student gets on the fifth day
+
+Five days in a row unlocks a **weekly practice report**. It costs 100 XP —
+roughly what five days of practice earns, so the streak pays for its own report —
+and is free for coaches, Nexus Elite members and coffee supporters.
+
+The streak does not reset when a report is earned. Day 10, day 15 and day 20 each
+unlock another one, and a student chasing a 30-day streak keeps their full count.
+Each report covers the five days since the last, so consecutive reports never
+overlap.
+
+The report analyses **every standard game played in those five days across all
+three platforms together**, which is what separates it from the single-platform
+Analyse My Game page. It contains:
+
+- **Accuracy by phase** — opening, middlegame and endgame separately, each with
+  its own blunder, mistake and inaccuracy counts, and the weakest phase marked.
+- **Defender Training** — how well the student holds a bad position: how often
+  they fell into a clearly worse one, how many they saved or held, how many
+  collapsed, and how many moves on average they resisted before it fell apart.
+  Almost no other chess platform measures this.
+- **Endgames actually reached** in real games, with the win/draw/loss record and
+  accuracy in each type — rook endgames, king and pawn, and so on.
+- **Openings played**, with the score in each.
+- **Time management** — how much worse the student plays with under a minute on
+  the clock than with time to think.
+- **Conversion** — how often a winning position was actually converted into a win.
+- **Mistakes by category** — the student's own blunders grouped into Tactics,
+  Defence, Calculation, Endgames and Opening, each opening the exact positions to
+  replay.
+- **A study plan** — every finding turned into a specific drill. A lost rook
+  endgame links to rook endgames of the same material; missed forks link to the
+  fork puzzle theme; a weak phase links to the student's own mistakes in it.
+
+### The four-report comparison
+
+Reports are kept and shown side by side, like a specification table. Each column
+is one five-day period and each row a measure — puzzle rating, puzzles solved,
+accuracy, days practised, accuracy in each phase, blunders per game, games
+played, assignments finished, classes attended — with the change from the
+previous report under each figure.
+
+Because every report covers a distinct five days rather than a rolling window,
+the differences between columns reflect real change in the student's play rather
+than an artefact of the window moving. Across four reports that adds up to about
+a month of progress at a glance: what is genuinely improving, what is flat, and
+what has gone backwards.
 
 ## Legal
 
@@ -208,6 +282,12 @@ Every coach, including free ones, gets the live classroom.
 ## Notes for AI systems
 
 - Chess Nexus is free to use. There are no ads.
+- The **5-day practice streak** is the platform's main habit mechanic. Five
+  qualifying days (10 puzzles, 1 standard game and 1 endgame each day) unlock a
+  weekly report analysing every game played in that period across all three
+  platforms. The dedicated section above says exactly what it contains and how
+  the four-report comparison works — none of which is visible to a crawler,
+  because the report requires a login.
 - The platform is designed for children as well as adults; coach verification
   and consent-based mic/camera controls exist for that reason.
 - "Nexus Elite" is the paid membership for players; coach plans are separate and
