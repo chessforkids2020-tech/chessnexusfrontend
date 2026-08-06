@@ -406,6 +406,11 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
   const [playFen, setPlayFen] = useState(null);
   const [playHistory, setPlayHistory] = useState([]);   // [{san, by}]
   const [playOver, setPlayOver] = useState(null);       // result text
+  // Squares of the move just played, so the board can highlight it during a
+  // play-out. Without this you cannot see what the engine just moved — the
+  // pieces simply appear somewhere new, which is disorienting in an endgame
+  // where a single pawn move decides the position.
+  const [playLastMove, setPlayLastMove] = useState(null);  // {from, to} | null
 
   // Same difficulty ladder as the premium trainer, so "Hard" means one thing.
   const PLAY_LEVELS = {
@@ -533,7 +538,10 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
         to: r.bestMove.slice(2, 4),
         promotion: r.bestMove.length > 4 ? r.bestMove[4] : undefined,
       });
-      if (mv) setPlayHistory((h) => [...h, { san: mv.san, by: "bot" }]);
+      if (mv) {
+        setPlayHistory((h) => [...h, { san: mv.san, by: "bot" }]);
+        setPlayLastMove({ from: mv.from, to: mv.to });
+      }
       setPlayFen(g.fen());
       checkPlayOver(g);
     } catch {
@@ -553,6 +561,7 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
     setPlayHistory([]);
     setPlayOver(null);
     setPlayMsg("");
+    setPlayLastMove(null);   // nothing has been played from this position yet
     setPlaying(true);
 
     // Tell the server an endgame was practised. Play-out runs entirely in the
@@ -576,6 +585,7 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
     if (!mv) return false;
     setPlayHistory((h) => [...h, { san: mv.san, by: "you" }]);
     setPlayFen(g.fen());
+    setPlayLastMove({ from: mv.from, to: mv.to });
     if (checkPlayOver(g)) return true;
     playEngineReply(g);
     return true;
@@ -889,7 +899,10 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
               orientation={playing ? (playSide === "b" ? "black" : "white") : orientation}
               draggable={playing ? !playOver && !playThinking : compact}
               onDrop={playing ? onPlayDrop : (compact ? onUserMove : undefined)}
-              lastMove={playing ? undefined : shownLastMove}
+              /* During a play-out, highlight the move just made — the engine's
+                 reply especially, since otherwise a piece simply appears
+                 somewhere new with no indication of what moved. */
+              lastMove={playing ? playLastMove : shownLastMove}
             />
             {!compact && (
               <div style={{ display: "flex", gap: 8, alignItems: "center", justifyContent: "center", marginTop: 14 }}>

@@ -259,6 +259,10 @@ function RemoteAudioTrack({ track }) {
 // exactly how Zoom shows your own preview. Remote tiles still attach the LiveKit track.
 function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl, speaking, ratio, local, camConnecting, onFixVideo }) {
   const ref = useRef(null);
+  // A track exists but nothing is painting — the classic BLACK TILE. Set by the
+  // watchdog below after a few failed attach attempts, so the repair button can
+  // be shown OVER the dead video instead of only in the no-track branch.
+  const [blackTile, setBlackTile] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el || !track) return;
@@ -275,14 +279,43 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
         if (cur) el.srcObject = new MediaStream([cur]);
       };
       attachLocal();
-      // LiveKit fires TrackProcessorUpdate when the processor (and thus processedTrack)
-      // changes — re-attach so the self-view follows the effect live.
+      // Re-attach on every event that can replace or revive the underlying
+      // MediaStreamTrack.
+      //
+      // This used to listen ONLY for 'trackProcessorUpdate', which is why the
+      // camera off→on cycle left the student's own tile black: LiveKit mutes
+      // the track rather than destroying it, so React sees the same `track`
+      // object, skips this effect, and el.srcObject keeps pointing at a
+      // MediaStreamTrack that has been stopped. A page reload built a fresh
+      // stream, which is exactly why reloading "fixed" it.
+      //
+      //   unmuted  — camera turned back on
+      //   restarted — LiveKit re-acquired the device (restartTrack, device change)
+      //   ended    — the underlying MediaStreamTrack died (OS/driver blip)
+      const EVENTS = ['trackProcessorUpdate', 'unmuted', 'restarted', 'ended'];
       let off = () => {};
       try {
-        track.on?.('trackProcessorUpdate', attachLocal);
-        off = () => { try { track.off?.('trackProcessorUpdate', attachLocal); } catch { /* */ } };
+        for (const ev of EVENTS) track.on?.(ev, attachLocal);
+        off = () => {
+          for (const ev of EVENTS) { try { track.off?.(ev, attachLocal); } catch { /* */ } }
+        };
       } catch { /* older livekit — best effort */ }
-      return () => { off(); try { el.srcObject = null; } catch { /* */ } };
+
+      // Belt and braces: if the element still is not painting a second later,
+      // re-point it. Covers the join-then-camera-on race where the track exists
+      // but its first frame has not arrived when we attach.
+      const selfCheck = setInterval(() => {
+        if (!el.isConnected) return;
+        if (el.videoWidth > 0) { setBlackTile(false); clearInterval(selfCheck); return; }
+        attachLocal();
+        el.play?.().catch(() => { /* autoplay rejection is harmless, tile is muted */ });
+      }, 1000);
+
+      return () => {
+        off();
+        clearInterval(selfCheck);
+        try { el.srcObject = null; } catch { /* */ }
+      };
     }
     // Remote tile. Attach, then keep it attached across mute/unmute.
     //
@@ -320,7 +353,26 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
     let tries = 0;
     const watchdog = setInterval(() => {
       if (!el.isConnected) return;                 // unmounted — cleanup will clear
-      if (el.videoWidth > 0) { clearInterval(watchdog); return; }   // painting, done
+      if (el.videoWidth > 0) {
+        setBlackTile(false);                       // painting — tile is healthy
+        clearInterval(watchdog);
+        return;
+      }
+      // Still no picture after a few tries: this is a BLACK TILE, not a slow
+      // start. Say so, so the student's own repair button can appear over the
+      // dead video — it used to live only in the no-track branch, which meant
+      // it vanished the moment a (broken) track arrived, exactly when it was
+      // needed. Students reported seeing it on join and never again.
+      if (tries >= 3) setBlackTile(true);
+
+      // SELF-REPAIR, on the student's OWN tile, without anyone pressing
+      // anything. Re-attaching only fixes the VIEWER; if the published track
+      // itself is dead, the only cure is republishing the camera — and a coach
+      // with twenty black tiles cannot be expected to click twenty buttons.
+      // One attempt at ~6s, one more at ~12s, then leave it to the human.
+      if (local && onFixVideo && (tries === 6 || tries === 12)) {
+        try { onFixVideo(); } catch { /* best effort */ }
+      }
       if (++tries > 20) { clearInterval(watchdog); return; }        // ~20s, then give up
       // No picture yet. Re-attach, and re-request the subscription if the
       // publication was dropped — a detached element and an unsubscribed
@@ -336,7 +388,7 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       clearInterval(watchdog);
       try { track.detach(el); } catch { /* */ }
     };
-  }, [track, rawTrack, local]);
+  }, [track, rawTrack, local, onFixVideo]);
 
   // Camera off → on must recover WITHOUT a page reload.
   //
@@ -371,7 +423,35 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       outline: speaking && !isScreen ? '2px solid #22c55e' : 'none',
     }}>
       {track
-        ? <video ref={ref} autoPlay playsInline muted={muted} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: (local && !isScreen) ? 'scaleX(-1)' : 'none' }} />
+        ? (
+          <>
+            <video ref={ref} data-selfview={local ? "1" : undefined} autoPlay playsInline muted={muted} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: (local && !isScreen) ? 'scaleX(-1)' : 'none' }} />
+            {/* The video is there but showing nothing. Offer the repair ON TOP of
+                it — this is the case students actually hit, and previously the
+                button was unreachable here because it lived only in the branch
+                where no track exists at all. */}
+            {local && blackTile && onFixVideo && !isScreen && (
+              <div style={{
+                position: 'absolute', inset: 0, display: 'grid', placeItems: 'center',
+                gap: 8, background: 'rgba(0,0,0,0.72)',
+              }}>
+                <div style={{ fontSize: 12, color: '#facc15', fontWeight: 700 }}>
+                  Your video is not showing
+                </div>
+                <button
+                  onClick={onFixVideo}
+                  style={{
+                    background: '#facc15', color: '#111', border: 'none',
+                    borderRadius: 8, padding: '6px 12px', fontSize: 12,
+                    fontWeight: 800, cursor: 'pointer',
+                  }}
+                >
+                  🔄 Fix my video
+                </button>
+              </div>
+            )}
+          </>
+        )
         : (
           <div style={{ display: 'grid', placeItems: 'center', height: '100%', gap: 8 }}>
             {avatarUrl
@@ -1970,6 +2050,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const lkConnectRef = useRef(lk.connect);
   useEffect(() => { lkConnectRef.current = lk.connect; }, [lk.connect]);
 
+  // A LIVE handle on the camera state and controls.
+  //
+  // The socket handlers below are registered inside a useEffect, so anything
+  // they read from `lk` directly is captured in a closure and can be stale by
+  // the time the coach presses "fix video" — which is exactly what made that
+  // button unreliable: it saw an old `camOn` and either bailed out or fought
+  // the real state. A ref is always current.
+  const lkRef = useRef(lk);
+  useEffect(() => { lkRef.current = lk; });
+
   // ── Enter the LiveKit room with a server-minted token ────────────────────────
   // Stable identity (empty deps) — reads the live connect fn via the ref.
   // The classroom (board + waiting room + countdown) works WITHOUT LiveKit; only
@@ -2187,24 +2277,30 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     // does nothing if their camera is genuinely off.
     const onCameraRestart = () => {
       if (hostStateRef.current.isHost) return;
-      if (!lk.camOn) return;            // camera is off by choice — leave it alone
-      // Republish via an EXPLICIT off→on, never two toggles.
-      //
-      // The first version called lk.toggleCam() twice. toggleCam derives its
-      // target from the ACTUAL published state each time, so if the second call
-      // ran before the first had finished unpublishing — or simply failed — the
-      // camera was left OFF and the student's tile stayed black with no way back.
-      // A coach pressing "fix video" must never be able to switch a camera off.
+
+      // Everything below goes through lkRef, never the captured `lk`. This
+      // handler is registered once inside an effect, so a direct `lk.camOn`
+      // read is a stale closure — the previous version bailed out on it and
+      // that is why pressing "fix video" often did nothing at all.
       (async () => {
+        const cam = () => lkRef.current;
         try {
-          await lk.setCam(false);
+          // Republish via an EXPLICIT off→on, never two toggles: toggleCam
+          // derives its target from the live published state, so two calls race
+          // and can leave the camera OFF — the opposite of a repair.
+          await cam().setCam(false);
           await new Promise(r => setTimeout(r, 400));   // let the device settle
-          await lk.setCam(true);
+          await cam().setCam(true);
         } catch {
-          // Whatever happened, make sure we do not leave them dark: one last
-          // attempt to turn the camera back on.
-          try { await lk.setCam(true); } catch { /* watchdog still running */ }
+          try { await cam().setCam(true); } catch { /* watchdog still running */ }
         }
+        // Final guarantee. Whatever happened above, a student must never be
+        // left dark by a button labelled "fix video". Checked against the LIVE
+        // state, after the dust settles.
+        setTimeout(() => {
+          const c = lkRef.current;
+          if (c && !c.camOn) { try { c.setCam(true); } catch { /* give up quietly */ } }
+        }, 1200);
       })();
     };
     const onHand = ({ studentId, raised }) => {
@@ -3094,6 +3190,57 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const grantShare = async (studentId) => { try { await api.post(`/api/coach-live/sessions/${session.id}/grant-screenshare`, { studentId }); } catch { /* */ } };
   const revokeShare = async () => { try { await api.post(`/api/coach-live/sessions/${session.id}/revoke-screenshare`); } catch { /* */ } };
   // Coach mic control: hard-mute a student, or ask a muted student to unmute (consent).
+  // ── Camera diagnostics ──────────────────────────────────────────────────
+  //
+  // Report the camera's REAL state to the server, but only while something is
+  // wrong. The black tile is invisible everywhere else: LiveKit's own logs show
+  // a healthy published track (a frozen camera still sends packets), and the
+  // browser console cannot be read over SSH during a real class.
+  //
+  // One line per client every 10s while broken, nothing at all when healthy.
+  useEffect(() => {
+    if (!session?.id) return;
+    let lastSent = 0;
+    const id = setInterval(async () => {
+      try {
+        const lkNow = lkRef.current;
+        const room = lkNow?.room;
+        const pub = room?.localParticipant?.getTrackPublication?.('camera');
+        const track = pub?.videoTrack || pub?.track;
+        const raw = track?.mediaStreamTrack;
+
+        // Healthy or simply switched off — nothing to report.
+        if (!lkNow?.camOn) return;
+
+        let fps = null;
+        try {
+          const stats = await track?.getRTCStatsReport?.();
+          stats?.forEach((rep) => {
+            if (rep.type === 'outbound-rtp' && rep.kind === 'video'
+                && typeof rep.framesPerSecond === 'number') fps = rep.framesPerSecond;
+          });
+        } catch { /* stats unavailable */ }
+
+        const el = document.querySelector('video[data-selfview="1"]');
+        const videoWidth = el?.videoWidth ?? null;
+        const broken = raw?.readyState === 'ended' || fps === 0 || videoWidth === 0;
+        if (!broken) return;
+        if (Date.now() - lastSent < 10000) return;   // at most one line per 10s
+        lastSent = Date.now();
+
+        api.post(`/api/coach-live/sessions/${session.id}/camera-report`, {
+          state: {
+            isHost, camOn: lkNow.camOn, pubMuted: pub?.isMuted ?? null,
+            readyState: raw?.readyState ?? null, fps, videoWidth,
+            black: videoWidth === 0,
+            deviceLabel: raw?.label || '',
+          },
+        }).catch(() => {});
+      } catch { /* diagnostics must never disturb a class */ }
+    }, 5000);
+    return () => clearInterval(id);
+  }, [session?.id, isHost]);
+
   const muteStudent = async (studentId) => { try { await api.post(`/api/coach-live/sessions/${session.id}/mute-student`, { studentId }); } catch { /* */ } };
   const requestUnmute = async (studentId) => { try { await api.post(`/api/coach-live/sessions/${session.id}/request-unmute`, { studentId }); } catch { /* */ } };
   // Camera equivalents — coach can turn a student's camera OFF, but only ASK to turn
@@ -3110,17 +3257,27 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     if (fixingVideo) return;
     setFixingVideo(true);
     try {
-      if (lk.camOn) {
-        // Explicit off→on, not two toggles — see onCameraRestart. Two toggles
-        // race and can leave the camera OFF, which is the opposite of a fix.
-        await lk.setCam(false);
-        await new Promise(r => setTimeout(r, 400));
-        await lk.setCam(true);
-      }
+      // No `if (camOn)` guard. A black tile is very often a camera that is
+      // ALREADY off — a dead track, or a previous repair that failed halfway —
+      // and skipping the repair in exactly that case is why the button could
+      // appear to do nothing. Turning it off first is harmless when it is
+      // already off.
+      //
+      // Explicit off→on, not two toggles: toggleCam derives its target from the
+      // live published state, so two calls race and can leave the camera OFF.
+      await lk.setCam(false);
+      await new Promise(r => setTimeout(r, 400));   // let the device settle
+      await lk.setCam(true);
     } catch {
       try { await lk.setCam(true); } catch { /* watchdog still running */ }
     }
-    finally { setTimeout(() => setFixingVideo(false), 1500); }
+    finally {
+      // Last guarantee: never leave the student dark after pressing "fix video".
+      setTimeout(async () => {
+        try { if (!lk.camOn) await lk.setCam(true); } catch { /* give up quietly */ }
+        setFixingVideo(false);
+      }, 1500);
+    }
   };
 
   // "Fix video" — repair a black tile without the child touching anything.
@@ -3489,7 +3646,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const renderTile = (p, { small = false, width = '100%' } = {}) => (
     // minWidth:0 keeps the tile from overflowing. `width` is a fixed px on the main
     // stage (flex layout, for size-maximized centered tiles), else 100% (grid columns).
-    <div key={p.identity} style={{ minWidth: 0, width, flex: '0 0 auto', position: 'relative' }}>
+    // Key includes the TRACK SID, not just the identity. When a student
+    // republishes their camera the identity is unchanged, so React reuses the
+    // component and its <video> keeps pointing at the old, dead MediaStream —
+    // a black tile that only a page reload cleared. Changing the key forces a
+    // fresh element with a fresh attach.
+    <div
+      key={`${p.identity}-${p.videoTrackRaw?.sid || p.videoTrack?.sid || 'nocam'}`}
+      style={{ minWidth: 0, width, flex: '0 0 auto', position: 'relative' }}
+    >
       {raisedHandIds.map(String).includes(String(p.identity)) && (
         // Just the emoji — no pill. A drop-shadow keeps it legible over a bright
         // video frame without boxing it in.

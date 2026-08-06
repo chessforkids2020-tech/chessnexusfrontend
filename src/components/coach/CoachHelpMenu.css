@@ -1,0 +1,158 @@
+/* CoachHelpMenu.css — the Help dropdown beside the coach's Profile button. */
+
+.chm-wrap { position: relative; display: inline-block; }
+
+.chm-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 200;
+  width: 290px;
+  padding: 6px;
+  background: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+}
+
+.chm-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: 100%;
+  padding: 10px 11px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #e2e8f0;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.chm-item:hover,
+.chm-item:focus-visible { background: rgba(6, 182, 212, 0.12); }
+
+.chm-ic { font-size: 17px; line-height: 1.3; flex: none; }
+.chm-item b { display: block; font-size: 13.5px; font-weight: 700; }
+.chm-item em {
+  display: block;
+  font-style: normal;
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin-top: 1px;
+  line-height: 1.4;
+}
+
+/* ── The bug / feature form ─────────────────────────────────────────── */
+.chm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(2, 6, 23, 0.72);
+}
+
+.chm-card {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 26px 24px 22px;
+  background: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  color: #e2e8f0;
+}
+.chm-card h3 { margin: 0 0 4px; font-size: 19px; font-weight: 800; color: #f8fafc; }
+.chm-sub { margin: 0 0 18px; font-size: 13px; line-height: 1.55; color: #94a3b8; }
+
+.chm-x {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  padding: 4px;
+  border: none;
+  background: none;
+  color: #64748b;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.chm-x:hover { color: #e2e8f0; }
+
+.chm-label {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.chm-input,
+.chm-textarea {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 9px 11px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 9px;
+  color: #f1f5f9;
+  font-size: 13.5px;
+  font-family: inherit;
+}
+.chm-textarea { resize: vertical; line-height: 1.5; }
+.chm-input:focus,
+.chm-textarea:focus {
+  outline: none;
+  border-color: rgba(6, 182, 212, 0.55);
+}
+
+.chm-err {
+  margin-bottom: 12px;
+  padding: 8px 11px;
+  border-radius: 9px;
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #fca5a5;
+  font-size: 12.5px;
+}
+
+.chm-primary {
+  width: 100%;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  color: #04210f;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.chm-primary:disabled { opacity: 0.6; cursor: default; }
+
+/* ── Sent confirmation ──────────────────────────────────────────────── */
+.chm-done { text-align: center; padding: 6px 0; }
+.chm-done-ic {
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 12px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #34d399;
+  font-size: 22px;
+  font-weight: 800;
+}
+.chm-done p { margin: 0 0 18px; font-size: 13.5px; line-height: 1.6; color: #cbd5e1; }
+
+@media (max-width: 480px) {
+  .chm-menu { width: 260px; }
+}

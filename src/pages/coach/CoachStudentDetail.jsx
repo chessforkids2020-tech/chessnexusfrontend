@@ -18,6 +18,115 @@ function fmt(n) { return n != null ? Number(n).toLocaleString() : '—'; }
 // Chess ratings are plain numbers — never thousands-separated (1200, not 1,200).
 function fmtRating(n) { return n != null ? String(Math.round(Number(n))) : '—'; }
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '—'; }
+
+// Race topic SLUG -> readable title.
+//
+// The stored value is a slug ('racer-tactics'), not a title. Showing it raw in a
+// coach-facing table is the kind of thing that makes an app look unfinished, so
+// map it — and fall back to the race's own NAME when the coach or admin gave it
+// one, since that is more specific than the topic it was built from.
+const RACE_TOPIC_TITLES = {
+  tactics: 'Tactics',
+  endgame: 'Endgames',
+  openings: 'Openings',
+  strategy: 'Strategy',
+  defense: 'Defence',
+  mixed: 'Mixed',
+};
+// One platform's rating curve, one line per time control.
+//
+// Colours follow Lichess's own convention, so a coach who already reads those
+// graphs does not have to learn a second colour language.
+const TC_COLOURS = {
+  bullet:    '#f472b6',
+  blitz:     '#fbbf24',
+  rapid:     '#34d399',
+  classical: '#60a5fa',
+};
+const TC_ORDER = ['bullet', 'blitz', 'rapid', 'classical'];
+
+function RatingChart({ title, accent, who, series }) {
+  const keys = TC_ORDER.filter(k => series?.[k]?.length >= 3);
+  if (!keys.length) return null;
+
+  // One shared Y scale across every line, so the graph shows which time control
+  // this student is actually stronger at — separate scales would hide that.
+  const all = keys.flatMap(k => series[k].map(p => p.r));
+  const lo = Math.min(...all);
+  const hi = Math.max(...all);
+  const pad = Math.max(20, Math.round((hi - lo) * 0.12));   // never a flat line on the edge
+  const yMin = lo - pad;
+  const yMax = hi + pad;
+
+  // Shared X scale too: lines from the same period must line up in time.
+  const allT = keys.flatMap(k => series[k].map(p => p.t));
+  const tMin = Math.min(...allT);
+  const tMax = Math.max(...allT);
+  const xOf = (t) => (tMax === tMin ? 0 : ((t - tMin) / (tMax - tMin)) * 300);
+  const yOf = (r) => 96 - ((r - yMin) / (yMax - yMin || 1)) * 92;
+
+  return (
+    <div className="csd-rating-card">
+      <div className="csd-rating-head">
+        <span className="csd-rating-title" style={{ color: accent }}>{title}</span>
+        {who && <span className="csd-rating-who">@{who}</span>}
+      </div>
+
+      <svg className="csd-rating-svg" viewBox="0 0 300 100" preserveAspectRatio="none" role="img"
+        aria-label={`${title} rating over recent games`}>
+        {keys.map(k => (
+          <polyline
+            key={k}
+            points={series[k].map(p => `${xOf(p.t)},${yOf(p.r)}`).join(' ')}
+            fill="none"
+            stroke={TC_COLOURS[k]}
+            strokeWidth="2"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
+      </svg>
+
+      {/* Legend doubles as a summary: current rating and the change across the
+          window, which is the number a coach actually wants. */}
+      <div className="csd-rating-legend">
+        {keys.map(k => {
+          const pts = series[k];
+          const first = pts[0].r;
+          const last = pts[pts.length - 1].r;
+          const diff = last - first;
+          return (
+            <span key={k} className="csd-rating-key">
+              <i style={{ background: TC_COLOURS[k] }} />
+              {k} <b>{last}</b>
+              <em className={diff > 0 ? 'up' : diff < 0 ? 'down' : ''}>
+                {diff > 0 ? `+${diff}` : diff < 0 ? diff : '±0'}
+              </em>
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Which phase is furthest behind, so the coach's eye lands on it first.
+function weakestPhaseOf(phases) {
+  const withAcc = ['opening', 'middlegame', 'endgame']
+    .filter(p => phases?.[p]?.accuracy != null);
+  if (withAcc.length < 2) return null;
+  return withAcc.reduce((a, b) => (phases[a].accuracy <= phases[b].accuracy ? a : b));
+}
+
+function raceTopicLabel(r) {
+  if (r?.raceName) return r.raceName;                 // an explicitly named race
+  const slug = String(r?.topic || '').replace(/^racer-/, '');
+  if (!slug) return '—';
+  return RACE_TOPIC_TITLES[slug]
+    // Unknown slug: tidy it rather than print it raw ('back-rank' -> 'Back rank').
+    || slug.replace(/[-_]/g, ' ').replace(/^./, c => c.toUpperCase());
+}
 function fmtTime(secs) {
   if (!secs) return '—';
   const m = Math.floor(secs / 60), s = secs % 60;
@@ -38,6 +147,12 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
 
   // ── Game analysis (deep Stockfish report on the student's last 25 games) ──
   const [analysis, setAnalysis] = useState(null);      // result object when done
+  // The student's latest weekly practice report, if they have earned one.
+  // Coach-scoped: the API resolves it through THIS coach's student link, so
+  // another coach cannot reach it.
+  const [streakReport, setStreakReport] = useState(null);
+  // Lichess / Chess.com rating curves, one series per time control.
+  const [ratings, setRatings] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);   // job running / polling
   const [analyzeErr, setAnalyzeErr] = useState('');
   const [analyzeProgress, setAnalyzeProgress] = useState(null); // { current, total, stage }
@@ -118,6 +233,20 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       .then(r => setData(r.data))
       .catch(e => setError(e.response?.data?.message || 'Failed to load student.'))
       .finally(() => setLoading(false));
+
+    // The student's latest practice report. Absent for most students — they
+    // have to earn it — so a failure here is not an error worth showing.
+    setStreakReport(null);
+    api.get(`/api/coach/students/${studentLinkId}/streak-report`)
+      .then(r => setStreakReport(r.data?.report || null))
+      .catch(() => {});
+
+    // External rating curves. Absent unless the student linked an account, and
+    // it calls two public APIs, so a failure is silent rather than an error.
+    setRatings(null);
+    api.get(`/api/coach/students/${studentLinkId}/rating-history`)
+      .then(r => setRatings(r.data || null))
+      .catch(() => {});
   }, [studentLinkId]);
 
   // Stop polling on unmount or when the student changes.
@@ -146,13 +275,19 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
     }, 3000);
   };
 
-  const startAnalysis = async (force = false) => {
+  // Which platform the current analysis is for. A coach wants to see how their
+  // student plays EVERYWHERE, not only in arena games here — and the three
+  // results are separate reports, so the page remembers which one is showing.
+  const [analyzePlatform, setAnalyzePlatform] = useState('chessnexus');
+
+  const startAnalysis = async (force = false, platform = analyzePlatform) => {
     setAnalyzeErr('');
     setAnalyzing(true);
     setAnalysis(null);
+    setAnalyzePlatform(platform);
     setAnalyzeProgress({ current: 0, total: 25, stage: 'Starting…' });
     try {
-      const r = await api.post(`/api/coach/students/${studentLinkId}/analyze`, { force });
+      const r = await api.post(`/api/coach/students/${studentLinkId}/analyze`, { force, platform });
       if (r.data.status === 'done') {
         setAnalysis(r.data.result);
         setAnalyzing(false);
@@ -312,17 +447,156 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       </div>
 
 
+      {/* ── Rating over recent games, per platform ─────
+          Reconstructed from the ratings attached to each fetched game, so it
+          covers roughly the last 100 games rather than a full career — said
+          plainly under the charts rather than implied otherwise. */}
+      {(ratings?.lichess || ratings?.chesscom) && (
+        <div className="coach-section">
+          <div className="coach-section-head">
+            <h2>📈 Rating over recent games</h2>
+          </div>
+          <div className="csd-rating-grid">
+            {ratings.lichess && (
+              <RatingChart
+                title="Lichess"
+                accent="#a78bfa"
+                who={ratings.lichessName}
+                series={ratings.lichess}
+              />
+            )}
+            {ratings.chesscom && (
+              <RatingChart
+                title="Chess.com"
+                accent="#86efac"
+                who={ratings.chesscomName}
+                series={ratings.chesscom}
+              />
+            )}
+          </div>
+          <p className="csd-chart-desc" style={{ marginTop: 10 }}>
+            Built from this student's most recent games on each site, so it shows the
+            current trend rather than their whole history.
+          </p>
+        </div>
+      )}
+
+      {/* ── The student's weekly practice report ───────
+          Everything the student earned by practising five days running, shown
+          to their coach in one place: which phase is weakest, how they defend,
+          and the study plan built from their own mistakes. */}
+      {streakReport?.payload && (
+        <div className="coach-section">
+          <div className="coach-section-head">
+            <h2>🔥 Practice report</h2>
+            <span className="csd-muted" style={{ fontSize: 12.5 }}>
+              {fmtDate(streakReport.periodStart)} – {fmtDate(streakReport.periodEnd)} ·
+              {' '}{streakReport.milestoneDay}-day streak ·
+              {' '}{streakReport.gamesAnalysed} games
+            </span>
+          </div>
+
+          {streakReport.payload.verdict?.text && (
+            <p className="csd-verdict">🎯 {streakReport.payload.verdict.text}</p>
+          )}
+
+          {/* Accuracy by phase — the fastest read of where a student is losing. */}
+          <div className="csd-phase-row">
+            {['opening', 'middlegame', 'endgame'].map(k => {
+              const ph = streakReport.payload.phases?.[k] || {};
+              const weak = weakestPhaseOf(streakReport.payload.phases);
+              return (
+                <div key={k} className={`csd-phase${weak === k ? ' is-weak' : ''}`}>
+                  <div className="csd-phase-name">{k}</div>
+                  <div className="csd-phase-acc">{ph.accuracy != null ? `${ph.accuracy}%` : '—'}</div>
+                  <div className="csd-phase-sub">
+                    {ph.blunders || 0}b · {ph.mistakes || 0}m · {ph.inaccuracies || 0}i
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Defence and conversion — two things a coach can act on directly. */}
+          <div className="csd-mini-stats">
+            {streakReport.payload.defence?.opportunities > 0 && (
+              <span>
+                🛡 Held <b>{(streakReport.payload.defence.recovered || 0)
+                  + (streakReport.payload.defence.turnedAround || 0)
+                  + (streakReport.payload.defence.held || 0)}</b>
+                {' '}of <b>{streakReport.payload.defence.opportunities}</b> bad positions
+                {streakReport.payload.defence.defensiveScore != null
+                  && ` (${streakReport.payload.defence.defensiveScore}%)`}
+              </span>
+            )}
+            {streakReport.payload.conversion?.hadWinningPosition > 0 && (
+              <span>
+                🏁 Won <b>{streakReport.payload.conversion.converted}</b> of
+                {' '}<b>{streakReport.payload.conversion.hadWinningPosition}</b> winning positions
+              </span>
+            )}
+          </div>
+
+          {/* Where their mistakes cluster. */}
+          {(streakReport.payload.moments?.categories || []).length > 0 && (
+            <div className="csd-cats">
+              {streakReport.payload.moments.categories.map(c => (
+                <span key={c.key} className="csd-cat">
+                  {c.icon} <b>{c.count}</b> {c.label}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* The study plan the report built — what the student was told to do. */}
+          {(streakReport.payload.suggestions || []).length > 0 && (
+            <div className="csd-plan">
+              <div className="csd-plan-head">Study plan given to this student</div>
+              {streakReport.payload.suggestions.map(sg => (
+                <div key={sg.key} className="csd-plan-row">
+                  <span className="csd-plan-ic">{sg.icon}</span>
+                  <span>
+                    <b>{sg.title}</b>
+                    <em>{sg.detail}</em>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ── Game analysis (deep Stockfish report) ───── */}
       <div className="coach-section">
         <div className="coach-section-head csd-analyze-head">
           <h2>🔎 Game analysis</h2>
           <div className="csd-analyze-actions">
-            {analysis && !analyzing && (
-              <button className="btn-ghost" onClick={() => startAnalysis(true)}>↻ Re-analyze</button>
+            {/* One button per platform. Lichess and Chess.com only appear when
+                the student has actually saved that username — offering a button
+                that can only fail is worse than not offering it. */}
+            <button
+              className={analyzePlatform === 'chessnexus' && analysis ? 'btn-ghost' : 'btn-primary'}
+              onClick={() => startAnalysis(analyzePlatform === 'chessnexus' && !!analysis, 'chessnexus')}
+              disabled={analyzing}
+            >
+              {analyzing && analyzePlatform === 'chessnexus' ? 'Analyzing…' : '♟ Chess Nexus'}
+            </button>
+            {student?.lichessUsername && (
+              <button
+                className={analyzePlatform === 'lichess' && analysis ? 'btn-ghost' : 'btn-primary'}
+                onClick={() => startAnalysis(analyzePlatform === 'lichess' && !!analysis, 'lichess')}
+                disabled={analyzing}
+              >
+                {analyzing && analyzePlatform === 'lichess' ? 'Analyzing…' : '🔵 Lichess'}
+              </button>
             )}
-            {!analysis && (
-              <button className="btn-primary" onClick={() => startAnalysis(false)} disabled={analyzing}>
-                {analyzing ? 'Analyzing…' : 'Analyze last 25 games'}
+            {student?.chessComUsername && (
+              <button
+                className={analyzePlatform === 'chesscom' && analysis ? 'btn-ghost' : 'btn-primary'}
+                onClick={() => startAnalysis(analyzePlatform === 'chesscom' && !!analysis, 'chesscom')}
+                disabled={analyzing}
+              >
+                {analyzing && analyzePlatform === 'chesscom' ? 'Analyzing…' : '🟢 Chess.com'}
               </button>
             )}
           </div>
@@ -330,8 +604,12 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
 
         <p className="csd-analyze-hint">
           Runs a deep Stockfish review of {student?.displayName || student?.username || 'the student'}'s
-          last 25 ChessNexus games — accuracy by phase, blunders, playstyle and recurring patterns.
-          Results are cached for 24 hours.
+          last 25 games on the platform you pick — accuracy by phase, blunders, playstyle and
+          recurring patterns. Each platform is analysed separately; press the same button again to
+          re-run. Results are cached for 24 hours.
+          {!student?.lichessUsername && !student?.chessComUsername && (
+            <> Lichess and Chess.com appear here once the student saves those usernames in their profile.</>
+          )}
         </p>
 
         {analyzeErr && <div className="coach-error" style={{ marginTop: 8 }}>⚠️ {analyzeErr}</div>}
@@ -360,7 +638,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
         <div className="coach-section-head">
           <h2>⏱️ Time on app (last 30 days)</h2>
         </div>
-        <p className="csd-chart-desc">Minutes {student?.displayName || student?.username || 'the student'} spent practising each day. Taller bar = more time that day.</p>
+        <p className="csd-chart-desc">Minutes {student?.displayName || student?.username || 'the student'} spent practising each day. Higher line = more time that day.</p>
         {activity.length === 0 ? (
           <div className="coach-empty">No activity recorded yet.</div>
         ) : (() => {
@@ -383,17 +661,60 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                   <span>{peakMins}m</span>
                   <span>0</span>
                 </div>
-                <div className="csd-chart">
-                  {activity.map((a, i) => {
-                    const mins = Math.round((a.totalSeconds || 0) / 60);
-                    const h = Math.max(mins > 0 ? 6 : 2, ((a.totalSeconds || 0) / maxSeconds) * 100);
+                {/* Line rather than bars. Over 30 days the shape of the habit —
+                    building, holding, dropping off — is the thing a coach reads,
+                    and thirty separate bars make that harder to see, not easier. */}
+                <svg
+                  className="csd-line-chart"
+                  viewBox="0 0 300 100"
+                  preserveAspectRatio="none"
+                  role="img"
+                  aria-label={`Practice minutes per day over the last ${activity.length} days`}
+                >
+                  <defs>
+                    <linearGradient id="csdFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.34" />
+                      <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  {(() => {
+                    const n = activity.length;
+                    const x = (i) => (n <= 1 ? 0 : (i / (n - 1)) * 300);
+                    // Invert: SVG y grows downward, and leave 4px of headroom so
+                    // the peak is not clipped by the viewBox edge.
+                    const y = (sec) => 96 - ((sec || 0) / (maxSeconds || 1)) * 92;
+                    const pts = activity.map((a, i) => `${x(i)},${y(a.totalSeconds)}`).join(' ');
                     return (
-                      <div className="csd-bar-wrap" key={i} title={`${fmtDate(a.date)} · ${mins} min`}>
-                        <div className="csd-bar" style={{ height: `${h}%`, opacity: mins > 0 ? 1 : 0.35 }} />
-                      </div>
+                      <>
+                        {/* Soft fill under the line, so a flat stretch still reads
+                            as "little practice" rather than as a missing line. */}
+                        <polygon points={`0,100 ${pts} 300,100`} fill="url(#csdFill)" />
+                        <polyline
+                          points={pts}
+                          fill="none"
+                          stroke="#22d3ee"
+                          strokeWidth="2"
+                          strokeLinejoin="round"
+                          strokeLinecap="round"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                        {/* A dot on each active day — the days that count. */}
+                        {activity.map((a, i) => ((a.totalSeconds || 0) > 0 ? (
+                          <circle
+                            key={i}
+                            cx={x(i)}
+                            cy={y(a.totalSeconds)}
+                            r="2.5"
+                            fill="#22d3ee"
+                            vectorEffect="non-scaling-stroke"
+                          >
+                            <title>{`${fmtDate(a.date)} · ${Math.round((a.totalSeconds || 0) / 60)} min`}</title>
+                          </circle>
+                        ) : null))}
+                      </>
                     );
-                  })}
-                </div>
+                  })()}
+                </svg>
               </div>
               {/* X-axis: date range */}
               <div className="csd-chart-xaxis">
@@ -435,30 +756,22 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               <thead>
                 <tr>
                   <th>Date</th>
-                  <th>Puzzles</th>
+                  <th>Topic</th>
                   <th>Correct</th>
                   <th>Wrong</th>
-                  <th>Accuracy</th>
                   <th>Time</th>
                   <th>Score</th>
-                  <th>Rank</th>
                 </tr>
               </thead>
               <tbody>
                 {raceResults.map((r, i) => (
                   <tr key={i}>
                     <td>{fmtDate(r.finishedAt)}</td>
-                    <td>{r.puzzlesSolved}/{r.totalPuzzles}</td>
+                    <td>{raceTopicLabel(r)}</td>
                     <td className="cell-good">{r.correctCount}</td>
                     <td className="cell-bad">{r.wrongCount}</td>
-                    <td>
-                      <span className={`acc-pill ${r.accuracy >= 80 ? 'acc-high' : r.accuracy >= 50 ? 'acc-mid' : 'acc-low'}`}>
-                        {r.accuracy}%
-                      </span>
-                    </td>
                     <td>{fmtTime(r.finishTime)}</td>
                     <td className="cell-score">{fmt(r.finalScore)}</td>
-                    <td>#{r.rank}</td>
                   </tr>
                 ))}
               </tbody>

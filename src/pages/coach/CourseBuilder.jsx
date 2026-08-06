@@ -35,9 +35,37 @@ export default function CourseBuilder() {
   const [lessonErr, setLessonErr] = useState('');
 
   // Master game picker (searches the public master-games API).
+  //
+  // Searching by player name only was too blunt for building a course: a coach
+  // teaching the Sicilian wants Sicilian games, not to remember which players
+  // played it. The API already supported family + opening filters — the same
+  // two-level pair the Master Games page uses — they were simply never offered
+  // here.
   const [mgQuery, setMgQuery] = useState('');
   const [mgResults, setMgResults] = useState([]);
   const [mgSearching, setMgSearching] = useState(false);
+  const [mgFamilies, setMgFamilies] = useState([]);     // major openings
+  const [mgFamily, setMgFamily] = useState('');
+  const [mgVariations, setMgVariations] = useState([]); // variations within one
+  const [mgOpening, setMgOpening] = useState('');
+  const [mgSearched, setMgSearched] = useState(false);  // so "no results" only shows after a search
+
+  // Load the opening list once, when the coach first opens this tab.
+  useEffect(() => {
+    if (lessonMode !== 'masterGame' || mgFamilies.length) return;
+    api.get('/api/master-games/filters')
+      .then(r => setMgFamilies(r.data?.families || []))
+      .catch(() => {});
+  }, [lessonMode, mgFamilies.length]);
+
+  // Variations belong to a family, so reload them whenever the family changes.
+  useEffect(() => {
+    setMgOpening('');
+    if (!mgFamily) { setMgVariations([]); return; }
+    api.get(`/api/master-games/variations?family=${encodeURIComponent(mgFamily)}`)
+      .then(r => setMgVariations(r.data?.variations || []))
+      .catch(() => setMgVariations([]));
+  }, [mgFamily]);
   // Endgame picker. Source 'free' = public endgames collection; source 'premium'
   // = admin premium endgame trainer picks (subscribed coaches only, free for their
   // enrolled students within the course).
@@ -197,12 +225,20 @@ export default function CourseBuilder() {
 
   // ── Master game lesson ──
   const searchMasterGames = async () => {
-    if (!mgQuery.trim()) return;
+    // Any ONE filter is enough — player, opening, or a specific variation. A
+    // coach building an opening course should not have to name a player.
+    if (!mgQuery.trim() && !mgFamily && !mgOpening) return;
     setMgSearching(true);
     try {
-      const r = await api.get(`/api/master-games/?player=${encodeURIComponent(mgQuery.trim())}&limit=20`);
+      const qs = new URLSearchParams({ limit: '20' });
+      if (mgQuery.trim()) qs.set('player', mgQuery.trim());
+      if (mgFamily) qs.set('family', mgFamily);
+      // `opening` is the variation; it already implies the family, but sending
+      // both keeps the query specific if the same variation name appears twice.
+      if (mgOpening) qs.set('opening', mgOpening);
+      const r = await api.get(`/api/master-games/?${qs.toString()}`);
       setMgResults(r.data?.games || []);
-    } catch { setMgResults([]); } finally { setMgSearching(false); }
+    } catch { setMgResults([]); } finally { setMgSearching(false); setMgSearched(true); }
   };
   const addMasterGameLesson = async (masterGameId) => {
     setLessonErr('');
@@ -680,13 +716,46 @@ export default function CourseBuilder() {
 
                 {lessonMode === 'masterGame' && (
                   <>
+                    {/* Opening filters. Two levels, same as the Master Games
+                        page: pick a major opening, then narrow to a variation.
+                        Either can be used on its own, with or without a player. */}
+                    <div className="cb-row" style={{ marginBottom: 8, gap: 8 }}>
+                      <select
+                        className="cb-input"
+                        style={{ marginBottom: 0 }}
+                        value={mgFamily}
+                        onChange={e => setMgFamily(e.target.value)}
+                      >
+                        <option value="">All openings</option>
+                        {mgFamilies.map(f => <option key={f} value={f}>{f}</option>)}
+                      </select>
+                      <select
+                        className="cb-input"
+                        style={{ marginBottom: 0 }}
+                        value={mgOpening}
+                        onChange={e => setMgOpening(e.target.value)}
+                        disabled={!mgFamily || mgVariations.length === 0}
+                        title={mgFamily ? 'Narrow to one variation' : 'Choose an opening first'}
+                      >
+                        <option value="">
+                          {mgFamily ? `All ${mgFamily} variations` : 'All variations'}
+                        </option>
+                        {mgVariations.map(v => <option key={v} value={v}>{v}</option>)}
+                      </select>
+                    </div>
+
                     <div className="cb-row" style={{ alignItems: 'center' }}>
                       <input className="cb-input" style={{ marginBottom: 0 }}
-                        placeholder="Search by player (e.g. Kasparov)"
+                        placeholder="Player name (optional, e.g. Kasparov)"
                         value={mgQuery}
                         onChange={e => setMgQuery(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') searchMasterGames(); }} />
-                      <button className="btn-primary" onClick={searchMasterGames} disabled={!mgQuery.trim() || mgSearching} style={{ flex: '0 0 auto' }}>
+                      <button
+                        className="btn-primary"
+                        onClick={searchMasterGames}
+                        disabled={(!mgQuery.trim() && !mgFamily && !mgOpening) || mgSearching}
+                        style={{ flex: '0 0 auto' }}
+                      >
                         {mgSearching ? 'Searching…' : 'Search'}
                       </button>
                     </div>
@@ -702,8 +771,14 @@ export default function CourseBuilder() {
                         ))}
                       </div>
                     )}
+                    {mgSearched && !mgSearching && mgResults.length === 0 && (
+                      <p className="cb-muted" style={{ marginTop: 8, fontSize: 12 }}>
+                        No games matched. Try a broader opening, or clear the player name.
+                      </p>
+                    )}
                     <p className="cb-muted" style={{ marginTop: 8, fontSize: 12 }}>
                       Master games are free professional games — students replay them move by move.
+                      Filter by opening to build a themed course, or search a player for their classics.
                     </p>
                   </>
                 )}

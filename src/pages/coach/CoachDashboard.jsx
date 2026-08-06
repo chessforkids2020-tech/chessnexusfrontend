@@ -4,6 +4,7 @@ import api from '../../api';
 import socket from '../../socket';
 import CoachChatFab from '../../components/coach/CoachChatFab';
 import CoachNotificationBell from '../../components/coach/CoachNotificationBell';
+import CoachHelpMenu from '../../components/coach/CoachHelpMenu';
 import ExpiryReminder from '../../components/ExpiryReminder';
 import './CoachDashboard.css';
 import './CoachOnboarding.css'; // shared button styles
@@ -360,6 +361,11 @@ export default function CoachDashboard() {
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <CoachNotificationBell />
+          {/* Help sits NEXT TO Profile because that is where a coach looks when
+              something is wrong. Report a bug, ask for a feature, or book a call
+              — all three already existed, just nowhere a coach would find them
+              mid-lesson. */}
+          <CoachHelpMenu />
           <Link to="/coach/profile" className="btn-ghost">👤 Profile</Link>
         </div>
       </div>

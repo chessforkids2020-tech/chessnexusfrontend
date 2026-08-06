@@ -723,11 +723,28 @@ export default function useLiveKitRoom() {
     refresh(r);
   }, [refresh]);
 
+  // SERIALISES every camera change. Two setCameraEnabled calls overlapping is
+  // a real way to end up with a LIVE BUT FROZEN track: the browser is still
+  // tearing the device down when the next acquisition starts, and Chrome hands
+  // back a MediaStreamTrack that reports readyState 'live' while producing zero
+  // frames. Nothing downstream can tell that apart from a working camera —
+  // LiveKit dutifully encodes and sends black.
+  //
+  // A promise chain means off→on→off, however fast the clicking, always runs in
+  // order and never overlaps.
+  const camQueueRef = useRef(Promise.resolve());
+  const enqueueCam = useCallback((fn) => {
+    const next = camQueueRef.current.then(fn, fn);
+    // Swallow rejections so one failure cannot poison every later call.
+    camQueueRef.current = next.catch(() => {});
+    return next;
+  }, []);
+
   // Set the camera to an EXPLICIT state. `toggleCam` flips whatever is current;
   // this says exactly what you want, which matters for repair flows — two
   // toggles in a row can race (each reads the live published state) and leave a
   // student's camera OFF, with a black tile and no way back.
-  const setCam = useCallback(async (want) => {
+  const setCam = useCallback((want) => enqueueCam(async () => {
     const r = roomRef.current; if (!r) return;
     const isOn = r.localParticipant.isCameraEnabled;
     if (isOn === want) return;          // already there
@@ -776,7 +793,7 @@ export default function useLiveKitRoom() {
     // Resync participant state here rather than in toggleCam, so the repair
     // flows (which call setCam directly) get it too.
     refresh(r);
-  }, [refresh, activeCameraId]);
+  }), [enqueueCam, refresh, activeCameraId]);
 
   // Flip the camera. Delegates to setCam so both paths share one implementation.
   const toggleCam = useCallback(async () => {
@@ -796,6 +813,69 @@ export default function useLiveKitRoom() {
     }
   }, [screenOn, refresh]);
 
+  // ── FROZEN CAMERA WATCHDOG ──────────────────────────────────────────────
+  //
+  // The failure nothing else here can see: the MediaStreamTrack reports
+  // readyState 'live' and muted === false, LiveKit is happily publishing, and
+  // the camera is producing ZERO FRAMES. Every other repair in this file
+  // re-attaches or republishes — all of which faithfully re-plumb a dead
+  // source. The only cure is asking the browser for the device again.
+  //
+  // Detection uses the sender's own stats: framesPerSecond stuck at 0 while the
+  // track claims to be live. Two consecutive zero readings (~10s) before acting,
+  // so a momentarily idle camera is not restarted for no reason.
+  useEffect(() => {
+    let zeroRuns = 0;
+    let restarting = false;
+
+    const check = async () => {
+      const r = roomRef.current;
+      if (!r || restarting) return;
+      try {
+        const pub = r.localParticipant?.getTrackPublication?.('camera');
+        const track = pub?.videoTrack || pub?.track;
+        const raw = track?.mediaStreamTrack;
+        // Only meaningful when the camera is supposed to be sending.
+        if (!track || !raw || pub?.isMuted || raw.readyState !== 'live') {
+          zeroRuns = 0;
+          return;
+        }
+
+        const stats = await track.getRTCStatsReport?.();
+        if (!stats) return;
+        let fps = null;
+        stats.forEach((rep) => {
+          if (rep.type === 'outbound-rtp' && rep.kind === 'video') {
+            if (typeof rep.framesPerSecond === 'number') fps = rep.framesPerSecond;
+          }
+        });
+        if (fps === null) return;          // browser does not report it — cannot judge
+
+        if (fps > 0) { zeroRuns = 0; return; }
+
+        // Live track, zero frames.
+        if (++zeroRuns < 2) return;        // wait for a second reading
+        zeroRuns = 0;
+        restarting = true;
+        console.warn('[camera] live track producing 0 fps — restarting the device');
+        try {
+          // restartTrack re-acquires from the OS and swaps the MediaStreamTrack
+          // in place, keeping the same publication so subscribers do not have to
+          // resubscribe. This is the one repair that fixes a frozen camera.
+          await track.restartTrack(VIDEO_CAPTURE_DEFAULTS);
+        } catch {
+          // Device busy or gone: fall back to a full off→on through the queue.
+          try { await setCam(false); await setCam(true); } catch { /* give up */ }
+        } finally {
+          restarting = false;
+        }
+      } catch { /* stats unavailable — nothing to do */ }
+    };
+
+    const id = setInterval(check, 5000);
+    return () => clearInterval(id);
+  }, [setCam]);
+
   useEffect(() => () => { roomRef.current?.disconnect().catch(() => {}); }, []);
 
   return {
@@ -811,5 +891,8 @@ export default function useLiveKitRoom() {
     // Autoplay-blocked audio: `audioBlocked` is true when the browser is refusing
     // to play remote voices; call enableAudio() from a click to unblock.
     audioBlocked, enableAudio,
+    // The live Room, for diagnostics only (camera state reporting). Read it,
+    // do not drive the session through it — everything else here wraps it.
+    get room() { return roomRef.current; },
   };
 }
