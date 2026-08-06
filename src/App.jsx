@@ -43,6 +43,7 @@ import PlayWithFriendsPage from "./pages/marketing/PlayWithFriendsPage";
 import MastersGamesPage from "./pages/marketing/MastersGamesPage";
 import AnalyseMyChessGamePage from "./pages/marketing/AnalyseMyChessGamePage";
 import ImproveAtChessPage from "./pages/marketing/ImproveAtChessPage";
+import PracticeStreakPage from "./pages/marketing/PracticeStreakPage";
 import ChessCoachingPage from "./pages/marketing/ChessCoachingPage";
 import FreeCoachPlanPage from "./pages/marketing/FreeCoachPlanPage";
 import CoachGuidePage from "./pages/marketing/CoachGuidePage";
@@ -556,6 +557,14 @@ export default function App() {
         <Route path="/improve-at-chess" element={
           <MarketingLayout>
             <ImproveAtChessPage />
+          </MarketingLayout>
+        } />
+        {/* The 5-day practice streak and the weekly report. The report
+            itself is behind a login, so this page is where a search engine
+            or an AI can learn what it contains. */}
+        <Route path="/chess-practice-streak" element={
+          <MarketingLayout>
+            <PracticeStreakPage />
           </MarketingLayout>
         } />
         <Route path="/chess-coaching" element={

@@ -66,6 +66,14 @@ export const FEATURES = [
       "Your Nexus Guide studies your own games, finds your weaknesses, replays your mistakes and drills the tactics you keep missing — free.",
   },
   {
+    slug: "/chess-practice-streak",
+    appPath: "/dashboard",
+    icon: "🔥",
+    title: "Practice Streak & Weekly Report",
+    blurb:
+      "Practise five days running and unlock a report on every game you played — accuracy by phase, how you defend, the endgames you reached, and a study plan from your own mistakes.",
+  },
+  {
     slug: "/chess-coaching",
     appPath: "/coach/onboarding",
     icon: "🎓",
