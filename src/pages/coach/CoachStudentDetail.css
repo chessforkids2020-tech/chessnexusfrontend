@@ -247,6 +247,16 @@
   white-space: nowrap;
 }
 
+/* Topic titles run long ("Discovered Attack, Double Check & Capture the
+   Defender"), and every other cell is nowrap. Let this one wrap onto two lines
+   instead of pushing the whole table into horizontal scroll. */
+.cell-topic {
+  white-space: normal;
+  min-width: 150px;
+  max-width: 230px;
+  line-height: 1.35;
+}
+
 .csd-table tr:last-child td { border-bottom: none; }
 
 .csd-table tr:hover td { background: rgba(6,182,212,0.05); }
@@ -521,9 +531,34 @@
 .csd-rating-title { font-size: 14px; font-weight: 800; }
 .csd-rating-who { font-size: 11.5px; color: #64748b; }
 
+/* Plot = axis column + chart. The labels sit outside the svg because the chart
+   stretches horizontally (preserveAspectRatio="none"), which would distort any
+   text drawn inside it. */
+.csd-rating-plot {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.csd-rating-yaxis {
+  position: relative;
+  flex: none;
+  width: 34px;
+  height: 110px;
+  font-size: 10px;
+  color: rgba(226, 232, 240, 0.45);
+  font-variant-numeric: tabular-nums;
+}
+.csd-rating-yaxis span {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
 .csd-rating-svg {
   display: block;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: 110px;
   overflow: visible;
 }
@@ -548,7 +583,16 @@
 /* ── Time on app: line instead of bars ───────────────────────────────────── */
 .csd-line-chart {
   display: block;
-  width: 100%;
-  height: 100%;
+  flex: 1;
+  min-width: 0;
+  /* A FIXED height, matching the bar chart this replaced. The svg was set to
+     height:100% inside a container with no height of its own, so it stretched
+     to fill the page — a 30-day line does not need half a screen to read. */
+  height: 160px;
+  padding: 16px;
+  background: rgba(20, 20, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-sizing: border-box;
   overflow: visible;
 }

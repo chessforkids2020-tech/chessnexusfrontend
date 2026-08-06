@@ -25,13 +25,24 @@ function fmtDate(d) { return d ? new Date(d).toLocaleDateString(undefined, { mon
 // coach-facing table is the kind of thing that makes an app look unfinished, so
 // map it — and fall back to the race's own NAME when the coach or admin gave it
 // one, since that is more specific than the topic it was built from.
+// Race topic id -> the title the topic is published under, copied from
+// backend/seed-race-topics.js (the same rows the Topic collection is seeded
+// from, and the same titles the student saw when they picked the race).
+// These are NOT derivable from the id: no amount of tidying turns
+// 'forkpinskewer' into 'Fork, Pin & Skewer' or 'mate123' into 'Mate in 1, 2, 3'.
 const RACE_TOPIC_TITLES = {
-  tactics: 'Tactics',
-  endgame: 'Endgames',
-  openings: 'Openings',
-  strategy: 'Strategy',
-  defense: 'Defence',
-  mixed: 'Mixed',
+  opening:       'Opening',
+  middlegame:    'Middlegame',
+  endgame:       'Endgame',
+  pawnendgame:   'Pawn Endgame & Advanced Pawn',
+  mate123:       'Mate in 1, 2, 3',
+  forkpinskewer: 'Fork, Pin & Skewer',
+  discovered:    'Discovered Attack, Double Check & Capture the Defender',
+  checkmate:     'Checkmate',
+  attraction:    'Attraction, Clearance & Deflection',
+  hanging:       'Hanging Piece, Sacrifice & Trapped Piece',
+  xray:          'X-Ray, Queen/Rook Endgame & Zugzwang',
+  mixed:         'Mixed',
 };
 // One platform's rating curve, one line per time control.
 //
@@ -54,9 +65,18 @@ function RatingChart({ title, accent, who, series }) {
   const all = keys.flatMap(k => series[k].map(p => p.r));
   const lo = Math.min(...all);
   const hi = Math.max(...all);
-  const pad = Math.max(20, Math.round((hi - lo) * 0.12));   // never a flat line on the edge
-  const yMin = lo - pad;
-  const yMax = hi + pad;
+  // Round the scale out to friendly numbers so the axis reads 800 / 900 / 1000
+  // rather than 807 / 913 / 1019. A rating chart without a readable scale shows
+  // that the line moved but not between WHAT — which is most of the value.
+  const span = Math.max(40, hi - lo);
+  const step = span > 600 ? 200 : span > 300 ? 100 : span > 120 ? 50 : 25;
+  const yMin = Math.floor((lo - span * 0.12) / step) * step;
+  const yMax = Math.ceil((hi + span * 0.12) / step) * step;
+
+  // Gridline values, top to bottom. Capped so a wide range does not draw fifty
+  // lines across a 110px chart.
+  const ticks = [];
+  for (let v = yMax; v >= yMin && ticks.length < 6; v -= step) ticks.push(v);
 
   // Shared X scale too: lines from the same period must line up in time.
   const allT = keys.flatMap(k => series[k].map(p => p.t));
@@ -72,21 +92,45 @@ function RatingChart({ title, accent, who, series }) {
         {who && <span className="csd-rating-who">@{who}</span>}
       </div>
 
-      <svg className="csd-rating-svg" viewBox="0 0 300 100" preserveAspectRatio="none" role="img"
-        aria-label={`${title} rating over recent games`}>
-        {keys.map(k => (
-          <polyline
-            key={k}
-            points={series[k].map(p => `${xOf(p.t)},${yOf(p.r)}`).join(' ')}
-            fill="none"
-            stroke={TC_COLOURS[k]}
-            strokeWidth="2"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
-      </svg>
+      {/* The axis labels live OUTSIDE the svg. The chart uses
+          preserveAspectRatio="none" so its lines fill the width, and anything
+          drawn inside — including text — gets stretched horizontally with it. */}
+      <div className="csd-rating-plot">
+        <div className="csd-rating-yaxis">
+          {ticks.map(v => (
+            <span key={v} style={{ top: `${((yMax - v) / (yMax - yMin)) * 100}%` }}>{v}</span>
+          ))}
+        </div>
+
+        <svg className="csd-rating-svg" viewBox="0 0 300 100" preserveAspectRatio="none" role="img"
+          aria-label={`${title} rating from ${yMin} to ${yMax} over recent games`}>
+          {/* Gridlines at the same values as the labels beside them. */}
+          {ticks.map(v => {
+            const y = yOf(v);
+            return (
+              <line
+                key={v}
+                x1="0" y1={y} x2="300" y2={y}
+                stroke="rgba(148,163,184,0.16)"
+                strokeWidth="1"
+                vectorEffect="non-scaling-stroke"
+              />
+            );
+          })}
+          {keys.map(k => (
+            <polyline
+              key={k}
+              points={series[k].map(p => `${xOf(p.t)},${yOf(p.r)}`).join(' ')}
+              fill="none"
+              stroke={TC_COLOURS[k]}
+              strokeWidth="2"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          ))}
+        </svg>
+      </div>
 
       {/* Legend doubles as a summary: current rating and the change across the
           window, which is the number a coach actually wants. */}
@@ -119,13 +163,27 @@ function weakestPhaseOf(phases) {
   return withAcc.reduce((a, b) => (phases[a].accuracy <= phases[b].accuracy ? a : b));
 }
 
+// The Topic column answers "what did they practise?" — so it shows the puzzle
+// TOPIC ('Mate in 1, 2, 3'), not the race's marketing name. A race called
+// "Puzzle Storm Sprint" tells a coach nothing about the student's weakness;
+// the topic is the whole reason the column exists.
 function raceTopicLabel(r) {
-  if (r?.raceName) return r.raceName;                 // an explicitly named race
   const slug = String(r?.topic || '').replace(/^racer-/, '');
-  if (!slug) return '—';
-  return RACE_TOPIC_TITLES[slug]
-    // Unknown slug: tidy it rather than print it raw ('back-rank' -> 'Back rank').
-    || slug.replace(/[-_]/g, ' ').replace(/^./, c => c.toUpperCase());
+  if (slug) {
+    return RACE_TOPIC_TITLES[slug]
+      // A topic seeded after this map was written: tidy the id rather than
+      // print it raw ('back-rank' -> 'Back rank').
+      || slug.replace(/[-_]/g, ' ').replace(/^./, c => c.toUpperCase());
+  }
+  // Only when there is no topic at all (custom/one-off races) fall back to the
+  // name, minus any trailing date the Date column already shows.
+  const name = String(r?.raceName || '')
+    .replace(/\s*[–—-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '')
+    .replace(/\s*[–—-]\s*\d{4}-\d{2}-\d{2}\s*$/, '')
+    .replace(/\s*\(\s*\d{1,2}\s+\w+\s+\d{4}\s*\)\s*$/, '')
+    .trim();
+  const dateOnly = /^\d{1,2}\s+\w+\s+\d{4}$/.test(name) || /^\d{4}-\d{2}-\d{2}$/.test(name);
+  return (name && !dateOnly) ? name : '—';
 }
 function fmtTime(secs) {
   if (!secs) return '—';
@@ -698,18 +756,23 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                           strokeLinecap="round"
                           vectorEffect="non-scaling-stroke"
                         />
-                        {/* A dot on each active day — the days that count. */}
+                        {/* A marker on each active day. Drawn as a zero-length
+                            stroked line with a round cap rather than a <circle>:
+                            preserveAspectRatio="none" stretches the viewBox to
+                            fill the width, which squashes any circle into an
+                            oval, whereas a non-scaling stroke stays round. */}
                         {activity.map((a, i) => ((a.totalSeconds || 0) > 0 ? (
-                          <circle
+                          <line
                             key={i}
-                            cx={x(i)}
-                            cy={y(a.totalSeconds)}
-                            r="2.5"
-                            fill="#22d3ee"
+                            x1={x(i)} y1={y(a.totalSeconds)}
+                            x2={x(i)} y2={y(a.totalSeconds)}
+                            stroke="#22d3ee"
+                            strokeWidth="6"
+                            strokeLinecap="round"
                             vectorEffect="non-scaling-stroke"
                           >
                             <title>{`${fmtDate(a.date)} · ${Math.round((a.totalSeconds || 0) / 60)} min`}</title>
-                          </circle>
+                          </line>
                         ) : null))}
                       </>
                     );
@@ -767,7 +830,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                 {raceResults.map((r, i) => (
                   <tr key={i}>
                     <td>{fmtDate(r.finishedAt)}</td>
-                    <td>{raceTopicLabel(r)}</td>
+                    <td className="cell-topic">{raceTopicLabel(r)}</td>
                     <td className="cell-good">{r.correctCount}</td>
                     <td className="cell-bad">{r.wrongCount}</td>
                     <td>{fmtTime(r.finishTime)}</td>
