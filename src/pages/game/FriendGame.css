@@ -127,11 +127,14 @@
 }
 .fg-left { display: flex; flex-direction: column; gap: 14px; }
 /* Middle card holds only the board — no padding/gap so it hugs the frame top.
-   Pulled up so the board sits higher than the side cards. */
+   NOTE: this used to pull itself up with `margin-top: -28px` to sit higher than
+   the side cards. Combined with `overflow: hidden` on the same element, that
+   clipped the top of the board: rank 8 and the board's own frame were cut off,
+   so the top row looked like it was missing. Sit at the natural top instead —
+   the card already hugs the frame because it has no padding. */
 .fg-center {
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-  gap: 0; padding: 0; overflow: hidden;
-  margin-top: -28px;
+  gap: 0; padding: 0;
 }
 .fg-center .fg-board-wrap { display: block; line-height: 0; }
 .fg-right { display: flex; flex-direction: column; gap: 10px; }
