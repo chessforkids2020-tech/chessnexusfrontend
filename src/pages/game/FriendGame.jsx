@@ -10,14 +10,24 @@ import FriendGameChat from '../../components/FriendGameChat';
 import UserAvatar from '../../components/UserAvatar';
 import './FriendGame.css';
 
-const SOCKET_URL = import.meta?.env?.VITE_API_URL ||
+// NOTE: `import.meta.env.X` must be written EXACTLY like this — plain, with no
+// optional chaining. Vite performs a literal TEXT substitution of that pattern at
+// build time; `import.meta?.env?.VITE_API_URL` does not match, so it survives into
+// the bundle as a real runtime lookup. In a browser `import.meta.env` does not
+// exist, so it evaluated to undefined and fell through to the origin — this page
+// tried to open a socket to https://www.chessnexus.in/friendgame (Vercel, which
+// runs no Socket.IO server) instead of the API host. It never connected, never
+// created a room, and never reached the backend, so there was nothing in the
+// server logs and no console error either.
+const SOCKET_URL = import.meta.env.VITE_API_URL ||
   window.location.origin.replace('5173', '5000');
 
-// In production the Render proxy supports WebSocket natively; prefer it so we
-// don't stall on HTTP long-polling (which Render's infrastructure can buffer for
-// minutes). Locally, fall back to polling first so it still works without WSS.
-const IS_PROD = import.meta?.env?.PROD;
-const SOCKET_TRANSPORTS = IS_PROD ? ['websocket'] : ['polling', 'websocket'];
+// Production prefers a native WebSocket so we don't stall on HTTP long-polling.
+// Polling stays in the list as a fallback: websocket-only has no second chance if
+// the WSS upgrade is blocked (corporate proxy, some mobile networks), and this
+// page is the only socket in the app that used to forbid it.
+const IS_PROD = import.meta.env.PROD;
+const SOCKET_TRANSPORTS = IS_PROD ? ['websocket', 'polling'] : ['polling', 'websocket'];
 
 function fmtClock(secs) {
   if (secs == null) return '--:--';
