@@ -554,6 +554,14 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
     setPlayOver(null);
     setPlayMsg("");
     setPlaying(true);
+
+    // Tell the server an endgame was practised. Play-out runs entirely in the
+    // browser (client-side Stockfish, no round trip), so without this the server
+    // never learns it happened and the practice streak's endgame requirement
+    // could only ever be met from the PREMIUM trainer — playing a rook or pawn
+    // endgame here counted for nothing.
+    // Fire-and-forget: a failure must not interrupt the game.
+    api.post("/api/endgame-play/played", { fen: current.fen }).catch(() => {});
   }, [current?.fen]);
 
   // A user move during play-out, followed by the engine's reply.

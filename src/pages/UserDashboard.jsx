@@ -17,6 +17,7 @@ import FoundingBadge from "../components/FoundingBadge";
 import { useIsFoundingSupporter } from "../context/SupporterContext";
 import UserAvatar from "../components/UserAvatar";
 import StreakMilestoneModal from "../components/StreakMilestoneModal";
+import StreakReminderModal from "../components/StreakReminderModal";
 import CoffeeCta from "../components/CoffeeCta";
 
 // ─── Badge Tracks: Starter → Gold → Platinum ────────────────────────────────
@@ -583,6 +584,7 @@ function TodayStrip() {
   const [hasPrivateCoach, setHasPrivateCoach] = React.useState(false);
   const [showHow, setShowHow] = React.useState(false);
   const [milestone, setMilestone] = React.useState(null);  // streak count to celebrate
+  const [reminder, setReminder] = React.useState(null);    // daily nudge toward the next report
   const [me, setMe] = React.useState(null);                // for the username prompt
 
   React.useEffect(() => {
@@ -607,6 +609,32 @@ function TodayStrip() {
         // milestones passed against reports actually generated — not a
         // `current % 5` test here, which would silently skip a student who
         // reached day 5 and then practised again before opening the dashboard.
+        // Daily nudge, ONCE PER DAY, whenever a report is not already owed.
+        // Keyed by the server's IST date so it fires on the student's day
+        // boundary rather than the browser's, and scoped by user id because
+        // coaches sign into many student accounts on one browser.
+        const istDate = s?.today?.istDate;
+        if (!s?.reportDue && istDate) {
+          const uid = s?.userId || 'me';
+          const seenKey = `streakReminderSeen:${uid}:${istDate}`;
+          if (!localStorage.getItem(seenKey)) {
+            // Drop this user's older reminder keys — one per day would otherwise
+            // accumulate forever in a browser a family shares.
+            try {
+              const prefix = `streakReminderSeen:${uid}:`;
+              for (let i = localStorage.length - 1; i >= 0; i--) {
+                const k = localStorage.key(i);
+                if (k && k.startsWith(prefix) && k !== seenKey) localStorage.removeItem(k);
+              }
+            } catch { /* private mode / quota — not worth failing over */ }
+            localStorage.setItem(seenKey, '1');
+            setReminder(s);
+            api.get('/api/auth/me')
+              .then(r => { if (alive) setMe(r.data?.user || r.data || null); })
+              .catch(() => {});
+          }
+        }
+
         if (s?.reportDue) {
           // Once per milestone per browser, so the modal is a reward and not a
           // nag on every page load. Scoped by user id: coaches sign into many
@@ -748,6 +776,18 @@ function TodayStrip() {
           onClose={() => setMilestone(null)}
         />
       )}
+      {/* The milestone modal wins when both could show — being offered the
+          report you just earned matters more than being reminded to keep
+          going. */}
+      {!milestone && reminder && (
+        <StreakReminderModal
+          streak={reminder.current}
+          progress={reminder.today}
+          milestone={reminder.milestone}
+          user={me}
+          onClose={() => setReminder(null)}
+        />
+      )}
     </>
   );
 }
@@ -763,7 +803,8 @@ function StreakHowTo({ progress, onClose }) {
   // EVERY day made the bar high enough that most students would break the streak
   // on an ordinary busy evening — and a reward nobody reaches is not a reward.
   const rows = [
-    { key: 'puzzles',  icon: '\u{1F9E9}', label: 'puzzles, any topic', to: '/training/healthy-mix' },
+    { key: 'puzzles',  icon: '\u{1F9E9}', label: 'puzzles', to: '/training/healthy-mix',
+      note: 'Healthy Mix, themes, pieces or rating — all count' },
     { key: 'games',    icon: '⚔️', label: 'game — Chess Nexus, Chess.com or Lichess',
       to: '/arenatournament', note: 'blitz, rapid or classical' },
     { key: 'endgames', icon: '♟️', label: 'endgame against the computer', to: '/study/endgames' },

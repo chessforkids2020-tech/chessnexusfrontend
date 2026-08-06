@@ -49,6 +49,17 @@ export default function StreakMilestoneModal({ streak, user, onClose }) {
   const [phase, setPhase] = useState('offer');   // offer | celebrating | queued | error
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
+  // What the report costs THIS user. Shown before they press Generate — being
+  // charged XP you were never told about feels like a trick, even at 100.
+  const [cost, setCost] = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    api.get('/api/streak-report/price')
+      .then(r => { if (alive) setCost(r.data || null); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
 
   // Without these we can only see their Chess Nexus games, which for most
   // students is a small slice of the week — worth saying before they generate,
@@ -101,8 +112,24 @@ export default function StreakMilestoneModal({ streak, user, onClose }) {
               </div>
             )}
 
-            <button type="button" style={S.primary} onClick={generate} disabled={busy}>
-              {busy ? 'Starting…' : 'Generate my report'}
+            {cost && !cost.free && (
+              <div style={{ ...S.cost, ...(cost.affordable ? {} : S.costShort) }}>
+                <span>Costs <b>{cost.price} XP</b></span>
+                <span style={S.costBal}>
+                  you have {cost.balance}
+                  {!cost.affordable && ' — solve a few more puzzles'}
+                </span>
+              </div>
+            )}
+            <button
+              type="button"
+              style={{ ...S.primary, ...(cost && !cost.affordable ? S.primaryOff : {}) }}
+              onClick={generate}
+              disabled={busy || (cost ? !cost.affordable : false)}
+            >
+              {busy ? 'Starting…'
+                : cost && !cost.free ? `Generate my report · ${cost.price} XP`
+                : 'Generate my report'}
             </button>
             <button type="button" style={S.ghost} onClick={onClose}>Maybe later</button>
           </>
@@ -146,6 +173,15 @@ const S = {
   flame: { fontSize: 46, lineHeight: 1 },
   title: { margin: '8px 0 6px', fontSize: 26, fontWeight: 800, color: '#f8fafc' },
   body: { margin: '0 0 18px', fontSize: 14.5, lineHeight: 1.6, color: '#cbd5e1' },
+  cost: {
+    display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
+    gap: 10, padding: '9px 12px', marginBottom: 10, borderRadius: 10,
+    background: 'rgba(6,182,212,0.10)', border: '1px solid rgba(6,182,212,0.3)',
+    fontSize: 13, color: '#e2e8f0',
+  },
+  costShort: { background: 'rgba(245,158,11,0.10)', borderColor: 'rgba(245,158,11,0.4)', color: '#fcd34d' },
+  costBal: { fontSize: 12, color: '#94a3b8' },
+  primaryOff: { opacity: 0.5, cursor: 'not-allowed' },
   warn: {
     textAlign: 'left', background: 'rgba(245,158,11,0.10)',
     border: '1px solid rgba(245,158,11,0.35)', borderRadius: 10,
