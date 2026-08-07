@@ -274,9 +274,17 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       // (Re)point the <video> at whatever the CURRENT mediaStreamTrack is. This must
       // run again when a processor is attached/detached/changed — otherwise the coach's
       // own tile stays on the raw camera and effect changes only show after a reload.
+      // IDEMPOTENT. Assigning srcObject tears down and rebuilds the element's
+      // pipeline, which paints one black frame — so doing it unconditionally on
+      // a 1s interval made the coach's own tile strobe. Only re-point when the
+      // underlying MediaStreamTrack is genuinely different from what is already
+      // playing.
       const attachLocal = () => {
         const cur = track.mediaStreamTrack;
-        if (cur) el.srcObject = new MediaStream([cur]);
+        if (!cur) return;
+        const playing = el.srcObject?.getVideoTracks?.()[0];
+        if (playing === cur) return;      // already showing this exact track
+        el.srcObject = new MediaStream([cur]);
       };
       attachLocal();
       // Re-attach on every event that can replace or revive the underlying
@@ -304,9 +312,17 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       // Belt and braces: if the element still is not painting a second later,
       // re-point it. Covers the join-then-camera-on race where the track exists
       // but its first frame has not arrived when we attach.
+      // Bounded, like the remote watchdog. This used to run every second FOREVER
+      // whenever videoWidth was 0 — and a tile that is legitimately not painting
+      // (camera muted, tab backgrounded, device asleep) never reports a width,
+      // so it re-attached endlessly and flashed black each time. Give up after
+      // ~20s and let the events above or the repair button take over.
+      let selfTries = 0;
       const selfCheck = setInterval(() => {
         if (!el.isConnected) return;
         if (el.videoWidth > 0) { setBlackTile(false); clearInterval(selfCheck); return; }
+        if (++selfTries > 20) { clearInterval(selfCheck); return; }
+        if (selfTries >= 3) setBlackTile(true);
         attachLocal();
         el.play?.().catch(() => { /* autoplay rejection is harmless, tile is muted */ });
       }, 1000);
@@ -3345,7 +3361,24 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     const id = String(studentId);
     setCamFixedIds(prev => (prev.includes(id) ? prev : [...prev, id]));
     setTimeout(() => setCamFixedIds(prev => prev.filter(x => x !== id)), 6000);
-    try { await api.post(`/api/coach-live/sessions/${session.id}/restart-camera`, { studentId: id }); } catch { /* */ }
+    try {
+      await api.post(`/api/coach-live/sessions/${session.id}/restart-camera`, { studentId: id });
+    } catch (e) {
+      // This used to swallow every error, so a rejected repair looked identical
+      // to a working one — the coach pressed 🔄, nothing happened, and there was
+      // no way to tell why. The two real rejections are 403 (the person is not
+      // a linked student of this coach: a guest, or a student added by someone
+      // else) and 404 (the session is not live any more).
+      const code = e.response?.status;
+      // alert, not a toast: this page has no transient-message surface, and a
+      // silent failure mid-class is exactly what wasted the coach's time.
+      window.alert(
+        code === 403 ? 'Cannot fix that camera — they are not one of your students. Ask them to turn their camera off and on.'
+        : code === 404 ? 'The class session is no longer live.'
+        : 'Could not reach that student. Ask them to turn their camera off and on.'
+      );
+      setCamFixedIds(prev => prev.filter(x => x !== id));
+    }
   };
   const requestCamera = async (studentId) => {
     const id = String(studentId);

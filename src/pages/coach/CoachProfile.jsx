@@ -121,7 +121,7 @@ export default function CoachProfile() {
   // that one recruits other COACHES (and pays commission), this one invites a
   // STUDENT to join this coach's roster. They look alike and do opposite things,
   // so they get their own labelled rows rather than sitting side by side.
-  const joinLink = p.coachCode ? `${window.location.origin}/join/${p.coachCode}` : '';
+  const joinLink = p.coachCode ? `${window.location.origin}/join-coach/${p.coachCode}` : '';
   const copyJoinLink = async () => {
     if (await copyText(joinLink)) {
       setJoinCopied(true);

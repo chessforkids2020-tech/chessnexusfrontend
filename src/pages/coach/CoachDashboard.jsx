@@ -150,6 +150,8 @@ export default function CoachDashboard() {
   const [studentSearch, setStudentSearch] = useState('');
   const [batchFilter, setBatchFilter] = useState('');   // '' = all batches
   const [pending, setPending] = useState([]);
+  // Requests students sent to THIS coach, waiting on the coach to accept.
+  const [incoming, setIncoming] = useState([]);
   const [error, setError] = useState('');
   const [showVerifiedPopup, setShowVerifiedPopup] = useState(false); // one-time verified welcome
   const [toast, setToast] = useState('');   // transient live-update notice
@@ -194,14 +196,16 @@ export default function CoachDashboard() {
       // One-time "you're a verified coach" welcome — verified but not yet seen.
       const cp = status.data?.coachProfile;
       if (cp?.verified && !cp?.verifiedNoticeSeenAt) setShowVerifiedPopup(true);
-      const [dash, studs, pend] = await Promise.all([
+      const [dash, studs, pend, inc] = await Promise.all([
         api.get('/api/coach/dashboard'),
         api.get('/api/coach/students'),
-        api.get('/api/coach/students/pending')
+        api.get('/api/coach/students/pending'),
+        api.get('/api/coach/student-requests').catch(() => ({ data: { requests: [] } })),
       ]);
       setSummary(dash.data);
       setStudents(studs.data?.students || []);
       setPending(pend.data?.pending || []);
+      setIncoming(inc.data?.requests || []);
       setError('');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load dashboard');
@@ -227,11 +231,20 @@ export default function CoachDashboard() {
       loadAll();
     };
 
+    // A student ASKING to join — the server already emits this; without a
+    // listener the request only appeared after a manual reload.
+    const onRequested = (d) => {
+      setToast(`${d?.studentName || 'A student'} asked to join your students`);
+      loadAll();
+    };
+
     socket.on('coach:studentApproved', onApproved);
     socket.on('coach:studentDeclined', onDeclined);
+    socket.on('coach:studentRequested', onRequested);
     return () => {
       socket.off('coach:studentApproved', onApproved);
       socket.off('coach:studentDeclined', onDeclined);
+      socket.off('coach:studentRequested', onRequested);
     };
   }, []); // eslint-disable-line
 
@@ -267,6 +280,18 @@ export default function CoachDashboard() {
       setAddErrorUpgrade(err.response?.status === 402 && !!err.response?.data?.requiresUpgrade);
     } finally {
       setAdding(false);
+    }
+  };
+
+  // Accept or decline a request a STUDENT sent. On accept the student joins the
+  // roster, so refresh the list rather than guessing the new row's shape.
+  const answerIncoming = async (linkId, action) => {
+    try {
+      await api.post(`/api/coach/student-requests/${linkId}/${action}`);
+      setIncoming(prev => prev.filter(r => r._id !== linkId));
+      if (action === 'approve') loadAll();
+    } catch (err) {
+      alert(err.response?.data?.message || `Failed to ${action} the request.`);
     }
   };
 
@@ -475,6 +500,37 @@ export default function CoachDashboard() {
           >
             <span>🎓 {addNotice}</span>
             <button onClick={() => setAddNotice('')} style={{ background: 'none', border: 'none', color: '#a78bfa', cursor: 'pointer', fontSize: '16px' }}>✕</button>
+          </div>
+        )}
+
+        {/* Requests STUDENTS sent to this coach. Rendered above the outgoing
+            list because these need an action from the coach, whereas outgoing
+            ones are just waiting. */}
+        {incoming.length > 0 && (
+          <div style={{ marginBottom: '14px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 700, color: '#6ee7b7', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '4px 0 8px' }}>
+              🙋 Student requests ({incoming.length})
+            </div>
+            <div className="coach-students-grid">
+              {incoming.map(r => {
+                const u = r.studentId;
+                const name = u?.displayName || u?.username || r.studentName || 'Student';
+                return (
+                  <div key={r._id} className="coach-student-card" style={{ border: '1px solid rgba(16,185,129,0.45)' }}>
+                    <div className="coach-student-name">{name}</div>
+                    <div style={{ fontSize: '12px', color: '#6ee7b7', margin: '4px 0' }}>
+                      asked to join your students
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      <button className="btn-primary" style={{ padding: '6px 14px', fontSize: 13 }}
+                        onClick={() => answerIncoming(r._id, 'approve')}>Accept</button>
+                      <button className="btn-ghost" style={{ padding: '6px 14px', fontSize: 13 }}
+                        onClick={() => answerIncoming(r._id, 'decline')}>Decline</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 

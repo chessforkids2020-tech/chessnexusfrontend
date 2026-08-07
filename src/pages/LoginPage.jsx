@@ -71,7 +71,7 @@ export default function LoginPage() {
           invite = sessionStorage.getItem("pendingCoachInvite");
           if (invite) sessionStorage.removeItem("pendingCoachInvite");
         } catch { /* private mode — fall through to the dashboard */ }
-        navigate(invite ? `/join/${invite}` : "/dashboard", { replace: true });
+        navigate(invite ? `/join-coach/${invite}` : "/dashboard", { replace: true });
       }
     }
   }, [isAuthenticated, authLoading, redirectParam]);

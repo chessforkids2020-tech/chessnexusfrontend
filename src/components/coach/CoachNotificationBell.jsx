@@ -18,6 +18,9 @@ export default function CoachNotificationBell() {
   const [count, setCount] = useState(0);
   const [open, setOpen] = useState(false);
   const [latest, setLatest] = useState([]);   // most recent pending requests
+  // Students asking to join this coach — a different kind of request, but the
+  // coach looks in ONE bell, so it belongs in the same badge.
+  const [studentReqs, setStudentReqs] = useState([]);
   const boxRef = useRef(null);
 
   const loadCount = async () => {
@@ -34,9 +37,17 @@ export default function CoachNotificationBell() {
     } catch { setLatest([]); }
   };
 
+  const loadStudentReqs = async () => {
+    try {
+      const r = await api.get('/api/coach/student-requests');
+      setStudentReqs(r.data?.requests || []);
+    } catch { setStudentReqs([]); }
+  };
+
   useEffect(() => {
     loadCount();
-    const id = setInterval(loadCount, 60000);   // safety net
+    loadStudentReqs();
+    const id = setInterval(() => { loadCount(); loadStudentReqs(); }, 60000);   // safety net
 
     if (!socket.connected) socket.connect();
     // Payload always carries `count`; a new request also carries `request`.
@@ -45,10 +56,13 @@ export default function CoachNotificationBell() {
       else loadCount();
     };
     socket.on('coach:paymentRequest', onRequest);
+    const onStudentRequest = () => loadStudentReqs();
+    socket.on('coach:studentRequested', onStudentRequest);
 
     return () => {
       clearInterval(id);
       socket.off('coach:paymentRequest', onRequest);
+      socket.off('coach:studentRequested', onStudentRequest);
     };
   }, []);
 
@@ -65,7 +79,17 @@ export default function CoachNotificationBell() {
   const toggle = () => {
     const next = !open;
     setOpen(next);
-    if (next) loadLatest();
+    if (next) { loadLatest(); loadStudentReqs(); }
+  };
+
+  // One badge for everything the coach must act on.
+  const totalCount = count + studentReqs.length;
+
+  const answer = async (linkId, action) => {
+    try {
+      await api.post(`/api/coach/student-requests/${linkId}/${action}`);
+      setStudentReqs(prev => prev.filter(r => r._id !== linkId));
+    } catch { /* leave the row so the coach can retry */ }
   };
 
   const goToRequests = () => {
@@ -80,11 +104,11 @@ export default function CoachNotificationBell() {
       <button
         className="btn-ghost"
         onClick={toggle}
-        title={count > 0 ? `${count} pending payment request${count === 1 ? '' : 's'}` : 'No new requests'}
+        title={totalCount > 0 ? `${totalCount} item${totalCount === 1 ? '' : 's'} need your attention` : 'No new requests'}
         style={{ position: 'relative' }}
       >
         🔔
-        {count > 0 && (
+        {totalCount > 0 && (
           <span style={{
             position: 'absolute', top: -6, right: -6,
             minWidth: 18, height: 18, padding: '0 5px',
@@ -93,7 +117,7 @@ export default function CoachNotificationBell() {
             color: '#fff', background: '#ef4444', borderRadius: 999,
             boxShadow: '0 0 0 2px rgba(15,23,42,0.9)',
           }}>
-            {count > 99 ? '99+' : count}
+            {totalCount > 99 ? '99+' : totalCount}
           </span>
         )}
       </button>
@@ -106,6 +130,36 @@ export default function CoachNotificationBell() {
           borderRadius: 12, padding: 12, backdropFilter: 'blur(10px)',
           boxShadow: '0 18px 40px rgba(0,0,0,0.5)',
         }}>
+          {studentReqs.length > 0 && (
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ color: '#6ee7b7', fontWeight: 700, fontSize: 14, marginBottom: 8 }}>
+                🙋 Student requests
+              </div>
+              {studentReqs.slice(0, 5).map(r => (
+                <div key={r._id} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  gap: 8, padding: '7px 0', borderBottom: '1px solid rgba(255,255,255,0.06)',
+                }}>
+                  <span style={{ color: '#e2e8f0', fontSize: 13, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {r.studentId?.displayName || r.studentId?.username || r.studentName || 'Student'}
+                  </span>
+                  <span style={{ display: 'flex', gap: 6, flex: 'none' }}>
+                    <button onClick={() => answer(r._id, 'approve')} style={{
+                      background: 'rgba(16,185,129,0.18)', border: '1px solid rgba(16,185,129,0.45)',
+                      color: '#6ee7b7', borderRadius: 7, padding: '3px 10px', fontSize: 12,
+                      fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
+                    }}>Accept</button>
+                    <button onClick={() => answer(r._id, 'decline')} style={{
+                      background: 'transparent', border: '1px solid rgba(255,255,255,0.18)',
+                      color: '#94a3b8', borderRadius: 7, padding: '3px 10px', fontSize: 12,
+                      fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
+                    }}>Decline</button>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div style={{ color: '#e2e8f0', fontWeight: 700, fontSize: 14, marginBottom: 8 }}>
             💰 Payment requests
           </div>

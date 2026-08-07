@@ -1336,7 +1336,10 @@ export default function App() {
             page can mount, which would throw the invite code away. JoinCoachPage
             stashes the code first, then sends them to log in, and LoginPage
             brings them back here. */}
-        <Route path="/join/:code" element={<JoinCoachPage />} />
+        {/* /join-coach/, NOT /join/ — that pattern is already the LIVE CLASS
+            join page (see above), and React Router matches the first route, so
+            a coach invite link would have opened the classroom instead. */}
+        <Route path="/join-coach/:code" element={<JoinCoachPage />} />
         <Route path="/my-coach" element={
           <UserLayout>
             <ProtectedRoute>

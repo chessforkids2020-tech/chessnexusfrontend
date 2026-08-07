@@ -824,9 +824,11 @@ export default function useLiveKitRoom() {
   // Detection uses the sender's own stats: framesPerSecond stuck at 0 while the
   // track claims to be live. Two consecutive zero readings (~10s) before acting,
   // so a momentarily idle camera is not restarted for no reason.
+  const lastFramesRef = useRef(null);
   useEffect(() => {
     let zeroRuns = 0;
     let restarting = false;
+    lastFramesRef.current = null;
 
     const check = async () => {
       const r = roomRef.current;
@@ -844,12 +846,31 @@ export default function useLiveKitRoom() {
         const stats = await track.getRTCStatsReport?.();
         if (!stats) return;
         let fps = null;
+        let framesSent = null;
         stats.forEach((rep) => {
           if (rep.type === 'outbound-rtp' && rep.kind === 'video') {
             if (typeof rep.framesPerSecond === 'number') fps = rep.framesPerSecond;
+            // Firefox does not always populate framesPerSecond on outbound-rtp
+            // even while encoding normally, so a healthy camera read as 0 and
+            // was restarted every ~10s — the coach saw their own tile flash
+            // black on a loop. A RISING cumulative frame count proves the
+            // camera is producing pictures whatever fps says.
+            const c = rep.framesEncoded ?? rep.framesSent;
+            if (typeof c === 'number') framesSent = c;
           }
         });
-        if (fps === null) return;          // browser does not report it — cannot judge
+
+        // Trust a rising frame counter over fps: if frames are still being
+        // encoded since the last check, the camera is alive.
+        if (framesSent !== null) {
+          const prev = lastFramesRef.current;
+          lastFramesRef.current = framesSent;
+          if (prev !== null && framesSent > prev) { zeroRuns = 0; return; }
+          // Counter did not move. Fall through only if fps also says zero.
+          if (prev === null) return;       // first reading — nothing to compare yet
+        }
+
+        if (fps === null && framesSent === null) return;   // cannot judge
 
         if (fps > 0) { zeroRuns = 0; return; }
 
