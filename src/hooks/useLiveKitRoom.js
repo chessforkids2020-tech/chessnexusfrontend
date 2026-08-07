@@ -907,20 +907,43 @@ export default function useLiveKitRoom() {
         // stats are also legitimately absent for a second or two right after
         // publishing, before the sender is established.
         if (fps === null && framesSent === null) {
-          if (++noStatsRuns < 4) return;      // ~20s of genuinely no sender
+          if (++noStatsRuns < 6) return;      // ~30s of genuinely no sender
           noStatsRuns = 0;
-          zeroRuns = 2;                       // fall through to the repair below
+          zeroRuns = 6;                       // fall through to the repair below
         } else {
           noStatsRuns = 0;
+          // fps says zero, but there is NO frame counter to corroborate it.
+          // That is exactly the Firefox case, and acting on fps alone is what
+          // restarted a healthy camera every few seconds — releasing the device
+          // and visibly blinking its hardware LED. Without a second signal
+          // agreeing, do nothing: a black tile with a repair button is far
+          // better than a camera that drops out on its own mid-lesson.
+          if (framesSent === null) { zeroRuns = 0; return; }
         }
 
         if (fps > 0) { zeroRuns = 0; return; }
 
         // Live track, zero frames.
-        if (++zeroRuns < 2) return;        // wait for a second reading
+        //
+        // Two readings (~10s) was far too eager. The restart RELEASES THE CAMERA
+        // DEVICE — the coach sees their hardware LED go out and the picture drop
+        // for about a second — so a false positive is not a harmless retry, it is
+        // the very glitch this code exists to prevent. Firefox routinely reports
+        // fps 0 on a perfectly healthy camera, and every 10s it was restarting
+        // the device for no reason.
+        //
+        // Six consecutive readings (~30s) with no frames at all. A real freeze
+        // stays frozen and is still repaired; a stats quirk never survives that
+        // long, because any single good reading resets the run to zero.
+        if (++zeroRuns < 6) return;
         zeroRuns = 0;
         restarting = true;
-        console.warn('[camera] live track producing 0 fps — restarting the device');
+        // Restarting re-acquires the device from the OS, which visibly blinks
+        // the camera's hardware LED and blacks the picture for ~1s. That is an
+        // acceptable price for reviving a genuinely dead camera and completely
+        // unacceptable for a working one, so it is now the LAST resort and is
+        // logged loudly enough to be traced from a class.
+        console.warn('[camera] restarting device — frames stalled for ~30s', { zeroRuns });
         try {
           // restartTrack re-acquires from the OS and swaps the MediaStreamTrack
           // in place, keeping the same publication so subscribers do not have to

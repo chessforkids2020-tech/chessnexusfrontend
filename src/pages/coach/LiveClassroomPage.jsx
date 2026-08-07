@@ -329,12 +329,32 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       // (camera muted, tab backgrounded, device asleep) never reports a width,
       // so it re-attached endlessly and flashed black each time. Give up after
       // ~20s and let the events above or the repair button take over.
+      // The "Your video is not showing" overlay is a 72%-black sheet drawn OVER
+      // the video, so raising it on a healthy camera IS the black flash.
+      //
+      // videoWidth momentarily reads 0 whenever the browser reallocates the
+      // decoder — a normal, sub-second event. Flagging after 3 such ticks
+      // painted the overlay over a perfectly good picture, and the next tick
+      // cleared it: exactly the ~1s blink, on the coach's own tile only,
+      // because only the local tile renders this overlay.
+      //
+      // Two changes: require the failure to be SUSTAINED (12 consecutive
+      // seconds with no picture, not 3), and never raise it once the element
+      // has painted at least once — a camera that has produced frames and then
+      // dips is recovering, not broken.
       let selfTries = 0;
+      let everPainted = false;
       const selfCheck = setInterval(() => {
         if (!el.isConnected) return;
-        if (el.videoWidth > 0) { setBlackTile(false); clearInterval(selfCheck); return; }
+        if (el.videoWidth > 0) {
+          everPainted = true;
+          selfTries = 0;                 // a good frame resets the failure run
+          setBlackTile(false);
+          clearInterval(selfCheck);
+          return;
+        }
         if (++selfTries > 20) { clearInterval(selfCheck); return; }
-        if (selfTries >= 3) setBlackTile(true);
+        if (selfTries >= 12 && !everPainted) setBlackTile(true);
         attachLocal();
         el.play?.().catch(() => { /* autoplay rejection is harmless, tile is muted */ });
       }, 1000);
@@ -391,7 +411,9 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       // dead video — it used to live only in the no-track branch, which meant
       // it vanished the moment a (broken) track arrived, exactly when it was
       // needed. Students reported seeing it on join and never again.
-      if (tries >= 3) setBlackTile(true);
+      // Same reasoning as the self-view above: 3 seconds of no picture is a
+      // decoder hiccup, not a broken camera, and this raises a black overlay.
+      if (tries >= 12) setBlackTile(true);
 
       // SELF-REPAIR, on the student's OWN tile, without anyone pressing
       // anything. Re-attaching only fixes the VIEWER; if the published track
