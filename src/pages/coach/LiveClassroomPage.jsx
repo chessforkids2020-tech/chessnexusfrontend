@@ -469,7 +469,23 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       //
       // The user always has the button. An automatic repair that is
       // indistinguishable from a fault is worse than no automatic repair.
-      if (++tries > 20) { clearInterval(watchdog); return; }        // ~20s, then give up
+      // NEVER GIVE UP.
+      //
+      // This used to stop after ~20 tries. A tile still black at 21s stayed
+      // black for the rest of the lesson, because nothing ever looked again —
+      // and that is precisely the complaint: a student's camera is on, everyone
+      // sees a black square, and only a page reload clears it. The causes that
+      // produce it (a dropped subscription, a track that arrives late, a
+      // renegotiation after a wifi blip) can all happen minutes into a class,
+      // long after a 20-second window has closed.
+      //
+      // Re-attaching costs nothing and is invisible — unlike the camera off→on
+      // that was removed, this only re-points the VIEWER's element and
+      // re-requests the subscription. It never touches the student's device.
+      // After the first 20 attempts it backs off to every 5 seconds so a
+      // genuinely camera-off tile is not polled hard for an hour.
+      tries++;
+      if (tries > 20 && tries % 5 !== 0) return;
       // No picture yet. Re-attach, and re-request the subscription if the
       // publication was dropped — a detached element and an unsubscribed
       // publication produce the same black tile.
