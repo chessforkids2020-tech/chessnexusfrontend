@@ -264,6 +264,19 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
   // be shown OVER the dead video instead of only in the no-track branch.
   const [blackTile, setBlackTile] = useState(false);
 
+  // True for the first few seconds a tile has no track. A camera legitimately
+  // takes a moment to open — especially the first time in a session, when the
+  // browser is still granting the device — and during that window the tile is
+  // not broken, it is starting. Used to keep the repair button hidden until
+  // waiting is genuinely unusual.
+  const [settling, setSettling] = useState(true);
+  useEffect(() => {
+    if (track) { setSettling(false); return undefined; }
+    setSettling(true);
+    const t = setTimeout(() => setSettling(false), 6000);
+    return () => clearTimeout(t);
+  }, [track]);
+
   // THE SELF-VIEW BLINK.
   //
   // onFixVideo is passed as `p.isLocal && lk.camOn ? fixMyVideo : undefined`,
@@ -363,18 +376,22 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       // has painted at least once — a camera that has produced frames and then
       // dips is recovering, not broken.
       let selfTries = 0;
-      let everPainted = false;
       const selfCheck = setInterval(() => {
         if (!el.isConnected) return;
         if (el.videoWidth > 0) {
-          everPainted = true;
           selfTries = 0;                 // a good frame resets the failure run
           setBlackTile(false);
           clearInterval(selfCheck);
           return;
         }
         if (++selfTries > 20) { clearInterval(selfCheck); return; }
-        if (selfTries >= 12 && !everPainted) setBlackTile(true);
+        // 12 consecutive seconds with no picture. `everPainted` is deliberately
+        // NOT required: a camera that worked and then died mid-class is exactly
+        // when a student needs the button, and requiring it meant the offer
+        // could never appear after a good start. The long threshold plus the
+        // reset on any good frame (above) is what stops a brief decoder dip
+        // raising it.
+        if (selfTries >= 12) setBlackTile(true);
         attachLocal();
         el.play?.().catch(() => { /* autoplay rejection is harmless, tile is muted */ });
       }, 1000);
@@ -545,12 +562,30 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
                 Camera on — connecting…
               </div>
             )}
+            {/* The same reassurance for your OWN tile. camConnecting is
+                remote-only (it reads camPublished, which a local participant
+                does not report), so a student watching their own camera come up
+                previously saw nothing but a blank tile and a repair button. */}
+            {local && settling && !isScreen && (
+              <div style={{ fontSize: 11, color: '#facc15', fontWeight: 600 }}>
+                Starting your camera…
+              </div>
+            )}
             {/* Self-repair, on the student's OWN tile only.
                 A child cannot be told to "reload the page" — they do not know
                 what that means and end up fetching a parent mid-lesson. One
                 obvious button they can press themselves republishes the camera
-                and fixes a stuck tile without leaving the class. */}
-            {local && onFixVideo && (
+                and fixes a stuck tile without leaving the class.
+
+                NOT while the camera is still coming up. This branch renders
+                whenever `track` is null, which includes the first seconds after
+                joining — so every student was shown "Fix my video" on arrival,
+                when nothing was wrong yet, and it then vanished the moment the
+                track appeared. Exactly backwards: present when it is useless,
+                gone when it is needed. `settling` hides it for the first few
+                seconds so it only appears once the camera has genuinely failed
+                to arrive. */}
+            {local && onFixVideo && !settling && (
               <button
                 onClick={onFixVideo}
                 style={{
