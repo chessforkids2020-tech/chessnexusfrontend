@@ -257,7 +257,7 @@ function RemoteAudioTrack({ track }) {
 // `local` marks YOUR own tile: we render the RAW camera MediaStreamTrack directly
 // (bypassing the encode/simulcast path) so the self-view is instant and full-res —
 // exactly how Zoom shows your own preview. Remote tiles still attach the LiveKit track.
-function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl, speaking, ratio, local, camConnecting, onFixVideo }) {
+function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, avatarUrl, speaking, ratio, local, camConnecting, onFixVideo }) {
   const ref = useRef(null);
   // A track exists but nothing is painting — the classic BLACK TILE. Set by the
   // watchdog below after a few failed attach attempts, so the repair button can
@@ -354,47 +354,43 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
         };
       } catch { /* older livekit — best effort */ }
 
-      // Belt and braces: if the element still is not painting a second later,
-      // re-point it. Covers the join-then-camera-on race where the track exists
-      // but its first frame has not arrived when we attach.
-      // Bounded, like the remote watchdog. This used to run every second FOREVER
-      // whenever videoWidth was 0 — and a tile that is legitimately not painting
-      // (camera muted, tab backgrounded, device asleep) never reports a width,
-      // so it re-attached endlessly and flashed black each time. Give up after
-      // ~20s and let the events above or the repair button take over.
-      // The "Your video is not showing" overlay is a 72%-black sheet drawn OVER
-      // the video, so raising it on a healthy camera IS the black flash.
+      // Self-view health monitor. Same shape as the remote one below, and same
+      // reason: it used to `clearInterval` on the first painted frame, so a
+      // self-view that froze later in the lesson had nothing watching it.
       //
-      // videoWidth momentarily reads 0 whenever the browser reallocates the
-      // decoder — a normal, sub-second event. Flagging after 3 such ticks
-      // painted the overlay over a perfectly good picture, and the next tick
-      // cleared it: exactly the ~1s blink, on the coach's own tile only,
-      // because only the local tile renders this overlay.
+      // Judged on `currentTime` advancing rather than `videoWidth > 0`. A frozen
+      // picture keeps its dimensions indefinitely, so the width check called a
+      // dead tile healthy; the media clock only moves while frames are actually
+      // being decoded.
       //
-      // Two changes: require the failure to be SUSTAINED (12 consecutive
-      // seconds with no picture, not 3), and never raise it once the element
-      // has painted at least once — a camera that has produced frames and then
-      // dips is recovering, not broken.
-      let selfTries = 0;
+      // The repair is `attachLocal()`, which is idempotent and re-points the
+      // element at the current MediaStreamTrack. It never calls setCam or
+      // restartTrack, so the camera device is untouched and there is nothing to
+      // see — that distinction is what made the earlier automatic repairs a
+      // visible glitch and this one silent.
+      //
+      // The overlay still needs a SUSTAINED failure (6s), never a single dip:
+      // videoWidth/currentTime both stutter briefly whenever the browser
+      // reallocates the decoder, and flagging on that is what painted a black
+      // sheet over a perfectly good picture.
+      let selfBadSince = null;
+      let selfLastTime = -1;
       const selfCheck = setInterval(() => {
         if (!el.isConnected) return;
-        if (el.videoWidth > 0) {
-          selfTries = 0;                 // a good frame resets the failure run
+        const now = Date.now();
+        const advancing = el.currentTime > selfLastTime;
+        selfLastTime = el.currentTime;
+        if (advancing && el.videoWidth > 0) {
+          selfBadSince = null;
           setBlackTile(false);
-          clearInterval(selfCheck);
-          return;
+          return;                        // NOTE: keep watching
         }
-        if (++selfTries > 20) { clearInterval(selfCheck); return; }
-        // 12 consecutive seconds with no picture. `everPainted` is deliberately
-        // NOT required: a camera that worked and then died mid-class is exactly
-        // when a student needs the button, and requiring it meant the offer
-        // could never appear after a good start. The long threshold plus the
-        // reset on any good frame (above) is what stops a brief decoder dip
-        // raising it.
-        if (selfTries >= 12) setBlackTile(true);
+        if (selfBadSince === null) { selfBadSince = now; return; }
+        if (now - selfBadSince < 6000) return;   // a dip is not a fault
+        setBlackTile(true);
         attachLocal();
         el.play?.().catch(() => { /* autoplay rejection is harmless, tile is muted */ });
-      }, 1000);
+      }, 2000);
 
       return () => {
         off();
@@ -421,80 +417,87 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
     };
     doAttach();
 
-    // WATCHDOG. A coach cannot tell a child to reload mid-class, so recovery
-    // must not depend on one event firing or on a frame arriving quickly.
+    // HEALTH MONITOR — runs for the LIFE of the tile.
     //
-    // This used to be two fixed timeouts (400ms, 1500ms) and then it gave up
-    // forever. That is too short and too final: a camera can take several
-    // seconds to produce its first frame on a slow device, and a subscription
-    // that lands late — or a track that silently stops after a network blip —
-    // arrives long after the last check has expired. The tile then stayed black
-    // permanently and only a page reload fixed it, which is exactly the
-    // complaint from real classes.
+    // The bug this replaces: the old watchdog did `clearInterval` the moment the
+    // element painted one frame. A tile that came up fine therefore had NO
+    // monitor for the rest of the lesson, so a subscription dropped at minute
+    // fifteen, a decoder that stalled after a wifi blip, or a renegotiation that
+    // silently killed the stream all went unobserved. That is precisely the
+    // report from real classes: the student's camera is on, their tile looked
+    // fine when they joined, and it is black now — only a reload clears it.
     //
-    // Instead: keep checking every second until the element is genuinely
-    // painting (videoWidth > 0), then stop. A healthy tile stops the interval
-    // after one tick, so this costs nothing in the normal case.
-    let tries = 0;
+    // Two things had to change:
+    //
+    //   1. Never stop watching. The monitor keeps running until the tile
+    //      unmounts.
+    //   2. Judge on FRAMES, not on `videoWidth`. `videoWidth > 0` only proves a
+    //      frame arrived at some point — a frozen picture keeps its dimensions
+    //      forever, so the old check reported a dead tile as perfectly healthy.
+    //      `currentTime` advances only while frames are actually being decoded.
+    //
+    // Repairs are viewer-side ONLY (re-attach the element, re-request the
+    // subscription). Nothing here touches the student's camera device, so unlike
+    // the repairs removed earlier today there is nothing for anyone to see.
+    let badSince = null;
+    let lastTime = -1;
+    let escalated = false;
+    let repairs = 0;
+    const TICK = 2000;
+    const REPAIR_AFTER = 6000;     // silent re-attach
+    const ESCALATE_AFTER = 20000;  // force a resubscribe
     const watchdog = setInterval(() => {
       if (!el.isConnected) return;                 // unmounted — cleanup will clear
-      if (el.videoWidth > 0) {
+      const now = Date.now();
+      // Frames are arriving iff the media clock moved since the last tick.
+      const advancing = el.currentTime > lastTime;
+      lastTime = el.currentTime;
+      if (advancing && el.videoWidth > 0) {
+        badSince = null;
+        escalated = false;
         setBlackTile(false);                       // painting — tile is healthy
-        clearInterval(watchdog);
-        return;
+        return;                                    // NOTE: no clearInterval
       }
-      // Still no picture after a few tries: this is a BLACK TILE, not a slow
-      // start. Say so, so the student's own repair button can appear over the
-      // dead video — it used to live only in the no-track branch, which meant
-      // it vanished the moment a (broken) track arrived, exactly when it was
-      // needed. Students reported seeing it on join and never again.
-      // Same reasoning as the self-view above: 3 seconds of no picture is a
-      // decoder hiccup, not a broken camera, and this raises a black overlay.
-      if (tries >= 12) setBlackTile(true);
+      if (badSince === null) { badSince = now; return; }
+      const stalledFor = now - badSince;
+      if (stalledFor < REPAIR_AFTER) return;       // a dip is not a fault
+      // Sustained stall — this is a genuine black tile, not a hiccup. Say so, so
+      // the repair button can appear over the dead video.
+      setBlackTile(true);
 
-      // NO AUTOMATIC SELF-REPAIR.
+      // STEP 1 — re-attach the element. Detach first: attaching over a live
+      // srcObject can leave the old, dead MediaStream in place, which is the
+      // stale-attach case that a page reload used to be the only cure for.
+      // Entirely viewer-side and invisible.
       //
-      // This used to call fixMyVideo() at ~6s and ~12s so a student's black tile
-      // would heal without anyone pressing anything. The intention was right;
-      // the mechanism is not something that can happen quietly. fixMyVideo does
-      // setCam(false) → wait → setCam(true), a full camera off-and-on: the
-      // device is released, the hardware light goes out, and the picture drops
-      // for about a second. There is no silent version of that.
-      //
-      // So on any tile that had not painted yet — a camera still warming up, a
-      // tab in the background, a momentary decoder stall — it fired a visible
-      // reload, and if the tile still had not painted it fired again. That is
-      // the "my own video reloads every few seconds" report, and it hits only
-      // the local tile because only the local tile runs this.
-      //
-      // The user always has the button. An automatic repair that is
-      // indistinguishable from a fault is worse than no automatic repair.
-      // NEVER GIVE UP.
-      //
-      // This used to stop after ~20 tries. A tile still black at 21s stayed
-      // black for the rest of the lesson, because nothing ever looked again —
-      // and that is precisely the complaint: a student's camera is on, everyone
-      // sees a black square, and only a page reload clears it. The causes that
-      // produce it (a dropped subscription, a track that arrives late, a
-      // renegotiation after a wifi blip) can all happen minutes into a class,
-      // long after a 20-second window has closed.
-      //
-      // Re-attaching costs nothing and is invisible — unlike the camera off→on
-      // that was removed, this only re-points the VIEWER's element and
-      // re-requests the subscription. It never touches the student's device.
-      // After the first 20 attempts it backs off to every 5 seconds so a
-      // genuinely camera-off tile is not polled hard for an hour.
-      tries++;
-      if (tries > 20 && tries % 5 !== 0) return;
-      // No picture yet. Re-attach, and re-request the subscription if the
-      // publication was dropped — a detached element and an unsubscribed
-      // publication produce the same black tile.
+      // Backed off after the first few attempts. A tile whose camera is simply
+      // off never advances its clock, so without this it would be re-attached
+      // every 2s for the whole lesson — pointless work on every tile in a class
+      // where somebody has their camera down. Re-attach hard for the first ~20s
+      // (when a real stall is most likely to be recoverable), then once a minute.
+      // Escalate BEFORE the re-attach backoff can `return`, or a tile that has
+      // been dead long enough to need a resubscribe would never get one.
+      if (!escalated && stalledFor >= ESCALATE_AFTER) {
+        escalated = true;
+        try {
+          if (videoPub) {
+            if (videoPub.isSubscribed === false) {
+              videoPub.setSubscribed?.(true);
+            } else {
+              // Subscribed but dead — bounce it.
+              videoPub.setSubscribed?.(false);
+              setTimeout(() => { try { videoPub.setSubscribed?.(true); } catch { /* */ } }, 300);
+            }
+          }
+        } catch { /* best effort */ }
+      }
+
+      repairs++;
+      const shouldRepair = repairs <= 8 || repairs % 30 === 0;
+      if (!shouldRepair) return;
+      try { track.detach(el); } catch { /* */ }
       doAttach();
-      try {
-        const pub = rawTrack?.publication || track?.publication;
-        if (pub && pub.isSubscribed === false) pub.setSubscribed?.(true);
-      } catch { /* best effort */ }
-    }, 1000);
+    }, TICK);
 
     return () => {
       clearInterval(watchdog);
@@ -504,7 +507,7 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
     // it re-ran this effect on every render of the page and the cleanup blanked
     // the self-view each time.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [track, rawTrack, local]);
+  }, [track, rawTrack, videoPub, local]);
 
   // Camera off → on must recover WITHOUT a page reload.
   //
@@ -3903,6 +3906,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
            events so a student toggling their camera recovers without a reload —
            `track` alone goes null on mute and tears the listener down with it. */
         rawTrack={p.videoTrackRaw}
+        videoPub={p.videoPub}
         /* Mic state for the badge. `audioTrack` is null while muted — the same
            test the participants list uses, so tile and roster never disagree. */
         micOff={!p.isLocal && !p.audioTrack}

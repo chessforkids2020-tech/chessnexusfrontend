@@ -279,6 +279,18 @@ export default function useLiveKitRoom() {
       // state) well before `pub.track` is populated, so this is the only honest
       // answer to "is this student's camera on?" during the subscribe window.
       let camPublished = false;
+      // The camera PUBLICATION itself, captured whether or not we have a track.
+      //
+      // The tile's watchdog needs this to re-request a dropped subscription. It
+      // used to reach for `track.publication`, which does not exist: in
+      // livekit-client 2.x a RemoteTrack exposes receiver/isLocal/start/stop/
+      // getRTCStatsReport and no back-pointer to its publication. So that repair
+      // was silently dead code, and a tile whose subscription was lost had
+      // nothing that could bring it back.
+      //
+      // Captured BEFORE the `!t` bail below, because the case that matters most
+      // is exactly the one where `pub.track` is null.
+      let videoPub = null;
       p.trackPublications?.forEach((pub) => {
         const isScreen = pub.source === 'screen_share' || pub.source === 'screen_share_audio';
         // Force-subscribe EVERY remote track, not just screen share. With
@@ -300,6 +312,7 @@ export default function useLiveKitRoom() {
         // coach saw a black tile and the "ask them to turn the camera on"
         // button for a child whose camera was in fact on the whole time.
         if (!isLocal && !isScreen && pub.kind === 'video' && !pub.isMuted) camPublished = true;
+        if (!isScreen && pub.kind === 'video') videoPub = pub;
         const t = pub.track;
         if (!t) return;
         if (isScreen) { if (pub.kind !== 'audio') screenTrack = t; }
@@ -322,7 +335,7 @@ export default function useLiveKitRoom() {
       // camera is off.
       let avatar = null;
       try { avatar = p.metadata ? (JSON.parse(p.metadata).avatar || null) : null; } catch { /* ignore */ }
-      list.push({ identity: p.identity, name: p.name || p.identity, isLocal, isSpeaking: p.isSpeaking, videoTrack, videoTrackRaw, audioTrack, audioTrackRaw, screenTrack, avatar, camPublished });
+      list.push({ identity: p.identity, name: p.name || p.identity, isLocal, isSpeaking: p.isSpeaking, videoTrack, videoTrackRaw, videoPub, audioTrack, audioTrackRaw, screenTrack, avatar, camPublished });
     };
     if (r.localParticipant) pack(r.localParticipant, true);
     r.remoteParticipants?.forEach((p) => pack(p, false));
@@ -343,6 +356,10 @@ export default function useLiveKitRoom() {
             && o.camPublished === n.camPublished
             && o.videoTrack === n.videoTrack
             && o.videoTrackRaw === n.videoTrackRaw
+            // The publication object is stable for the life of a publication, so
+            // comparing it costs nothing in the common case and correctly forces
+            // a re-render when a camera is republished under a new publication.
+            && o.videoPub === n.videoPub
             && o.audioTrack === n.audioTrack
             && o.audioTrackRaw === n.audioTrackRaw
             && o.screenTrack === n.screenTrack
@@ -448,18 +465,67 @@ export default function useLiveKitRoom() {
     // So every few seconds, re-request any remote publication that is still
     // unsubscribed. It is a no-op once everything is subscribed (the common
     // case), and it is what makes recovery automatic rather than manual.
+    //
+    // It ALSO catches the case an unsubscribed check cannot see: a publication
+    // that is still subscribed but has silently stopped delivering frames (an
+    // SFU-side stall, a decoder that gave up after a network blip). To that
+    // viewer the tile is simply black, and nothing in the subscription state
+    // says anything is wrong. `framesDecoded` from the receiver's own stats is
+    // the honest signal — if it stops rising while the publication is unmuted,
+    // no pictures are arriving.
+    //
+    // Two consecutive flat readings (~8s) before acting, so a momentary stall is
+    // not "repaired" for nothing. The repair is a resubscribe, which is entirely
+    // viewer-side: it never touches the student's camera device, so unlike the
+    // camera off→on that was removed today there is nothing to see.
     if (resubTimerRef.current) clearInterval(resubTimerRef.current);
+    const frameStats = new Map();   // trackSid -> { frames, flatRuns }
     resubTimerRef.current = setInterval(() => {
       const room = roomRef.current;
       if (!room) return;
       let repaired = false;
+      const seen = new Set();
       room.remoteParticipants?.forEach((p) => {
         p.trackPublications?.forEach((pub) => {
           if (pub.isSubscribed === false && typeof pub.setSubscribed === 'function') {
             try { pub.setSubscribed(true); repaired = true; } catch { /* ignore */ }
+            return;
           }
+          // Frozen-track check: subscribed video only.
+          if (pub.kind !== 'video' || pub.isMuted || !pub.track || !pub.trackSid) return;
+          seen.add(pub.trackSid);
+          const track = pub.track;
+          if (typeof track.getRTCStatsReport !== 'function') return;
+          track.getRTCStatsReport().then((stats) => {
+            if (!stats) return;
+            let frames = null;
+            stats.forEach((rep) => {
+              if (rep.type === 'inbound-rtp' && rep.kind === 'video'
+                  && typeof rep.framesDecoded === 'number') frames = rep.framesDecoded;
+            });
+            if (frames === null) return;      // browser does not report it
+            const prev = frameStats.get(pub.trackSid);
+            if (!prev) { frameStats.set(pub.trackSid, { frames, flatRuns: 0 }); return; }
+            if (frames > prev.frames) {
+              frameStats.set(pub.trackSid, { frames, flatRuns: 0 });
+              return;
+            }
+            const flatRuns = prev.flatRuns + 1;
+            if (flatRuns < 2) { frameStats.set(pub.trackSid, { frames, flatRuns }); return; }
+            // Two flat readings — nothing is being decoded. Force a resubscribe.
+            frameStats.set(pub.trackSid, { frames, flatRuns: 0 });
+            try {
+              pub.setSubscribed(false);
+              setTimeout(() => { try { pub.setSubscribed(true); } catch { /* ignore */ } }, 300);
+              // eslint-disable-next-line no-console
+              console.warn('[liveclass] frozen remote video — resubscribing', pub.trackSid);
+            } catch { /* ignore */ }
+          }).catch(() => { /* stats unavailable */ });
         });
       });
+      // Drop bookkeeping for tracks that have gone away, so the map cannot grow
+      // for the length of a long class.
+      for (const sid of frameStats.keys()) if (!seen.has(sid)) frameStats.delete(sid);
       // Only re-render when we actually asked for something new.
       if (repaired) refresh(room);
     }, 4000);
