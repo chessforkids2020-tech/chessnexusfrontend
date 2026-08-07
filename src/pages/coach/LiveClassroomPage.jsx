@@ -435,14 +435,23 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       // decoder hiccup, not a broken camera, and this raises a black overlay.
       if (tries >= 12) setBlackTile(true);
 
-      // SELF-REPAIR, on the student's OWN tile, without anyone pressing
-      // anything. Re-attaching only fixes the VIEWER; if the published track
-      // itself is dead, the only cure is republishing the camera — and a coach
-      // with twenty black tiles cannot be expected to click twenty buttons.
-      // One attempt at ~6s, one more at ~12s, then leave it to the human.
-      if (local && onFixVideoRef.current && (tries === 6 || tries === 12)) {
-        try { onFixVideoRef.current(); } catch { /* best effort */ }
-      }
+      // NO AUTOMATIC SELF-REPAIR.
+      //
+      // This used to call fixMyVideo() at ~6s and ~12s so a student's black tile
+      // would heal without anyone pressing anything. The intention was right;
+      // the mechanism is not something that can happen quietly. fixMyVideo does
+      // setCam(false) → wait → setCam(true), a full camera off-and-on: the
+      // device is released, the hardware light goes out, and the picture drops
+      // for about a second. There is no silent version of that.
+      //
+      // So on any tile that had not painted yet — a camera still warming up, a
+      // tab in the background, a momentary decoder stall — it fired a visible
+      // reload, and if the tile still had not painted it fired again. That is
+      // the "my own video reloads every few seconds" report, and it hits only
+      // the local tile because only the local tile runs this.
+      //
+      // The user always has the button. An automatic repair that is
+      // indistinguishable from a fault is worse than no automatic repair.
       if (++tries > 20) { clearInterval(watchdog); return; }        // ~20s, then give up
       // No picture yet. Re-attach, and re-request the subscription if the
       // publication was dropped — a detached element and an unsubscribed
