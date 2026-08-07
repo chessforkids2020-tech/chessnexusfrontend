@@ -255,7 +255,10 @@
    actual pixel size is measured (ResizeObserver) and passed as boardWidth so
    the SVG arrow overlay matches the squares exactly — DON'T CSS-scale the inner
    board div (that distorts/fattens the arrows). */
-.fg-board-wrap { position: relative; width: 100%; max-width: 520px; }
+/* max-width tracks BOARD_MAX_PX in FriendGame.jsx (600) plus room for the
+   coordinate gutter the board draws outside its own width. Capping this at 520
+   while the middle grid column is 640 left dead space on large screens. */
+.fg-board-wrap { position: relative; width: 100%; max-width: 620px; }
 
 /* Player strip in the right card (avatar + name left, clock right) */
 .fg-pbar {
@@ -325,5 +328,5 @@ button.fg-move-san.active { background: rgba(6, 182, 212, 0.3); color: #fff; }
   .fg-create-grid { grid-template-columns: 1fr; }
   .fg-home-actions { grid-template-columns: 1fr; }
   .fg-moves-list { height: 200px; }
-  .fg-board-wrap { width: 100%; max-width: 520px; }
+  .fg-board-wrap { width: 100%; max-width: 620px; }
 }

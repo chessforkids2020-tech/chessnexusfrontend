@@ -81,7 +81,10 @@ export default function CustomBoardColors() {
 
   const S = {
     wrap: {
-      marginTop: 28, padding: '18px 20px',
+      // Sits ABOVE the preset grid in Settings, so the spacing goes below it.
+      // Kept on the component (not the parent) because this whole panel renders
+      // null while state is loading — a parent margin would leave a gap there.
+      marginBottom: 28, padding: '18px 20px',
       background: 'rgba(0,0,0,0.25)',
       border: '1px solid rgba(255,255,255,0.08)',
       borderRadius: 12,

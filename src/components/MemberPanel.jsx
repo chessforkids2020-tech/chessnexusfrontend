@@ -1,8 +1,10 @@
 // components/MemberPanel.jsx
 // Settings → Member tab. Lets the logged-in user leave a star-rated testimonial
-// (admins read them in the dashboard) and prompts them to support ChessNexus.
+// (admins read them in the dashboard). The support prompt now lives in the
+// UpgradeCard at the top of this tab, next to "Become a Coach" — the separate
+// "Buy us a coffee" card that used to sit at the bottom was a second ask for
+// the same thing, so it was removed.
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import UpgradeCard from './UpgradeCard';
 
@@ -19,7 +21,6 @@ const cardStyle = {
 };
 
 export default function MemberPanel() {
-  const navigate = useNavigate();
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
   const [text, setText] = useState('');
@@ -129,30 +130,6 @@ export default function MemberPanel() {
         </button>
       </section>
 
-      {/* ── Support card ────────────────────────────── */}
-      <section style={{
-        ...cardStyle,
-        marginBottom: 0,
-        background: 'linear-gradient(135deg, rgba(245,158,11,0.12), rgba(217,119,6,0.06))',
-        border: '1px solid rgba(245,158,11,0.35)',
-        display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap',
-      }}>
-        <div style={{ fontSize: 40, lineHeight: 1 }}>☕</div>
-        <div style={{ flex: '1 1 260px', minWidth: 0 }}>
-          <h2 style={{ margin: 0, fontSize: 17, color: '#fde68a' }}>Would you like to support ChessNexus.in?</h2>
-          <p style={{ margin: '6px 0 0', color: 'rgba(253,230,138,0.8)', fontSize: 13.5, lineHeight: 1.6 }}>
-            Chess Nexus is free and ad-free. A small contribution helps cover servers and new features —
-            and gets you a ☕ supporter badge next to your name.
-          </p>
-        </div>
-        <button onClick={() => navigate('/buy-coffee')} style={{
-          flex: 'none', background: 'linear-gradient(135deg, rgba(245,158,11,0.9), rgba(217,119,6,0.9))',
-          color: '#241a05', border: '1px solid rgba(245,158,11,0.5)', borderRadius: 999,
-          padding: '11px 22px', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
-        }}>
-          Buy us a coffee →
-        </button>
-      </section>
     </div>
   );
 }

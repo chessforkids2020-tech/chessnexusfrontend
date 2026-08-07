@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import io from 'socket.io-client';
-import Chessboard from '../../components/Chessboard';
+import Chessboard, { gutterFor } from '../../components/Chessboard';
 import api, { resolveApiAssetUrl } from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 import { getFriendIdentity } from './friendIdentity';
@@ -28,6 +28,11 @@ const SOCKET_URL = import.meta.env.VITE_API_URL ||
 // page is the only socket in the app that used to forbid it.
 const IS_PROD = import.meta.env.PROD;
 const SOCKET_TRANSPORTS = IS_PROD ? ['websocket', 'polling'] : ['polling', 'websocket'];
+
+// Widest the board is allowed to get. The middle grid column is 640px on a large
+// screen (1280 container - two 300px cards - two 20px gaps), so 600 lets a big
+// display actually use its space while leaving room for the coordinate gutter.
+const BOARD_MAX_PX = 600;
 
 function fmtClock(secs) {
   if (secs == null) return '--:--';
@@ -169,7 +174,19 @@ export default function FriendGame() {
     if (!el || typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver((entries) => {
       const w = entries[0]?.contentRect?.width;
-      if (w) setBoardPx(Math.min(520, Math.round(w)));
+      if (!w) return;
+      // The board draws its coordinate labels in a gutter OUTSIDE boardWidth, so
+      // the element it renders is wider than the number we hand it. Sizing the
+      // board to the full container therefore overflowed by the gutter (~16px at
+      // 520) and slid under the move list on the right.
+      //
+      // Ask the board for its real gutters rather than copying its internal math
+      // — the helper exists precisely because hardcoded copies broke last time
+      // the gutter changed. Only the labelled sides (bottom + left) reserve
+      // space, so just the horizontal ones matter here.
+      const probe = Math.round(w);
+      const g = gutterFor(probe);
+      setBoardPx(Math.max(200, Math.min(BOARD_MAX_PX, probe - g.left - g.right)));
     });
     ro.observe(el);
     return () => ro.disconnect();

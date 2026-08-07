@@ -222,6 +222,11 @@ export default function SettingsPage() {
               Choose how your board looks. The theme applies to every game, puzzle, and study.
             </p>
 
+            {/* Your own colours first. It used to sit at the very bottom, below
+                the preset grid and the live preview, so it read as a footnote and
+                was easy to miss entirely. */}
+            <CustomBoardColors />
+
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
@@ -269,8 +274,6 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Paid picker — sits under the free presets. */}
-            <CustomBoardColors />
           </section>
         )}
 
