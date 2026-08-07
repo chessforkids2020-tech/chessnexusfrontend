@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import ReactDOM from "react-dom";
 import ReactConfetti from 'react-confetti';
 import api, { resolveApiAssetUrl } from '../api';
+import AskCoachPanel from '../components/AskCoachPanel';
 import { trackEvent } from '../lib/analytics';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import './UserDashboard.css';
@@ -2008,6 +2009,12 @@ export default function UserDashboard() {
             {visitedTabs.has('mycoach') && (
               <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'mycoach'}>
                 {!isPublicView && <MyCoachCard />}
+                {/* A student with NO coach used to get a blank panel here:
+                    MyCoachCard returns null, and every link to /my-coach is
+                    gated behind already having a coach — so the one page that
+                    offered the request form was unreachable for exactly the
+                    people who needed it. Offer it here instead. */}
+                {!isPublicView && !isStudent && <AskCoachPanel />}
               </div>
             )}
 

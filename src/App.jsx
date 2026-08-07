@@ -29,6 +29,7 @@ import CoachArenaTournamentLive from "./pages/coach/CoachArenaTournamentLive";
 import PublicProfile from "./pages/PublicProfile";
 import UserAttendancePage from "./pages/UserAttendancePage";
 import MyCoachPortal from "./pages/MyCoachPortal";
+import JoinCoachPage from "./pages/JoinCoachPage";
 
 // Public SEO feature/about pages
 import FeaturesPage from "./pages/marketing/FeaturesPage";
@@ -1329,6 +1330,13 @@ export default function App() {
             </ProtectedRoute>
           </UserLayout>
         } />
+        {/* Coach invite link — a standalone landing page a parent may open
+            from WhatsApp, so no UserLayout chrome.
+            NOT wrapped in ProtectedRoute: that redirects to /login before the
+            page can mount, which would throw the invite code away. JoinCoachPage
+            stashes the code first, then sends them to log in, and LoginPage
+            brings them back here. */}
+        <Route path="/join/:code" element={<JoinCoachPage />} />
         <Route path="/my-coach" element={
           <UserLayout>
             <ProtectedRoute>

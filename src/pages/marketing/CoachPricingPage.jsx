@@ -170,9 +170,9 @@ export default function CoachPricingPage() {
                 <tr><td>Free</td><td>$0 — free forever</td><td>30</td><td>1/day · 40 min · 4 (+coach)</td></tr>
                 <tr><td>Pro</td><td>$29</td><td>70</td><td>1/day · 60 min · 4 (+coach)</td></tr>
                 <tr><td>Coach</td><td>$49</td><td>150</td><td>1/day · 60 min · 4 (+coach)</td></tr>
-                <tr><td>Live Basic</td><td>$79</td><td>50</td><td>Unlimited · 60 min · 10 (+coach)</td></tr>
-                <tr><td>Live Pro</td><td>$119</td><td>100</td><td>Unlimited · 60 min · 10 (+coach)</td></tr>
-                <tr><td>Live Coach</td><td>$244</td><td>150</td><td>Unlimited · 120 min · 25 (+coach)</td></tr>
+                <tr><td>Live Basic</td><td>$79</td><td>50</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
+                <tr><td>Live Pro</td><td>$119</td><td>100</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
+                <tr><td>Live Coach</td><td>$244</td><td>150</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
               </tbody>
             </table>
             <p className="mkt-p">

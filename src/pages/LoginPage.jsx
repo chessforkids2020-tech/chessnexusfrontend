@@ -62,8 +62,16 @@ export default function LoginPage() {
             if (token) window.location.href = buildCrossAppRedirect(redirectParam, token);
           });
       } else {
-        // Already logged in, no external redirect — go straight to dashboard
-        navigate("/dashboard", { replace: true });
+        // A student who opened a coach invite link while logged out was sent
+        // here; JoinCoachPage stashed the code. Return them to the invite
+        // instead of the dashboard, so the link still works end to end (this
+        // also covers signing UP from the link rather than logging in).
+        let invite = null;
+        try {
+          invite = sessionStorage.getItem("pendingCoachInvite");
+          if (invite) sessionStorage.removeItem("pendingCoachInvite");
+        } catch { /* private mode — fall through to the dashboard */ }
+        navigate(invite ? `/join/${invite}` : "/dashboard", { replace: true });
       }
     }
   }, [isAuthenticated, authLoading, redirectParam]);

@@ -4,6 +4,7 @@ import api from '../api';
 import StudentAssignments from '../components/StudentAssignments';
 import StudentCourses from '../components/StudentCourses';
 import CoachChat from '../components/coach/CoachChat';
+import AskCoachPanel from '../components/AskCoachPanel';
 import { DAY_NAMES, DAY_FULL, localTimeLabel, localDow, soonestClass, classesOnLocalDate } from '../utils/istSchedule';
 import './MyCoachPortal.css';
 
@@ -218,6 +219,9 @@ export default function MyCoachPortal() {
           <p className="mcp-empty-desc">
             When your coach adds you and marks your attendance, it will appear here.
           </p>
+          {/* Until now this was a dead end: it named the outcome but gave the
+              student no way to reach it. They can now ask their coach directly. */}
+          <AskCoachPanel />
           <Link to="/dashboard" className="mcp-empty-btn">← Back to Dashboard</Link>
         </div>
       </div>

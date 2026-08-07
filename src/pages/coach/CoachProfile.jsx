@@ -46,6 +46,7 @@ export default function CoachProfile() {
   const [error, setError] = useState('');
   const [codeCopied, setCodeCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [joinCopied, setJoinCopied] = useState(false);
   const [walletHelp, setWalletHelp] = useState(false); // wallet "?" explainer popup
   const [academyInfo, setAcademyInfo] = useState(null); // { academy, role } if a member
 
@@ -113,6 +114,18 @@ export default function CoachProfile() {
     if (await copyText(p.coachCode)) {
       setCodeCopied(true);
       setTimeout(() => setCodeCopied(false), 1800);
+    }
+  };
+
+  // STUDENT invite link. Deliberately separate from the referral link below:
+  // that one recruits other COACHES (and pays commission), this one invites a
+  // STUDENT to join this coach's roster. They look alike and do opposite things,
+  // so they get their own labelled rows rather than sitting side by side.
+  const joinLink = p.coachCode ? `${window.location.origin}/join/${p.coachCode}` : '';
+  const copyJoinLink = async () => {
+    if (await copyText(joinLink)) {
+      setJoinCopied(true);
+      setTimeout(() => setJoinCopied(false), 1800);
     }
   };
 
@@ -295,6 +308,15 @@ export default function CoachProfile() {
                 <span className="cp-code">
                   {p.coachCode}
                   <button onClick={copyCode}>{codeCopied ? '✓ Copied' : 'Copy'}</button>
+                </span>
+              ) : NOT_SET}
+            </Row>
+            <Row label="Student invite link">
+              {p.coachCode ? (
+                <span className="cp-joinlink">
+                  <code>{joinLink.replace(/^https?:\/\//, '')}</code>
+                  <button onClick={copyJoinLink}>{joinCopied ? '✓ Copied' : '🔗 Copy'}</button>
+                  <em>Send this to a student or parent. They ask to join, and you approve.</em>
                 </span>
               ) : NOT_SET}
             </Row>

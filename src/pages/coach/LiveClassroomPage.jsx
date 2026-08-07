@@ -896,6 +896,55 @@ function resultLabel(g) {
   return `${name} won · ${g.result}`;
 }
 
+// A Class-vs-Computer board → PGN, so the coach can review a student's engine
+// game on the teaching board exactly as they already can with Play-in-class.
+// Without this a finished engine game was a dead end: the coach could spotlight
+// it, but not step through the moves or branch off to show a better line.
+//
+// Unlike a Play-in-class game these start from a position the COACH chose, so
+// the FEN tag matters — replaying the movetext from the standard start would
+// desync immediately (or throw) on an endgame study.
+function engineBoardToPgn(board, game) {
+  if (!board || !Array.isArray(board.moves) || board.moves.length === 0) return '';
+  let movetext = '';
+  for (let i = 0; i < board.moves.length; i++) {
+    if (i % 2 === 0) movetext += `${i / 2 + 1}. `;
+    movetext += `${board.moves[i]} `;
+  }
+  const studentIsWhite = (game?.studentColor || 'white') !== 'black';
+  const student = board.studentName || 'Student';
+  const engine = `Computer (${game?.skill || 'medium'})`;
+  // result is stored from the STUDENT's point of view ("You won" / "You lost").
+  const r = String(board.result || '').toLowerCase();
+  const studentWon = r.includes('won') || r.includes('win');
+  const studentLost = r.includes('lost') || r.includes('loss');
+  const res = board.status !== 'finished' ? '*'
+    : studentWon ? (studentIsWhite ? '1-0' : '0-1')
+    : studentLost ? (studentIsWhite ? '0-1' : '1-0')
+    : '1/2-1/2';
+
+  const startFen = game?.startFen || '';
+  const tags =
+    `[Event "Class vs Computer"]
+` +
+    `[Date "${new Date().toISOString().slice(0, 10).replace(/-/g, '.')}"]
+` +
+    `[White "${studentIsWhite ? student : engine}"]
+` +
+    `[Black "${studentIsWhite ? engine : student}"]
+` +
+    `[Result "${res}"]
+` +
+    (startFen ? `[SetUp "1"]
+[FEN "${startFen}"]
+` : '') +
+    (board.result ? `[Termination "${board.result}"]
+` : '') +
+    `
+`;
+  return `${tags}${movetext.trim()} ${res}`;
+}
+
 // A Play-in-class game → PGN. Shared by "Review on board" (loads it onto the
 // teaching board) and "Copy PGN" (clipboard), so both always agree.
 // The PGN result tag uses the standard 1-0 / 0-1 / 1/2-1/2 / * codes.
@@ -2928,6 +2977,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // Review a finished Play-in-class game on the shared teaching board: turn its SAN
   // move list into PGN movetext, load it onto the synced board (whole class sees it),
   // and close the Activities panel so the board is front and centre.
+  // Review a student's engine game on the teaching board — same destination as
+  // reviewClassGame below, so both activities behave identically for the coach.
+  const reviewEngineBoard = (board) => {
+    const pgn = engineBoardToPgn(board, engineGame);
+    if (!pgn) return;
+    loadPgnIntoTree(pgn);
+    setShowActivities(false);
+  };
+
   const reviewClassGame = (game) => {
     const pgn = classGameToPgn(game);
     if (!pgn) return;
@@ -4158,7 +4216,12 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             // COACH: watch every student's board; click one to spotlight it.
             <EngineCoachStage
               game={engineGame}
-              boardWidth={Math.min(boardWidth, Math.max(360, (stageSize.w || 520) - 40))}
+              onReview={reviewEngineBoard}
+              // The engine grid owns the whole stage, so size it from the STAGE,
+              // not from `boardWidth`. That is the teaching board's own
+              // (user-resizable, 420-720) width, and clamping to it kept every
+              // student board small no matter how big the monitor was.
+              boardWidth={Math.max(360, (stageSize.w || 520) - 40)}
               onFocus={engineFocus}
               onEnd={engineEnd}
             />
@@ -4169,7 +4232,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               myBoard={myEngineBoard}
               socket={socket}
               sessionId={session?.id}
-              boardWidth={Math.min(boardWidth, Math.max(360, (stageSize.w || 520) - 40))}
+              // The student is PLAYING this one, so give it real room: the stage
+              // width, capped so it still fits a laptop's height alongside the
+              // move list. Previously clamped to the teaching board's width,
+              // which made it needlessly small on a big screen.
+              boardWidth={Math.max(360, Math.min(560, (stageSize.w || 520) - 40, (stageSize.h || 600) - 150))}
             />
           ) : simulOnStage && isHost ? (
             // COACH simul: one big active board + a strip of small boards to swap.

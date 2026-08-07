@@ -10,15 +10,22 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 
 const CANONICAL = "/live-chess-classroom";
 
+// Mirrors what the server actually enforces — config/coachPlans.js liveClass,
+// applied by helpers/liveClassLimits.js. The live plans carry
+// maxStudents: Infinity and may set a class to no time limit at all (a
+// requested duration of 0), so quoting "10 students / 25 students" and a flat
+// 60 minutes understated every paid plan. Verified against limitsForUser and
+// clampDuration rather than copied from the pricing copy.
 const PLAN_ROWS = [
   { plan: "Free", perDay: "1 a day", mins: "up to 40 min", students: "4" },
   { plan: "Pro / Coach", perDay: "1 a day", mins: "up to 60 min", students: "4" },
-  { plan: "Live Basic", perDay: "Unlimited", mins: "up to 60 min", students: "10" },
-  { plan: "Live Pro", perDay: "Unlimited", mins: "up to 60 min", students: "10" },
-  { plan: "Live Coach", perDay: "Unlimited", mins: "up to 120 min", students: "25" },
+  { plan: "Live Basic", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
+  { plan: "Live Pro", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
+  { plan: "Live Coach", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
 ];
 
 const FEATURES = [
+  { icon: "♾️", t: "No class-size or clock limits", d: "On the live plans a class runs as long as you need — set 120 minutes, or no time limit at all and end it when the lesson is done. Bring your whole batch: there is no cap on how many students join the room." },
   { icon: "📹", t: "HD video & screen share", d: "See your whole class, share your screen when you need to. Background noise suppression and video touch-up are built in, so a noisy room or a dim lamp doesn't ruin the lesson." },
   { icon: "♟️", t: "One shared board", d: "Every student sees the same position, live. Move a piece and it moves on their screen instantly — no 'can you see my screen?'." },
   { icon: "🖱️", t: "Give a student control", d: "Hand the board to any student so they play the move themselves in front of the class, then take it back with one click." },
