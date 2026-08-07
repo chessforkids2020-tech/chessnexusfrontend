@@ -839,128 +839,27 @@ export default function useLiveKitRoom() {
     }
   }, [screenOn, refresh]);
 
-  // ── FROZEN CAMERA WATCHDOG ──────────────────────────────────────────────
+  // ── NO AUTOMATIC CAMERA RESTART ─────────────────────────────────────────
   //
-  // The failure nothing else here can see: the MediaStreamTrack reports
-  // readyState 'live' and muted === false, LiveKit is happily publishing, and
-  // the camera is producing ZERO FRAMES. Every other repair in this file
-  // re-attaches or republishes — all of which faithfully re-plumb a dead
-  // source. The only cure is asking the browser for the device again.
+  // A "frozen camera watchdog" used to live here. It polled getRTCStatsReport
+  // and called track.restartTrack() when it decided the camera had stalled.
   //
-  // Detection uses the sender's own stats: framesPerSecond stuck at 0 while the
-  // track claims to be live. Two consecutive zero readings (~10s) before acting,
-  // so a momentarily idle camera is not restarted for no reason.
-  const lastFramesRef = useRef(null);
-  useEffect(() => {
-    let zeroRuns = 0;
-    let noStatsRuns = 0;
-    let restarting = false;
-    lastFramesRef.current = null;
-
-    const check = async () => {
-      const r = roomRef.current;
-      if (!r || restarting) return;
-      try {
-        const pub = r.localParticipant?.getTrackPublication?.('camera');
-        const track = pub?.videoTrack || pub?.track;
-        const raw = track?.mediaStreamTrack;
-        // Only meaningful when the camera is supposed to be sending.
-        if (!track || !raw || pub?.isMuted || raw.readyState !== 'live') {
-          zeroRuns = 0;
-          return;
-        }
-
-        const stats = await track.getRTCStatsReport?.();
-        if (!stats) return;
-        let fps = null;
-        let framesSent = null;
-        stats.forEach((rep) => {
-          if (rep.type === 'outbound-rtp' && rep.kind === 'video') {
-            if (typeof rep.framesPerSecond === 'number') fps = rep.framesPerSecond;
-            // Firefox does not always populate framesPerSecond on outbound-rtp
-            // even while encoding normally, so a healthy camera read as 0 and
-            // was restarted every ~10s — the coach saw their own tile flash
-            // black on a loop. A RISING cumulative frame count proves the
-            // camera is producing pictures whatever fps says.
-            const c = rep.framesEncoded ?? rep.framesSent;
-            if (typeof c === 'number') framesSent = c;
-          }
-        });
-
-        // Trust a rising frame counter over fps: if frames are still being
-        // encoded since the last check, the camera is alive.
-        if (framesSent !== null) {
-          const prev = lastFramesRef.current;
-          lastFramesRef.current = framesSent;
-          if (prev !== null && framesSent > prev) { zeroRuns = 0; return; }
-          // Counter did not move. Fall through only if fps also says zero.
-          if (prev === null) return;       // first reading — nothing to compare yet
-        }
-
-        // NO outbound-rtp video stats at all (fps null AND no frame counter).
-        //
-        // This is not "cannot judge" — it is its own failure, seen in a real
-        // class: readyState 'live', publication unmuted, and yet the browser has
-        // no video sender to report on, so nothing reaches the SFU and every
-        // other participant sees a black tile. Treat it as broken, but only
-        // after MORE consecutive readings than the frozen case, because these
-        // stats are also legitimately absent for a second or two right after
-        // publishing, before the sender is established.
-        if (fps === null && framesSent === null) {
-          if (++noStatsRuns < 6) return;      // ~30s of genuinely no sender
-          noStatsRuns = 0;
-          zeroRuns = 6;                       // fall through to the repair below
-        } else {
-          noStatsRuns = 0;
-          // fps says zero, but there is NO frame counter to corroborate it.
-          // That is exactly the Firefox case, and acting on fps alone is what
-          // restarted a healthy camera every few seconds — releasing the device
-          // and visibly blinking its hardware LED. Without a second signal
-          // agreeing, do nothing: a black tile with a repair button is far
-          // better than a camera that drops out on its own mid-lesson.
-          if (framesSent === null) { zeroRuns = 0; return; }
-        }
-
-        if (fps > 0) { zeroRuns = 0; return; }
-
-        // Live track, zero frames.
-        //
-        // Two readings (~10s) was far too eager. The restart RELEASES THE CAMERA
-        // DEVICE — the coach sees their hardware LED go out and the picture drop
-        // for about a second — so a false positive is not a harmless retry, it is
-        // the very glitch this code exists to prevent. Firefox routinely reports
-        // fps 0 on a perfectly healthy camera, and every 10s it was restarting
-        // the device for no reason.
-        //
-        // Six consecutive readings (~30s) with no frames at all. A real freeze
-        // stays frozen and is still repaired; a stats quirk never survives that
-        // long, because any single good reading resets the run to zero.
-        if (++zeroRuns < 6) return;
-        zeroRuns = 0;
-        restarting = true;
-        // Restarting re-acquires the device from the OS, which visibly blinks
-        // the camera's hardware LED and blacks the picture for ~1s. That is an
-        // acceptable price for reviving a genuinely dead camera and completely
-        // unacceptable for a working one, so it is now the LAST resort and is
-        // logged loudly enough to be traced from a class.
-        console.warn('[camera] restarting device — frames stalled for ~30s', { zeroRuns });
-        try {
-          // restartTrack re-acquires from the OS and swaps the MediaStreamTrack
-          // in place, keeping the same publication so subscribers do not have to
-          // resubscribe. This is the one repair that fixes a frozen camera.
-          await track.restartTrack(VIDEO_CAPTURE_DEFAULTS);
-        } catch {
-          // Device busy or gone: fall back to a full off→on through the queue.
-          try { await setCam(false); await setCam(true); } catch { /* give up */ }
-        } finally {
-          restarting = false;
-        }
-      } catch { /* stats unavailable — nothing to do */ }
-    };
-
-    const id = setInterval(check, 5000);
-    return () => clearInterval(id);
-  }, [setCam]);
+  // It was removed because the cure was worse than the disease. restartTrack
+  // RE-ACQUIRES THE DEVICE FROM THE OS: the camera's hardware LED goes out, the
+  // picture drops for about a second, and every participant sees the coach
+  // flicker. Deciding "stalled" reliably turned out to be impossible — Firefox
+  // reports framesPerSecond 0 on a perfectly healthy camera, so a real class
+  // measured 30 device restarts in five minutes on a camera that was never
+  // broken. Successive attempts to tighten the heuristic (frame counters,
+  // longer thresholds, requiring corroboration) each still misfired.
+  //
+  // A camera that genuinely freezes is rare; a camera that blinks every few
+  // seconds while you teach is unusable. So repair is now manual and explicit:
+  // the student's own "Fix my video" button and the coach's per-tile 🔄, both
+  // of which do a full off→on republish and are only pressed when a human can
+  // actually see something is wrong.
+  //
+  // If this is ever reinstated, it must not act on any single browser statistic.
 
   useEffect(() => () => { roomRef.current?.disconnect().catch(() => {}); }, []);
 

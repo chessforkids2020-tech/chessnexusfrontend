@@ -263,6 +263,26 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
   // watchdog below after a few failed attach attempts, so the repair button can
   // be shown OVER the dead video instead of only in the no-track branch.
   const [blackTile, setBlackTile] = useState(false);
+
+  // THE SELF-VIEW BLINK.
+  //
+  // onFixVideo is passed as `p.isLocal && lk.camOn ? fixMyVideo : undefined`,
+  // and fixMyVideo is a plain function re-created on every render of the page.
+  // Its identity therefore changed constantly, and while it sat in the attach
+  // effect's dependency array that effect re-ran on every render — its cleanup
+  // sets `el.srcObject = null`, blanking the picture for a frame. A live
+  // classroom re-renders many times a minute (clock ticks, participant updates,
+  // waiting-room polls), which is the flicker.
+  //
+  // Only the LOCAL tile suffered: remote tiles receive `undefined`, which is
+  // referentially stable, so their effect never re-ran. That matches the report
+  // exactly — everyone sees everyone else perfectly, but their own tile blinks.
+  //
+  // Holding it in a ref keeps the button calling the latest function while the
+  // attach effect stops seeing it change.
+  const onFixVideoRef = useRef(onFixVideo);
+  useEffect(() => { onFixVideoRef.current = onFixVideo; }, [onFixVideo]);
+
   useEffect(() => {
     const el = ref.current;
     if (!el || !track) return;
@@ -420,8 +440,8 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       // itself is dead, the only cure is republishing the camera — and a coach
       // with twenty black tiles cannot be expected to click twenty buttons.
       // One attempt at ~6s, one more at ~12s, then leave it to the human.
-      if (local && onFixVideo && (tries === 6 || tries === 12)) {
-        try { onFixVideo(); } catch { /* best effort */ }
+      if (local && onFixVideoRef.current && (tries === 6 || tries === 12)) {
+        try { onFixVideoRef.current(); } catch { /* best effort */ }
       }
       if (++tries > 20) { clearInterval(watchdog); return; }        // ~20s, then give up
       // No picture yet. Re-attach, and re-request the subscription if the
@@ -438,7 +458,11 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       clearInterval(watchdog);
       try { track.detach(el); } catch { /* */ }
     };
-  }, [track, rawTrack, local, onFixVideo]);
+    // onFixVideo is deliberately NOT a dependency — see the ref above. Including
+    // it re-ran this effect on every render of the page and the cleanup blanked
+    // the self-view each time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [track, rawTrack, local]);
 
   // Camera off → on must recover WITHOUT a page reload.
   //
