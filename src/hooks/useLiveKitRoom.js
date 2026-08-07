@@ -326,7 +326,33 @@ export default function useLiveKitRoom() {
     };
     if (r.localParticipant) pack(r.localParticipant, true);
     r.remoteParticipants?.forEach((p) => pack(p, false));
-    setParticipants(list);
+    // Only publish a NEW array when something a tile actually renders has
+    // changed. refresh() runs on ActiveSpeakersChanged — i.e. every time anyone
+    // speaks — and previously handed React a brand-new array of brand-new
+    // objects each time, re-rendering every tile in the class for nothing.
+    // Speaking state is compared too (it draws the green ring), but track
+    // identity is what matters: an unchanged list must stay referentially equal
+    // so the video elements are left alone.
+    setParticipants((prev) => {
+      if (prev.length === list.length) {
+        const same = list.every((n, i) => {
+          const o = prev[i];
+          return o
+            && o.identity === n.identity
+            && o.isSpeaking === n.isSpeaking
+            && o.camPublished === n.camPublished
+            && o.videoTrack === n.videoTrack
+            && o.videoTrackRaw === n.videoTrackRaw
+            && o.audioTrack === n.audioTrack
+            && o.audioTrackRaw === n.audioTrackRaw
+            && o.screenTrack === n.screenTrack
+            && o.name === n.name
+            && o.avatar === n.avatar;
+        });
+        if (same) return prev;      // nothing to re-render
+      }
+      return list;
+    });
   }, []);
 
   const connect = useCallback(async ({ url, token }) => {
@@ -827,6 +853,7 @@ export default function useLiveKitRoom() {
   const lastFramesRef = useRef(null);
   useEffect(() => {
     let zeroRuns = 0;
+    let noStatsRuns = 0;
     let restarting = false;
     lastFramesRef.current = null;
 
@@ -870,7 +897,22 @@ export default function useLiveKitRoom() {
           if (prev === null) return;       // first reading — nothing to compare yet
         }
 
-        if (fps === null && framesSent === null) return;   // cannot judge
+        // NO outbound-rtp video stats at all (fps null AND no frame counter).
+        //
+        // This is not "cannot judge" — it is its own failure, seen in a real
+        // class: readyState 'live', publication unmuted, and yet the browser has
+        // no video sender to report on, so nothing reaches the SFU and every
+        // other participant sees a black tile. Treat it as broken, but only
+        // after MORE consecutive readings than the frozen case, because these
+        // stats are also legitimately absent for a second or two right after
+        // publishing, before the sender is established.
+        if (fps === null && framesSent === null) {
+          if (++noStatsRuns < 4) return;      // ~20s of genuinely no sender
+          noStatsRuns = 0;
+          zeroRuns = 2;                       // fall through to the repair below
+        } else {
+          noStatsRuns = 0;
+        }
 
         if (fps > 0) { zeroRuns = 0; return; }
 

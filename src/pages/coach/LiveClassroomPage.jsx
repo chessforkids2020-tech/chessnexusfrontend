@@ -279,11 +279,23 @@ function MediaTile({ track, rawTrack, muted, micOff, label, isScreen, avatarUrl,
       // a 1s interval made the coach's own tile strobe. Only re-point when the
       // underlying MediaStreamTrack is genuinely different from what is already
       // playing.
+      // DIAGNOSTIC COUNTERS. Three different things can blank a self-view and
+      // they are indistinguishable by eye, which is why this bug has been
+      // guessed at rather than found: a remount (new <video> element), a
+      // srcObject reassignment, or the camera track itself being replaced.
+      // Count each so the camera-report says which one is actually happening.
+      window.__svDiag = window.__svDiag || { mounts: 0, attaches: 0, trackIds: [] };
+      window.__svDiag.mounts++;
+
       const attachLocal = () => {
         const cur = track.mediaStreamTrack;
         if (!cur) return;
         const playing = el.srcObject?.getVideoTracks?.()[0];
         if (playing === cur) return;      // already showing this exact track
+        window.__svDiag.attaches++;
+        const d = window.__svDiag.trackIds;
+        if (d[d.length - 1] !== cur.id) d.push(cur.id);
+        if (d.length > 12) d.shift();
         el.srcObject = new MediaStream([cur]);
       };
       attachLocal();
@@ -3297,16 +3309,28 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
         const el = document.querySelector('video[data-selfview="1"]');
         const videoWidth = el?.videoWidth ?? null;
+        const d = window.__svDiag || { mounts: 0, attaches: 0, trackIds: [] };
+        // Also report when the picture LOOKS fine: a tile that flashes is
+        // healthy in most samples, so "only report when broken" hid the very
+        // behaviour being chased. A rising mount/attach count between reports
+        // is the flashing, whatever videoWidth happens to be at sample time.
+        const churning = d.mounts > 2 || d.attaches > 2;
         const broken = raw?.readyState === 'ended' || fps === 0 || videoWidth === 0;
-        if (!broken) return;
+        if (!broken && !churning) return;
         if (Date.now() - lastSent < 10000) return;   // at most one line per 10s
         lastSent = Date.now();
+        // Reset so the next line reports the delta, not a running total.
+        if (window.__svDiag) { window.__svDiag.mounts = 0; window.__svDiag.attaches = 0; window.__svDiag.trackIds = []; }
 
         api.post(`/api/coach-live/sessions/${session.id}/camera-report`, {
           state: {
             isHost, camOn: lkNow.camOn, pubMuted: pub?.isMuted ?? null,
             readyState: raw?.readyState ?? null, fps, videoWidth,
             black: videoWidth === 0,
+            // How many times the self-view remounted / re-attached / swapped
+            // camera track since the last report. Steady picture => all ~0.
+            svMounts: d.mounts, svAttaches: d.attaches,
+            svTrackSwaps: Math.max(0, d.trackIds.length - 1),
             deviceLabel: raw?.label || '',
           },
         }).catch(() => {});
@@ -3737,13 +3761,21 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const renderTile = (p, { small = false, width = '100%' } = {}) => (
     // minWidth:0 keeps the tile from overflowing. `width` is a fixed px on the main
     // stage (flex layout, for size-maximized centered tiles), else 100% (grid columns).
-    // Key includes the TRACK SID, not just the identity. When a student
+    // Key includes the TRACK SID for REMOTE tiles only. When a student
     // republishes their camera the identity is unchanged, so React reuses the
     // component and its <video> keeps pointing at the old, dead MediaStream —
     // a black tile that only a page reload cleared. Changing the key forces a
     // fresh element with a fresh attach.
+    //
+    // NOT for the local tile. The self-view attaches `track.mediaStreamTrack`
+    // directly and already re-points itself on unmuted/restarted/ended, so it
+    // does not need a remount to recover — and it must not get one: a local
+    // publication's sid changes (and is briefly undefined) across restartTrack
+    // and mute/unmute, so keying on it destroyed and rebuilt the coach's own
+    // <video> repeatedly. That is a guaranteed black frame each time, which is
+    // what made the coach's tile blink while every student tile was steady.
     <div
-      key={`${p.identity}-${p.videoTrackRaw?.sid || p.videoTrack?.sid || 'nocam'}`}
+      key={p.isLocal ? `${p.identity}-self` : `${p.identity}-${p.videoTrackRaw?.sid || p.videoTrack?.sid || 'nocam'}`}
       style={{ minWidth: 0, width, flex: '0 0 auto', position: 'relative' }}
     >
       {raisedHandIds.map(String).includes(String(p.identity)) && (
