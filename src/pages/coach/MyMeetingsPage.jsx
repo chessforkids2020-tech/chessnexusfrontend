@@ -190,15 +190,22 @@ export default function MyMeetingsPage() {
                   {canPickUnlimited ? '∞' : <>{limits.durationMin}<small style={s.chipUnit}>min</small></>}
                 </span>
                 <span style={s.chipKey}>Per class</span>
+                {/* When the plan allows a no-limit class the headline is already
+                    ∞, so the tag says "Unlimited" like the card beside it. The
+                    old "Up to 120 min or unlimited" restated the ceiling under a
+                    ∞ and read as a cap. The exact minutes are still offered in
+                    the Duration dropdown, which is where the choice is made. */}
                 <span style={{ ...s.chipTag, color: C.green }}>
-                  {canPickUnlimited ? `Up to ${limits.durationMin} min or unlimited` : 'Max length'}
+                  {canPickUnlimited ? 'Unlimited' : 'Max length'}
                 </span>
               </div>
               <div style={s.chip}>
                 <span style={{ ...s.chipIc, ...s.chipIcBlue }}><IconUsers size={17} /></span>
                 <span style={s.chipVal}>{limits.maxStudents === -1 ? '∞' : limits.maxStudents}</span>
                 <span style={s.chipKey}>Students + coach</span>
-                <span style={{ ...s.chipTag, color: '#60a5fa' }}>Per meeting</span>
+                <span style={{ ...s.chipTag, color: '#60a5fa' }}>
+                  {limits.maxStudents === -1 ? 'Unlimited' : 'Per meeting'}
+                </span>
               </div>
             </div>
           )}
