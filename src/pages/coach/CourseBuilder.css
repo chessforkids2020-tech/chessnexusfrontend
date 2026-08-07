@@ -160,6 +160,25 @@
 .cb-group-head { display: flex; align-items: center; gap: 8px; }
 .cb-group-name { font-weight: 600; flex: 1; }
 .cb-group-count { font-size: 12px; opacity: 0.6; }
+
+/* Member names on a batch card — so a coach can see WHO is in a batch without
+   opening Edit. Chips rather than a comma list: a long batch stays scannable. */
+.cb-group-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 2px;
+}
+.cb-name-chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.cb-group-empty { margin: 8px 0 2px; font-size: 12.5px; }
 .cb-group-members {
   margin-top: 8px;
   padding-top: 8px;

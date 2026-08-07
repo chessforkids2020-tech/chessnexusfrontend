@@ -19,6 +19,23 @@ export default function CoachBatches() {
   const studentId = (s) => String(s.studentId?._id || s.studentId || '');
   const studentLabel = (s) => s.studentName || s.studentId?.displayName || s.studentId?.username || 'Student';
 
+  // Names of the students in a batch. The batch card used to show only a count,
+  // so a coach had to open Edit and read a checkbox list to remember who was
+  // actually in it — which is the one thing they look at a batch to find out.
+  // No extra request: /api/coach/groups already returns studentIds, and the
+  // roster is loaded alongside it.
+  const memberNames = React.useMemo(() => {
+    const byId = new Map(students.map(s => [studentId(s), studentLabel(s)]));
+    const out = {};
+    for (const g of groups) {
+      out[g._id] = (g.studentIds || [])
+        .map(id => byId.get(String(id)))
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b));
+    }
+    return out;
+  }, [groups, students]);
+
   const loadAll = async () => {
     setLoading(true);
     try {
@@ -120,6 +137,22 @@ export default function CoachBatches() {
               </button>
               <button className="cb-icon-btn" onClick={() => deleteGroup(g._id)}>✕</button>
             </div>
+
+            {/* Who is in this batch, at a glance. Hidden while editing — the
+                checkbox list below is showing the same thing. */}
+            {editing?._id !== g._id && (
+              (memberNames[g._id] || []).length > 0 ? (
+                <div className="cb-group-names">
+                  {memberNames[g._id].map((n, i) => (
+                    <span key={i} className="cb-name-chip">{n}</span>
+                  ))}
+                </div>
+              ) : (
+                <p className="cb-muted cb-group-empty">
+                  No students yet — press <strong>Edit</strong> to add some.
+                </p>
+              )
+            )}
 
             {editing?._id === g._id && (
               <div className="cb-group-members">
