@@ -842,6 +842,36 @@ export default function Sidebar({ user, onNavigate }) {
             </div>
 
             
+            {/* Coach — PUBLIC. Shown to everyone, logged in or not: it is a page
+                ABOUT coaching on Chess Nexus, not the coach's own dashboard.
+                (That one is the 🎓 shortcut further down, gated behind isCoach.) */}
+            <div
+              style={isActive('/coach-hub') ? styles.navItemActive : styles.navItem}
+              onClick={() => {
+                if ((isMobile || isLandscape) && !isExpanded) {
+                  setIsExpanded(true);
+                } else {
+                  handleNavigate('/coach-hub');
+                }
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
+                e.currentTarget.style.color = '#06b6d4';
+                e.currentTarget.style.transform = 'translateX(5px)';
+                e.currentTarget.style.borderLeft = '5px solid #10b981';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = isActive('/coach-hub') ? 'rgba(6, 182, 212, 0.15)' : 'transparent';
+                e.currentTarget.style.color = isActive('/coach-hub') ? '#06b6d4' : '#ffffff';
+                e.currentTarget.style.transform = 'translateX(0)';
+                e.currentTarget.style.borderLeft = 'none';
+              }}
+              title="Coach"
+            >
+              <span style={styles.navIcon}>🎓</span>
+              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Coach</span>}
+            </div>
+
             <div 
               style={isActive('/games') ? styles.navItemActive : styles.navItem}
               onClick={() => {
@@ -869,44 +899,10 @@ export default function Sidebar({ user, onNavigate }) {
               {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>Play</span>}
             </div>
 
-            {/* 3D Arena nav item — visible to all; guests are redirected to login */}
-            <div 
-              style={styles.navItem}
-              onClick={() => {
-                if (!user || user.role === 'guest') {
-                  navigate('/login', { state: { message: 'Please log in to access the 3D Arena.' } });
-                  return;
-                }
-                const base = import.meta.env.VITE_3D_ARENA_URL || 'https://3darena.chessnexus.in';
-                // Open blank tab synchronously so browsers don't block it as a popup.
-                // Do NOT use noopener/noreferrer — they prevent navigating the new tab.
-                const newTab = window.open('', '_blank');
-                api.get('/api/auth/arena-token')
-                  .then(res => {
-                    if (newTab) newTab.location.href = `${base}?token=${encodeURIComponent(res.data.token)}`;
-                  })
-                  .catch(() => {
-                    const token = localStorage.getItem('authToken');
-                    if (newTab) newTab.location.href = token ? `${base}?token=${encodeURIComponent(token)}` : base;
-                  });
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(139, 92, 246, 0.15)';
-                e.currentTarget.style.color = '#a78bfa';
-                e.currentTarget.style.transform = 'translateX(5px)';
-                e.currentTarget.style.borderLeft = '5px solid #8b5cf6';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = '#ffffff';
-                e.currentTarget.style.transform = 'translateX(0)';
-                e.currentTarget.style.borderLeft = 'none';
-              }}
-              title="3D Arena"
-            >
-              <span style={styles.navIcon}>🎮</span>
-              {(!(isMobile || isLandscape) || isExpanded) && <span style={styles.navLabel}>3D Arena</span>}
-            </div>
+            {/* The 3D Arena nav item moved to the Games page (/games). It is a way
+                to PLAY, so it belongs beside the other play options rather than in
+                the global navigation, where it competed with Puzzles, Study and
+                Race for a coach's and student's attention. */}
 
             {/* Analyse My Games nav item */}
             <div

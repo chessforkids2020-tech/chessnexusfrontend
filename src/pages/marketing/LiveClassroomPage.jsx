@@ -11,21 +11,22 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 const CANONICAL = "/live-chess-classroom";
 
 // Mirrors what the server actually enforces — config/coachPlans.js liveClass,
-// applied by helpers/liveClassLimits.js. The live plans carry
-// maxStudents: Infinity and may set a class to no time limit at all (a
-// requested duration of 0), so quoting "10 students / 25 students" and a flat
-// 60 minutes understated every paid plan. Verified against limitsForUser and
-// clampDuration rather than copied from the pricing copy.
+// applied by helpers/liveClassLimits.js. Both paid plans carry
+// meetingsPerDay: Infinity and maxStudents: Infinity, and may set a class to no
+// time limit at all (a requested duration of 0). Verified against limitsForUser
+// and clampDuration rather than copied from the pricing copy.
+//
+// The separate Live Basic / Live Pro / Live Coach rows are gone — those plans
+// no longer exist. The unlimited classroom they used to sell is now simply part
+// of Pro and Coach, so the only limited row left is Free.
 const PLAN_ROWS = [
   { plan: "Free", perDay: "1 a day", mins: "up to 40 min", students: "4" },
-  { plan: "Pro / Coach", perDay: "1 a day", mins: "up to 60 min", students: "4" },
-  { plan: "Live Basic", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
-  { plan: "Live Pro", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
-  { plan: "Live Coach", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
+  { plan: "Pro (70 students)", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
+  { plan: "Coach (150 students)", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
 ];
 
 const FEATURES = [
-  { icon: "♾️", t: "No class-size or clock limits", d: "On the live plans a class runs as long as you need — set 120 minutes, or no time limit at all and end it when the lesson is done. Bring your whole batch: there is no cap on how many students join the room." },
+  { icon: "♾️", t: "No class-size or clock limits", d: "On either paid plan a class runs as long as you need — set 120 minutes, or no time limit at all and end it when the lesson is done. Bring your whole batch: there is no cap on how many students join the room." },
   { icon: "📹", t: "HD video & screen share", d: "See your whole class, share your screen when you need to. Background noise suppression and video touch-up are built in, so a noisy room or a dim lamp doesn't ruin the lesson." },
   { icon: "♟️", t: "One shared board", d: "Every student sees the same position, live. Move a piece and it moves on their screen instantly — no 'can you see my screen?'." },
   { icon: "🖱️", t: "Give a student control", d: "Hand the board to any student so they play the move themselves in front of the class, then take it back with one click." },
@@ -51,7 +52,7 @@ const FAQ = [
   },
   {
     q: "Is the live chess classroom free?",
-    a: "Yes. Every coach on Chess Nexus gets the live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. The live plans give you unlimited classes a day, unlimited students in the room, and classes up to 120 minutes or with no time limit at all.",
+    a: "Yes. Every coach on Chess Nexus gets the live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. Pro ($19 a month, 70 students) and Coach ($33 a month, 150 students) give you unlimited classes a day, unlimited students in the room, and classes up to 120 minutes or with no time limit at all.",
   },
   {
     q: "Can students move pieces on the shared board?",
@@ -134,8 +135,9 @@ export default function LiveClassroomMarketingPage() {
       <section className="mkt-section" aria-label="Plans">
         <h2>What each plan includes</h2>
         <p className="mkt-section-lead">
-          Every coach gets the live classroom — free plans included. Paid live plans
-          raise how often you teach, how long, and how many students join.
+          Every coach gets the live classroom — the free plan included. Both paid plans
+          unlock it completely: unlimited classes, unlimited students in the room, and
+          classes up to 120 minutes or with no time limit at all.
         </p>
         <div className="mkt-table-wrap">
           <table className="mkt-table">
@@ -176,7 +178,7 @@ export default function LiveClassroomMarketingPage() {
       <section className="mkt-section mkt-cta-section" aria-label="Start">
         <h2>Run your next class here</h2>
         <p className="mkt-section-lead">
-          Free forever for up to 30 students. No card required.
+          Free forever for up to 20 students. No card required.
         </p>
         <div className="mkt-cta-row">
           <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Start teaching free</Link>

@@ -18,15 +18,23 @@ const CANONICAL = "/chess-coach-pricing";
 const FAQ = [
   {
     q: "Is Chess Nexus free for chess coaches?",
-    a: "Yes. Coaching is free forever for up to 30 students — no card, no trial clock. That includes assignments, courses, attendance, the class schedule, parent reports and one live class a day.",
+    a: "Yes. Coaching is free forever for up to 20 students — no card, no trial clock. That includes assignments, courses, attendance, the class schedule, parent reports and one live class a day.",
   },
+  // Replaced the old "plan families" question. There is no longer a
+  // "Without Live Classroom" / "With Live Classroom" split to explain — every
+  // plan carries the classroom, so the only real question left is what changes
+  // as you move up the three plans.
   {
-    q: "What's the difference between the plan families?",
-    a: "The 'Without Live Classroom' plans raise your student cap and unlock premium coaching tools. The 'With Live Classroom' plans additionally raise how often you can teach live, how long each class runs, and how many students can join at once.",
+    q: "What's the difference between the three plans?",
+    a: "The classroom is in every plan. Free gives you a taste of it — one class a day, up to 40 minutes, up to 4 students in the room. Pro and Coach both unlock it completely: unlimited classes, unlimited students in the room, and classes up to 120 minutes or with no time limit at all. After that the only difference is how many students you can teach — 20 on Free, 70 on Pro, 150 on Coach — plus the premium coaching tools on Coach.",
   },
   {
     q: "Do I need a paid plan to teach live?",
-    a: "No. Every coach gets the built-in live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. The live plans give you unlimited classes a day, unlimited students in the room, and classes up to 120 minutes or with no time limit at all.",
+    a: "No. Every coach gets the built-in live classroom, including free coaches — one class a day (up to 40 minutes) with up to 4 students plus you, the coach. Pro and Coach give you unlimited classes a day, unlimited students in the room, and classes up to 120 minutes or with no time limit at all.",
+  },
+  {
+    q: "How much are the paid plans?",
+    a: "Pro is $19 a month (₹1299 in India) for up to 70 students. Coach is $33 a month (₹2444) for up to 150 students. Both include the full live classroom and the elite-coach perks. Paying for 3 months up front takes 10% off: Pro ₹3507 / $51 and Coach ₹6599 / $89 for the term.",
   },
   {
     q: "What happens if my paid plan expires?",
@@ -63,7 +71,10 @@ function orUnlimited(n) {
 
 export default function CoachPricingPage() {
   const [data, setData] = useState(null);
-  const [family, setFamily] = useState("noLive");
+  // Default family is now "coach" — the ONE family the API returns. It used to
+  // be "noLive", which no longer exists as a family key, so the lookup below
+  // would miss and silently fall back to families[0].
+  const [family, setFamily] = useState("coach");
 
   useEffect(() => {
     let alive = true;
@@ -95,9 +106,9 @@ export default function CoachPricingPage() {
   return (
     <FeaturePageLayout
       seo={{
-        title: "Chess Coach Pricing — Free for 30 Students",
+        title: "Chess Coach Pricing — Free for 20 Students",
         description:
-          "Chess Nexus coach pricing. Free forever for up to 30 students, including the built-in live classroom. Paid plans raise student limits and live-class length, frequency and size.",
+          "Chess Nexus coach pricing. Free forever for up to 20 students, including the built-in live classroom. Pro ($19/mo, 70 students) and Coach ($33/mo, 150 students) unlock unlimited live classes with unlimited students in the room.",
         keywords:
           "chess coach pricing, chess coaching software cost, chess academy software pricing, online chess teaching platform price",
         canonical: CANONICAL,
@@ -106,7 +117,7 @@ export default function CoachPricingPage() {
         icon: "💳",
         h1: "Coach pricing",
         sub:
-          "Free forever for up to 30 students — including the live classroom. Paid plans are for coaches who need more students, longer classes, or more of them.",
+          "Free forever for up to 20 students — including the live classroom. Three plans, all with the classroom; the paid two unlock it completely and raise how many students you can teach.",
         primary: { to: "/coach/onboarding", label: "Start coaching free" },
         secondary: { to: "/chess-coach-guide", label: "See what's included" },
       }}
@@ -127,13 +138,23 @@ export default function CoachPricingPage() {
 
       <section className="mkt-section" aria-label="Plans">
         <h2>Plans for individual coaches</h2>
+        {/* One list, three plans. This used to describe two families ("without"
+            and "with" the live classroom), which asked a coach to choose between
+            features before they had used either. The classroom is in every plan
+            now, so the only question is how many students you teach. */}
         <p className="mkt-section-lead">
-          Two families: one without the live classroom limits raised, one with. Every
-          plan — including Free — includes the built-in classroom.
+          Three plans, and every one of them — including Free — includes the built-in
+          live classroom. Free gives you a taste of it; both paid plans unlock it
+          completely and raise how many students you can teach.
         </p>
         <p className="mkt-p">
-          ⭐ <strong>Every plan in the "With Live Classroom" family is an elite coach plan</strong>{" "}
-          — unlimited Team Race events and unlimited Monthly Focus challenges, on all three.
+          ⭐ <strong>Both paid plans are elite coach plans</strong>{" "}
+          — unlimited Team Race events and unlimited Monthly Focus challenges, on Pro and Coach alike.
+        </p>
+        <p className="mkt-p">
+          Plans are bought by the month or in a 3-month term. Paying for{" "}
+          <strong>3 months up front takes 10% off</strong> — Pro ₹3507 / $51 and Coach
+          ₹6599 / $89 for the term.
         </p>
 
         {families.length > 1 && (
@@ -166,17 +187,17 @@ export default function CoachPricingPage() {
                   <th>Plan</th><th>Price (USD/mo)</th><th>Students</th><th>Live classes</th>
                 </tr>
               </thead>
+              {/* The Live Basic / Live Pro / Live Coach rows are gone: those
+                  plans no longer exist in config/coachPlans.js. Their unlimited
+                  classroom moved INTO Pro and Coach, so there are three rows. */}
               <tbody>
-                <tr><td>Free</td><td>$0 — free forever</td><td>30</td><td>1/day · 40 min · 4 (+coach)</td></tr>
-                <tr><td>Pro</td><td>$29</td><td>70</td><td>1/day · 60 min · 4 (+coach)</td></tr>
-                <tr><td>Coach</td><td>$49</td><td>150</td><td>1/day · 60 min · 4 (+coach)</td></tr>
-                <tr><td>Live Basic</td><td>$79</td><td>50</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
-                <tr><td>Live Pro</td><td>$119</td><td>100</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
-                <tr><td>Live Coach</td><td>$244</td><td>150</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
+                <tr><td>Free</td><td>$0 — free forever</td><td>20</td><td>1/day · 40 min · 4 (+coach)</td></tr>
+                <tr><td>Pro</td><td>$19</td><td>70</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
+                <tr><td>Coach</td><td>$33</td><td>150</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
               </tbody>
             </table>
             <p className="mkt-p">
-              The Free plan is <strong>free forever for up to 30 students</strong> — not a
+              The Free plan is <strong>free forever for up to 20 students</strong> — not a
               trial, and no card is required. It includes assignments, courses, the class
               schedule, attendance, fee tracking, parent progress reports and the built-in
               live classroom. See{" "}
@@ -279,7 +300,7 @@ export default function CoachPricingPage() {
 
       <section className="mkt-section mkt-cta-section" aria-label="Start">
         <h2>Start free, upgrade only if you outgrow it</h2>
-        <p className="mkt-section-lead">Up to 30 students, no card required.</p>
+        <p className="mkt-section-lead">Up to 20 students, no card required.</p>
         <div className="mkt-cta-row">
           <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Start coaching free</Link>
           <Link to="/chess-coach-referral" className="mkt-btn">Refer & earn</Link>

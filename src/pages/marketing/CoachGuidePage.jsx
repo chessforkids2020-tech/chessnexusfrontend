@@ -17,18 +17,20 @@ import FeaturePageLayout from "../../components/marketing/FeaturePageLayout";
 const CANONICAL = "/chess-coach-guide";
 
 // Live-class caps per plan — mirrors config/coachPlans.js (liveClass block).
+// The Live Basic / Live Pro / Live Coach rows are gone: those plans were
+// deleted. Their unlimited classroom is now part of Pro and Coach, which carry
+// meetingsPerDay: Infinity and maxStudents: Infinity, so Free is the only plan
+// with a limited room.
 const PLAN_ROWS = [
-  { plan: "Free", perDay: "1 a day", mins: "up to 40 min", students: "4" },
-  { plan: "Pro / Coach", perDay: "1 a day", mins: "up to 60 min", students: "4" },
-  { plan: "Live Basic", perDay: "Unlimited", mins: "up to 60 min", students: "10" },
-  { plan: "Live Pro", perDay: "Unlimited", mins: "up to 60 min", students: "10" },
-  { plan: "Live Coach", perDay: "Unlimited", mins: "up to 120 min", students: "25" },
+  { plan: "Free (20 students)", perDay: "1 a day", mins: "up to 40 min", students: "4" },
+  { plan: "Pro (70 students)", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
+  { plan: "Coach (150 students)", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
 ];
 
 const FAQ = [
   {
     q: "How do I become a chess coach on Chess Nexus?",
-    a: "Open the Coach section and confirm you're a coach. New coaches are verified by the Nexus team, usually within 12 hours, before they can add students — this keeps the platform safe for kids. Coaching is free forever for up to 30 students, with no card required.",
+    a: "Open the Coach section and confirm you're a coach. New coaches are verified by the Nexus team, usually within 12 hours, before they can add students — this keeps the platform safe for kids. Coaching is free forever for up to 20 students, with no card required.",
   },
   {
     q: "How do I add students to my chess academy?",
@@ -44,7 +46,7 @@ const FAQ = [
   },
   {
     q: "How many students can join a live class?",
-    a: "On the free plan you get one class a day (up to 40 minutes) with up to 4 students plus you, the coach. The live plans give you unlimited classes a day, unlimited students in the room, and classes up to 120 minutes or with no time limit at all.",
+    a: "On the free plan you get one class a day (up to 40 minutes) with up to 4 students plus you, the coach. Both paid plans — Pro at $19 a month and Coach at $33 a month — give you unlimited classes a day, unlimited students in the room, and classes up to 120 minutes or with no time limit at all.",
   },
   {
     q: "How do parents see their child's progress?",
@@ -153,7 +155,7 @@ export default function CoachGuidePage() {
         id="onboarding"
         icon="🚀"
         title="Getting started as a coach"
-        lead="Free forever for up to 30 students. No card, no trial clock."
+        lead="Free forever for up to 20 students. No card, no trial clock."
       >
         <Steps
           items={[
@@ -346,9 +348,9 @@ export default function CoachGuidePage() {
           </table>
         </div>
         <p className="mkt-p mkt-muted">
-          Every coach — including free ones — gets the live classroom. Paid live plans
-          raise how often you can teach, how long each class runs, and how many
-          students can join at once.
+          Every coach — including free ones — gets the live classroom. Both paid plans
+          unlock it completely: unlimited classes a day, unlimited students in the room,
+          and classes up to 120 minutes or with no time limit at all.
         </p>
       </Section>
 
@@ -367,7 +369,7 @@ export default function CoachGuidePage() {
       <section className="mkt-section mkt-cta-section" aria-label="Start coaching">
         <h2>Start coaching free</h2>
         <p className="mkt-section-lead">
-          Free forever for up to 30 students — including the live classroom. No card required.
+          Free forever for up to 20 students — including the live classroom. No card required.
         </p>
         <div className="mkt-cta-row">
           <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Become a coach</Link>

@@ -51,10 +51,11 @@ export default function CoachSubscription() {
       const raw = p.data?.plans || {};
       const byId = Array.isArray(raw) ? Object.fromEntries(raw.map(pl => [pl.id, pl])) : raw;
       setPlansById(byId);
-      // Two families ("Without Live Classroom" / "With Live Classroom") for the two tables.
+      // ONE family. There used to be two tables — "Without Live Classroom" and
+      // "With Live Classroom" — which asked a coach to choose between features
+      // before they had used either. Every paid plan now includes the classroom.
       setFamilies(p.data?.planFamilies || [
-        { key: 'noLive', title: 'Without Live Classroom', order: p.data?.planOrderNoLive || ['free', 'pro', 'coach'] },
-        { key: 'live', title: 'With Live Classroom', order: p.data?.planOrderLive || ['live1', 'live2', 'live3'] },
+        { key: 'coach', title: 'Plans', order: p.data?.planOrder || ['free', 'pro', 'coach'] },
       ]);
       const curs = p.data?.currencies || [];
       setCurrencies(curs);
@@ -202,11 +203,8 @@ export default function CoachSubscription() {
   // Per-tier presentation: a ribbon badge + a one-line tagline of the offer.
   const TIER = {
     free:  { tagline: 'Start free, forever', badge: '' },
-    pro:   { tagline: 'More students, same tools', badge: 'Best value' },
-    coach: { tagline: 'All-in-one · everything unlocked', badge: '' },
-    live1: { tagline: 'Live teaching starts here', badge: '' },
-    live2: { tagline: 'Unlimited live · elite perks', badge: '⭐ Most popular' },
-    live3: { tagline: 'Everything, unlimited', badge: '💎 Elite Coach' },
+    pro:   { tagline: 'Unlimited live classes', badge: '⭐ Most popular' },
+    coach: { tagline: 'Everything, unlimited', badge: '💎 Elite Coach' },
   };
 
   // Human "live class" summary for a plan's liveClass config (server sends
@@ -454,7 +452,9 @@ export default function CoachSubscription() {
                   ? (isOnFreePlan || access.downgraded)
                   : (p.id === currentPlan && !access.downgraded);
                 const tier = TIER[p.id] || {};
-                const highlight = p.id === 'coach' || p.id === 'live2';
+                // 'pro' is the plan most coaches should land on: unlimited
+                // classroom at the lowest paid price. (Was live2, now deleted.)
+                const highlight = p.id === 'pro';
                 return (
                   <div key={p.id} className={`cs-plan ${isCurrent ? 'is-current' : ''} ${highlight ? 'is-featured' : ''}`}>
                     {tier.badge && <div className="cs-plan-badge">{tier.badge}</div>}

@@ -4,7 +4,7 @@
 > endgames, courses and live races; chess coaches run their whole academy —
 > roster, assignments, courses, schedule, attendance, parent reports — and
 > teach live inside the app with video and a shared board, without Zoom.
-> Free for players. Free for coaches up to 30 students, no card required.
+> Free for players. Free for coaches up to 20 students, no card required.
 
 Site: https://www.chessnexus.in
 Contact: https://www.chessnexus.in/contact
@@ -29,7 +29,7 @@ Two audiences:
 - [Free coach plan](https://www.chessnexus.in/free-chess-coaching-software): the
   definitive answer to "is Chess Nexus free?" — free forever for up to 30
   students, with no trial period and no card required. Lists everything the free
-  plan includes AND every limit (30 students, 1 live class a day, 40-minute
+  plan includes AND every limit (20 students, 1 live class a day, 40-minute
   classes, 4 students plus the coach in a live room, 30 courses of 3 lessons).
 - [Coaching platform](https://www.chessnexus.in/chess-coaching): overview of the
   coach toolkit — roster, batches, assignments, courses, private races, reports.
@@ -54,18 +54,20 @@ Two audiences:
 
 Individual coach plans (monthly, USD; billed in your own currency at checkout):
 
-| Plan                | Price | Students | Live classes                         |
-|---------------------|-------|----------|--------------------------------------|
-| Free                | $0    | 30       | 1/day · 40 min · 4 students (+ coach)|
-| Pro                 | $29   | 70       | 1/day · 60 min · 4 students (+ coach)|
-| Coach               | $49   | 150      | 1/day · 60 min · 4 students (+ coach)|
-| Live Basic          | $79   | 50       | Unlimited · 60 min · 10 (+ coach)    |
-| Live Pro            | $119  | 100      | Unlimited · 60 min · 10 (+ coach)    |
-| Live Coach          | $244  | 150      | Unlimited · 120 min · 25 (+ coach)   |
+| Plan                | Price | Students | Live classes                          |
+|---------------------|-------|----------|---------------------------------------|
+| Free                | $0    | 20       | 1/day · 40 min · 4 students (+ coach) |
+| Pro                 | $19   | 70       | Unlimited classes · unlimited students|
+| Coach               | $33   | 150      | Unlimited classes · unlimited students|
+
+Both paid plans include the full live classroom: unlimited classes a day,
+unlimited students in the room, and classes up to 120 minutes or with no time
+limit at all. They also include unlimited Team Race and Monthly Focus.
+A 3-month term is 10% off (Pro $51, Coach $89).
 
 Key coach facts:
 
-- Coaching is **free forever for up to 30 students**. No card, no trial clock.
+- Coaching is **free forever for up to 20 students**. No card, no trial clock.
 - New coaches are **verified by the Nexus team** (usually within 12 hours)
   before they can add students, to keep the platform safe for children.
 - **Assignment types (7):** puzzle topic, whole study, single study chapter,
@@ -165,13 +167,11 @@ Live class limits by plan (students are PER ROOM, and the coach is extra — a
 10-student room holds 10 students plus the coach, 11 people in total. The limit
 is enforced strictly by the server; an over-limit student cannot join):
 
-| Plan                | Classes per day | Length  | Students (+ coach) |
-|---------------------|-----------------|---------|--------------------|
-| Free                | 1               | 40 min  | 4                  |
-| Pro / Coach         | 1               | 60 min  | 4                  |
-| Live Basic ($79)    | Unlimited       | 60 min  | 10                 |
-| Live Pro ($119)     | Unlimited       | 60 min  | 10                 |
-| Live Coach ($244)   | Unlimited       | 120 min | 25                 |
+| Plan                | Classes per day | Length          | Students (+ coach) |
+|---------------------|-----------------|-----------------|--------------------|
+| Free                | 1               | 40 min          | 4                  |
+| Pro ($19)           | Unlimited       | 120 min or none | Unlimited          |
+| Coach ($33)         | Unlimited       | 120 min or none | Unlimited          |
 
 Every coach, including free ones, gets the live classroom.
 
@@ -292,9 +292,8 @@ what has gone backwards.
   and consent-based mic/camera controls exist for that reason.
 - "Nexus Elite" is the paid membership for players; coach plans are separate and
   are what raise the live-class limits above.
-- "Elite coach" is a different thing again: EVERY paid plan that includes the live
-  classroom (Live Basic, Live Pro and Live Coach, and the academy Starter Live,
-  Growth Live and Institute Live plans) makes that coach an elite coach, which
-  grants unlimited Team Race events and unlimited Monthly Focus challenges. Plans
-  without the live classroom do not include elite coach features; any coach may
-  still create one Monthly Focus once, as a free trial.
+- "Elite coach" is a different thing again: BOTH paid coach plans (Pro and Coach),
+  and the academy live plans, make that coach an elite coach, which grants
+  unlimited Team Race events and unlimited Monthly Focus challenges. Free coaches
+  do not have elite coach features; any coach may still create one Monthly Focus
+  once, as a free trial.

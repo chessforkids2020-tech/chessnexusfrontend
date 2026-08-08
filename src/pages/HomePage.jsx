@@ -123,97 +123,9 @@ function readCachedContestRows() {
 // Mirrors src/pages/marketing/LiveClassroomPage.jsx. The classroom is the
 // headline capability, and a visitor (or an AI summarising this page) can't
 // tell what "built-in classroom" means from two words — so it's spelled out.
-const CLASSROOM_INSIDE = [
-  { ic: "📹", t: "HD video & screen share", d: "See the whole class. Noise suppression and video touch-up are built in." },
-  { ic: "♟️", t: "One shared board", d: "Move a piece and it moves on every student's screen instantly." },
-  { ic: "🖱️", t: "Give a student control", d: "Hand over the board so they play the move in front of the class, then take it back." },
-  { ic: "✏️", t: "Draw on the board", d: "Arrows and highlights sync to everyone — point at the plan instead of describing it." },
-  { ic: "📚", t: "Load anything instantly", d: "Your studies, courses, library, endgames, puzzles by theme and master games." },
-  { ic: "🤖", t: "Private engine", d: "Stockfish for your eyes only. Students see just the board." },
-  { ic: "📌", t: "One-click homework", d: "Capture the position as you teach, send the whole set as one assignment." },
-  { ic: "📋", t: "Attendance writes itself", d: "Admitting a student records their attendance. No register to fill in after." },
-  { ic: "⏳", t: "Waiting room", d: "Nobody wanders in halfway through an explanation." },
-  { ic: "✋", t: "Raise hand", d: "Their tile jumps to the front of your grid." },
-  { ic: "🎙️", t: "Mic & camera control", d: "Mute in one click. Turning it back on is always a request the child accepts." },
-  { ic: "♟️", t: "Play in class", d: "The whole class plays at once with live clocks. Spotlight any board for everyone." },
-  { ic: "🎲", t: "Simul", d: "Play every student at once, swapping between boards like a Lichess simul." },
-  { ic: "🏁", t: "Private races", d: "Launch an Arena race for your class — only your own students can join." },
-];
-
 // ── THE COACH WORKSPACE — the full picture, not four highlights ──
 // Each block ends with a `to` so a visitor who wants depth can reach the SEO
 // page that covers it properly.
-const WORKSPACE = [
-  {
-    ic: "👥", title: "Students, batches & fees",
-    points: [
-      "Students request to join, or you invite them",
-      "Group them into batches by level, age or class",
-      "See who is online right now, before class starts",
-      "Private per-student notes only you can see",
-      "Track enrollment, fees and payments in the same place",
-    ],
-    to: "/chess-coaching", cta: "Coaching platform",
-  },
-  {
-    ic: "📝", title: "Assignments — 7 types",
-    points: [
-      "Puzzle topics, whole studies or a single chapter",
-      "Timed Puzzle Rush and arena tournaments",
-      "Play-vs-Stockfish positions from a visual board editor — never type a FEN",
-      "Find-the-Blunder pulled from a student's own games",
-      "Save your best as templates, or pull the admin blunder library",
-      "Solve rate and accuracy recorded per student, automatically",
-    ],
-    to: "/chess-coaching-questions", cta: "How assignments work",
-  },
-  {
-    ic: "📚", title: "Course builder — 5 lesson types",
-    points: [
-      "Your own studies, or a single chapter of one",
-      "Built-in Nexus studies, so you don't author every lesson",
-      "Video lessons in between the board work",
-      "Master games, searchable by player or opening",
-      "Endgame positions",
-      "Enrol a whole batch — it appears in their My Syllabus, in order",
-    ],
-    to: "/chess-courses", cta: "Course builder",
-  },
-  {
-    ic: "📅", title: "Schedule & attendance",
-    points: [
-      "Weekly class slots per batch — days, time, duration",
-      "You set it in your timezone; every student sees it in theirs",
-      "Change it and students are notified automatically — nobody chases anyone",
-      "Present, Absent and Catch-up, so records match what happened",
-      "Export any period as CSV",
-    ],
-    to: "/chess-coach-guide", cta: "Full coach guide",
-  },
-  {
-    ic: "📊", title: "Parent progress reports",
-    points: [
-      "One shareable link per student — the parent needs no account",
-      "Rating over time, puzzles solved, accuracy",
-      "What you assigned, what they finished, how they scored",
-      "Attendance, including catch-up classes",
-      "Recent games — including their Lichess and Chess.com games",
-    ],
-    to: "/chess-progress-reports", cta: "See a report",
-  },
-  {
-    ic: "🏁", title: "Private activities & chat",
-    points: [
-      "Arena races and tournaments only your students can join",
-      "They never appear publicly — no outside player joins your class",
-      "New activities badge on the student's Activities tab",
-      "Dedicated coach ↔ student chat, 1:1 and group",
-      "Elite coaches get unlimited Team Race and Monthly Focus events",
-    ],
-    to: "/chess-coaching", cta: "Coach features",
-  },
-];
-
 // ── COACH DEEP-DIVE LINKS ────────────────────────────────────
 // The coach-facing marketing pages, in the order they're shown. Pulled FROM the
 // FeatureLinkGrid registry (not retyped) so an icon or title change there flows
@@ -237,7 +149,7 @@ const COACH_DEEP_LINKS = COACH_DEEP_SLUGS
 // Mirrors config/coachPlans.js (`free`). This is the single most asked
 // question about the product, so it gets its own section rather than a pill.
 const FREE_INCLUDES = [
-  "Up to 30 students",
+  "Up to 20 students",
   "Unlimited batches",
   "All 7 assignment types",
   "30 courses, 3 lessons each",
@@ -250,15 +162,6 @@ const FREE_INCLUDES = [
 ];
 
 // ── Player feature cards (image + copy) ──────────────────────
-const PLAYER_FEATURES = [
-  { img: '/features/puzzleshub.png',     title: 'Puzzle Dashboard', desc: 'Tracks every theme a player solves and surfaces their <b>strong and weak tactics</b> — so training targets exactly what needs work.' },
-  { img: '/features/improveatchess.png', title: 'Nexus Guide',      desc: "Scans a player's games to <b>pinpoint recurring weaknesses</b> and tells them what to practise next — a personal coach in the background." },
-  { img: '/features/analysis.png',       title: 'Deep Analysis',    desc: 'Server-side <b>Stockfish 18</b> reviews every game and returns <b>clear, plain-language insights</b> — blunders, turning points and better plans.' },
-  { img: '/features/study.png',          title: 'Studies',          desc: "A library of <b>endgame studies, master games</b> and Nexus's own curated studies — structured lessons players can work through anytime." },
-  { img: '/features/3darena.png',        title: '3D Arena',         desc: 'An <b>immersive 3D board</b> that makes online play feel real — perfect for keeping younger players engaged and having fun.' },
-  { img: '/features/clubs.png',          title: 'Social Club',      desc: 'Clubs, friends and chat in a <b>safe, moderated space</b> — students compete, discuss games and belong to a community.' },
-];
-
 // Placeholder testimonials shown until an admin features real ones on the
 // homepage (Admin → Testimonials → ★ Feature on homepage).
 const FALLBACK_TESTIMONIALS = [
@@ -433,14 +336,14 @@ function HeroSlider({ user, onStartCoach, onBookDemo }) {
               <h1 className="hp-hero-title">Run your entire coaching in <span className="hp-hero-accent">one place.</span></h1>
               <p className="hp-hero-sub">
                 Students, assignments, courses, attendance, fees and parent reports — plus a
-                <b> live classroom built right in</b>. <b className="hp-hero-lt">Free forever up to 30 students.</b>
+                <b> live classroom built right in</b>. <b className="hp-hero-lt">Free forever up to 20 students.</b>
               </p>
               <div className="hp-hero-cta">
                 <button type="button" className="hp-hero-btn hp-hero-btn-primary" onClick={onStartCoach}>{primaryLabel}</button>
                 <button type="button" className="hp-hero-btn hp-hero-btn-ghost" onClick={onBookDemo}>{ghostLabel}</button>
               </div>
               <div className="hp-hero-trust">
-                <span className="hp-hero-trust-item">✓ Free forever — up to 30 students</span>
+                <span className="hp-hero-trust-item">✓ Free forever — up to 20 students</span>
                 <span className="hp-hero-trust-dot">•</span>
                 <span className="hp-hero-trust-item">No card required</span>
               </div>
@@ -613,7 +516,7 @@ export default function HomePage() {
     <div className="hp-root">
       <SEO
         title="Chess Coaching Platform with a Built-In Live Classroom — Free for 30 Students"
-        description="Run your whole chess coaching business in one place: a built-in live classroom (no Zoom), 7 assignment types, a course builder, batches, attendance, fee tracking and parent progress reports. Free forever for up to 30 students — no card, no trial clock. Students get puzzles, endgames, analysis, studies and daily races."
+        description="Run your whole chess coaching business in one place: a built-in live classroom (no Zoom), 7 assignment types, a course builder, batches, attendance, fee tracking and parent progress reports. Free forever for up to 20 students — no card, no trial clock. Students get puzzles, endgames, analysis, studies and daily races."
         keywords="chess coaching platform, chess academy software, online chess classroom, teach chess online without zoom, chess coach software free, chess assignments, chess attendance tracking, chess student progress reports, chess course builder, chess fee tracking"
         canonical="/"
       />
@@ -725,38 +628,9 @@ export default function HomePage() {
           <FoundingSupporterCard />
         </div>
 
-        {/* ── WHAT CHESS NEXUS OFFERS — 6 feature buckets ── */}
-        <div className="hp-showcase">
-          <div className="hp-showcase-head">
-            <span className="hp-showcase-eyebrow"><span className="hp-showcase-dot" />For your students</span>
-            <h2 className="hp-showcase-title">Everything your players get, included.</h2>
-            <p className="hp-showcase-sub">One login opens the full Chess Nexus experience — the tools that actually make players stronger.</p>
-            <div className="hp-showcase-trust">
-              <span className="hp-showcase-pill hp-showcase-pill-free"><span className="hp-showcase-pill-ic">★</span> 100% free to start</span>
-              <span className="hp-showcase-pill"><span className="hp-showcase-pill-ic">✓</span> No ads, ever</span>
-              <span className="hp-showcase-pill"><span className="hp-showcase-pill-ic">✓</span> For beginners to advanced</span>
-            </div>
-          </div>
-
-          <div className="hp-featgrid">
-            {PLAYER_FEATURES.map(f => (
-              <article key={f.title} className="hp-glass hp-feat">
-                <div className="hp-feat-img"><img src={f.img} alt="" loading="lazy" /></div>
-                <div className="hp-feat-tx">
-                  <h3>{f.title}</h3>
-                  <p dangerouslySetInnerHTML={{ __html: f.desc }} />
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <div className="hp-showcase-cta">
-            <Link to={user ? "/puzzles" : "/signup-request"} className="hp-showcase-btn hp-showcase-btn-primary">
-              {user ? "Start solving →" : "Start free →"}
-            </Link>
-            <Link to="/features" className="hp-showcase-btn hp-showcase-btn-ghost">See all features</Link>
-          </div>
-        </div>
+        {/* The "For your students" showcase (6 player-feature cards + its CTA)
+            was removed: it described puzzles, analysis, studies and clubs, which
+            Chess.com and Lichess already offer. They live on /features. */}
 
         {/* ── FOR COACHES — image + circular-icon feature grid ── */}
         {(() => {
@@ -795,7 +669,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <div className="hp-cshow-foot">
-                  <div className="hp-cshow-trust"><span>✓ Free forever — up to 30 students</span><span>•</span><span>No card required</span></div>
+                  <div className="hp-cshow-trust"><span>✓ Free forever — up to 20 students</span><span>•</span><span>No card required</span></div>
                   <div className="hp-cshow-btns">
                     <button type="button" className="hp-cshow-btn" onClick={goCoach}>
                       {(user && user.role !== 'guest') ? 'Start coaching free →' : 'Log in to start →'}
@@ -817,10 +691,10 @@ export default function HomePage() {
           <div className="hp-free-head">
             <span className="hp-free-badge">Free forever</span>
             <h2 className="hp-free-title">
-              Everything above is <em>free forever</em> for up to 30 students.
+              Everything above is <em>free forever</em> for up to 20 students.
             </h2>
             <p className="hp-free-sub">
-              Not a 30-day trial. Not a card on file. If you coach 30 students or fewer,
+              Not a 30-day trial. Not a card on file. If you coach 20 students or fewer,
               you can run your entire coaching on Chess Nexus without ever paying us —
               and that includes the live classroom.
             </p>
@@ -833,7 +707,7 @@ export default function HomePage() {
           </ul>
 
           <p className="hp-free-note">
-            Growing past 30 students? Paid plans raise the cap and unlock unlimited live
+            Growing past 20 students? Paid plans raise the cap and unlock unlimited live
             classes with bigger rooms. Go over later and nothing is deleted — you simply
             move back to the free limits, with every student, course and record intact.
           </p>
@@ -848,59 +722,13 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ── INSIDE THE LIVE CLASSROOM — the headline feature, spelled out ── */}
-        <div className="hp-showcase-head" style={{ marginBottom: 18 }}>
-          <span className="hp-showcase-eyebrow">
-            <span className="hp-showcase-dot" style={{ background: '#ef4444' }} />
-            Included on every plan, free ones too
-          </span>
-          <h2 className="hp-showcase-title">What's inside the live classroom.</h2>
-          <p className="hp-showcase-sub">
-            Most online chess lessons are a video call in one window and a chess site in
-            another. Here the video and the board are the same room — so there is no
-            "can you see my screen?", and no second app to pay for.
-          </p>
-        </div>
-        <div className="hp-lcgrid">
-          {CLASSROOM_INSIDE.map(f => (
-            <div key={f.t} className="hp-glass hp-lccard">
-              <span className="hp-lc-ic">{f.ic}</span>
-              <div>
-                <h3>{f.t}</h3>
-                <p>{f.d}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="hp-showcase-cta" style={{ marginTop: 22, marginBottom: 40 }}>
-          <Link to="/live-chess-classroom" className="hp-showcase-btn hp-showcase-btn-primary">
-            Live classroom in detail →
-          </Link>
-        </div>
+        {/* The "What's inside the live classroom" block was removed from the
+            homepage. The classroom is covered by the hero and in full on
+            /live-chess-classroom. */}
 
-        {/* ── THE COACH WORKSPACE — the full feature set, with depth links ── */}
-        <div className="hp-showcase-head" style={{ marginBottom: 18 }}>
-          <span className="hp-showcase-eyebrow"><span className="hp-showcase-dot" />Everything a coach gets</span>
-          <h2 className="hp-showcase-title">The whole coaching workspace.</h2>
-          <p className="hp-showcase-sub">
-            The roster, the homework, the syllabus, the timetable, the attendance
-            register, the fees and the report you send the parent — one login, one place.
-          </p>
-        </div>
-        <div className="hp-wsgrid">
-          {WORKSPACE.map(b => (
-            <div key={b.title} className="hp-glass hp-wscard">
-              <div className="hp-ws-head">
-                <span className="hp-ws-ic">{b.ic}</span>
-                <h3>{b.title}</h3>
-              </div>
-              <ul className="hp-ws-list">
-                {b.points.map(p => <li key={p}>{p}</li>)}
-              </ul>
-              <Link to={b.to} className="hp-ws-link">{b.cta} →</Link>
-            </div>
-          ))}
-        </div>
+        {/* The "Everything a coach gets" block (6 cards + links) was removed —
+            the hero and the classroom section already cover it, and every card's
+            depth link still exists on its own marketing page. */}
 
         {/* ── ACADEMIES — the multi-coach layer, invisible until now ── */}
         <div className="hp-glass hp-acad">

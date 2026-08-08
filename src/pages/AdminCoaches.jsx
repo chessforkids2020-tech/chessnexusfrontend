@@ -121,7 +121,7 @@ export default function AdminCoaches() {
   const [coachListLoading, setCoachListLoading] = useState(false);
   // Admin "Grant plan" (comp collaborators / YouTubers) modal state.
   const [grantFor, setGrantFor] = useState(null);     // the coach row being granted
-  const [grantPlan, setGrantPlan] = useState('live3');
+  const [grantPlan, setGrantPlan] = useState('coach');
   const [grantMonths, setGrantMonths] = useState('never');
   const [grantReason, setGrantReason] = useState('');
   const [grantBusy, setGrantBusy] = useState(false);
@@ -696,15 +696,10 @@ export default function AdminCoaches() {
             <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Plan</label>
             <select value={grantPlan} onChange={e => setGrantPlan(e.target.value)}
               style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 14 }}>
-              <optgroup label="Without live classes">
-                <option value="pro">Pro — 70 students</option>
-                <option value="coach">Coach — 150 students</option>
-              </optgroup>
-              <optgroup label="With live classes">
-                <option value="live1">Live Basic — 50 students · 5 classes/day</option>
-                <option value="live2">Live Pro — 100 students · unlimited · elite</option>
-                <option value="live3">Live Coach — 150 students · unlimited · elite</option>
-              </optgroup>
+              {/* One list now: both paid plans include the unlimited classroom,
+                  so there is nothing to split "with"/"without live" on. */}
+              <option value="pro">Pro — 70 students · unlimited classroom</option>
+              <option value="coach">Coach — 150 students · unlimited classroom</option>
             </select>
             <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Duration</label>
             <select value={grantMonths} onChange={e => setGrantMonths(e.target.value)}

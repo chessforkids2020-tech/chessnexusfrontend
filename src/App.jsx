@@ -30,6 +30,7 @@ import PublicProfile from "./pages/PublicProfile";
 import UserAttendancePage from "./pages/UserAttendancePage";
 import MyCoachPortal from "./pages/MyCoachPortal";
 import JoinCoachPage from "./pages/JoinCoachPage";
+import CoachHubPage from "./pages/CoachHubPage";
 
 // Public SEO feature/about pages
 import FeaturesPage from "./pages/marketing/FeaturesPage";
@@ -1407,6 +1408,14 @@ export default function App() {
         <Route path="/games" element={
           <UserLayout>
             <Games />
+          </UserLayout>
+        } />
+        {/* Public on purpose — no ProtectedRoute. The "Coach" item in the sidebar
+            is a page ABOUT coaching that a logged-out visitor can read. The
+            coach's own dashboard is /coach/dashboard and stays gated. */}
+        <Route path="/coach-hub" element={
+          <UserLayout>
+            <CoachHubPage />
           </UserLayout>
         } />
         <Route path="/master-games" element={

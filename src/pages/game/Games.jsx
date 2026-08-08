@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../../api';
+import { useAuth } from '../../contexts/AuthContext';
 import CoffeeCta from '../../components/CoffeeCta';
 import AboutFeatureCTA from '../../components/marketing/AboutFeatureCTA';
 import FriendGameSetup from './FriendGameSetup';
@@ -10,6 +11,7 @@ import './Games.css';
 
 export default function Games() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const [showFriendSetup, setShowFriendSetup] = useState(false);
 
@@ -94,6 +96,31 @@ export default function Games() {
   }, []);
 
   // Play options for right column
+  // Open the 3D Arena (a separate app on its own subdomain) with a single-sign-on
+  // token, so the player does not have to log in twice.
+  //
+  // The blank tab is opened SYNCHRONOUSLY inside the click handler — browsers
+  // block a window.open that happens later, inside a promise callback, as a
+  // popup. `noopener`/`noreferrer` are deliberately NOT used: they null out the
+  // returned handle, and we need it to navigate the tab once the token arrives.
+  const open3DArena = () => {
+    if (!user || user.role === 'guest') {
+      navigate('/login', { state: { message: 'Please log in to access the 3D Arena.' } });
+      return;
+    }
+    const base = import.meta.env.VITE_3D_ARENA_URL || 'https://3darena.chessnexus.in';
+    const newTab = window.open('', '_blank');
+    api.get('/api/auth/arena-token')
+      .then(res => {
+        if (newTab) newTab.location.href = `${base}?token=${encodeURIComponent(res.data.token)}`;
+      })
+      .catch(() => {
+        // Fall back to the main auth token — the arena accepts it too.
+        const token = localStorage.getItem('authToken');
+        if (newTab) newTab.location.href = token ? `${base}?token=${encodeURIComponent(token)}` : base;
+      });
+  };
+
   const playOptions = [
     {
       id: 'friend',
@@ -110,6 +137,17 @@ export default function Games() {
       icon: "🏆",
       color: "#FFD166",
       action: () => navigate('/arenatournament')
+    },
+    {
+      // Moved here from the sidebar: the 3D Arena is a way to PLAY, so it
+      // belongs beside the other play options rather than in the app's global
+      // navigation, where it competed with Puzzles, Study and Race.
+      id: '3darena',
+      title: "3D Arena",
+      subtitle: "Play on an immersive 3D board • Opens in a new tab",
+      icon: "🎮",
+      color: "#A78BFA",
+      action: open3DArena
     }
   ];
 
