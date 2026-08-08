@@ -231,7 +231,7 @@ export default function ChessAcademyPricingPage() {
         <p className="mkt-section-lead">
           Chess Nexus is sold two ways. This page covers <strong>academies and institutes</strong>{" "}
           with several coaches. If you teach alone, individual coach plans are cheaper — and
-          free up to 20 students.
+          free up to 30 students.
         </p>
         <AudienceSplit current="academy" />
       </section>
@@ -379,7 +379,7 @@ export default function ChessAcademyPricingPage() {
             <p>
               Academy plans exist for organisations with several coaches. A single coach
               teaching their own students is better off on an individual plan — those are{" "}
-              <strong>free forever for up to 20 students</strong>, with paid tiers from
+              <strong>free forever for up to 30 students</strong>, with paid tiers from
               $19/month and a live classroom on every plan.{" "}
               <Link to="/chess-coach-pricing">See individual coach pricing</Link>.
             </p>

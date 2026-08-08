@@ -22,7 +22,7 @@ const CANONICAL = "/chess-coach-guide";
 // meetingsPerDay: Infinity and maxStudents: Infinity, so Free is the only plan
 // with a limited room.
 const PLAN_ROWS = [
-  { plan: "Free (20 students)", perDay: "1 a day", mins: "up to 40 min", students: "4" },
+  { plan: "Free (30 students)", perDay: "1 a day", mins: "up to 40 min", students: "4" },
   { plan: "Pro (70 students)", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
   { plan: "Coach (150 students)", perDay: "Unlimited", mins: "up to 120 min, or no limit", students: "Unlimited" },
 ];
@@ -30,7 +30,7 @@ const PLAN_ROWS = [
 const FAQ = [
   {
     q: "How do I become a chess coach on Chess Nexus?",
-    a: "Open the Coach section and confirm you're a coach. New coaches are verified by the Nexus team, usually within 12 hours, before they can add students — this keeps the platform safe for kids. Coaching is free forever for up to 20 students, with no card required.",
+    a: "Open the Coach section and confirm you're a coach. New coaches are verified by the Nexus team, usually within 12 hours, before they can add students — this keeps the platform safe for kids. Coaching is free forever for up to 30 students, with no card required.",
   },
   {
     q: "How do I add students to my chess academy?",
@@ -155,7 +155,7 @@ export default function CoachGuidePage() {
         id="onboarding"
         icon="🚀"
         title="Getting started as a coach"
-        lead="Free forever for up to 20 students. No card, no trial clock."
+        lead="Free forever for up to 30 students. No card, no trial clock."
       >
         <Steps
           items={[
@@ -369,7 +369,7 @@ export default function CoachGuidePage() {
       <section className="mkt-section mkt-cta-section" aria-label="Start coaching">
         <h2>Start coaching free</h2>
         <p className="mkt-section-lead">
-          Free forever for up to 20 students — including the live classroom. No card required.
+          Free forever for up to 30 students — including the live classroom. No card required.
         </p>
         <div className="mkt-cta-row">
           <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Become a coach</Link>

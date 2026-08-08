@@ -116,7 +116,7 @@ export default function CoachHubPage() {
                 the <strong>Pro plan free for a whole year</strong> — the complete
                 coaching workspace, with nothing to pay and no card required.</>
             : <>The complete coaching workspace: a live classroom, courses,
-                assignments, attendance and parent reports — free for up to 20
+                assignments, attendance and parent reports — free for up to 30
                 students, with no card required.</>}
         </p>
 
@@ -149,7 +149,7 @@ export default function CoachHubPage() {
 
         {offerOpen
           ? <div className="chub-worth">Worth <strong>$228</strong> over the year · yours free</div>
-          : <div className="chub-worth">Pro is <strong>$19/month</strong> · free forever up to 20 students</div>}
+          : <div className="chub-worth">Pro is <strong>$19/month</strong> · free forever up to 30 students</div>}
 
         <Link to={claimTo} className="chub-cta">{claimLabel}</Link>
         <p className="chub-fineprint">

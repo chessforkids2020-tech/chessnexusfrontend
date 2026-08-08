@@ -32,7 +32,7 @@ export default function AudienceSplit({ current }) {
         <li>You pay for yourself</li>
       </ul>
       <div className="mkt-aud-price">
-        Free forever up to 20 students
+        Free forever up to 30 students
         <span>Paid plans from $19/month</span>
       </div>
     </>

@@ -18,7 +18,7 @@ const CANONICAL = "/chess-coach-pricing";
 const FAQ = [
   {
     q: "Is Chess Nexus free for chess coaches?",
-    a: "Yes. Coaching is free forever for up to 20 students — no card, no trial clock. That includes assignments, courses, attendance, the class schedule, parent reports and one live class a day.",
+    a: "Yes. Coaching is free forever for up to 30 students — no card, no trial clock. That includes assignments, courses, attendance, the class schedule, parent reports and one live class a day.",
   },
   // Replaced the old "plan families" question. There is no longer a
   // "Without Live Classroom" / "With Live Classroom" split to explain — every
@@ -26,7 +26,7 @@ const FAQ = [
   // as you move up the three plans.
   {
     q: "What's the difference between the three plans?",
-    a: "The classroom is in every plan. Free gives you a taste of it — one class a day, up to 40 minutes, up to 4 students in the room. Pro and Coach both unlock it completely: unlimited classes, unlimited students in the room, and classes up to 120 minutes or with no time limit at all. After that the only difference is how many students you can teach — 20 on Free, 70 on Pro, 150 on Coach — plus the premium coaching tools on Coach.",
+    a: "The classroom is in every plan. Free gives you a taste of it — one class a day, up to 40 minutes, up to 4 students in the room. Pro and Coach both unlock it completely: unlimited classes, unlimited students in the room, and classes up to 120 minutes or with no time limit at all. After that the only difference is how many students you can teach — 30 on Free, 70 on Pro, 150 on Coach — plus the premium coaching tools on Coach.",
   },
   {
     q: "Do I need a paid plan to teach live?",
@@ -106,9 +106,9 @@ export default function CoachPricingPage() {
   return (
     <FeaturePageLayout
       seo={{
-        title: "Chess Coach Pricing — Free for 20 Students",
+        title: "Chess Coach Pricing — Free for 30 Students",
         description:
-          "Chess Nexus coach pricing. Free forever for up to 20 students, including the built-in live classroom. Pro ($19/mo, 70 students) and Coach ($33/mo, 150 students) unlock unlimited live classes with unlimited students in the room.",
+          "Chess Nexus coach pricing. Free forever for up to 30 students, including the built-in live classroom. Pro ($19/mo, 70 students) and Coach ($33/mo, 150 students) unlock unlimited live classes with unlimited students in the room.",
         keywords:
           "chess coach pricing, chess coaching software cost, chess academy software pricing, online chess teaching platform price",
         canonical: CANONICAL,
@@ -117,7 +117,7 @@ export default function CoachPricingPage() {
         icon: "💳",
         h1: "Coach pricing",
         sub:
-          "Free forever for up to 20 students — including the live classroom. Three plans, all with the classroom; the paid two unlock it completely and raise how many students you can teach.",
+          "Free forever for up to 30 students — including the live classroom. Three plans, all with the classroom; the paid two unlock it completely and raise how many students you can teach.",
         primary: { to: "/coach/onboarding", label: "Start coaching free" },
         secondary: { to: "/chess-coach-guide", label: "See what's included" },
       }}
@@ -197,7 +197,7 @@ export default function CoachPricingPage() {
               </tbody>
             </table>
             <p className="mkt-p">
-              The Free plan is <strong>free forever for up to 20 students</strong> — not a
+              The Free plan is <strong>free forever for up to 30 students</strong> — not a
               trial, and no card is required. It includes assignments, courses, the class
               schedule, attendance, fee tracking, parent progress reports and the built-in
               live classroom. See{" "}
@@ -301,7 +301,7 @@ export default function CoachPricingPage() {
 
       <section className="mkt-section mkt-cta-section" aria-label="Start">
         <h2>Start free, upgrade only if you outgrow it</h2>
-        <p className="mkt-section-lead">Up to 20 students, no card required.</p>
+        <p className="mkt-section-lead">Up to 30 students, no card required.</p>
         <div className="mkt-cta-row">
           <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Start coaching free</Link>
           <Link to="/chess-coach-referral" className="mkt-btn">Refer & earn</Link>

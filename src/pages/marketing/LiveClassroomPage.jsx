@@ -178,7 +178,7 @@ export default function LiveClassroomMarketingPage() {
       <section className="mkt-section mkt-cta-section" aria-label="Start">
         <h2>Run your next class here</h2>
         <p className="mkt-section-lead">
-          Free forever for up to 20 students. No card required.
+          Free forever for up to 30 students. No card required.
         </p>
         <div className="mkt-cta-row">
           <Link to="/coach/onboarding" className="mkt-btn mkt-btn-primary">Start teaching free</Link>

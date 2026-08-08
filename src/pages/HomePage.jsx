@@ -142,7 +142,7 @@ const COACH_DEEP_LINKS = COACH_DEEP_SLUGS
 // Mirrors config/coachPlans.js (`free`). This is the single most asked
 // question about the product, so it gets its own section rather than a pill.
 const FREE_INCLUDES = [
-  "Up to 20 students",
+  "Up to 30 students",
   "Unlimited batches",
   "All 7 assignment types",
   "30 courses, 3 lessons each",
@@ -329,14 +329,14 @@ function HeroSlider({ user, onStartCoach, onBookDemo }) {
               <h1 className="hp-hero-title">Run your entire coaching in <span className="hp-hero-accent">one place.</span></h1>
               <p className="hp-hero-sub">
                 Students, assignments, courses, attendance, fees and parent reports — plus a
-                <b> live classroom built right in</b>. <b className="hp-hero-lt">Free forever up to 20 students.</b>
+                <b> live classroom built right in</b>. <b className="hp-hero-lt">Free forever up to 30 students.</b>
               </p>
               <div className="hp-hero-cta">
                 <button type="button" className="hp-hero-btn hp-hero-btn-primary" onClick={onStartCoach}>{primaryLabel}</button>
                 <button type="button" className="hp-hero-btn hp-hero-btn-ghost" onClick={onBookDemo}>{ghostLabel}</button>
               </div>
               <div className="hp-hero-trust">
-                <span className="hp-hero-trust-item">✓ Free forever — up to 20 students</span>
+                <span className="hp-hero-trust-item">✓ Free forever — up to 30 students</span>
                 <span className="hp-hero-trust-dot">•</span>
                 <span className="hp-hero-trust-item">No card required</span>
               </div>
@@ -509,7 +509,7 @@ export default function HomePage() {
     <div className="hp-root">
       <SEO
         title="Chess Coaching Platform with a Built-In Live Classroom — Free for 30 Students"
-        description="Run your whole chess coaching business in one place: a built-in live classroom (no Zoom), 7 assignment types, a course builder, batches, attendance, fee tracking and parent progress reports. Free forever for up to 20 students — no card, no trial clock. Students get puzzles, endgames, analysis, studies and daily races."
+        description="Run your whole chess coaching business in one place: a built-in live classroom (no Zoom), 7 assignment types, a course builder, batches, attendance, fee tracking and parent progress reports. Free forever for up to 30 students — no card, no trial clock. Students get puzzles, endgames, analysis, studies and daily races."
         keywords="chess coaching platform, chess academy software, online chess classroom, teach chess online without zoom, chess coach software free, chess assignments, chess attendance tracking, chess student progress reports, chess course builder, chess fee tracking"
         canonical="/"
       />
@@ -665,7 +665,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <div className="hp-cshow-foot">
-                  <div className="hp-cshow-trust"><span>✓ Free forever — up to 20 students</span><span>•</span><span>No card required</span></div>
+                  <div className="hp-cshow-trust"><span>✓ Free forever — up to 30 students</span><span>•</span><span>No card required</span></div>
                   <div className="hp-cshow-btns">
                     <button type="button" className="hp-cshow-btn" onClick={goCoach}>
                       {(user && user.role !== 'guest') ? 'Start coaching free →' : 'Log in to start →'}
