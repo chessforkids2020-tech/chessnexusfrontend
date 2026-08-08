@@ -185,10 +185,10 @@ export default function ChessCoachingPage() {
             <h2>Running an academy with several coaches?</h2>
             <p>
               Everything above is for one coach and their own students. If you have a team of
-              coaches, an academy plan covers <strong>5, 10 or 25 coaches</strong> on a single
-              bill — up to <strong>3,750 students</strong> — with one dashboard over every
-              coach, student and class, and bulk discounts of up to 20%. You still coach your
-              own students as head of the academy.{" "}
+              coaches, an academy plan covers <strong>5, 10 or unlimited coaches</strong> on a
+              single bill from $89/month — 100 students and an unlimited live classroom for
+              every one of them — with one dashboard over every coach, student and class. You
+              still coach your own students as head of the academy.{" "}
               <Link to="/chess-academy-software">See how academies work</Link> or{" "}
               <Link to="/chess-academy-pricing">compare academy pricing</Link>.
             </p>

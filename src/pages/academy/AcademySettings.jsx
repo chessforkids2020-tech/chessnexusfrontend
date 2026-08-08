@@ -52,8 +52,10 @@ export default function AcademySettings() {
             <div className="acad-plan-status-name">{s.planName}</div>
             <div className="acad-plan-status-grid">
               <div><strong>{s.coachCount}</strong><span>Coaches joined</span></div>
-              <div><strong>{s.maxCoaches ?? '—'}</strong><span>Plan allows</span></div>
-              <div><strong>{s.coachesRemaining ?? '—'}</strong><span>Seats left</span></div>
+              {/* -1 means UNLIMITED — the server sends it because JSON cannot
+                  carry Infinity. Rendered raw it read as "-1 coaches". */}
+              <div><strong>{s.maxCoaches === -1 ? '∞' : (s.maxCoaches ?? '—')}</strong><span>Plan allows</span></div>
+              <div><strong>{s.coachesRemaining === -1 ? '∞' : (s.coachesRemaining ?? '—')}</strong><span>Seats left</span></div>
               <div><strong>{s.studentsPerCoach ?? '—'}</strong><span>Students / coach</span></div>
             </div>
             {s.coachesRemaining === 0 && (

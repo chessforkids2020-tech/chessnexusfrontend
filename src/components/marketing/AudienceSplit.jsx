@@ -26,12 +26,14 @@ export default function AudienceSplit({ current }) {
       <ul>
         <li>Your own student roster, up to 150 students</li>
         <li>Courses, assignments, attendance, parent reports</li>
-        <li>Live classroom — unlimited students (+ you) on the live plans</li>
+        {/* "on the live plans" is gone — the separate live plans no longer
+            exist; the classroom is in every coach plan (see coachPlans.js). */}
+        <li>Live classroom — unlimited students (+ you) on the paid plans</li>
         <li>You pay for yourself</li>
       </ul>
       <div className="mkt-aud-price">
-        Free forever up to 30 students
-        <span>Paid plans from $29/month</span>
+        Free forever up to 20 students
+        <span>Paid plans from $19/month</span>
       </div>
     </>
   );
@@ -44,15 +46,17 @@ export default function AudienceSplit({ current }) {
       </span>
       <h3>Academy or institute</h3>
       <p className="mkt-aud-for">For an organisation with several coaches.</p>
+      {/* No academy-wide student total here any more: Institute has UNLIMITED
+          coaches, so there is no finite "students across the academy" figure. */}
       <ul>
-        <li>5, 10 or 25 coaches under one academy</li>
-        <li>Up to 3,750 students across the academy</li>
+        <li>5, 10 or unlimited coaches under one academy</li>
+        <li>100 students for every coach, on every plan</li>
         <li>One dashboard over every coach, student and class</li>
         <li>You pay once for everyone — coaches never pay</li>
       </ul>
       <div className="mkt-aud-price">
-        From $88/month for 5 coaches
-        <span>Bulk discounts up to 20%</span>
+        From $89/month for 5 coaches
+        <span>Unlimited live classes on every plan</span>
       </div>
     </>
   );

@@ -113,21 +113,24 @@ Key academy facts:
   live classes — plus the academy dashboard, all from one login. No second
   account is needed.
 - The academy pays **one bill for every coach**. Coaches never enter a card.
-- **Bulk discount** on paying for several coaches at once: 10% from 3 coaches,
-  15% from 6, 20% from 11 or more. Paying 3 months up front takes a further 10%.
+- Paying **3 months up front takes 10% off**. (The old per-coach bulk discount
+  no longer exists: plans are flat-priced by coach count.)
 - If an academy plan expires, coaches are **not locked out** — each keeps their
   plan on a short exit trial, and all students and data stay in place.
 
 Academy plans (monthly, USD; students per coach are NOT shared between coaches):
 
-| Plan             | Price  | Coaches | Students/coach | Total students | Live classes per coach          |
-|------------------|--------|---------|----------------|----------------|---------------------------------|
-| Starter          | $88    | 5       | 50             | 250            | 1/day · 60 min · 4 (+ coach)    |
-| Growth           | $144   | 10      | 100            | 1,000          | 1/day · 60 min · 4 (+ coach)    |
-| Institute        | $266   | 25      | 150            | 3,750          | 1/day · 120 min · 4 (+ coach)   |
-| Starter Live     | $237   | 5       | 50             | 250            | Unlimited · 60 min · 10 (+ coach)|
-| Growth Live      | $777   | 10      | 100            | 1,000          | Unlimited · 60 min · 15 (+ coach)|
-| Institute Live   | $1,777 | 25      | 150            | 3,750          | Unlimited · 120 min · 25 (+ coach)|
+| Plan      | Price          | Coaches   | Students/coach | Live classes per coach                 |
+|-----------|----------------|-----------|----------------|----------------------------------------|
+| Starter   | $89  / ₹7,999  | 5         | 100            | Unlimited · unlimited students in room |
+| Growth    | $129 / ₹11,999 | 10        | 100            | Unlimited · unlimited students in room |
+| Institute | $199 / ₹19,999 | Unlimited | 100            | Unlimited · unlimited students in room |
+
+Every academy plan includes the full live classroom for every one of its
+coaches: unlimited classes a day, unlimited students in the room, and classes
+up to 120 minutes or with no time limit at all. Every coach is also an elite
+coach (unlimited Team Race + Monthly Focus). The tiers differ ONLY in how many
+coaches the academy may have. A 3-month term is 10% off.
 
 Every coach in an academy gets a full coach workspace: their own student roster
 and batches, course builder, assignments, class schedule, automatic attendance,

@@ -20,15 +20,15 @@ const CANONICAL = "/chess-academy-pricing";
 const FAQ = [
   {
     q: "How much does chess academy software cost?",
-    a: "Chess Nexus academy plans start at $88 per month for up to 5 coaches and 50 students per coach, and go up to $1,777 per month for up to 25 coaches and 150 students per coach with unlimited live classes. Plans without raised live-classroom limits are cheaper than the equivalent live plan. One academy plan covers every coach — coaches never pay separately.",
+    a: "Chess Nexus academy plans are $89 per month (₹7,999) for up to 5 coaches, $129 (₹11,999) for up to 10 coaches, and $199 (₹19,999) for unlimited coaches. Every plan gives each coach 100 students and the full live classroom — unlimited classes a day with unlimited students in the room. One academy plan covers every coach; coaches never pay separately.",
   },
   {
     q: "How many coaches can join one academy?",
-    a: "Starter plans cover up to 5 coaches, Growth up to 10, and Institute up to 25. Each plan also sets how many students every coach may teach: 50 on Starter, 100 on Growth and 150 on Institute. So an Institute academy can reach up to 3,750 students across 25 coaches.",
+    a: "Starter covers up to 5 coaches, Growth up to 10, and Institute has no coach limit at all — add as many as your academy needs. Every plan gives every coach the same 100 students, so moving up a plan only ever buys you more coaches.",
   },
   {
     q: "What does each coach get in an academy?",
-    a: "Every coach in the academy gets a full coach account: their own student roster, course builder, assignments, attendance, class schedule, parent progress reports and the built-in live classroom. The academy plan then sets their student limit and their live-class limits. Every plan with the live classroom also makes each coach an elite coach — unlimited Team Race events and unlimited Monthly Focus challenges — plus premium endgames, the premium blunder library and a cloud opening repertoire.",
+    a: "Every coach in the academy gets a full coach account: their own student roster of up to 100 students, course builder, assignments, attendance, class schedule, parent progress reports and the built-in live classroom with unlimited classes a day, unlimited students in the room and classes up to 120 minutes or with no time limit at all. Every plan also makes each coach an elite coach — unlimited Team Race events and unlimited Monthly Focus challenges — plus premium endgames, the premium blunder library, unlimited courses and lessons and a cloud opening repertoire.",
   },
   {
     q: "How does academy billing work?",
@@ -36,15 +36,19 @@ const FAQ = [
   },
   {
     q: "Is there a discount for more coaches?",
-    a: "Yes. Paying for more coaches in a single checkout earns a bulk discount off the combined total — 10% from 3 coaches, 15% from 6, and 20% from 11 or more. Paying for three months at once takes a further 10% off.",
+    a: "Academy plans are flat-priced by coach count, so the saving is built into the plan itself rather than applied as a per-coach discount: $199 covers unlimited coaches. Paying for three months at once takes 10% off.",
   },
   {
     q: "Which currencies can an academy pay in?",
     a: "Prices are shown here in US dollars. At checkout an academy is billed in the currency for its country — Indian rupees, US dollars, euros, pounds, Australian and Canadian dollars, Singapore dollars or UAE dirhams. India is priced separately for the Indian market.",
   },
+  // Replaced the old "two plan families" question. There is no longer a
+  // "Without Live Classroom" / "With Live Classroom" split to explain — every
+  // academy plan carries the full classroom, so the only question left is what
+  // actually changes as you move up the three plans.
   {
-    q: "What is the difference between the two plan families?",
-    a: "The 'Without Live Classroom' plans set how many coaches you have and how many students each coach can teach, and include a single short live class a day. The 'With Live Classroom' plans give every coach unlimited live classes a day, unlimited students in the room, and classes up to 120 minutes or with no time limit at all.",
+    q: "What is the difference between the three plans?",
+    a: "Only the number of coaches. Starter covers up to 5 coaches, Growth up to 10, and Institute is unlimited. Everything else is identical on all three: 100 students for every coach, unlimited live classes a day with unlimited students in the room, classes up to 120 minutes or with no time limit, unlimited courses and lessons, premium endgames, the premium blunder library, a cloud opening repertoire and elite-coach perks for every coach.",
   },
   {
     q: "What happens if the academy plan expires?",
@@ -82,11 +86,16 @@ function liveSentence(lc) {
   const len = isUnlimited(lc.meetingsPerDay) ? `up to ${lc.durationMin} min each or unlimited` : `up to ${lc.durationMin} min each`;
   return `${classesPerDay(lc)} · ${len} · ${room}`;
 }
-const totalStudents = (p) => (p.maxCoaches || 0) * (p.studentsPerCoach || 0);
+// Coach cap. Institute has NO coach limit, and academyPlansForWire() sends -1 for
+// that (JSON can't carry Infinity), so print "Unlimited" rather than "Up to -1".
+const coachCap = (p) => (isUnlimited(p?.maxCoaches) ? "Unlimited" : `Up to ${p.maxCoaches}`);
 
-// One family's table. Rendered ONCE PER FAMILY (not behind a toggle) so both
-// tables are in the HTML for crawlers and AI search — a toggle would hide half
-// the pricing from anything that doesn't run JavaScript interactions.
+// NOTE: the old totalStudents() helper (maxCoaches × studentsPerCoach) is gone
+// along with the "Total students" column and prose that used it. Institute has
+// unlimited coaches, so any such figure would state a cap that no longer exists.
+
+// The plan table. There is now ONE list of three plans — the "with" / "without
+// live classroom" families are gone, so this renders once rather than per family.
 function PlanTable({ plans }) {
   return (
     <div className="mkt-table-wrap">
@@ -97,7 +106,6 @@ function PlanTable({ plans }) {
             <th>Per month (USD)</th>
             <th>Coaches</th>
             <th>Students per coach</th>
-            <th>Total students</th>
             <th>Live classes per coach</th>
           </tr>
         </thead>
@@ -106,9 +114,8 @@ function PlanTable({ plans }) {
             <tr key={p.id}>
               <td><strong>{p.name}</strong></td>
               <td>{money(p)}</td>
-              <td>Up to {p.maxCoaches}</td>
+              <td>{coachCap(p)}</td>
               <td>{p.studentsPerCoach}</td>
-              <td><strong>{totalStudents(p).toLocaleString()}</strong></td>
               <td>{liveSentence(p.liveClass)}</td>
             </tr>
           ))}
@@ -129,11 +136,10 @@ function PlanCards({ plans }) {
           <span className="mkt-feat-tx">
             <strong>{p.name} — {money(p)} per month</strong>
             <span>
-              Covers up to <strong>{p.maxCoaches} coaches</strong> on one bill.
-              Each coach gets up to <strong>{p.studentsPerCoach} students</strong>,
-              so the academy reaches up to{" "}
-              <strong>{totalStudents(p).toLocaleString()} students</strong> in total
-              ({p.maxCoaches} coaches × {p.studentsPerCoach} students).
+              {isUnlimited(p.maxCoaches)
+                ? <>Covers an <strong>unlimited number of coaches</strong> on one bill. </>
+                : <>Covers up to <strong>{p.maxCoaches} coaches</strong> on one bill. </>}
+              Each coach gets up to <strong>{p.studentsPerCoach} students</strong> of their own.
               Live classes for every coach: {liveSentence(p.liveClass)}.
               Every coach also gets their own course builder, assignments, attendance,
               class schedule and parent progress reports
@@ -154,12 +160,15 @@ export default function ChessAcademyPricingPage() {
     api
       .get("/api/academy/plans")
       .then((r) => { if (alive) setData(r.data); })
-      .catch(() => { if (alive) setData({ plans: {}, families: [] }); });
+      // Leave `data` NULL on failure so the static fallback table renders. Setting
+      // it to an empty object made `!data` false while `allPlans.length > 0` was
+      // also false, so the page showed NO prices at all — which is exactly what
+      // prerender produces, since it aborts every API call.
+      .catch(() => { if (alive) setData(null); });
     return () => { alive = false; };
   }, []);
 
   const families = data?.families || [];
-  const tiers = (data?.discountTiers || []).filter((t) => t.pct > 0);
   const allPlans = families.flatMap((f) =>
     (f.order || []).map((id) => data?.plans?.[id]).filter(Boolean)
   );
@@ -181,8 +190,8 @@ export default function ChessAcademyPricingPage() {
     "@type": "Product",
     name: `Chess Nexus Academy — ${p.name}`,
     description:
-      `Chess academy plan for up to ${p.maxCoaches} coaches with ${p.studentsPerCoach} students per coach ` +
-      `(up to ${totalStudents(p).toLocaleString()} students in total). ` +
+      `Chess academy plan for ${isUnlimited(p.maxCoaches) ? "unlimited coaches" : `up to ${p.maxCoaches} coaches`} ` +
+      `with ${p.studentsPerCoach} students per coach. ` +
       `Live classes per coach: ${liveSentence(p.liveClass)}.`,
     category: "Chess academy management software",
     offers: {
@@ -197,9 +206,9 @@ export default function ChessAcademyPricingPage() {
   return (
     <FeaturePageLayout
       seo={{
-        title: "Chess Academy Pricing — Multi-Coach Plans from $88/month",
+        title: "Chess Academy Pricing — Multi-Coach Plans from $89/month",
         description:
-          "Chess Nexus academy pricing: plans for 5, 10 or 25 coaches with 50–150 students each, up to 3,750 students in total. One plan covers every coach, with bulk discounts. Compare academy plans with and without live classrooms.",
+          "Chess Nexus academy pricing: $89/mo for up to 5 coaches, $129 for up to 10, $199 for unlimited coaches. Every plan gives every coach 100 students and unlimited live classes with unlimited students in the room. One plan covers every coach.",
         keywords:
           "chess academy pricing, chess academy software cost, chess institute software pricing, multi coach chess platform price, chess school software cost, how much does chess academy software cost",
         canonical: CANONICAL,
@@ -208,7 +217,7 @@ export default function ChessAcademyPricingPage() {
         icon: "🏫",
         h1: "Academy pricing",
         sub:
-          "One plan covers your whole team — from 5 to 25 coaches, and up to 3,750 students. Coaches never pay separately, and discounts grow as your academy grows.",
+          "One plan covers your whole team — 5, 10 or unlimited coaches, each with 100 students and an unlimited live classroom. Coaches never pay separately.",
         primary: { to: "/coach/onboarding", label: "Get started free" },
         secondary: { to: "/chess-academy-software", label: "How academies work" },
       }}
@@ -222,7 +231,7 @@ export default function ChessAcademyPricingPage() {
         <p className="mkt-section-lead">
           Chess Nexus is sold two ways. This page covers <strong>academies and institutes</strong>{" "}
           with several coaches. If you teach alone, individual coach plans are cheaper — and
-          free up to 30 students.
+          free up to 20 students.
         </p>
         <AudienceSplit current="academy" />
       </section>
@@ -230,30 +239,30 @@ export default function ChessAcademyPricingPage() {
       <section className="mkt-section" aria-label="How academy pricing works">
         <h2>How academy pricing works</h2>
         <p className="mkt-section-lead">
-          An academy buys <strong>one plan</strong>. That plan decides three things: how many
-          coaches you can have, how many students each of those coaches can teach, and what
-          each coach's live classroom allows.
+          An academy buys <strong>one plan</strong>, and that plan decides exactly one thing:
+          how many coaches you can have. Everything each coach gets — 100 students and the
+          full unlimited live classroom — is identical on all three plans.
         </p>
         <ul className="mkt-featurelist">
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">👥</span>
             <span className="mkt-feat-tx">
               <strong>Coaches</strong>
-              <span>Up to 5, 10 or 25 coaches depending on the plan. Invite them by email or link; remove them any time.</span>
+              <span>Up to 5 on Starter, up to 10 on Growth, and unlimited on Institute. Invite them by email or link; remove them any time.</span>
             </span>
           </li>
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">🎓</span>
             <span className="mkt-feat-tx">
               <strong>Students per coach</strong>
-              <span>50, 100 or 150 students for every coach in the academy — not shared between them.</span>
+              <span>100 students for every coach in the academy, on every plan — not shared between them.</span>
             </span>
           </li>
           <li>
             <span className="mkt-feat-ic" aria-hidden="true">🎥</span>
             <span className="mkt-feat-tx">
               <strong>Live classroom</strong>
-              <span>Every coach gets the built-in classroom. The live plans give each coach unlimited classes a day and much larger rooms.</span>
+              <span>Unlimited live classes a day for every coach, with unlimited students in the room and classes up to 120 minutes or with no time limit at all.</span>
             </span>
           </li>
           <li>
@@ -266,80 +275,67 @@ export default function ChessAcademyPricingPage() {
         </ul>
       </section>
 
-      {!data && (
-        <section className="mkt-section"><p className="mkt-p">Loading plans…</p></section>
-      )}
+      {/* ONE section, three plans. This used to render a section per family
+          ("with" and "without live classroom") plus a six-row comparison table
+          below it; both families and three of the six plans no longer exist in
+          config/academyPlans.js, so all of that collapsed into this one list. */}
+      <section className="mkt-section" aria-label="Academy plans">
+        <h2>Academy plans</h2>
+        <p className="mkt-section-lead">
+          Three plans, all with the full live classroom. Every coach on every plan gets
+          100 students, unlimited live classes a day and unlimited students in the room —
+          so the only question is how many coaches your academy has.
+        </p>
+        <p className="mkt-p">
+          ⭐ <strong>Every academy plan makes each of your coaches an elite coach</strong> —
+          unlimited Team Race events and unlimited Monthly Focus challenges, plus premium
+          endgames, the premium blunder library and a cloud opening repertoire.
+        </p>
 
-      {/* Each family gets its OWN section + table, always rendered (no toggle), so
-          both price lists are visible to readers and crawlers at once. */}
-      {families.map((f) => {
-        const plans = (f.order || []).map((id) => data?.plans?.[id]).filter(Boolean);
-        if (!plans.length) return null;
-        const live = f.key === "live";
-        return (
-          <section className="mkt-section" key={f.key} aria-label={f.title}>
-            <h2>{live ? "Academy plans with live classroom" : "Academy plans without live classroom"}</h2>
-            <p className="mkt-section-lead">
-              {live
-                ? "Every coach gets unlimited live classes a day and a full-size live room — for academies that teach live every day."
-                : "The full coaching toolkit for every coach, with a single short live class a day. For academies that teach mostly through assignments, courses and practice."}
-            </p>
-            {live && (
-              <p className="mkt-p">
-                ⭐ <strong>Every plan with the live classroom makes each of your coaches an
-                elite coach</strong> — unlimited Team Race events and unlimited Monthly Focus
-                challenges, on all three live plans.
-              </p>
-            )}
-            <PlanTable plans={plans} />
-            <PlanCards plans={plans} />
-          </section>
-        );
-      })}
-
-      {data && allPlans.length > 0 && (
-        <section className="mkt-section" aria-label="Price comparison">
-          <h2>Every academy plan at a glance</h2>
-          <p className="mkt-section-lead">
-            All six plans side by side, cheapest first — so you can see exactly what each step up buys.
-          </p>
+        {/* Static fallback, mirroring CoachPricingPage: prerender.js aborts every
+            API call, so /api/academy/plans never resolves at build time and the
+            crawled snapshot would otherwise show "Loading plans…" with no prices
+            at all. This table is what crawlers and AI assistants actually read.
+            Mirrors backend/config/academyPlans.js — keep in step. */}
+        {!data && (
           <div className="mkt-table-wrap">
             <table className="mkt-table">
               <thead>
                 <tr>
                   <th>Plan</th>
-                  <th>Live classroom</th>
                   <th>Per month (USD)</th>
+                  <th>Per month (INR)</th>
                   <th>Coaches</th>
-                  <th>Students each</th>
-                  <th>Total students</th>
-                  <th>Live room size</th>
+                  <th>Students per coach</th>
+                  <th>Live classes per coach</th>
                 </tr>
               </thead>
               <tbody>
-                {allPlans
-                  .slice()
-                  .sort((a, b) => (usd(a) ?? 0) - (usd(b) ?? 0))
-                  .map((p) => (
-                    <tr key={p.id}>
-                      <td><strong>{p.name}</strong></td>
-                      <td>{p.family === "live" ? "✅ Unlimited classes" : "1 class/day"}</td>
-                      <td>{money(p)}</td>
-                      <td>{p.maxCoaches}</td>
-                      <td>{p.studentsPerCoach}</td>
-                      <td><strong>{totalStudents(p).toLocaleString()}</strong></td>
-                      <td>{isUnlimited(p.liveClass?.maxStudents) ? 'Unlimited' : `${p.liveClass?.maxStudents} + coach`}</td>
-                    </tr>
-                  ))}
+                <tr><td><strong>Starter</strong></td><td>$89</td><td>₹7,999</td><td>Up to 5</td><td>100</td><td>Unlimited · up to 120 min or no limit · unlimited students</td></tr>
+                <tr><td><strong>Growth</strong></td><td>$129</td><td>₹11,999</td><td>Up to 10</td><td>100</td><td>Unlimited · up to 120 min or no limit · unlimited students</td></tr>
+                <tr><td><strong>Institute</strong></td><td>$199</td><td>₹19,999</td><td><strong>Unlimited</strong></td><td>100</td><td>Unlimited · up to 120 min or no limit · unlimited students</td></tr>
               </tbody>
             </table>
+            <p className="mkt-p">
+              Every plan includes unlimited courses and lessons, the premium blunder library,
+              premium endgames, a cloud opening repertoire and elite-coach perks for every
+              coach — on one central bill, so no coach ever enters a card. Plans are bought by
+              the month or in a 3-month term, and paying for 3 months up front takes 10% off.
+            </p>
+          </div>
+        )}
+
+        {allPlans.length > 0 && (
+          <>
+            <PlanTable plans={allPlans} />
+            <PlanCards plans={allPlans} />
             <p className="mkt-p" style={{ fontSize: 13, opacity: 0.75, marginTop: 10 }}>
               Prices shown in US dollars. At checkout your academy is billed in its own currency —
               ₹ INR, €, £, A$, C$, S$ or د.إ. India is priced separately for the Indian market.
             </p>
-          </div>
-        </section>
-      )}
+          </>
+        )}
+      </section>
 
       <section className="mkt-section" aria-label="What every coach gets">
         <h2>What every coach in your academy gets</h2>
@@ -356,35 +352,12 @@ export default function ChessAcademyPricingPage() {
         </ul>
       </section>
 
-      {tiers.length > 0 && (
-        <section className="mkt-section" aria-label="Bulk discount">
-          <h2>The more coaches, the bigger the discount</h2>
-          <p className="mkt-section-lead">
-            Applied automatically to the combined total when you pay for your coaches in one go.
-          </p>
-          <div className="mkt-table-wrap">
-            <table className="mkt-table">
-              <thead>
-                <tr><th>Coaches paid for at once</th><th>Discount</th></tr>
-              </thead>
-              <tbody>
-                {tiers
-                  .slice()
-                  .sort((a, b) => a.min - b.min)
-                  .map((t) => (
-                    <tr key={t.min}>
-                      <td>{t.min}+ coaches</td>
-                      <td><strong>{Math.round(t.pct * 100)}% off</strong></td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="mkt-p">
-            Paying for three months up front takes a further <strong>10%</strong> off on top.
-          </p>
-        </section>
-      )}
+      {/* The per-coach bulk-discount table was removed. It promised a discount
+          "applied automatically to the combined total", but academyPriceForMonths
+          never applied one — the tiers were displayed and never charged. Under the
+          new flat pricing (one price per coach-count tier) there is no per-coach
+          discount to advertise. The 3-month 10% IS real and is stated with the
+          plans above. */}
 
       <section className="mkt-section" aria-label="FAQ">
         <h2>Academy pricing FAQ</h2>
@@ -406,8 +379,8 @@ export default function ChessAcademyPricingPage() {
             <p>
               Academy plans exist for organisations with several coaches. A single coach
               teaching their own students is better off on an individual plan — those are{" "}
-              <strong>free forever for up to 30 students</strong>, with paid tiers from
-              $29/month and a live classroom on every plan.{" "}
+              <strong>free forever for up to 20 students</strong>, with paid tiers from
+              $19/month and a live classroom on every plan.{" "}
               <Link to="/chess-coach-pricing">See individual coach pricing</Link>.
             </p>
           </div>

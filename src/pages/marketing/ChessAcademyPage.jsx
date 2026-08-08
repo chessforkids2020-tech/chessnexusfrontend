@@ -25,7 +25,7 @@ const FAQ = [
   },
   {
     q: "How many coaches can an academy have?",
-    a: "Between 5 and 25 depending on the plan — Starter covers 5 coaches, Growth 10, and Institute 25. Each plan also sets how many students each coach can have, from 50 up to 150 per coach.",
+    a: "As many as you need — Starter covers up to 5 coaches, Growth up to 10, and Institute has no coach limit at all. Every plan gives every coach the same 100 students, so a bigger plan only ever buys you more coaches.",
   },
   {
     q: "Do individual coaches still need their own subscription?",
@@ -37,7 +37,7 @@ const FAQ = [
   },
   {
     q: "Is there a discount for paying for several coaches at once?",
-    a: "Yes. Academy billing applies a bulk discount that grows with the number of coaches you pay for in one checkout — 10% from 3 coaches, 15% from 6, and 20% from 11 or more, off the combined total.",
+    a: "Academy plans are flat-priced by coach count — $89 for up to 5 coaches, $129 for up to 10, and $199 for unlimited coaches — so the saving is already built into the plan rather than added as a per-coach discount. Paying for three months at once takes 10% off.",
   },
   {
     q: "Can coaches be added or removed later?",
@@ -45,7 +45,7 @@ const FAQ = [
   },
   {
     q: "Does every coach in the academy get the live classroom?",
-    a: "Yes — every Chess Nexus coach has the built-in live classroom. The academy plan then sets how often each coach can teach live, how long each class runs, and how many students can join one room.",
+    a: "Yes, and it is unlimited on every academy plan. Each coach can run unlimited live classes a day, with unlimited students in the room, and classes up to 120 minutes or with no time limit at all. There is no cheaper academy plan with a smaller classroom — all three include it in full.",
   },
 ];
 
@@ -66,7 +66,7 @@ const HOW_IT_WORKS = [
     n: "3",
     icon: "💳",
     title: "Pay once, for everyone",
-    body: "Choose an academy plan and pay centrally. Every member coach is upgraded automatically — no coach handles their own billing, and bulk discounts apply as you add coaches.",
+    body: "Choose an academy plan and pay centrally. Every member coach is upgraded automatically — no coach handles their own billing, and adding a coach costs nothing extra until you outgrow the tier.",
   },
   {
     n: "4",
@@ -81,7 +81,7 @@ const MANAGE = [
   { icon: "🎓", title: "Students across the academy", body: "Every student of every coach, aggregated. See who is active, who has stalled, and which coach they belong to." },
   { icon: "💳", title: "Central billing", body: "One academy plan covers all of your coaches. Pay monthly or for three months at a discount, in your own currency." },
   { icon: "🧾", title: "Payments & invoices", body: "A full record of what the academy has paid, when, and for which coaches — for your own accounting." },
-  { icon: "🎥", title: "Live classes for every coach", body: "Each coach gets the built-in live classroom with a shared board, video, chat and play-in-class — with limits set by the academy plan." },
+  { icon: "🎥", title: "Live classes for every coach", body: "Each coach gets the built-in live classroom with a shared board, video, chat and play-in-class — unlimited classes a day with unlimited students in the room, on every academy plan." },
   { icon: "⚙️", title: "Academy settings", body: "Your academy's identity and preferences in one place, controlled by the head coach." },
 ];
 
@@ -113,7 +113,7 @@ export default function ChessAcademyPage() {
       seo={{
         title: "Chess Academy Software — Manage Multiple Coaches in One Place",
         description:
-          "Run your whole chess academy on Chess Nexus: invite your coaches, pay for everyone centrally, and oversee every coach, student and class from one dashboard — while still coaching your own students as head coach.",
+          "Run your whole chess academy on Chess Nexus: invite your coaches, pay for everyone centrally, and oversee every coach, student and class from one dashboard — while still coaching your own students as head coach. Plans from $89/month for 5 coaches to $199 for unlimited coaches, each with 100 students and an unlimited live classroom.",
         keywords:
           "chess academy software, chess academy management, manage multiple chess coaches, chess institute software, chess club management software, chess school platform",
         canonical: CANONICAL,
@@ -198,9 +198,14 @@ export default function ChessAcademyPage() {
       <section className="mkt-section" aria-label="Plans overview">
         <h2>Plans that scale with your team</h2>
         <p className="mkt-section-lead">
-          Academy plans are sized by how many coaches you have and how many students each
-          coach teaches — with or without raised live-classroom limits.
+          Academy plans are sized by one thing only: how many coaches you have. Every plan
+          gives every coach 100 students and the full unlimited live classroom.
         </p>
+        {/* Static table — this page makes no API call, so these figures are what
+            crawlers and AI assistants read. Mirrors backend/config/academyPlans.js.
+            The "Total students" column was dropped along with the old 6-plan
+            structure: Institute has unlimited coaches, so there is no finite
+            academy-wide total to quote any more. */}
         <div className="mkt-table-wrap">
           <table className="mkt-table">
             <thead>
@@ -208,21 +213,22 @@ export default function ChessAcademyPage() {
                 <th>Plan</th>
                 <th>Coaches</th>
                 <th>Students per coach</th>
-                <th>Total students</th>
+                <th>Per month</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td><strong>Starter</strong></td><td>Up to 5</td><td>50</td><td><strong>250</strong></td></tr>
-              <tr><td><strong>Growth</strong></td><td>Up to 10</td><td>100</td><td><strong>1,000</strong></td></tr>
-              <tr><td><strong>Institute</strong></td><td>Up to 25</td><td>150</td><td><strong>3,750</strong></td></tr>
+              <tr><td><strong>Starter</strong></td><td>Up to 5</td><td>100</td><td>$89 / ₹7,999</td></tr>
+              <tr><td><strong>Growth</strong></td><td>Up to 10</td><td>100</td><td>$129 / ₹11,999</td></tr>
+              <tr><td><strong>Institute</strong></td><td><strong>Unlimited</strong></td><td>100</td><td>$199 / ₹19,999</td></tr>
             </tbody>
           </table>
         </div>
         <p className="mkt-p">
-          Each of those comes in two families — one without raised live-classroom limits and
-          one with. Bulk discounts apply as you pay for more coaches at once. See{" "}
-          <Link to="/chess-academy-pricing">academy pricing</Link> for the full table and
-          current prices.
+          All three include unlimited live classes with unlimited students in the room,
+          unlimited courses and lessons, premium endgames, the premium blunder library, a
+          cloud opening repertoire and elite-coach perks for every coach. Pay monthly or in a
+          3-month term for 10% off. See{" "}
+          <Link to="/chess-academy-pricing">academy pricing</Link> for the full breakdown.
         </p>
       </section>
 

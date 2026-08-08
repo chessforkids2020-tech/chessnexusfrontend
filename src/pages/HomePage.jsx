@@ -743,8 +743,8 @@ export default function HomePage() {
               your own students from the same login. No coach ever enters a card.
             </p>
             <ul className="hp-acad-list">
-              <li>Plans for <b>5, 10 or 25 coaches</b> — up to 3,750 students</li>
-              <li>Bulk discounts up to <b>20%</b>, plus 10% for paying 3 months up front</li>
+              <li>Plans for <b>5, 10 or unlimited coaches</b> — 100 students each</li>
+              <li><b>Unlimited live classes</b> for every coach, plus 10% for paying 3 months up front</li>
               <li>The head coach is still a coach, not locked into admin</li>
               <li>If a plan lapses, nobody is locked out and no data is lost</li>
             </ul>

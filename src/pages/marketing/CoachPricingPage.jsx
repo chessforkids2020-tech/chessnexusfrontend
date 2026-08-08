@@ -130,8 +130,8 @@ export default function CoachPricingPage() {
         <h2>First — are you one coach, or an academy?</h2>
         <p className="mkt-section-lead">
           Chess Nexus is sold two ways. This page covers <strong>individual coaches</strong>.
-          If several coaches teach under one name, the academy plans are cheaper per coach
-          and add a dashboard over all of them.
+          If several coaches teach under one name, an academy plan pays for all of them on
+          one bill and adds a dashboard over all of them.
         </p>
         <AudienceSplit current="solo" />
       </section>
@@ -277,10 +277,11 @@ export default function CoachPricingPage() {
             <h2>More than one coach? Look at academy plans</h2>
             <p>
               If you run a chess academy, school or institute with several coaches, you
-              don't buy a plan each. One academy plan covers <strong>5, 10 or 25 coaches</strong>{" "}
-              — up to <strong>3,750 students</strong> — on a single bill, with one dashboard
-              over every coach and student, and bulk discounts of up to 20%. The head of the
-              academy still keeps their own students and teaches like any other coach.{" "}
+              don't buy a plan each. One academy plan covers <strong>5, 10 or unlimited
+              coaches</strong> from $89/month, giving every one of them 100 students and an
+              unlimited live classroom on a single bill, with one dashboard over every coach
+              and student. The head of the academy still keeps their own students and teaches
+              like any other coach.{" "}
               <Link to="/chess-academy-pricing">See academy pricing</Link> or read{" "}
               <Link to="/chess-academy-software">how academies work</Link>.
             </p>

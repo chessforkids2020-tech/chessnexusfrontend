@@ -129,13 +129,21 @@ export default function AcademyBilling() {
         {shown.map(p => {
           const isCurrent = p.id === data.currentPlan;
           const tooManyCoaches = !p.fitsCoachCount;
+          // -1 means UNLIMITED. The server sends it because JSON cannot carry
+          // Infinity; rendering it raw showed "Covers up to -1 coaches" and a
+          // total of "-100 students".
+          const unlimitedCoaches = p.maxCoaches === -1;
           return (
             <div key={p.id} className={`acad-plan-card ${isCurrent ? 'is-current' : ''}`}>
               <div className="acad-plan-name">{p.name}</div>
               <div className="acad-plan-price">{fmt(p.price, currency)}<span> / {months}mo</span></div>
 
               {/* Academy-level: how many coaches this ONE price covers */}
-              <div className="acad-plan-coaches">Covers up to <strong>{p.maxCoaches} coaches</strong> · one price</div>
+              <div className="acad-plan-coaches">
+                {unlimitedCoaches
+                  ? <>Covers <strong>unlimited coaches</strong> · one price</>
+                  : <>Covers up to <strong>{p.maxCoaches} coaches</strong> · one price</>}
+              </div>
 
               {/* Per-coach entitlements — the differentiator: EVERY coach gets the full thing */}
               <div className="acad-plan-percoach">
@@ -147,8 +155,10 @@ export default function AcademyBilling() {
                 </ul>
               </div>
               <div className="acad-plan-total">
-                = {p.maxCoaches} coaches × {p.studentsPerCoach} students = up to{' '}
-                <strong>{(p.maxCoaches * p.studentsPerCoach).toLocaleString()} students</strong> across your academy
+                {unlimitedCoaches
+                  ? <>= unlimited coaches × {p.studentsPerCoach} students = <strong>no cap</strong> on your academy</>
+                  : <>= {p.maxCoaches} coaches × {p.studentsPerCoach} students = up to{' '}
+                      <strong>{(p.maxCoaches * p.studentsPerCoach).toLocaleString()} students</strong> across your academy</>}
               </div>
 
               {isCurrent ? (
@@ -160,6 +170,8 @@ export default function AcademyBilling() {
                   onClick={() => buy(p.id)}
                 >
                   {busy === p.id ? 'Processing…' : tooManyCoaches ? `Max ${p.maxCoaches} coaches` : `Buy ${p.name}`}
+                  {/* tooManyCoaches can never be true on the unlimited plan, so
+                      the -1 label above is unreachable there. */}
                 </button>
               )}
               {tooManyCoaches && <div className="acad-plan-warn">You have {data.coachCount} coaches — this plan allows {p.maxCoaches}.</div>}
