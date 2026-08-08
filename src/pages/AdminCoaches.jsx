@@ -174,6 +174,34 @@ export default function AdminCoaches() {
     }
   };
 
+  // ── Take coach status off an account (test / abandoned coach accounts) ──
+  //
+  // Not a user delete: the person keeps their login, rating and games and
+  // becomes a normal player again. The server refuses when the coach still has
+  // students, courses or attendance records and tells us what is attached; we
+  // relay that and re-send with force only if the admin confirms.
+  const removeCoach = async (c, force = false) => {
+    const name = c.coachName || c.username || 'this coach';
+    if (!force && !window.confirm(
+      `Remove coach status from ${name}?\n\n` +
+      `They keep their account, rating and games — they simply stop being a coach ` +
+      `and disappear from this list and the public directory.`
+    )) return;
+
+    try {
+      const res = await api.post(`/api/admin/coaches/${c.id}/remove`, force ? { force: true } : {});
+      alert(res.data?.message || 'Coach removed.');
+      loadCoaches();
+    } catch (err) {
+      const d = err.response?.data;
+      if (d?.needsForce || d?.isAdmin) {
+        if (window.confirm(`${d.message}\n\nRemove anyway?`)) return removeCoach(c, true);
+        return;
+      }
+      alert(d?.message || 'Failed to remove coach');
+    }
+  };
+
   // ── Grant a plan free (comp collaborators / YouTubers) ──
   const submitGrant = async () => {
     if (!grantFor) return;
@@ -467,6 +495,15 @@ export default function AdminCoaches() {
                             style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #0ea5e9", background: "#fff", color: "#0284c7" }}>
                             {detailId === c.id ? "▾ Less" : "▸ More"}
                           </button>
+                          {/* Clears coach status (test / abandoned accounts).
+                              The user account itself is kept. */}
+                          {c.isCoach && (
+                            <button onClick={() => removeCoach(c)}
+                              title="Remove coach status — keeps the user account"
+                              style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #ef4444", background: "#fff", color: "#ef4444" }}>
+                              🗑 Remove coach
+                            </button>
+                          )}
                           <button onClick={() => { setGrantFor(c); setGrantPlan('live3'); setGrantMonths('never'); }}
                             style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #7c3aed", background: "#fff", color: "#7c3aed" }}>
                             🎁 Grant
