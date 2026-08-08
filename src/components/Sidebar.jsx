@@ -162,6 +162,32 @@ export default function Sidebar({ user, onNavigate }) {
     }
   }, [isAuthenticated]);
 
+  // Unread COACH messages (shown in the bell alongside friend messages).
+  //
+  // /friend-unread excludes coach threads on purpose, so without this a coach's
+  // reply was invisible unless the student opened the Messages tab. Same
+  // 404-tolerance as above: this endpoint ships ahead of the backend deploy.
+  const [coachMsgs, setCoachMsgs] = useState([]);
+  const [coachMsgTotal, setCoachMsgTotal] = useState(0);
+  const coachUnread404s = React.useRef(0);
+  const coachUnreadDisabled = React.useRef(false);
+  const fetchCoachUnread = React.useCallback(async () => {
+    if (!isAuthenticated || coachUnreadDisabled.current) {
+      setCoachMsgs([]); setCoachMsgTotal(0); return;
+    }
+    try {
+      const res = await api.get('/api/chat/coach/unread-items');
+      coachUnread404s.current = 0;
+      setCoachMsgs(res.data?.items || []);
+      setCoachMsgTotal(res.data?.total || 0);
+    } catch (err) {
+      if (err?.response?.status === 404 && ++coachUnread404s.current >= 2) {
+        coachUnreadDisabled.current = true; // give up for this session
+      }
+      /* otherwise silent — bell still shows everything else */
+    }
+  }, [isAuthenticated]);
+
   // Per-user notifications (currently: "your practice report is ready").
   // Separate from the admin notifications above, which are a BROADCAST — one row
   // published to everyone with read state kept in localStorage. That cannot
@@ -188,6 +214,17 @@ export default function Sidebar({ user, onNavigate }) {
     socket.on('notification:new', onNew);
     return () => socket.off('notification:new', onNew);
   }, [isAuthenticated, fetchMyNotifs]);
+
+  // Live push when any chat message arrives for us, so a coach's reply shows in
+  // the bell at once instead of up to 120s later. The server emits this to our
+  // own user room; `receive_message` would not reach us here, since the sidebar
+  // never joins the per-chat rooms.
+  useEffect(() => {
+    if (!isAuthenticated || !socket) return;
+    const onUnread = () => { fetchCoachUnread(); fetchFriendUnread(); };
+    socket.on('chat:unread', onUnread);
+    return () => socket.off('chat:unread', onUnread);
+  }, [isAuthenticated, fetchCoachUnread, fetchFriendUnread]);
 
   // Unread admin replies to the user's reports (shown in the bell; full text on /my-reports)
   const [reportReplies, setReportReplies] = useState([]);
@@ -267,13 +304,13 @@ export default function Sidebar({ user, onNavigate }) {
     // Fetch once, then poll. Poll quickly (30s) only while the bell is open;
     // otherwise refresh slowly (120s) just to keep the badge count fresh. This
     // cuts request volume well below the old constant 60s polling.
-    const poll = () => { fetchFriendUnread(); fetchReportReplies(); fetchCoachRequests(); fetchAppNotifications(); fetchOnlineFriends(); fetchGameInvites(); };
+    const poll = () => { fetchFriendUnread(); fetchCoachUnread(); fetchReportReplies(); fetchCoachRequests(); fetchAppNotifications(); fetchOnlineFriends(); fetchGameInvites(); };
     poll();
     // Poll faster (30s) while either the bell or friends panel is open.
     const intervalMs = (showNotifications || showFriends) ? 30000 : 120000;
     const id = setInterval(poll, intervalMs);
     return () => clearInterval(id);
-  }, [isAuthenticated, fetchFriendUnread, fetchReportReplies, fetchCoachRequests, fetchAppNotifications, fetchOnlineFriends, fetchGameInvites, showNotifications, showFriends]);
+  }, [isAuthenticated, fetchFriendUnread, fetchCoachUnread, fetchReportReplies, fetchCoachRequests, fetchAppNotifications, fetchOnlineFriends, fetchGameInvites, showNotifications, showFriends]);
 
   // Real-time game invite via main socket
   useEffect(() => {
@@ -294,8 +331,8 @@ export default function Sidebar({ user, onNavigate }) {
     return () => socket.off('game_invite', handler);
   }, [isAuthenticated]);
 
-  // Total red badge = unread app notifications + friend messages + report replies + coach requests + game invites
-  const unreadNotifCount = appUnreadCount + friendMsgTotal + reportReplies.length + coachRequests.length + gameInvites.length + myNotifs.unread;
+  // Total red badge = unread app notifications + friend messages + coach messages + report replies + coach requests + game invites
+  const unreadNotifCount = appUnreadCount + friendMsgTotal + coachMsgTotal + reportReplies.length + coachRequests.length + gameInvites.length + myNotifs.unread;
 
   // Load coach status once when authenticated
   useEffect(() => {
@@ -1720,7 +1757,58 @@ export default function Sidebar({ user, onNavigate }) {
                   </>
                 )}
 
-                {appNotifications.length === 0 && friendMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 ? (
+                {/* Coach messages — replies in a coaching thread. Kept separate
+                    from friend messages because they land on a different page. */}
+                {coachMsgs.length > 0 && (
+                  <>
+                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#6ee7b7', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
+                      🎓 Coach messages
+                    </div>
+                    <div style={{ maxHeight: '210px', overflowY: 'auto', paddingRight: '2px' }}>
+                    {coachMsgs.map(m => (
+                      <div
+                        key={m.chatId}
+                        /* A coach reading a student's reply belongs on their own
+                           dashboard (where the 💬 chat button lives), not on the
+                           student-facing My Coach page. */
+                        onClick={() => { handleNavigate(isCoach ? '/coach/dashboard' : '/my-coach'); setShowNotifications(false); }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: '10px',
+                          background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.22)',
+                          borderRadius: '10px', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
+                          transition: 'border-color 0.2s, background 0.2s',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.5)'; e.currentTarget.style.background = 'rgba(16,185,129,0.12)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.22)'; e.currentTarget.style.background = 'rgba(16,185,129,0.06)'; }}
+                      >
+                        <UserAvatar user={m.from} size={32} />
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {m.from?.displayName}
+                            </span>
+                            {m.unreadCount > 1 && (
+                              <span style={{ background: '#ef4444', color: '#fff', borderRadius: '999px', fontSize: '9px', fontWeight: 800, padding: '0 5px', lineHeight: '15px', height: '15px' }}>
+                                {m.unreadCount}
+                              </span>
+                            )}
+                          </div>
+                          {m.isGroup && (
+                            <div style={{ fontSize: '10px', color: '#6ee7b7', marginBottom: '1px' }}>
+                              in {m.groupName}
+                            </div>
+                          )}
+                          <div style={{ fontSize: '11.5px', color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {m.latestMessage}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    </div>
+                  </>
+                )}
+
+                {appNotifications.length === 0 && friendMsgs.length === 0 && coachMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 ? (
                   <div style={{ color: '#64748b', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
                     You're all caught up — no notifications.
                   </div>

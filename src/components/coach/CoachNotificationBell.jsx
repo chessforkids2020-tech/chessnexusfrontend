@@ -186,10 +186,24 @@ export default function CoachNotificationBell() {
             </div>
           )}
 
-          <button className="btn-primary" onClick={goToRequests}
-            style={{ width: '100%', marginTop: 10 }}>
-            Review requests
-          </button>
+          {/* Right-aligned and sized to its text: this is a "go to the full
+              page" link, not the panel's main action, so a full-width primary
+              button overstated it. */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
+            <button onClick={goToRequests} style={{
+              padding: '6px 12px',
+              borderRadius: 8,
+              fontSize: 12.5,
+              fontWeight: 700,
+              fontFamily: 'inherit',
+              cursor: 'pointer',
+              color: '#67e8f9',
+              background: 'rgba(6,182,212,0.10)',
+              border: '1px solid rgba(6,182,212,0.35)',
+            }}>
+              Review requests →
+            </button>
+          </div>
         </div>
       )}
     </div>

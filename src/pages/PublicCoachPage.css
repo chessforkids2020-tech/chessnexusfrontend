@@ -1,0 +1,221 @@
+/* PublicCoachPage.css — /coaches/:code, one coach's public page. */
+
+.pc-page {
+  /* Wider than the old 780px: the header is now a 260px photo beside a column
+     of label/value rows, and 780 left the values cramped. */
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+  color: #e5e7eb;
+}
+
+.pc-muted { padding: 60px 0; text-align: center; color: #94a3b8; font-size: 14px; }
+
+/* ── Header ───────────────────────────────────────────────────────────── */
+.pc-head {
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* A coach's face is the thing a parent actually looks at, so it leads the page
+   at a real size rather than as an avatar chip. Square-ish and fixed-ratio so
+   portrait and landscape uploads both crop predictably. */
+.pc-photo {
+  flex: none;
+  width: 260px;
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  font-size: 72px;
+  font-weight: 800;
+  color: #04211d;
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+}
+.pc-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+.pc-head-tx { min-width: 0; flex: 1; }
+
+.pc-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 0 0 8px;
+  font-size: 27px;
+  font-weight: 800;
+  color: #f8fafc;
+  letter-spacing: -0.01em;
+}
+.pc-title {
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #241a05;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+}
+.pc-verified {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+  color: #04211d;
+  background: #34d399;
+}
+
+/* The coach's one-line pitch, under the name. */
+.pc-tagline {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.45;
+  color: #cbd5e1;
+}
+
+/* Label / value rows. The label column is fixed so the values line up down the
+   page; below 560px the pair stacks instead of squeezing the value. */
+.pc-rows { margin: 0 0 14px; display: grid; gap: 9px; }
+.pc-row { display: flex; gap: 16px; align-items: baseline; }
+.pc-row dt {
+  flex: none;
+  width: 96px;
+  font-size: 13px;
+  color: #7c8899;
+}
+.pc-row dd {
+  margin: 0;
+  min-width: 0;
+  font-size: 14.5px;
+  color: #e2e8f0;
+  overflow-wrap: anywhere;
+}
+
+/* Ratings inline: "FIDE 2343   Lichess 2585". */
+.pc-rate-line { display: flex; gap: 18px; flex-wrap: wrap; }
+.pc-hr { text-decoration: none; color: #e2e8f0; white-space: nowrap; }
+.pc-hr strong { font-weight: 700; color: #67e8f9; }
+a.pc-hr:hover strong { text-decoration: underline; }
+.pc-hr-l { font-size: 12.5px; color: #7c8899; }
+
+
+.pc-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.pc-badge {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.pc-badge-open {
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+.pc-badge-full { color: #94a3b8; }
+
+/* ── Sections ─────────────────────────────────────────────────────────── */
+.pc-section { margin-top: 30px; }
+.pc-section h2 {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+/* pre-wrap: the coach typed their own line breaks and paragraphs. */
+.pc-prose {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: #b9c2cf;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.pc-facts { display: grid; gap: 12px; }
+.pc-fact {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.pc-fact-k {
+  flex: none;
+  min-width: 96px;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+.pc-fact-v { font-size: 14px; color: #cbd5e1; }
+
+/* ── Ask to join ──────────────────────────────────────────────────────── */
+.pc-cta {
+  margin-top: 34px;
+  padding: 26px 24px;
+  border-radius: 16px;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.05));
+  border: 1px solid rgba(6, 182, 212, 0.28);
+}
+.pc-cta h2 { margin: 0 0 6px; font-size: 19px; font-weight: 800; color: #f1f5f9; }
+.pc-cta p { margin: 0 0 18px; font-size: 13.5px; line-height: 1.6; color: #94a3b8; }
+
+.pc-btn {
+  display: inline-block;
+  padding: 12px 26px;
+  border-radius: 11px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+.pc-btn-primary {
+  color: #04211d;
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  border: none;
+  font-weight: 800;
+}
+
+.pc-foot { margin-top: 26px; text-align: center; }
+.pc-foot a { font-size: 13px; color: #64748b; text-decoration: none; }
+.pc-foot a:hover { color: #cbd5e1; }
+
+/* ── Not available ────────────────────────────────────────────────────── */
+.pc-empty { padding: 60px 20px; text-align: center; }
+.pc-empty-ic { font-size: 52px; margin-bottom: 14px; }
+.pc-empty h1 { margin: 0 0 8px; font-size: 22px; font-weight: 800; color: #f1f5f9; }
+.pc-empty p { margin: 0 0 20px; font-size: 14px; color: #94a3b8; }
+
+/* Tablet: keep the photo beside the text, just smaller. */
+@media (max-width: 760px) {
+  .pc-photo { width: 190px; font-size: 54px; }
+  .pc-name { font-size: 24px; }
+  .pc-tagline { font-size: 15px; }
+}
+
+@media (max-width: 560px) {
+  /* Stack, and let the photo run the full width — a big clear face reads far
+     better on a phone than a shrunken square floated to one side. */
+  .pc-head { flex-direction: column; gap: 18px; }
+  .pc-photo { width: 100%; max-width: 320px; margin: 0 auto; font-size: 64px; }
+  .pc-name { font-size: 22px; justify-content: flex-start; }
+
+  /* Label above value, so a long value is not squeezed into a narrow column. */
+  .pc-row { flex-direction: column; gap: 1px; }
+  .pc-row dt { width: auto; font-size: 12px; }
+  .pc-rate-line { gap: 14px; }
+}

@@ -30,7 +30,7 @@ const fmtMsgTime = (d) => {
  * Sending, reading, and real-time delivery use the same shared endpoints as the
  * Social Hub chat, so students can reply in a thread but can never open one.
  */
-export default function CoachChat({ mode = 'student' }) {
+export default function CoachChat({ mode = 'student', openThreadId = null }) {
   const isCoach = mode === 'coach';
   const { user, fetchUnreadCount } = useAuth();
   const myId = user?._id || user?.id;
@@ -93,6 +93,40 @@ export default function CoachChat({ mode = 'student' }) {
   useEffect(() => {
     threads.forEach(t => socket.emit('join_chat', t._id));
   }, [threads]);
+
+  /* ── auto-open a thread the caller asked for ──────────────────────── */
+  // Used when a coach clicks "Message" on a student request: the chat should
+  // land ready to type to that person, not on an empty pane the coach has to
+  // hunt through. Waits for threads to load, since the id means nothing until
+  // the matching thread object exists.
+  //
+  // Keyed on the id we last honoured (not on `selected`) so that once the coach
+  // clicks a DIFFERENT thread we do not drag them back to this one — but asking
+  // for the same person again later still re-opens them.
+  const autoOpenedRef = useRef(null);
+  useEffect(() => {
+    if (!openThreadId) { autoOpenedRef.current = null; return; }
+    if (autoOpenedRef.current === openThreadId) return;
+
+    const thread = threads.find(t => String(t._id) === String(openThreadId));
+    if (thread) {
+      autoOpenedRef.current = openThreadId;
+      openThread(thread);
+      return;
+    }
+
+    // Not in the list yet. This is the common case for a FIRST message to an
+    // applicant: the caller created the thread moments ago, and our own
+    // loadThreads() may have been in flight before it existed. Re-fetch once so
+    // the brand-new thread can appear, rather than leaving the coach on an
+    // empty pane after clicking Message.
+    let alive = true;
+    const t = setTimeout(() => { if (alive) loadThreads(); }, 350);
+    return () => { alive = false; clearTimeout(t); };
+    // openThread only closes over setters + refs; listing it would re-run this
+    // on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openThreadId, threads, loadThreads]);
 
   /* ── incoming messages ────────────────────────────────────────────── */
   useEffect(() => {

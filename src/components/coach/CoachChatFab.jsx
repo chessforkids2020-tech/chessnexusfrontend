@@ -14,14 +14,38 @@ import './CoachChatFab.css';
  * GET /api/chat/coach/unread-count and is kept live via the socket + refreshed
  * when the popup closes (opening a thread marks it read).
  */
+/**
+ * Open the coach chat popup from anywhere on the page, optionally landing on a
+ * specific thread.
+ *
+ * The FAB is a SIBLING of the things that want to open it (a request card on
+ * the dashboard, for example), not an ancestor, so there is no prop path
+ * between them. A window event keeps that one-way call simple without lifting
+ * popup state into four different pages that each mount this component.
+ */
+export function openCoachChat(threadId = null) {
+  window.dispatchEvent(new CustomEvent('coachchat:open', { detail: { threadId } }));
+}
+
 export default function CoachChatFab() {
   const { user } = useAuth();
   const myId = user?._id || user?.id;
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
+  const [openThreadId, setOpenThreadId] = useState(null);
   const openRef = useRef(false);
 
   useEffect(() => { openRef.current = open; }, [open]);
+
+  // Someone on the page asked us to open (see openCoachChat above).
+  useEffect(() => {
+    const onOpen = (e) => {
+      setOpenThreadId(e.detail?.threadId || null);
+      setOpen(true);
+    };
+    window.addEventListener('coachchat:open', onOpen);
+    return () => window.removeEventListener('coachchat:open', onOpen);
+  }, []);
 
   const refreshUnread = useCallback(async () => {
     try {
@@ -55,6 +79,9 @@ export default function CoachChatFab() {
   // When the popup closes, threads the coach opened are now read → refresh badge.
   const closePopup = () => {
     setOpen(false);
+    // Forget the requested thread, so opening the FAB normally later does not
+    // jump back to whoever we were last pointed at.
+    setOpenThreadId(null);
     refreshUnread();
   };
 
@@ -64,7 +91,7 @@ export default function CoachChatFab() {
     <>
       <button
         className="ccfab"
-        onClick={() => setOpen(true)}
+        onClick={() => { setOpenThreadId(null); setOpen(true); }}
         aria-label="Messages"
         title="Message students"
       >
@@ -78,7 +105,7 @@ export default function CoachChatFab() {
           <div className="ccfab-popup">
             <button className="ccfab-close" onClick={closePopup} aria-label="Close">✕</button>
             <div className="ccfab-popup-body">
-              <CoachChat mode="coach" />
+              <CoachChat mode="coach" openThreadId={openThreadId} />
             </div>
           </div>
         </div>

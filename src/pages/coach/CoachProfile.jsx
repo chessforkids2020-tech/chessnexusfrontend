@@ -13,7 +13,21 @@ import './CoachProfile.css';
 
 // Only these are editable server-side (routes/coach.js `allowed`). Keep in sync.
 const EDITABLE = ['coachName', 'coachCountry', 'hourlyRate', 'rateCurrency',
-  'coachType', 'academyName', 'bio', 'specialization'];
+  'coachType', 'academyName', 'bio', 'specialization',
+  // Public profile — everything below appears on /coach/<code> and in the
+  // /coaches directory. All optional; a coach who fills in none of it simply
+  // has a sparser page.
+  // No 'title': a chess title is claimed once per user in Settings → Profile
+  // and granted only by an approved TitleClaim (admin checks an ID document).
+  // The server ignores it here too — see routes/coach.js.
+  'profilePhotoUrl', 'publicListed', 'acceptingStudents',
+  'fideRating', 'lichessRating', 'chessComRating', 'experienceYears',
+  'coachAchievements', 'languages', 'teaches'];
+const LEVELS = [
+  { key: 'beginner', label: 'Beginner' },
+  { key: 'intermediate', label: 'Intermediate' },
+  { key: 'advanced', label: 'Advanced' },
+];
 
 const NOT_SET = <span className="cp-not-set">Not set</span>;
 
@@ -44,6 +58,9 @@ export default function CoachProfile() {
   const [form, setForm] = useState({});
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  // The VERIFIED chess title (User.chessTitle), not anything typed here. Same
+  // source the Settings → Profile card uses.
+  const [myTitle, setMyTitle] = useState('');
   const [codeCopied, setCodeCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [joinCopied, setJoinCopied] = useState(false);
@@ -52,16 +69,18 @@ export default function CoachProfile() {
 
   const load = async () => {
     try {
-      const [s, d, w, am] = await Promise.all([
+      const [s, d, w, am, t] = await Promise.all([
         api.get('/api/coach/status'),
         api.get('/api/coach/dashboard').catch(() => ({ data: null })), // needs access; may 403
         api.get('/api/coach-subscription/wallet').catch(() => ({ data: null })),
         api.get('/api/academy/me').catch(() => ({ data: null })),
+        api.get('/api/title-claim/mine').catch(() => ({ data: null })),
       ]);
       setStatus(s.data);
       setCounts(d.data);
       setWallet(w.data || null);
       setAcademyInfo(am.data?.academy ? am.data : null);
+      setMyTitle(t.data?.chessTitle || '');
     } catch {
       setError('Could not load your profile.');
     }
@@ -90,16 +109,61 @@ export default function CoachProfile() {
   const startEdit = () => {
     const next = {};
     EDITABLE.forEach(k => { next[k] = p[k] ?? ''; });
+    // `languages` is an array in the document and a comma-separated string in
+    // the form. Converted here and back on save, so the coach types naturally.
+    next.languages = Array.isArray(p.languages) ? p.languages.join(', ') : '';
+    // `teaches` stays an array — it is checkboxes, not free text.
+    next.teaches = Array.isArray(p.teaches) ? p.teaches : [];
+    next.publicListed = !!p.publicListed;
+    next.acceptingStudents = p.acceptingStudents !== false;
     setForm(next);
     setError('');
     setEditing(true);
+  };
+
+  // Toggle one teaching level on/off.
+  const toggleLevel = (key) => setForm(f => {
+    const cur = Array.isArray(f.teaches) ? f.teaches : [];
+    return { ...f, teaches: cur.includes(key) ? cur.filter(x => x !== key) : [...cur, key] };
+  });
+
+  // Read a chosen image as a data URL. The server validates format and size —
+  // this only rejects the obvious cases early so the coach gets a fast answer.
+  const onPhoto = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
+      setError('Use a PNG, JPG or WebP image.');
+      return;
+    }
+    if (file.size > 2_000_000) {
+      setError('That image is over 2MB. Please use a smaller one.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => { setError(''); setForm(f => ({ ...f, profilePhotoUrl: reader.result })); };
+    reader.onerror = () => setError('Could not read that file.');
+    reader.readAsDataURL(file);
   };
 
   const save = async () => {
     setSaving(true);
     setError('');
     try {
-      const body = { ...form, hourlyRate: Number(form.hourlyRate) || 0 };
+      const body = {
+        ...form,
+        hourlyRate: Number(form.hourlyRate) || 0,
+        // The form edits languages as a comma-separated string; the server
+        // expects a list (it also accepts the string, but sending the real
+        // shape keeps the contract honest).
+        languages: String(form.languages || '').split(',').map(x => x.trim()).filter(Boolean),
+        // Empty rating boxes mean "not stated", not zero — send null so the
+        // server clears the field instead of publishing a rating of 0.
+        fideRating: form.fideRating === '' ? null : form.fideRating,
+        lichessRating: form.lichessRating === '' ? null : form.lichessRating,
+        chessComRating: form.chessComRating === '' ? null : form.chessComRating,
+        experienceYears: form.experienceYears === '' ? null : form.experienceYears,
+      };
       const res = await api.put('/api/coach/profile', body);
       setStatus(s => ({ ...s, coachProfile: res.data.coachProfile }));
       setEditing(false);
@@ -285,9 +349,136 @@ export default function CoachProfile() {
               </div>
             </div>
             <div className="cp-field">
-              <label>Bio <span style={{ fontWeight: 400 }}>({(form.bio || '').length}/600)</span></label>
-              <textarea rows={4} maxLength={600}
-                        value={form.bio} onChange={set('bio')} placeholder="Tell students about your coaching background." />
+              <label>Bio</label>
+              <textarea rows={10}
+                        value={form.bio} onChange={set('bio')}
+                        placeholder="Tell students and parents about your coaching. How long you have taught, how a lesson runs, who you work best with. Write as much as you like — there is no limit." />
+            </div>
+
+            {/* ── PUBLIC PROFILE ──────────────────────────────────────────
+                Everything below appears on the coach's public page and in the
+                /coaches directory. Separated from the fields above because
+                those are account settings, while these are published. */}
+            <div className="cp-public">
+              <div className="cp-public-head">
+                <h3>Your public coach page</h3>
+                <p>
+                  This is what students and parents see at your own page and in
+                  the coach directory. Everything here is optional.
+                </p>
+              </div>
+
+              {/* Photo. Deliberately not the player avatar: that one is locked
+                  behind invite milestones, and a coach needs a face on their
+                  page from day one. */}
+              <div className="cp-photo-row">
+                <div className="cp-photo-prev">
+                  {form.profilePhotoUrl
+                    ? <img src={form.profilePhotoUrl} alt="" />
+                    : <span>{initials(form.coachName)}</span>}
+                </div>
+                <div className="cp-photo-ctl">
+                  <label className="cp-photo-btn">
+                    📷 {form.profilePhotoUrl ? 'Change photo' : 'Add a photo'}
+                    <input type="file" accept="image/png,image/jpeg,image/webp" onChange={onPhoto} hidden />
+                  </label>
+                  {form.profilePhotoUrl && (
+                    <button type="button" className="cp-photo-clear"
+                            onClick={() => setForm(f => ({ ...f, profilePhotoUrl: '' }))}>
+                      Remove
+                    </button>
+                  )}
+                  <span className="cp-photo-hint">PNG, JPG or WebP · up to 2MB</span>
+                </div>
+              </div>
+
+              <div className="cp-form-grid">
+                {/* Read-only. A title is claimed once per USER in Settings →
+                    Profile and granted only after an admin checks an ID
+                    document, so it is not something to re-type per coach
+                    profile. Shown here so a coach can see what will appear. */}
+                <div className="cp-field">
+                  <label>FIDE title</label>
+                  <div className="cp-static">
+                    {myTitle
+                      ? <span className="cp-title-badge">{myTitle}</span>
+                      : <span className="cp-static-empty">No verified title</span>}
+                  </div>
+                  <span className="cp-hint">
+                    {myTitle
+                      ? 'Verified — this shows on your public page.'
+                      : <>Claim your title in <Link to="/settings?tab=profile">Settings → Profile</Link>. It appears here once approved.</>}
+                  </span>
+                </div>
+                <div className="cp-field">
+                  <label>Years teaching</label>
+                  <input className="cp-input" type="number" min="0" max="80" placeholder="e.g. 12"
+                         value={form.experienceYears} onChange={set('experienceYears')} />
+                </div>
+                <div className="cp-field">
+                  <label>FIDE rating</label>
+                  <input className="cp-input" type="number" min="0" max="3000" placeholder="e.g. 2145"
+                         value={form.fideRating} onChange={set('fideRating')} />
+                </div>
+                <div className="cp-field">
+                  <label>Lichess rating</label>
+                  <input className="cp-input" type="number" min="0" max="4000" placeholder="e.g. 2280"
+                         value={form.lichessRating} onChange={set('lichessRating')} />
+                </div>
+                <div className="cp-field">
+                  <label>Chess.com rating</label>
+                  <input className="cp-input" type="number" min="0" max="4000" placeholder="e.g. 2190"
+                         value={form.chessComRating} onChange={set('chessComRating')} />
+                </div>
+                <div className="cp-field">
+                  <label>Teaching languages</label>
+                  <input className="cp-input" placeholder="English, Tamil, Hindi"
+                         value={form.languages} onChange={set('languages')} />
+                  <span className="cp-hint">Separate with commas</span>
+                </div>
+              </div>
+
+              <div className="cp-field">
+                <label>Who you teach</label>
+                <div className="cp-levels">
+                  {LEVELS.map(l => (
+                    <button key={l.key} type="button"
+                            className={`cp-level ${(form.teaches || []).includes(l.key) ? 'on' : ''}`}
+                            onClick={() => toggleLevel(l.key)}>
+                      {(form.teaches || []).includes(l.key) ? '✓ ' : ''}{l.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="cp-field">
+                <label>Achievements</label>
+                <textarea rows={6}
+                          value={form.coachAchievements} onChange={set('coachAchievements')}
+                          placeholder="Titles, tournament results, students you have coached to norms or national events. One per line reads best." />
+              </div>
+
+              <div className="cp-toggles">
+                <label className="cp-toggle">
+                  <input type="checkbox" checked={!!form.acceptingStudents}
+                         onChange={e => setForm(f => ({ ...f, acceptingStudents: e.target.checked }))} />
+                  <span>
+                    <strong>I am taking new students</strong>
+                    <em>Shows an "open to students" badge. Turn it off when you are full.</em>
+                  </span>
+                </label>
+                <label className="cp-toggle">
+                  <input type="checkbox" checked={!!form.publicListed}
+                         onChange={e => setForm(f => ({ ...f, publicListed: e.target.checked }))} />
+                  <span>
+                    <strong>List me in the public coach directory</strong>
+                    <em>
+                      Off by default. Your page only goes live once you are
+                      verified by the Nexus team AND this is on.
+                    </em>
+                  </span>
+                </label>
+              </div>
             </div>
             <div className="cp-form-actions">
               <button className="btn-primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : '✓ Save changes'}</button>
@@ -302,7 +493,56 @@ export default function CoachProfile() {
             {isAcademy && <Row label="Academy">{p.academyName || NOT_SET}</Row>}
             <Row label="Specialization">{p.specialization || NOT_SET}</Row>
             <Row label="Hourly rate">{rate || NOT_SET}</Row>
-            <Row label="Bio">{p.bio || NOT_SET}</Row>
+            <Row label="Bio">
+              {p.bio
+                ? <span style={{ whiteSpace: 'pre-wrap' }}>{p.bio}</span>
+                : NOT_SET}
+            </Row>
+            {/* User.chessTitle — granted by an approved title claim, never
+                typed on this page. */}
+            <Row label="FIDE title">
+              {myTitle
+                ? <span className="cp-title-badge">{myTitle}</span>
+                : <>{NOT_SET} · <Link to="/settings?tab=profile">claim your title</Link></>}
+            </Row>
+            <Row label="Ratings">
+              {(p.fideRating || p.lichessRating || p.chessComRating)
+                ? [
+                    p.fideRating && `FIDE ${p.fideRating}`,
+                    p.lichessRating && `Lichess ${p.lichessRating}`,
+                    p.chessComRating && `Chess.com ${p.chessComRating}`,
+                  ].filter(Boolean).join(' · ')
+                : NOT_SET}
+            </Row>
+            <Row label="Years teaching">{p.experienceYears ?? NOT_SET}</Row>
+            <Row label="Languages">
+              {(p.languages || []).length ? p.languages.join(', ') : NOT_SET}
+            </Row>
+            <Row label="Teaches">
+              {(p.teaches || []).length
+                ? p.teaches.map(t => t[0].toUpperCase() + t.slice(1)).join(', ')
+                : NOT_SET}
+            </Row>
+            <Row label="Achievements">
+              {p.coachAchievements
+                ? <span style={{ whiteSpace: 'pre-wrap' }}>{p.coachAchievements}</span>
+                : NOT_SET}
+            </Row>
+            {/* Where the public page stands. Both gates are shown because a
+                coach who ticked "list me" and is still unverified would
+                otherwise wonder why their page 404s. */}
+            <Row label="Public page">
+              {!p.publicListed
+                ? <span className="cp-not-set">Not listed — turn it on in Edit profile</span>
+                : !p.verified
+                  ? <span style={{ color: '#fcd34d' }}>Waiting for verification by the Nexus team</span>
+                  : (
+                    <span className="cp-joinlink">
+                      <code>{`${window.location.origin}/coaches/${p.coachCode}`.replace(/^https?:\/\//, '')}</code>
+                      <a href={`/coaches/${p.coachCode}`} target="_blank" rel="noreferrer">View</a>
+                    </span>
+                  )}
+            </Row>
             <Row label="Coach code">
               {p.coachCode ? (
                 <span className="cp-code">

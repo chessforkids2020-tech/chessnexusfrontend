@@ -61,18 +61,27 @@ export default function AudienceSplit({ current }) {
     </>
   );
 
+  // The whole card used to BE the link, with nothing to say so — no button, no
+  // affordance, just a block of text that happened to navigate when clicked.
+  // A coach reading the two cards to compare them had no reason to think either
+  // was interactive, so the pricing pages behind them went unvisited.
+  //
+  // The card is now plain, with an explicit "See pricing" button. The card the
+  // visitor is already on shows no button — there is nowhere to go.
   return (
     <div className="mkt-audience">
-      {current === "solo" ? (
-        <div className="mkt-aud mkt-aud-solo">{soloBody}</div>
-      ) : (
-        <Link to="/chess-coach-pricing" className="mkt-aud mkt-aud-solo">{soloBody}</Link>
-      )}
-      {current === "academy" ? (
-        <div className="mkt-aud mkt-aud-academy">{academyBody}</div>
-      ) : (
-        <Link to="/chess-academy-pricing" className="mkt-aud mkt-aud-academy">{academyBody}</Link>
-      )}
+      <div className="mkt-aud mkt-aud-solo">
+        {soloBody}
+        {current !== "solo" && (
+          <Link to="/chess-coach-pricing" className="mkt-aud-btn">See pricing →</Link>
+        )}
+      </div>
+      <div className="mkt-aud mkt-aud-academy">
+        {academyBody}
+        {current !== "academy" && (
+          <Link to="/chess-academy-pricing" className="mkt-aud-btn">See pricing →</Link>
+        )}
+      </div>
     </div>
   );
 }

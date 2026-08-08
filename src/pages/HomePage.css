@@ -2785,24 +2785,6 @@
   gap: 20px;
 }
 
-/* ── Player feature cards (image + copy) ───────────── */
-.hp-featgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.hp-feat { display: flex; flex-direction: column; overflow: hidden; transition: border-color .18s ease, transform .18s ease; }
-.hp-feat:hover { border-color: rgba(52,211,153,0.4); transform: translateY(-3px); }
-.hp-feat-img {
-  height: 150px; display: grid; place-items: center; padding: 18px;
-  background:
-    radial-gradient(120% 120% at 50% 0%, rgba(52,211,153,0.09), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
-  border-bottom: 1px solid var(--glass-border);
-}
-.hp-feat-img img { max-height: 112px; max-width: 70%; width: auto; height: auto; object-fit: contain; filter: drop-shadow(0 12px 18px rgba(0,0,0,0.45)); }
-.hp-feat-tx { padding: 18px 20px 22px; }
-.hp-feat-tx h3 { font-size: 17px; font-weight: 600; color: var(--t1); letter-spacing: -0.01em; margin-bottom: 8px; }
-.hp-feat-tx p { font-size: 13.5px; line-height: 1.6; color: #8899aa; }
-.hp-feat-tx p b { color: #b3bfce; font-weight: 600; }
-@media (max-width: 900px) { .hp-featgrid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 560px) { .hp-featgrid { grid-template-columns: 1fr; } }
 
 /* ── COACH SHOWCASE (image + circular-icon grid) ───── */
 .hp-cshow { display: grid; grid-template-columns: 1fr 1.12fr; gap: 40px; align-items: center; padding: 30px; margin: 28px 0; }
@@ -3253,121 +3235,6 @@
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    INSIDE THE LIVE CLASSROOM
    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-.hp-lcgrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
-  gap: 14px;
-}
-.hp-lccard {
-  display: flex;
-  gap: 13px;
-  padding: 17px 18px;
-  border-radius: 16px;
-  transition: transform 0.22s ease, border-color 0.28s ease;
-}
-.hp-lccard:hover { transform: translateY(-3px); border-color: rgba(239, 68, 68, 0.34); }
-.hp-lc-ic {
-  flex: none;
-  font-size: 19px;
-  line-height: 1;
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 11px;
-  background: rgba(239, 68, 68, 0.11);
-  border: 1px solid rgba(239, 68, 68, 0.24);
-}
-.hp-lccard h3 {
-  margin: 0 0 5px;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--t1);
-}
-.hp-lccard p {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--t2);
-}
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   THE COACH WORKSPACE
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-.hp-wsgrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-  margin-bottom: 44px;
-}
-.hp-wscard {
-  display: flex;
-  flex-direction: column;
-  padding: 22px 22px 18px;
-  border-radius: 18px;
-  transition: transform 0.22s ease, border-color 0.28s ease;
-}
-.hp-wscard:hover { transform: translateY(-3px); border-color: rgba(34, 211, 238, 0.34); }
-.hp-ws-head {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  margin-bottom: 14px;
-}
-.hp-ws-ic {
-  flex: none;
-  font-size: 18px;
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 11px;
-  background: rgba(6, 182, 212, 0.11);
-  border: 1px solid rgba(34, 211, 238, 0.26);
-}
-.hp-wscard h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 750;
-  color: var(--t1);
-}
-.hp-ws-list {
-  list-style: none;
-  margin: 0 0 16px;
-  padding: 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-.hp-ws-list li {
-  position: relative;
-  padding-left: 18px;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--t2);
-}
-.hp-ws-list li::before {
-  content: "";
-  position: absolute;
-  left: 2px;
-  top: 8px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #34d399, #06b6d4);
-}
-.hp-ws-link {
-  align-self: flex-start;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #67e8f9;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(103, 232, 249, 0.3);
-  padding-bottom: 2px;
-}
-.hp-ws-link:hover { border-bottom-color: #67e8f9; }
-.hp-ws-link:focus-visible { outline: 2px solid var(--cyan-hi); outline-offset: 3px; }
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    ACADEMIES
@@ -3498,3 +3365,4 @@
   .hp-lccard, .hp-wscard { padding: 16px; }
   .hp-deep-link { font-size: 12.5px; padding: 7px 12px; }
 }
+

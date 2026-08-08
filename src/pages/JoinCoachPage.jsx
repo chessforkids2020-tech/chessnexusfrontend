@@ -19,6 +19,7 @@ export default function JoinCoachPage() {
   const { user, loading: authLoading } = useAuth();
 
   const [state, setState] = useState({ loading: true, coach: null, status: 'none', error: '' });
+  const [note, setNote] = useState('');
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [err, setErr] = useState('');
@@ -52,7 +53,7 @@ export default function JoinCoachPage() {
     if (sending) return;
     setSending(true); setErr('');
     try {
-      await api.post('/api/coach/request-coach', { coachCode: code });
+      await api.post('/api/coach/request-coach', { coachCode: code, note });
       setSent(true);
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not send that request.');
@@ -120,11 +121,44 @@ export default function JoinCoachPage() {
               Ask {name} to add you as their student. They will need to accept
               before you appear on their roster.
             </p>
-            {err && <div className="jc-err">⚠️ {err}</div>}
-            <button className="jc-btn" onClick={send} disabled={sending}>
-              {sending ? 'Sending…' : `Ask ${name} to add me`}
-            </button>
-            <Link to="/dashboard" className="jc-ghost">Not now</Link>
+            {/* Guests cannot ask to join. Saying so up front beats a button
+                that fails with a 403 after they have typed a message. */}
+            {user?.role === 'guest' ? (
+              <>
+                <div className="jc-err">
+                  You are playing as a guest. Create a free account to ask a coach
+                  to take you on.
+                </div>
+                <Link to="/signup-request" className="jc-btn">Create a free account</Link>
+              </>
+            ) : (
+              <>
+                <label className="jc-note-label" htmlFor="jc-note">
+                  Tell {name.split(' ')[0]} a little about yourself
+                </label>
+                <textarea
+                  id="jc-note"
+                  className="jc-note"
+                  rows={4}
+                  maxLength={600}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Your age, your rating if you have one, and what you would like help with. Coaches read this before deciding."
+                />
+                <div className="jc-note-count">{note.length}/600</div>
+                {err && <div className="jc-err">⚠️ {err}</div>}
+                <button className="jc-btn" onClick={send} disabled={sending || !note.trim()}>
+                  {sending ? 'Sending…' : `Ask ${name} to add me`}
+                </button>
+                {!note.trim() && (
+                  <p className="jc-sub" style={{ margin: '10px 0 0', fontSize: 12 }}>
+                    Write a short message first — coaches rarely accept a request
+                    with nothing in it.
+                  </p>
+                )}
+                <Link to="/dashboard" className="jc-ghost">Not now</Link>
+              </>
+            )}
           </>
         )}
       </div>

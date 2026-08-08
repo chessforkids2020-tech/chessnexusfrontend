@@ -423,6 +423,125 @@ function AvatarXpPrices() {
   );
 }
 
+// ─── Founding coaches ("first 50") ───────────────────────────────────────────
+// The offer on /coach-hub shows "N spots left". That number is total - claimed,
+// and `claimed` is MANUAL: the prize is granted by hand, so the count is
+// whatever the admin says it is. Without this panel the API accepted the value
+// but nothing could set it, which meant the counter was stuck at 50 forever.
+function FoundingCoaches() {
+  const [fc, setFc] = useState({ enabled: true, total: 50, claimed: 0 });
+  const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  useEffect(() => {
+    api.get('/api/admin/settings')
+      .then(res => {
+        const f = res.data?.foundingCoaches;
+        if (f) setFc({ enabled: f.enabled !== false, total: f.total ?? 50, claimed: f.claimed ?? 0 });
+        setLoaded(true);
+      })
+      .catch(() => setLoaded(true));
+  }, []);
+
+  const save = async (next = fc) => {
+    setSaving(true); setMsg('');
+    try {
+      // Send ONLY foundingCoaches: the route patches each group independently,
+      // so this cannot clobber the XP prices edited in the panel above.
+      const res = await api.put('/api/admin/settings', { foundingCoaches: next });
+      const f = res.data?.foundingCoaches;
+      if (f) setFc({ enabled: f.enabled !== false, total: f.total ?? 50, claimed: f.claimed ?? 0 });
+      setMsg('Saved ✓');
+      setTimeout(() => setMsg(''), 2500);
+    } catch {
+      setMsg('Save failed');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Clamped so the public page can never be asked to show a negative count.
+  const claim = (delta) => {
+    const claimed = Math.min(fc.total, Math.max(0, fc.claimed + delta));
+    const next = { ...fc, claimed };
+    setFc(next);
+    save(next);
+  };
+
+  const remaining = Math.max(0, fc.total - fc.claimed);
+  const inputStyle = { width: 90, padding: 6, border: '1px solid #cbd5e1', borderRadius: 6 };
+
+  return (
+    <div style={{ ...styles.card, padding: 16, marginTop: 20, background: '#ffffff', border: '1px solid #e2e8f0' }}>
+      <h3 style={{ marginTop: 0, marginBottom: 4, color: '#0f172a' }}>🏅 Founding coaches (first 50)</h3>
+      <div style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
+        Controls the “N spots left” counter on the public Coach page. Grant the free
+        Pro year by hand, then press <b>Granted one</b> to reduce the spots left.
+      </div>
+
+      {!loaded ? <div style={{ color: '#94a3b8' }}>Loading…</div> : (
+        <>
+          <div style={{
+            display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 14,
+            padding: '10px 14px', borderRadius: 8, background: '#f0fdf4', border: '1px solid #bbf7d0',
+          }}>
+            <span style={{ fontSize: 30, fontWeight: 800, color: '#15803d' }}>{remaining}</span>
+            <span style={{ fontSize: 13, color: '#166534' }}>
+              spots left &nbsp;·&nbsp; {fc.claimed} of {fc.total} granted
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginBottom: 16 }}>
+            <button onClick={() => claim(1)} disabled={saving || fc.claimed >= fc.total}
+                    style={{ ...styles.primaryBtn, opacity: (saving || fc.claimed >= fc.total) ? 0.5 : 1 }}>
+              − Granted one (spots left → {Math.max(0, remaining - 1)})
+            </button>
+            <button onClick={() => claim(-1)} disabled={saving || fc.claimed <= 0}
+                    style={{
+                      padding: '8px 14px', borderRadius: 6, cursor: 'pointer',
+                      border: '1px solid #cbd5e1', background: '#fff', color: '#334155',
+                      opacity: (saving || fc.claimed <= 0) ? 0.5 : 1,
+                    }}>
+              + Undo one
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-end',
+                        paddingTop: 14, borderTop: '1px solid #e2e8f0' }}>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: '#334155' }}>
+              Total spots
+              <input type="number" min={1} style={inputStyle} value={fc.total}
+                onChange={e => setFc({ ...fc, total: Math.max(1, +e.target.value || 1) })} />
+            </label>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: '#334155' }}>
+              Granted so far
+              <input type="number" min={0} style={inputStyle} value={fc.claimed}
+                onChange={e => setFc({ ...fc, claimed: Math.max(0, +e.target.value || 0) })} />
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#334155' }}>
+              <input type="checkbox" checked={fc.enabled}
+                onChange={e => setFc({ ...fc, enabled: e.target.checked })} />
+              Show the offer
+            </label>
+          </div>
+          <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 6 }}>
+            Unticking hides the whole offer section — the page never shows “0 spots left”.
+          </div>
+
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 16 }}>
+            <button onClick={() => save()} disabled={saving}
+                    style={{ ...styles.primaryBtn, opacity: saving ? 0.6 : 1 }}>
+              {saving ? 'Saving…' : 'Save'}
+            </button>
+            {msg && <span style={{ fontSize: 13, color: msg.includes('fail') ? '#dc2626' : '#16a34a' }}>{msg}</span>}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── Recent coffee supporters (dashboard glance) ─────────────────────────────
 // Small red "needs attention" pip for admin nav buttons (like chat unread).
 // Renders nothing when count is 0. The parent button must be position:relative.
@@ -1259,6 +1378,8 @@ function AdminDashboard() {
       </div>
 
       <AvatarXpPrices />
+
+      <FoundingCoaches />
 
       <div style={{
         ...styles.card,

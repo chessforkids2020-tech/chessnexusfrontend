@@ -11,6 +11,37 @@ import api from '../api';
 import GameAnalysisModal from './masterGames/GameAnalysisModal';
 import '../pages/MyCoachPortal.css';
 
+// Build the embed URL for a course video.
+//
+// A course video must PLAY here and never hand a child off to youtube.com,
+// where the sidebar and end-screen suggestions are an open door to the rest of
+// the site. These parameters strip what we can:
+//   modestbranding=1  drop the YouTube logo in the control bar
+//   rel=0             end screen shows only this channel's videos, not the web's
+//   playsinline=1     iOS plays in place instead of taking over fullscreen
+//   iv_load_policy=3  no clickable annotation overlays
+//   fs=1              fullscreen still allowed — it stays inside our player
+//
+// youtube-nocookie.com is the privacy-preserving host: no tracking cookie is
+// set unless the child actually plays the video. That matters here because the
+// audience is children.
+//
+// Caveat worth being honest about: YouTube's own "Watch on YouTube" affordance
+// in the control bar cannot be removed by any embed parameter — that is a
+// deliberate term of the IFrame API. The overlay in CSS covers the title
+// region where that link sits; the link inside the control bar remains, so
+// this raises the wall a long way but is not a sealed box.
+function lessonEmbedUrl(videoId) {
+  const params = new URLSearchParams({
+    modestbranding: '1',
+    rel: '0',
+    playsinline: '1',
+    iv_load_policy: '3',
+    fs: '1',
+  });
+  return `https://www.youtube-nocookie.com/embed/${videoId}?${params}`;
+}
+
 export default function StudentCourses() {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
@@ -94,8 +125,10 @@ export default function StudentCourses() {
                 <span className="mcp-lesson-action">
                   {l.state === 'done' && (
                     <>
+                      {/* No link out: the player for a finished lesson is right
+                          below, so "Rewatch" is a label, not a trip to YouTube. */}
                       {isVideo
-                        ? <a className="mcp-lesson-review" href={`https://youtu.be/${l.videoId}`} target="_blank" rel="noreferrer">Rewatch ↗</a>
+                        ? <span className="mcp-lesson-done-tag">▶ rewatch below</span>
                         : <button className="mcp-lesson-review" onClick={open}>Review</button>}
                       <span className="mcp-lesson-done-tag">✓ studied</span>
                     </>
@@ -113,13 +146,15 @@ export default function StudentCourses() {
                   {l.state === 'locked' && <span className="mcp-lesson-locked">🔒</span>}
                 </span>
 
-                {/* Inline embedded player for the current video lesson */}
-                {isVideo && l.state === 'current' && l.videoId && (
+                {/* Inline player. Shown for the current lesson AND for one the
+                    student already finished, so a rewatch stays on this page
+                    instead of sending a child off to youtube.com. */}
+                {isVideo && (l.state === 'current' || l.state === 'done') && l.videoId && (
                   <div className="mcp-video-embed">
                     <iframe
-                      src={`https://www.youtube.com/embed/${l.videoId}`}
+                      src={lessonEmbedUrl(l.videoId)}
                       title={l.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     />
                   </div>

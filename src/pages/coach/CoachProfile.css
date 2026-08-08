@@ -347,3 +347,132 @@
   color: #64748b;
   line-height: 1.45;
 }
+
+/* ── Public coach profile editor ──────────────────────────────────────── */
+.cp-public {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.cp-public-head { margin-bottom: 16px; }
+.cp-public-head h3 { margin: 0 0 4px; font-size: 16px; font-weight: 700; color: #e2e8f0; }
+.cp-public-head p { margin: 0; font-size: 12.5px; line-height: 1.55; color: #94a3b8; }
+
+/* Photo */
+.cp-photo-row { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.cp-photo-prev {
+  flex: none;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  font-weight: 800;
+  color: #04211d;
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  border: 2px solid rgba(6, 182, 212, 0.4);
+}
+.cp-photo-prev img { width: 100%; height: 100%; object-fit: cover; }
+.cp-photo-ctl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.cp-photo-btn {
+  padding: 8px 15px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+.cp-photo-btn:hover { background: rgba(6, 182, 212, 0.14); border-color: rgba(6, 182, 212, 0.4); }
+.cp-photo-clear {
+  padding: 8px 13px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  cursor: pointer;
+  color: #fca5a5;
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  font-family: inherit;
+}
+.cp-photo-hint { flex-basis: 100%; font-size: 11.5px; color: #64748b; }
+
+.cp-hint { display: block; margin-top: 4px; font-size: 11.5px; color: #64748b; }
+.cp-hint a { color: #67e8f9; }
+
+/* A field that is displayed but not editable here — sized like an input so the
+   form grid keeps its rhythm, but visibly not a control. */
+.cp-static {
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 0;
+}
+.cp-static-empty { font-size: 13.5px; color: #64748b; }
+
+/* Verified FIDE title. Gold, matching how titles read elsewhere in the app. */
+.cp-title-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #241a05;
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+}
+
+/* Who you teach — multi-select chips */
+.cp-levels { display: flex; gap: 8px; flex-wrap: wrap; }
+.cp-level {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transition: all 0.15s ease;
+}
+.cp-level.on {
+  color: #67e8f9;
+  background: rgba(6, 182, 212, 0.14);
+  border-color: rgba(6, 182, 212, 0.5);
+}
+
+/* Publish toggles */
+.cp-toggles { display: grid; gap: 12px; margin-top: 18px; }
+.cp-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px 15px;
+  border-radius: 11px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+.cp-toggle:hover { border-color: rgba(6, 182, 212, 0.3); }
+.cp-toggle input { margin-top: 3px; flex: none; width: 16px; height: 16px; cursor: pointer; }
+.cp-toggle strong { display: block; font-size: 13.5px; font-weight: 700; color: #e2e8f0; }
+.cp-toggle em {
+  display: block;
+  margin-top: 2px;
+  font-style: normal;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #8899aa;
+}
+
+/* The live public-page link in the read-only view */
+.cp-joinlink a {
+  margin-left: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #67e8f9;
+  text-decoration: none;
+}

@@ -119,13 +119,6 @@ function readCachedContestRows() {
   }
 }
 
-// ── EVERYTHING INSIDE THE LIVE CLASSROOM ─────────────────────
-// Mirrors src/pages/marketing/LiveClassroomPage.jsx. The classroom is the
-// headline capability, and a visitor (or an AI summarising this page) can't
-// tell what "built-in classroom" means from two words — so it's spelled out.
-// ── THE COACH WORKSPACE — the full picture, not four highlights ──
-// Each block ends with a `to` so a visitor who wants depth can reach the SEO
-// page that covers it properly.
 // ── COACH DEEP-DIVE LINKS ────────────────────────────────────
 // The coach-facing marketing pages, in the order they're shown. Pulled FROM the
 // FeatureLinkGrid registry (not retyped) so an icon or title change there flows
@@ -533,6 +526,7 @@ export default function HomePage() {
           onBookDemo={() => setDemoOpen(true)}
         />
 
+
         {/* ── TOP ROW: Puzzle + Right Column ── */}
         <div className="hp-top-row">
 
@@ -629,8 +623,10 @@ export default function HomePage() {
         </div>
 
         {/* The "For your students" showcase (6 player-feature cards + its CTA)
-            was removed: it described puzzles, analysis, studies and clubs, which
-            Chess.com and Lichess already offer. They live on /features. */}
+            was removed. It described puzzles, analysis, studies and clubs —
+            things Chess.com and Lichess already offer, so it argued on their
+            ground rather than ours. The homepage now stays on the coach-led
+            story. The features themselves still live on /features. */}
 
         {/* ── FOR COACHES — image + circular-icon feature grid ── */}
         {(() => {
@@ -722,12 +718,14 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* The "What's inside the live classroom" block was removed from the
-            homepage. The classroom is covered by the hero and in full on
-            /live-chess-classroom. */}
+        {/* The "What's inside the live classroom" block (14 feature titles, the
+            screenshot and its CTA) was removed from the homepage. The classroom
+            is still the headline capability — it is covered by the hero above
+            and in full on /live-chess-classroom. */}
 
-        {/* The "Everything a coach gets" block (6 cards + links) was removed —
-            the hero and the classroom section already cover it, and every card's
+        {/* The "Everything a coach gets / The whole coaching workspace" block
+            (6 cards + their links) was removed. The same ground is covered by
+            the hero and the live-classroom section above, and every card's
             depth link still exists on its own marketing page. */}
 
         {/* ── ACADEMIES — the multi-coach layer, invisible until now ── */}
@@ -744,7 +742,7 @@ export default function HomePage() {
             </p>
             <ul className="hp-acad-list">
               <li>Plans for <b>5, 10 or unlimited coaches</b> — 100 students each</li>
-              <li><b>Unlimited live classes</b> for every coach, plus 10% for paying 3 months up front</li>
+              <li>Unlimited live classes for every coach, plus 10% for paying 3 months up front</li>
               <li>The head coach is still a coach, not locked into admin</li>
               <li>If a plan lapses, nobody is locked out and no data is lost</li>
             </ul>

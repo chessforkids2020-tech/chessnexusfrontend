@@ -31,6 +31,8 @@ import UserAttendancePage from "./pages/UserAttendancePage";
 import MyCoachPortal from "./pages/MyCoachPortal";
 import JoinCoachPage from "./pages/JoinCoachPage";
 import CoachHubPage from "./pages/CoachHubPage";
+import CoachesDirectoryPage from "./pages/CoachesDirectoryPage";
+import PublicCoachPage from "./pages/PublicCoachPage";
 
 // Public SEO feature/about pages
 import FeaturesPage from "./pages/marketing/FeaturesPage";
@@ -1410,9 +1412,26 @@ export default function App() {
             <Games />
           </UserLayout>
         } />
-        {/* Public on purpose — no ProtectedRoute. The "Coach" item in the sidebar
-            is a page ABOUT coaching that a logged-out visitor can read. The
-            coach's own dashboard is /coach/dashboard and stays gated. */}
+        {/* Public on purpose — no ProtectedRoute. This is the "Coach" item in the
+            sidebar, a page ABOUT coaching that a logged-out visitor can read.
+            The coach's own dashboard is /coach/dashboard and stays gated. */}
+        {/* PUBLIC COACH DIRECTORY. No ProtectedRoute — anyone may browse, and a
+            coach's page is meant to be shareable with parents who have no
+            account. The server only returns coaches who are verified AND have
+            opted in, so this cannot expose an unverified account.
+
+            NOT /coach/:code — there are 17 routes under /coach/*, and a bare
+            parameter there would match every one of them. */}
+        <Route path="/coaches" element={
+          <UserLayout>
+            <CoachesDirectoryPage />
+          </UserLayout>
+        } />
+        <Route path="/coaches/:code" element={
+          <UserLayout>
+            <PublicCoachPage />
+          </UserLayout>
+        } />
         <Route path="/coach-hub" element={
           <UserLayout>
             <CoachHubPage />

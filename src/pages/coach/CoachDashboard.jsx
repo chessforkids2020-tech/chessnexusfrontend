@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import socket from '../../socket';
-import CoachChatFab from '../../components/coach/CoachChatFab';
+import CoachChatFab, { openCoachChat } from '../../components/coach/CoachChatFab';
 import CoachNotificationBell from '../../components/coach/CoachNotificationBell';
 import CoachHelpMenu from '../../components/coach/CoachHelpMenu';
 import ExpiryReminder from '../../components/ExpiryReminder';
@@ -285,6 +285,20 @@ export default function CoachDashboard() {
 
   // Accept or decline a request a STUDENT sent. On accept the student joins the
   // roster, so refresh the list rather than guessing the new row's shape.
+  // Open a 1:1 chat with someone who has ASKED to join but is not accepted yet.
+  // The server allows this for pending applicants specifically so a coach can
+  // vet them first.
+  const messageApplicant = async (studentId, name) => {
+    try {
+      const res = await api.post('/api/chat/coach/start', { studentId });
+      // Open the chat straight onto this person's thread, so the coach lands in
+      // a ready compose box instead of having to find them in the list.
+      openCoachChat(res.data?._id);
+    } catch (err) {
+      alert(err.response?.data?.message || `Could not open a chat with ${name}.`);
+    }
+  };
+
   const answerIncoming = async (linkId, action) => {
     try {
       await api.post(`/api/coach/student-requests/${linkId}/${action}`);
@@ -521,7 +535,27 @@ export default function CoachDashboard() {
                     <div style={{ fontSize: '12px', color: '#6ee7b7', margin: '4px 0' }}>
                       asked to join your students
                     </div>
+                    {/* What the student wrote. Shown BEFORE the buttons on
+                        purpose: accepting a stranger with no idea who they are
+                        is exactly what this flow exists to prevent. */}
+                    {r.requestNote && (
+                      <div style={{
+                        margin: '8px 0 10px', padding: '9px 11px', borderRadius: 9,
+                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
+                        fontSize: 12.5, lineHeight: 1.55, color: '#cbd5e1', whiteSpace: 'pre-wrap',
+                      }}>
+                        “{r.requestNote}”
+                      </div>
+                    )}
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                      {/* Message first. The coach can now open a 1:1 with a
+                          PENDING applicant (see coachContactableIdSet on the
+                          server), so they can ask questions before deciding
+                          rather than accepting a stranger sight unseen. */}
+                      {u?._id && (
+                        <button className="btn-ghost" style={{ padding: '6px 14px', fontSize: 13, borderColor: 'rgba(6,182,212,0.45)', color: '#67e8f9' }}
+                          onClick={() => messageApplicant(u._id, name)}>💬 Message</button>
+                      )}
                       <button className="btn-primary" style={{ padding: '6px 14px', fontSize: 13 }}
                         onClick={() => answerIncoming(r._id, 'approve')}>Accept</button>
                       <button className="btn-ghost" style={{ padding: '6px 14px', fontSize: 13 }}

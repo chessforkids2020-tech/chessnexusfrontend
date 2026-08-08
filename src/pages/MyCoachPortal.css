@@ -764,6 +764,28 @@
   border: 0;
 }
 
+/* Cover the strip along the top of the player where YouTube draws the video
+   title and channel name — both are links to youtube.com, and no embed
+   parameter removes them. The bar only appears on hover/pause, so a
+   transparent cover costs the student nothing: clicking anywhere in this strip
+   does nothing instead of navigating away.
+   Deliberately NOT full-height — the play/pause click target and the whole
+   control bar must stay usable. */
+.mcp-video-embed::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 62px;
+  z-index: 2;
+  /* Blocks pointer events but stays invisible. */
+  background: transparent;
+}
+
+/* On a phone the title bar is shorter; covering 62px would eat into the video. */
+@media (max-width: 560px) {
+  .mcp-video-embed::before { height: 44px; }
+}
+
 /* ── Class schedule tab ── */
 .mcp-nextclass {
   display: flex; align-items: center; justify-content: space-between; gap: 14px;
