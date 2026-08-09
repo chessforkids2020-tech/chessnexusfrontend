@@ -191,7 +191,7 @@ export default function CoachPricingPage() {
                   plans no longer exist in config/coachPlans.js. Their unlimited
                   classroom moved INTO Pro and Coach, so there are three rows. */}
               <tbody>
-                <tr><td>Free</td><td>$0 — free forever</td><td>20</td><td>1/day · 40 min · 4 (+coach)</td></tr>
+                <tr><td>Free</td><td>$0 — free forever</td><td>30</td><td>1/day · 40 min · 4 (+coach)</td></tr>
                 <tr><td>Pro</td><td>$19</td><td>70</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
                 <tr><td>Coach</td><td>$33</td><td>150</td><td>Unlimited · up to 120 min or no limit · Unlimited students</td></tr>
               </tbody>

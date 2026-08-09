@@ -90,6 +90,14 @@ export const FEATURES = [
       "Free forever for up to 30 students — no trial, no card. Exactly what is included, and exactly where the limits are.",
   },
   {
+    slug: "/founding-chess-coaches",
+    appPath: "/coach-hub",
+    icon: "🏆",
+    title: "Founding Coaches",
+    blurb:
+      "The first 50 coaches get the Pro plan free for a full year — unlimited live classes, 70 students, no card. Worth $228.",
+  },
+  {
     slug: "/chess-academy-software",
     appPath: "/coach/onboarding",
     icon: "🏫",

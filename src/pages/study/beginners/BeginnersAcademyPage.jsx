@@ -10,12 +10,6 @@ import './beginners.css';
 // with reward points (xpWallet) + a mood emoji up top. Phase 1 has the Piece Movements
 // lesson built; other cards open a friendly "coming soon". Progress + unlock come from
 // GET /api/beginners-academy (server is the source of truth).
-// ── LAUNCH GATE ──────────────────────────────────────────────────────────────
-// The Academy is still being built (only Piece Movements is finished), so anyone
-// who reaches /study/beginners sees a Coming Soon screen instead of a half-built
-// feature. Flip this to false to launch — the whole Academy below is untouched
-// and will work exactly as it does today.
-const COMING_SOON = true;
 
 export default function BeginnersAcademyPage() {
   const navigate = useNavigate();
@@ -25,9 +19,6 @@ export default function BeginnersAcademyPage() {
   const [points, setPoints] = useState(user?.xpWallet?.total ?? 0);
 
   const load = useCallback(async () => {
-    // Skip the fetch entirely while gated — no point calling the API for a page
-    // that only renders a Coming Soon card.
-    if (COMING_SOON) return;
     try { const r = await api.get('/api/beginners-academy'); setProgress(r.data); } catch { /* */ }
   }, []);
   useEffect(() => { load(); }, [load]);
@@ -44,39 +35,6 @@ export default function BeginnersAcademyPage() {
   // ── Coming Soon gate ──
   // Placed AFTER every hook above (Rules of Hooks: hooks must run in the same
   // order on every render, so this can't be an early return at the top).
-  if (COMING_SOON) {
-    return (
-      <div className="ba-wrap">
-        <div style={{ textAlign: 'center', marginTop: 70, padding: '0 20px' }}>
-          <div style={{ fontSize: 64, lineHeight: 1 }}>🎓</div>
-          <h2 className="ba-title" style={{ fontSize: 26, marginTop: 14 }}>
-            Beginners Academy
-          </h2>
-          <div style={{
-            display: 'inline-block', marginTop: 10, padding: '6px 16px', borderRadius: 999,
-            border: '1px solid rgba(6,182,212,0.4)', background: 'rgba(6,182,212,0.12)',
-            color: '#67e8f9', fontWeight: 800, fontSize: 13, letterSpacing: 0.6,
-          }}>
-            ✨ COMING SOON
-          </div>
-          <p className="ba-sub" style={{ maxWidth: 420, margin: '18px auto 0' }}>
-            We're building a step-by-step chess course for complete beginners —
-            how each piece moves, how to checkmate, and your first openings, with
-            a friendly guide along the way. It'll be here soon!
-          </p>
-          <button
-            type="button"
-            className="ba-back"
-            style={{ marginTop: 26 }}
-            onClick={() => navigate('/study')}
-          >
-            ← Back to Study
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // ── Lesson open ──
   if (open === 'piece-movements') {
     return (

@@ -4,7 +4,7 @@
 > endgames, courses and live races; chess coaches run their whole academy —
 > roster, assignments, courses, schedule, attendance, parent reports — and
 > teach live inside the app with video and a shared board, without Zoom.
-> Free for players. Free for coaches up to 20 students, no card required.
+> Free for players. Free for coaches up to 30 students, no card required.
 
 Site: https://www.chessnexus.in
 Contact: https://www.chessnexus.in/contact
@@ -29,7 +29,7 @@ Two audiences:
 - [Free coach plan](https://www.chessnexus.in/free-chess-coaching-software): the
   definitive answer to "is Chess Nexus free?" — free forever for up to 30
   students, with no trial period and no card required. Lists everything the free
-  plan includes AND every limit (20 students, 1 live class a day, 40-minute
+  plan includes AND every limit (30 students, 1 live class a day, 40-minute
   classes, 4 students plus the coach in a live room, 30 courses of 3 lessons).
 - [Coaching platform](https://www.chessnexus.in/chess-coaching): overview of the
   coach toolkit — roster, batches, assignments, courses, private races, reports.
@@ -56,7 +56,7 @@ Individual coach plans (monthly, USD; billed in your own currency at checkout):
 
 | Plan                | Price | Students | Live classes                          |
 |---------------------|-------|----------|---------------------------------------|
-| Free                | $0    | 20       | 1/day · 40 min · 4 students (+ coach) |
+| Free                | $0    | 30       | 1/day · 40 min · 4 students (+ coach) |
 | Pro                 | $19   | 70       | Unlimited classes · unlimited students|
 | Coach               | $33   | 150      | Unlimited classes · unlimited students|
 
@@ -67,7 +67,7 @@ A 3-month term is 10% off (Pro $51, Coach $89).
 
 Key coach facts:
 
-- Coaching is **free forever for up to 20 students**. No card, no trial clock.
+- Coaching is **free forever for up to 30 students**. No card, no trial clock.
 - New coaches are **verified by the Nexus team** (usually within 12 hours)
   before they can add students, to keep the platform safe for children.
 - **Assignment types (7):** puzzle topic, whole study, single study chapter,

@@ -55,6 +55,8 @@ const ROUTES = [
   '/chess-practice-streak',
   '/chess-coaching',
   '/free-chess-coaching-software',
+  '/founding-chess-coaches',
+  '/free-chess-classes-for-kids',
   '/chess-coach-guide',
   '/chess-coach-pricing',
   '/chess-coach-referral',

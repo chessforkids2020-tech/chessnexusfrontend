@@ -162,6 +162,19 @@
 .chub-cta:active { transform: translateY(1px); }
 .chub-cta:disabled { opacity: 0.6; cursor: default; }
 
+/* "What the founding year includes" — a quiet link under the CTA, so it never
+   competes with the button next to it. */
+.chub-details { margin-top: 13px; }
+.chub-details a {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fcd34d;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(252, 211, 77, 0.35);
+  padding-bottom: 1px;
+}
+.chub-details a:hover { border-bottom-color: #fcd34d; }
+
 .chub-fineprint {
   margin: 14px auto 0;
   max-width: 460px;

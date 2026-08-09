@@ -33,6 +33,7 @@ import './CoachHubPage.css';
 // FeatureLinkGrid registry rather than retyped, so an icon or title change there
 // flows here automatically. Same list and order as the homepage row.
 const COACH_DEEP_SLUGS = [
+  '/founding-chess-coaches',
   '/chess-coaching',
   '/chess-academy-software',
   '/live-chess-classroom',
@@ -152,6 +153,13 @@ export default function CoachHubPage() {
           : <div className="chub-worth">Pro is <strong>$19/month</strong> · free forever up to 30 students</div>}
 
         <Link to={claimTo} className="chub-cta">{claimLabel}</Link>
+        {/* Full written terms of the offer, as a crawlable page — this hero
+            carries the live counter but is thin on detail. */}
+        {offerOpen && (
+          <div className="chub-details">
+            <Link to="/founding-chess-coaches">What the founding year includes →</Link>
+          </div>
+        )}
         <p className="chub-fineprint">
           {isCoach
             ? 'You are already set up as a coach. If you are one of the first 50, your Pro year is applied to your account — nothing else to do.'

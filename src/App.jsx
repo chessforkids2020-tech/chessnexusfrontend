@@ -47,9 +47,12 @@ import PlayWithFriendsPage from "./pages/marketing/PlayWithFriendsPage";
 import MastersGamesPage from "./pages/marketing/MastersGamesPage";
 import AnalyseMyChessGamePage from "./pages/marketing/AnalyseMyChessGamePage";
 import ImproveAtChessPage from "./pages/marketing/ImproveAtChessPage";
+import FreeChessClassesPage from "./pages/marketing/FreeChessClassesPage";
+import AdminFreeClassRequests from "./pages/AdminFreeClassRequests";
 import PracticeStreakPage from "./pages/marketing/PracticeStreakPage";
 import ChessCoachingPage from "./pages/marketing/ChessCoachingPage";
 import FreeCoachPlanPage from "./pages/marketing/FreeCoachPlanPage";
+import FoundingCoachesPage from "./pages/marketing/FoundingCoachesPage";
 import CoachGuidePage from "./pages/marketing/CoachGuidePage";
 import CoachPricingPage from "./pages/marketing/CoachPricingPage";
 import ChessAcademyPage from "./pages/marketing/ChessAcademyPage";
@@ -563,6 +566,19 @@ export default function App() {
             <ImproveAtChessPage />
           </MarketingLayout>
         } />
+        <Route path="/free-chess-classes-for-kids" element={
+          <MarketingLayout>
+            <FreeChessClassesPage />
+          </MarketingLayout>
+        } />
+        {/* No styles.container here on purpose: it paints a beige (#f5f5dc)
+            page background, which framed this dark admin page in cream. The
+            page renders its own full-height dark background instead. */}
+        <Route path="/admin/free-class-requests" element={
+          <ProtectedRoute requiredRole="admin">
+            <AdminFreeClassRequests />
+          </ProtectedRoute>
+        } />
         {/* The 5-day practice streak and the weekly report. The report
             itself is behind a login, so this page is where a search engine
             or an AI can learn what it contains. */}
@@ -579,6 +595,14 @@ export default function App() {
         <Route path="/free-chess-coaching-software" element={
           <MarketingLayout>
             <FreeCoachPlanPage />
+          </MarketingLayout>
+        } />
+        {/* The founding-coach offer, as static text. /coach-hub carries the same
+            offer with a LIVE spot counter, but that counter comes from an API
+            call prerender aborts — so the crawlable version lives here. */}
+        <Route path="/founding-chess-coaches" element={
+          <MarketingLayout>
+            <FoundingCoachesPage />
           </MarketingLayout>
         } />
         <Route path="/chess-coach-guide" element={
