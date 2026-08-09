@@ -47,8 +47,6 @@ import PlayWithFriendsPage from "./pages/marketing/PlayWithFriendsPage";
 import MastersGamesPage from "./pages/marketing/MastersGamesPage";
 import AnalyseMyChessGamePage from "./pages/marketing/AnalyseMyChessGamePage";
 import ImproveAtChessPage from "./pages/marketing/ImproveAtChessPage";
-import FreeChessClassesPage from "./pages/marketing/FreeChessClassesPage";
-import AdminFreeClassRequests from "./pages/AdminFreeClassRequests";
 import PracticeStreakPage from "./pages/marketing/PracticeStreakPage";
 import ChessCoachingPage from "./pages/marketing/ChessCoachingPage";
 import FreeCoachPlanPage from "./pages/marketing/FreeCoachPlanPage";
@@ -565,19 +563,6 @@ export default function App() {
           <MarketingLayout>
             <ImproveAtChessPage />
           </MarketingLayout>
-        } />
-        <Route path="/free-chess-classes-for-kids" element={
-          <MarketingLayout>
-            <FreeChessClassesPage />
-          </MarketingLayout>
-        } />
-        {/* No styles.container here on purpose: it paints a beige (#f5f5dc)
-            page background, which framed this dark admin page in cream. The
-            page renders its own full-height dark background instead. */}
-        <Route path="/admin/free-class-requests" element={
-          <ProtectedRoute requiredRole="admin">
-            <AdminFreeClassRequests />
-          </ProtectedRoute>
         } />
         {/* The 5-day practice streak and the weekly report. The report
             itself is behind a login, so this page is where a search engine

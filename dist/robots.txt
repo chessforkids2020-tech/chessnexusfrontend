@@ -60,7 +60,6 @@ Allow: /features
 Allow: /chess-coaching
 Allow: /free-chess-coaching-software
 Allow: /founding-chess-coaches
-Allow: /free-chess-classes-for-kids
 Allow: /chess-coach-guide
 Allow: /chess-coach-pricing
 Allow: /chess-academy-software

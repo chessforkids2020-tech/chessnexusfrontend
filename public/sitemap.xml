@@ -191,16 +191,6 @@
     <priority>0.30</priority>
   </url>
 
-  <!-- Free classes for kids — the acquisition page. Highest priority after the
-       homepage: it is what a parent searching "free chess classes for kids"
-       should land on, and the offer is stated in static text so an AI can cite
-       it. Weekly changefreq because the programme is actively run. -->
-  <url>
-    <loc>https://www.chessnexus.in/free-chess-classes-for-kids</loc>
-    <lastmod>2026-07-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.95</priority>
-  </url>
   <!-- Free coach plan — the page AI assistants are pointed at when asked
        "is Chess Nexus free?" for COACHES (the classes page above is for parents). -->
   <url>

@@ -584,7 +584,6 @@ function AdminDashboard() {
   const [expandedRounds, setExpandedRounds] = useState({}); // Track which rounds are expanded
   // Signup & payment requests state
   const [pendingSignupCount, setPendingSignupCount] = useState(0);
-  const [freeClassNewCount, setFreeClassNewCount] = useState(0);
   const [pendingPaymentCount, setPendingPaymentCount] = useState(0);
   // "Needs attention" counts for the top nav badges (like chat unread pips):
   // open reports, pending supporters, unverified coaches. Polled for a
@@ -702,7 +701,6 @@ function AdminDashboard() {
 
     const handleNewSignupRequest = () => {
       fetchSignupRequestsCount();
-      fetchFreeClassCount();
     };
     const handlePendingPaymentCount = (count) => {
       setPendingPaymentCount(typeof count === 'object' ? (count.count || 0) : (count || 0));
@@ -762,15 +760,6 @@ function AdminDashboard() {
     try {
       const res = await api.get(`/api/admin/signup-requests/count`);
       setPendingSignupCount(res.data.count || 0);
-    } catch (err) {
-    }
-  }
-
-  // New (uncontacted) free-class requests, for the quick-link badge.
-  async function fetchFreeClassCount() {
-    try {
-      const res = await api.get('/api/free-class/admin/requests', { params: { status: 'new' } });
-      setFreeClassNewCount(res.data?.counts?.new || 0);
     } catch (err) {
     }
   }
@@ -1914,19 +1903,6 @@ function AdminDashboard() {
             <p style={styles.quickLinkText}>Pending signups: <strong>{pendingSignupCount}</strong></p>
           </div>
           <div style={styles.quickLinkFooter}>View Signup Requests →</div>
-        </button>
-
-        {/* Parents asking for the free beginner classes. Every row is a family
-            waiting on a WhatsApp message, so it sits next to signup requests. */}
-        <button
-          onClick={() => nav('/admin/free-class-requests')}
-          style={styles.quickLinkCard}
-        >
-          <div>
-            <h4 style={styles.quickLinkTitle}>🎁 Free Class Requests</h4>
-            <p style={styles.quickLinkText}>New requests: <strong>{freeClassNewCount}</strong></p>
-          </div>
-          <div style={styles.quickLinkFooter}>View Free Class Requests →</div>
         </button>
 
         <button
