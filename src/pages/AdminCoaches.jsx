@@ -121,7 +121,11 @@ export default function AdminCoaches() {
   const [coachListLoading, setCoachListLoading] = useState(false);
   // Admin "Grant plan" (comp collaborators / YouTubers) modal state.
   const [grantFor, setGrantFor] = useState(null);     // the coach row being granted
-  const [grantPlan, setGrantPlan] = useState('coach');
+  // Must be a plan id that still exists in config/coachPlans.js. This used to
+  // seed 'live3', which the three-plan consolidation deleted: the dropdown then
+  // matched no <option> and showed "Pro" while posting 'live3', so every grant
+  // came back "Unknown plan" unless the admin re-picked the plan by hand.
+  const [grantPlan, setGrantPlan] = useState('pro');
   const [grantMonths, setGrantMonths] = useState('never');
   const [grantReason, setGrantReason] = useState('');
   const [grantBusy, setGrantBusy] = useState(false);
@@ -504,7 +508,7 @@ export default function AdminCoaches() {
                               🗑 Remove coach
                             </button>
                           )}
-                          <button onClick={() => { setGrantFor(c); setGrantPlan('live3'); setGrantMonths('never'); }}
+                          <button onClick={() => { setGrantFor(c); setGrantPlan('pro'); setGrantMonths('never'); }}
                             style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #7c3aed", background: "#fff", color: "#7c3aed" }}>
                             🎁 Grant
                           </button>
