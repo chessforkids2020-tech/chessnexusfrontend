@@ -145,8 +145,8 @@ export function createLightAppearanceProcessor(getEffects) {
   let canvas, ctx, videoEl, rafId, srcStream, outStream;
   let running = false;
 
-  const draw = () => {
-    if (!running) return;
+  // Draw ONE frame. Shared by both drive loops below.
+  const paint = () => {
     const e = getEffects();
     // Use the live frame size, but never shrink below what we already have (avoids the
     // old 640×480 fallback resampling a 720p feed down to soft mush).
@@ -155,8 +155,36 @@ export function createLightAppearanceProcessor(getEffects) {
     if (w && canvas.width !== w) canvas.width = w;
     if (h && canvas.height !== h) canvas.height = h;
     renderFrame(ctx, videoEl, w, h, e);
-    rafId = requestAnimationFrame(draw);
   };
+
+  // Redraw ONCE PER CAMERA FRAME, not once per display refresh.
+  //
+  // This used to run on requestAnimationFrame, which ticks on the DISPLAY's
+  // clock (~60Hz) and has nothing to do with the camera. A webcam that delivers
+  // 12fps — common on cheap sensors in dim light, where auto-exposure holds the
+  // shutter open longer — meant the canvas redrew the SAME frame ~5 times, then
+  // caught a new one mid-cycle. The result is visible judder: motion that seems
+  // to jump forward and back, even though every frame is present.
+  //
+  // requestVideoFrameCallback fires exactly when a new frame is ready, so the
+  // canvas now tracks the camera's real cadence however irregular it is. It also
+  // stops burning CPU redrawing identical frames — which matters most on the
+  // slower machines where this was worst.
+  const useRvfc = typeof HTMLVideoElement !== 'undefined'
+    && typeof HTMLVideoElement.prototype.requestVideoFrameCallback === 'function';
+
+  const drawRvfc = () => {
+    if (!running) return;
+    paint();
+    rafId = videoEl.requestVideoFrameCallback(drawRvfc);
+  };
+  // Fallback for browsers without rVFC (older Firefox): keep the rAF loop.
+  const drawRaf = () => {
+    if (!running) return;
+    paint();
+    rafId = requestAnimationFrame(drawRaf);
+  };
+  const draw = () => (useRvfc ? drawRvfc() : drawRaf());
 
   return {
     name: 'cn-light-appearance',
@@ -182,14 +210,27 @@ export function createLightAppearanceProcessor(getEffects) {
       ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
       running = true;
       draw();
-      // Capture at the source framerate so the processed track matches the raw one.
-      outStream = canvas.captureStream(settings.frameRate || 30);
+      // captureStream(0) = emit a frame whenever the canvas is painted, instead
+      // of resampling to a fixed rate. Paired with the per-camera-frame draw
+      // loop above, the output now follows the camera's ACTUAL cadence.
+      //
+      // Passing settings.frameRate here was actively harmful on a camera that
+      // reports one rate but delivers another (a 1080p webcam dropping to 12fps
+      // in dim light): the canvas resampled to a rate the source never hit, so
+      // frames were duplicated and dropped in an uneven pattern — the judder.
+      outStream = canvas.captureStream(0);
       this.processedTrack = outStream.getVideoTracks()[0];
     },
     async restart(opts) { await this.destroy(); await this.init(opts); },
     async destroy() {
       running = false;
-      if (rafId) cancelAnimationFrame(rafId);
+      // Cancel with the API that scheduled it — cancelAnimationFrame does not
+      // cancel a requestVideoFrameCallback handle, which would leave the old
+      // loop painting into a canvas we are about to tear down.
+      if (rafId) {
+        if (useRvfc) { try { videoEl?.cancelVideoFrameCallback?.(rafId); } catch { /* */ } }
+        else cancelAnimationFrame(rafId);
+      }
       try { outStream?.getTracks().forEach(t => t.stop()); } catch { /* */ }
       try { videoEl?.pause(); videoEl && (videoEl.srcObject = null); } catch { /* */ }
       canvas = ctx = videoEl = srcStream = outStream = null;

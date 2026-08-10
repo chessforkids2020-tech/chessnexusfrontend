@@ -110,8 +110,113 @@ const VIDEO_ENCODING = {
 // works — it just gives its best. Paired with the encoding above, this is the
 // "sharp like Zoom" combination (good source in → enough bits out).
 const VIDEO_CAPTURE_DEFAULTS = {
-  resolution: { width: 1280, height: 720, frameRate: 30 },
+  resolution: {
+    width: 1280,
+    height: 720,
+    // A RANGE, not a bare 30. Many webcams cut their frame rate in dim light —
+    // auto-exposure holds the shutter open longer, and a 1080p camera can fall
+    // to 12fps, which is where the "video jumps back and forth" reports came
+    // from. `min: 15` tells the driver not to trade frame rate away that far;
+    // it prefers a slightly darker but SMOOTH picture, which is what a viewer
+    // actually notices. `ideal: 30` still asks for full smoothness where the
+    // light allows, and a camera that genuinely cannot do 15 is not rejected —
+    // min is advisory in practice, unlike `exact`.
+    frameRate: { min: 15, ideal: 30 },
+  },
 };
+
+// ── SMOOTHNESS OVER SHARPNESS: measure what the camera actually delivers ─────
+//
+// Constraints are a REQUEST, not a contract. A budget webcam asked for 720p30
+// will happily answer "720p" and then deliver 12fps, because auto-exposure holds
+// the shutter open longer in dim light and that mathematically caps the frame
+// rate. 12fps is where video starts to look like it jumps forward and back.
+//
+// The web platform will not tell us that pairing up front: getCapabilities()
+// returns RANGES (width 640-1920, frameRate 1-31), never "720p only runs at
+// 12fps". Zoom avoids the problem because it is native — it reads the camera's
+// discrete mode list and simply picks 640x360@30 over 1280x720@12.
+//
+// So we reach the same answer empirically: ask, MEASURE, and step the resolution
+// down until the frame rate is acceptable. A good webcam passes the first check
+// and keeps full 720p; a weak one lands on something smooth. No coach ever sees
+// this happen, and nobody has to know what a constraint is.
+const FPS_FLOOR = 20;              // below this, motion visibly judders
+const RESOLUTION_LADDER = [
+  { width: 1280, height: 720 },    // preferred — unchanged for capable cameras
+  { width: 960,  height: 540 },
+  { width: 640,  height: 360 },    // last resort: still smooth, still watchable
+];
+
+// Frames actually delivered, measured over `ms`. getSettings().frameRate reports
+// what the camera CLAIMS, which on exactly the cameras we care about is the
+// number it failed to honour — so we count real frames instead.
+function measureFps(track, ms = 1000) {
+  return new Promise((resolve) => {
+    try {
+      const vid = document.createElement('video');
+      vid.muted = true; vid.playsInline = true;
+      vid.srcObject = new MediaStream([track]);
+      const cleanup = () => { try { vid.pause(); vid.srcObject = null; } catch { /* */ } };
+
+      // requestVideoFrameCallback fires once per DELIVERED frame — the only
+      // honest count available in a browser.
+      if (typeof vid.requestVideoFrameCallback !== 'function') { cleanup(); resolve(null); return; }
+
+      let frames = 0, start = 0, handle = null;
+      const tick = (now) => {
+        if (!start) start = now;
+        frames++;
+        if (now - start >= ms) {
+          cleanup();
+          resolve((frames / (now - start)) * 1000);
+          return;
+        }
+        handle = vid.requestVideoFrameCallback(tick);
+      };
+      vid.play().then(() => { handle = vid.requestVideoFrameCallback(tick); }).catch(() => { cleanup(); resolve(null); });
+      // Never hang the join on a camera that delivers nothing at all.
+      setTimeout(() => { if (handle != null) { cleanup(); resolve(frames ? (frames / ms) * 1000 : 0); } }, ms + 1200);
+    } catch { resolve(null); }
+  });
+}
+
+// Walk DOWN the ladder until the delivered frame rate clears FPS_FLOOR.
+// Returns the resolution that worked, or null to leave the track untouched.
+async function tuneForSmoothness(track, onInfo) {
+  if (!track || typeof track.applyConstraints !== 'function') return null;
+  for (let i = 0; i < RESOLUTION_LADDER.length; i++) {
+    const fps = await measureFps(track);
+    // null = we could not measure (no rVFC). Changing the camera on a guess
+    // would risk downgrading a coach whose video is perfectly fine, so stop.
+    if (fps == null) return null;
+    const { width, height } = RESOLUTION_LADDER[i];
+    if (fps >= FPS_FLOOR) {
+      onInfo?.({ width, height, fps: Math.round(fps), steppedDown: i > 0 });
+      return { width, height };
+    }
+    const next = RESOLUTION_LADDER[i + 1];
+    if (!next) {
+      // Bottom of the ladder and still slow: this is lighting or the sensor
+      // itself, not something a constraint can fix. Leave it at the smallest
+      // size — it is the best chance the camera has.
+      onInfo?.({ ...RESOLUTION_LADDER[i], fps: Math.round(fps), steppedDown: true, floorReached: true });
+      return null;
+    }
+    try {
+      await track.applyConstraints({
+        width: { ideal: next.width },
+        height: { ideal: next.height },
+        frameRate: { min: 15, ideal: 30 },
+      });
+      // Give the camera a moment to restart at the new mode before re-measuring.
+      await new Promise(r => setTimeout(r, 400));
+    } catch {
+      return null; // camera refused the change — keep what we have
+    }
+  }
+  return null;
+}
 
 // ── Audio quality (the Zoom-parity settings) ────────────────────────────────
 // Raw mic capture = noisy, echoey, and quiet ("someone talking from kilometres
@@ -279,6 +384,11 @@ export default function useLiveKitRoom() {
   // Camera capabilities + live settings, for the host "video info" readout so we can
   // SEE (in production) what the sensor actually supports and is publishing.
   const [camInfo, setCamInfo] = useState(null); // { settings, autoApplied: [...], supports: {...} }
+  // Result of the smoothness tune: { width, height, fps, steppedDown, floorReached }.
+  // Exposed so the UI can tell a coach WHY their video looks soft or still judders
+  // — a camera stuck at the bottom of the ladder is a lighting problem, and only
+  // the coach can fix that.
+  const [camSmoothness, setCamSmoothness] = useState(null);
   // Multi-mic support (external mic / headset): available mics + the one publishing.
   const [mics, setMics] = useState([]);
   const [activeMicId, setActiveMicId] = useState('');
@@ -679,6 +789,16 @@ export default function useLiveKitRoom() {
         // Camera sensor auto-exposure / white-balance / focus (quick, hardware).
         applyContentHint(r);
         await applyCameraAutoAdjust(r, setCamInfo);
+        // Then check the camera is actually DELIVERING a smooth frame rate, and
+        // step the resolution down if it is not. Runs once, here, on the raw
+        // camera track — before any canvas processor is attached, so we measure
+        // the sensor rather than our own effects pipeline. Never mid-class: each
+        // step restarts the camera briefly.
+        try {
+          const camPub = r.localParticipant.getTrackPublication?.('camera');
+          const rawTrack = (camPub?.videoTrack || camPub?.track)?.mediaStreamTrack;
+          if (rawTrack) await tuneForSmoothness(rawTrack, setCamSmoothness);
+        } catch { /* smoothness tuning is best-effort */ }
         // Saved video effects (canvas processor) — visual polish, can lag a beat.
         try { await applyVideoRef.current(); } catch { /* effects optional */ }
         // AI noise filters — the SLOWEST (WASM + AudioWorklet), so last + non-blocking.
@@ -1023,6 +1143,7 @@ export default function useLiveKitRoom() {
     noiseSuppression, toggleNoiseSuppression,
     connect, disconnect, toggleMic, toggleCam, setCam, toggleScreen,
     camInfo,
+    camSmoothness,
     // Autoplay-blocked audio: `audioBlocked` is true when the browser is refusing
     // to play remote voices; call enableAudio() from a click to unblock.
     audioBlocked, enableAudio,
