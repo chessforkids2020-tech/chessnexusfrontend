@@ -127,6 +127,15 @@ export default function AdminCoaches() {
   // came back "Unknown plan" unless the admin re-picked the plan by hand.
   const [grantPlan, setGrantPlan] = useState('pro');
   const [grantMonths, setGrantMonths] = useState('never');
+
+  // ── Academies (grant a plan free, same idea as the coach comp) ──
+  const [academies, setAcademies] = useState(null);
+  const [acadPlans, setAcadPlans] = useState([]);
+  const [acadGrantFor, setAcadGrantFor] = useState(null);
+  const [acadGrantPlan, setAcadGrantPlan] = useState('');
+  const [acadGrantMonths, setAcadGrantMonths] = useState('never');
+  const [acadGrantReason, setAcadGrantReason] = useState('');
+  const [acadBusy, setAcadBusy] = useState(false);
   const [grantReason, setGrantReason] = useState('');
   const [grantBusy, setGrantBusy] = useState(false);
 
@@ -233,6 +242,61 @@ export default function AdminCoaches() {
         ? { ...x, plan: 'free', comped: false } : x));
     } catch (err) {
       alert(err.response?.data?.message || "Failed to revoke");
+    }
+  };
+
+  // ── Academies ──────────────────────────────────────────────────────────────
+  const loadAcademies = useCallback(async () => {
+    try {
+      const [listRes, plansRes] = await Promise.all([
+        api.get('/api/academy/admin/list'),
+        api.get('/api/academy/plans'),
+      ]);
+      setAcademies(Array.isArray(listRes.data?.academies) ? listRes.data.academies : []);
+      // /plans returns an OBJECT keyed by plan id (not an array) — each value
+      // already carries its own `id`, so Object.values gives a clean list.
+      const raw = plansRes.data?.plans || {};
+      const plans = Array.isArray(raw) ? raw : Object.values(raw);
+      setAcadPlans(plans);
+      // Seed the picker with a real plan id from config — never a hardcoded
+      // string, which is exactly how the coach modal ended up posting 'live3'.
+      if (plans.length) setAcadGrantPlan(p => p || plans[0].id);
+    } catch (err) {
+      if (err?.response?.status !== 403) setAcademies([]);
+    }
+  }, []);
+
+  useEffect(() => { loadAcademies(); }, [loadAcademies]);
+
+  const submitAcadGrant = async () => {
+    if (!acadGrantFor || !acadGrantPlan) return;
+    setAcadBusy(true);
+    try {
+      const res = await api.post('/api/academy/admin/grant', {
+        academyId: acadGrantFor.id,
+        plan: acadGrantPlan,
+        months: acadGrantMonths === 'never' ? 'never' : Number(acadGrantMonths),
+        reason: acadGrantReason,
+      });
+      const d = res.data || {};
+      alert(`Granted ${d.planName || acadGrantPlan} to ${acadGrantFor.name} — ${d.coachesUpdated ?? 0} coach(es) updated.`);
+      setAcadGrantFor(null); setAcadGrantReason('');
+      loadAcademies();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to grant academy plan');
+    } finally { setAcadBusy(false); }
+  };
+
+  const revokeAcadGrant = async (a) => {
+    if (!window.confirm(
+      `Revoke ${a.name}'s comped plan?\n\n` +
+      `The academy loses its plan and its ${a.coaches} coach(es) get a 5-day exit trial.`
+    )) return;
+    try {
+      await api.post('/api/academy/admin/revoke', { academyId: a.id });
+      loadAcademies();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to revoke');
     }
   };
 
@@ -610,6 +674,130 @@ export default function AdminCoaches() {
           )}
         </div>
       </div>
+
+      {/* ── ACADEMIES — grant a plan free ──
+          An academy that refers other academies is worth more than its own
+          subscription, so the admin can comp it. Granting also pushes the
+          matching coach plan onto every member coach. */}
+      <h3 style={{ color: "#072b05", marginBottom: 12 }}>🏛️ Academies</h3>
+      <div style={{ ...styles.tableWrap, marginBottom: 28 }}>
+        {academies === null ? (
+          <div style={{ padding: 16, color: "#6b7280" }}>Loading academies…</div>
+        ) : academies.length === 0 ? (
+          <div style={{ padding: 16, color: "#6b7280" }}>No academies yet.</div>
+        ) : (
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Academy</th>
+                <th style={styles.th}>Head coach</th>
+                <th style={styles.th}>Coaches</th>
+                <th style={styles.th}>Plan</th>
+                <th style={styles.th}>Status</th>
+                <th style={styles.th}>Ends</th>
+                <th style={styles.th}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {academies.map(a => (
+                <tr key={a.id}>
+                  <td style={styles.td}>
+                    <div style={{ fontWeight: 700 }}>{a.name}</div>
+                    <div style={{ fontSize: 11, color: "#6b7280" }}>{a.academyCode}</div>
+                  </td>
+                  <td style={styles.td}>{a.ownerName}</td>
+                  <td style={styles.td}>{a.coaches}</td>
+                  <td style={styles.td}>
+                    {a.planName || <span style={styles.muted}>—</span>}
+                    {a.comped && (
+                      <span style={{ ...styles.tag, marginLeft: 6, color: "#7c3aed", background: "rgba(124,58,237,0.12)" }}>
+                        Comped
+                      </span>
+                    )}
+                  </td>
+                  <td style={styles.td}>
+                    {a.planStatus === 'active'
+                      ? <span style={{ ...styles.tag, color: "#047857", background: "rgba(16,185,129,0.14)" }}>Active</span>
+                      : <span style={styles.muted}>{a.planStatus}</span>}
+                  </td>
+                  <td style={styles.td}>
+                    {a.planStatus === 'active' && !a.currentPeriodEnd
+                      ? <span style={{ color: "#047857", fontWeight: 700 }}>Never</span>
+                      : (a.currentPeriodEnd ? fmtDate(a.currentPeriodEnd) : <span style={styles.muted}>—</span>)}
+                  </td>
+                  <td style={styles.td}>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      <button
+                        onClick={() => {
+                          setAcadGrantFor(a);
+                          setAcadGrantPlan(a.plan || acadPlans[0]?.id || '');
+                          setAcadGrantMonths('never');
+                        }}
+                        style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #7c3aed", background: "#fff", color: "#7c3aed" }}>
+                        🎁 Grant
+                      </button>
+                      {a.comped && (
+                        <button onClick={() => revokeAcadGrant(a)}
+                          style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #ef4444", background: "#fff", color: "#ef4444" }}>
+                          Revoke
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* ── Grant academy plan modal ── */}
+      {acadGrantFor && (
+        <div onClick={() => setAcadGrantFor(null)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "grid", placeItems: "center", zIndex: 2000, padding: 16 }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background: "#fff", borderRadius: 14, padding: 22, width: "min(440px, 94vw)", boxShadow: "0 24px 60px rgba(0,0,0,0.3)" }}>
+            <h3 style={{ margin: "0 0 4px", color: "#1f2937" }}>🎁 Grant an academy plan free</h3>
+            <p style={{ margin: "0 0 16px", color: "#6b7280", fontSize: 13 }}>
+              Give <b>{acadGrantFor.name}</b> free access. No payment; marked as comped
+              and revocable. This also applies the matching coach plan to all{" "}
+              <b>{acadGrantFor.coaches}</b> member coach(es).
+            </p>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Plan</label>
+            <select value={acadGrantPlan} onChange={e => setAcadGrantPlan(e.target.value)}
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 14 }}>
+              {/* Options come from the plan config, so a renamed or retired plan
+                  can never leave a stale id selected here. */}
+              {acadPlans.map(p => (
+                <option key={p.id} value={p.id}>
+                  {p.name} — {p.maxCoaches === -1 ? 'unlimited' : p.maxCoaches} coaches · {p.studentsPerCoach}/coach
+                </option>
+              ))}
+            </select>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Duration</label>
+            <select value={acadGrantMonths} onChange={e => setAcadGrantMonths(e.target.value)}
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 14 }}>
+              <option value="never">Never expires</option>
+              <option value="1">1 month</option>
+              <option value="3">3 months</option>
+              <option value="6">6 months</option>
+              <option value="12">12 months</option>
+            </select>
+            <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Reason (optional)</label>
+            <input value={acadGrantReason} onChange={e => setAcadGrantReason(e.target.value)}
+              placeholder="e.g. referred 3 academies"
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 18, boxSizing: "border-box" }} />
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+              <button onClick={() => setAcadGrantFor(null)} disabled={acadBusy}
+                style={{ padding: "9px 16px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontWeight: 700, cursor: "pointer" }}>Cancel</button>
+              <button onClick={submitAcadGrant} disabled={acadBusy || !acadGrantPlan}
+                style={{ padding: "9px 16px", borderRadius: 8, border: "none", background: "#7c3aed", color: "#fff", fontWeight: 700, cursor: "pointer" }}>
+                {acadBusy ? "Granting…" : "Grant plan"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <h3 style={{ color: "#072b05", marginBottom: 12 }}>💳 Subscriptions</h3>
       <div style={styles.summaryGrid}>

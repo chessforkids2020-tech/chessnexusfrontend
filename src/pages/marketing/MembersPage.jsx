@@ -4,36 +4,49 @@ import SEO from "../../components/SEO";
 
 const CANONICAL = "/members";
 
-// What every signed-up user can do (all free).
+// Free coach roster cap — mirrors PLANS.free.maxStudents in
+// backend/config/coachPlans.js. Keep the two in step if the cap ever moves.
+const FREE_STUDENTS = 30;
+
+// What every signed-up player gets, at no cost.
 const USER_PERKS = [
-  { icon: "🧩", title: "All puzzles & training", desc: "Daily puzzles, themed tactics, rating-band and piece-count training in Healthy Mix — solve as much as you want." },
+  { icon: "🧩", title: "All puzzles & training", desc: "Daily puzzles, themed tactics, rating-band and piece-count training in Healthy Mix — solve as much as you want, with no daily limit." },
   { icon: "⚡", title: "All races", desc: "Timed Race, Arena Race and Team Race — beat the clock and climb the live leaderboards." },
-  { icon: "📈", title: "Game analysis", desc: "Review your games with engine evaluation, accuracy and phase-by-phase breakdowns." },
-  { icon: "📚", title: "Study & tests", desc: "Browse studies, work through chapters and take timed study tests to track your progress." },
+  { icon: "📈", title: "Analyse your own games", desc: "Import from Lichess or Chess.com and review any game with engine evaluation, accuracy, blunder detection and a phase-by-phase breakdown. The engine runs in your browser, so analysis is unlimited and free." },
+  { icon: "📚", title: "Studies & timed tests", desc: "Work through Nexus studies chapter by chapter, then sit timed study tests that grade you and track progress over time." },
   { icon: "🏆", title: "Tournaments", desc: "Join arena tournaments and compete across multiple rounds with full leaderboards." },
-  { icon: "🎮", title: "3D Arena Tournament Experience", desc: "Immerse yourself in realistic 3D tournament environments — play chess on stunning 3D boards with atmospheric effects, camera controls, and real-time spectator views." },
-  { icon: "🧩✨", title: "3D Puzzle Room", desc: "Solve puzzles with friends and other players in real-time 3D puzzle rooms. Collaborate, compete, and learn together in an immersive spatial puzzle environment." },
-  { icon: "💬", title: "Social Hub — Group Chats", desc: "Create and join group chats with friends, coaches, and teammates. Share strategies, discuss games, and stay connected with the chess community." },
-  { icon: "🏛️", title: "Clubs", desc: "Create or join chess clubs to participate in exclusive club activities, internal tournaments, club leaderboards, and team-based puzzle challenges." },
+  { icon: "♟️", title: "Endgame trainer", desc: "Drill essential endgames from a free library of positions, then play them out against the engine at your chosen strength. A deeper premium set unlocks with the XP you earn as you play." },
+  { icon: "🎮", title: "3D Arena Tournament", desc: "Play in realistic 3D tournament environments — 3D boards with atmospheric effects, camera controls and real-time spectator views." },
+  { icon: "🧩✨", title: "3D Puzzle Room", desc: "Solve puzzles with friends and other players in real-time 3D puzzle rooms — collaborate, compete and learn together." },
+  { icon: "💬", title: "Chat & friends", desc: "Message friends, coaches and teammates, create group chats, and see who is online right now." },
+  { icon: "🏛️", title: "Clubs", desc: "Create or join chess clubs for club activities, internal tournaments, club leaderboards and team puzzle challenges." },
+  { icon: "🔥", title: "Streaks, XP & badges", desc: "Build a daily practice streak, earn XP for everything you solve, and unlock achievement badges shown on your public profile." },
 ];
 
-// Extra abilities Elite members unlock.
+// Extra abilities Elite members unlock. Coach access is deliberately NOT listed
+// here any more: coaching is free for everyone up to the free-plan cap, so
+// presenting it as an Elite unlock both undersold the free plan and misled.
 const ELITE_PERKS = [
-  { icon: "🎓", title: "Coach access — free", desc: "Work with a coach on the platform at no cost as an Elite member." },
   { icon: "👥", title: "Create Team Races", desc: "Set up your own team-based puzzle races and invite players to compete." },
   { icon: "🎯", title: "Create Monthly Focus challenges", desc: "Design month-long daily challenges with XP and leaderboards for the community." },
   { icon: "🧊", title: "Create 3D Arena Tournaments", desc: "Host immersive 3D arena tournaments — a premium way to run events." },
+  { icon: "♟️", title: "Premium tools included", desc: "Premium endgame positions and the opening repertoire trainer are open to you without spending XP." },
 ];
 
-// What coaches can do.
+// What coaches can do. Everything here is on the free plan unless the entry
+// says otherwise — the free plan is the product, not a trial.
 const COACH_PERKS = [
-  { icon: "🎥", title: "Built-in live classroom", desc: "Teach inside the app — HD video, screen share and one shared board. Give a student control to play their move, load studies, endgames, puzzles or master games onto the board, and run a waiting room with raise-hand, mic and camera controls. Attendance marks itself as students join." },
-  { icon: "📋", title: "Assign structured work", desc: "Give students puzzle topics, timed Study Tests, Timed Races and 'find the blunder' tasks." },
-  { icon: "📊", title: "Track every student", desc: "See each student's solved/failed/streak, accuracy, grades and the exact answers they submitted." },
-  { icon: "📝", title: "Attendance & payments", desc: "Mark attendance, manage enrollment and record payments — built for running real classes." },
-  { icon: "🔗", title: "Manage your roster", desc: "Add students, handle join requests and keep everyone's progress in one place." },
-  { icon: "👥", title: "Coach Group Chats", desc: "Create dedicated group chats for your students. Send announcements, share puzzles, and provide real-time feedback to your entire class." },
-  { icon: "🏛️", title: "Manage Club Activities", desc: "Create and manage chess clubs, organize club tournaments, track member participation, and foster a thriving community around your coaching." },
+  { icon: "🎥", title: "Built-in live classroom", desc: "Teach inside the app — HD video, screen share and one shared board. Give a student control to play their move, load studies, endgames, puzzles or master games onto the board, and run a waiting room with raise-hand, mic and camera controls. Attendance marks itself as students join. Free plan: one 40-minute class a day with up to 4 students; paid plans remove every limit." },
+  { icon: "📋", title: "Seven kinds of assignment", desc: "Puzzle topics by theme or rating band, whole studies, timed Study Tests, Timed Races, Arena Tournaments, 'find the blunder' tasks from real games, and custom positions played out against Stockfish." },
+  { icon: "📚", title: "Course builder", desc: "Build a course as your curriculum — order lessons from your own studies, Nexus studies, videos, master games and endgame positions, then enrol a whole batch at once and watch progress lesson by lesson." },
+  { icon: "👥", title: "Batches", desc: "Group students into batches and assign work, courses and class times to the whole group instead of one student at a time." },
+  { icon: "🗓️", title: "Class schedule", desc: "Set your weekly class slots with IST times and a meeting link. Students see them on their My Coach page, and everyone is notified automatically when a slot changes." },
+  { icon: "📊", title: "Track every student", desc: "See each student's solved/failed/streak, accuracy, grades and the exact moves they played — including their wrong answers, so you can teach from the mistake." },
+  { icon: "📨", title: "Parent progress reports", desc: "Share a link that shows a parent how their child is doing — activity, accuracy, streaks and recent work — without the parent needing an account." },
+  { icon: "📝", title: "Attendance & fees", desc: "Mark attendance, manage enrolment and record fee payments — built for running a real academy." },
+  { icon: "🗂️", title: "Your coaching library", desc: "Save assignment templates, positions and games you reuse, and pull from the Nexus blunder library instead of rebuilding the same homework each term." },
+  { icon: "🏁", title: "Private class activities", desc: "Run Arena Races just for your own students — your batch competes together, with nobody else in the room." },
+  { icon: "💬", title: "Coach & class chat", desc: "One-to-one chat with any student plus dedicated class group chats for announcements, puzzles and feedback." },
 ];
 
 function PerkList({ items }) {
@@ -58,7 +71,7 @@ export default function MembersPage() {
     "@type": "WebPage",
     name: "Chess Nexus Members",
     description:
-      "What members can do on Chess Nexus — every user can play all activities for free, Elite members unlock coach access, Team Races, Monthly Focus challenges and 3D arena tournaments, and coaches can assign and track student work.",
+      `What members get on Chess Nexus — every player trains free with puzzles, races, studies, tournaments, clubs and unlimited analysis of their own games; coaches run a full academy free for up to ${FREE_STUDENTS} students with a built-in live classroom, seven assignment types, courses, attendance and parent reports; Elite members can create Team Races, Monthly Focus challenges and 3D arena tournaments.`,
     url: `https://chessnexus.in${CANONICAL}`,
   };
 
@@ -364,9 +377,9 @@ export default function MembersPage() {
       
       <div className="mkt-page">
         <SEO
-          title="Members — Users, Elite & Coaches on Chess Nexus"
-          description="See what every member can do on Chess Nexus: all users play every activity free; Elite members get free coach access, Team Races, Monthly Focus challenges and 3D arena tournaments; coaches assign and track student work."
-          keywords="chess nexus members, elite chess membership, chess coach platform, create team race, monthly focus challenge, 3d arena tournament, 3d puzzle room, chess clubs, group chat"
+          title="Members — Players, Coaches & Elite on Chess Nexus"
+          description={`What you get on Chess Nexus: every player trains free — puzzles, races, studies, tournaments, clubs and unlimited analysis of their own games. Coaches run an academy free for up to ${FREE_STUDENTS} students, with a live classroom, seven assignment types, courses, attendance and parent reports.`}
+          keywords="chess nexus members, free chess training, chess coach platform, free chess coaching software, chess course builder, chess attendance, parent progress reports, create team race, monthly focus challenge, 3d arena tournament, 3d puzzle room, chess clubs"
           canonical={CANONICAL}
         />
         <Helmet>
@@ -378,58 +391,70 @@ export default function MembersPage() {
             <img src="/logo.png" alt="Chess Nexus logo" className="mkt-hero-logo" />
             <h1>Membership on Chess Nexus</h1>
             <p className="mkt-hero-sub">
-              Everyone gets the full platform for free. Elite members and coaches
-              unlock extra ways to create, host and teach.
+              Every player gets the whole training platform free. Coaches run their
+              academy free for up to {FREE_STUDENTS} students, and Elite members
+              unlock extra ways to create and host.
             </p>
-            <div className="mkt-free-badge">✅ Every core activity is free for all members</div>
+            <div className="mkt-free-badge">✅ Free to play · free to coach · no card required</div>
           </header>
 
           {/* ── All users ── */}
-          <section className="mkt-section" aria-label="What every user can do">
-            <h2>👤 Every user</h2>
+          <section className="mkt-section" aria-label="What every player gets">
+            <h2>👤 Every player</h2>
             <p className="mkt-section-lead">
-              Sign up and explore the whole app — every user can use all features
-              and play all activities, completely free.
+              Sign up and start training — puzzles, races, studies, tournaments,
+              clubs and analysis of your own games are all free, with no daily
+              caps and no card. The only things behind a gate are the premium
+              endgame set and the repertoire trainer, and XP you earn by playing
+              opens those too.
             </p>
             <PerkList items={USER_PERKS} />
-          </section>
-
-          {/* ── Elite users ── */}
-          <section className="mkt-section" aria-label="What elite members can do">
-            <h2>⭐ Elite members</h2>
-            <p className="mkt-section-lead">
-              Elite members get everything above, plus the power to create and host
-              for the whole community.
-            </p>
-            <PerkList items={ELITE_PERKS} />
           </section>
 
           {/* ── Coaches ── */}
           <section className="mkt-section" aria-label="What coaches can do">
             <h2>🎓 Coaches</h2>
             <p className="mkt-section-lead">
-              Coaches run their classes on Chess Nexus — assign work, track
-              progress and manage attendance and payments.
+              Run your whole coaching operation here — classroom, curriculum,
+              homework, attendance and parent reports. It is{" "}
+              <strong>free forever for up to {FREE_STUDENTS} students</strong>:
+              not a trial, no time limit and no card on file. Paid plans raise the
+              roster cap and lift every limit on the live classroom.
             </p>
             <PerkList items={COACH_PERKS} />
+          </section>
+
+          {/* ── Elite users ── */}
+          <section className="mkt-section" aria-label="What elite members can do">
+            <h2>⭐ Elite members</h2>
+            <p className="mkt-section-lead">
+              Elite is a small invited role for people who help run the community.
+              Elite members get everything above, plus the power to create and host
+              events for everyone else.
+            </p>
+            <PerkList items={ELITE_PERKS} />
           </section>
 
           {/* ── Collaboration / become Elite ── */}
           <div className="mkt-callout">
             <span className="mkt-callout-icon">🤝</span>
             <div>
-              <h2>Want to collaborate or become an Elite member?</h2>
+              <h2>Teach on Chess Nexus</h2>
               <p>
-                Interested in coaching on Chess Nexus, hosting tournaments, or
-                partnering with us? Reach out — we'd love to work with you and help
-                you become an Elite member.
+                If you coach, you can move your whole academy here today — roster,
+                classes, homework, attendance and parent reports — free for up to{" "}
+                {FREE_STUDENTS} students, with no card and no trial clock. Hosting
+                tournaments or partnering with us instead? Get in touch.
               </p>
               <div className="mkt-cta-row">
-                <Link to="/contact" className="mkt-btn mkt-btn-primary">
-                  Contact us to collaborate
+                <Link to="/chess-coaching" className="mkt-btn mkt-btn-primary">
+                  Start coaching free
                 </Link>
-                <Link to="/features" className="mkt-btn mkt-btn-ghost">
-                  See all features
+                <Link to="/chess-coach-pricing" className="mkt-btn mkt-btn-ghost">
+                  See coach plans
+                </Link>
+                <Link to="/contact" className="mkt-btn mkt-btn-ghost">
+                  Contact us
                 </Link>
               </div>
             </div>

@@ -63,6 +63,8 @@ import AcademyBilling from "./pages/academy/AcademyBilling";
 import AcademyPayments from "./pages/academy/AcademyPayments";
 import AcademySettings from "./pages/academy/AcademySettings";
 import JoinAcademy from "./pages/academy/JoinAcademy";
+import AcademyInvite from "./pages/academy/AcademyInvite";
+import AcademyCoachDetail from "./pages/academy/AcademyCoachDetail";
 import LiveClassroomMarketingPage from "./pages/marketing/LiveClassroomPage";
 import EndgameTrainingPage from "./pages/marketing/EndgameTrainingPage";
 import OpeningRepertoirePage from "./pages/marketing/OpeningRepertoirePage";
@@ -1163,6 +1165,11 @@ export default function App() {
         <Route path="/academy/coaches" element={
           <UserLayout><CoachRoute><AcademyGate><AcademyCoaches /></AcademyGate></CoachRoute></UserLayout>
         } />
+        {/* Drill-down into ONE member coach. Owner-only is enforced server-side
+            by requireAcademyOwner on the detail endpoint. */}
+        <Route path="/academy/coaches/:coachId" element={
+          <UserLayout><CoachRoute><AcademyGate><AcademyCoachDetail /></AcademyGate></CoachRoute></UserLayout>
+        } />
         <Route path="/academy/billing" element={
           <UserLayout><CoachRoute><AcademyGate allowUnpaid><AcademyBilling /></AcademyGate></CoachRoute></UserLayout>
         } />
@@ -1177,6 +1184,16 @@ export default function App() {
             <CoachRoute>
               <JoinAcademy />
             </CoachRoute>
+          </UserLayout>
+        } />
+        {/* An invited coach may not be a coach YET — accepting is what sends them
+            to onboarding — so this is deliberately NOT behind CoachRoute, which
+            would bounce them to /coach/onboarding and lose the invitation. */}
+        <Route path="/academy/invite" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <AcademyInvite />
+            </ProtectedRoute>
           </UserLayout>
         } />
         <Route path="/coach/students/:studentLinkId" element={

@@ -277,6 +277,10 @@ export default function HealthyMix() {
         fen: puzzleRef.current?.fen,
         solution: Array.isArray(puzzleRef.current?.solution) ? puzzleRef.current.solution : [],
         attempts: attemptsRef.current,
+        // How long this puzzle took, in seconds. Lets the coach see effort, not
+        // just the verdict — a quick wrong answer and a four-minute wrong answer
+        // are different problems to teach.
+        timeTakenSec: elapsedSec(),
       });
       const d = res.data || {};
       setAssignProgress(d.progress || 0);
@@ -328,6 +332,20 @@ export default function HealthyMix() {
   // this useful for review, so it is logged separately and sent on submit.
   // A ref, not state: it must be readable inside submit without re-rendering.
   const attemptsRef = useRef([]);
+
+  // When the current puzzle appeared on screen, so an assignment can report how
+  // long it took. Reset everywhere attemptsRef is — the two belong to the same
+  // "this is a fresh puzzle" moment, including a retry (which restarts the
+  // clock: the coach wants time spent on the attempt they are reading).
+  //
+  // Client-measured, so it is honest-effort data rather than proof — a student
+  // who wanders off inflates it. That is fine for the signal a coach actually
+  // wants ("four minutes on this fork and still missed it"), and the server
+  // clamps the value so a broken or edited clock cannot store nonsense.
+  const puzzleStartRef = useRef(Date.now());
+  const elapsedSec = () =>
+    Math.max(0, Math.round((Date.now() - (puzzleStartRef.current || Date.now())) / 1000));
+
   const logAttempt = useCallback((san, correct, fen) => {
     if (!san) return;
     // Cap it: a user can retry indefinitely, and an unbounded array would grow
@@ -482,6 +500,7 @@ export default function HealthyMix() {
     // Reset move history to just the starting position (ply 0).
     setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
     attemptsRef.current = [];   // new puzzle → fresh attempt log
+    puzzleStartRef.current = Date.now();   // …and restart the solve clock
     setViewIdx(null);
     clearVariations();
     // Engine always starts off on a fresh puzzle / retry — the user opts in each time.
@@ -589,6 +608,7 @@ export default function HealthyMix() {
       // it must reset plies/viewIdx itself.
       setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
     attemptsRef.current = [];   // new puzzle → fresh attempt log
+    puzzleStartRef.current = Date.now();   // …and restart the solve clock
       setViewIdx(null);
       clearVariations();
       setOrientation(game.turn() === 'w' ? 'white' : 'black');
@@ -889,6 +909,7 @@ export default function HealthyMix() {
     // Retry replays from the start — clear the moves card back to the start position.
     setPlies([{ san: null, fen: game.fen(), from: null, to: null }]);
     attemptsRef.current = [];   // new puzzle → fresh attempt log
+    puzzleStartRef.current = Date.now();   // …and restart the solve clock
     setViewIdx(null);
     clearVariations();
     setEngineOn(false);   // back to solving → engine hidden and off again

@@ -155,3 +155,151 @@
    lower than a card whose total fits 1 line. min-height keeps the buttons aligned. */
 .acad-plan-total { font-size: 12px; color: rgba(226,232,240,0.6); margin-bottom: 12px; line-height: 1.5; min-height: 36px; }
 .acad-plan-total strong { color: #67e8f9; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACADEMY → COACH DETAIL (/academy/coaches/:coachId)
+   The head's drill-down into one member coach: profile, stat tiles, month
+   calendars (attendance / classes / fees / activity) and roster tables.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Profile hero ── */
+.acad-coach-hero {
+  display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: 20px; margin-bottom: 16px;
+}
+.acad-coach-photo {
+  width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex: 0 0 auto;
+  border: 2px solid rgba(255,255,255,0.14);
+}
+.acad-coach-photo--none {
+  display: grid; place-items: center; font-size: 30px; font-weight: 800;
+  color: #cbd5e1; background: rgba(255,255,255,0.08);
+}
+.acad-coach-title {
+  display: inline-block; margin-right: 8px; padding: 2px 8px; border-radius: 6px;
+  font-size: 13px; font-weight: 800; color: #0b1120; background: #fbbf24; vertical-align: middle;
+}
+.acad-coach-verified { margin-left: 8px; color: #34d399; font-size: 18px; }
+.acad-coach-sub { color: #9aa4bf; font-size: 13.5px; margin-top: 4px; }
+.acad-coach-spec { color: #cbd5e1; font-size: 13px; margin-top: 8px; }
+.acad-coach-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.acad-tag {
+  padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600;
+  color: #cbd5e1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ── Month picker ── */
+.acad-month-bar {
+  display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;
+}
+
+/* ── Stat tiles ── */
+.acad-stat-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px; margin-bottom: 18px;
+}
+.acad-stat {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; padding: 14px 16px;
+}
+.acad-stat-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  color: #7c8aa8; margin-bottom: 6px;
+}
+.acad-stat-value { font-size: 26px; font-weight: 800; line-height: 1.1; }
+.acad-stat-sub { font-size: 11.5px; color: #7c8aa8; margin-top: 4px; }
+
+/* ── Panels ── */
+.acad-panel {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 18px; margin-bottom: 16px;
+}
+.acad-panel h3 { margin: 0 0 14px; color: #fff; font-size: 15px; }
+
+/* ── Bars ── */
+.acad-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.acad-bar-label { flex: 0 0 84px; font-size: 12.5px; color: #cbd5e1; }
+.acad-bar-track {
+  flex: 1; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.07); overflow: hidden;
+}
+.acad-bar-fill { display: block; height: 100%; border-radius: 999px; }
+.acad-bar-val { flex: 0 0 40px; text-align: right; font-size: 12.5px; font-weight: 700; color: #e2e8f0; }
+
+/* ── Calendars ── */
+.acad-cal-row {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px; margin-bottom: 16px;
+}
+.acad-cal {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 16px;
+}
+.acad-cal-head { color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 12px; }
+.acad-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.acad-cal-wd {
+  text-align: center; font-size: 10.5px; font-weight: 700; color: #64748b; padding-bottom: 4px;
+}
+.acad-cal-cell {
+  aspect-ratio: 1; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+}
+.acad-cal-blank { background: transparent; border-color: transparent; }
+.acad-cal-day { font-size: 10px; color: #64748b; line-height: 1; }
+.acad-cal-val { font-size: 11px; font-weight: 800; color: #e2e8f0; line-height: 1; }
+.acad-cal-legend { margin-top: 10px; font-size: 11px; color: #64748b; }
+
+/* ── Pills ── */
+.acad-pill {
+  display: inline-block; padding: 2px 9px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; text-transform: capitalize;
+}
+.acad-pill--ok   { color: #6ee7b7; background: rgba(16,185,129,0.16); }
+.acad-pill--warn { color: #fcd34d; background: rgba(245,158,11,0.16); }
+.acad-pill--bad  { color: #fca5a5; background: rgba(239,68,68,0.16); }
+
+@media (max-width: 640px) {
+  .acad-coach-hero { padding: 16px; }
+  .acad-stat-value { font-size: 22px; }
+  .acad-cal-val { font-size: 10px; }
+}
+
+/* Fee split (received / pending / rejected) on the coach detail page. */
+.acad-fee-split {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px; margin-bottom: 16px;
+}
+.acad-fee-card {
+  border-radius: 12px; padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
+}
+.acad-fee-label { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+.acad-fee-amount { font-size: 20px; font-weight: 800; color: #fff; line-height: 1.2; }
+.acad-fee-count { font-size: 11.5px; color: #7c8aa8; margin-top: 3px; }
+.acad-fee--ok   { border-color: rgba(52,211,153,0.35); background: rgba(16,185,129,0.10); }
+.acad-fee--ok   .acad-fee-label { color: #6ee7b7; }
+.acad-fee--warn { border-color: rgba(251,191,36,0.35); background: rgba(245,158,11,0.10); }
+.acad-fee--warn .acad-fee-label { color: #fcd34d; }
+.acad-fee--bad  { border-color: rgba(248,113,113,0.32); background: rgba(239,68,68,0.09); }
+.acad-fee--bad  .acad-fee-label { color: #fca5a5; }
+
+/* Fees column on the academy coaches table: one small compartment per
+   currency (INR / USD) so amounts line up down the table rather than
+   shifting with whichever currencies each coach uses. */
+.acad-fee-cells { display: flex; gap: 6px; flex-wrap: wrap; }
+.acad-fee-cell {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 1px;
+  min-width: 62px; padding: 4px 8px; border-radius: 7px;
+  background: rgba(52,211,153,0.10); border: 1px solid rgba(52,211,153,0.28);
+}
+.acad-fee-cell--empty {
+  background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.07);
+}
+.acad-fee-cell-cur {
+  font-size: 9.5px; font-weight: 800; letter-spacing: .06em;
+  color: #7c8aa8; text-transform: uppercase; line-height: 1;
+}
+.acad-fee-cell-amt { font-size: 13px; font-weight: 800; color: #e2e8f0; line-height: 1.2; }
+.acad-fee-cell--empty .acad-fee-cell-amt { color: #64748b; font-weight: 600; }

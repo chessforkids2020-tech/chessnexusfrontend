@@ -81,6 +81,16 @@ export default function CoachOnboarding() {
       await api.post('/api/coach/onboard', form);
       try { localStorage.removeItem('coachRefCode'); } catch {} // don't leak to next coach on shared browser
       if (refreshUser) await refreshUser();
+
+      // Onboarded only in order to accept an academy invitation? Send them back
+      // to it instead of the dashboard, where the invite would sit unanswered.
+      if (form.coachType !== 'academy') {
+        try {
+          const inv = await api.get('/api/academy/my-invite');
+          if (inv.data?.invite) { navigate('/academy/invite', { replace: true }); return; }
+        } catch { /* no invite — fall through to the normal destination */ }
+      }
+
       // A new academy must buy a plan before anything unlocks → straight to billing.
       navigate(form.coachType === 'academy' ? '/academy/billing' : '/coach/dashboard', { replace: true });
     } catch (err) {

@@ -2,11 +2,53 @@
 // The coach roster: join link to share, pending join-request approvals, and a
 // per-coach table (students, joined, classes, plan) with roster drill-down.
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import CoachChatFab from '../../components/coach/CoachChatFab';
 import './AcademyDashboard.css';
 
+const CURRENCY_SYMBOL = { INR: '₹', USD: '$', EUR: '€', GBP: '£', AUD: 'A$', CAD: 'C$', AED: 'د.إ', SGD: 'S$' };
+
+// Fees a coach RECEIVED this calendar month, as two fixed compartments — INR
+// and USD — so the column lines up down the table instead of shifting with
+// whatever currencies each coach happens to use. Never summed: ₹ and $ cannot
+// be added into one honest figure.
+//
+// Anything outside those two (a coach billing in EUR, say) still appears, on
+// its own line — dropping real money to keep the layout tidy would be worse
+// than an occasional third row.
+const FEE_COLUMNS = ['INR', 'USD'];
+
+function fmtFees(c) {
+  const by = c.feesByCurrency || {};
+  const others = Object.keys(by).filter(k => !FEE_COLUMNS.includes(k) && by[k] > 0);
+  const nothing = FEE_COLUMNS.every(k => !by[k]) && others.length === 0;
+  if (nothing) return <span className="acad-muted">—</span>;
+
+  return (
+    <div className="acad-fee-cells" title={`${c.feesCount} approved payment${c.feesCount === 1 ? '' : 's'} this month`}>
+      {FEE_COLUMNS.map(code => (
+        <div key={code} className={`acad-fee-cell ${by[code] ? '' : 'acad-fee-cell--empty'}`}>
+          <span className="acad-fee-cell-cur">{code}</span>
+          <span className="acad-fee-cell-amt">
+            {by[code] ? `${CURRENCY_SYMBOL[code]}${by[code].toLocaleString()}` : '—'}
+          </span>
+        </div>
+      ))}
+      {others.map(code => (
+        <div key={code} className="acad-fee-cell">
+          <span className="acad-fee-cell-cur">{code}</span>
+          <span className="acad-fee-cell-amt">
+            {CURRENCY_SYMBOL[code] || ''}{by[code].toLocaleString()}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function AcademyCoaches() {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,6 +60,42 @@ export default function AcademyCoaches() {
   const [roster, setRoster] = useState(null);
   const [rosterLoading, setRosterLoading] = useState(false);
 
+  // "Add coach" — invite an EXISTING account by username. Deliberately not open
+  // to guests/strangers: we attach the invite to a real user, so there has to be
+  // an account already.
+  const [showInvite, setShowInvite] = useState(false);
+  const [inviteName, setInviteName] = useState('');
+  const [inviteBusy, setInviteBusy] = useState(false);
+  const [inviteErr, setInviteErr] = useState('');
+  const [invites, setInvites] = useState([]);
+
+  const loadInvites = async () => {
+    try {
+      const r = await api.get('/api/academy/invites');
+      setInvites(r.data?.invites || []);
+    } catch { setInvites([]); }
+  };
+
+  const sendInvite = async () => {
+    const u = inviteName.trim();
+    if (!u) return;
+    setInviteBusy(true); setInviteErr('');
+    try {
+      const r = await api.post('/api/academy/invite', { username: u });
+      setMsg(r.data?.message || 'Invitation sent.');
+      setInviteName(''); setShowInvite(false);
+      loadInvites();
+    } catch (e) {
+      setInviteErr(e.response?.data?.message || 'Could not send the invitation.');
+    } finally { setInviteBusy(false); }
+  };
+
+  const withdrawInvite = async (id, name) => {
+    if (!window.confirm(`Withdraw the invitation to ${name}?`)) return;
+    try { await api.delete(`/api/academy/invites/${id}`); loadInvites(); }
+    catch (e) { setErr(e.response?.data?.message || 'Could not withdraw the invitation.'); }
+  };
+
   const load = async () => {
     setLoading(true); setErr('');
     try {
@@ -25,6 +103,7 @@ export default function AcademyCoaches() {
       setData(res.data);
       if (res.data?.isOwner) {
         api.get('/api/academy/requests').then(r => setRequests(r.data?.requests || [])).catch(() => setRequests([]));
+        loadInvites();
       }
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not load coaches.');
@@ -76,9 +155,59 @@ export default function AcademyCoaches() {
 
   return (
     <div className="acad-wrap">
-      <h1 style={{ color: '#fff', marginBottom: 14 }}>👨‍🏫 Coaches</h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
+        <h1 style={{ color: '#fff', margin: 0 }}>👨‍🏫 Coaches</h1>
+        {isOwner && (
+          <button className="btn-primary" onClick={() => { setShowInvite(true); setInviteErr(''); }}>
+            + Add coach
+          </button>
+        )}
+      </div>
       {msg && <div className="acad-msg">{msg}</div>}
       {err && <div className="acad-error">⚠️ {err}</div>}
+
+      {/* ── Invite a coach by username ── */}
+      {showInvite && (
+        <div
+          onClick={() => setShowInvite(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', display: 'grid', placeItems: 'center', zIndex: 2000, padding: 16 }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ background: '#141a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 22, width: 'min(420px, 94vw)', boxShadow: '0 24px 60px rgba(0,0,0,0.45)' }}
+          >
+            <h3 style={{ margin: '0 0 4px', color: '#fff' }}>➕ Add a coach</h3>
+            <p style={{ margin: '0 0 16px', color: '#9aa4bf', fontSize: 13, lineHeight: 1.5 }}>
+              Enter the coach's <b>Chess Nexus username</b>. They'll get an invitation
+              in their notifications and join once they accept.
+              <br />
+              <span style={{ color: '#7c8aa8' }}>
+                They need an account already — ask them to sign up first if they don't have one.
+              </span>
+            </p>
+
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#cbd5e1', marginBottom: 6 }}>
+              Coach username
+            </label>
+            <input
+              value={inviteName}
+              onChange={e => setInviteName(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && !inviteBusy) sendInvite(); }}
+              placeholder="e.g. coachqueen"
+              autoFocus
+              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', color: '#fff', marginBottom: 12, boxSizing: 'border-box' }}
+            />
+            {inviteErr && <div className="acad-error" style={{ marginBottom: 12 }}>⚠️ {inviteErr}</div>}
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button className="btn-ghost" onClick={() => setShowInvite(false)} disabled={inviteBusy}>Cancel</button>
+              <button className="btn-primary" onClick={sendInvite} disabled={inviteBusy || !inviteName.trim()}>
+                {inviteBusy ? 'Sending…' : 'Send invitation'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isOwner && (
         <>
@@ -91,6 +220,27 @@ export default function AcademyCoaches() {
               {linkCopied ? '✓ Copied' : 'Copy link'}
             </button>
           </div>
+
+          {invites.length > 0 && (
+            <div className="acad-req">
+              <h3>✉️ {invites.length} invitation{invites.length === 1 ? '' : 's'} waiting to be accepted</h3>
+              {invites.map(i => (
+                <div key={i.id} className="acad-req-row">
+                  <span>
+                    {i.name}{i.username ? ` · @${i.username}` : ''}
+                    {!i.isCoach && (
+                      <span style={{ color: '#fbbf24', marginLeft: 8, fontSize: 12 }}>
+                        · will onboard as a coach when they accept
+                      </span>
+                    )}
+                  </span>
+                  <div className="acad-req-btns">
+                    <button className="acad-req-decline" onClick={() => withdrawInvite(i.id, i.name)}>Withdraw</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {requests.length > 0 && (
             <div className="acad-req">
@@ -117,7 +267,10 @@ export default function AcademyCoaches() {
             <thead>
               <tr>
                 <th>Coach</th><th>Role</th><th>Plan</th>
-                <th>Students</th><th>Joined (period)</th><th>Classes</th>
+                <th>Students</th><th>Joined (period)</th>
+                {/* Fees RECEIVED this calendar month (approved requests only) —
+                    what the coach actually collected, not what was asked for. */}
+                <th>Fees this month</th>
                 {isOwner && <th></th>}
               </tr>
             </thead>
@@ -130,15 +283,21 @@ export default function AcademyCoaches() {
                     <td>{c.plan}{c.sponsored && <span className="acad-role acad-role-coach" style={{ marginLeft: 6 }}>sponsored</span>}</td>
                     <td><strong>{c.students}</strong></td>
                     <td>{c.joinedInPeriod}</td>
-                    <td>{c.classesTotal}</td>
+                    <td>{fmtFees(c)}</td>
                     {isOwner && (
                       <td>
-                        {c.role !== 'head' && (
-                          <div className="acad-req-btns">
-                            <button className="acad-msg-btn" onClick={() => messageCoach(c.coachId, c.name)}>💬 Message</button>
-                            <button className="acad-remove" onClick={() => removeCoach(c.coachId, c.name)}>Remove</button>
-                          </div>
-                        )}
+                        <div className="acad-req-btns">
+                          {/* Full drill-down: profile, calendars, roster, fees. */}
+                          <button className="acad-msg-btn" onClick={() => navigate(`/academy/coaches/${c.coachId}`)}>
+                            📊 View
+                          </button>
+                          {c.role !== 'head' && (
+                            <>
+                              <button className="acad-msg-btn" onClick={() => messageCoach(c.coachId, c.name)}>💬 Message</button>
+                              <button className="acad-remove" onClick={() => removeCoach(c.coachId, c.name)}>Remove</button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     )}
                   </tr>

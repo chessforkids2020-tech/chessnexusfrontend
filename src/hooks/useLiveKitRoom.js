@@ -16,6 +16,82 @@ import { createLightAppearanceProcessor, loadEffects, saveEffects } from '../lib
 const VIDEO_PRESET = { width: 1280, height: 720 }; // 720p ceiling
 const SIMULCAST = true;
 
+// ── ADAPTIVE CODEC: let each machine publish what it can actually encode ─────
+//
+// THE BUG THIS FIXES. We used to hardcode VP9 with `backupCodec: true`. On a
+// machine whose GPU cannot encode VP9 that is close to the worst case possible:
+//
+//   • VP9 has NO hardware encoder on any consumer NVIDIA GPU (NVENC does H.264 /
+//     HEVC / AV1 — never VP9), and VP8 has none anywhere. So both fall back to
+//     Chrome's libvpx SOFTWARE encoder.
+//   • `backupCodec` does not mean "instead of" — it publishes a SECOND video
+//     track so incompatible subscribers can still see you. With simulcast on,
+//     one camera became a VP9 L3T3_KEY stack PLUS a 3-layer VP8 stack: ~6
+//     concurrent software encodes at 720p30.
+//   • The CPU cannot sustain that, so the encoder drops frames and then delivers
+//     a burst — video that appears to jump backwards and forwards.
+//
+// Confirmed on a Windows desktop (GeForce GT 710): webrtc-internals showed
+// `SimulcastEncoderAdapter (libvpx, libvpx, libvpx)` with
+// `powerEfficientEncoder=false`, and chrome://gpu listed H.264 encode ONLY.
+// Laptops mostly escaped it because modern mobile chips DO have VP9 encode.
+//
+// So: ask the browser what this device can encode efficiently, and publish that.
+// Newer machines keep VP9 (best quality per bit); older ones get H.264, which is
+// hardware-accelerated essentially everywhere — including that GT 710. Nobody is
+// downgraded to fix somebody else's machine, which is what a global switch to
+// H.264 would have done.
+const CODEC_PROBE_KEY = 'lkVideoCodec:v1';
+
+// Is `codec` encodable on this device, and is it POWER EFFICIENT (i.e. hardware)?
+// mediaCapabilities is the only web API that answers the hardware question —
+// RTCRtpSender.getCapabilities() lists a codec whether it is hardware or software,
+// so it cannot distinguish the machines that need help.
+async function probeEncoder(mimeType) {
+  try {
+    if (!navigator.mediaCapabilities?.encodingInfo) return null;
+    const info = await navigator.mediaCapabilities.encodingInfo({
+      type: 'webrtc',
+      video: {
+        contentType: mimeType,
+        width: VIDEO_PRESET.width,
+        height: VIDEO_PRESET.height,
+        bitrate: 2_500_000,
+        framerate: 30,
+      },
+    });
+    return { supported: !!info?.supported, efficient: !!info?.powerEfficient };
+  } catch {
+    return null; // API missing or threw — treat as "unknown", never as a failure
+  }
+}
+
+// Pick the publish codec for THIS device. Cached per browser: the answer depends
+// on hardware that does not change between classes, and probing costs a few ms.
+async function pickVideoCodec() {
+  try {
+    const cached = sessionStorage.getItem(CODEC_PROBE_KEY);
+    if (cached) return cached;
+  } catch { /* private mode — just probe again */ }
+
+  let codec = 'vp9'; // default unchanged: best quality where the hardware allows
+  try {
+    const vp9 = await probeEncoder('video/VP9');
+    // Only move OFF VP9 when we have positive evidence this device would software-
+    // encode it. `null` (API unavailable) keeps today's behaviour — an unknown
+    // device must not be silently downgraded.
+    if (vp9 && (!vp9.supported || !vp9.efficient)) {
+      const h264 = await probeEncoder('video/H264');
+      if (h264?.supported && h264.efficient) codec = 'h264';
+      // If H.264 is not hardware either, VP9 remains the better choice: it at
+      // least gives a cleaner picture for the same CPU spend.
+    }
+  } catch { /* keep the default */ }
+
+  try { sessionStorage.setItem(CODEC_PROBE_KEY, codec); } catch { /* ignore */ }
+  return codec;
+}
+
 // ── Video CLARITY (the "grainy / noisy video" fix) ──────────────────────────
 // LiveKit's default 720p bitrate is ~1.7 Mbps — enough to be watchable, but the
 // encoder is bit-starved on detail/motion, which shows up as grain, blocking and
@@ -386,6 +462,9 @@ export default function useLiveKitRoom() {
     // control change), tear down the old room first to avoid a dangling
     // connection / duplicate participant.
     if (roomRef.current) { try { await roomRef.current.disconnect(); } catch { /* */ } roomRef.current = null; }
+    // What can THIS machine encode in hardware? Decided before the Room is built
+    // because publishDefaults is read at construction time.
+    const videoCodec = await pickVideoCodec();
     const r = new Room({
       adaptiveStream: true,
       dynacast: true,
@@ -399,11 +478,16 @@ export default function useLiveKitRoom() {
         videoResolution: VIDEO_PRESET,
         // Higher video bitrate = clean picture instead of grainy/noisy compression.
         videoEncoding: VIDEO_ENCODING,
-        // Prefer VP9: noticeably cleaner image at the same bitrate than the older VP8
-        // default. backupCodec lets browsers that can't do VP9 fall back to VP8 so
-        // nobody fails to publish (e.g. some Safari/older devices).
-        videoCodec: 'vp9',
-        backupCodec: true,
+        // Chosen per device (see pickVideoCodec): VP9 where the GPU encodes it,
+        // H.264 on machines that would otherwise software-encode — the older
+        // desktops where video stuttered.
+        videoCodec,
+        // backupCodec is deliberately OFF. It publishes a SECOND video track in a
+        // fallback codec, so with simulcast one camera became ~6 concurrent
+        // software encodes and the picture stuttered on any machine without a
+        // hardware VP9 encoder. It is also unnecessary here: VP8/H.264 decode is
+        // universal, and we now publish a codec the device actually handles.
+        backupCodec: false,
         audioPreset: { maxBitrate: AUDIO_PUBLISH_BITRATE },
         // Discontinuous transmission + forward error correction: cleaner speech on
         // lossy connections (kids on home wifi), less garble.

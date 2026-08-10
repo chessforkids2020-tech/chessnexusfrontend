@@ -21,7 +21,12 @@ const NAV = [
 
 // Live Class is host-only (the 2 allowed accounts). Appended conditionally below.
 const LIVE_NAV = { icon: '🔴', label: 'Classroom', path: '/coach/live' };
-// Academy entry — shown only to members of an academy (head/managing/coach).
+// Academy entry — the academy MANAGEMENT area, so it is for the academy head
+// (owner) only. Every page under /academy/* is wrapped in AcademyGate, which
+// redirects a non-owner back to /coach/dashboard: showing this to an ordinary
+// member coach gave them a tab that bounced them straight back where they came
+// from. A member coach is a normal coach — the academy is an overlay over their
+// account, not somewhere they manage.
 const ACADEMY_NAV = { icon: '🏛️', label: 'Academy', path: '/academy/dashboard' };
 
 export default function CoachSidebar({ onNavigate }) {
@@ -40,9 +45,11 @@ export default function CoachSidebar({ onNavigate }) {
   const showClassroom = isAdmin || authCanHost || (hostState ? hostState !== 'no' : true);
   // Academy membership (drives the Academy nav entry).
   const [academy, setAcademy] = useState(null); // { academy, role, status, isOwner } | null
-  const isAcademyMember = academy?.academy && academy?.status === 'active';
+  // Owner only — must match AcademyGate in App.jsx, which is what actually
+  // guards the destination.
+  const isAcademyOwner = !!(academy?.academy && academy?.status === 'active' && academy?.isOwner);
   let navItems = showClassroom ? [...NAV, LIVE_NAV] : [...NAV];
-  if (isAcademyMember) navItems = [...navItems, ACADEMY_NAV];
+  if (isAcademyOwner) navItems = [...navItems, ACADEMY_NAV];
   // Students online (mirrors the main sidebar's "friends online").
   const [onlineStudents, setOnlineStudents] = useState([]);
   const [showOnline, setShowOnline] = useState(false);

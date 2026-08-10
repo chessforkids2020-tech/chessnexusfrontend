@@ -21,6 +21,13 @@ import Chessboard from '../Chessboard';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
+// Seconds → "42s" / "3m 05s". Compact because it sits inside a list label.
+function fmtDuration(sec) {
+  const s = Math.max(0, Math.round(Number(sec) || 0));
+  if (s < 60) return `${s}s`;
+  return `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`;
+}
+
 export default function AssignmentReview({ assignment, onClose }) {
   const a = assignment;
   const isBlunder = a?.assignmentType === 'custom';
@@ -52,10 +59,13 @@ export default function AssignmentReview({ assignment, onClose }) {
     }));
     if (isPuzzle) return (student?.puzzleResults || []).map((r, i) => ({
       kind: 'puzzle', idx: i, fen: r.fen,
-      label: `${r.solved ? '✅' : '❌'} Puzzle ${i + 1}`,
+      // Time is in the label so the coach can scan the list for the slow ones
+      // without opening each puzzle. 0 = recorded before timing existed.
+      label: `${r.solved ? '✅' : '❌'} Puzzle ${i + 1}${r.timeTakenSec ? ` · ${fmtDuration(r.timeTakenSec)}` : ''}`,
       attempts: r.attempts || [],
       solution: r.solution || [],
       solved: !!r.solved,
+      timeTakenSec: r.timeTakenSec || 0,
     }));
     return [];
   }, [a, isFen, isBlunder, isPuzzle, student]);
@@ -224,7 +234,10 @@ export default function AssignmentReview({ assignment, onClose }) {
               {!student ? (
                 <div style={S.muted}>Pick a student to see what they played.</div>
               ) : isPuzzle ? (
-                <PuzzleAnswer item={item} />
+                <>
+                  <PuzzleTimeSummary results={student.puzzleResults || []} />
+                  <PuzzleAnswer item={item} />
+                </>
               ) : isFen ? (
                 <FenAnswer student={student} item={item} onJump={setPly} ply={ply} />
               ) : (
@@ -320,6 +333,43 @@ function FenAnswer({ student, item, onJump, ply }) {
 //     even though the student was credited for it.
 const normalizeMove = (m) => String(m || '').toLowerCase().replace(/[+#!?\s]/g, '');
 
+// ── Puzzle assignment: time spent across the whole assignment ───────────────
+// Total and average, plus the split between solved and missed puzzles. That
+// split is the useful part: fast-and-wrong means guessing, slow-and-wrong means
+// the idea itself has not landed, and they need different teaching.
+function PuzzleTimeSummary({ results }) {
+  const timed = (results || []).filter(r => (r.timeTakenSec || 0) > 0);
+  if (timed.length === 0) return null;
+
+  const total = timed.reduce((n, r) => n + (r.timeTakenSec || 0), 0);
+  const solvedRows = timed.filter(r => r.solved);
+  const missedRows = timed.filter(r => !r.solved);
+  const avg = (rows) => (rows.length
+    ? Math.round(rows.reduce((n, r) => n + (r.timeTakenSec || 0), 0) / rows.length)
+    : 0);
+
+  return (
+    <div style={S.timeSummary}>
+      <span style={S.timeChip} title="Total time across timed puzzles">
+        ⏱ {fmtDuration(total)} total
+      </span>
+      <span style={S.timeChip} title={`Average over ${timed.length} timed puzzle${timed.length === 1 ? '' : 's'}`}>
+        {fmtDuration(avg(timed))} avg
+      </span>
+      {solvedRows.length > 0 && (
+        <span style={S.timeChip} title={`Average on the ${solvedRows.length} they solved`}>
+          ✅ {fmtDuration(avg(solvedRows))}
+        </span>
+      )}
+      {missedRows.length > 0 && (
+        <span style={S.timeChip} title={`Average on the ${missedRows.length} they missed`}>
+          ❌ {fmtDuration(avg(missedRows))}
+        </span>
+      )}
+    </div>
+  );
+}
+
 // ── Puzzle assignment: what the student played on ONE puzzle ────────────────
 // Coaches previously saw only a tally ("7 of 10, 70%"). This shows the actual
 // moves, with the engine line beside them so the coach can see how close the
@@ -329,7 +379,16 @@ function PuzzleAnswer({ item }) {
   const attempts = item.attempts || [];
   return (
     <div>
-      <div style={S.answerHead}>{item.solved ? '✅ Solved' : '❌ Not solved'}</div>
+      <div style={S.answerHead}>
+        {item.solved ? '✅ Solved' : '❌ Not solved'}
+        {/* Time spent, beside the verdict: a 5-second wrong answer is a guess,
+            a 4-minute wrong answer is a misunderstanding — different lessons. */}
+        {item.timeTakenSec > 0 && (
+          <span style={S.timeChip} title="Time spent on this puzzle">
+            ⏱ {fmtDuration(item.timeTakenSec)}
+          </span>
+        )}
+      </div>
 
       <div style={{ ...S.answerHead, marginTop: 12 }}>They played</div>
       <div style={S.moveRow}>
@@ -454,4 +513,8 @@ const S = {
   pillOk: { padding: '2px 8px', borderRadius: 999, background: 'rgba(16,185,129,0.16)', color: '#6ee7b7', fontSize: 11, fontWeight: 700 },
   pillNo: { padding: '2px 8px', borderRadius: 999, background: 'rgba(239,68,68,0.14)', color: '#fca5a5', fontSize: 11, fontWeight: 700 },
   muted: { color: '#94a3b8', fontSize: 12 },
+  // Time spent on a puzzle. Deliberately neutral (slate, not red/green): it is
+  // context for the coach, not a pass/fail signal.
+  timeChip: { marginLeft: 8, padding: '2px 8px', borderRadius: 999, background: 'rgba(148,163,184,0.14)', border: '1px solid rgba(148,163,184,0.3)', color: '#cbd5e1', fontSize: 11, fontWeight: 700, textTransform: 'none', letterSpacing: 0 },
+  timeSummary: { display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12, paddingBottom: 10, borderBottom: '1px solid rgba(255,255,255,0.06)' },
 };

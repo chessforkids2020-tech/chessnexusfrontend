@@ -1598,6 +1598,50 @@ export default function Sidebar({ user, onNavigate }) {
                   >✕</button>
                 </div>
 
+                {/* Per-user notifications (academy invites, streak reports…).
+                    Top-level on purpose: these feed the badge count, so nesting
+                    them inside another section's conditional would reproduce the
+                    original bug — a bell reading "1" over an empty panel. */}
+                {(myNotifs.notifications || []).filter(n => !n.read).length > 0 && (
+                  <>
+                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#c4b5fd', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
+                      🔔 For you
+                    </div>
+                    {(myNotifs.notifications || []).filter(n => !n.read).map(n => (
+                      <div
+                        key={n.id}
+                        onClick={async () => {
+                          try { await api.post('/api/notifications/read', { ids: [n.id] }); } catch { /* non-blocking */ }
+                          fetchMyNotifs();
+                          if (n.link) handleNavigate(n.link);
+                          setShowNotifications(false);
+                        }}
+                        style={{
+                          background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.3)',
+                          borderRadius: '10px', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
+                          transition: 'border-color 0.2s, background 0.2s',
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.6)'; e.currentTarget.style.background = 'rgba(124,58,237,0.14)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)'; e.currentTarget.style.background = 'rgba(124,58,237,0.08)'; }}
+                      >
+                        <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#c4b5fd', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {n.type === 'academy_invite' ? '🏛️ ' : '🔔 '}{n.title}
+                        </div>
+                        {n.body && (
+                          <div style={{ fontSize: '11.5px', color: '#cbd5e1', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            {n.body}
+                          </div>
+                        )}
+                        {n.link && (
+                          <div style={{ fontSize: '10.5px', color: '#94a3b8', marginTop: '3px' }}>
+                            Tap to open →
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </>
+                )}
+
                 {/* Game invites — someone invited this user to play a friend game */}
                 {gameInvites.length > 0 && (
                   <>
@@ -1808,7 +1852,10 @@ export default function Sidebar({ user, onNavigate }) {
                   </>
                 )}
 
-                {appNotifications.length === 0 && friendMsgs.length === 0 && coachMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 ? (
+                {/* myNotifs must be in this test too: it feeds the badge count, so
+                    leaving it out made a lone academy invite show "1" on the bell
+                    above an "all caught up" panel. */}
+                {appNotifications.length === 0 && friendMsgs.length === 0 && coachMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 && (myNotifs.notifications || []).filter(n => !n.read).length === 0 ? (
                   <div style={{ color: '#64748b', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
                     You're all caught up — no notifications.
                   </div>

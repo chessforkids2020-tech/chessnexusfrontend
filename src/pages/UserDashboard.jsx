@@ -587,6 +587,35 @@ function TodayStrip() {
   const [milestone, setMilestone] = React.useState(null);  // streak count to celebrate
   const [reminder, setReminder] = React.useState(null);    // daily nudge toward the next report
   const [me, setMe] = React.useState(null);                // for the username prompt
+  const [repairBusy, setRepairBusy] = React.useState(false);
+
+  // Buy yesterday back with wallet XP. The server re-checks eligibility, the
+  // cost and the per-block cap, so this only has to handle the outcome.
+  const onRepair = React.useCallback(async () => {
+    const r = streak?.repair;
+    if (!r?.eligible || repairBusy) return;
+    if (!window.confirm(
+      `Restore your streak for ${r.cost} XP?\n\n` +
+      `This buys back ${r.istDate}. You can restore at most ${r.maxPerBlock} days ` +
+      `out of every 5 — the other 3 have to be earned.`
+    )) return;
+
+    setRepairBusy(true);
+    try {
+      const res = await api.post('/api/user/streak/repair');
+      const d = res.data || {};
+      // Fold the fresh numbers straight in rather than refetching: the response
+      // already carries the new streak and the updated repair status.
+      setStreak(s => (s ? { ...s, current: d.current ?? s.current, repair: d.repair ?? s.repair } : s));
+    } catch (err) {
+      alert(err?.response?.data?.message || 'Could not restore your streak.');
+      // Eligibility may have changed underneath us (another tab, or the day
+      // rolled over) — resync so the chip reflects reality.
+      api.get('/api/user/streak').then(r2 => setStreak(r2.data || null)).catch(() => {});
+    } finally {
+      setRepairBusy(false);
+    }
+  }, [streak, repairBusy]);
 
   React.useEffect(() => {
     let alive = true;
@@ -705,6 +734,30 @@ function TodayStrip() {
         </span>
       </div>
     );
+
+    // Missed yesterday but the run is otherwise alive? Offer to buy it back.
+    // Only rendered when the SERVER says it is eligible — the cost, the
+    // per-block cap and the "is there a streak to save" test all live there, so
+    // this cannot offer a repair the API would refuse.
+    if (streak.repair?.eligible) {
+      const r = streak.repair;
+      const left = Math.max(0, (r.maxPerBlock || 0) - (r.usedInBlock || 0));
+      chips.push(
+        <button
+          key="streak-repair"
+          type="button"
+          className="today-chip today-chip--todo"
+          disabled={repairBusy}
+          onClick={onRepair}
+          title={`Buy back ${r.istDate} for ${r.cost} XP — ${left} of ${r.maxPerBlock} left in this 5-day block`}
+        >
+          <span className="today-chip-emoji">&#129517;</span>
+          <span className="today-chip-text">
+            {repairBusy ? 'Restoring…' : <>Missed yesterday — restore for <strong>{r.cost}</strong> XP</>}
+          </span>
+        </button>
+      );
+    }
   }
 
   // ALWAYS shown. With a report it opens it; without one it explains how to earn
