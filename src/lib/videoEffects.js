@@ -157,19 +157,6 @@ export function createLightAppearanceProcessor(getEffects) {
     renderFrame(ctx, videoEl, w, h, e);
   };
 
-  // Redraw ONCE PER CAMERA FRAME, not once per display refresh.
-  //
-  // This used to run on requestAnimationFrame, which ticks on the DISPLAY's
-  // clock (~60Hz) and has nothing to do with the camera. A webcam that delivers
-  // 12fps — common on cheap sensors in dim light, where auto-exposure holds the
-  // shutter open longer — meant the canvas redrew the SAME frame ~5 times, then
-  // caught a new one mid-cycle. The result is visible judder: motion that seems
-  // to jump forward and back, even though every frame is present.
-  //
-  // requestVideoFrameCallback fires exactly when a new frame is ready, so the
-  // canvas now tracks the camera's real cadence however irregular it is. It also
-  // stops burning CPU redrawing identical frames — which matters most on the
-  // slower machines where this was worst.
   // DRIVEN BY requestAnimationFrame, deliberately.
   //
   // An earlier attempt drove this from requestVideoFrameCallback so the canvas
@@ -179,12 +166,36 @@ export function createLightAppearanceProcessor(getEffects) {
   // loop stalled a few seconds in and the published track went black.
   //
   // rAF keeps running for an offscreen element, so it is the safe clock here.
-  // Redrawing an unchanged frame costs a little CPU; a frozen classroom costs a
-  // lesson. If the judder needs more work, fix it at the CAPTURE end (what the
-  // camera is asked for), never by making this loop depend on frame delivery.
+  // The loop must never depend on frame DELIVERY to keep ticking.
+  //
+  // But it must not repaint blindly either. rAF fires at the display's rate
+  // (~60Hz) while a webcam delivers ~30fps, so every second frame was a pixel-
+  // identical redraw: full canvas filter work, twice per new frame, for nothing.
+  // On a machine with headroom that is merely wasteful — on a slow one it
+  // saturates the CPU, the offscreen <video> backs up, and you get both lag and
+  // judder. A coach reported exactly that: video ~1-2s behind and stuttering
+  // with "natural light & colour" enabled, and instantly clean with it off.
+  //
+  // So: keep the rAF clock, but SKIP the paint when the frame has not changed.
+  // currentTime advances only when a new frame arrives, which makes it a
+  // reliable change signal without ever gating the loop itself. Roughly halves
+  // this processor's cost on every device.
+  let lastFrameTime = -1;
+  let lastPaintAt = 0;
   const draw = () => {
     if (!running) return;
-    paint();
+    const t = videoEl.currentTime;
+    const now = performance.now();
+    // Repaint on a new frame — or if 250ms have passed without one. That
+    // heartbeat is a safety net: captureStream needs the canvas to keep
+    // producing, so if currentTime ever stalls (a paused element, a browser
+    // quirk) the output degrades to 4fps rather than freezing to black. Never
+    // let an optimisation be the thing that stops the video.
+    if (t !== lastFrameTime || now - lastPaintAt > 250) {
+      lastFrameTime = t;
+      lastPaintAt = now;
+      paint();
+    }
     rafId = requestAnimationFrame(draw);
   };
 
