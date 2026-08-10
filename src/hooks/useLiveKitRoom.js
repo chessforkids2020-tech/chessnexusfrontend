@@ -794,11 +794,16 @@ export default function useLiveKitRoom() {
         // camera track — before any canvas processor is attached, so we measure
         // the sensor rather than our own effects pipeline. Never mid-class: each
         // step restarts the camera briefly.
-        try {
-          const camPub = r.localParticipant.getTrackPublication?.('camera');
-          const rawTrack = (camPub?.videoTrack || camPub?.track)?.mediaStreamTrack;
-          if (rawTrack) await tuneForSmoothness(rawTrack, setCamSmoothness);
-        } catch { /* smoothness tuning is best-effort */ }
+        // DISABLED. This measured the delivered frame rate and stepped the
+        // resolution down, but applyConstraints restarts the camera underneath a
+        // track LiveKit has already published (and a processor may already be
+        // attached to), which froze video a few seconds after joining.
+        //
+        // The capture constraints below already ask for frameRate {min:15,
+        // ideal:30}, which pushes the driver away from trading frame rate for
+        // resolution without ever restarting anything. If a stronger fix is
+        // needed, it must happen BEFORE the track is published, not after.
+        // try { await tuneForSmoothness(rawTrack, setCamSmoothness); } catch {}
         // Saved video effects (canvas processor) — visual polish, can lag a beat.
         try { await applyVideoRef.current(); } catch { /* effects optional */ }
         // AI noise filters — the SLOWEST (WASM + AudioWorklet), so last + non-blocking.
