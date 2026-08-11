@@ -99,6 +99,7 @@ export default function StreakReportPage() {
   // first report is exactly right anyway.
   const comparison = p.comparison || (() => {
     const res = games.results || {};
+    const pt = p.practiceTotals || {};
     const played = (res.win || 0) + (res.loss || 0) + (res.draw || 0);
     const current = {
       periodStart: report.periodStart,
@@ -113,7 +114,21 @@ export default function StreakReportPage() {
         : null,
       winRate: played ? Math.round(((res.win || 0) / played) * 100) : null,
       defensiveScore: p.defence?.defensiveScore ?? null,
-      momentsFound: p.moments?.total ?? null,
+      // NOT moments.total: that counts CATEGORISED moments, and in payloads
+      // written before 'tactic' became categorisable almost nothing was, so it
+      // was saved as 0 while the report showed dozens of mistakes. The practice
+      // plan's own tally never depended on categories.
+      momentsFound: p.moments?.practice?.drillable
+        ?? (p.momentThemes || []).reduce((n, t) => n + (t.count || 0), 0)
+        ?? p.moments?.total ?? null,
+      puzzles:        pt.puzzles        ?? null,
+      puzzleAccuracy: pt.puzzleAccuracy ?? null,
+      bestStreak:     pt.bestStreak     ?? null,
+      daysPractised:  pt.daysPractised  ?? null,
+      arenaGames:     pt.arenaGames     ?? null,
+      externalGames:  pt.externalGames  ?? null,
+      endgamesPlayed: pt.endgames       ?? null,
+      studies:        pt.studies        ?? null,
     };
     return { history: [], current, columns: [current] };
   })();
@@ -159,10 +174,10 @@ export default function StreakReportPage() {
 
       {/* ── The three phases ─────────────────────────────────────────── */}
       <section className="sr-section">
-        <h2 className="sr-h2">The three phases of your games</h2>
-        <p className="sr-sub">
-          All {games.analysed || 0} games, Chess Nexus and your other accounts together.
-        </p>
+        <SectionHead
+          title="The three phases of your games"
+          help={`All ${games.analysed || 0} games, Chess Nexus and your other accounts together. Accuracy is how close your moves were to the best move available, so 100% would mean playing like the engine.`}
+        />
         <div className="sr-phases">
           {['opening', 'middlegame', 'endgame'].map(key => {
             const ph = phases[key] || {};
@@ -192,10 +207,12 @@ export default function StreakReportPage() {
       {/* ── Defence ──────────────────────────────────────────────────── */}
       {p.defence?.opportunities > 0 && (
         <section className="sr-section">
-          <h2 className="sr-h2">How you defend</h2>
-          <p className="sr-sub">
+          <SectionHead
+            title="How you defend"
+            help={<>
             What happens after a game turns against you — the skill most players never measure.
-          </p>
+          </>}
+          />
           <div className="sr-stats">
             <Stat label="Difficult positions" value={p.defence.opportunities} />
             <Stat label="Saved or held" value={p.defence.recovered + p.defence.turnedAround + p.defence.held} good />
@@ -209,8 +226,10 @@ export default function StreakReportPage() {
       {/* ── Endgames reached ─────────────────────────────────────────── */}
       {(p.endgames || []).length > 0 && (
         <section className="sr-section">
-          <h2 className="sr-h2">The endgames you reached</h2>
-          <p className="sr-sub">Which endgames came up, and how you did once you were in them.</p>
+          <SectionHead
+            title="The endgames you reached"
+            help="Which endgames came up, and how you did once you were in them."
+          />
           <div className="sr-scroll">
             <table className="sr-table">
               <thead>
@@ -236,12 +255,14 @@ export default function StreakReportPage() {
           the page simply never rendered it. */}
       {openings.length > 0 && (
         <section className="sr-section">
-          <h2 className="sr-h2">Openings you played</h2>
-          <p className="sr-sub">
+          <SectionHead
+            title="Openings you played"
+            help={<>
             Grouped by opening, not by variation — three Sicilians are three
             Sicilians however they continued. Openings you played only once are left
             out: one game is not a pattern.
-          </p>
+          </>}
+          />
           <div className="sr-scroll">
             <table className="sr-table">
               <thead>
@@ -278,11 +299,13 @@ export default function StreakReportPage() {
           number. */}
       {(p.momentThemes || []).length > 0 && (
         <section className="sr-section">
-          <h2 className="sr-h2">The patterns you missed</h2>
-          <p className="sr-sub">
+          <SectionHead
+            title="The patterns you missed"
+            help={<>
             The tactical motifs behind your mistakes this period, most frequent first.
             These come from your own games, not from a puzzle set.
-          </p>
+          </>}
+          />
           <div className="sr-motifs">
             {p.momentThemes.slice(0, 8).map(t => {
               const top = p.momentThemes[0]?.count || 1;
@@ -311,39 +334,25 @@ export default function StreakReportPage() {
           reason to come back for a second one. */}
       {comparison.current && (
         <section className="sr-section">
-          <h2 className="sr-h2">
-            {(comparison.history || []).length > 0 ? 'Your reports, side by side' : 'Your baseline'}
-          </h2>
-          {/* Only the multi-report case needs explaining. On a first report the
-              table says it itself: one filled column, one hatched "Next report"
-              column waiting — a sentence repeating that just pushed the numbers
-              further down the page. */}
-          {(comparison.history || []).length > 0 && (
-            <p className="sr-sub">
-              Each column is one report period, oldest first. The small figure under a
-              number is the change from the report before it. Periods never overlap, so
-              a change here is a real change in your play.
-            </p>
-          )}
+          {/* One fixed title. It used to name the column count ("Four reports,
+              side by side"), which was wrong for everyone who did not have four,
+              and swapping in "Your baseline" for a first report meant the same
+              section changed name as a student earned more — so nobody could
+              learn where to look for it.
 
-          {/* What this period's practice actually was. On a first report this is
-              the answer to "how much did I do?", which is the only honest way to
-              say what "more next time" means. */}
-          {(comparison.history || []).length === 0 && (
-            <div className="sr-stats" style={{ marginBottom: 16 }}>
-              <Stat label="Games analysed" value={games.analysed || 0} />
-              {games.found > (games.analysed || 0) && (
-                <Stat label="Games played" value={games.found} />
-              )}
-              <Stat label="Mistakes found" value={p.moments?.total || 0} />
-              {p.moments?.practice?.drillable > 0 && (
-                <Stat label="Positions to practise" value={p.moments.practice.drillable} />
-              )}
-              {p.moments?.practice?.alreadySolved > 0 && (
-                <Stat label="Already practised" value={p.moments.practice.alreadySolved} good />
-              )}
-            </div>
-          )}
+              On a FIRST report there is nothing to explain: the table shows one
+              filled column and one hatched "Next report" column waiting, which
+              says it without a sentence. So no "?" appears there at all. */}
+          <SectionHead
+            title="Weekly report"
+            help={(comparison.history || []).length > 0
+              ? 'Each column is one report period, oldest first. The small figure under a number is the change from the report before it. Periods never overlap, so a change here is a real change in your play.'
+              : null}
+          />
+
+          {/* No stat cards above the table. They repeated "games analysed" from
+              the masthead and "mistakes found" from the table's own row, so the
+              same figure appeared three times on one page. */}
           <div className="sr-scroll">
             <table className="sr-table sr-compare">
               <thead>
@@ -369,14 +378,42 @@ export default function StreakReportPage() {
                 </tr>
               </thead>
               <tbody>
-                <CompareRow label="Games analysed"   cols={comparison.columns} field="gamesAnalysed" />
-                <CompareRow label="Opening accuracy" cols={comparison.columns} field="opening" suffix="%" />
-                <CompareRow label="Middlegame accuracy" cols={comparison.columns} field="middlegame" suffix="%" />
-                <CompareRow label="Endgame accuracy" cols={comparison.columns} field="endgame" suffix="%" />
-                <CompareRow label="Blunders per game" cols={comparison.columns} field="blundersPerGame" lowerIsBetter />
-                <CompareRow label="Win rate"         cols={comparison.columns} field="winRate" suffix="%" />
-                <CompareRow label="Defensive score"  cols={comparison.columns} field="defensiveScore" suffix="%" />
-                <CompareRow label="Mistakes found"   cols={comparison.columns} field="momentsFound" lowerIsBetter />
+                {/* Grouped the way the report is read: what you practised, how
+                    you played, what you played, what you studied. A flat list of
+                    eight numbers made the reader work out which belonged
+                    together. A group whose every row is empty hides itself, so a
+                    student with no study work does not get an empty heading. */}
+                <CompareGroup label="Puzzles — Chess Nexus" cols={comparison.columns}
+                  rows={[
+                    { label: 'Puzzles solved', field: 'puzzles' },
+                    { label: 'Puzzle accuracy', field: 'puzzleAccuracy', suffix: '%' },
+                    { label: 'Best streak', sub: 'correct in a row', field: 'bestStreak' },
+                    { label: 'Days practised', field: 'daysPractised' },
+                  ]} />
+
+                <CompareGroup label="Play — accuracy by phase" cols={comparison.columns}
+                  rows={[
+                    { label: 'Games analysed', field: 'gamesAnalysed' },
+                    { label: 'Opening', field: 'opening', suffix: '%' },
+                    { label: 'Middlegame', field: 'middlegame', suffix: '%' },
+                    { label: 'Endgame', field: 'endgame', suffix: '%' },
+                    { label: 'Blunders per game', field: 'blundersPerGame', lowerIsBetter: true },
+                    { label: 'Defensive score', field: 'defensiveScore', suffix: '%' },
+                    { label: 'Mistakes found', field: 'momentsFound', lowerIsBetter: true },
+                  ]} />
+
+                <CompareGroup label="Games played" cols={comparison.columns}
+                  rows={[
+                    { label: 'Chess Nexus arena', field: 'arenaGames' },
+                    { label: 'Lichess + Chess.com', field: 'externalGames' },
+                    { label: 'Win rate', sub: 'all games', field: 'winRate', suffix: '%' },
+                  ]} />
+
+                <CompareGroup label="Study" cols={comparison.columns}
+                  rows={[
+                    { label: 'Endgames played out', field: 'endgamesPlayed' },
+                    { label: 'Chapters completed', field: 'studies' },
+                  ]} />
               </tbody>
             </table>
           </div>
@@ -392,11 +429,13 @@ export default function StreakReportPage() {
           behind every Chess Nexus mistake, and cannot for the other two. */}
       {Object.values(p.games?.bySource || {}).some(n => n > 0) && (
         <section className="sr-section">
-          <h2 className="sr-h2">Where the work came from</h2>
-          <p className="sr-sub">
+          <SectionHead
+            title="Where the work came from"
+            help={<>
             Your games from every account go into the phase and endgame analysis above.
             Puzzle motifs are the one thing only Chess Nexus can give you.
-          </p>
+          </>}
+          />
           <div className="sr-sources">
             {[
               { key: 'chessnexus', name: 'Chess Nexus',
@@ -412,13 +451,20 @@ export default function StreakReportPage() {
               const n = p.games.bySource[src.key] || 0;
               const failed = (p.games.sourceErrors || {})[src.key];
               const pt = src.key === 'chessnexus' ? p.practiceTotals : null;
+              // Did the student do ANY Chess Nexus work — puzzles, endgames or
+              // studies — not just play games here?
+              const practised = (pt?.puzzles || 0) + (pt?.endgames || 0) + (pt?.studies || 0) > 0;
               // Chess Nexus is the only source that also carries PRACTICE, so
               // its headline is the puzzle count when we have one — games alone
               // badly understate what the student did here.
               const headline = pt?.puzzles > 0
                 ? `${pt.puzzles} puzzle${pt.puzzles === 1 ? '' : 's'}`
                 : `${n} game${n === 1 ? '' : 's'}`;
-              if (!n && !failed && !(pt?.puzzles > 0)) return null;
+              // Hide a source only when there is genuinely nothing to say about
+              // it. Chess Nexus previously disappeared whenever no GAMES were
+              // played here, which hid a week of puzzle practice — the one thing
+              // this card exists to show.
+              if (!n && !failed && !practised) return null;
               return (
                 <div className="sr-src" key={src.key}>
                   <div className="sr-src-who">{src.name}</div>
@@ -463,11 +509,13 @@ export default function StreakReportPage() {
       {/* ── Moments by category ──────────────────────────────────────── */}
       {(p.moments?.categories || []).length > 0 && (
         <section className="sr-section">
-          <h2 className="sr-h2">Where your mistakes happen</h2>
-          <p className="sr-sub">
+          <SectionHead
+            title="Where your mistakes happen"
+            help={<>
             {p.moments.total} positions from your own games. A mistake can belong to more
             than one group — an endgame fork is both — so these add up to more than the total.
-          </p>
+          </>}
+          />
           <div className="sr-cats">
             {p.moments.categories.map(c => (
               <Link key={c.key} to={`/nexus-guide?category=${c.key}`} className="sr-cat">
@@ -484,11 +532,13 @@ export default function StreakReportPage() {
       {/* ── Practice plan ────────────────────────────────────────────── */}
       {(p.moments?.practice?.plan || []).length > 0 && (
         <section className="sr-section">
-          <h2 className="sr-h2">Your practice for the next few days</h2>
-          <p className="sr-sub">
+          <SectionHead
+            title="Your practice for the next few days"
+            help={<>
             The positions that cost you the most, worst first. Five a day — enough to
             actually finish.
-          </p>
+          </>}
+          />
           <div className="sr-plan">
             {p.moments.practice.plan.map(d => (
               <div key={d.day} className="sr-day">
@@ -510,11 +560,10 @@ export default function StreakReportPage() {
       {/* ── Study plan — the payoff: every finding becomes something to DO ── */}
       {(p.suggestions || []).length > 0 && (
         <section className="sr-section">
-          <h2 className="sr-h2">Study plan — practice from your mistakes</h2>
-          <p className="sr-sub">
-            Built from the games above, worst first. Everything here comes from a
-            position you actually got wrong this week.
-          </p>
+          <SectionHead
+            title="Study plan — practice from your mistakes"
+            help="Built from the games above, worst first. Everything here comes from a position you actually got wrong this week."
+          />
           <div className="sr-improve">
             {p.suggestions.map(s => (
               <div key={s.key} className="sr-imp">
@@ -534,6 +583,40 @@ export default function StreakReportPage() {
 
       <Link to="/dashboard" className="sr-back">← Back to dashboard</Link>
     </div>
+  );
+}
+
+/**
+ * A section heading with its explanation tucked behind a "?".
+ *
+ * Every section used to carry two or three lines of prose under its title. Each
+ * line was worth having — they say what a number MEANS, which is the difference
+ * between a report and a scoreboard — but ten of them pushed the actual figures
+ * a long way down, and a student rereading their report has already read them.
+ *
+ * So the text stays, one tap away. Collapsed by default because the numbers are
+ * what people come back for; the "?" is always there for the first read, or for
+ * a parent seeing the report for the first time.
+ */
+function SectionHead({ title, help }) {
+  const [open, setOpen] = useState(false);
+  if (!help) return <h2 className="sr-h2">{title}</h2>;
+  return (
+    <>
+      <h2 className="sr-h2">
+        {title}
+        <button
+          type="button"
+          className={`sr-help${open ? ' is-open' : ''}`}
+          onClick={() => setOpen(v => !v)}
+          aria-expanded={open}
+          aria-label={open ? `Hide explanation of ${title}` : `What does ${title} mean?`}
+        >
+          ?
+        </button>
+      </h2>
+      {open && <p className="sr-sub sr-sub--help">{help}</p>}
+    </>
   );
 }
 
@@ -566,10 +649,33 @@ function prettyTheme(t) {
  * A null value prints "—" and suppresses the delta: a phase that was never
  * reached has no accuracy, and inventing 0 would read as playing it terribly.
  */
-function CompareRow({ label, cols, field, suffix = '', lowerIsBetter = false }) {
+/**
+ * A labelled band of related rows.
+ *
+ * Hides itself entirely when every row in it is empty for every column, so a
+ * student who has done no studies is not shown a "Study" heading over blanks —
+ * an empty group reads as missing data rather than as work not yet done.
+ */
+function CompareGroup({ label, cols, rows }) {
+  const live = rows.filter(r => cols.some(c => c[r.field] != null));
+  if (!live.length) return null;
+  return (
+    <>
+      <tr className="sr-group">
+        <th scope="row" colSpan={cols.length + (cols.length === 1 ? 2 : 1)}>{label}</th>
+      </tr>
+      {live.map(r => <CompareRow key={r.field} cols={cols} {...r} />)}
+    </>
+  );
+}
+
+function CompareRow({ label, sub, cols, field, suffix = '', lowerIsBetter = false }) {
   return (
     <tr>
-      <th scope="row">{label}</th>
+      <th scope="row">
+        {label}
+        {sub && <small className="sr-rowsub">{sub}</small>}
+      </th>
       {cols.map((c, i) => {
         const v = c[field];
         const prev = i > 0 ? cols[i - 1][field] : null;
