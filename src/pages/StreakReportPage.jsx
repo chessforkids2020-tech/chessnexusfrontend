@@ -314,21 +314,17 @@ export default function StreakReportPage() {
           <h2 className="sr-h2">
             {(comparison.history || []).length > 0 ? 'Your reports, side by side' : 'Your baseline'}
           </h2>
-          <p className="sr-sub">
-            {(comparison.history || []).length > 0 ? (
-              <>
-                Each column is one report period, oldest first. The small figure under a
-                number is the change from the report before it. Periods never overlap, so
-                a change here is a real change in your play.
-              </>
-            ) : (
-              <>
-                This is your first report, so there is nothing to compare against yet —
-                these are the numbers to beat. Practise another five days and your next
-                report will show this column beside the new one, with the change in each.
-              </>
-            )}
-          </p>
+          {/* Only the multi-report case needs explaining. On a first report the
+              table says it itself: one filled column, one hatched "Next report"
+              column waiting — a sentence repeating that just pushed the numbers
+              further down the page. */}
+          {(comparison.history || []).length > 0 && (
+            <p className="sr-sub">
+              Each column is one report period, oldest first. The small figure under a
+              number is the change from the report before it. Periods never overlap, so
+              a change here is a real change in your play.
+            </p>
+          )}
 
           {/* What this period's practice actually was. On a first report this is
               the answer to "how much did I do?", which is the only honest way to
