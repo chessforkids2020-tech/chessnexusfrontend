@@ -56,6 +56,41 @@ export default function StreakReportPage() {
   const phases = p.phases || {};
   const games = p.games || {};
 
+  // Openings saved by an OLDER build are one row per variation and include
+  // rows the source could not name ("Unknown"). Regroup them here so an
+  // existing report reads the same as a new one — same rules as
+  // openingSummary() in the builder: family before the colon, drop unnamed,
+  // drop anything played only once.
+  const openings = (() => {
+    const raw = p.openings || [];
+    if (!raw.length) return raw;
+    // Already grouped by the current builder — it stamps `variations`.
+    if (raw.some(o => typeof o.variations === 'number')) return raw;
+    const by = new Map();
+    for (const o of raw) {
+      const family = String(o.opening || '').split(':')[0].trim();
+      if (!family || /^(unknown|unnamed|irregular|\?+)$/i.test(family)) continue;
+      const key = `${family}|${o.side || ''}`;
+      if (!by.has(key)) {
+        by.set(key, { opening: family, ecoCode: o.ecoCode || '', side: o.side || '',
+                      games: 0, wins: 0, draws: 0, losses: 0, variations: new Set() });
+      }
+      const g = by.get(key);
+      // Old rows carry their own game count, so add rather than increment.
+      g.games  += o.games || o.played || 0;
+      g.wins   += o.wins || 0;
+      g.draws  += o.draws || 0;
+      g.losses += o.losses || 0;
+      if (o.opening && o.opening !== family) g.variations.add(o.opening);
+    }
+    return [...by.values()]
+      .filter(g => g.games >= 2)
+      .map(g => ({ ...g, variations: g.variations.size,
+                   score: Math.round(((g.wins + g.draws * 0.5) / g.games) * 100) }))
+      .sort((a, b) => b.games - a.games)
+      .slice(0, 8);
+  })();
+
   // Reports generated BEFORE the comparison section existed have no
   // `payload.comparison`. Rather than hide the section from every student who
   // already earned a report, rebuild this report's own column from figures the
@@ -199,12 +234,13 @@ export default function StreakReportPage() {
       {/* ── Openings you played ──────────────────────────────────────────
           openingSummary() has always been computed and saved in the payload;
           the page simply never rendered it. */}
-      {(p.openings || []).length > 0 && (
+      {openings.length > 0 && (
         <section className="sr-section">
           <h2 className="sr-h2">Openings you played</h2>
           <p className="sr-sub">
-            Which openings came up this period, and how you scored in each. Sorted by
-            how often you played them.
+            Grouped by opening, not by variation — three Sicilians are three
+            Sicilians however they continued. Openings you played only once are left
+            out: one game is not a pattern.
           </p>
           <div className="sr-scroll">
             <table className="sr-table">
@@ -212,13 +248,20 @@ export default function StreakReportPage() {
                 <tr><th>Opening</th><th>Side</th><th>Games</th><th>W</th><th>D</th><th>L</th><th>Score</th></tr>
               </thead>
               <tbody>
-                {p.openings.slice(0, 12).map((o, i) => (
+                {openings.slice(0, 12).map((o, i) => (
                   <tr key={`${o.opening}-${o.side}-${i}`}>
                     <th scope="row">
-                      {o.opening}{o.ecoCode ? <small style={{ display: 'block', fontWeight: 400, opacity: 0.6 }}>{o.ecoCode}</small> : null}
+                      {o.opening}
+                      {(o.ecoCode || o.variations > 1) && (
+                        <small style={{ display: 'block', fontWeight: 400, opacity: 0.6 }}>
+                          {o.ecoCode}
+                          {o.ecoCode && o.variations > 1 ? ' · ' : ''}
+                          {o.variations > 1 ? `${o.variations} variations` : ''}
+                        </small>
+                      )}
                     </th>
                     <td>{o.side === 'white' ? 'White' : o.side === 'black' ? 'Black' : '—'}</td>
-                    <td>{o.played}</td>
+                    <td>{o.games}</td>
                     <td>{o.wins}</td><td>{o.draws}</td><td>{o.losses}</td>
                     <td className={o.score < 40 ? 'sr-bad' : o.score > 60 ? 'sr-good' : ''}>{o.score}%</td>
                   </tr>
