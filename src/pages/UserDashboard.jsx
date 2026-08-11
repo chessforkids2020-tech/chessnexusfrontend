@@ -588,6 +588,12 @@ function TodayStrip() {
   const [reminder, setReminder] = React.useState(null);    // daily nudge toward the next report
   const [me, setMe] = React.useState(null);                // for the username prompt
   const [repairBusy, setRepairBusy] = React.useState(false);
+  // Price, so the unlock chip can state the cost up front rather than only
+  // revealing it once the modal is open.
+  const [reportPrice, setReportPrice] = React.useState(null);
+  // A report already queued/running. Without this the chip would keep offering
+  // "Unlock" to someone who has already paid and is waiting on the analysis.
+  const [jobRunning, setJobRunning] = React.useState(false);
 
   // Buy yesterday back with wallet XP. The server re-checks eligibility, the
   // cost and the per-block cap, so this only has to handle the outcome.
@@ -670,10 +676,17 @@ function TodayStrip() {
           // nag on every page load. Scoped by user id: coaches sign into many
           // student accounts on one browser and a global key would leak
           // between them.
+          //
+          // The key is NOT set here. It is set when the student actually ACTS —
+          // generates the report, or dismisses with "Maybe later" (see
+          // onDismiss below). Marking it seen on mere RENDER was how a student
+          // who hit day 5 while short of the XP price lost the reward for good:
+          // the modal told them "you need 100 XP", set the key, and then never
+          // reappeared once they had earned it. The unlock button lives ONLY in
+          // this modal, so there was no other way back in.
           const uid = s?.userId || 'me';
           const key = `streakMilestoneSeen:${uid}:${s.milestoneDay}`;
           if (!localStorage.getItem(key)) {
-            localStorage.setItem(key, '1');
             setMilestone(s.milestoneDay || s.current);
             api.get('/api/auth/me')
               .then(r => { if (alive) setMe(r.data?.user || r.data || null); })
@@ -688,6 +701,14 @@ function TodayStrip() {
     api.get('/api/streak-report/latest')
       .then(res => { if (alive) setReport(res.data?.report || null); })
       .catch(() => { /* endpoint ships with the report itself; ignore until then */ });
+
+    // Price for the unlock chip's label, and whether one is already being built.
+    api.get('/api/streak-report/price')
+      .then(res => { if (alive) setReportPrice(res.data || null); })
+      .catch(() => {});
+    api.get('/api/streak-report/status')
+      .then(res => { if (alive) setJobRunning(!!res.data?.job); })
+      .catch(() => {});
 
     api.get('/api/public/monthly-focus/current')
       .then(async res => {
@@ -760,10 +781,41 @@ function TodayStrip() {
     }
   }
 
-  // ALWAYS shown. With a report it opens it; without one it explains how to earn
-  // one - the only place a student is told what a streak day actually costs.
+  // ALWAYS shown, in one of THREE states:
+  //
+  //   1. a report is being generated  → "Being prepared…" (no dead end while waiting)
+  //   2. a report is ready            → opens it
+  //   3. one is EARNED but not claimed→ "Unlock · N XP", reopens the offer
+  //   4. nothing yet                  → explains how to earn one
+  //
+  // State 3 is the important one. The unlock button used to exist ONLY inside the
+  // milestone modal, which fired once per browser — so a student who reached day 5
+  // while short of the XP price had no route back to their own reward, however much
+  // XP they later earned. The chip is now a permanent way in.
+  const reportDue = streak?.reportDue && !jobRunning;
   chips.push(
-    report ? (
+    jobRunning ? (
+      <span key="report" className="today-chip today-chip--todo">
+        <span className="today-chip-emoji">&#128202;</span>
+        <span className="today-chip-text">Weekly report — being prepared…</span>
+      </span>
+    ) : reportDue ? (
+      <button
+        key="report"
+        type="button"
+        className="today-chip today-chip--todo"
+        onClick={() => {
+          setMilestone(streak?.milestoneDay || streak?.current);
+          if (!me) api.get('/api/auth/me').then(r => setMe(r.data?.user || r.data || null)).catch(() => {});
+        }}
+      >
+        <span className="today-chip-emoji">&#127873;</span>
+        <span className="today-chip-text">
+          Unlock weekly report{reportPrice && !reportPrice.free ? ` · ${reportPrice.price} XP` : ''}
+        </span>
+        <span className="today-chip-go">&rarr;</span>
+      </button>
+    ) : report ? (
       <Link key="report" to={`/streak-report/${report.id}`} className="today-chip today-chip--done">
         <span className="today-chip-emoji">&#128202;</span>
         <span className="today-chip-text">Weekly report</span>
@@ -828,6 +880,21 @@ function TodayStrip() {
           streak={milestone}
           user={me}
           onClose={() => setMilestone(null)}
+          // Mark this milestone "seen" only on a REAL decision — generated, or
+          // explicitly put off with "Maybe later". Closing because they cannot
+          // afford it yet must leave the offer standing, so it reappears once
+          // they have the XP. The chip below is the other way back in.
+          onDismiss={() => {
+            try {
+              const uid = streak?.userId || 'me';
+              const day = streak?.milestoneDay || milestone;
+              localStorage.setItem(`streakMilestoneSeen:${uid}:${day}`, '1');
+            } catch { /* private mode — modal simply shows again */ }
+          }}
+          // Flip the chip to "being prepared…" straight away, so closing the
+          // modal does not drop the student back to an "Unlock" button for a
+          // report they have just paid for.
+          onGenerated={() => setJobRunning(true)}
         />
       )}
       {/* The milestone modal wins when both could show — being offered the

@@ -40,13 +40,23 @@ export default function MyMoments() {
   // in with ?category=defence, so "you collapsed in 7 of 13 difficult positions"
   // opens exactly those positions instead of every moment the student has.
   const [searchParams, setSearchParams] = useSearchParams();
-  const [category, setCategory] = useState(searchParams.get('category') || '');
+  // LAND ON "ALL KINDS", even when the report links in with ?category=…
+  //
+  // Arriving pre-filtered is how students hit an empty page: if that one bucket
+  // happens to be empty for them, the first thing they ever see is a blank box
+  // with a number above it, and they conclude the feature is broken rather than
+  // that they picked a narrow filter. Showing everything first means there is
+  // always something on screen; the chip below is highlighted so the category
+  // they came for is one click away, not lost.
+  const [category, setCategory] = useState('');
+  // The category the report wanted, kept only to draw attention to that chip.
+  const suggestedCategory = searchParams.get('category') || '';
   // Only shown once the server has told us what a category is called — the
   // buckets are defined in one place (services/momentCategories.js) so the tab
   // labels and the report's counts can never disagree.
   const [catInfo, setCatInfo] = useState(null);
   const [puzzles, setPuzzles] = useState([]);
-  const [counts, setCounts] = useState({ total: 0, unsolved: 0 });
+  const [counts, setCounts] = useState({ total: 0, unsolved: 0, totalAllKinds: 0 });
   const [loading, setLoading] = useState(true);
 
   const [active, setActive] = useState(null);
@@ -73,7 +83,11 @@ export default function MyMoments() {
 
       const res = await api.get(`/api/game-insights/puzzles?${qs.toString()}`);
       setPuzzles(res.data.puzzles || []);
-      setCounts({ total: res.data.total || 0, unsolved: res.data.unsolved || 0 });
+      setCounts({
+        total: res.data.total || 0,
+        unsolved: res.data.unsolved || 0,
+        totalAllKinds: res.data.totalAllKinds ?? res.data.total ?? 0,
+      });
       setCatInfo(res.data.category || null);
     } catch (e) {
       setPuzzles([]);
@@ -162,17 +176,29 @@ export default function MyMoments() {
       <div className="mm-cats">
         <button
           className={`mm-cat${!category ? ' active' : ''}`}
-          onClick={() => { setCategory(''); setSearchParams({}, { replace: true }); }}
+          onClick={() => {
+            setCategory('');
+            // Drop only the category. setSearchParams({}) also threw away
+            // since/until, so clearing the kind silently widened the view to
+            // every mistake the student had ever made.
+            const next = new URLSearchParams(searchParams);
+            next.delete('category');
+            setSearchParams(next, { replace: true });
+          }}
         >
           All kinds
         </button>
         {MOMENT_CATEGORIES.map(c => (
           <button
             key={c.key}
-            className={`mm-cat${category === c.key ? ' active' : ''}`}
+            className={`mm-cat${category === c.key ? ' active' : ''}${
+              !category && suggestedCategory === c.key ? ' suggested' : ''}`}
             onClick={() => {
               setCategory(c.key);
-              // Keep the URL honest so the view can be shared or reloaded.
+              // Keep the URL honest so the view can be shared or reloaded, and
+              // KEEP since/until — dropping them silently widened the view from
+              // "this report's mistakes" to "every mistake ever" the moment a
+              // student touched a chip.
               const next = new URLSearchParams(searchParams);
               next.set('category', c.key);
               setSearchParams(next, { replace: true });
@@ -203,11 +229,30 @@ export default function MyMoments() {
         <div className="mm-empty">Loading your moments…</div>
       ) : puzzles.length === 0 ? (
         <div className="mm-empty">
-          {counts.total === 0 ? (
+          {counts.totalAllKinds === 0 ? (
             <>
               <p>You haven't collected any moments yet.</p>
               <p className="mm-empty-sub">Analyse your games and the Nexus Guide will turn your mistakes into puzzles here.</p>
               <button className="mm-cta" onClick={() => navigate('/game-analysis')}>🔎 Analyse my games</button>
+            </>
+          ) : category ? (
+            /* The student HAS moments, just none of this kind. Say so plainly and
+               offer the way out — "Nothing here, try another tab" left them to
+               guess which tab, and reading it as "the app is broken" was the
+               fairer interpretation. */
+            <>
+              <p>No {catInfo?.label?.toLowerCase() || 'moments of this kind'} to practise here.</p>
+              <p className="mm-empty-sub">
+                You have {counts.totalAllKinds} moment{counts.totalAllKinds === 1 ? '' : 's'} in total.
+              </p>
+              <button className="mm-cta" onClick={() => { setCategory(''); const n = new URLSearchParams(searchParams); n.delete('category'); setSearchParams(n, { replace: true }); }}>
+                Show all kinds
+              </button>
+            </>
+          ) : filter === 'false' ? (
+            <>
+              <p>Nothing left to practise — you have solved them all.</p>
+              <button className="mm-cta" onClick={() => setFilter('all')}>Review the solved ones</button>
             </>
           ) : (
             <p>Nothing here in this view. Try another tab.</p>

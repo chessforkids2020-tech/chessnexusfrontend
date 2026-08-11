@@ -45,6 +45,13 @@
 .mm-cat.active {
   background: rgba(16,185,129,.14); border-color: rgba(16,185,129,.42); color: #34d399;
 }
+/* The kind the weekly report sent the student here for. Not selected — the page
+   deliberately opens on "All kinds" so there is always something on screen — but
+   marked so the one they came for is obvious and one click away. */
+.mm-cat.suggested {
+  border-color: rgba(6,182,212,.5); color: #67e8f9;
+  box-shadow: 0 0 0 1px rgba(6,182,212,.18);
+}
 .mm-cat-blurb {
   margin: 0 0 12px; font-size: 12.5px; color: #9ca3af;
 }

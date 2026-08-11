@@ -45,7 +45,12 @@ function Confetti({ ms = 5000, onDone }) {
   );
 }
 
-export default function StreakMilestoneModal({ streak, user, onClose }) {
+// `onDismiss` marks this milestone as dealt with, so the modal does not reappear.
+// It is called ONLY on a real decision: the report was generated, or the student
+// chose "Maybe later". It is deliberately NOT called when they close while short
+// of the XP price — that student has not had their reward, and suppressing the
+// offer would strand them exactly as it did before (the unlock lives only here).
+export default function StreakMilestoneModal({ streak, user, onClose, onDismiss, onGenerated }) {
   const [phase, setPhase] = useState('offer');   // offer | celebrating | queued | error
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
@@ -73,6 +78,9 @@ export default function StreakMilestoneModal({ streak, user, onClose }) {
     setBusy(true); setErr('');
     try {
       await api.post('/api/streak-report/generate');
+      // Generated — this milestone is genuinely done with.
+      onDismiss?.();
+      onGenerated?.();
       setPhase('celebrating');
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not start your report. Please try again.');
@@ -131,7 +139,18 @@ export default function StreakMilestoneModal({ streak, user, onClose }) {
                 : cost && !cost.free ? `Generate my report · ${cost.price} XP`
                 : 'Generate my report'}
             </button>
-            <button type="button" style={S.ghost} onClick={onClose}>Maybe later</button>
+            {/* "Maybe later" is a real decision ONLY if they could have said yes.
+                A student who cannot afford it yet is not deferring — they are
+                blocked — so closing must leave the offer standing for when they
+                have the XP. Hence the label changes too: promising to come back
+                is honest; "maybe later" would imply they had a choice. */}
+            <button
+              type="button"
+              style={S.ghost}
+              onClick={() => { if (cost ? cost.affordable : true) onDismiss?.(); onClose(); }}
+            >
+              {cost && !cost.affordable ? 'I will come back for this' : 'Maybe later'}
+            </button>
           </>
         )}
 
@@ -140,6 +159,10 @@ export default function StreakMilestoneModal({ streak, user, onClose }) {
             <p style={S.body}>
               We are analysing your games now. This takes a while — go and play, and
               we will send you a notification the moment it is ready.
+            </p>
+            <p style={S.bodyQuiet}>
+              You can close this. The report will be waiting on your dashboard under
+              <b> Weekly report</b> when it is done.
             </p>
             {phase === 'queued' && (
               <button type="button" style={S.primary} onClick={onClose}>Got it</button>
@@ -173,6 +196,7 @@ const S = {
   flame: { fontSize: 46, lineHeight: 1 },
   title: { margin: '8px 0 6px', fontSize: 26, fontWeight: 800, color: '#f8fafc' },
   body: { margin: '0 0 18px', fontSize: 14.5, lineHeight: 1.6, color: '#cbd5e1' },
+  bodyQuiet: { margin: '0 0 18px', fontSize: 13, lineHeight: 1.55, color: '#94a3b8' },
   cost: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
     gap: 10, padding: '9px 12px', marginBottom: 10, borderRadius: 10,

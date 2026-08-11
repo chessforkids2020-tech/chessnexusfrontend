@@ -558,6 +558,29 @@ export default function useLiveKitRoom() {
     });
   }, []);
 
+  // SERIALISES every camera change. Two setCameraEnabled calls overlapping is
+  // a real way to end up with a LIVE BUT FROZEN track: the browser is still
+  // tearing the device down when the next acquisition starts, and Chrome hands
+  // back a MediaStreamTrack that reports readyState 'live' while producing zero
+  // frames. Nothing downstream can tell that apart from a working camera —
+  // LiveKit dutifully encodes and sends black.
+  //
+  // A promise chain means off→on→off, however fast the clicking, always runs in
+  // order and never overlaps.
+  //
+  // Declared ABOVE connect() because the JOIN-TIME camera enable now goes
+  // through this same queue. Previously the join enabled the camera directly
+  // while only the manual toggle was serialised, so the two could overlap: a
+  // user pressing the camera button during the ~1s join window produced exactly
+  // the overlapping-acquisition case described above. One queue, both paths.
+  const camQueueRef = useRef(Promise.resolve());
+  const enqueueCam = useCallback((fn) => {
+    const next = camQueueRef.current.then(fn, fn);
+    // Swallow rejections so one failure cannot poison every later call.
+    camQueueRef.current = next.catch(() => {});
+    return next;
+  }, []);
+
   const connect = useCallback(async ({ url, token }) => {
     setError('');
     let LK;
@@ -567,7 +590,14 @@ export default function useLiveKitRoom() {
       setError('Video library not installed (livekit-client).');
       throw e;
     }
-    const { Room, RoomEvent, Track } = LK;
+    // Verbose SDK logging, opt-in per browser so production consoles stay clean:
+    //   localStorage.setItem('lkDebug','1')  then reload.
+    // Must run BEFORE the Room is constructed — the log level is read at
+    // construction. setLogLevel is a top-level export, not a Room method.
+    try {
+      if (localStorage.getItem('lkDebug') === '1') LK.setLogLevel?.('debug');
+    } catch { /* private mode — skip */ }
+    const { Room, RoomEvent, Track, ConnectionState } = LK;
     // If we're already connected (e.g. reconnecting with a fresh token after a
     // control change), tear down the old room first to avoid a dangling
     // connection / duplicate participant.
@@ -644,6 +674,26 @@ export default function useLiveKitRoom() {
       // Autoplay policy: fires when the browser blocks (or later allows) audio.
       .on(RoomEvent.AudioPlaybackStatusChanged, () => {
         setAudioBlocked(!r.canPlaybackAudio);
+      })
+      // ASYNCHRONOUS device failure — a camera/mic yanked by another app (or by
+      // the OS) AFTER a successful acquisition. The try/catch around
+      // setCameraEnabled cannot see this: that call already resolved. Without
+      // this listener the track dies mid-class and the user is told nothing.
+      .on(RoomEvent.MediaDevicesError, (e) => {
+        setDeviceIssue({ mic: false, cam: true, kind: classifyDeviceError(e) });
+      })
+      // After a FULL reconnect the SDK republishes the tracks, but our canvas
+      // processors (light/appearance, background blur) and the sharpness hint do
+      // not survive onto the fresh track — the coach comes back from a network
+      // blip with their effects silently gone.
+      .on(RoomEvent.Reconnected, () => {
+        (async () => {
+          try {
+            applyContentHint(r);
+            await applyVideoRef.current();
+          } catch { /* effects are optional */ }
+          refresh(r);
+        })();
       });
 
     await r.connect(url, token);
@@ -734,36 +784,73 @@ export default function useLiveKitRoom() {
       setAudioBlocked(!r.canPlaybackAudio);
     }
 
-    // ── FAST PATH: get the coach INTO the room ASAP ──────────────────────────────
-    // Enable mic + camera in PARALLEL (not serially), then immediately mark connected
-    // and render the UI. The old code awaited mic → Krisp → RNNoise → camera →
-    // auto-adjust → video-effects one after another before showing anything, which
-    // took ~20-30s (RNNoise WASM + canvas processor setup are slow). None of those
-    // "polish" steps are needed to SEE the room, so they now run in the BACKGROUND.
-    // Failures are RECORDED, not swallowed: entering the room must never be blocked by
-    // a dead device, but the user still has to be told why they're silent/invisible.
-    const [micRes, camRes] = await Promise.all([
-      r.localParticipant.setMicrophoneEnabled(true, AUDIO_CAPTURE_DEFAULTS)
-        .then(() => null).catch((e) => e),
-      r.localParticipant.setCameraEnabled(true).then(() => null).catch((e) => e),
-    ]);
-    // ONE RETRY for the camera, on its own.
+    // ── WAIT FOR A GENUINELY CONNECTED ROOM ──────────────────────────────────
     //
-    // Mic and camera are requested in PARALLEL above (for speed), and some
-    // machines cannot serve both getUserMedia calls at once — the camera loses
-    // the race and comes back NotReadableError/TrackStartError even though the
-    // permission was granted and the device is perfectly fine. That is the
-    // "browser says camera is allowed and available, but the classroom cannot
-    // open it" case, and it hits ONE student on ONE machine while everyone else
-    // is fine, which is exactly the reported symptom.
+    // r.connect() resolving is necessary but NOT sufficient. On a slow or
+    // still-settling transport the Room can be past connect() while the peer
+    // connection is not yet ready to negotiate. Publishing into that window
+    // produces a track that exists locally and is never negotiated — which
+    // renders black for everyone INCLUDING the publisher, and is fixed by a
+    // reload. That is the reported symptom, so we gate on the honest signal.
+    if (r.state !== ConnectionState.Connected) {
+      await new Promise((resolve) => {
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          r.off(RoomEvent.ConnectionStateChanged, onState);
+          clearTimeout(timer);
+          resolve();
+        };
+        const onState = () => { if (r.state === ConnectionState.Connected) finish(); };
+        // Never hang the join forever on a transport that refuses to settle:
+        // proceed anyway and let the device errors below report honestly.
+        const timer = setTimeout(finish, 8000);
+        r.on(RoomEvent.ConnectionStateChanged, onState);
+        onState(); // in case it connected between the check and the listener
+      });
+    }
+
+    // ── SEQUENTIAL device enable (was Promise.all) ───────────────────────────
+    // Mic FIRST, then camera — deliberately not in parallel. Requesting both
+    // getUserMedia calls concurrently makes some machines fail the camera with
+    // NotReadableError/TrackStartError even though permission is granted and the
+    // device is free: the camera loses a race against the mic for the same
+    // device-manager lock. That hit ONE student on ONE machine while everyone
+    // else was fine. Serialising costs ~200-400ms on join and removes the whole
+    // failure class.
     //
-    // Retrying alone, after the mic has finished, costs nothing when the first
-    // attempt worked (this block does not run) and rescues that student.
-    let camFinal = camRes;
-    if (camRes) {
+    // The UI still renders before the slow "polish" steps (effects, RNNoise,
+    // Krisp) — those remain in the background block below, which is where the
+    // original ~20-30s join delay actually came from, not from this ordering.
+    // Failures are RECORDED, not swallowed: entering the room must never be
+    // blocked by a dead device, but the user still has to be told why they are
+    // silent/invisible.
+    const micRes = await r.localParticipant
+      .setMicrophoneEnabled(true, AUDIO_CAPTURE_DEFAULTS)
+      .then(() => null).catch((e) => e);
+
+    // Through enqueueCam so the join-time enable shares ONE serialisation chain
+    // with the manual toggle — see the queue's note above.
+    let camFinal = await enqueueCam(() =>
+      r.localParticipant.setCameraEnabled(true).then(() => null).catch((e) => e)
+    );
+
+    // ONE RETRY for the camera, on its own. KEPT DELIBERATELY.
+    //
+    // Sequencing above makes this rare, not impossible — a camera briefly still
+    // held by another app (Zoom/Teams) fails the same way. The retry cannot be
+    // replaced by the SDK's reconnection logic: that handles TRANSPORT failures
+    // (ICE restart, signal drop, session resume), whereas a getUserMedia
+    // rejection is a LOCAL device-acquisition failure. No track was ever
+    // created, so LiveKit does not know one was wanted and will never retry it.
+    // Without this the user sits with no video and no recovery until they
+    // reload. Costs nothing when the first attempt succeeds.
+    if (camFinal) {
       await new Promise(res => setTimeout(res, 500));
-      camFinal = await r.localParticipant.setCameraEnabled(true)
-        .then(() => null).catch((e) => e);
+      camFinal = await enqueueCam(() =>
+        r.localParticipant.setCameraEnabled(true).then(() => null).catch((e) => e)
+      );
     }
 
     if (micRes || camFinal) {
@@ -827,7 +914,7 @@ export default function useLiveKitRoom() {
       } catch { /* ignore */ }
     })();
     return r;
-  }, [refresh]);
+  }, [refresh, enqueueCam]);
 
   // Switch which webcam is publishing (live, no reconnect).
   const switchCamera = useCallback(async (deviceId) => {
@@ -946,11 +1033,15 @@ export default function useLiveKitRoom() {
   const retryDevices = useCallback(async () => {
     const r = roomRef.current;
     if (!r) return false;
-    const [micRes, camRes] = await Promise.all([
-      r.localParticipant.setMicrophoneEnabled(true, AUDIO_CAPTURE_DEFAULTS)
-        .then(() => null).catch((e) => e),
-      r.localParticipant.setCameraEnabled(true).then(() => null).catch((e) => e),
-    ]);
+    // Sequential + queued, for the same reasons as the join path: this is the
+    // "my devices are broken" button, so it is the LAST place that should risk
+    // losing the camera to a parallel-getUserMedia race against the mic.
+    const micRes = await r.localParticipant
+      .setMicrophoneEnabled(true, AUDIO_CAPTURE_DEFAULTS)
+      .then(() => null).catch((e) => e);
+    const camRes = await enqueueCam(() =>
+      r.localParticipant.setCameraEnabled(true).then(() => null).catch((e) => e)
+    );
     if (micRes || camRes) {
       const kinds = [micRes && classifyDeviceError(micRes), camRes && classifyDeviceError(camRes)].filter(Boolean);
       setDeviceIssue({ mic: !!micRes, cam: !!camRes, kind: kinds.includes('blocked') ? 'blocked' : kinds[0] });
@@ -969,7 +1060,7 @@ export default function useLiveKitRoom() {
     loadCameras();
     refresh(r);
     return true;
-  }, [refresh, loadCameras]);
+  }, [refresh, loadCameras, enqueueCam]);
 
   // Toggle the free RNNoise AI noise suppression on the mic (persisted). Applied live
   // to the current mic track. If Krisp is licensed/enabled it owns the mic instead.
@@ -1023,23 +1114,6 @@ export default function useLiveKitRoom() {
     }
     refresh(r);
   }, [refresh]);
-
-  // SERIALISES every camera change. Two setCameraEnabled calls overlapping is
-  // a real way to end up with a LIVE BUT FROZEN track: the browser is still
-  // tearing the device down when the next acquisition starts, and Chrome hands
-  // back a MediaStreamTrack that reports readyState 'live' while producing zero
-  // frames. Nothing downstream can tell that apart from a working camera —
-  // LiveKit dutifully encodes and sends black.
-  //
-  // A promise chain means off→on→off, however fast the clicking, always runs in
-  // order and never overlaps.
-  const camQueueRef = useRef(Promise.resolve());
-  const enqueueCam = useCallback((fn) => {
-    const next = camQueueRef.current.then(fn, fn);
-    // Swallow rejections so one failure cannot poison every later call.
-    camQueueRef.current = next.catch(() => {});
-    return next;
-  }, []);
 
   // Set the camera to an EXPLICIT state. `toggleCam` flips whatever is current;
   // this says exactly what you want, which matters for repair flows — two

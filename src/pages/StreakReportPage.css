@@ -281,6 +281,87 @@
   .sr-imp-cta { width: 100%; text-align: center; }
 }
 
+/* ── Motif bars ───────────────────────────────────────────────────────
+   Which patterns the student missed. A bar length is read faster than a
+   number, and the point of the section is which motif is worst. */
+.sr-motifs {
+  background: var(--sr-panel);
+  border: 1px solid var(--sr-line);
+  border-radius: 14px;
+  padding: 18px 20px 8px;
+}
+.sr-motif {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 4px 12px; margin-bottom: 14px; align-items: baseline;
+}
+.sr-motif-name { font-size: 14px; color: #e2e8f0; }
+.sr-motif-val { font-size: 13.5px; font-weight: 700; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+.sr-motif-unit { font-size: 11.5px; font-weight: 400; color: var(--sr-faint); }
+.sr-motif-track {
+  grid-column: 1 / -1; height: 6px; border-radius: 3px;
+  background: rgba(148,163,184,0.16); overflow: hidden;
+}
+.sr-motif-track > i {
+  display: block; height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, #f87171, #fb923c);
+}
+
+/* ── Source cards ─────────────────────────────────────────────────────
+   Which platforms the report drew on, and what each one can and cannot
+   tell us. The limitation line is deliberately part of the card: a
+   student should never wonder why their Lichess puzzles are absent. */
+.sr-sources {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+.sr-src {
+  background: var(--sr-panel);
+  border: 1px solid var(--sr-line);
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+.sr-src-who {
+  font-size: 11.5px; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--sr-dim); font-weight: 700;
+}
+.sr-src-big {
+  font-size: 26px; font-weight: 800; margin: 6px 0 2px;
+  color: #f8fafc; font-variant-numeric: tabular-nums;
+}
+.sr-src ul { margin: 10px 0 0; padding-left: 16px; font-size: 12.5px; color: #cbd5e1; }
+.sr-src li { margin-bottom: 3px; }
+.sr-src-limit {
+  margin: 10px 0 0; font-size: 11.5px; color: var(--sr-faint); line-height: 1.5;
+}
+
+/* ── Comparison table ─────────────────────────────────────────────────
+   The current report's column is tinted so the eye lands on "where am I
+   now" before reading back through the history. */
+.sr-compare th.sr-now, .sr-compare td.sr-now {
+  background: rgba(6, 182, 212, 0.07);
+  color: #f8fafc;
+}
+.sr-compare td.sr-now { font-weight: 700; }
+.sr-wk {
+  display: block; font-size: 10px; font-weight: 500;
+  letter-spacing: 0.04em; text-transform: none; color: var(--sr-faint);
+  margin-top: 2px;
+}
+.sr-delta {
+  display: block; font-size: 11px; font-weight: 700;
+  font-variant-numeric: tabular-nums; margin-top: 1px;
+}
+/* The waiting column on a first report — present but clearly not yet filled. */
+.sr-compare th.sr-next, .sr-compare td.sr-next {
+  color: var(--sr-faint);
+  background: repeating-linear-gradient(
+    45deg, transparent, transparent 5px,
+    rgba(148,163,184,0.045) 5px, rgba(148,163,184,0.045) 10px
+  );
+}
+.sr-compare td.sr-next { text-align: center; }
+
 .sr-back {
   display: inline-block; margin-top: 36px;
   color: var(--sr-dim); font-size: 13.5px; text-decoration: none;

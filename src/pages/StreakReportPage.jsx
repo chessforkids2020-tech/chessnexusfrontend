@@ -56,6 +56,33 @@ export default function StreakReportPage() {
   const phases = p.phases || {};
   const games = p.games || {};
 
+  // Reports generated BEFORE the comparison section existed have no
+  // `payload.comparison`. Rather than hide the section from every student who
+  // already earned a report, rebuild this report's own column from figures the
+  // payload has always carried. History stays empty (it genuinely is not known
+  // for an old payload), so such a report renders as a baseline — which for a
+  // first report is exactly right anyway.
+  const comparison = p.comparison || (() => {
+    const res = games.results || {};
+    const played = (res.win || 0) + (res.loss || 0) + (res.draw || 0);
+    const current = {
+      periodStart: report.periodStart,
+      periodEnd: report.periodEnd,
+      gamesAnalysed: games.analysed ?? null,
+      opening:    phases.opening?.accuracy ?? null,
+      middlegame: phases.middlegame?.accuracy ?? null,
+      endgame:    phases.endgame?.accuracy ?? null,
+      blundersPerGame: played
+        ? +(((phases.opening?.blunders || 0) + (phases.middlegame?.blunders || 0)
+            + (phases.endgame?.blunders || 0)) / played).toFixed(2)
+        : null,
+      winRate: played ? Math.round(((res.win || 0) / played) * 100) : null,
+      defensiveScore: p.defence?.defensiveScore ?? null,
+      momentsFound: p.moments?.total ?? null,
+    };
+    return { history: [], current, columns: [current] };
+  })();
+
   return (
     <div className="sr-wrap">
       <header className="sr-head">
@@ -169,6 +196,214 @@ export default function StreakReportPage() {
         </section>
       )}
 
+      {/* ── Openings you played ──────────────────────────────────────────
+          openingSummary() has always been computed and saved in the payload;
+          the page simply never rendered it. */}
+      {(p.openings || []).length > 0 && (
+        <section className="sr-section">
+          <h2 className="sr-h2">Openings you played</h2>
+          <p className="sr-sub">
+            Which openings came up this period, and how you scored in each. Sorted by
+            how often you played them.
+          </p>
+          <div className="sr-scroll">
+            <table className="sr-table">
+              <thead>
+                <tr><th>Opening</th><th>Side</th><th>Games</th><th>W</th><th>D</th><th>L</th><th>Score</th></tr>
+              </thead>
+              <tbody>
+                {p.openings.slice(0, 12).map((o, i) => (
+                  <tr key={`${o.opening}-${o.side}-${i}`}>
+                    <th scope="row">
+                      {o.opening}{o.ecoCode ? <small style={{ display: 'block', fontWeight: 400, opacity: 0.6 }}>{o.ecoCode}</small> : null}
+                    </th>
+                    <td>{o.side === 'white' ? 'White' : o.side === 'black' ? 'Black' : '—'}</td>
+                    <td>{o.played}</td>
+                    <td>{o.wins}</td><td>{o.draws}</td><td>{o.losses}</td>
+                    <td className={o.score < 40 ? 'sr-bad' : o.score > 60 ? 'sr-good' : ''}>{o.score}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {/* ── Motifs you missed ────────────────────────────────────────────
+          momentThemes is already computed and stored. Bars rather than a table:
+          the point is which motif is WORST, and a length is read faster than a
+          number. */}
+      {(p.momentThemes || []).length > 0 && (
+        <section className="sr-section">
+          <h2 className="sr-h2">The patterns you missed</h2>
+          <p className="sr-sub">
+            The tactical motifs behind your mistakes this period, most frequent first.
+            These come from your own games, not from a puzzle set.
+          </p>
+          <div className="sr-motifs">
+            {p.momentThemes.slice(0, 8).map(t => {
+              const top = p.momentThemes[0]?.count || 1;
+              return (
+                <div className="sr-motif" key={t.theme}>
+                  <span className="sr-motif-name">{prettyTheme(t.theme)}</span>
+                  <span className="sr-motif-val">
+                    {t.count}<span className="sr-motif-unit"> missed</span>
+                  </span>
+                  <div className="sr-motif-track">
+                    <i style={{ width: `${Math.max(6, Math.round((t.count / top) * 100))}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* ── Report-over-report comparison ────────────────────────────────
+          Renders from the FIRST report onward. With no history it is a baseline
+          rather than a comparison: the numbers to beat, plus what this period's
+          practice actually consisted of. A student's first report should still
+          tell them where they stand and what "more practice" would mean —
+          hiding the section entirely taught them nothing and gave them no
+          reason to come back for a second one. */}
+      {comparison.current && (
+        <section className="sr-section">
+          <h2 className="sr-h2">
+            {(comparison.history || []).length > 0 ? 'Your reports, side by side' : 'Your baseline'}
+          </h2>
+          <p className="sr-sub">
+            {(comparison.history || []).length > 0 ? (
+              <>
+                Each column is one report period, oldest first. The small figure under a
+                number is the change from the report before it. Periods never overlap, so
+                a change here is a real change in your play.
+              </>
+            ) : (
+              <>
+                This is your first report, so there is nothing to compare against yet —
+                these are the numbers to beat. Practise another five days and your next
+                report will show this column beside the new one, with the change in each.
+              </>
+            )}
+          </p>
+
+          {/* What this period's practice actually was. On a first report this is
+              the answer to "how much did I do?", which is the only honest way to
+              say what "more next time" means. */}
+          {(comparison.history || []).length === 0 && (
+            <div className="sr-stats" style={{ marginBottom: 16 }}>
+              <Stat label="Games analysed" value={games.analysed || 0} />
+              {games.found > (games.analysed || 0) && (
+                <Stat label="Games played" value={games.found} />
+              )}
+              <Stat label="Mistakes found" value={p.moments?.total || 0} />
+              {p.moments?.practice?.drillable > 0 && (
+                <Stat label="Positions to practise" value={p.moments.practice.drillable} />
+              )}
+              {p.moments?.practice?.alreadySolved > 0 && (
+                <Stat label="Already practised" value={p.moments.practice.alreadySolved} good />
+              )}
+            </div>
+          )}
+          <div className="sr-scroll">
+            <table className="sr-table sr-compare">
+              <thead>
+                <tr>
+                  <th>Measure</th>
+                  {comparison.columns.map((c, i) => (
+                    <th key={i} className={i === comparison.columns.length - 1 ? 'sr-now' : ''}>
+                      {comparison.columns.length === 1
+                        ? 'This report'
+                        : i === comparison.columns.length - 1 ? 'This report' : `Report ${i + 1}`}
+                      <span className="sr-wk">{fmtDate(c.periodStart)}</span>
+                    </th>
+                  ))}
+                  {/* A ghost column on a first report: the shape of what comes
+                      next, so the table reads as "one down, one to go" rather
+                      than a list with a missing half. */}
+                  {comparison.columns.length === 1 && (
+                    <th className="sr-next">
+                      Next report
+                      <span className="sr-wk">after 5 more days</span>
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                <CompareRow label="Games analysed"   cols={comparison.columns} field="gamesAnalysed" />
+                <CompareRow label="Opening accuracy" cols={comparison.columns} field="opening" suffix="%" />
+                <CompareRow label="Middlegame accuracy" cols={comparison.columns} field="middlegame" suffix="%" />
+                <CompareRow label="Endgame accuracy" cols={comparison.columns} field="endgame" suffix="%" />
+                <CompareRow label="Blunders per game" cols={comparison.columns} field="blundersPerGame" lowerIsBetter />
+                <CompareRow label="Win rate"         cols={comparison.columns} field="winRate" suffix="%" />
+                <CompareRow label="Defensive score"  cols={comparison.columns} field="defensiveScore" suffix="%" />
+                <CompareRow label="Mistakes found"   cols={comparison.columns} field="momentsFound" lowerIsBetter />
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+      {/* ── Where the work came from ─────────────────────────────────────
+          bySource has always been collected and saved; the page never showed
+          it. Worth showing because it answers "did you actually look at ALL my
+          chess?" — the thing that makes this report different from the
+          single-site stats a student already gets on Lichess or Chess.com.
+          It is also where the honest limitation belongs: we can name the motif
+          behind every Chess Nexus mistake, and cannot for the other two. */}
+      {Object.values(p.games?.bySource || {}).some(n => n > 0) && (
+        <section className="sr-section">
+          <h2 className="sr-h2">Where the work came from</h2>
+          <p className="sr-sub">
+            Your games from every account go into the phase and endgame analysis above.
+            Puzzle motifs are the one thing only Chess Nexus can give you.
+          </p>
+          <div className="sr-sources">
+            {[
+              { key: 'chessnexus', name: 'Chess Nexus',
+                lines: ['Every motif named and scored', 'Your moves kept, right and wrong', 'Failed positions ready to redo'],
+                limit: null },
+              { key: 'lichess', name: 'Lichess',
+                lines: ['Openings played, by result', 'Win / draw / loss'],
+                limit: 'Puzzles solved on Lichess stay on Lichess — we cannot see the motifs.' },
+              { key: 'chesscom', name: 'Chess.com',
+                lines: ['Openings played, by result', 'Win / draw / loss'],
+                limit: 'Same here — games yes, puzzle detail no.' },
+            ].map(src => {
+              const n = p.games.bySource[src.key] || 0;
+              const failed = (p.games.sourceErrors || {})[src.key];
+              const pt = src.key === 'chessnexus' ? p.practiceTotals : null;
+              // Chess Nexus is the only source that also carries PRACTICE, so
+              // its headline is the puzzle count when we have one — games alone
+              // badly understate what the student did here.
+              const headline = pt?.puzzles > 0
+                ? `${pt.puzzles} puzzle${pt.puzzles === 1 ? '' : 's'}`
+                : `${n} game${n === 1 ? '' : 's'}`;
+              if (!n && !failed && !(pt?.puzzles > 0)) return null;
+              return (
+                <div className="sr-src" key={src.key}>
+                  <div className="sr-src-who">{src.name}</div>
+                  <div className="sr-src-big">{headline}</div>
+                  {failed ? (
+                    <p className="sr-src-limit">Could not be reached this period, so these games are missing.</p>
+                  ) : (
+                    <>
+                      <ul>
+                        {src.lines.map(l => <li key={l}>{l}</li>)}
+                        {pt?.arenaGames > 0 && <li>{pt.arenaGames} arena game{pt.arenaGames === 1 ? '' : 's'}</li>}
+                        {pt?.endgames > 0 && <li>{pt.endgames} endgame{pt.endgames === 1 ? '' : 's'} played out</li>}
+                        {pt?.studies > 0 && <li>{pt.studies} study chapter{pt.studies === 1 ? '' : 's'}</li>}
+                      </ul>
+                      {src.limit && <p className="sr-src-limit">{src.limit}</p>}
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {/* ── Time pressure ────────────────────────────────────────────── */}
       {p.timePressure?.hasClockData && (
         <section className="sr-section">
@@ -260,6 +495,64 @@ export default function StreakReportPage() {
 
       <Link to="/dashboard" className="sr-back">← Back to dashboard</Link>
     </div>
+  );
+}
+
+// detectTheme() emits snake_case keys ('discovered_attack'). Shown to children,
+// so they are spelled out rather than title-cased mechanically.
+const THEME_LABELS = {
+  fork: 'Forks',
+  pin: 'Pins',
+  skewer: 'Skewers',
+  discovered_attack: 'Discovered attacks',
+  hanging_piece: 'Hanging pieces',
+  queen_win: 'Winning the queen',
+  mate: 'Missed mates',
+  sacrifice: 'Sacrifices',
+  long_combination: 'Long combinations',
+  tactic: 'Other tactics',
+};
+function prettyTheme(t) {
+  return THEME_LABELS[t] || String(t || '').replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
+}
+
+/**
+ * One row of the side-by-side table: the value per report, each with its change
+ * from the column before.
+ *
+ * `lowerIsBetter` flips the colour for measures where down is good (blunders per
+ * game, mistakes found) — without it a student cutting their blunders in half
+ * would see it painted red.
+ *
+ * A null value prints "—" and suppresses the delta: a phase that was never
+ * reached has no accuracy, and inventing 0 would read as playing it terribly.
+ */
+function CompareRow({ label, cols, field, suffix = '', lowerIsBetter = false }) {
+  return (
+    <tr>
+      <th scope="row">{label}</th>
+      {cols.map((c, i) => {
+        const v = c[field];
+        const prev = i > 0 ? cols[i - 1][field] : null;
+        const hasDelta = v != null && prev != null;
+        const d = hasDelta ? +(v - prev).toFixed(2) : null;
+        const better = d == null || d === 0 ? null : (lowerIsBetter ? d < 0 : d > 0);
+        return (
+          <td key={i} className={i === cols.length - 1 ? 'sr-now' : ''}>
+            {v == null ? '—' : `${v}${suffix}`}
+            {hasDelta && d !== 0 && (
+              <span className={`sr-delta ${better ? 'sr-good' : 'sr-bad'}`}>
+                {d > 0 ? '+' : ''}{d}{suffix}
+              </span>
+            )}
+          </td>
+        );
+      })}
+      {/* Empty cell under the "Next report" ghost header, so a first report's
+          table has a visible slot waiting to be filled rather than a ragged
+          edge. */}
+      {cols.length === 1 && <td className="sr-next">·</td>}
+    </tr>
   );
 }
 
