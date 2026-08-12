@@ -3,7 +3,7 @@
 /* ── Page ── */
 .pz-page {
   min-height: 100vh;
-  background: #0d1117;
+  background: var(--color-bg);
   color: var(--color-text);
   font-family: 'Poppins', sans-serif;
   padding: 40px 32px 60px;
@@ -55,7 +55,7 @@
 }
 .pz-moments-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(6, 182, 212, 0.6);
+  border-color: var(--color-accent-a40);
   background: linear-gradient(135deg, var(--color-accent-a20), var(--color-accent-2-a20));
 }
 .pz-moments-icon { font-size: 22px; }
@@ -68,7 +68,7 @@
   padding: 0 6px;
   border-radius: var(--radius-pill);
   background: var(--color-accent);
-  color: #04121a;
+  color: var(--color-bg);
   font-size: 12px;
   font-weight: 800;
   display: flex;
@@ -108,15 +108,15 @@
 }
 
 /* ── Daily Puzzles banner ──
-   Full-width band above the mode grid. Uses the same #161b22 surface and
+   Full-width band above the mode grid. Uses the same var(--color-surface) surface and
    18px radius as .pz-card so it reads as part of the page, with a purple
    wash to mark it as the featured, changes-daily mode. */
 .pz-daily-banner {
   display: flex;
   align-items: center;
   gap: 18px;
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.22), rgba(22, 27, 34, 0.95) 55%);
-  border: 1px solid rgba(124, 58, 237, 0.45);
+  background: linear-gradient(135deg, var(--color-accent-2-a15), var(--color-surface) 55%);
+  border: 1px solid var(--color-accent-2-a30);
   border-radius: var(--radius-xl);
   padding: 20px 24px;
   margin-bottom: 20px;
@@ -142,7 +142,7 @@
   text-transform: uppercase;
   color: var(--color-accent-2);
   background: var(--color-accent-2-a30);
-  border: 1px solid rgba(124, 58, 237, 0.45);
+  border: 1px solid var(--color-accent-2-a30);
   border-radius: var(--radius-pill);
   padding: 3px 10px;
 }
@@ -165,7 +165,7 @@
   font-size: 15px;
   border-radius: var(--radius-lg);
   padding: 12px 22px;
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 6px 20px var(--color-accent-2-a30);
   white-space: nowrap;
   text-decoration: none;
   cursor: pointer;
@@ -174,7 +174,7 @@
 .pz-daily-cta:hover {
   background: var(--color-accent-2);
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.55);
+  box-shadow: 0 8px 24px var(--color-accent-2-a30);
 }
 
 /* Stack on phones so the CTA never squeezes the text to a sliver. */
@@ -190,7 +190,7 @@
 
 /* ── Card ── */
 .pz-card {
-  background: #161b22;
+  background: var(--color-surface);
   border-radius: var(--radius-xl);
   overflow: hidden;
   border: 1px solid var(--color-white-a07);
@@ -211,7 +211,7 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: #0d1117;
+  background: var(--color-bg);
 }
 
 .pz-card-img {
@@ -326,7 +326,7 @@
 .btn-purple {
   background: var(--color-accent-2);
   color: var(--color-text);
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 6px 20px var(--color-accent-2-a30);
 }
 
 .btn-green {
@@ -342,15 +342,15 @@
 }
 
 .btn-orange {
-  background: #f97316;
+  background: var(--color-warning);
   color: var(--color-text);
-  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+  box-shadow: 0 6px 20px var(--color-warning-a30);
 }
 
 /* ── Your Puzzle Stats (last 7 days) ── */
 .pz-stats-section {
   margin-top: 28px;
-  background: #11161d;
+  background: var(--color-surface-2);
   border: 1px solid var(--color-white-a07);
   border-radius: var(--radius-xl);
   padding: 20px 22px 22px;
@@ -391,7 +391,7 @@
 }
 
 .pz-stat-card {
-  background: #161b22;
+  background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
   border-radius: var(--radius-lg);
   padding: 18px 14px;
@@ -449,7 +449,7 @@
 @keyframes pzFade { from { opacity: 0; } to { opacity: 1; } }
 
 .pz-modal {
-  background: #11161d;
+  background: var(--color-surface-2);
   border: 1px solid var(--color-white-a10);
   border-radius: var(--radius-xl);
   padding: 24px;
@@ -513,7 +513,7 @@
   align-items: center;
   gap: 4px;
   padding: 14px 10px;
-  background: #161b22;
+  background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
   border-radius: var(--radius-lg);
   cursor: pointer;
@@ -522,8 +522,8 @@
 
 .pz-band:hover {
   transform: translateY(-2px);
-  border-color: #f97316;
-  background: rgba(249, 115, 22, 0.08);
+  border-color: var(--color-warning);
+  background: var(--color-warning-a12);
 }
 
 .pz-band-range {
