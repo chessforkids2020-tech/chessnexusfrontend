@@ -1898,8 +1898,14 @@ export default function Sidebar({ user, onNavigate }) {
 
 const styles = {
   sidebar: {
-    width: "170px",
-    background: "var(--color-bg)",
+    width: "var(--sidebar-w)",
+    // The themed rail: sidebar colour with a faint accent wash over it.
+    // --color-bg (the old value) was the same near-black in every theme, so the
+    // sidebar looked identical no matter what the user picked. A flat
+    // --color-sidebar-bg is barely better: all six palettes are near-black, and
+    // sidebar-vs-page contrast measures 1.01–1.04. The wash in --sidebar-surface
+    // is what actually makes the theme visible here.
+    background: "var(--sidebar-surface)",
     position: "fixed",
     top: 0,
     left: 0,
@@ -1909,7 +1915,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     fontFamily: "'Poppins', sans-serif",
-    borderRight: "1px solid var(--color-white-a04)",
+    borderRight: "1px solid var(--sidebar-edge)",
     backdropFilter: "blur(10px)",
   },
   sidebarContent: {

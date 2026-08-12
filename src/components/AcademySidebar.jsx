@@ -88,7 +88,9 @@ const baseItem = {
 
 const styles = {
   sidebar: {
-    width: '170px', background: 'var(--color-bg)', position: 'fixed',
+    // Same themed rail as the main Sidebar — see the note there on why a flat
+    // background reads as "the sidebar never changes".
+    width: 'var(--sidebar-w)', background: 'var(--sidebar-surface)', position: 'fixed',
     top: 0, left: 0, height: '100vh', boxShadow: '2px 0 20px var(--color-black-a50)',
     zIndex: 100, display: 'flex', flexDirection: 'column',
     fontFamily: "'Poppins', sans-serif", borderRight: '1px solid var(--color-white-a04)',

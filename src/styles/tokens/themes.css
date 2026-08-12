@@ -279,6 +279,24 @@ html {
   --color-black-a50: rgb(0 0 0 / 0.50);
   --color-black-a65: rgb(0 0 0 / 0.65);
 
+  /* ── Sidebar ──
+     The nav rail needs a visible identity, and a flat --sidebar-bg cannot give
+     it one: every palette here is a near-black, so sidebar-vs-page contrast
+     measures 1.01–1.04, i.e. indistinguishable. Switching themes appeared to
+     leave the sidebar untouched.
+     So it is painted as the sidebar colour with a faint accent wash over it.
+     The wash is what actually carries the theme — warm in Deep Ember, violet in
+     Purple Haze — while staying dark enough to sit behind white nav text. */
+  --sidebar-surface: linear-gradient(
+    180deg,
+    var(--color-accent-a08) 0%,
+    var(--color-accent-a06) 40%,
+    transparent 100%
+  ), var(--color-sidebar-bg);
+  /* The rail's right-hand edge: a theme-coloured hairline rather than a grey
+     one, so the boundary itself reads as part of the theme. */
+  --sidebar-edge: var(--color-accent-a20);
+
   /* ── Composite tokens ──
      The six "extra" keys obsidianGlass shipped with, defined for all themes so
      the key sets match. */
