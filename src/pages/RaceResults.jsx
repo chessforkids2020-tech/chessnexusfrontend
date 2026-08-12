@@ -4,6 +4,7 @@ import api from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
+import { useChartTheme } from '../lib/chartTheme';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
@@ -230,6 +231,9 @@ const styles = {
 };
 
 export default function RaceResults() {
+  // Chart.js cannot resolve var(--token) on canvas; these are the resolved
+  // theme colours, re-read whenever the theme changes.
+  const chartColors = useChartTheme();
   const { state } = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -455,13 +459,13 @@ export default function RaceResults() {
                         datasets: [{
                           label: 'Correct/Incorrect',
                           data: attempts.map(a => a.correct ? 1 : -1),
-                          borderColor: 'var(--color-success)',
-                          backgroundColor: 'var(--color-success-a12)',
+                          borderColor: chartColors.success,
+                          backgroundColor: chartColors.successFill,
                           tension: 0.3,
                           fill: true,
                           pointRadius: 4,
-                          pointBackgroundColor: 'var(--color-success)',
-                          pointBorderColor: 'var(--color-success)',
+                          pointBackgroundColor: chartColors.success,
+                          pointBorderColor: chartColors.success,
                         }]
                       }}
                       options={{
@@ -499,13 +503,13 @@ export default function RaceResults() {
                             let sum = 0;
                             return attempts.map(a => { sum += (a.correct ? 10 : 0); return sum; });
                           })(),
-                          borderColor: 'var(--color-accent)',
-                          backgroundColor: 'var(--color-accent-a12)',
+                          borderColor: chartColors.accent,
+                          backgroundColor: chartColors.accentFill,
                           tension: 0.3,
                           fill: true,
                           pointRadius: 4,
-                          pointBackgroundColor: 'var(--color-accent)',
-                          pointBorderColor: 'var(--color-accent)',
+                          pointBackgroundColor: chartColors.accent,
+                          pointBorderColor: chartColors.accent,
                         }]
                       }}
                       options={{

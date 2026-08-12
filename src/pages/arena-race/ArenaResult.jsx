@@ -132,7 +132,7 @@ const styles = {
     fontWeight: '700',
     fontSize: '12px',
     color: 'var(--color-text)',
-    backgroundColor: 'var(--color-accent-a15)',
+    backgroundColor: 'var(--color-accent-a12)',
     borderBottom: '2px solid var(--color-accent-a30)',
     textTransform: 'uppercase',
     letterSpacing: '1px',
@@ -199,7 +199,7 @@ const styles = {
   backButtonHover: {
     transform: 'translateY(-2px)',
     boxShadow: '0 12px 32px var(--color-accent-a30)',
-    borderColor: 'var(--color-accent-a40)',
+    borderColor: 'var(--color-accent-a30)',
     background: 'var(--color-accent-a12)',
   },
   loading: {

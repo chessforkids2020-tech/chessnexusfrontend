@@ -8,6 +8,7 @@
     "build": "vite build && node prerender.js",
     "build:spa": "vite build",
     "lint": "eslint .",
+    "check:colors": "node scripts/check-colors.mjs",
     "preview": "vite preview",
     "test": "playwright test",
     "test:ui": "playwright test --ui",

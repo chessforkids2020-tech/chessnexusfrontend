@@ -25,6 +25,7 @@ import OTBConfirmPanel from '../components/OTBConfirmPanel';
 import CoffeeCta from '../components/CoffeeCta';
 import AboutFeatureCTA from '../components/marketing/AboutFeatureCTA';
 import './GameAnalysis.css';
+import { useChartTheme } from '../lib/chartTheme';
 
 ChartJS.register(ArcElement, BarElement, LineElement, PointElement, CategoryScale, LinearScale, Filler, Tooltip, Legend);
 
@@ -212,6 +213,10 @@ export function PeerComparisonCard({ peerComparison }) {
 
 // ─── Progress History Charts ──────────────────────────────────────────────────
 function ProgressHistoryCharts({ history }) {
+  // Chart.js paints to canvas, which has no CSS cascade — it cannot resolve
+  // var(--token). These are the tokens resolved to concrete colours, re-read
+  // whenever the theme changes.
+  const chartColors = useChartTheme();
   if (!history || history.length < 2) return null;
   const labels = history.map((s, i) => {
     const d = new Date(s.analyzedAt);
@@ -231,10 +236,10 @@ function ProgressHistoryCharts({ history }) {
     datasets: [{
       label: 'Accuracy %',
       data: history.map(s => s.overallAccuracy),
-      borderColor: 'var(--color-accent)',
-      backgroundColor: 'var(--color-accent-a12)',
+      borderColor: chartColors.accent,
+      backgroundColor: chartColors.accentFill,
       tension: 0.35,
-      pointBackgroundColor: 'var(--color-accent)',
+      pointBackgroundColor: chartColors.accent,
       pointRadius: 4,
       fill: true
     }]
@@ -246,7 +251,7 @@ function ProgressHistoryCharts({ history }) {
       label: 'Blunders/game',
       data: history.map(s => s.blundersPerGame),
       backgroundColor: 'rgba(239,68,68,0.6)',
-      borderColor: 'var(--color-danger)',
+      borderColor: chartColors.danger,
       borderWidth: 1,
       borderRadius: 'var(--radius-sm)'
     }]
@@ -257,10 +262,10 @@ function ProgressHistoryCharts({ history }) {
     datasets: [{
       label: 'Avg cp loss',
       data: history.map(s => s.capsAvgCpLoss),
-      borderColor: 'var(--color-warning)',
-      backgroundColor: 'var(--color-warning-a12)',
+      borderColor: chartColors.warning,
+      backgroundColor: chartColors.warning,
       tension: 0.35,
-      pointBackgroundColor: 'var(--color-warning)',
+      pointBackgroundColor: chartColors.warning,
       pointRadius: 4,
       fill: true
     }]
@@ -753,6 +758,8 @@ export function GameBreakdownTable({ games }) {
 // ─── TrendCharts ──────────────────────────────────────────────────────────────
 
 export function TrendCharts({ trends }) {
+  // Resolved theme colours — Chart.js cannot read var(--token) on canvas.
+  const chartColors = useChartTheme();
   if (!trends || !trends.accuracyPerGame || trends.accuracyPerGame.length === 0) return null;
   const labels = trends.accuracyPerGame.map((_, i) => `G${i + 1}`);
 
@@ -761,10 +768,10 @@ export function TrendCharts({ trends }) {
     datasets: [{
       label: 'Accuracy %',
       data: trends.accuracyPerGame,
-      borderColor: 'var(--color-accent)',
-      backgroundColor: 'var(--color-accent-a12)',
+      borderColor: chartColors.accent,
+      backgroundColor: chartColors.accentFill,
       tension: 0.35,
-      pointBackgroundColor: 'var(--color-accent)',
+      pointBackgroundColor: chartColors.accent,
       pointRadius: 4,
       fill: true
     }]
@@ -787,7 +794,7 @@ export function TrendCharts({ trends }) {
       label: 'Blunders',
       data: trends.blundersPerGame,
       backgroundColor: 'rgba(239,68,68,0.65)',
-      borderColor: 'var(--color-danger)',
+      borderColor: chartColors.danger,
       borderWidth: 1,
       borderRadius: 'var(--radius-sm)'
     }]

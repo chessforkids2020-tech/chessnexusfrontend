@@ -8,6 +8,7 @@ import { Line, Bar } from 'react-chartjs-2';
 import api from '../../api';
 import ExpiryReminder from '../../components/ExpiryReminder';
 import './AcademyDashboard.css';
+import { useChartTheme } from '../../lib/chartTheme';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Tooltip, Legend);
 
@@ -37,6 +38,9 @@ function shortLabel(label, grain) {
 }
 
 export default function AcademyDashboard() {
+  // Chart.js cannot resolve var(--token) on canvas; these are the resolved
+  // theme colours, re-read whenever the theme changes.
+  const chartColors = useChartTheme();
   const [data, setData] = useState(null);
   const [period, setPeriod] = useState('month');
   const [loading, setLoading] = useState(true);
@@ -85,7 +89,7 @@ export default function AcademyDashboard() {
   const labels = (graphs?.students || []).map(p => shortLabel(p.label, grain));
   const col = (arr) => (arr || []).map(p => p.count);
   const barData = { labels, datasets: [{ label: 'Students joined', data: col(graphs?.students), backgroundColor: 'rgba(6,182,212,0.6)', borderRadius: 'var(--radius-sm)' }] };
-  const lineData = { labels, datasets: [{ label: 'Classes', data: col(graphs?.classes), borderColor: 'var(--color-success)', backgroundColor: 'var(--color-success-a12)', fill: true, tension: 0.3 }] };
+  const lineData = { labels, datasets: [{ label: 'Classes', data: col(graphs?.classes), borderColor: chartColors.success, backgroundColor: chartColors.successFill, fill: true, tension: 0.3 }] };
   const activityData = { labels, datasets: [{ label: 'Activities', data: col(graphs?.activities), backgroundColor: 'rgba(167,139,250,0.6)', borderRadius: 'var(--radius-sm)' }] };
   const fee = graphs?.feeRequests || {};
   const feeData = {
