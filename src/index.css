@@ -118,3 +118,26 @@ option {
   background-color: var(--color-surface);
   color: var(--color-text);
 }
+
+/* ── Player titles ──────────────────────────────────────────────────────────
+   Two kinds sit before a player's name and must never be confused:
+
+     .chess-title   GM / IM / FM …  EARNED, FIDE, admin-verified.
+     .nexus-title   NS / NX         BOUGHT, ChessNexus-only, lapses with support.
+
+   The FIDE title keeps its long-standing amber and is deliberately NOT themed:
+   it means the same thing on every site in chess, and a palette should not
+   restyle a real-world credential. The Nexus title follows the theme accent,
+   marking it as part of this app rather than a chess-wide fact.
+
+   See components/PlayerName.jsx, which renders both. */
+.chess-title {
+  font-weight: 700;
+  color: #b45309;                    /* tokenize-ignore — a FIDE credential, not chrome */
+}
+
+.nexus-title {
+  font-weight: 700;
+  color: var(--color-accent);
+  letter-spacing: 0.02em;
+}

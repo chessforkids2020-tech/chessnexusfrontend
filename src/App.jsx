@@ -693,6 +693,15 @@ export default function App() {
             </ProtectedRoute>
           </UserLayout>
         } />
+        {/* /support is the name that matches what the page now offers (a title,
+            not a coffee). /buy-coffee stays as an alias: it may be linked from
+            emails, chat messages and external posts, and breaking those would
+            cost a supporter for no gain. */}
+        <Route path="/support" element={
+          <UserLayout>
+            <BuyMeACoffee />
+          </UserLayout>
+        } />
         <Route path="/buy-coffee" element={
           <UserLayout>
             <BuyMeACoffee />

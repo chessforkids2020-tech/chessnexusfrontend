@@ -8,8 +8,12 @@ import api from '../api';
 
 const EMPTY = {
   keys: new Set(), ids: new Set(),
-  // Founding Supporters (first 100 backers) — they get a permanent 👑 instead of ☕.
+  // Founding Supporters (first 100 backers) — they get a permanent 👑.
   foundingKeys: new Set(), foundingIds: new Set(),
+  // Nexus title per identifier: Map<lowercased username|displayName|userId,
+  // 'NS' | 'NX'>. Only tiers that carry a title appear here — Black Coffee
+  // supporters are in `keys` (so they get the ♞) but not in `titles`.
+  titles: new Map(),
 };
 
 const SupporterContext = createContext({ ...EMPTY, refresh: () => {} });
@@ -34,7 +38,12 @@ export function SupporterProvider({ children }) {
       // Founder sets are absent on an older backend — the ☕ badge still works.
       const foundingKeys = new Set((data.foundingKeys || []).map(norm).filter(Boolean));
       const foundingIds = new Set((data.foundingUserIds || []).map(String));
-      setSupporters({ keys, ids, foundingKeys, foundingIds });
+      // Nexus titles. Absent on an older backend — the ♞ badge still works, so
+      // this degrades to "supporter, no title" rather than breaking.
+      const titles = new Map(
+        Object.entries(data.titles || {}).map(([k, v]) => [norm(k), v])
+      );
+      setSupporters({ keys, ids, foundingKeys, foundingIds, titles });
     } catch (err) {
       // Badge is best-effort, but log so this doesn't fail invisibly again.
       console.warn('SupporterContext refresh failed:', err?.message || err);
@@ -82,6 +91,27 @@ export function useIsFoundingSupporter(username, displayName, userId) {
   const d = norm(displayName);
   if (d && foundingKeys.has(d)) return true;
   return false;
+}
+
+/**
+ * The player's ChessNexus title — 'NS' (Nexus Supporter), 'NX' (Nexus Expert),
+ * or null. Same matching rules as useIsSupporter.
+ *
+ * Null does NOT mean "not a supporter": the entry-level tier grants the ♞ badge
+ * and no letters. Use useIsSupporter for that question.
+ */
+export function useNexusTitle(username, displayName, userId) {
+  const { titles } = useContext(SupporterContext);
+  if (!titles || titles.size === 0) return null;
+  if (userId) {
+    const byId = titles.get(norm(userId));
+    if (byId) return byId;
+  }
+  const u = norm(username);
+  if (u && titles.has(u)) return titles.get(u);
+  const d = norm(displayName);
+  if (d && titles.has(d)) return titles.get(d);
+  return null;
 }
 
 /** Returns the refresh function to force-reload supporter badges. */

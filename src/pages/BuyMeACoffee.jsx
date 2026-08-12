@@ -1,8 +1,17 @@
-// BuyMeACoffee.jsx — donation page modelled after lichess/Patreon style support
-// pages but framed as a friendly "buy us a coffee" gesture. Supports INR
-// (Razorpay / UPI / Indian bank) and USD (PayPal / international cards via
-// Razorpay International). After payment the user confirms with us and a
-// 30-day ☕ supporter badge appears next to their displayName everywhere.
+// BuyMeACoffee.jsx — the support page.
+//
+// Supporting ChessNexus grants a TITLE shown before the name, the way a FIDE
+// title is: "NS Hikaru". A coffee cup meant nothing to chess players; a title
+// is the currency of identity here.
+//
+//   Knight (♞)        entry tier, a knight beside the name
+//   Nexus Supporter   NS
+//   Nexus Expert      NX
+//
+// Supports INR (Razorpay / UPI / Indian bank) and USD (PayPal / international
+// cards via Razorpay International). The file and route keep the "coffee" name
+// internally — renaming the model, collection and 10 API paths would be a
+// migration for zero user-visible gain.
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
@@ -24,24 +33,30 @@ const C = {
   amberBorder: 'var(--color-warning-a30)'
 };
 
-// Two choices combine to set the price and how long the badge lasts:
-//   1. A coffee (base price tier)         2. A duration (1 / 3 / 6 / 12 months)
-// Final price = coffee base price × months. The ☕ badge then lives for that many
-// months. A single payment — no auto-renewal.
+// Two choices combine to set the price and how long the title lasts:
+//   1. A tier (base price)                 2. A duration (1 / 3 / 6 / 12 months)
+// Final price = base × months. The title then lives for that many months. A
+// single payment — no auto-renewal.
+//
+// THE `id` VALUES ARE A DATA CONTRACT. They are written to
+// CoffeeSupporter.tier and mapped to titles by TIER_TITLES in
+// backend/models/CoffeeSupporter.js. Renaming an id silently strips the title
+// from everyone who bought that tier — change the `name` shown to users, never
+// the id.
 const COFFEE_TIERS_INR = [
-  { id: 'simple',   emoji: '☕', name: 'Black Coffee',      base: 149, blurb: 'A warm thank-you. Fuels one bug fix.' },
-  { id: 'espresso', emoji: '🥃', name: 'American Espresso', base: 250, blurb: 'A jolt of focus. Pays for a feature sprint.', elite: true },
-  { id: 'latte',    emoji: '🍵', name: 'Cafe Latte',        base: 500, blurb: 'Helps cover a day of server bills.' }
+  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 149, blurb: 'A knight beside your name. Fuels one bug fix.' },
+  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 250, blurb: 'The NS title before your name. Pays for a feature sprint.', elite: true },
+  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 500, blurb: 'The NX title before your name. Covers a day of server bills.' }
 ];
 
 const COFFEE_TIERS_USD = [
-  { id: 'simple',   emoji: '☕', name: 'Black Coffee',      base: 3,  blurb: 'A warm thank-you. Fuels one bug fix.' },
-  { id: 'espresso', emoji: '🥃', name: 'American Espresso', base: 5,  blurb: 'A jolt of focus. Pays for a feature sprint.', elite: true },
-  { id: 'latte',    emoji: '🍵', name: 'Cafe Latte',        base: 10, blurb: 'Helps cover a day of server bills.' }
+  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 3,  blurb: 'A knight beside your name. Fuels one bug fix.' },
+  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 5,  blurb: 'The NS title before your name. Pays for a feature sprint.', elite: true },
+  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 10, blurb: 'The NX title before your name. Covers a day of server bills.' }
 ];
 
-// Duration options shown as tabs above the coffees. They multiply the price and
-// set the badge length.
+// Duration options shown as tabs above the tiers. They multiply the price and
+// set how long the title lasts.
 const DURATIONS = [
   { months: 1,  label: '1 Month'   },
   { months: 3,  label: '3 Months'  },
@@ -50,7 +65,11 @@ const DURATIONS = [
 ];
 
 const DEFAULT_MONTHS = 3;          // 3 months selected by default
-const MIN_BASE = { INR: 299, USD: 3 }; // minimum per-coffee base for manual entry
+// Minimum per-tier base for a custom amount. Matches MIN_BASE in
+// backend/routes/coffee.js — it previously read 299 here against the server's
+// 100, and also sat ABOVE this page's own cheapest tier (149), so a custom
+// amount could be rejected for being less than an advertised price.
+const MIN_BASE = { INR: 100, USD: 3 };
 
 // How many early backers get the permanent 👑 Founding Supporter badge. Purely a
 // front-end display incentive for the empty/early state — honest scarcity ("first N").
@@ -126,7 +145,13 @@ export default function BuyMeACoffee() {
 
   const effectiveMonths = months;
   const effectiveAmount = baseAmount * months;            // coffee price × months
-  const effectiveTierId = isCustom ? 'custom' : (selectedCoffee?.id || 'espresso');
+  // A CUSTOM amount earns the highest tier it covers, rather than the literal
+  // id 'custom'. TIER_TITLES on the server only knows simple/espresso/latte, so
+  // sending 'custom' would silently deny a title to someone who typed ₹500 —
+  // while the person who clicked the ₹500 tier gets NX.
+  const effectiveTierId = isCustom
+    ? (coffees.slice().reverse().find(c => baseAmount >= c.base)?.id || 'simple')
+    : (selectedCoffee?.id || 'espresso');
   const customBelowMin = isCustom && Number.isFinite(customNum) && customNum < minBase;
   const canContinue = baseAmount >= minBase;
 
@@ -182,7 +207,7 @@ export default function BuyMeACoffee() {
         amount: Math.round(effectiveAmount * 100),
         currency,
         name: 'ChessNexus',
-        description: `${isCustom ? 'Custom Coffee' : selectedCoffee?.name} — ${effectiveMonths} ${effectiveMonths === 1 ? 'month' : 'months'} supporter badge`,
+        description: `${isCustom ? 'Custom amount' : selectedCoffee?.name} — ${effectiveMonths} ${effectiveMonths === 1 ? 'month' : 'months'} supporter badge`,
         order_id: orderId,
         prefill: { name: user?.displayName || '' },
         theme: { color: 'var(--color-warning)' },
@@ -204,7 +229,7 @@ export default function BuyMeACoffee() {
             });
             setThankYou(true);
             try { await refreshUser(); } catch (_) {}
-            try { await refreshSupporters(); } catch (_) {} // update ☕ badge instantly everywhere
+            try { await refreshSupporters(); } catch (_) {} // update the title instantly everywhere
             try {
               const meRes = await api.get('/api/coffee/me');
               setMyStatus(meRes.data || { active: true, pendingCount: 0 });
@@ -242,7 +267,7 @@ export default function BuyMeACoffee() {
             onClick={() => { setStep('pick'); setConfirmFor(null); setProviderRef(''); setThankYou(false); }}
             style={{ background: 'transparent', border: 'none', color: C.textDim, cursor: 'pointer', fontSize: 14, padding: '6px 0', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Poppins, sans-serif', marginBottom: 24 }}
           >
-            ← Back to coffees
+            ← Back
           </button>
 
           <div style={{ maxWidth: 460, margin: '0 auto' }}>
@@ -253,7 +278,7 @@ export default function BuyMeACoffee() {
                 <div style={{ textAlign: 'center', padding: '28px 24px 20px', borderBottom: `1px solid ${C.panelBorder}` }}>
                   <div style={{ fontSize: 54 }}>{coffeeObj?.emoji || '☕'}</div>
                   <div style={{ color: C.textDim, fontSize: 13, marginTop: 6 }}>
-                    {coffeeObj?.name || 'Custom Coffee'} · {monthsLabel}
+                    {coffeeObj?.name || 'Custom amount'} · {monthsLabel}
                   </div>
                   <div style={{ fontSize: 46, fontWeight: 800, color: C.amber, margin: '6px 0 2px', fontFamily: 'Poppins, sans-serif', lineHeight: 1 }}>
                     {symbol}{displayAmt}
@@ -267,13 +292,22 @@ export default function BuyMeACoffee() {
                 <div style={{ padding: '20px 24px', borderBottom: `1px solid ${C.panelBorder}` }}>
                   <div style={{ color: C.textDim, fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 12 }}>What you'll get</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 'var(--radius-lg)', padding: '10px 14px', marginBottom: 12 }}>
+                    {/* Live preview of the exact title this tier grants, in the
+                        same order it renders app-wide: title, then name. */}
+                    {coffeeObj?.title && (
+                      <span className="nexus-title" style={{ fontSize: 16 }}>{coffeeObj.title}</span>
+                    )}
                     <span style={{ color: C.text, fontWeight: 700, fontSize: 16 }}>{user?.displayName || 'You'}</span>
-                    <span style={{ fontSize: 18 }}>☕</span>
+                    {!coffeeObj?.title && <span style={{ fontSize: 18, color: 'var(--color-accent)' }}>♞</span>}
                     <span style={{ color: C.amber, fontSize: 11, fontWeight: 600, background: 'var(--color-warning-a12)', padding: '2px 8px', borderRadius: 'var(--radius-pill)' }}>Preview</span>
                   </div>
                   <p style={{ color: C.textDim, fontSize: 13, lineHeight: 1.65, margin: 0 }}>
-                    A <strong style={{ color: 'var(--color-warning)' }}>☕ supporter badge</strong> appears next to your display name for{' '}
-                    <strong style={{ color: C.text }}>{monthsLabel}</strong> — visible on your dashboard, leaderboards, and everywhere on ChessNexus. One-time payment, no auto-renewal.
+                    {coffeeObj?.title ? (
+                      <>The <strong className="nexus-title">{coffeeObj.title}</strong> title appears before your name for{' '}</>
+                    ) : (
+                      <>A <strong style={{ color: 'var(--color-accent)' }}>♞ knight</strong> appears beside your name for{' '}</>
+                    )}
+                    <strong style={{ color: C.text }}>{monthsLabel}</strong> — visible on your dashboard, leaderboards, chat and everywhere on ChessNexus. One-time payment, no auto-renewal.
                   </p>
                 </div>
 
@@ -297,7 +331,7 @@ export default function BuyMeACoffee() {
                 <div style={{ fontSize: 40, marginBottom: 10 }}>☕✨</div>
                 <div style={{ fontWeight: 700, color: C.text, fontSize: 18 }}>Thank you for the coffee!</div>
                 <div style={{ color: C.textDim, fontSize: 14, marginTop: 8, lineHeight: 1.6 }}>
-                  Your ☕ supporter badge is now live next to your name — visible on your dashboard, leaderboards, and everywhere on ChessNexus. You're literally fuelling the next feature.
+                  Your title is now live next to your name — visible on your dashboard, leaderboards, and everywhere on ChessNexus. You're literally fuelling the next feature.
                 </div>
                 <button
                   type="button"
@@ -320,9 +354,9 @@ export default function BuyMeACoffee() {
           which points at '/' — Google would fold this page into the homepage
           as a duplicate and never index it. */}
       <SEO
-        title="Support Chess Nexus — Buy Us a Coffee"
-        description="Chess Nexus is free with no ads. If it has helped you or your students, you can support it with a one-off coffee and get a ☕ supporter badge — plus free premium endgames and the opening repertoire trainer."
-        keywords="support chess nexus, buy me a coffee chess, donate chess platform, chess supporter badge"
+        title="Support Chess Nexus — Earn Your Nexus Title"
+        description="Chess Nexus is free with no ads. If it has helped you or your students, support it once and earn a Nexus title — NS or NX — shown before your name across the site."
+        keywords="support chess nexus, donate chess platform, nexus title, chess supporter title"
         canonical="/buy-coffee"
       />
       <div style={styles.bgGlow} />
@@ -370,7 +404,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
               Supporters never spend XP on locked activities
             </div>
             <p style={styles.xpPerkText}>
-              While your ☕ badge is active, every locked activity opens for free — no XP needed.
+              While your support is active, every locked activity opens for free — no XP needed.
               <strong style={{ color: C.text }}> Premium endgames</strong>,
               <strong style={{ color: C.text }}> playing endgames out against Stockfish</strong>,
               the <strong style={{ color: C.text }}>opening repertoire trainer</strong> and
@@ -427,7 +461,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
         {/* Duration selector — sets badge length and multiplies the price */}
         <div style={{ marginBottom: 18 }}>
           <div style={{ color: C.textDim, fontSize: 13, fontWeight: 600, marginBottom: 8 }}>
-            How long should your ☕ badge last?
+            How long should your title last?
           </div>
           <div style={styles.durationTabs}>
             {DURATIONS.map(d => {

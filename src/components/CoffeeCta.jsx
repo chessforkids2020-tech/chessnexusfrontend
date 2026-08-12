@@ -1,12 +1,15 @@
-// CoffeeCta — compact "Buy us a coffee" pill button. Drop it anywhere a
+// CoffeeCta — compact "Support ChessNexus" pill button. Drop it anywhere a
 // supporter prompt fits (homepage, dashboard, games, analysis). Clicking it
-// navigates to the dedicated /buy-coffee page.
+// navigates to the support page.
+//
+// Keeps its filename: renaming it would touch four importers for no visible
+// gain, and the label is what users actually read.
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function CoffeeCta({
   variant = 'pill',          // 'pill' | 'floating' | 'inline'
-  label = 'Buy us a coffee',
+  label = 'Support ChessNexus',
   subLabel,                   // optional small line under the label
   style = {}
 }) {
@@ -14,9 +17,9 @@ export default function CoffeeCta({
 
   const base = {
     cursor: 'pointer',
-    border: '1px solid var(--color-warning-a30)',
-    background: 'linear-gradient(135deg, var(--color-warning-a20), rgba(217, 119, 6, 0.18))',
-    color: 'var(--color-warning)',
+    border: '1px solid var(--color-accent-a30)',
+    background: 'linear-gradient(135deg, var(--color-accent-a20), var(--color-accent-a12))',
+    color: 'var(--color-accent)',
     fontFamily: 'Poppins, sans-serif',
     fontWeight: 600,
     boxShadow: '0 8px 20px var(--color-warning-a12)',
@@ -62,10 +65,10 @@ export default function CoffeeCta({
         e.currentTarget.style.boxShadow = '0 8px 20px var(--color-warning-a12)';
       }}
     >
-      <span aria-hidden style={{ fontSize: 18, filter: 'drop-shadow(0 0 6px rgba(245, 158, 11, 0.55))' }}>☕</span>
+      <span aria-hidden style={{ fontSize: 18, filter: 'drop-shadow(0 0 6px var(--color-accent-a40))' }}>♞</span>
       <span style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.15 }}>
         <span>{label}</span>
-        {subLabel && <span style={{ fontSize: 11, color: 'rgba(253, 230, 138, 0.75)', fontWeight: 500 }}>{subLabel}</span>}
+        {subLabel && <span style={{ fontSize: 11, color: 'var(--color-text-muted)', fontWeight: 500 }}>{subLabel}</span>}
       </span>
     </button>
   );

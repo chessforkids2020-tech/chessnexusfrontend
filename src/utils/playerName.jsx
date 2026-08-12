@@ -20,6 +20,32 @@ export function normalizeTitle(title) {
   return TITLE_SET.has(t) ? t : null;
 }
 
+/* ── Nexus titles ──────────────────────────────────────────────────────────
+ * ChessNexus-only titles granted by supporting the site. Mirrors
+ * backend/helpers/playerName.js.
+ *
+ *   NS  Nexus Supporter   (American Espresso tier)
+ *   NX  Nexus Expert      (Cafe Latte tier)
+ *
+ * Rendered AFTER any FIDE title and before the name: "GM NS Hikaru". Unlike
+ * chessTitle these are not stored on the User — they are derived per request
+ * from the active supporter record, so they lapse on their own.
+ */
+const NEXUS_TITLES = ['NS', 'NX'];
+const NEXUS_SET = new Set(NEXUS_TITLES);
+
+export function normalizeNexusTitle(title) {
+  if (typeof title !== 'string') return null;
+  const t = title.trim().toUpperCase();
+  return NEXUS_SET.has(t) ? t : null;
+}
+
+/** The Nexus title to show for a user, or null. Bots are always untitled. */
+export function nexusTitleOf(user) {
+  if (!user || user.isBot) return null;
+  return normalizeNexusTitle(user.nexusTitle);
+}
+
 /** The title to show for a user, or null. Bots are always untitled. */
 export function titleOf(user) {
   if (!user || user.isBot) return null;

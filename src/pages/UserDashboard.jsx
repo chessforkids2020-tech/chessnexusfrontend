@@ -13,7 +13,7 @@ import ActivityTracker from "../components/ActivityTracker";
 import BestRacers from "../components/BestRacers";
 import FriendGamesSection from "../components/FriendGamesSection";
 import GameInsightsPanel from "../components/GameInsightsPanel";
-import CoffeeBadge from "../components/CoffeeBadge";
+import KnightBadge from "../components/KnightBadge";
 import FoundingBadge from "../components/FoundingBadge";
 import { useIsFoundingSupporter } from "../context/SupporterContext";
 import UserAvatar from "../components/UserAvatar";
@@ -1670,13 +1670,21 @@ export default function UserDashboard() {
             </div>
             <div className="welcome-text">
               <h1 className="welcome-title">
+                {/* The Nexus title (NS / NX) sits before the name here exactly as
+                    it does everywhere else, so a supporter sees on their own
+                    dashboard what the rest of the app sees. */}
+                {user.nexusTitle && (
+                  <>
+                    <span className="nexus-title" style={{ fontSize: 26 }}>{user.nexusTitle}</span>{' '}
+                  </>
+                )}
                 {isPublicView ? user.displayName : `Welcome, ${user.displayName}!`}
-                {/* A Founding Supporter's permanent 👑 replaces the ☕ — otherwise a
-                    founder would see a coffee cup on their OWN dashboard while
-                    everyone else in the app sees their crown. */}
+                {/* A Founding Supporter's permanent 👑 wins. Otherwise the entry
+                    tier gets the ♞ — but a titled supporter already has letters,
+                    so they never also carry an icon. */}
                 {isFounder
                   ? <FoundingBadge size={26} />
-                  : user.coffeeSupporter && <CoffeeBadge size={26} />}
+                  : (user.coffeeSupporter && !user.nexusTitle && <KnightBadge size={26} />)}
                 {user.role === 'elite' && (
                   <span style={{
                     display: 'inline-flex',
