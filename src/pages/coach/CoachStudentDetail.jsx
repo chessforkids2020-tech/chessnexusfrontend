@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import GameReplay from '../../components/GameReplay';
+import { viewOpenings, viewComparison } from '../../lib/streakReportView';
 import UserAvatar from '../../components/UserAvatar';
 import ArenaGameReplayModal from '../../components/ArenaGameReplayModal';
 // Reuse the SAME detailed report cards the student's "Analyze My Games" page
@@ -617,12 +618,23 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
             )}
           </div>
 
-          {/* Where their mistakes cluster. */}
-          {(streakReport.payload.moments?.categories || []).length > 0 && (
+          {/* Where their mistakes cluster. Falls back to the motif breakdown on
+              payloads written before 'tactic' was categorisable, where the
+              category counts were saved near-zero and this row would otherwise
+              show a student with dozens of mistakes as having almost none. */}
+          {(streakReport.payload.moments?.categories || []).some(c => c.count > 0) ? (
             <div className="csd-cats">
-              {streakReport.payload.moments.categories.map(c => (
+              {streakReport.payload.moments.categories.filter(c => c.count > 0).map(c => (
                 <span key={c.key} className="csd-cat">
                   {c.icon} <b>{c.count}</b> {c.label}
+                </span>
+              ))}
+            </div>
+          ) : (streakReport.payload.momentThemes || []).length > 0 && (
+            <div className="csd-cats">
+              {streakReport.payload.momentThemes.slice(0, 6).map(t => (
+                <span key={t.theme} className="csd-cat" style={{ textTransform: 'capitalize' }}>
+                  <b>{t.count}</b> {String(t.theme).replace(/_/g, ' ')}
                 </span>
               ))}
             </div>
@@ -1047,7 +1059,13 @@ function FullReportModal({ report, studentName, onClose }) {
   const p = report.payload || {};
   const phases = p.phases || {};
   const games = p.games || {};
-  const cols = p.comparison?.columns || [];
+  // The SAME read-side repairs the student's own report page applies. Without
+  // these the coach saw a different report from their student for any payload
+  // written before the current builder: "Unknown" openings, one row per
+  // variation, one-game openings, and no comparison table at all.
+  const openings = viewOpenings(p);
+  const comparison = viewComparison(report);
+  const cols = comparison.columns || [];
 
   // Escape to close — a coach flicking through students should not have to aim.
   useEffect(() => {
@@ -1127,7 +1145,9 @@ function FullReportModal({ report, studentName, onClose }) {
                     {p.endgames.map((e, i) => (
                       <tr key={i}>
                         <th scope="row">{e.type}</th>
-                        <td>{e.reached}</td><td>{e.wins}</td><td>{e.draws}</td><td>{e.losses}</td>
+                        {/* `played`, not `reached` — endgameSummary() emits
+                            played, so `reached` rendered an empty column. */}
+                        <td>{e.played}</td><td>{e.wins}</td><td>{e.draws}</td><td>{e.losses}</td>
                         <td className={e.score < 40 ? 'csd-bad' : e.score > 60 ? 'csd-good' : ''}>{pct(e.score)}</td>
                       </tr>
                     ))}
@@ -1137,14 +1157,14 @@ function FullReportModal({ report, studentName, onClose }) {
             </>
           )}
 
-          {(p.openings || []).length > 0 && (
+          {openings.length > 0 && (
             <>
               <h3 className="csd-modal-h3">Openings played</h3>
               <div className="csd-fr-scroll">
                 <table className="csd-fr-table">
                   <thead><tr><th>Opening</th><th>Side</th><th>Games</th><th>W</th><th>D</th><th>L</th><th>Score</th></tr></thead>
                   <tbody>
-                    {p.openings.map((o, i) => (
+                    {openings.map((o, i) => (
                       <tr key={i}>
                         <th scope="row">{o.opening}</th>
                         <td>{o.side === 'white' ? 'White' : o.side === 'black' ? 'Black' : '—'}</td>
@@ -1187,10 +1207,15 @@ function FullReportModal({ report, studentName, onClose }) {
             </>
           )}
 
-          {/* Report-over-report, so a coach can see the trend rather than one week. */}
-          {cols.length > 1 && (
+          {/* The measures table. With more than one report it shows the trend;
+              with one it is still the fullest set of figures on the page, so it
+              renders either way rather than being hidden from any coach whose
+              student has only earned their first. */}
+          {cols.length > 0 && (
             <>
-              <h3 className="csd-modal-h3">Report over report</h3>
+              <h3 className="csd-modal-h3">
+                {cols.length > 1 ? 'Report over report' : 'All measures'}
+              </h3>
               <div className="csd-fr-scroll">
                 <table className="csd-fr-table">
                   <thead>
@@ -1202,16 +1227,26 @@ function FullReportModal({ report, studentName, onClose }) {
                     </tr>
                   </thead>
                   <tbody>
+                    {/* Same measures, in the same order, as the student's own
+                        report — a coach and their student discussing "the
+                        table" must be looking at the same rows. */}
                     {[
+                      ['Puzzles solved', 'puzzles', ''],
+                      ['Puzzle accuracy', 'puzzleAccuracy', '%'],
+                      ['Best streak', 'bestStreak', ''],
+                      ['Days practised', 'daysPractised', ''],
                       ['Games analysed', 'gamesAnalysed', ''],
                       ['Opening', 'opening', '%'],
                       ['Middlegame', 'middlegame', '%'],
                       ['Endgame', 'endgame', '%'],
                       ['Blunders per game', 'blundersPerGame', ''],
-                      ['Win rate', 'winRate', '%'],
                       ['Defensive score', 'defensiveScore', '%'],
-                      ['Puzzles solved', 'puzzles', ''],
-                      ['Puzzle accuracy', 'puzzleAccuracy', '%'],
+                      ['Mistakes found', 'momentsFound', ''],
+                      ['Chess Nexus arena', 'arenaGames', ''],
+                      ['Lichess + Chess.com', 'externalGames', ''],
+                      ['Win rate', 'winRate', '%'],
+                      ['Endgames played out', 'endgamesPlayed', ''],
+                      ['Chapters completed', 'studies', ''],
                     ].filter(([, f]) => cols.some(c => c[f] != null)).map(([label, f, sfx]) => (
                       <tr key={f}>
                         <th scope="row">{label}</th>

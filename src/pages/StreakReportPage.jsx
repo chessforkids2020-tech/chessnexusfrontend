@@ -13,6 +13,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api';
+import { viewOpenings, viewComparison } from '../lib/streakReportView';
 import './StreakReportPage.css';
 
 const PHASE_LABEL = { opening: 'Opening', middlegame: 'Middlegame', endgame: 'Endgame' };
@@ -56,88 +57,11 @@ export default function StreakReportPage() {
   const phases = p.phases || {};
   const games = p.games || {};
 
-  // Openings saved by an OLDER build are one row per variation and include
-  // rows the source could not name ("Unknown"). Regroup them here so an
-  // existing report reads the same as a new one — same rules as
-  // openingSummary() in the builder: family before the colon, drop unnamed,
-  // drop anything played only once.
-  const openings = (() => {
-    const raw = p.openings || [];
-    if (!raw.length) return raw;
-    // Already grouped by the current builder — it stamps `variations`.
-    if (raw.some(o => typeof o.variations === 'number')) return raw;
-    const by = new Map();
-    for (const o of raw) {
-      const family = String(o.opening || '').split(':')[0].trim();
-      if (!family || /^(unknown|unnamed|irregular|\?+)$/i.test(family)) continue;
-      const key = `${family}|${o.side || ''}`;
-      if (!by.has(key)) {
-        by.set(key, { opening: family, ecoCode: o.ecoCode || '', side: o.side || '',
-                      games: 0, wins: 0, draws: 0, losses: 0, variations: new Set() });
-      }
-      const g = by.get(key);
-      // Old rows carry their own game count, so add rather than increment.
-      g.games  += o.games || o.played || 0;
-      g.wins   += o.wins || 0;
-      g.draws  += o.draws || 0;
-      g.losses += o.losses || 0;
-      if (o.opening && o.opening !== family) g.variations.add(o.opening);
-    }
-    return [...by.values()]
-      .filter(g => g.games >= 2)
-      .map(g => ({ ...g, variations: g.variations.size,
-                   score: Math.round(((g.wins + g.draws * 0.5) / g.games) * 100) }))
-      .sort((a, b) => b.games - a.games)
-      .slice(0, 8);
-  })();
-
-  // Reports generated BEFORE the comparison section existed have no
-  // `payload.comparison`. Rather than hide the section from every student who
-  // already earned a report, rebuild this report's own column from figures the
-  // payload has always carried. History stays empty (it genuinely is not known
-  // for an old payload), so such a report renders as a baseline — which for a
-  // first report is exactly right anyway.
-  const comparison = p.comparison || (() => {
-    const res = games.results || {};
-    const pt = p.practiceTotals || {};
-    const played = (res.win || 0) + (res.loss || 0) + (res.draw || 0);
-    const current = {
-      periodStart: report.periodStart,
-      periodEnd: report.periodEnd,
-      gamesAnalysed: games.analysed ?? null,
-      opening:    phases.opening?.accuracy ?? null,
-      middlegame: phases.middlegame?.accuracy ?? null,
-      endgame:    phases.endgame?.accuracy ?? null,
-      blundersPerGame: played
-        ? +(((phases.opening?.blunders || 0) + (phases.middlegame?.blunders || 0)
-            + (phases.endgame?.blunders || 0)) / played).toFixed(2)
-        : null,
-      winRate: played ? Math.round(((res.win || 0) / played) * 100) : null,
-      defensiveScore: p.defence?.defensiveScore ?? null,
-      // NOT moments.total: that counts CATEGORISED moments, and in payloads
-      // written before 'tactic' became categorisable almost nothing was, so it
-      // was saved as 0 while the report showed dozens of mistakes. The practice
-      // plan's own tally never depended on categories.
-      momentsFound: p.moments?.practice?.drillable
-        ?? (p.momentThemes || []).reduce((n, t) => n + (t.count || 0), 0)
-        ?? p.moments?.total ?? null,
-      puzzles:        pt.puzzles        ?? null,
-      puzzleAccuracy: pt.puzzleAccuracy ?? null,
-      bestStreak:     pt.bestStreak     ?? null,
-      daysPractised:  pt.daysPractised  ?? null,
-      // Games from bySource — the games actually collected and analysed. NOT
-      // StreakDay.externalGames, which is a streak GATE: it stops counting once
-      // a day has one external game, so it reported 9 for a student with 26
-      // analysed games.
-      arenaGames:     games.bySource?.chessnexus ?? null,
-      externalGames:  (games.bySource?.lichess != null || games.bySource?.chesscom != null)
-        ? (games.bySource.lichess || 0) + (games.bySource.chesscom || 0)
-        : null,
-      endgamesPlayed: pt.endgames       ?? null,
-      studies:        pt.studies        ?? null,
-    };
-    return { history: [], current, columns: [current] };
-  })();
+  // Read-side repairs for payloads written before the current builder. Shared
+  // with the coach's view of this same report — see lib/streakReportView.js for
+  // why these cannot live in this file.
+  const openings = viewOpenings(p);
+  const comparison = viewComparison(report);
 
   return (
     <div className="sr-wrap">
