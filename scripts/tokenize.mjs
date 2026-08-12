@@ -156,9 +156,38 @@ const shouldSkipLine = (line) => (
   /tokenize-ignore/.test(line)
 );
 
+/* HTML NUMERIC ENTITIES ARE NOT COLOURS.
+ *
+ * `&#128202;` is the bar-chart emoji. It contains the substring "#128202",
+ * which is indistinguishable from a six-digit hex colour to a naive regex — so
+ * the first version of this script rewrote it to `&var(--color-success);`, and
+ * the emoji rendered as that literal text on the dashboard.
+ *
+ * Entities are matched and masked out before the colour pass, then restored
+ * afterwards. Masking rather than skipping the whole line, because a line can
+ * legitimately contain both an entity and a real colour. */
+const ENTITY = /&#\d+;|&#x[0-9a-fA-F]+;/g;
+
+function maskEntities(line) {
+  const found = [];
+  const masked = line.replace(ENTITY, (m) => {
+    found.push(m);
+    return ` ENT${found.length - 1} `;
+  });
+  return { masked, found };
+}
+
+function unmaskEntities(line, found) {
+  return line.replace(/ ENT(\d+) /g, (_, i) => found[+i]);
+}
+
 function processText(text, stats) {
-  return text.split('\n').map((line) => {
-    if (shouldSkipLine(line)) return line;
+  return text.split('\n').map((rawLine) => {
+    if (shouldSkipLine(rawLine)) return rawLine;
+
+    // Hide HTML entities from the colour regexes — see the note above.
+    const { masked, found } = maskEntities(rawLine);
+    let line = masked;
 
     // rgb/rgba first: a naive hex pass cannot match inside these anyway, but
     // doing them first keeps the two passes independent.
@@ -182,7 +211,7 @@ function processText(text, stats) {
       return m;
     });
 
-    return line;
+    return unmaskEntities(line, found);
   }).join('\n');
 }
 

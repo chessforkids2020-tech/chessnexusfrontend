@@ -798,7 +798,7 @@ function TodayStrip() {
   chips.push(
     jobRunning ? (
       <span key="report" className="today-chip today-chip--todo">
-        <span className="today-chip-emoji">&var(--color-success);</span>
+        <span className="today-chip-emoji">&#128202;</span>
         <span className="today-chip-text">Weekly report — being prepared…</span>
       </span>
     ) : reportDue ? (
@@ -819,7 +819,7 @@ function TodayStrip() {
       </button>
     ) : report ? (
       <Link key="report" to={`/streak-report/${report.id}`} className="today-chip today-chip--done">
-        <span className="today-chip-emoji">&var(--color-success);</span>
+        <span className="today-chip-emoji">&#128202;</span>
         <span className="today-chip-text">Weekly report</span>
         <span className="today-chip-go">&rarr;</span>
       </Link>
@@ -831,7 +831,7 @@ function TodayStrip() {
         onClick={() => setShowHow(v => !v)}
         aria-expanded={showHow}
       >
-        <span className="today-chip-emoji">&var(--color-success);</span>
+        <span className="today-chip-emoji">&#128202;</span>
         <span className="today-chip-text">Weekly report</span>
         <span className="today-chip-go">?</span>
       </button>
@@ -855,7 +855,7 @@ function TodayStrip() {
   if (hasAdminCoach) {
     chips.push(
       <Link key="myclasses" to="/attendance" className="today-chip today-chip--todo">
-        <span className="today-chip-emoji">&var(--color-accent-2);</span>
+        <span className="today-chip-emoji">&#127891;</span>
         <span className="today-chip-text">My Classes</span>
         <span className="today-chip-go">&rarr;</span>
       </Link>
@@ -864,7 +864,7 @@ function TodayStrip() {
   if (hasPrivateCoach) {
     chips.push(
       <Link key="mycoach" to="/my-coach" className="today-chip today-chip--todo">
-        <span className="today-chip-emoji">&var(--color-accent-2);</span>
+        <span className="today-chip-emoji">&#127891;</span>
         <span className="today-chip-text">My Coach</span>
         <span className="today-chip-go">&rarr;</span>
       </Link>
