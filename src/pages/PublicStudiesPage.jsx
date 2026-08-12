@@ -73,7 +73,7 @@ const PublicStudiesPage = () => {
       background: 'var(--color-white-a07)',
       border: '1px solid var(--color-white-a13)',
       color: 'var(--color-text)',
-      borderRadius: 8,
+      borderRadius: 'var(--radius-md)',
       padding: '8px 14px',
       cursor: 'pointer',
       fontSize: 14,
@@ -105,7 +105,7 @@ const PublicStudiesPage = () => {
       flex: 1,
       background: 'var(--color-white-a07)',
       border: '1px solid var(--color-white-a13)',
-      borderRadius: 8,
+      borderRadius: 'var(--radius-md)',
       padding: '8px 14px',
       color: 'var(--color-text)',
       fontSize: 14,
@@ -114,7 +114,7 @@ const PublicStudiesPage = () => {
     searchBtn: {
       background: 'var(--color-accent-2)',
       border: 'none',
-      borderRadius: 8,
+      borderRadius: 'var(--radius-md)',
       color: 'var(--color-text)',
       padding: '8px 16px',
       cursor: 'pointer',
@@ -128,7 +128,7 @@ const PublicStudiesPage = () => {
     },
     filterChip: (active, type) => ({
       padding: '6px 14px',
-      borderRadius: 20,
+      borderRadius: 'var(--radius-2xl)',
       border: `1px solid ${active
         ? (type !== 'all' ? typeColors[type]?.color || 'var(--color-accent-2)' : 'var(--color-accent-2)')
         : 'var(--color-white-a13)'}`,
@@ -152,7 +152,7 @@ const PublicStudiesPage = () => {
     card: {
       background: 'var(--color-white-a04)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: 14,
+      borderRadius: 'var(--radius-lg)',
       padding: 20,
       cursor: 'pointer',
       transition: 'border-color 0.2s',
@@ -175,7 +175,7 @@ const PublicStudiesPage = () => {
       fontSize: 11,
       fontWeight: 600,
       padding: '3px 10px',
-      borderRadius: 10,
+      borderRadius: 'var(--radius-md)',
       background: typeColors[type]?.bg || 'var(--color-border)',
       color: typeColors[type]?.color || 'var(--color-text-muted)',
       textTransform: 'capitalize',
@@ -217,7 +217,7 @@ const PublicStudiesPage = () => {
     },
     pageBtn: (active) => ({
       padding: '8px 14px',
-      borderRadius: 8,
+      borderRadius: 'var(--radius-md)',
       border: `1px solid ${active ? 'var(--color-accent-2)' : 'var(--color-white-a13)'}`,
       background: active ? 'var(--color-accent-2-a15)' : 'transparent',
       color: active ? 'var(--color-accent-2)' : 'var(--color-text-muted)',

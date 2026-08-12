@@ -16,7 +16,7 @@
   text-align: center;
   background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   box-shadow: 0 18px 44px var(--color-black-a35);
   color: var(--color-text);
 }
@@ -26,7 +26,7 @@
 .jc-photo {
   width: 84px;
   height: 84px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   object-fit: cover;
   margin: 0 auto 14px;
   display: block;
@@ -54,7 +54,7 @@
   width: 100%;
   padding: 12px 20px;
   border: none;
-  border-radius: 11px;
+  border-radius: var(--radius-lg);
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
   color: #04211d;
   font-size: 14.5px;
@@ -78,7 +78,7 @@
 .jc-ok {
   margin: 14px 0 0;
   padding: 11px 14px;
-  border-radius: 11px;
+  border-radius: var(--radius-lg);
   background: var(--color-success-a12);
   border: 1px solid var(--color-success-a30);
   color: var(--color-success);
@@ -89,7 +89,7 @@
 .jc-err {
   margin-bottom: 12px;
   padding: 9px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--color-danger-a12);
   border: 1px solid var(--color-danger-a30);
   color: var(--color-danger);
@@ -111,7 +111,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 11px 13px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-white-a13);
   background: var(--color-black-a35);
   color: var(--color-text);

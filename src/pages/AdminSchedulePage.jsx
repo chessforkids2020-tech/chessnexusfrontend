@@ -41,7 +41,7 @@ function WeeklyScheduleTable() {
     <div style={{ marginBottom: 28 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <div style={{ fontSize: 15, fontWeight: 800, color: '#1a1a2e' }}>📆 Weekly Regular Schedule — Activity Timings</div>
-        <button onClick={load} style={{ background: '#e2e8f0', color: '#1a1a2e', border: 'none', borderRadius: 8, padding: '5px 14px', fontWeight: 600, cursor: 'pointer', fontSize: 12 }}>
+        <button onClick={load} style={{ background: '#e2e8f0', color: '#1a1a2e', border: 'none', borderRadius: 'var(--radius-md)', padding: '5px 14px', fontWeight: 600, cursor: 'pointer', fontSize: 12 }}>
           🔄 Refresh
         </button>
       </div>
@@ -51,7 +51,7 @@ function WeeklyScheduleTable() {
 
       {!loading && data && (
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ borderCollapse: 'collapse', background: '#fff', borderRadius: 10, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', minWidth: 560 }}>
+          <table style={{ borderCollapse: 'collapse', background: '#fff', borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', minWidth: 560 }}>
             <thead>
               <tr>
                 <th style={{ ...thStyle(), textAlign: 'left', paddingLeft: 14, minWidth: 100 }}>Day</th>
@@ -79,7 +79,7 @@ function WeeklyScheduleTable() {
                                 <div key={idx} style={{
                                   display: 'inline-flex', alignItems: 'center', gap: 5,
                                   background: `${a.color}18`, border: `1px solid ${a.color}44`,
-                                  borderRadius: 6, padding: '3px 8px',
+                                  borderRadius: 'var(--radius-sm)', padding: '3px 8px',
                                 }}>
                                   <span style={{ fontWeight: 800, color: a.color, fontSize: 13 }}>{e.time}</span>
                                   <span style={{ color: '#475569', fontSize: 11, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={e.label}>{e.label}</span>
@@ -137,18 +137,18 @@ const s = {
   page: { padding: 24, paddingTop: 80, minHeight: '100vh', background: '#f5f5dc', fontFamily: 'Poppins, sans-serif' },
   header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
   title: { fontSize: 22, fontWeight: 800, color: '#1a1a2e' },
-  primaryBtn: { background: '#0b6623', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 18px', fontWeight: 700, cursor: 'pointer', fontSize: 13 },
-  dangerBtn:  { background: '#dc2626', color: '#fff', border: 'none', borderRadius: 8, padding: '6px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 12 },
-  secondaryBtn: { background: '#e2e8f0', color: '#1a1a2e', border: 'none', borderRadius: 8, padding: '6px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 12 },
-  table: { width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: 10, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' },
+  primaryBtn: { background: '#0b6623', color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', padding: '8px 18px', fontWeight: 700, cursor: 'pointer', fontSize: 13 },
+  dangerBtn:  { background: '#dc2626', color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', padding: '6px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 12 },
+  secondaryBtn: { background: '#e2e8f0', color: '#1a1a2e', border: 'none', borderRadius: 'var(--radius-md)', padding: '6px 12px', fontWeight: 600, cursor: 'pointer', fontSize: 12 },
+  table: { width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' },
   th: { background: '#1a1a2e', color: '#fff', padding: '10px 14px', textAlign: 'left', fontSize: 12, fontWeight: 700 },
   td: { padding: '10px 14px', borderBottom: '1px solid #f1f5f9', fontSize: 13, color: '#334155' },
   // Modal
   overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 },
-  modal: { background: '#fff', borderRadius: 12, padding: 28, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' },
+  modal: { background: '#fff', borderRadius: 'var(--radius-lg)', padding: 28, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' },
   label: { display: 'block', fontWeight: 600, fontSize: 13, color: '#334155', marginBottom: 4, marginTop: 14 },
-  input: { width: '100%', boxSizing: 'border-box', padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: 13, outline: 'none' },
-  select: { width: '100%', boxSizing: 'border-box', padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: 13 },
+  input: { width: '100%', boxSizing: 'border-box', padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: 'var(--radius-md)', fontSize: 13, outline: 'none' },
+  select: { width: '100%', boxSizing: 'border-box', padding: '8px 10px', border: '1px solid #cbd5e1', borderRadius: 'var(--radius-md)', fontSize: 13 },
 };
 
 // ── Inline date picker for admin modal ──────────────────────────────────────
@@ -181,7 +181,7 @@ function AdminDatePicker({ selected, onChange }) {
   const isToday = (day) => day && viewYear === today.getFullYear() && viewMonth === today.getMonth() && day === today.getDate();
 
   return (
-    <div style={{ border: '1px solid #cbd5e1', borderRadius: 10, padding: 12, marginTop: 4, background: '#fafafa' }}>
+    <div style={{ border: '1px solid #cbd5e1', borderRadius: 'var(--radius-md)', padding: 12, marginTop: 4, background: '#fafafa' }}>
       {/* Month navigation */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <button type="button" onClick={prevM} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: '#64748b', padding: '0 6px' }}>&#8249;</button>
@@ -202,7 +202,7 @@ function AdminDatePicker({ selected, onChange }) {
             onClick={() => toggleDate(day)}
             style={{
               height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 6, fontSize: 12,
+              borderRadius: 'var(--radius-sm)', fontSize: 12,
               fontWeight: isSel(day) ? 700 : 400,
               cursor: day ? 'pointer' : 'default',
               background: isSel(day) ? '#0b6623' : isToday(day) ? '#dcfce7' : 'transparent',
@@ -217,7 +217,7 @@ function AdminDatePicker({ selected, onChange }) {
       {selected.length > 0 && (
         <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 5 }}>
           {selected.map(ds => (
-            <span key={ds} style={{ background: '#dcfce7', color: '#166534', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span key={ds} style={{ background: '#dcfce7', color: '#166534', borderRadius: 'var(--radius-2xl)', padding: '3px 10px', fontSize: 11, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
               {ds}
               <span onClick={() => onChange(selected.filter(d => d !== ds))} style={{ cursor: 'pointer', fontWeight: 800, fontSize: 13, lineHeight: 1 }}>×</span>
             </span>
@@ -355,7 +355,7 @@ export default function AdminSchedulePage() {
             {items.map(item => (
               <tr key={item._id}>
                 <td style={s.td}>
-                  <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: '50%', background: item.color || '#06b6d4', marginRight: 6, verticalAlign: 'middle' }} />
+                  <span style={{ display: 'inline-block', width: 10, height: 10, borderRadius: 'var(--radius-circle)', background: item.color || '#06b6d4', marginRight: 6, verticalAlign: 'middle' }} />
                   {item.title}
                 </td>
                 <td style={s.td}>{ACTIVITY_TYPES.find(t => t.value === item.activityType)?.label || item.activityType}</td>
@@ -427,7 +427,7 @@ export default function AdminSchedulePage() {
               {PRESET_COLORS.map(c => (
                 <div
                   key={c}
-                  style={{ width: 24, height: 24, borderRadius: '50%', background: c, cursor: 'pointer', border: form.color === c ? '3px solid #000' : '2px solid transparent', transition: 'border 0.1s' }}
+                  style={{ width: 24, height: 24, borderRadius: 'var(--radius-circle)', background: c, cursor: 'pointer', border: form.color === c ? '3px solid #000' : '2px solid transparent', transition: 'border 0.1s' }}
                   onClick={() => setForm(f => ({ ...f, color: c }))}
                 />
               ))}

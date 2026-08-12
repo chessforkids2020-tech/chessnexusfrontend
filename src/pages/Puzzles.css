@@ -63,7 +63,7 @@
 .lp-sound-btn {
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a07);
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   width: 34px;
   height: 34px;
   cursor: pointer;
@@ -136,13 +136,13 @@
   padding: 7px 16px;
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a07);
-  border-radius: 30px;
+  border-radius: var(--radius-2xl);
 }
 
 .lp-simple-circle {
   width: 14px;
   height: 14px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   flex-shrink: 0;
 }
 .lp-simple-circle.white {
@@ -179,7 +179,7 @@
   padding: 16px;
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a07);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   transition: background 0.3s, border-color 0.3s;
 }
 
@@ -198,7 +198,7 @@
 .lp-color-disc {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -261,7 +261,7 @@
   padding: 10px 14px;
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a04);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
 }
 
 .lp-from-icon {
@@ -296,7 +296,7 @@
   padding: 8px 14px;
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a04);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
 }
 
 .lp-diff-label {
@@ -312,7 +312,7 @@
   font-size: 12px;
   font-weight: 700;
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
 }
 .lp-diff-badge.easy   { background: var(--color-success-a12); color: var(--color-success); }
 .lp-diff-badge.medium { background: var(--color-warning-a12);  color: var(--color-warning); }
@@ -363,7 +363,7 @@
 .lp-dot {
   flex: 1;
   height: 36px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -401,7 +401,7 @@
   width: 10px;
   height: 10px;
   background: var(--color-accent-2);
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   animation: lp-pulse 1.4s ease-in-out infinite;
 }
 
@@ -427,7 +427,7 @@
   margin: 16px 16px 20px;
   padding: 15px 20px;
   border: none;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   font-size: 15px;
   font-weight: 800;
   color: var(--color-text);
@@ -610,7 +610,7 @@
 @media (max-width: 768px) {
   .training-completion-container {
     padding: 40px 30px;
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
     max-width: 100%;
   }
   
@@ -627,7 +627,7 @@
 @media (max-width: 480px) {
   .training-completion-container {
     padding: 30px 20px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
   }
   
   .training-completion-title {
@@ -649,7 +649,7 @@
   padding: 10px 14px;
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a04);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 13px;
 }
 
@@ -692,7 +692,7 @@
   padding: 20px;
   background: var(--color-accent-a15);
   border: 1px solid var(--color-accent-a20);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   width: 100%;
 }
 
@@ -738,7 +738,7 @@
   .current-rating-section {
     margin-bottom: 20px;
     padding: 16px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
   }
   
   .current-rating-value {
@@ -771,7 +771,7 @@
   padding: 16px;
   background: var(--color-success-a12);
   border: 1px solid var(--color-success-a20);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
@@ -780,7 +780,7 @@
   padding: 16px;
   background: var(--color-danger-a12);
   border: 1px solid var(--color-danger-a20);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }

@@ -103,7 +103,7 @@ const styles = {
     background: "rgba(23,23,23,0.85)",
     backdropFilter: "blur(12px)",
     border: "1px solid var(--color-white-a07)",
-    borderRadius: 20,
+    borderRadius: 'var(--radius-2xl)',
     padding: "48px 40px",
     textAlign: "center",
     boxShadow: "0 8px 40px var(--color-black-a50)"
@@ -136,7 +136,7 @@ const styles = {
     color: "var(--color-text)",
     textDecoration: "none",
     padding: "12px 28px",
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     fontSize: 15,
     boxShadow: "0 4px 16px rgba(109,40,217,0.35)"

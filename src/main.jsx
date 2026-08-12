@@ -15,6 +15,10 @@ import LiveNoteBanner from "./components/LiveNoteBanner";
 import "./styles/tokens/layout.css";
 import "./styles/tokens/themes.css";
 import "./styles/tokens/aliases.css";
+// Button GEOMETRY (padding/radius/size) for every existing button convention,
+// pointed at the --btn-* tokens. Colour is left to each convention. Loaded
+// before page CSS so a page that genuinely needs a different size still wins.
+import "./styles/tokens/buttons.css";
 
 import "./index.css";
 import "./components/layout.css";

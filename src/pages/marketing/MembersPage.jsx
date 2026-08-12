@@ -315,7 +315,7 @@ export default function MembersPage() {
         
         .mkt-page::-webkit-scrollbar-thumb {
           background: rgba(102, 126, 234, 0.5);
-          border-radius: 4px;
+          border-radius: var(--radius-sm);
         }
         
         /* Responsive */

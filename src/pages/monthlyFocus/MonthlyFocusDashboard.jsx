@@ -454,7 +454,7 @@ export default function MonthlyFocusDashboard() {
                 style={{
                   background: `linear-gradient(145deg, #0f0f1a, #1a1a2e)`,
                   border: `2px solid ${badgePopup.color}`,
-                  borderRadius: '24px',
+                  borderRadius: 'var(--radius-2xl)',
                   padding: '40px 36px',
                   textAlign: 'center',
                   maxWidth: '380px',
@@ -466,7 +466,7 @@ export default function MonthlyFocusDashboard() {
               >
                 {/* Glow ring */}
                 <div style={{
-                  position: 'absolute', inset: 0, borderRadius: '24px',
+                  position: 'absolute', inset: 0, borderRadius: 'var(--radius-2xl)',
                   background: `radial-gradient(ellipse at 50% 0%, ${badgePopup.color}18 0%, transparent 70%)`,
                   pointerEvents: 'none'
                 }} />
@@ -498,7 +498,7 @@ export default function MonthlyFocusDashboard() {
                       key={i}
                       animate={{ scale: [1, 1.6, 1], opacity: [0.4, 1, 0.4] }}
                       transition={{ duration: 1.2, repeat: Infinity, delay }}
-                      style={{ width: '8px', height: '8px', borderRadius: '50%', background: badgePopup.color }}
+                      style={{ width: '8px', height: '8px', borderRadius: 'var(--radius-circle)', background: badgePopup.color }}
                     />
                   ))}
                 </div>
@@ -510,7 +510,7 @@ export default function MonthlyFocusDashboard() {
                   style={{
                     width: '100%', padding: '14px',
                     background: `linear-gradient(135deg, ${badgePopup.color}, ${badgePopup.color}bb)`,
-                    border: 'none', borderRadius: '12px',
+                    border: 'none', borderRadius: 'var(--radius-lg)',
                     color: 'var(--color-bg)', fontWeight: '800', fontSize: '15px', cursor: 'pointer',
                     letterSpacing: '0.03em'
                   }}
@@ -561,7 +561,7 @@ export default function MonthlyFocusDashboard() {
             textDecoration: 'none', padding: '6px 14px',
             background: 'var(--color-white-a04)',
             border: '1px solid var(--color-white-a07)',
-            borderRadius: '20px', transition: 'color 0.2s'
+            borderRadius: 'var(--radius-2xl)', transition: 'color 0.2s'
           }}
         >
           ← All Challenges
@@ -780,7 +780,7 @@ export default function MonthlyFocusDashboard() {
                     background: 'var(--color-warning-a12)',
                     color: 'var(--color-warning)',
                     padding: '10px',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-md)',
                     textAlign: 'center',
                     marginBottom: '12px',
                     fontSize: '13px',
@@ -797,7 +797,7 @@ export default function MonthlyFocusDashboard() {
                     background: 'var(--color-warning-a12)',
                     color: 'var(--color-warning)',
                     padding: '10px',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-md)',
                     textAlign: 'center',
                     marginBottom: '12px',
                     fontSize: '13px',
@@ -812,7 +812,7 @@ export default function MonthlyFocusDashboard() {
                 <p className="task-type-badge" style={{
                   display: 'inline-block',
                   padding: '6px 14px',
-                  borderRadius: '20px',
+                  borderRadius: 'var(--radius-2xl)',
                   fontSize: '12px',
                   marginBottom: '12px',
                   background: day.taskType === 'puzzles' ? 'var(--color-accent-a15)' : 
@@ -867,7 +867,7 @@ export default function MonthlyFocusDashboard() {
               padding: '60px 20px', 
               color: 'var(--color-text-muted)',
               background: 'rgba(23, 23, 23, 0.5)',
-              borderRadius: '16px',
+              borderRadius: 'var(--radius-xl)',
               border: '1px solid var(--color-white-a04)'
             }}>
               <p style={{ fontSize: '1.1em', margin: 0 }}>No days created yet. Check back soon!</p>

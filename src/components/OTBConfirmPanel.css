@@ -2,7 +2,7 @@
   margin-top: 18px;
   background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
   border: 1px solid #f59e0b55;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 20px;
   color: var(--color-text);
 }
@@ -42,7 +42,7 @@
 .otb-confirm-row {
   background: var(--color-surface);
   border: 1px solid #ffffff10;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 14px;
 }
 
@@ -76,7 +76,7 @@
 .otb-confirm-row-raw code {
   background: #1f2937;
   padding: 2px 8px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   color: var(--color-warning);
   font-family: 'Courier New', monospace;
 }
@@ -108,7 +108,7 @@
 .otb-confirm-input {
   background: #1f2937;
   border: 1px solid var(--color-text-faint);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 10px 12px;
   color: var(--color-warning);
   font-family: 'Courier New', monospace;
@@ -157,7 +157,7 @@
 .otb-confirm-side-badge {
   background: var(--color-surface-2);
   color: var(--color-text);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 1px 6px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -181,7 +181,7 @@
 .otb-confirm-cancel,
 .otb-confirm-submit {
   padding: 10px 18px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
   font-weight: 600;
@@ -217,7 +217,7 @@
 .otb-confirm-block {
   background: var(--color-surface);
   border: 1px solid #f59e0b33;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 14px;
   margin-bottom: 14px;
 }
@@ -226,7 +226,7 @@
 .otb-confirm-quick-section {
   background: var(--color-surface);
   border: 1px solid #ffffff10;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 14px;
   margin-bottom: 4px;
 }
@@ -268,7 +268,7 @@
 .otb-confirm-quick-raw code {
   background: #1f2937;
   padding: 2px 6px;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   color: var(--color-warning);
   font-family: 'Courier New', monospace;
 }
@@ -277,7 +277,7 @@
   flex: 1 1 120px;
   background: #1f2937;
   border: 1px solid var(--color-text-faint);
-  border-radius: 7px;
+  border-radius: var(--radius-md);
   padding: 7px 10px;
   color: var(--color-warning);
   font-family: 'Courier New', monospace;
@@ -310,7 +310,7 @@
 @media (max-width: 640px) {
   .otb-confirm-card {
     padding: 14px 12px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
   }
 
   .otb-confirm-header {

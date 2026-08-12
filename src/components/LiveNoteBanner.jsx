@@ -75,7 +75,7 @@ export default function LiveNoteBanner() {
           maxWidth: 'min(92vw, 420px)',
           background: isLive ? 'rgba(5,46,22,0.96)' : 'rgba(20,20,40,0.96)',
           border: `1.5px solid ${isLive ? 'var(--color-success)' : 'var(--color-accent)'}`,
-          borderRadius: 12,
+          borderRadius: 'var(--radius-lg)',
           padding: '9px 13px',
           display: 'flex',
           alignItems: 'center',
@@ -91,7 +91,7 @@ export default function LiveNoteBanner() {
         }}
       >
         {isLive && (
-          <span style={{ flexShrink: 0, width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'lnbLiveDot 1.4s infinite' }} />
+          <span style={{ flexShrink: 0, width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'lnbLiveDot 1.4s infinite' }} />
         )}
 
         <div style={{ minWidth: 0, flex: 1 }}>
@@ -107,14 +107,14 @@ export default function LiveNoteBanner() {
             {isLive ? (
               <span style={{
                 color: '#bbf7d0', fontWeight: 800, letterSpacing: 0.4,
-                padding: '1px 8px', borderRadius: 999,
+                padding: '1px 8px', borderRadius: 'var(--radius-pill)',
                 background: 'rgba(34,197,94,0.18)', border: '1px solid rgba(34,197,94,0.6)',
                 textShadow: '0 0 8px rgba(34,197,94,0.9)',
               }}>● LIVE NOW</span>
             ) : (
               <span style={{
                 color: 'var(--color-warning)', fontWeight: 700,
-                padding: '1px 8px', borderRadius: 999,
+                padding: '1px 8px', borderRadius: 'var(--radius-pill)',
                 background: 'var(--color-warning-a12)', border: '1px solid rgba(245,158,11,0.5)',
                 textShadow: '0 0 6px rgba(245,158,11,0.7)',
               }}>in {formatCountdown(diff)}</span>

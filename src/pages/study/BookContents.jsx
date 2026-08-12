@@ -132,16 +132,16 @@ const styles = {
   container: { maxWidth: 820, margin: '0 auto', padding: 24 },
   backButton: { background: 'none', border: 'none', color: 'var(--color-success)', cursor: 'pointer', fontSize: 15, padding: 0, marginBottom: 8 },
   title: { fontSize: 30, color: 'var(--color-text)', margin: '4px 0', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
-  freeBadge: { background: 'var(--color-success)', color: 'var(--color-text)', fontSize: 13, fontWeight: 800, letterSpacing: 0.5, padding: '3px 10px', borderRadius: 6, verticalAlign: 'middle' },
+  freeBadge: { background: 'var(--color-success)', color: 'var(--color-text)', fontSize: 13, fontWeight: 800, letterSpacing: 0.5, padding: '3px 10px', borderRadius: 'var(--radius-sm)', verticalAlign: 'middle' },
   author: { color: 'var(--color-text-muted)', fontSize: 16, marginBottom: 20, fontStyle: 'italic' },
-  toc: { background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: 12, padding: '20px 26px' },
+  toc: { background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', padding: '20px 26px' },
   tocHeading: { color: 'var(--color-success)', fontSize: 16, textTransform: 'uppercase', letterSpacing: 1, marginTop: 0 },
-  error: { background: '#fdecea', color: '#c62828', padding: '10px 14px', borderRadius: 6 },
-  upsell: { marginTop: 20, padding: 16, background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 12, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' },
-  supportBtn: { background: 'var(--color-success)', color: '#06281d', border: 'none', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontWeight: 700 },
-  xpBtn: { background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent))', color: 'var(--color-text)', border: 'none', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' },
+  error: { background: '#fdecea', color: '#c62828', padding: '10px 14px', borderRadius: 'var(--radius-sm)' },
+  upsell: { marginTop: 20, padding: 16, background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 'var(--radius-lg)', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' },
+  supportBtn: { background: 'var(--color-success)', color: '#06281d', border: 'none', padding: '8px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 700 },
+  xpBtn: { background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent))', color: 'var(--color-text)', border: 'none', padding: '8px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' },
   xpBtnDisabled: { background: 'var(--color-border-strong)', color: 'var(--color-text-muted)', cursor: 'not-allowed' },
-  unlockedBadge: { background: 'rgba(124,58,237,0.18)', color: 'var(--color-accent-2)', border: '1px solid rgba(124,58,237,0.4)', fontSize: 13, fontWeight: 800, padding: '3px 10px', borderRadius: 6, verticalAlign: 'middle' },
+  unlockedBadge: { background: 'rgba(124,58,237,0.18)', color: 'var(--color-accent-2)', border: '1px solid rgba(124,58,237,0.4)', fontSize: 13, fontWeight: 800, padding: '3px 10px', borderRadius: 'var(--radius-sm)', verticalAlign: 'middle' },
 };
 
 export default BookContents;

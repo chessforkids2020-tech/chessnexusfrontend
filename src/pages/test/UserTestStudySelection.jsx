@@ -56,7 +56,7 @@ const UserTestStudySelection = () => {
     },
     card: {
       background: 'var(--color-surface)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       padding: '30px',
       border: '1px solid var(--color-white-a10)',
       cursor: 'pointer',
@@ -98,7 +98,7 @@ const UserTestStudySelection = () => {
       background: 'rgba(38, 38, 38, 0.8)',
       color: 'var(--color-text)',
       border: '1px solid var(--color-white-a20)',
-      borderRadius: '10px',
+      borderRadius: 'var(--radius-md)',
       cursor: 'pointer',
       fontSize: '14px',
       marginBottom: '30px',
@@ -114,7 +114,7 @@ const UserTestStudySelection = () => {
       color: 'var(--color-text-faint)',
       padding: '60px',
       background: 'var(--color-surface)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
     },
   };
 

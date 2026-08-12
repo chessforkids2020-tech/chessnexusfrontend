@@ -135,7 +135,7 @@ const StudyTestResult = () => {
       background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       padding: '30px',
       boxShadow: '0 8px 32px var(--color-black-a50)',
       border: '1px solid var(--color-white-a04)',
@@ -163,7 +163,7 @@ const StudyTestResult = () => {
       textAlign: 'center',
       background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '30px',
       marginBottom: '25px',
       border: '1px solid var(--color-white-a04)',
@@ -172,7 +172,7 @@ const StudyTestResult = () => {
     gradeCircle: {
       width: '140px',
       height: '140px',
-      borderRadius: '50%',
+      borderRadius: 'var(--radius-circle)',
       margin: '0 auto 20px',
       display: 'flex',
       alignItems: 'center',
@@ -197,7 +197,7 @@ const StudyTestResult = () => {
     statCard: {
       background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '20px',
       textAlign: 'center',
       border: '1px solid var(--color-white-a04)',
@@ -231,7 +231,7 @@ const StudyTestResult = () => {
     attemptCard: {
       background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '15px',
       marginBottom: '12px',
       borderLeft: '4px solid',
@@ -260,7 +260,7 @@ const StudyTestResult = () => {
     button: {
       padding: '12px 24px',
       border: 'none',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '14px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -298,7 +298,7 @@ const StudyTestResult = () => {
     modalContent: {
       background: 'var(--color-surface)',
       backdropFilter: 'blur(20px)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       padding: '30px',
       maxWidth: '600px',
       width: '90%',
@@ -340,7 +340,7 @@ const StudyTestResult = () => {
       padding: '10px 20px',
       background: 'var(--color-accent-a20)',
       border: '1px solid var(--color-accent-a40)',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       color: 'var(--color-accent)',
       fontSize: '14px',
       fontWeight: '600',
@@ -349,7 +349,7 @@ const StudyTestResult = () => {
     },
     moveInfo: {
       background: 'var(--color-surface)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '15px',
       fontSize: '13px',
       color: 'var(--color-text-muted)',
@@ -358,7 +358,7 @@ const StudyTestResult = () => {
       padding: '8px 16px',
       background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       border: 'none',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       color: 'var(--color-text)',
       fontSize: '12px',
       fontWeight: '600',
@@ -588,7 +588,7 @@ const StudyTestResult = () => {
                 orientation={expandedPuzzle.playerColor === 'w' ? 'white' : 'black'}
                 draggable={false}
                 boardStyle={{
-                  borderRadius: '8px',
+                  borderRadius: 'var(--radius-md)',
                   boxShadow: '0 8px 24px var(--color-black-a50)',
                 }}
                 boardWidth={boardSize}

@@ -15,7 +15,7 @@
   border: 1px solid var(--color-white-a07);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
-  border-radius: 20px; width: 100%; max-width: 640px;
+  border-radius: var(--radius-2xl); width: 100%; max-width: 640px;
   padding: 28px; position: relative;
   box-shadow: 0 20px 60px var(--color-black-a65);
   color: var(--color-text);
@@ -32,7 +32,7 @@
 .fg-home-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .fg-big-btn {
   display: flex; flex-direction: column; align-items: center; gap: 10px;
-  padding: 28px 14px; border-radius: 14px;
+  padding: 28px 14px; border-radius: var(--radius-lg);
   border: 1px solid var(--color-white-a07);
   background: var(--color-black-a35);
   cursor: pointer; font-size: 16px; font-weight: 700; color: var(--color-text);
@@ -50,7 +50,7 @@
 .fg-col-title { font-size: 14px; font-weight: 700; color: var(--color-text); margin: 0 0 10px; }
 .fg-tc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .fg-tc {
-  padding: 10px 0; border-radius: 8px;
+  padding: 10px 0; border-radius: var(--radius-md);
   border: 1px solid var(--color-white-a07);
   background: var(--color-black-a35);
   cursor: pointer; font-weight: 700; color: var(--color-text-muted); transition: all .12s;
@@ -64,14 +64,14 @@
 .fg-custom label { font-size: 12px; color: var(--color-text-muted); display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .fg-custom input {
   padding: 8px; border: 1px solid var(--color-white-a10);
-  border-radius: 6px; background: var(--color-black-a50); color: var(--color-text);
+  border-radius: var(--radius-sm); background: var(--color-black-a50); color: var(--color-text);
 }
 .fg-custom input:focus { outline: none; border-color: rgba(6, 182, 212, 0.6); }
 .fg-tc-note { font-size: 12px; color: var(--color-text-faint); margin: 10px 0 0; }
 
 .fg-variant { display: flex; gap: 8px; }
 .fg-var {
-  flex: 1; padding: 12px 0; border-radius: 8px;
+  flex: 1; padding: 12px 0; border-radius: var(--radius-md);
   border: 1px solid var(--color-white-a07);
   background: var(--color-black-a35);
   cursor: pointer; font-weight: 700; color: var(--color-text-muted); transition: all .12s;
@@ -89,7 +89,7 @@
 .fg-create-footer { display: flex; justify-content: space-between; margin-top: 22px; }
 .fg-primary {
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); color: #06121a; border: none;
-  padding: 12px 22px; border-radius: 10px; font-weight: 800; cursor: pointer;
+  padding: 12px 22px; border-radius: var(--radius-md); font-weight: 800; cursor: pointer;
   box-shadow: 0 8px 20px var(--color-accent-a20); transition: filter .15s;
 }
 .fg-primary:hover { filter: brightness(1.08); }
@@ -97,14 +97,14 @@
 .fg-secondary {
   background: var(--color-white-a07); color: var(--color-text);
   border: 1px solid var(--color-white-a10); padding: 12px 18px;
-  border-radius: 10px; font-weight: 700; cursor: pointer; transition: background .15s;
+  border-radius: var(--radius-md); font-weight: 700; cursor: pointer; transition: background .15s;
 }
 .fg-secondary:hover { background: var(--color-white-a13); }
 .fg-error { color: var(--color-danger); margin: 12px 0 0; font-size: 14px; }
 .fg-code-input {
   width: 100%; padding: 14px; font-size: 20px; letter-spacing: 3px; text-align: center;
   text-transform: uppercase; border: 1px solid var(--color-white-a10);
-  border-radius: 10px; margin: 8px 0;
+  border-radius: var(--radius-md); margin: 8px 0;
   background: var(--color-black-a50); color: var(--color-text);
 }
 .fg-code-input:focus { outline: none; border-color: rgba(6, 182, 212, 0.6); }
@@ -122,7 +122,7 @@
   background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-  border-radius: 16px; box-shadow: 0 8px 32px var(--color-black-a50);
+  border-radius: var(--radius-xl); box-shadow: 0 8px 32px var(--color-black-a50);
   padding: 16px;
 }
 .fg-left { display: flex; flex-direction: column; gap: 14px; }
@@ -146,18 +146,18 @@
 .fg-invite {
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a07);
-  border-radius: 12px; padding: 16px; text-align: center;
+  border-radius: var(--radius-lg); padding: 16px; text-align: center;
 }
 .fg-invite-label { font-size: 13px; color: var(--color-text-muted); margin: 0 0 10px; }
 .fg-code-box {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   background: var(--color-black-a35); border: 1px solid var(--color-white-a07);
-  border-radius: 10px; padding: 10px 14px; cursor: pointer;
+  border-radius: var(--radius-md); padding: 10px 14px; cursor: pointer;
 }
 .fg-code-text { font-size: 22px; font-weight: 800; letter-spacing: 3px; color: var(--color-accent); }
 .fg-copy-btn {
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); color: #06121a; border: none;
-  padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 800;
+  padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; font-weight: 800;
 }
 .fg-waiting { font-size: 13px; color: var(--color-text-muted); margin: 12px 0 0; }
 
@@ -180,7 +180,7 @@
   flex: 1;
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a10);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 7px 10px;
   color: var(--color-text);
   font-size: 13px;
@@ -190,7 +190,7 @@
 .fg-invite-friend-input::placeholder { color: var(--color-text-faint); }
 .fg-invite-friend-btn {
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
-  color: #06121a; border: none; border-radius: 8px;
+  color: #06121a; border: none; border-radius: var(--radius-md);
   padding: 7px 14px; font-size: 13px; font-weight: 800;
   cursor: pointer; white-space: nowrap;
 }
@@ -204,7 +204,7 @@
 }
 .fg-code-generating .fg-invite-label { margin: 0; }
 .fg-spinner {
-  width: 26px; height: 26px; border-radius: 50%;
+  width: 26px; height: 26px; border-radius: var(--radius-circle);
   border: 3px solid var(--color-accent-a20);
   border-top-color: var(--color-accent);
   animation: fg-spin 0.8s linear infinite;
@@ -216,14 +216,14 @@
   display: flex; justify-content: space-between; align-items: center;
   background: var(--color-surface);
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-  border-radius: 10px; padding: 12px 16px;
+  border-radius: var(--radius-md); padding: 12px 16px;
   border: 1px solid var(--color-white-a07);
   box-shadow: 0 4px 16px var(--color-black-a35);
 }
 .fg-player.on-move { border-color: rgba(6, 182, 212, 0.7); box-shadow: 0 0 0 1px var(--color-accent-a30); }
 .fg-player-id { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .fg-avatar {
-  width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%;
+  width: 34px; height: 34px; flex-shrink: 0; border-radius: var(--radius-circle);
   overflow: hidden; display: flex; align-items: center; justify-content: center;
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
   color: #06121a; font-weight: 800; font-size: 15px;
@@ -239,14 +239,14 @@
   flex: 1; display: flex; align-items: center; justify-content: center;
   background: var(--color-white-a07); color: var(--color-text);
   border: 1px solid var(--color-white-a10); padding: 10px 0;
-  border-radius: 10px; font-size: 20px; line-height: 1; cursor: pointer;
+  border-radius: var(--radius-md); font-size: 20px; line-height: 1; cursor: pointer;
   transition: background .15s, opacity .15s;
 }
 .fg-icon-btn:hover:not(:disabled) { background: var(--color-white-a13); }
 .fg-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .fg-banner {
   background: var(--color-warning-a12); border: 1px solid var(--color-warning-a30);
-  border-radius: 10px; padding: 10px 14px; font-size: 14px; color: var(--color-warning);
+  border-radius: var(--radius-md); padding: 10px 14px; font-size: 14px; color: var(--color-warning);
 }
 .fg-banner.fg-warn { background: var(--color-danger-a12); border-color: var(--color-danger-a30); color: var(--color-danger); }
 .fg-link { background: none; border: none; color: var(--color-accent); font-weight: 700; cursor: pointer; margin-left: 8px; }
@@ -266,7 +266,7 @@
   display: flex; justify-content: space-between; align-items: center;
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a07);
-  border-radius: 10px; padding: 8px 12px;
+  border-radius: var(--radius-md); padding: 8px 12px;
 }
 .fg-pbar.on-move { border-color: rgba(6, 182, 212, 0.7); box-shadow: 0 0 0 1px var(--color-accent-a30); }
 
@@ -289,7 +289,7 @@
   position: absolute; inset: 0; background: rgba(10, 10, 10, 0.88);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  border-radius: 12px; text-align: center; gap: 8px;
+  border-radius: var(--radius-lg); text-align: center; gap: 8px;
   border: 1px solid var(--color-white-a07);
 }
 .fg-result-overlay h3 { font-size: 26px; color: var(--color-accent); margin: 0; }
@@ -303,22 +303,22 @@
   flex: 0 0 auto; height: 340px; overflow-y: auto;
   background: var(--color-black-a20);
   border: 1px solid var(--color-white-a07);
-  border-radius: 10px 10px 0 0; padding: 6px;
+  border-radius: var(--radius-md) 10px 0 0; padding: 6px;
 }
 .fg-moves-list::-webkit-scrollbar { width: 8px; }
-.fg-moves-list::-webkit-scrollbar-track { background: var(--color-black-a35); border-radius: 4px; }
-.fg-moves-list::-webkit-scrollbar-thumb { background: var(--color-accent-a40); border-radius: 4px; }
+.fg-moves-list::-webkit-scrollbar-track { background: var(--color-black-a35); border-radius: var(--radius-sm); }
+.fg-moves-list::-webkit-scrollbar-thumb { background: var(--color-accent-a40); border-radius: var(--radius-sm); }
 .fg-moves-empty { color: var(--color-text-faint); font-size: 13px; text-align: center; padding: 16px 0; }
 .fg-move-row {
   display: grid; grid-template-columns: 32px 1fr 1fr; align-items: center;
-  padding: 2px 4px; border-radius: 6px; font-size: 14px;
+  padding: 2px 4px; border-radius: var(--radius-sm); font-size: 14px;
 }
 .fg-move-row:nth-child(odd) { background: var(--color-white-a04); }
 .fg-move-no { color: var(--color-text-faint); font-size: 12px; }
 .fg-move-san {
   text-align: left; background: none; border: none; cursor: pointer;
   color: var(--color-text); font-weight: 600; font-variant-numeric: tabular-nums;
-  padding: 3px 6px; border-radius: 5px; transition: background .1s;
+  padding: 3px 6px; border-radius: var(--radius-sm); transition: background .1s;
 }
 button.fg-move-san:hover { background: var(--color-accent-a15); }
 button.fg-move-san.active { background: var(--color-accent-a30); color: var(--color-text); }

@@ -186,7 +186,7 @@ export default function ClubsPage() {
                     type="button"
                     onClick={() => setCreateForm(f => ({ ...f, isPrivate: false }))}
                     style={{
-                      padding: '12px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+                      padding: '12px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
                       background: !createForm.isPrivate ? 'rgba(34,197,94,0.15)' : 'var(--color-white-a04)',
                       border: !createForm.isPrivate ? '2px solid rgba(34,197,94,0.5)' : '2px solid var(--color-white-a07)',
                       color: 'var(--color-text)', transition: 'all 0.15s'
@@ -200,7 +200,7 @@ export default function ClubsPage() {
                     type="button"
                     onClick={() => setCreateForm(f => ({ ...f, isPrivate: true }))}
                     style={{
-                      padding: '12px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+                      padding: '12px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
                       background: createForm.isPrivate ? 'var(--color-accent-2-a15)' : 'var(--color-white-a04)',
                       border: createForm.isPrivate ? '2px solid rgba(139,92,246,0.5)' : '2px solid var(--color-white-a07)',
                       color: 'var(--color-text)', transition: 'all 0.15s'
@@ -262,7 +262,7 @@ const s = {
     padding: '11px 16px',
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a10)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     color: 'var(--color-text)',
     fontSize: 14,
     outline: 'none',
@@ -277,7 +277,7 @@ const s = {
   clubCard: {
     background: 'var(--color-surface)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 14,
+    borderRadius: 'var(--radius-lg)',
     padding: '16px 18px',
     cursor: 'pointer',
     transition: 'border-color 0.2s, transform 0.15s',
@@ -286,15 +286,15 @@ const s = {
   clubName: { fontSize: 15, fontWeight: 700, color: 'var(--color-text)', marginBottom: 4 },
   clubDesc: { fontSize: 12, color: 'var(--color-text-faint)', lineHeight: 1.5, marginBottom: 10, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' },
   clubMeta: { fontSize: 12, color: 'var(--color-text-faint)' },
-  memberChip: { fontSize: 11, padding: '2px 8px', background: 'var(--color-accent-2-a15)', color: 'var(--color-accent-2)', borderRadius: 10, fontWeight: 600 },
-  publicBadge: { fontSize: 11, padding: '2px 8px', background: 'rgba(34,197,94,0.15)', color: '#4ade80', borderRadius: 10, fontWeight: 600 },
-  privateBadge: { fontSize: 11, padding: '2px 8px', background: 'var(--color-danger-a12)', color: 'var(--color-danger)', borderRadius: 10, fontWeight: 600 },
+  memberChip: { fontSize: 11, padding: '2px 8px', background: 'var(--color-accent-2-a15)', color: 'var(--color-accent-2)', borderRadius: 'var(--radius-md)', fontWeight: 600 },
+  publicBadge: { fontSize: 11, padding: '2px 8px', background: 'rgba(34,197,94,0.15)', color: '#4ade80', borderRadius: 'var(--radius-md)', fontWeight: 600 },
+  privateBadge: { fontSize: 11, padding: '2px 8px', background: 'var(--color-danger-a12)', color: 'var(--color-danger)', borderRadius: 'var(--radius-md)', fontWeight: 600 },
   btnPrimary: {
     padding: '9px 18px',
     background: 'linear-gradient(135deg,var(--color-accent-2),#6d28d9)',
     color: 'var(--color-text)',
     border: 'none',
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     fontSize: 14,
     cursor: 'pointer'
@@ -304,13 +304,13 @@ const s = {
     background: 'var(--color-white-a04)',
     color: 'var(--color-text-muted)',
     border: '1px solid var(--color-white-a10)',
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     fontSize: 14,
     cursor: 'pointer'
   },
   linkBtn: { background: 'none', border: 'none', color: 'var(--color-accent-2)', cursor: 'pointer', fontSize: 14, fontWeight: 600 },
-  pagBtn: { padding: '6px 12px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', color: 'var(--color-text-muted)', borderRadius: 8, cursor: 'pointer', fontSize: 13 },
+  pagBtn: { padding: '6px 12px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', color: 'var(--color-text-muted)', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 13 },
   pagBtnActive: { background: 'var(--color-accent-2-a30)', color: 'var(--color-accent-2)', borderColor: 'rgba(139,92,246,0.5)' },
   overlay: {
     position: 'fixed', inset: 0,
@@ -325,7 +325,7 @@ const s = {
   modal: {
     background: 'var(--color-surface)',
     border: '1px solid var(--color-white-a10)',
-    borderRadius: 18,
+    borderRadius: 'var(--radius-xl)',
     padding: '28px 32px',
     width: '100%',
     maxWidth: 440,
@@ -338,7 +338,7 @@ const s = {
     padding: '11px 14px',
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a10)',
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     color: 'var(--color-text)',
     fontSize: 14,
     outline: 'none',

@@ -233,7 +233,7 @@ const s = {
     flexShrink: 0,
     background: 'var(--color-surface)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     padding: '20px 16px',
     position: 'sticky',
     top: 80
@@ -250,7 +250,7 @@ const s = {
     alignItems: 'center',
     gap: 8,
     padding: '6px 8px',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     cursor: 'default',
     transition: 'background 0.2s'
   },
@@ -264,7 +264,7 @@ const s = {
   card: {
     background: 'rgba(15,23,42,0.7)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     padding: '20px 24px',
     marginBottom: 20
   },
@@ -275,7 +275,7 @@ const s = {
     padding: '10px 14px',
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a10)',
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     color: 'var(--color-text-muted)',
     fontSize: 13,
     fontFamily: 'monospace',
@@ -286,7 +286,7 @@ const s = {
     background: 'linear-gradient(135deg,var(--color-accent-2),#6d28d9)',
     color: 'var(--color-text)',
     border: 'none',
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     fontSize: 14,
     cursor: 'pointer',
@@ -300,7 +300,7 @@ const s = {
     flex: 1,
     background: 'rgba(15,23,42,0.7)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 14,
+    borderRadius: 'var(--radius-lg)',
     padding: '16px 20px',
     textAlign: 'center'
   },
@@ -310,13 +310,13 @@ const s = {
     display: 'inline-flex',
     alignItems: 'center',
     padding: '4px 12px',
-    borderRadius: 20,
+    borderRadius: 'var(--radius-2xl)',
     fontSize: 13,
     fontWeight: 600
   },
   milestoneBar: { display: 'flex', flexDirection: 'column', gap: 12, marginTop: 16 },
   milestone: { display: 'flex', alignItems: 'center', gap: 12 },
-  mileDot: { width: 10, height: 10, borderRadius: '50%', flexShrink: 0 },
+  mileDot: { width: 10, height: 10, borderRadius: 'var(--radius-circle)', flexShrink: 0 },
   inviteList: { display: 'flex', flexDirection: 'column', gap: 8 },
   inviteRow: {
     display: 'flex',
@@ -331,7 +331,7 @@ const s = {
     height: 48,
     border: '4px solid var(--color-accent-2-a15)',
     borderTopColor: 'var(--color-accent-2)',
-    borderRadius: '50%',
+    borderRadius: 'var(--radius-circle)',
     animation: 'spin 0.8s linear infinite',
     margin: '200px auto'
   }

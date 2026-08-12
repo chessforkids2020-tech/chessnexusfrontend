@@ -130,7 +130,7 @@ function ActivityCard({ item, compact }) {
     <div
       style={{
         background: 'rgba(23,23,23,0.8)',
-        borderRadius: 12,
+        borderRadius: 'var(--radius-lg)',
         borderTop: '1px solid var(--color-white-a04)',
         borderRight: '1px solid var(--color-white-a04)',
         borderBottom: '1px solid var(--color-white-a04)',
@@ -150,7 +150,7 @@ function ActivityCard({ item, compact }) {
     >
       {live && (
         <div style={{ position: 'absolute', top: 8, right: 10, display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
+          <span style={{ width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
           <span style={{ color: 'var(--color-success)', fontSize: 11, fontWeight: 700 }}>LIVE</span>
         </div>
       )}
@@ -168,7 +168,7 @@ function ActivityCard({ item, compact }) {
         <span style={{
           background: `${item.color || 'var(--color-accent)'}22`,
           color: item.color || 'var(--color-accent)',
-          borderRadius: 20,
+          borderRadius: 'var(--radius-2xl)',
           padding: '2px 8px',
           fontSize: 11,
           fontWeight: 600,
@@ -217,7 +217,7 @@ function MonthCalendar({ byDateMap }) {
 
   const navBtnSt = {
     background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)',
-    color: 'var(--color-text-muted)', borderRadius: 8, width: 36, height: 36, cursor: 'pointer',
+    color: 'var(--color-text-muted)', borderRadius: 'var(--radius-md)', width: 36, height: 36, cursor: 'pointer',
     fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
     fontFamily: 'Poppins,sans-serif',
   };
@@ -235,7 +235,7 @@ function MonthCalendar({ byDateMap }) {
         </div>
         <button
           onClick={goToday}
-          style={{ background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a30)', color: 'var(--color-accent)', borderRadius: 20, padding: '6px 16px', cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'Poppins,sans-serif' }}
+          style={{ background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a30)', color: 'var(--color-accent)', borderRadius: 'var(--radius-2xl)', padding: '6px 16px', cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'Poppins,sans-serif' }}
         >Today</button>
       </div>
 
@@ -271,7 +271,7 @@ function MonthCalendar({ byDateMap }) {
               }}
               style={{
                 minHeight: 90,
-                borderRadius: 10,
+                borderRadius: 'var(--radius-md)',
                 background: !day ? 'transparent' : isSelected ? 'var(--color-accent-a12)' : 'rgba(23,23,23,0.6)',
                 border: !day ? 'none' : isToday ? '1px solid rgba(6,182,212,0.6)' : isSelected ? '1px solid var(--color-accent-a30)' : '1px solid var(--color-white-a04)',
                 padding: day ? '6px 8px' : 0,
@@ -286,7 +286,7 @@ function MonthCalendar({ byDateMap }) {
                 <>
                   <div style={{ marginBottom: 5 }}>
                     <span style={isToday ? {
-                      background: 'var(--color-accent)', color: 'var(--color-bg)', borderRadius: '50%',
+                      background: 'var(--color-accent)', color: 'var(--color-bg)', borderRadius: 'var(--radius-circle)',
                       width: 22, height: 22, display: 'inline-flex', alignItems: 'center',
                       justifyContent: 'center', fontSize: 12, fontWeight: 800,
                     } : { fontSize: 13, fontWeight: 700, color: 'var(--color-text-muted)' }}>{day}</span>
@@ -341,7 +341,7 @@ function MonthCalendar({ byDateMap }) {
             onClick={e => e.stopPropagation()}
             style={{
               background: 'rgba(18,18,28,0.97)',
-              borderRadius: 20,
+              borderRadius: 'var(--radius-2xl)',
               padding: '28px 28px 24px',
               width: '100%',
               maxWidth: 560,
@@ -368,7 +368,7 @@ function MonthCalendar({ byDateMap }) {
                 onClick={() => { setSelectedDay(null); setSelectedDow(null); setSelectedDateStr(null); }}
                 style={{
                   background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a10)',
-                  color: 'var(--color-text-muted)', cursor: 'pointer', borderRadius: 8,
+                  color: 'var(--color-text-muted)', cursor: 'pointer', borderRadius: 'var(--radius-md)',
                   width: 34, height: 34, fontSize: 18, lineHeight: 1,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
@@ -442,7 +442,7 @@ function TodayTimetable({ byDateMap, items, tick }) {
             {DAYS[now.getDay()]},&nbsp;
             <span style={{ color: 'var(--color-accent)' }}>{MONTH_NAMES[now.getMonth()]} {now.getDate()}</span>
           </span>
-          <span style={{ marginLeft: 12, background: 'var(--color-accent-a15)', color: 'var(--color-accent)', borderRadius: 20, padding: '3px 12px', fontSize: 13, fontWeight: 700 }}>
+          <span style={{ marginLeft: 12, background: 'var(--color-accent-a15)', color: 'var(--color-accent)', borderRadius: 'var(--radius-2xl)', padding: '3px 12px', fontSize: 13, fontWeight: 700 }}>
             {todayItems.length} activit{todayItems.length === 1 ? 'y' : 'ies'} today
           </span>
         </div>
@@ -453,12 +453,12 @@ function TodayTimetable({ byDateMap, items, tick }) {
         <div style={{
           background: `linear-gradient(135deg, ${nextUpItem.color || 'var(--color-accent)'}18 0%, var(--color-surface) 100%)`,
           border: `1px solid ${nextUpItem.color || 'var(--color-accent)'}55`,
-          borderRadius: 16, padding: '16px 20px', marginBottom: 24,
+          borderRadius: 'var(--radius-xl)', padding: '16px 20px', marginBottom: 24,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
           boxShadow: `0 0 24px ${nextUpItem.color || 'var(--color-accent)'}22`,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: `${nextUpItem.color || 'var(--color-accent)'}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, border: `2px solid ${nextUpItem.color || 'var(--color-accent)'}55` }}>
+            <div style={{ width: 48, height: 48, borderRadius: 'var(--radius-circle)', background: `${nextUpItem.color || 'var(--color-accent)'}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, border: `2px solid ${nextUpItem.color || 'var(--color-accent)'}55` }}>
               {ACTIVITY_ICONS[nextUpItem.activityType] || '📌'}
             </div>
             <div>
@@ -471,7 +471,7 @@ function TodayTimetable({ byDateMap, items, tick }) {
             <div style={{ fontSize: 28, fontWeight: 900, color: nextUpItem.color || 'var(--color-accent)', lineHeight: 1 }}>{formatCountdown(nextUpMs)}</div>
             <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2 }}>until start</div>
             {nextUpItem.link && (
-              <button onClick={() => navigate(nextUpItem.link)} style={{ marginTop: 8, background: nextUpItem.color || 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 20, padding: '6px 16px', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'Poppins,sans-serif' }}>Join →</button>
+              <button onClick={() => navigate(nextUpItem.link)} style={{ marginTop: 8, background: nextUpItem.color || 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 'var(--radius-2xl)', padding: '6px 16px', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'Poppins,sans-serif' }}>Join →</button>
             )}
           </div>
         </div>
@@ -506,7 +506,7 @@ function TodayTimetable({ byDateMap, items, tick }) {
                 {/* Time dot */}
                 <div style={{ flexShrink: 0, width: 44, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 4 }}>
                   <div style={{
-                    width: 14, height: 14, borderRadius: '50%',
+                    width: 14, height: 14, borderRadius: 'var(--radius-circle)',
                     background: isEnded ? 'var(--color-text-faint)' : col,
                     border: `2px solid ${isEnded ? 'var(--color-text-faint)' : col}`,
                     boxShadow: isLive ? `0 0 10px ${col}` : 'none',
@@ -540,13 +540,13 @@ function TodayTimetable({ byDateMap, items, tick }) {
                     </div>
                     {/* Status badge */}
                     {isLive && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700, color: 'var(--color-success)', whiteSpace: 'nowrap' }}>
-                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 'var(--radius-2xl)', padding: '2px 10px', fontSize: 11, fontWeight: 700, color: 'var(--color-success)', whiteSpace: 'nowrap' }}>
+                        <span style={{ width: 6, height: 6, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
                         LIVE
                       </span>
                     )}
                     {!isLive && !isEnded && (
-                      <span style={{ background: `${col}22`, color: col, borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}>
+                      <span style={{ background: `${col}22`, color: col, borderRadius: 'var(--radius-2xl)', padding: '2px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}>
                         starts in {formatCountdown(status.ms)}
                       </span>
                     )}
@@ -556,9 +556,9 @@ function TodayTimetable({ byDateMap, items, tick }) {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 6, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{fmtIstTime(item)}</span>
-                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--color-surface-2)', display: 'inline-block' }} />
+                    <span style={{ width: 3, height: 3, borderRadius: 'var(--radius-circle)', background: 'var(--color-surface-2)', display: 'inline-block' }} />
                     <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{item.durationMinutes} min</span>
-                    <span style={{ background: `${col}22`, color: col, borderRadius: 20, padding: '1px 8px', fontSize: 11, fontWeight: 600 }}>
+                    <span style={{ background: `${col}22`, color: col, borderRadius: 'var(--radius-2xl)', padding: '1px 8px', fontSize: 11, fontWeight: 600 }}>
                       {ACTIVITY_LABELS[item.activityType] || 'Activity'}
                     </span>
                   </div>
@@ -660,7 +660,7 @@ export default function SchedulePage() {
       <style>{`
         @keyframes schedPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
         @keyframes schedShimmer { 0%{background-position:200% center} 100%{background-position:-200% center} }
-        .sched-day-btn { cursor:pointer; border:none; padding:8px 14px; border-radius:20px; font-size:13px; font-weight:600; transition:all 0.2s; font-family:Poppins,sans-serif; }
+        .sched-day-btn { cursor:pointer; border:none; padding:8px 14px; border-radius: var(--radius-2xl); font-size:13px; font-weight:600; transition:all 0.2s; font-family:Poppins,sans-serif; }
         .sched-day-btn:hover { transform:translateY(-1px); }
         .sched-nav-btn:hover { opacity: 0.85; }
         .month-cal-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 12px; }
@@ -694,7 +694,7 @@ export default function SchedulePage() {
             <button
               className="sched-nav-btn"
               onClick={() => navigate('/dashboard')}
-              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 20, padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
+              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 'var(--radius-2xl)', padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
             >
               Dashboard →
             </button>
@@ -702,7 +702,7 @@ export default function SchedulePage() {
             <button
               className="sched-nav-btn"
               onClick={() => navigate('/login')}
-              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 20, padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
+              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 'var(--radius-2xl)', padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
             >
               Login
             </button>
@@ -720,8 +720,8 @@ export default function SchedulePage() {
 
         {/* Live now banner */}
         {liveItems.length > 0 && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 24, padding: '6px 16px', marginTop: 16 }}>
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--color-success)', animation: 'schedPulse 1.4s infinite', display: 'inline-block' }} />
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 'var(--radius-2xl)', padding: '6px 16px', marginTop: 16 }}>
+            <span style={{ width: 10, height: 10, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', animation: 'schedPulse 1.4s infinite', display: 'inline-block' }} />
             <span style={{ color: 'var(--color-success)', fontWeight: 700, fontSize: 13 }}>
               {liveItems.map(i => i.title).join(', ')} — happening now!
             </span>
@@ -752,7 +752,7 @@ export default function SchedulePage() {
         {!loading && items.length > 0 && (
           <>
             {/* View Toggle */}
-            <div style={{ display: 'flex', gap: 4, marginBottom: 24, background: 'rgba(23,23,23,0.5)', padding: 4, borderRadius: 24, width: 'fit-content', border: '1px solid var(--color-white-a07)' }}>
+            <div style={{ display: 'flex', gap: 4, marginBottom: 24, background: 'rgba(23,23,23,0.5)', padding: 4, borderRadius: 'var(--radius-2xl)', width: 'fit-content', border: '1px solid var(--color-white-a07)' }}>
               <button className="sched-day-btn" style={{ background: viewMode === 'today' ? 'var(--color-accent)' : 'transparent', color: viewMode === 'today' ? 'var(--color-bg)' : 'var(--color-text-muted)', padding: '6px 18px' }} onClick={() => setViewMode('today')}>&#9200; Today</button>
               <button className="sched-day-btn" style={{ background: viewMode === 'weekly' ? 'var(--color-accent)' : 'transparent', color: viewMode === 'weekly' ? 'var(--color-bg)' : 'var(--color-text-muted)', padding: '6px 18px' }} onClick={() => setViewMode('weekly')}>&#128203; Weekly</button>
               <button className="sched-day-btn" style={{ background: viewMode === 'monthly' ? 'var(--color-accent)' : 'transparent', color: viewMode === 'monthly' ? 'var(--color-bg)' : 'var(--color-text-muted)', padding: '6px 18px' }} onClick={() => setViewMode('monthly')}>&#128198; Monthly</button>
@@ -786,7 +786,7 @@ export default function SchedulePage() {
                   >
                     {DAY_SHORT[date.getDay()]} {date.getMonth()+1}/{date.getDate()}
                     {count > 0 && (
-                      <span style={{ marginLeft: 6, background: active ? '#00000033' : '#06b6d422', borderRadius: 10, padding: '1px 6px', fontSize: 11 }}>{count}</span>
+                      <span style={{ marginLeft: 6, background: active ? '#00000033' : '#06b6d422', borderRadius: 'var(--radius-md)', padding: '1px 6px', fontSize: 11 }}>{count}</span>
                     )}
                   </button>
                 );
@@ -809,7 +809,7 @@ export default function SchedulePage() {
                     style={{
                       display: hidden ? 'none' : 'block',
                       background: 'var(--color-surface)',
-                      borderRadius: 16,
+                      borderRadius: 'var(--radius-xl)',
                       border: isToday ? '1px solid var(--color-accent-a40)' : '1px solid var(--color-white-a04)',
                       padding: 12,
                       minHeight: 100,
@@ -821,7 +821,7 @@ export default function SchedulePage() {
                     <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ fontWeight: 700, fontSize: 13, color: isToday ? 'var(--color-accent)' : 'var(--color-text)' }}>{DAY_SHORT[date.getDay()]}</span>
                       <span style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>{date.getMonth()+1}/{date.getDate()}</span>
-                      {isToday && <span style={{ fontSize: 10, background: '#06b6d422', color: 'var(--color-accent)', borderRadius: 8, padding: '1px 6px', fontWeight: 700 }}>TODAY</span>}
+                      {isToday && <span style={{ fontSize: 10, background: '#06b6d422', color: 'var(--color-accent)', borderRadius: 'var(--radius-md)', padding: '1px 6px', fontWeight: 700 }}>TODAY</span>}
                     </div>
                     {dayItems.length === 0 ? (
                       <div style={{ color: 'var(--color-text-faint)', fontSize: 12, textAlign: 'center', paddingTop: 16 }}>—</div>
@@ -836,14 +836,14 @@ export default function SchedulePage() {
 
             {/* Guest CTA — only shown to logged-out users */}
             {!user && (
-            <div style={{ marginTop: 32, textAlign: 'center', background: 'var(--color-surface)', borderRadius: 16, padding: '24px 16px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 8px 32px var(--color-black-a50)' }}>
+            <div style={{ marginTop: 32, textAlign: 'center', background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', padding: '24px 16px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 8px 32px var(--color-black-a50)' }}>
               <div style={{ marginBottom: 12 }}><img src="/logo.png" alt="Chess Nexus" style={{ height: 48, width: 'auto', objectFit: 'contain' }} /></div>
               <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 16 }}>Ready to participate?</div>
               <div style={{ color: 'var(--color-text-muted)', fontSize: 13, marginTop: 4, marginBottom: 16 }}>
                 Login to join activities, track your progress, and compete with others.
               </div>
               <button
-                style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 20, padding: '10px 28px', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
+                style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 'var(--radius-2xl)', padding: '10px 28px', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
                 onClick={() => window.location.href = '/login'}
               >
                 Login to Join

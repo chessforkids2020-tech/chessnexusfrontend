@@ -212,7 +212,7 @@ export default function PuzzleTournament() {
       padding: '32px 28px',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -237,7 +237,7 @@ export default function PuzzleTournament() {
     noAssignment: {
       background: 'var(--color-danger-a12)',
       border: '1px solid var(--color-danger-a20)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       padding: '24px',
       marginBottom: '30px',
       textAlign: 'center',
@@ -251,7 +251,7 @@ export default function PuzzleTournament() {
     roundContainer: {
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       padding: '24px', // Reduced padding
       boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -277,7 +277,7 @@ export default function PuzzleTournament() {
       fontWeight: '500',
       background: 'var(--color-black-a35)',
       padding: '5px 10px', // Reduced padding
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid var(--color-white-a04)',
     },
     batchContainer: {
@@ -285,7 +285,7 @@ export default function PuzzleTournament() {
       padding: '20px', // Reduced padding
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       backdropFilter: 'blur(10px)',
       transition: 'all 0.3s ease',
     },
@@ -309,14 +309,14 @@ export default function PuzzleTournament() {
       fontWeight: '500',
       background: 'var(--color-accent-a15)',
       padding: '4px 10px', // Reduced padding
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid var(--color-accent-a20)',
     },
     participants: {
       color: 'var(--color-text-muted)',
       background: 'var(--color-black-a35)',
       padding: '4px 10px', // Reduced padding
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid var(--color-white-a04)',
     },
     viewResults: {
@@ -339,7 +339,7 @@ export default function PuzzleTournament() {
       color: 'var(--color-text)',
       border: 'none',
       padding: '8px 20px', // Reduced padding
-      borderRadius: '10px', // Slightly smaller
+      borderRadius: 'var(--radius-md)', // Slightly smaller
       fontSize: '14px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -353,7 +353,7 @@ export default function PuzzleTournament() {
       color: 'var(--color-text)',
       border: 'none',
       padding: '8px 20px', // Reduced padding
-      borderRadius: '10px', // Slightly smaller
+      borderRadius: 'var(--radius-md)', // Slightly smaller
       fontSize: '14px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -367,7 +367,7 @@ export default function PuzzleTournament() {
       color: '#9f7aea',
       border: '1px solid rgba(111, 66, 193, 0.2)',
       padding: '8px 20px', // Reduced padding
-      borderRadius: '10px', // Slightly smaller
+      borderRadius: 'var(--radius-md)', // Slightly smaller
       fontSize: '14px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -378,7 +378,7 @@ export default function PuzzleTournament() {
       color: 'var(--color-warning)',
       border: '1px solid var(--color-warning-a20)',
       padding: '8px 20px', // Reduced padding
-      borderRadius: '10px', // Slightly smaller
+      borderRadius: 'var(--radius-md)', // Slightly smaller
       fontSize: '14px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -390,7 +390,7 @@ export default function PuzzleTournament() {
       textAlign: 'center',
       padding: '30px', // Reduced padding
       background: 'var(--color-black-a35)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       border: '1px solid var(--color-white-a04)',
     },
     noRounds: {
@@ -399,7 +399,7 @@ export default function PuzzleTournament() {
       color: 'var(--color-text-muted)',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -408,7 +408,7 @@ export default function PuzzleTournament() {
       padding: '60px 20px',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -432,7 +432,7 @@ export default function PuzzleTournament() {
       padding: '60px 40px',
       background: 'var(--color-danger-a12)',
       border: '1px solid var(--color-danger-a20)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -452,7 +452,7 @@ export default function PuzzleTournament() {
       color: 'var(--color-text)',
       border: 'none',
       padding: '12px 28px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '15px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -521,7 +521,7 @@ export default function PuzzleTournament() {
             background: 'linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)',
             color: 'white',
             padding: '12px 24px',
-            borderRadius: '12px',
+            borderRadius: 'var(--radius-lg)',
             boxShadow: '0 8px 32px var(--color-success-a30)',
             backdropFilter: 'blur(10px)',
             border: '1px solid var(--color-white-a20)',

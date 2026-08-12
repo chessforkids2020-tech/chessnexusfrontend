@@ -322,7 +322,7 @@ function PackBuilderModal({ subscribed, onClose, onSaved }) {
                       onClick={() => setFenEditorOpen(fenEditorOpen === i ? null : i)}
                       title="Set up the position on a board instead of typing a FEN"
                       style={{
-                        whiteSpace: 'nowrap', padding: '0 14px', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600,
+                        whiteSpace: 'nowrap', padding: '0 14px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 13, fontWeight: 600,
                         background: fenEditorOpen === i ? 'rgba(239,68,68,0.12)' : 'rgba(99,102,241,0.15)',
                         border: `1px solid ${fenEditorOpen === i ? 'rgba(239,68,68,0.4)' : 'rgba(99,102,241,0.4)'}`,
                         color: fenEditorOpen === i ? '#f87171' : '#a5b4fc',

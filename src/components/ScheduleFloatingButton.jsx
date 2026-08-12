@@ -102,7 +102,7 @@ export default function ScheduleFloatingButton() {
           <div style={{
             background: '#1a1a2e',
             border: '1px solid #334155',
-            borderRadius: 12,
+            borderRadius: 'var(--radius-lg)',
             padding: '12px 16px',
             width: 220,
             boxShadow: '0 8px 24px var(--color-black-a50)',
@@ -111,7 +111,7 @@ export default function ScheduleFloatingButton() {
             {isLive ? (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'sfbLiveDot 1.4s infinite' }} />
+                  <span style={{ width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'sfbLiveDot 1.4s infinite' }} />
                   <span style={{ color: 'var(--color-success)', fontWeight: 700, fontSize: 12 }}>LIVE NOW</span>
                 </div>
                 <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 14 }}>{preview.title}</div>
@@ -141,7 +141,7 @@ export default function ScheduleFloatingButton() {
             gap: 8,
             background: isLive ? '#052e16' : '#1a1a2e',
             border: `2px solid ${isLive ? 'var(--color-success)' : 'var(--color-accent)'}`,
-            borderRadius: 28,
+            borderRadius: 'var(--radius-2xl)',
             padding: '10px 18px',
             cursor: 'pointer',
             color: isLive ? 'var(--color-success)' : 'var(--color-accent)',
@@ -156,7 +156,7 @@ export default function ScheduleFloatingButton() {
           onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)'; }}
         >
           {isLive && (
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'sfbLiveDot 1.4s infinite' }} />
+            <span style={{ width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'sfbLiveDot 1.4s infinite' }} />
           )}
           <span style={{ fontSize: 16 }}>📅</span>
           <span>Schedule</span>

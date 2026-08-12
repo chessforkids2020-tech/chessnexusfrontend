@@ -35,7 +35,7 @@ function RaceCard({ race, onJoin }) {
     <div style={{
       background: 'var(--color-black-a35)',
       border: `1px solid ${isArena ? 'var(--color-warning-a20)' : 'var(--color-accent-2-a15)'}`,
-      borderRadius: 14,
+      borderRadius: 'var(--radius-lg)',
       padding: '14px 16px',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
@@ -44,7 +44,7 @@ function RaceCard({ race, onJoin }) {
             display: 'inline-block', fontSize: 11, fontWeight: 700,
             background: isArena ? 'var(--color-warning-a20)' : 'var(--color-accent-2-a15)',
             color: isArena ? 'var(--color-warning)' : 'var(--color-accent-2)',
-            padding: '2px 9px', borderRadius: 20, marginBottom: 6,
+            padding: '2px 9px', borderRadius: 'var(--radius-2xl)', marginBottom: 6,
           }}>
             {isArena ? '👑 Arena Race' : '👥 Team Race'}
           </span>
@@ -60,7 +60,7 @@ function RaceCard({ race, onJoin }) {
           style={{
             marginLeft: 12, flexShrink: 0,
             background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
-            color: 'var(--color-text)', border: 'none', borderRadius: 10,
+            color: 'var(--color-text)', border: 'none', borderRadius: 'var(--radius-md)',
             padding: '8px 16px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
           }}
         >
@@ -69,19 +69,19 @@ function RaceCard({ race, onJoin }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-        <div style={{ background: 'var(--color-white-a04)', borderRadius: 8, padding: '6px 8px' }}>
+        <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', padding: '6px 8px' }}>
           <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Topic</div>
           <div style={{ fontSize: 12, color: 'var(--color-text)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {race.topic || '—'}
           </div>
         </div>
-        <div style={{ background: 'var(--color-white-a04)', borderRadius: 8, padding: '6px 8px' }}>
+        <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', padding: '6px 8px' }}>
           <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Players</div>
           <div style={{ fontSize: 12, color: 'var(--color-text)', fontWeight: 600 }}>
             {race.playerCount !== undefined ? race.playerCount : '—'}
           </div>
         </div>
-        <div style={{ background: 'var(--color-white-a04)', borderRadius: 8, padding: '6px 8px' }}>
+        <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', padding: '6px 8px' }}>
           <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Starts in</div>
           <div style={{ fontSize: 12, color: isOpen ? 'var(--color-success)' : 'var(--color-warning)', fontWeight: 700 }}>
             {countdown}
@@ -347,7 +347,7 @@ const styles = {
   glassCard: {
     background: 'var(--color-surface)',
     border: '1px solid var(--color-white-a04)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     backdropFilter: 'blur(10px)',
     padding: '24px 28px 28px 28px',
     boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -366,7 +366,7 @@ const styles = {
   modeCard: {
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a04)',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     padding: '22px',
     cursor: 'pointer',
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -384,7 +384,7 @@ const styles = {
   modeIcon: {
     width: '50px',
     height: '50px',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

@@ -165,7 +165,7 @@ export default function PlayWithStockfish() {
       flex: '0 0 300px',
       background: '#f5f5f5',
       padding: '20px',
-      borderRadius: '10px',
+      borderRadius: 'var(--radius-md)',
       boxShadow: '0 2px 10px var(--color-black-a20)',
     },
     button: {
@@ -173,7 +173,7 @@ export default function PlayWithStockfish() {
       color: 'white',
       border: 'none',
       padding: '10px 20px',
-      borderRadius: '5px',
+      borderRadius: 'var(--radius-sm)',
       cursor: 'pointer',
       fontSize: '1rem',
       margin: '10px 5px',
@@ -187,7 +187,7 @@ export default function PlayWithStockfish() {
       overflowY: 'auto',
       background: 'white',
       padding: '10px',
-      borderRadius: '5px',
+      borderRadius: 'var(--radius-sm)',
       marginTop: '10px',
     },
     moveItem: {

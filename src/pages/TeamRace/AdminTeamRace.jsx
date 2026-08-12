@@ -175,7 +175,7 @@ function AdminTeamRace() {
         backgroundColor: badge.color,
         color: 'white',
         padding: '4px 12px',
-        borderRadius: '12px',
+        borderRadius: 'var(--radius-lg)',
         fontSize: '12px',
         fontWeight: 'bold'
       }}>
@@ -220,7 +220,7 @@ function AdminTeamRace() {
                 color: 'white',
                 border: '1px solid var(--color-danger)',
                 padding: '8px 16px',
-                borderRadius: '4px',
+                borderRadius: 'var(--radius-sm)',
                 cursor: 'pointer',
                 marginLeft: '10px'
               }}
@@ -370,7 +370,7 @@ function AdminTeamRace() {
                       color: 'white',
                       border: 'none',
                       padding: '4px 8px',
-                      borderRadius: '4px',
+                      borderRadius: 'var(--radius-sm)',
                       cursor: 'pointer',
                       fontSize: '12px',
                       marginLeft: '10px'

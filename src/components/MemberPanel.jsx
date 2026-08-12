@@ -15,7 +15,7 @@ const amber = 'var(--color-warning)';
 const cardStyle = {
   background: 'var(--color-white-a04)',
   border: '1px solid var(--color-white-a07)',
-  borderRadius: 14,
+  borderRadius: 'var(--radius-lg)',
   padding: 24,
   marginBottom: 22,
 };
@@ -85,14 +85,14 @@ export default function MemberPanel() {
 
         {loaded && existing && !justSent && (
           <div style={{ background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)',
-                        borderRadius: 10, padding: '12px 14px', marginBottom: 16, fontSize: 13.5, color: 'var(--color-success)' }}>
+                        borderRadius: 'var(--radius-md)', padding: '12px 14px', marginBottom: 16, fontSize: 13.5, color: 'var(--color-success)' }}>
             You already shared a {existing.rating}★ testimonial — thank you! You can send an updated one below anytime.
           </div>
         )}
 
         {justSent && (
           <div style={{ background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)',
-                        borderRadius: 10, padding: '14px 16px', marginBottom: 16, color: 'var(--color-success)', fontSize: 14 }}>
+                        borderRadius: 'var(--radius-md)', padding: '14px 16px', marginBottom: 16, color: 'var(--color-success)', fontSize: 14 }}>
             ✅ Thank you! Your testimonial was submitted.
           </div>
         )}
@@ -111,7 +111,7 @@ export default function MemberPanel() {
           maxLength={600}
           rows={4}
           placeholder="What do you like about Chess Nexus? What's helped you improve?"
-          style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 10,
+          style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-md)',
                    border: '1px solid var(--color-white-a13)', background: 'var(--color-black-a35)',
                    color: 'var(--color-text)', fontSize: 14, fontFamily: 'inherit', outline: 'none', resize: 'vertical' }}
         />
@@ -123,7 +123,7 @@ export default function MemberPanel() {
 
         <button onClick={submit} disabled={submitting} style={{
           marginTop: 14, background: submitting ? 'var(--color-accent-a40)' : `linear-gradient(135deg,${cyan},${green})`,
-          color: '#04211d', border: 'none', borderRadius: 10, padding: '11px 22px',
+          color: '#04211d', border: 'none', borderRadius: 'var(--radius-md)', padding: '11px 22px',
           fontSize: 14, fontWeight: 700, cursor: submitting ? 'default' : 'pointer',
         }}>
           {submitting ? 'Submitting…' : justSent ? 'Submit another' : '🚀 Submit testimonial'}

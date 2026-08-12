@@ -14,7 +14,7 @@ const tierUnlocked = (userTier, requiredTier) =>
 
 const cardStyle = {
   background: 'var(--color-surface)',
-  borderRadius: '16px',
+  borderRadius: 'var(--radius-xl)',
   border: '1px solid var(--color-white-a04)',
   boxShadow: '0 8px 32px var(--color-black-a50)',
   textAlign: 'left',
@@ -212,7 +212,7 @@ export default function AvatarStudio() {
           style={{
             width: '100%',
             aspectRatio: '1 / 1',
-            borderRadius: 12,
+            borderRadius: 'var(--radius-lg)',
             border: activeKey === opt.key ? `2px solid ${accentColor}` : '1px solid var(--color-white-a13)',
             background: 'var(--color-black-a35)',
             cursor: avatarSaving || (locked && walletXp < price) ? 'not-allowed' : 'pointer',
@@ -288,7 +288,7 @@ export default function AvatarStudio() {
         overflowY: 'auto',
         background: 'linear-gradient(180deg, var(--color-surface), #111827)',
         border: '1px solid rgba(148,163,184,0.35)',
-        borderRadius: 16,
+        borderRadius: 'var(--radius-xl)',
         padding: 18,
         scrollbarGutter: 'stable',
       }} onClick={(e) => e.stopPropagation()}>
@@ -298,7 +298,7 @@ export default function AvatarStudio() {
             background: 'transparent',
             color: 'var(--color-text-muted)',
             border: '1px solid rgba(148,163,184,0.45)',
-            borderRadius: 8,
+            borderRadius: 'var(--radius-md)',
             padding: '6px 10px',
             cursor: 'pointer',
           }}>Close</button>
@@ -328,7 +328,7 @@ export default function AvatarStudio() {
             <div style={{
               border: '1px dashed rgba(245,158,11,0.5)',
               background: 'var(--color-warning-a12)',
-              borderRadius: 12,
+              borderRadius: 'var(--radius-lg)',
               padding: 14,
               color: 'var(--color-warning)',
             }}>
@@ -344,7 +344,7 @@ export default function AvatarStudio() {
                   disabled={walletXp < xpPrices.customPhoto || unlockTier === 'customPhoto'}
                   onClick={() => unlockWithXp('customPhoto')}
                   style={{
-                    border: 'none', borderRadius: 8, padding: '8px 12px', fontWeight: 800, cursor: walletXp < xpPrices.customPhoto ? 'not-allowed' : 'pointer',
+                    border: 'none', borderRadius: 'var(--radius-md)', padding: '8px 12px', fontWeight: 800, cursor: walletXp < xpPrices.customPhoto ? 'not-allowed' : 'pointer',
                     background: walletXp < xpPrices.customPhoto ? 'var(--color-border-strong)' : 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent))',
                     color: walletXp < xpPrices.customPhoto ? 'var(--color-text-muted)' : 'var(--color-text)',
                   }}
@@ -352,7 +352,7 @@ export default function AvatarStudio() {
                   {unlockTier === 'customPhoto' ? 'Unlocking…' : (walletXp < xpPrices.customPhoto ? `Need ${xpPrices.customPhoto - walletXp} more XP` : `👛 Unlock for ${xpPrices.customPhoto} XP`)}
                 </button>
                 <button type="button" onClick={() => { closeAvatarPicker(); navigate('/social'); }} style={{
-                  border: 'none', borderRadius: 8, padding: '8px 12px', background: 'var(--color-warning)', color: '#111827', fontWeight: 700, cursor: 'pointer',
+                  border: 'none', borderRadius: 'var(--radius-md)', padding: '8px 12px', background: 'var(--color-warning)', color: '#111827', fontWeight: 700, cursor: 'pointer',
                 }}>Invite Friends</button>
               </div>
             </div>
@@ -369,7 +369,7 @@ export default function AvatarStudio() {
             <div style={{
               border: '1px dashed rgba(168,85,247,0.5)',
               background: 'rgba(168,85,247,0.12)',
-              borderRadius: 12,
+              borderRadius: 'var(--radius-lg)',
               padding: 14,
               color: '#ddd6fe',
             }}>
@@ -385,7 +385,7 @@ export default function AvatarStudio() {
                   disabled={walletXp < xpPrices['3d'] || unlockTier === '3d'}
                   onClick={() => unlockWithXp('3d')}
                   style={{
-                    border: 'none', borderRadius: 8, padding: '8px 12px', fontWeight: 800, cursor: walletXp < xpPrices['3d'] ? 'not-allowed' : 'pointer',
+                    border: 'none', borderRadius: 'var(--radius-md)', padding: '8px 12px', fontWeight: 800, cursor: walletXp < xpPrices['3d'] ? 'not-allowed' : 'pointer',
                     background: walletXp < xpPrices['3d'] ? 'var(--color-border-strong)' : 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent))',
                     color: walletXp < xpPrices['3d'] ? 'var(--color-text-muted)' : 'var(--color-text)',
                   }}
@@ -393,7 +393,7 @@ export default function AvatarStudio() {
                   {unlockTier === '3d' ? 'Unlocking…' : (walletXp < xpPrices['3d'] ? `Need ${xpPrices['3d'] - walletXp} more XP` : `👛 Unlock for ${xpPrices['3d']} XP`)}
                 </button>
                 <button type="button" onClick={() => { closeAvatarPicker(); navigate('/social'); }} style={{
-                  border: 'none', borderRadius: 8, padding: '8px 12px', background: 'var(--color-accent-2)', color: '#f5f3ff', fontWeight: 700, cursor: 'pointer',
+                  border: 'none', borderRadius: 'var(--radius-md)', padding: '8px 12px', background: 'var(--color-accent-2)', color: '#f5f3ff', fontWeight: 700, cursor: 'pointer',
                 }}>Invite Friends</button>
               </div>
             </div>
@@ -412,7 +412,7 @@ export default function AvatarStudio() {
         <div style={{
           width: 56,
           height: 56,
-          borderRadius: '50%',
+          borderRadius: 'var(--radius-circle)',
           border: '2px solid var(--color-white-a13)',
           overflow: 'hidden',
         }}>
@@ -448,7 +448,7 @@ export default function AvatarStudio() {
                 fontSize: 9,
                 fontWeight: 800,
                 padding: '2px 6px',
-                borderRadius: 6,
+                borderRadius: 'var(--radius-sm)',
                 letterSpacing: '0.05em',
                 zIndex: 1,
                 pointerEvents: 'none',
@@ -463,7 +463,7 @@ export default function AvatarStudio() {
               style={{
                 width: '100%',
                 border: card.comingSoon ? '1px solid var(--color-warning-a30)' : '1px solid var(--color-white-a20)',
-                borderRadius: 12,
+                borderRadius: 'var(--radius-lg)',
                 padding: '12px 8px',
                 background: card.comingSoon ? 'var(--color-black-a35)' : 'var(--color-black-a20)',
                 color: card.comingSoon ? 'var(--color-text-faint)' : 'var(--color-text)',

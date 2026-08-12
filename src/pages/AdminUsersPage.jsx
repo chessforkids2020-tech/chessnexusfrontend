@@ -28,7 +28,7 @@ const styles = {
     background: "#6c757d",
     color: "#fff",
     border: "none",
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     cursor: "pointer",
     fontSize: 14,
     fontWeight: 600
@@ -70,7 +70,7 @@ const styles = {
     flex: 1,
     minWidth: "200px",
     padding: "12px 16px",
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     border: "1px solid #d6f0d6",
     fontSize: 14,
     fontFamily: "Inter, Arial, sans-serif"
@@ -78,7 +78,7 @@ const styles = {
   tableContainer: {
     background: "#fff",
     padding: 16,
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
     overflowX: "auto"
   },
@@ -124,13 +124,13 @@ const styles = {
   },
   roleTag: {
     padding: "4px 8px",
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     fontSize: 11,
     fontWeight: 500
   },
   statusTag: {
     padding: "4px 8px",
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     fontSize: 11,
     fontWeight: 500
   },
@@ -138,7 +138,7 @@ const styles = {
     padding: "4px 8px",
     background: "#fef3c7",
     color: "#d97706",
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     fontSize: 11,
     fontWeight: 500
   },
@@ -147,14 +147,14 @@ const styles = {
     background: "#0ea5e9", 
     color: "#fff", 
     border: "none", 
-    borderRadius: 6, 
+    borderRadius: 'var(--radius-sm)', 
     cursor: "pointer",
     fontSize: 12,
     fontWeight: 500
   },
   input: { 
     padding: 8, 
-    borderRadius: 8, 
+    borderRadius: 'var(--radius-md)', 
     marginTop: 8, 
     border: "1px solid #e6f1e6", 
     width: "100%",
@@ -165,7 +165,7 @@ const styles = {
     background: "#0b6623", 
     color: "#fff", 
     border: "none", 
-    borderRadius: 8, 
+    borderRadius: 'var(--radius-md)', 
     cursor: "pointer", 
     marginTop: 8,
     fontWeight: 600
@@ -175,7 +175,7 @@ const styles = {
     background: "#f0f9f0", 
     color: "#064f28", 
     border: "1px solid #d6f0d6", 
-    borderRadius: 8, 
+    borderRadius: 'var(--radius-md)', 
     cursor: "pointer",
     fontWeight: 600
   },
@@ -199,7 +199,7 @@ const styles = {
   stat: {
     background: "#fff",
     padding: 16,
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     flex: 1,
     minWidth: 200,
     boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
@@ -667,7 +667,7 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      <div style={{ marginBottom: 20, background: '#fff', borderRadius: 12, padding: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+      <div style={{ marginBottom: 20, background: '#fff', borderRadius: 'var(--radius-lg)', padding: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <h2 style={{ marginTop: 0, marginBottom: 0, color: '#0f172a' }}>Create New User</h2>
           <button
@@ -741,7 +741,7 @@ export default function AdminUsersPage() {
           <button type="submit" style={styles.primaryBtn}>Create User</button>
           </form>
         ) : (
-          <div style={{ color: '#64748b', fontSize: 14, padding: 12, background: '#f8fafc', borderRadius: 8 }}>
+          <div style={{ color: '#64748b', fontSize: 14, padding: 12, background: '#f8fafc', borderRadius: 'var(--radius-md)' }}>
             Create user form is collapsed. Click expand to add a new user.
           </div>
         )}

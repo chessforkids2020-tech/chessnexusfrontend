@@ -389,7 +389,7 @@ function TeamLobby() {
                 backgroundColor: showLeaderboard ? 'var(--color-danger)' : 'var(--color-accent-2)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '4px',
+                borderRadius: 'var(--radius-sm)',
                 cursor: 'pointer',
                 fontSize: '14px'
               }}

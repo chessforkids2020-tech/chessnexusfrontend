@@ -67,7 +67,7 @@ const UserTestChapterSelection = () => {
     },
     card: {
       background: 'var(--color-surface)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '25px',
       border: '1px solid var(--color-white-a10)',
       cursor: 'pointer',
@@ -84,7 +84,7 @@ const UserTestChapterSelection = () => {
     chapterNumber: {
       width: '50px',
       height: '50px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       background: 'linear-gradient(135deg, var(--color-warning) 0%, var(--color-danger) 100%)',
       display: 'flex',
       alignItems: 'center',
@@ -111,7 +111,7 @@ const UserTestChapterSelection = () => {
       background: 'var(--color-warning-a20)',
       color: 'var(--color-warning)',
       padding: '6px 12px',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       fontSize: '13px',
       fontWeight: '500',
     },
@@ -120,7 +120,7 @@ const UserTestChapterSelection = () => {
       background: 'rgba(38, 38, 38, 0.8)',
       color: 'var(--color-text)',
       border: '1px solid var(--color-white-a20)',
-      borderRadius: '10px',
+      borderRadius: 'var(--radius-md)',
       cursor: 'pointer',
       fontSize: '14px',
       marginBottom: '30px',
@@ -136,7 +136,7 @@ const UserTestChapterSelection = () => {
       color: 'var(--color-text-faint)',
       padding: '60px',
       background: 'var(--color-surface)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
     },
   };
 

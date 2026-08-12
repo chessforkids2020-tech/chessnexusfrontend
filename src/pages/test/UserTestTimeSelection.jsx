@@ -56,7 +56,7 @@ const UserTestTimeSelection = () => {
     },
     card: {
       background: 'var(--color-surface)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '25px',
       border: '2px solid var(--color-white-a10)',
       cursor: 'pointer',
@@ -85,7 +85,7 @@ const UserTestTimeSelection = () => {
     startButton: {
       width: '100%',
       padding: '18px',
-      borderRadius: '14px',
+      borderRadius: 'var(--radius-lg)',
       border: 'none',
       background: selectedTime 
         ? 'linear-gradient(135deg, var(--color-warning) 0%, var(--color-danger) 100%)' 
@@ -102,7 +102,7 @@ const UserTestTimeSelection = () => {
       background: 'rgba(38, 38, 38, 0.8)',
       color: 'var(--color-text)',
       border: '1px solid var(--color-white-a20)',
-      borderRadius: '10px',
+      borderRadius: 'var(--radius-md)',
       cursor: 'pointer',
       fontSize: '14px',
       marginBottom: '30px',
@@ -110,7 +110,7 @@ const UserTestTimeSelection = () => {
     info: {
       background: 'var(--color-warning-a12)',
       border: '1px solid var(--color-warning-a30)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '20px',
       marginBottom: '25px',
       color: 'var(--color-warning)',

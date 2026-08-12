@@ -8,33 +8,33 @@ const styles = {
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid var(--color-text)', paddingBottom: '15px' },
   title: { fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: 0 },
   grid: { display: 'grid', gridTemplateColumns: '300px 1fr', gap: '20px' },
-  sidebar: { background: 'var(--color-surface)', padding: '15px', borderRadius: '12px', height: 'fit-content' },
-  main: { background: 'var(--color-surface)', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 8px var(--color-black-a20)' },
-  focusItem: { padding: '12px', borderRadius: '8px', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.2s', background: 'var(--color-surface)', border: '1px solid var(--color-text)' },
+  sidebar: { background: 'var(--color-surface)', padding: '15px', borderRadius: 'var(--radius-lg)', height: 'fit-content' },
+  main: { background: 'var(--color-surface)', padding: '20px', borderRadius: 'var(--radius-lg)', boxShadow: '0 2px 8px var(--color-black-a20)' },
+  focusItem: { padding: '12px', borderRadius: 'var(--radius-md)', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.2s', background: 'var(--color-surface)', border: '1px solid var(--color-text)' },
   focusItemSelected: { background: '#ede9fe', border: '2px solid var(--color-accent-2)' },
   focusItemActive: { background: 'var(--color-accent-2)', color: 'var(--color-text)', border: '1px solid var(--color-accent-2)' },
-  btn: { padding: '10px 20px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500', fontSize: '14px', transition: 'opacity 0.2s' },
+  btn: { padding: '10px 20px', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: '500', fontSize: '14px', transition: 'opacity 0.2s' },
   btnPrimary: { background: 'var(--color-accent-2)', color: 'var(--color-text)' },
   btnSecondary: { background: 'var(--color-surface)', color: 'var(--color-text-faint)', border: '1px solid var(--color-text-muted)' },
   btnDanger: { background: 'var(--color-danger)', color: 'var(--color-text)' },
   btnSuccess: { background: 'var(--color-success)', color: 'var(--color-text)' },
   btnSmall: { padding: '6px 12px', fontSize: '12px' },
   btnDisabled: { opacity: 0.5, cursor: 'not-allowed' },
-  input: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: '6px', fontSize: '14px', marginBottom: '10px', boxSizing: 'border-box' },
-  textarea: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: '6px', fontSize: '14px', minHeight: '80px', marginBottom: '10px', fontFamily: 'monospace', boxSizing: 'border-box' },
-  select: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: '6px', fontSize: '14px', marginBottom: '10px', background: 'var(--color-surface)', boxSizing: 'border-box' },
+  input: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: 'var(--radius-sm)', fontSize: '14px', marginBottom: '10px', boxSizing: 'border-box' },
+  textarea: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: 'var(--radius-sm)', fontSize: '14px', minHeight: '80px', marginBottom: '10px', fontFamily: 'monospace', boxSizing: 'border-box' },
+  select: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: 'var(--radius-sm)', fontSize: '14px', marginBottom: '10px', background: 'var(--color-surface)', boxSizing: 'border-box' },
   label: { display: 'block', marginBottom: '5px', fontWeight: '500', color: 'var(--color-text-faint)', fontSize: '14px' },
   modal: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--color-black-a50)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 },
-  modalContent: { background: 'var(--color-surface)', padding: '24px', borderRadius: '12px', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' },
-  dayCard: { padding: '15px', border: '1px solid var(--color-text)', borderRadius: '8px', marginBottom: '10px' },
-  badge: { display: 'inline-block', padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '500' },
+  modalContent: { background: 'var(--color-surface)', padding: '24px', borderRadius: 'var(--radius-lg)', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' },
+  dayCard: { padding: '15px', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-md)', marginBottom: '10px' },
+  badge: { display: 'inline-block', padding: '4px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '500' },
   badgeActive: { background: '#dcfce7', color: '#166534' },
   badgeDraft: { background: 'var(--color-warning)', color: '#92400e' },
   badgeCompleted: { background: 'var(--color-surface)', color: 'var(--color-text-faint)' },
   row: { display: 'flex', gap: '10px', marginBottom: '10px' },
-  fieldGroup: { background: 'var(--color-surface)', padding: '15px', borderRadius: '8px', marginBottom: '15px' },
-  canCreateBanner: { background: '#f5f3ff', border: '1px solid var(--color-accent-2)', borderRadius: '8px', padding: '12px 15px', marginBottom: '15px', fontSize: '14px', color: '#5b21b6' },
-  cannotCreateBanner: { background: 'var(--color-warning)', border: '1px solid var(--color-warning)', borderRadius: '8px', padding: '12px 15px', marginBottom: '15px', fontSize: '14px', color: '#92400e' },
+  fieldGroup: { background: 'var(--color-surface)', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '15px' },
+  canCreateBanner: { background: '#f5f3ff', border: '1px solid var(--color-accent-2)', borderRadius: 'var(--radius-md)', padding: '12px 15px', marginBottom: '15px', fontSize: '14px', color: '#5b21b6' },
+  cannotCreateBanner: { background: 'var(--color-warning)', border: '1px solid var(--color-warning)', borderRadius: 'var(--radius-md)', padding: '12px 15px', marginBottom: '15px', fontSize: '14px', color: '#92400e' },
 };
 
 const EMPTY_DAY_FORM = {
@@ -425,7 +425,7 @@ export default function EliteMonthlyFocus() {
       </div>
 
       {error && (
-        <div style={{ background: '#fef2f2', color: '#b91c1c', padding: '12px', borderRadius: '8px', marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ background: '#fef2f2', color: '#b91c1c', padding: '12px', borderRadius: 'var(--radius-md)', marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {error}
           <button onClick={() => setError('')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>×</button>
         </div>
@@ -526,12 +526,12 @@ export default function EliteMonthlyFocus() {
 
               {/* Info */}
               {selectedFocus.status === 'draft' && (
-                <div style={{ background: 'var(--color-warning)', borderRadius: '8px', padding: '12px', marginBottom: '15px', fontSize: '14px', color: '#92400e' }}>
+                <div style={{ background: 'var(--color-warning)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '15px', fontSize: '14px', color: '#92400e' }}>
                   📝 Draft — Add at least 1 day, then activate to make it live for all users.
                 </div>
               )}
               {selectedFocus.status === 'active' && (
-                <div style={{ background: '#dcfce7', borderRadius: '8px', padding: '12px', marginBottom: '15px', fontSize: '14px', color: '#166534' }}>
+                <div style={{ background: '#dcfce7', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '15px', fontSize: '14px', color: '#166534' }}>
                   🟢 Active — This challenge is live. Press <strong>▶️ Start Day</strong> on a day below to open it for 24 hours (one day runs at a time).
                 </div>
               )}
@@ -549,7 +549,7 @@ export default function EliteMonthlyFocus() {
               </div>
 
               {focusDays.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px', background: 'var(--color-surface)', borderRadius: '8px', color: 'var(--color-text-faint)' }}>
+                <div style={{ textAlign: 'center', padding: '40px', background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-faint)' }}>
                   <p>No days yet. Add days 1–7 to build your challenge cycle.</p>
                 </div>
               ) : (
@@ -767,7 +767,7 @@ export default function EliteMonthlyFocus() {
             {dayForm.taskType === 'puzzles' && (
               <div style={styles.fieldGroup}>
                 {/* Engine-judged toggle */}
-                <div style={{ background: '#f5f3ff', border: '1px solid var(--color-accent-2)', borderRadius: '8px', padding: '12px', marginBottom: '12px' }}>
+                <div style={{ background: '#f5f3ff', border: '1px solid var(--color-accent-2)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '12px' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: '#5b21b6' }}>
                     <input type="checkbox" checked={dayForm.engineJudged}
                       onChange={e => setDayForm({ ...dayForm, engineJudged: e.target.checked })} />
@@ -800,7 +800,7 @@ export default function EliteMonthlyFocus() {
                   <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addPuzzle}>+ Add Puzzle</button>
                 </div>
                 {dayForm.puzzles.map((p, i) => (
-                  <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: '6px', padding: '10px', marginBottom: '8px' }}>
+                  <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-sm)', padding: '10px', marginBottom: '8px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                       <strong style={{ fontSize: '13px' }}>Puzzle {i + 1}</strong>
                       {dayForm.puzzles.length > 1 && (
@@ -871,7 +871,7 @@ export default function EliteMonthlyFocus() {
                       <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addBestMove}>+ Add</button>
                     </div>
                     {dayForm.findMistakes.bestMoves.map((m, i) => (
-                      <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: '6px', padding: '10px', marginBottom: '6px' }}>
+                      <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-sm)', padding: '10px', marginBottom: '6px' }}>
                         <div style={styles.row}>
                           <input style={{ ...styles.input, flex: 1, marginBottom: 0 }} type="number" placeholder="Move #" value={m.moveNumber}
                             onChange={e => updateBestMove(i, 'moveNumber', parseInt(e.target.value))} />
@@ -895,7 +895,7 @@ export default function EliteMonthlyFocus() {
                       <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addBlunder}>+ Add</button>
                     </div>
                     {dayForm.findMistakes.blunders.map((b, i) => (
-                      <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: '6px', padding: '10px', marginBottom: '6px' }}>
+                      <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-sm)', padding: '10px', marginBottom: '6px' }}>
                         <div style={styles.row}>
                           <input style={{ ...styles.input, flex: 1, marginBottom: 0 }} type="number" placeholder="Move #" value={b.moveNumber}
                             onChange={e => updateBlunder(i, 'moveNumber', parseInt(e.target.value))} />
@@ -924,7 +924,7 @@ export default function EliteMonthlyFocus() {
                   <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addTactics}>+ Add</button>
                 </div>
                 {dayForm.tacticsItems.map((t, i) => (
-                  <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: '6px', padding: '10px', marginBottom: '8px' }}>
+                  <div key={i} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-sm)', padding: '10px', marginBottom: '8px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                       <strong style={{ fontSize: '13px' }}>Item {i + 1}</strong>
                       {dayForm.tacticsItems.length > 1 && (
@@ -950,7 +950,7 @@ export default function EliteMonthlyFocus() {
                   <button style={{ ...styles.btn, ...styles.btnPrimary, ...styles.btnSmall }} onClick={addMC}>+ Add</button>
                 </div>
                 {dayForm.multipleChoiceItems.map((item, mi) => (
-                  <div key={mi} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: '6px', padding: '12px', marginBottom: '10px' }}>
+                  <div key={mi} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-sm)', padding: '12px', marginBottom: '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <strong style={{ fontSize: '13px' }}>Question {mi + 1}</strong>
                       {dayForm.multipleChoiceItems.length > 1 && (
@@ -1046,7 +1046,7 @@ export default function EliteMonthlyFocus() {
               </div>
             ) : (
               <div>
-                <div style={{ background: '#f0fdf4', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                <div style={{ background: '#f0fdf4', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
                   <strong>{dayResults.length}</strong> user{dayResults.length !== 1 ? 's' : ''} completed this day
                 </div>
 
@@ -1126,14 +1126,14 @@ export default function EliteMonthlyFocus() {
                   <div key={idx} style={{
                     padding: '15px',
                     background: ans.isCorrect ? '#f0fdf4' : '#fef2f2',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-md)',
                     marginBottom: '15px',
                     border: `1px solid ${ans.isCorrect ? '#bbf7d0' : '#fecaca'}`
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                       <strong style={{ color: 'var(--color-text-faint)' }}>Question #{idx + 1}</strong>
                       <span style={{
-                        padding: '2px 8px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold',
+                        padding: '2px 8px', borderRadius: 'var(--radius-sm)', fontSize: '12px', fontWeight: 'bold',
                         background: ans.isCorrect ? 'var(--color-success)' : 'var(--color-danger)', color: 'var(--color-text)'
                       }}>
                         {ans.isCorrect ? 'CORRECT' : 'INCORRECT'}
@@ -1141,7 +1141,7 @@ export default function EliteMonthlyFocus() {
                     </div>
 
                     {ans.fen && (
-                      <div style={{ marginBottom: '10px', fontSize: '12px', color: 'var(--color-text-faint)', fontFamily: 'monospace', background: 'var(--color-surface)', padding: '6px', borderRadius: '4px' }}>
+                      <div style={{ marginBottom: '10px', fontSize: '12px', color: 'var(--color-text-faint)', fontFamily: 'monospace', background: 'var(--color-surface)', padding: '6px', borderRadius: 'var(--radius-sm)' }}>
                         FEN: {ans.fen}
                       </div>
                     )}
@@ -1151,7 +1151,7 @@ export default function EliteMonthlyFocus() {
                         <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>USER ANSWER</div>
                         <div style={{
                           fontWeight: '500', color: ans.isCorrect ? '#065f46' : '#991b1b',
-                          background: 'var(--color-surface)', padding: '8px', borderRadius: '4px', border: '1px solid var(--color-text)'
+                          background: 'var(--color-surface)', padding: '8px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-text)'
                         }}>
                           {ans.userAnswer || ans.userTag || '(No answer)'}
                         </div>
@@ -1162,7 +1162,7 @@ export default function EliteMonthlyFocus() {
                         </div>
                         <div style={{
                           fontWeight: '500', color: 'var(--color-text-faint)',
-                          background: 'var(--color-surface)', padding: '8px', borderRadius: '4px', border: '1px solid var(--color-text)'
+                          background: 'var(--color-surface)', padding: '8px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-text)'
                         }}>
                           {ans.engineJudged
                             ? (ans.isCorrect

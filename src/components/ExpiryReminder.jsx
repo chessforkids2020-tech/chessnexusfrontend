@@ -20,7 +20,7 @@ export default function ExpiryReminder({ daysRemaining, what = 'plan', to, ctaLa
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
-      padding: '10px 16px', marginBottom: 16, borderRadius: 12,
+      padding: '10px 16px', marginBottom: 16, borderRadius: 'var(--radius-lg)',
       background: urgent ? 'var(--color-danger-a12)' : 'var(--color-warning-a12)',
       border: `1px solid ${urgent ? 'var(--color-danger-a30)' : 'var(--color-warning-a30)'}`,
     }}>
@@ -31,7 +31,7 @@ export default function ExpiryReminder({ daysRemaining, what = 'plan', to, ctaLa
         <Link to={to} style={{
           fontSize: 12.5, fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap',
           color: '#04211d', background: urgent ? 'var(--color-danger)' : 'var(--color-warning)',
-          borderRadius: 8, padding: '6px 14px',
+          borderRadius: 'var(--radius-md)', padding: '6px 14px',
         }}>{ctaLabel}</Link>
       )}
     </div>

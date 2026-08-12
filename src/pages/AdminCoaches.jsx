@@ -70,23 +70,23 @@ const styles = {
   header: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 },
   title: { fontSize: 22, color: "#072b05", fontWeight: 800, margin: 0 },
   subtitle: { margin: "4px 0 0", color: "#64748b", fontSize: 13 },
-  secondaryBtn: { padding: "8px 12px", background: "#f0f9f0", color: "#064f28", border: "1px solid #d6f0d6", borderRadius: 8, cursor: "pointer", fontWeight: 600 },
-  primaryBtn: { padding: "8px 12px", background: "#0b6623", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 },
+  secondaryBtn: { padding: "8px 12px", background: "#f0f9f0", color: "#064f28", border: "1px solid #d6f0d6", borderRadius: 'var(--radius-md)', cursor: "pointer", fontWeight: 600 },
+  primaryBtn: { padding: "8px 12px", background: "#0b6623", color: "#fff", border: "none", borderRadius: 'var(--radius-md)', cursor: "pointer", fontWeight: 600 },
   summaryGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 20 },
-  summaryCard: { background: "#fff", padding: 16, borderRadius: 12, border: "1px solid #e6f1e6", boxShadow: "0 6px 16px rgba(0,0,0,0.04)" },
+  summaryCard: { background: "#fff", padding: 16, borderRadius: 'var(--radius-lg)', border: "1px solid #e6f1e6", boxShadow: "0 6px 16px rgba(0,0,0,0.04)" },
   summaryLabel: { fontSize: 12, color: "#64748b", marginBottom: 6 },
   summaryValue: { fontSize: 24, fontWeight: 800, color: "#064f28" },
   summarySub: { fontSize: 12, color: "#94a3b8", marginTop: 4 },
   toolbar: { display: "flex", gap: 10, alignItems: "center", marginBottom: 14, flexWrap: "wrap" },
-  input: { padding: "8px 12px", borderRadius: 8, border: "1px solid #d6e3d6", minWidth: 240, fontSize: 14 },
-  select: { padding: "8px 12px", borderRadius: 8, border: "1px solid #d6e3d6", fontSize: 14, background: "#fff" },
-  tableWrap: { background: "#fff", borderRadius: 12, border: "1px solid #e6f1e6", overflow: "auto", boxShadow: "0 6px 16px rgba(0,0,0,0.04)" },
+  input: { padding: "8px 12px", borderRadius: 'var(--radius-md)', border: "1px solid #d6e3d6", minWidth: 240, fontSize: 14 },
+  select: { padding: "8px 12px", borderRadius: 'var(--radius-md)', border: "1px solid #d6e3d6", fontSize: 14, background: "#fff" },
+  tableWrap: { background: "#fff", borderRadius: 'var(--radius-lg)', border: "1px solid #e6f1e6", overflow: "auto", boxShadow: "0 6px 16px rgba(0,0,0,0.04)" },
   table: { width: "100%", borderCollapse: "collapse", fontSize: 13 },
   th: { padding: "12px 10px", textAlign: "left", fontWeight: 700, color: "#374151", borderBottom: "2px solid #e5e7eb", background: "#f9fafb", whiteSpace: "nowrap", position: "sticky", top: 0 },
   td: { padding: "10px", borderBottom: "1px solid #f3f4f6", verticalAlign: "top" },
   name: { fontWeight: 700, color: "#0f172a" },
   muted: { color: "#94a3b8", fontSize: 12 },
-  tag: { padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 700, display: "inline-block" },
+  tag: { padding: "3px 10px", borderRadius: 'var(--radius-lg)', fontSize: 11, fontWeight: 700, display: "inline-block" },
   pager: { display: "flex", gap: 10, alignItems: "center", justifyContent: "center", marginTop: 16 },
 };
 
@@ -357,7 +357,7 @@ export default function AdminCoaches() {
             { label: "Total Students", value: coachAnalytics?.totalStudents ?? "—", color: "#f59e0b" },
             { label: "Paid Payments", value: coachAnalytics?.paidCount ?? "—", color: "#ef4444" },
           ].map(({ label, value, color }) => (
-            <div key={label} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 10, padding: "16px 18px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+            <div key={label} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 'var(--radius-md)', padding: "16px 18px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
               <div style={{ fontSize: 11, color: "#6b7280", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>{label}</div>
               <div style={{ fontSize: 28, fontWeight: 700, color }}>{value}</div>
             </div>
@@ -366,7 +366,7 @@ export default function AdminCoaches() {
 
         {coachAnalytics && (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-            <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 10, padding: 20, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+            <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 'var(--radius-md)', padding: 20, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
               <h4 style={{ margin: "0 0 14px", color: "#072b05", fontSize: 14 }}>Coaches by Plan</h4>
               {/* Built from whatever plans actually appear in the data. This used
                   to hardcode ["starter","pro","pro_plus","academy",null] — all
@@ -394,7 +394,7 @@ export default function AdminCoaches() {
                       label: 'Coaches',
                       data: rows.map(p => p.count || 0),
                       backgroundColor: rows.map(p => COLOR[p._id] || '#8b5cf6'),
-                      borderRadius: 5,
+                      borderRadius: 'var(--radius-sm)',
                     }],
                   };
                 })()}
@@ -402,7 +402,7 @@ export default function AdminCoaches() {
               />
             </div>
 
-            <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 10, padding: 20, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+            <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 'var(--radius-md)', padding: 20, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
               <h4 style={{ margin: "0 0 14px", color: "#072b05", fontSize: 14 }}>Monthly Payments (Last 6 Months)</h4>
               <Line
                 data={{
@@ -431,11 +431,11 @@ export default function AdminCoaches() {
         {!coachAnalytics && <p style={{ color: "#94a3b8", fontSize: 13 }}>Coach analytics unavailable</p>}
 
         {/* Coach list: who they are, status, payments, verify */}
-        <div style={{ marginTop: 24, background: "#fff", border: "1px solid #e2e8f0", borderRadius: 10, padding: 18, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+        <div style={{ marginTop: 24, background: "#fff", border: "1px solid #e2e8f0", borderRadius: 'var(--radius-md)', padding: 18, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
             <h4 style={{ margin: 0, color: "#072b05", fontSize: 14 }}>Coaches &amp; Applicants — verify here</h4>
             <button onClick={loadCoaches} disabled={coachListLoading}
-              style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid #10b981", background: "#10b981", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+              style={{ padding: "6px 14px", borderRadius: 'var(--radius-md)', border: "1px solid #10b981", background: "#10b981", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
               {coachListLoading ? "Loading…" : (coachList ? "↻ Refresh" : "Load coaches")}
             </button>
           </div>
@@ -447,7 +447,7 @@ export default function AdminCoaches() {
           ) : (
             <>
             {referralSummary && referralSummary.totalReferred > 0 && (
-              <div style={{ background: "#ecfeff", border: "1px solid #a5f3fc", borderRadius: 12, padding: "12px 16px", marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 20 }}>
+              <div style={{ background: "#ecfeff", border: "1px solid #a5f3fc", borderRadius: 'var(--radius-lg)', padding: "12px 16px", marginBottom: 16, display: "flex", flexWrap: "wrap", gap: 20 }}>
                 <div style={{ fontWeight: 800, color: "#0e7490" }}>🎁 Referral program</div>
                 <div style={{ fontSize: 13, color: "#155e63" }}><strong>{referralSummary.totalReferred}</strong> referred · <strong>{referralSummary.totalSubscribed}</strong> converted · <strong>{referralSummary.totalPending}</strong> pending</div>
                 <div style={{ fontSize: 13, color: "#155e63" }}>Credit issued: <strong>{totalsLabel(referralSummary.creditIssuedByCurrency)}</strong></div>
@@ -501,7 +501,7 @@ export default function AdminCoaches() {
                       </td>
                       <td style={{ padding: "8px 10px" }}>
                         {c.plan || "—"}{c.subStatus ? ` (${c.subStatus})` : ""}
-                        {c.comped && <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 700, color: "#7c3aed", background: "#f3e8ff", padding: "1px 6px", borderRadius: 6 }}>🎁 Comped</span>}
+                        {c.comped && <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 700, color: "#7c3aed", background: "#f3e8ff", padding: "1px 6px", borderRadius: 'var(--radius-sm)' }}>🎁 Comped</span>}
                       </td>
                       <td style={{ padding: "8px 10px" }}>
                         {/* Active vs on-break, not just a total — a coach with 40
@@ -551,7 +551,7 @@ export default function AdminCoaches() {
                           {c.isCoach && (
                             <button onClick={() => verifyCoach(c.id, !c.verified)}
                               style={{
-                                padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer",
+                                padding: "5px 12px", borderRadius: 'var(--radius-md)', fontSize: 12, fontWeight: 700, cursor: "pointer",
                                 border: `1px solid ${c.verified ? "#ef4444" : "#10b981"}`,
                                 background: c.verified ? "#fff" : "#10b981",
                                 color: c.verified ? "#ef4444" : "#fff",
@@ -560,7 +560,7 @@ export default function AdminCoaches() {
                             </button>
                           )}
                           <button onClick={() => setDetailId(detailId === c.id ? null : c.id)}
-                            style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #0ea5e9", background: "#fff", color: "#0284c7" }}>
+                            style={{ padding: "5px 12px", borderRadius: 'var(--radius-md)', fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #0ea5e9", background: "#fff", color: "#0284c7" }}>
                             {detailId === c.id ? "▾ Less" : "▸ More"}
                           </button>
                           {/* Clears coach status (test / abandoned accounts).
@@ -568,17 +568,17 @@ export default function AdminCoaches() {
                           {c.isCoach && (
                             <button onClick={() => removeCoach(c)}
                               title="Remove coach status — keeps the user account"
-                              style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #ef4444", background: "#fff", color: "#ef4444" }}>
+                              style={{ padding: "5px 12px", borderRadius: 'var(--radius-md)', fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #ef4444", background: "#fff", color: "#ef4444" }}>
                               🗑 Remove coach
                             </button>
                           )}
                           <button onClick={() => { setGrantFor(c); setGrantPlan('pro'); setGrantMonths('never'); }}
-                            style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #7c3aed", background: "#fff", color: "#7c3aed" }}>
+                            style={{ padding: "5px 12px", borderRadius: 'var(--radius-md)', fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #7c3aed", background: "#fff", color: "#7c3aed" }}>
                             🎁 Grant
                           </button>
                           {c.comped && (
                             <button onClick={() => revokeGrant(c)}
-                              style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #ef4444", background: "#fff", color: "#ef4444" }}>
+                              style={{ padding: "5px 12px", borderRadius: 'var(--radius-md)', fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #ef4444", background: "#fff", color: "#ef4444" }}>
                               Revoke
                             </button>
                           )}
@@ -733,12 +733,12 @@ export default function AdminCoaches() {
                           setAcadGrantPlan(a.plan || acadPlans[0]?.id || '');
                           setAcadGrantMonths('never');
                         }}
-                        style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #7c3aed", background: "#fff", color: "#7c3aed" }}>
+                        style={{ padding: "5px 12px", borderRadius: 'var(--radius-md)', fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #7c3aed", background: "#fff", color: "#7c3aed" }}>
                         🎁 Grant
                       </button>
                       {a.comped && (
                         <button onClick={() => revokeAcadGrant(a)}
-                          style={{ padding: "5px 12px", borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #ef4444", background: "#fff", color: "#ef4444" }}>
+                          style={{ padding: "5px 12px", borderRadius: 'var(--radius-md)', fontSize: 12, fontWeight: 700, cursor: "pointer", border: "1px solid #ef4444", background: "#fff", color: "#ef4444" }}>
                           Revoke
                         </button>
                       )}
@@ -756,7 +756,7 @@ export default function AdminCoaches() {
         <div onClick={() => setAcadGrantFor(null)}
           style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "grid", placeItems: "center", zIndex: 2000, padding: 16 }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: 14, padding: 22, width: "min(440px, 94vw)", boxShadow: "0 24px 60px rgba(0,0,0,0.3)" }}>
+            style={{ background: "#fff", borderRadius: 'var(--radius-lg)', padding: 22, width: "min(440px, 94vw)", boxShadow: "0 24px 60px rgba(0,0,0,0.3)" }}>
             <h3 style={{ margin: "0 0 4px", color: "#1f2937" }}>🎁 Grant an academy plan free</h3>
             <p style={{ margin: "0 0 16px", color: "#6b7280", fontSize: 13 }}>
               Give <b>{acadGrantFor.name}</b> free access. No payment; marked as comped
@@ -765,7 +765,7 @@ export default function AdminCoaches() {
             </p>
             <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Plan</label>
             <select value={acadGrantPlan} onChange={e => setAcadGrantPlan(e.target.value)}
-              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 14 }}>
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 'var(--radius-md)', border: "1px solid #d1d5db", marginBottom: 14 }}>
               {/* Options come from the plan config, so a renamed or retired plan
                   can never leave a stale id selected here. */}
               {acadPlans.map(p => (
@@ -776,7 +776,7 @@ export default function AdminCoaches() {
             </select>
             <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Duration</label>
             <select value={acadGrantMonths} onChange={e => setAcadGrantMonths(e.target.value)}
-              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 14 }}>
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 'var(--radius-md)', border: "1px solid #d1d5db", marginBottom: 14 }}>
               <option value="never">Never expires</option>
               <option value="1">1 month</option>
               <option value="3">3 months</option>
@@ -786,12 +786,12 @@ export default function AdminCoaches() {
             <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Reason (optional)</label>
             <input value={acadGrantReason} onChange={e => setAcadGrantReason(e.target.value)}
               placeholder="e.g. referred 3 academies"
-              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 18, boxSizing: "border-box" }} />
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 'var(--radius-md)', border: "1px solid #d1d5db", marginBottom: 18, boxSizing: "border-box" }} />
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
               <button onClick={() => setAcadGrantFor(null)} disabled={acadBusy}
-                style={{ padding: "9px 16px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontWeight: 700, cursor: "pointer" }}>Cancel</button>
+                style={{ padding: "9px 16px", borderRadius: 'var(--radius-md)', border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontWeight: 700, cursor: "pointer" }}>Cancel</button>
               <button onClick={submitAcadGrant} disabled={acadBusy || !acadGrantPlan}
-                style={{ padding: "9px 16px", borderRadius: 8, border: "none", background: "#7c3aed", color: "#fff", fontWeight: 700, cursor: "pointer" }}>
+                style={{ padding: "9px 16px", borderRadius: 'var(--radius-md)', border: "none", background: "#7c3aed", color: "#fff", fontWeight: 700, cursor: "pointer" }}>
                 {acadBusy ? "Granting…" : "Grant plan"}
               </button>
             </div>
@@ -916,7 +916,7 @@ export default function AdminCoaches() {
         <div onClick={() => setGrantFor(null)}
           style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "grid", placeItems: "center", zIndex: 2000, padding: 16 }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background: "#fff", borderRadius: 14, padding: 22, width: "min(420px, 94vw)", boxShadow: "0 24px 60px rgba(0,0,0,0.3)" }}>
+            style={{ background: "#fff", borderRadius: 'var(--radius-lg)', padding: 22, width: "min(420px, 94vw)", boxShadow: "0 24px 60px rgba(0,0,0,0.3)" }}>
             <h3 style={{ margin: "0 0 4px", color: "#1f2937" }}>🎁 Grant a plan free</h3>
             <p style={{ margin: "0 0 16px", color: "#6b7280", fontSize: 13 }}>
               Give <b>@{grantFor.username}</b> free access (e.g. a collaborator / YouTuber).
@@ -924,7 +924,7 @@ export default function AdminCoaches() {
             </p>
             <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Plan</label>
             <select value={grantPlan} onChange={e => setGrantPlan(e.target.value)}
-              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 14 }}>
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 'var(--radius-md)', border: "1px solid #d1d5db", marginBottom: 14 }}>
               {/* One list now: both paid plans include the unlimited classroom,
                   so there is nothing to split "with"/"without live" on. */}
               <option value="pro">Pro — 70 students · unlimited classroom</option>
@@ -932,7 +932,7 @@ export default function AdminCoaches() {
             </select>
             <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Duration</label>
             <select value={grantMonths} onChange={e => setGrantMonths(e.target.value)}
-              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 14 }}>
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 'var(--radius-md)', border: "1px solid #d1d5db", marginBottom: 14 }}>
               <option value="never">Never expires</option>
               <option value="1">1 month</option>
               <option value="3">3 months</option>
@@ -942,12 +942,12 @@ export default function AdminCoaches() {
             <label style={{ display: "block", fontSize: 13, fontWeight: 700, color: "#374151", marginBottom: 4 }}>Reason (optional)</label>
             <input value={grantReason} onChange={e => setGrantReason(e.target.value)}
               placeholder="e.g. YouTube collaboration"
-              style={{ width: "100%", padding: "9px 10px", borderRadius: 8, border: "1px solid #d1d5db", marginBottom: 18, boxSizing: "border-box" }} />
+              style={{ width: "100%", padding: "9px 10px", borderRadius: 'var(--radius-md)', border: "1px solid #d1d5db", marginBottom: 18, boxSizing: "border-box" }} />
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
               <button onClick={() => setGrantFor(null)} disabled={grantBusy}
-                style={{ padding: "9px 16px", borderRadius: 8, border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontWeight: 700, cursor: "pointer" }}>Cancel</button>
+                style={{ padding: "9px 16px", borderRadius: 'var(--radius-md)', border: "1px solid #d1d5db", background: "#fff", color: "#374151", fontWeight: 700, cursor: "pointer" }}>Cancel</button>
               <button onClick={submitGrant} disabled={grantBusy}
-                style={{ padding: "9px 16px", borderRadius: 8, border: "none", background: "#7c3aed", color: "#fff", fontWeight: 700, cursor: "pointer" }}>
+                style={{ padding: "9px 16px", borderRadius: 'var(--radius-md)', border: "none", background: "#7c3aed", color: "#fff", fontWeight: 700, cursor: "pointer" }}>
                 {grantBusy ? "Granting…" : "Grant plan"}
               </button>
             </div>

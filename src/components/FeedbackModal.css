@@ -4,7 +4,7 @@
 .fbm-textarea {
   width: 100%;
   padding: 11px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-white-a13);
   background: var(--color-white-a04);
   color: #f0f4ff;
@@ -30,7 +30,7 @@
 .fbm-skip {
   flex: none;
   padding: 12px 16px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-white-a13);
   background: transparent;
   color: #8899aa;

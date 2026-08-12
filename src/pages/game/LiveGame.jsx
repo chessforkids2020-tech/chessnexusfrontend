@@ -313,7 +313,7 @@ export default function LiveGame() {
           <div style={{ 
             padding: '15px', 
             backgroundColor: game.turn() !== orientation[0] ? 'var(--color-surface)' : 'var(--color-text)',
-            borderRadius: '10px',
+            borderRadius: 'var(--radius-md)',
             border: `2px solid ${game.turn() !== orientation[0] ? '#3498db' : '#eee'}`,
             width: '200px'
           }}>
@@ -332,7 +332,7 @@ export default function LiveGame() {
           <div style={{ 
             padding: '15px', 
             backgroundColor: game.turn() === orientation[0] ? 'var(--color-surface)' : 'var(--color-text)',
-            borderRadius: '10px',
+            borderRadius: 'var(--radius-md)',
             border: `2px solid ${game.turn() === orientation[0] ? '#3498db' : '#eee'}`,
             width: '200px'
           }}>
@@ -350,7 +350,7 @@ export default function LiveGame() {
           padding: '10px 20px', 
           backgroundColor: isMyTurn ? '#2ecc71' : '#f1c40f', 
           color: 'white', 
-          borderRadius: '5px',
+          borderRadius: 'var(--radius-sm)',
           fontWeight: 'bold',
           marginBottom: '20px'
         }}>
@@ -384,7 +384,7 @@ export default function LiveGame() {
                   backgroundColor: currentMoveIndex <= 0 ? '#ccc' : '#3498db',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '5px',
+                  borderRadius: 'var(--radius-sm)',
                   cursor: currentMoveIndex <= 0 ? 'not-allowed' : 'pointer',
                   fontSize: '14px'
                 }}
@@ -399,7 +399,7 @@ export default function LiveGame() {
                   backgroundColor: currentMoveIndex <= 0 ? '#ccc' : '#3498db',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '5px',
+                  borderRadius: 'var(--radius-sm)',
                   cursor: currentMoveIndex <= 0 ? 'not-allowed' : 'pointer',
                   fontSize: '14px'
                 }}
@@ -409,7 +409,7 @@ export default function LiveGame() {
               <span style={{ 
                 padding: '8px 12px', 
                 backgroundColor: 'var(--color-surface)', 
-                borderRadius: '5px',
+                borderRadius: 'var(--radius-sm)',
                 fontSize: '14px',
                 fontWeight: 'bold',
                 minWidth: '80px',
@@ -425,7 +425,7 @@ export default function LiveGame() {
                   backgroundColor: currentMoveIndex >= gameHistory.length - 1 ? '#ccc' : '#3498db',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '5px',
+                  borderRadius: 'var(--radius-sm)',
                   cursor: currentMoveIndex >= gameHistory.length - 1 ? 'not-allowed' : 'pointer',
                   fontSize: '14px'
                 }}
@@ -440,7 +440,7 @@ export default function LiveGame() {
                   backgroundColor: currentMoveIndex >= gameHistory.length - 1 ? '#ccc' : '#3498db',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '5px',
+                  borderRadius: 'var(--radius-sm)',
                   cursor: currentMoveIndex >= gameHistory.length - 1 ? 'not-allowed' : 'pointer',
                   fontSize: '14px'
                 }}
@@ -452,7 +452,7 @@ export default function LiveGame() {
             <div style={{ 
               padding: '10px', 
               backgroundColor: '#e8f4f8', 
-              borderRadius: '5px',
+              borderRadius: 'var(--radius-sm)',
               fontSize: '14px',
               marginBottom: '15px',
               textAlign: 'center'
@@ -480,7 +480,7 @@ export default function LiveGame() {
         {/* Notation Panel */}
         <div style={{
           backgroundColor: 'var(--color-surface)',
-          borderRadius: '10px',
+          borderRadius: 'var(--radius-md)',
           boxShadow: '0 2px 10px var(--color-black-a20)',
           padding: '15px',
           minWidth: '200px',
@@ -515,7 +515,7 @@ export default function LiveGame() {
               backgroundColor: '#e74c3c', 
               color: 'white', 
               border: 'none', 
-              borderRadius: '5px', 
+              borderRadius: 'var(--radius-sm)', 
               cursor: 'pointer',
               fontSize: '16px'
             }}

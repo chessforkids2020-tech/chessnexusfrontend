@@ -113,18 +113,18 @@ const S = {
   wrap: {
     border: '1px solid rgba(255,255,255,0.08)',
     background: 'rgba(255,255,255,0.03)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     padding: '10px 12px',
     marginTop: 10,
   },
   head: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 8 },
   title: { fontSize: 13, fontWeight: 800, color: '#e6e8ee' },
   toggle: {
-    padding: '4px 12px', borderRadius: 999, cursor: 'pointer', fontSize: 11.5, fontWeight: 700,
+    padding: '4px 12px', borderRadius: 'var(--radius-pill)', cursor: 'pointer', fontSize: 11.5, fontWeight: 700,
     border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#94a3b8',
   },
   toggleOn: {
-    padding: '4px 12px', borderRadius: 999, cursor: 'pointer', fontSize: 11.5, fontWeight: 800,
+    padding: '4px 12px', borderRadius: 'var(--radius-pill)', cursor: 'pointer', fontSize: 11.5, fontWeight: 800,
     border: '1px solid rgba(52,211,153,0.5)', background: 'rgba(16,185,129,0.16)', color: '#6ee7b7',
   },
   hint: { fontSize: 11.5, lineHeight: 1.55, color: '#94a3b8' },
@@ -132,12 +132,12 @@ const S = {
   list: { display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 220, overflowY: 'auto' },
   row: { display: 'flex', alignItems: 'center', gap: 8 },
   san: {
-    flex: '0 0 58px', textAlign: 'left', padding: '3px 6px', borderRadius: 6,
+    flex: '0 0 58px', textAlign: 'left', padding: '3px 6px', borderRadius: 'var(--radius-sm)',
     border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.05)',
     color: '#e6e8ee', fontSize: 12.5, fontWeight: 700, fontFamily: 'monospace',
   },
   share: { flex: '0 0 34px', fontSize: 11.5, fontWeight: 700, color: '#cbd5e1', textAlign: 'right' },
-  bar: { flex: '1 1 auto', display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', minWidth: 40 },
+  bar: { flex: '1 1 auto', display: 'flex', height: 8, borderRadius: 'var(--radius-sm)', overflow: 'hidden', minWidth: 40 },
   seg: { display: 'block', height: '100%' },
   count: { flex: '0 0 auto', fontSize: 10.5, color: '#64748b', minWidth: 42, textAlign: 'right' },
 };

@@ -27,7 +27,7 @@ function CrownBadge({ tier, size = 'sm' }) {
       title={c.label}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: '3px',
-        padding: pad, borderRadius: '999px',
+        padding: pad, borderRadius: 'var(--radius-pill)',
         background: c.bg, border: `1px solid ${c.border}`,
         boxShadow: c.glow, color: c.color,
         fontSize: fs, fontWeight: '700', lineHeight: 1,
@@ -301,7 +301,7 @@ export default function ArenaTournamentLeaderboard() {
                 onClick={() => navigate(`/arenatournament/games/${tournamentId}`)}
                 style={{
                   border: 'none',
-                  borderRadius: '999px',
+                  borderRadius: 'var(--radius-pill)',
                   padding: '8px 14px',
                   background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))',
                   color: 'var(--color-text)',
@@ -316,9 +316,9 @@ export default function ArenaTournamentLeaderboard() {
               <div className="detail-item">
                 <span className="detail-label">Type</span>
                 <span className="detail-value">
-                  {tournament.tournamentType === 'team_battle' && <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)' }}>⚔️ Team Battle</span>}
-                  {tournament.tournamentType === 'chess960' && <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)' }}>🎲 Chess960</span>}
-                  {tournament.tournamentType === 'bullet_blitz_marathon' && <span style={{ padding: '3px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)' }}>⚡ Marathon</span>}
+                  {tournament.tournamentType === 'team_battle' && <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)' }}>⚔️ Team Battle</span>}
+                  {tournament.tournamentType === 'chess960' && <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)' }}>🎲 Chess960</span>}
+                  {tournament.tournamentType === 'bullet_blitz_marathon' && <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)' }}>⚡ Marathon</span>}
                 </span>
               </div>
             )}
@@ -471,7 +471,7 @@ export default function ArenaTournamentLeaderboard() {
           {/* Coach assignment submit card — only for students who came here from
               a coach's "play this tournament" assignment and actually played. */}
           {assignmentId && mySummary && (
-            <div style={{ marginBottom: '24px', padding: '20px 24px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--color-accent-2-a15) 0%, rgba(168,85,247,0.08) 100%)', border: '1px solid var(--color-accent-2-a30)' }}>
+            <div style={{ marginBottom: '24px', padding: '20px 24px', borderRadius: 'var(--radius-xl)', background: 'linear-gradient(135deg, var(--color-accent-2-a15) 0%, rgba(168,85,247,0.08) 100%)', border: '1px solid var(--color-accent-2-a30)' }}>
               <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-accent-2)', marginBottom: '10px' }}>🏆 Coach Assignment</h3>
               {assignDone ? (
                 <div style={{ color: 'var(--color-success)', fontWeight: '700', fontSize: '15px' }}>
@@ -492,7 +492,7 @@ export default function ArenaTournamentLeaderboard() {
                     onClick={submitAssignment}
                     disabled={assignSubmitting}
                     style={{
-                      padding: '12px 22px', borderRadius: '12px', border: 'none',
+                      padding: '12px 22px', borderRadius: 'var(--radius-lg)', border: 'none',
                       background: assignSubmitting ? 'rgba(107,114,128,0.4)' : 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))',
                       color: 'var(--color-text)', fontWeight: '700', fontSize: '15px',
                       cursor: assignSubmitting ? 'not-allowed' : 'pointer'
@@ -512,7 +512,7 @@ export default function ArenaTournamentLeaderboard() {
 
           {/* Personal Summary Card */}
           {mySummary && (
-            <div style={{ marginBottom: '24px', padding: '20px 24px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--color-accent-a08) 0%, var(--color-accent-2-a12) 100%)', border: '1px solid var(--color-accent-a20)' }}>
+            <div style={{ marginBottom: '24px', padding: '20px 24px', borderRadius: 'var(--radius-xl)', background: 'linear-gradient(135deg, var(--color-accent-a08) 0%, var(--color-accent-2-a12) 100%)', border: '1px solid var(--color-accent-a20)' }}>
               <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-accent)', marginBottom: '14px', letterSpacing: '0.5px' }}>📊 Your Summary — {mySummary.tournamentName || tournament?.name}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                 {[
@@ -525,7 +525,7 @@ export default function ArenaTournamentLeaderboard() {
                   { label: 'Total Moves', value: mySummary.totalMovesPlayed, color: 'var(--color-accent-2)' },
                   { label: 'Rank', value: myRank ? `#${myRank}` : '—', color: 'var(--color-warning)' }
                 ].map(({ label, value, color, suffix }) => (
-                  <div key={label} style={{ textAlign: 'center', padding: '10px', borderRadius: '10px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)' }}>
+                  <div key={label} style={{ textAlign: 'center', padding: '10px', borderRadius: 'var(--radius-md)', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)' }}>
                     <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</div>
                     <div style={{ fontSize: '22px', fontWeight: '800', color }}>{value}{suffix || ''}</div>
                   </div>
@@ -554,7 +554,7 @@ export default function ArenaTournamentLeaderboard() {
                       <tr key={team.teamId} className={i === 0 ? 'team-row-first' : ''}>
                         <td className="rank-cell">{medals[i] || i + 1}</td>
                         <td className="player-cell">
-                          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: team.color, boxShadow: `0 0 8px ${team.color}`, flexShrink: 0 }} />
+                          <div style={{ width: '10px', height: '10px', borderRadius: 'var(--radius-circle)', background: team.color, boxShadow: `0 0 8px ${team.color}`, flexShrink: 0 }} />
                           <span style={{ fontWeight: '700', color: team.color }}>{team.teamName}</span>
                         </td>
                         <td style={{ textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '14px' }}>{team.memberCount}</td>
@@ -607,8 +607,8 @@ export default function ArenaTournamentLeaderboard() {
                       {tournament?.tournamentType === 'team_battle' && (
                         <td style={{ textAlign: 'center' }}>
                           {participant.teamColor ? (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '2px 8px', borderRadius: '12px', background: `${participant.teamColor}22`, border: `1px solid ${participant.teamColor}55`, fontSize: '12px', fontWeight: '600', color: participant.teamColor, whiteSpace: 'nowrap' }}>
-                              <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: participant.teamColor, display: 'inline-block' }} />
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '2px 8px', borderRadius: 'var(--radius-lg)', background: `${participant.teamColor}22`, border: `1px solid ${participant.teamColor}55`, fontSize: '12px', fontWeight: '600', color: participant.teamColor, whiteSpace: 'nowrap' }}>
+                              <span style={{ width: '7px', height: '7px', borderRadius: 'var(--radius-circle)', background: participant.teamColor, display: 'inline-block' }} />
                               {participant.teamName}
                             </span>
                           ) : '—'}

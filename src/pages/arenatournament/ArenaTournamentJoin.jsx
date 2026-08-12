@@ -145,7 +145,7 @@ export default function ArenaTournamentJoin() {
       }}>
         <div style={{
           background: 'var(--color-surface)',
-          borderRadius: '20px',
+          borderRadius: 'var(--radius-2xl)',
           padding: '40px',
           boxShadow: '0 20px 40px var(--color-black-a50)',
           border: '1px solid var(--color-white-a04)',
@@ -176,7 +176,7 @@ export default function ArenaTournamentJoin() {
               background: 'var(--color-danger-a12)',
               color: 'var(--color-danger)',
               padding: '16px',
-              borderRadius: '12px',
+              borderRadius: 'var(--radius-lg)',
               marginBottom: '20px',
               border: '1px solid var(--color-danger-a20)',
               backdropFilter: 'blur(5px)',
@@ -212,7 +212,7 @@ export default function ArenaTournamentJoin() {
                   padding: '14px',
                   background: 'var(--color-black-a35)',
                   border: '1px solid var(--color-white-a10)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '18px',
                   fontFamily: 'monospace',
                   textAlign: 'center',
@@ -243,7 +243,7 @@ export default function ArenaTournamentJoin() {
                 background: loading || !joinCode.trim() ? 'rgba(107, 114, 128, 0.3)' : 'var(--color-accent-a15)',
                 color: loading || !joinCode.trim() ? 'var(--color-text-muted)' : 'var(--color-accent)',
                 border: loading || !joinCode.trim() ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid var(--color-accent-a30)',
-                borderRadius: '12px',
+                borderRadius: 'var(--radius-lg)',
                 fontSize: '16px',
                 fontWeight: '600',
                 cursor: loading || !joinCode.trim() ? 'not-allowed' : 'pointer',
@@ -289,7 +289,7 @@ export default function ArenaTournamentJoin() {
           {tournament && (
             <div style={{
               background: 'var(--color-black-a35)',
-              borderRadius: '16px',
+              borderRadius: 'var(--radius-xl)',
               padding: '24px',
               marginBottom: '20px',
               border: '1px solid var(--color-white-a04)',
@@ -363,7 +363,7 @@ export default function ArenaTournamentJoin() {
                     padding: '4px 12px',
                     background: getStatusColor(tournament.status),
                     color: 'white',
-                    borderRadius: '20px',
+                    borderRadius: 'var(--radius-2xl)',
                     display: 'inline-block',
                     boxShadow: `0 4px 16px ${getStatusColor(tournament.status)}40`
                   }}>
@@ -430,7 +430,7 @@ export default function ArenaTournamentJoin() {
                                 onClick={() => !isBlocked && setSelectedTeamId(team.teamId)}
                                 style={{
                                   padding: '12px 14px',
-                                  borderRadius: '12px',
+                                  borderRadius: 'var(--radius-lg)',
                                   border: `2px solid ${isSelected ? team.color : isFull ? 'var(--color-white-a04)' : isTooUnbalanced ? 'rgba(255,193,7,0.5)' : 'var(--color-white-a10)'}`,
                                   background: isSelected ? `${team.color}22` : isFull ? 'var(--color-black-a20)' : isTooUnbalanced ? 'rgba(40,30,0,0.5)' : 'var(--color-black-a35)',
                                   cursor: isBlocked ? 'not-allowed' : 'pointer',
@@ -439,7 +439,7 @@ export default function ArenaTournamentJoin() {
                                   textAlign: 'center'
                                 }}
                               >
-                                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: team.color, margin: '0 auto 6px' }} />
+                                <div style={{ width: '10px', height: '10px', borderRadius: 'var(--radius-circle)', background: team.color, margin: '0 auto 6px' }} />
                                 <div style={{ fontSize: '12px', fontWeight: '700', color: isSelected ? team.color : isTooUnbalanced ? 'var(--color-warning)' : 'var(--color-text)', marginBottom: '4px' }}>
                                   {team.teamName}
                                 </div>
@@ -461,7 +461,7 @@ export default function ArenaTournamentJoin() {
                         const minCount = Math.min(...counts);
                         const hasUnbalanced = counts.some(c => c >= minCount + 2);
                         return hasUnbalanced ? (
-                          <div style={{ fontSize: '12px', color: 'var(--color-warning)', marginTop: '10px', padding: '8px 12px', background: 'rgba(40,30,0,0.5)', borderRadius: '8px', border: '1px solid rgba(255,193,7,0.3)' }}>
+                          <div style={{ fontSize: '12px', color: 'var(--color-warning)', marginTop: '10px', padding: '8px 12px', background: 'rgba(40,30,0,0.5)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,193,7,0.3)' }}>
                             ⚖️ Some teams have too many players — please join a smaller team for fair play.
                           </div>
                         ) : null;
@@ -478,7 +478,7 @@ export default function ArenaTournamentJoin() {
                       background: (joining || (tournament.tournamentType === 'team_battle' && !selectedTeamId)) ? 'rgba(107, 114, 128, 0.3)' : 'var(--color-success-a12)',
                       color: (joining || (tournament.tournamentType === 'team_battle' && !selectedTeamId)) ? 'var(--color-text-muted)' : 'var(--color-success)',
                       border: (joining || (tournament.tournamentType === 'team_battle' && !selectedTeamId)) ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid var(--color-success-a30)',
-                      borderRadius: '12px',
+                      borderRadius: 'var(--radius-lg)',
                       fontSize: '16px',
                       fontWeight: '600',
                       cursor: (joining || (tournament.tournamentType === 'team_battle' && !selectedTeamId)) ? 'not-allowed' : 'pointer',
@@ -530,7 +530,7 @@ export default function ArenaTournamentJoin() {
                   style={{
                     width: '100%', padding: '16px', marginTop: '24px',
                     background: 'var(--color-accent-2-a15)', color: 'var(--color-accent-2)',
-                    border: '1px solid var(--color-accent-2-a30)', borderRadius: '12px',
+                    border: '1px solid var(--color-accent-2-a30)', borderRadius: 'var(--radius-lg)',
                     fontSize: '16px', fontWeight: '600', cursor: 'pointer'
                   }}
                 >
@@ -548,7 +548,7 @@ export default function ArenaTournamentJoin() {
               background: 'var(--color-white-a04)',
               color: 'var(--color-text)',
               border: '1px solid var(--color-white-a10)',
-              borderRadius: '12px',
+              borderRadius: 'var(--radius-lg)',
               fontSize: '16px',
               fontWeight: '600',
               cursor: 'pointer',

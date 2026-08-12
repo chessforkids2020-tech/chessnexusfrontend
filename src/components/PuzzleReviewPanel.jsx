@@ -79,7 +79,7 @@ function EvalBar({ cp, isMate, mateIn, forWhite, height = 300 }) {
     <div style={{
       width: 20,
       height,
-      borderRadius: 4,
+      borderRadius: 'var(--radius-sm)',
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
@@ -117,7 +117,7 @@ function MiniPuzzleCard({ puzzle, index, onClick }) {
         cursor: 'pointer',
         background: 'var(--color-white-a07)',
         border: `2px solid ${resultColor}40`,
-        borderRadius: 12,
+        borderRadius: 'var(--radius-lg)',
         padding: 8,
         display: 'flex',
         flexDirection: 'column',
@@ -141,7 +141,7 @@ function MiniPuzzleCard({ puzzle, index, onClick }) {
       </div>
 
       {/* mini board wrapper — pointer events disabled so the card click fires */}
-      <div style={{ pointerEvents: 'none', borderRadius: 6, overflow: 'hidden' }}>
+      <div style={{ pointerEvents: 'none', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
         <Chessboard
           position={puzzle.fen || 'start'}
           boardWidth={130}
@@ -158,7 +158,7 @@ function MiniPuzzleCard({ puzzle, index, onClick }) {
         color: resultColor,
         background: `${resultColor}20`,
         padding: '2px 8px',
-        borderRadius: 20,
+        borderRadius: 'var(--radius-2xl)',
       }}>
         {resultLabel}
       </div>
@@ -340,7 +340,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
     >
       <div style={{
         background: 'linear-gradient(135deg, var(--color-surface-2) 0%, var(--color-surface) 100%)',
-        borderRadius: 20,
+        borderRadius: 'var(--radius-2xl)',
         border: '1px solid var(--color-white-a10)',
         boxShadow: '0 40px 80px var(--color-black-a65)',
         width: '100%',
@@ -374,14 +374,14 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
                 title="Flip board"
                 style={{
                   background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)',
-                  borderRadius: 8, color: 'var(--color-text-muted)', padding: '5px 12px', cursor: 'pointer', fontSize: 15,
+                  borderRadius: 'var(--radius-md)', color: 'var(--color-text-muted)', padding: '5px 12px', cursor: 'pointer', fontSize: 15,
                 }}
               >⇅ Flip</button>
               <button
                 onClick={onClose}
                 style={{
                   background: 'var(--color-danger-a20)', border: '1px solid var(--color-danger-a30)',
-                  borderRadius: 8, color: 'var(--color-danger)', padding: '5px 12px', cursor: 'pointer', fontWeight: 700, fontSize: 15,
+                  borderRadius: 'var(--radius-md)', color: 'var(--color-danger)', padding: '5px 12px', cursor: 'pointer', fontWeight: 700, fontSize: 15,
                 }}
               >✕ Close</button>
             </div>
@@ -390,7 +390,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           {/* eval bar + board */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <EvalBar cp={evalCp} isMate={isMate} mateIn={mateIn} forWhite={currentChess.turn() === 'w'} height={boardSize} />
-            <div style={{ borderRadius: 6, overflow: 'hidden', boxShadow: '0 8px 30px var(--color-black-a50)' }}>
+            <div style={{ borderRadius: 'var(--radius-sm)', overflow: 'hidden', boxShadow: '0 8px 30px var(--color-black-a50)' }}>
               <Chessboard
                 position={fen}
                 onDrop={onDrop}
@@ -409,7 +409,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
             <span>{sideToMove} to move</span>
             {analyzing && (
               <span style={{ color: 'var(--color-accent-2)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-accent-2)', display: 'inline-block', animation: 'pulseDot 1s infinite' }} />
+                <span style={{ width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: 'var(--color-accent-2)', display: 'inline-block', animation: 'pulseDot 1s infinite' }} />
                 Analysing depth {targetDepth}…
               </span>
             )}
@@ -417,7 +417,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
               <span style={{
                 background: 'var(--color-white-a07)',
                 border: '1px solid var(--color-white-a13)',
-                borderRadius: 20,
+                borderRadius: 'var(--radius-2xl)',
                 padding: '2px 10px',
                 color: 'var(--color-text)',
                 fontWeight: 800,
@@ -434,7 +434,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
             alignItems: 'center',
             gap: 6,
             background: 'var(--color-white-a04)',
-            borderRadius: 12,
+            borderRadius: 'var(--radius-lg)',
             padding: '8px 12px',
             width: '100%',
             justifyContent: 'center',
@@ -443,7 +443,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
             <NavBtn onClick={() => goTo(moveIdx - 1)} disabled={moveIdx < 0} title="Previous">◀</NavBtn>
             <div style={{
               background: 'var(--color-white-a07)',
-              borderRadius: 8, padding: '4px 14px',
+              borderRadius: 'var(--radius-md)', padding: '4px 14px',
               color: 'var(--color-text-muted)', fontSize: 12, minWidth: 100, textAlign: 'center',
             }}>
               {moveIdx === -999 ? 'Free play'
@@ -459,7 +459,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
             onClick={() => goTo(-1)}
             style={{
               background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)',
-              borderRadius: 8, color: '#93c5fd', padding: '7px 20px',
+              borderRadius: 'var(--radius-md)', color: '#93c5fd', padding: '7px 20px',
               cursor: 'pointer', fontSize: 13, fontWeight: 600, width: '100%',
             }}
           >↩ Reset to starting position</button>
@@ -480,7 +480,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           <div style={{
             background: puzzle.isCorrect ? 'var(--color-success-a12)' : 'var(--color-danger-a12)',
             border: `1px solid ${puzzle.isCorrect ? 'var(--color-success-a30)' : 'var(--color-danger-a30)'}`,
-            borderRadius: 12, padding: '10px 14px',
+            borderRadius: 'var(--radius-lg)', padding: '10px 14px',
           }}>
             <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
               Puzzle Info
@@ -499,7 +499,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           </div>
 
           {/* solution moves */}
-          <div style={{ background: 'var(--color-white-a04)', borderRadius: 12, padding: '10px 14px' }}>
+          <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-lg)', padding: '10px 14px' }}>
             <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
               Solution
             </div>
@@ -509,7 +509,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
                 <button key={i} onClick={() => goTo(i)} style={{
                   background: moveIdx === i ? 'rgba(59,130,246,0.4)' : 'var(--color-white-a07)',
                   border: moveIdx === i ? '1px solid var(--color-accent-2)' : '1px solid var(--color-white-a13)',
-                  borderRadius: 6, color: moveIdx === i ? '#bfdbfe' : 'var(--color-text-muted)',
+                  borderRadius: 'var(--radius-sm)', color: moveIdx === i ? '#bfdbfe' : 'var(--color-text-muted)',
                   padding: '3px 8px', cursor: 'pointer', fontSize: 12,
                   fontWeight: moveIdx === i ? 700 : 400, fontFamily: 'monospace',
                 }}>
@@ -520,7 +520,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           </div>
 
           {/* ── STOCKFISH ANALYSE BUTTON — prominent, always visible ── */}
-          <div style={{ background: 'var(--color-white-a04)', borderRadius: 12, padding: '12px 14px' }}>
+          <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-lg)', padding: '12px 14px' }}>
             <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
               Stockfish Analysis
             </div>
@@ -552,7 +552,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
                   ? 'linear-gradient(135deg, var(--color-danger-a30), var(--color-danger-a12))'
                   : 'linear-gradient(135deg, rgba(34,197,94,0.35), rgba(34,197,94,0.15))',
                 border: `2px solid ${analyzeEnabled ? 'var(--color-danger)' : 'var(--color-success)'}`,
-                borderRadius: 10,
+                borderRadius: 'var(--radius-md)',
                 color: analyzeEnabled ? 'var(--color-danger)' : '#86efac',
                 cursor: 'pointer',
                 fontWeight: 800,
@@ -567,7 +567,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
 
           {/* evaluation + best lines (shown after analysis) */}
           {(evalInfo || analysisLines.length > 0) && (
-            <div style={{ background: 'var(--color-white-a04)', borderRadius: 12, padding: '10px 14px' }}>
+            <div style={{ background: 'var(--color-white-a04)', borderRadius: 'var(--radius-lg)', padding: '10px 14px' }}>
               {evalInfo && (
                 <div style={{ textAlign: 'center', marginBottom: 10 }}>
                   <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--color-text)', lineHeight: 1 }}>{evalLabel}</div>
@@ -586,10 +586,10 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
                     return (
                       <div key={i} style={{
                         display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5,
-                        padding: '4px 6px', borderRadius: 6,
+                        padding: '4px 6px', borderRadius: 'var(--radius-sm)',
                         background: i === 0 ? 'rgba(34,197,94,0.08)' : 'transparent',
                       }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColors[i], flexShrink: 0 }} />
+                        <div style={{ width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: dotColors[i], flexShrink: 0 }} />
                         <div style={{ color: 'var(--color-text-muted)', fontWeight: 700, fontSize: 12, minWidth: 46 }}>{label}</div>
                         <div style={{ color: 'var(--color-text-muted)', fontSize: 11, fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {line.move}
@@ -604,7 +604,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
 
           {/* tips */}
           <div style={{
-            background: 'var(--color-accent-2-a15)', borderRadius: 12, padding: '8px 14px',
+            background: 'var(--color-accent-2-a15)', borderRadius: 'var(--radius-lg)', padding: '8px 14px',
             color: 'var(--color-text-faint)', fontSize: 11, lineHeight: 1.7,
           }}>
             <strong style={{ color: 'var(--color-text-faint)' }}>Tips</strong><br />
@@ -637,7 +637,7 @@ function NavBtn({ onClick, disabled, title, children }) {
       style={{
         background: disabled ? 'var(--color-white-a04)' : 'var(--color-white-a07)',
         border: '1px solid var(--color-white-a10)',
-        borderRadius: 8,
+        borderRadius: 'var(--radius-md)',
         color: disabled ? '#334155' : 'var(--color-text-muted)',
         width: 32,
         height: 32,
@@ -675,7 +675,7 @@ export default function PuzzleReviewPanel({ dailyBatch }) {
           gap: 8,
           background: 'var(--color-accent-2-a15)',
           border: '1px solid var(--color-accent-2-a15)',
-          borderRadius: 24,
+          borderRadius: 'var(--radius-2xl)',
           padding: '6px 20px',
           color: '#93c5fd',
           fontSize: 13,

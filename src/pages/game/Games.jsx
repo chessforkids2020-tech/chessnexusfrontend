@@ -241,7 +241,7 @@ export default function Games() {
             style={{
               position: 'relative',
               overflow: 'hidden',
-              borderRadius: 20,
+              borderRadius: 'var(--radius-2xl)',
               padding: '34px 36px',
               minHeight: 150,
               background: `linear-gradient(120deg, rgba(124,58,237,0.22), var(--color-accent-a12) 60%, var(--color-black-a20))`,
@@ -270,16 +270,16 @@ export default function Games() {
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                       background: 'var(--color-danger-a20)', color: 'var(--color-danger)',
-                      border: '1px solid rgba(239,68,68,0.5)', borderRadius: 999,
+                      border: '1px solid rgba(239,68,68,0.5)', borderRadius: 'var(--radius-pill)',
                       padding: '3px 11px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em',
                     }}>
-                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--color-danger)', display: 'inline-block', animation: 'heroBlink 1.2s infinite' }} />
+                      <span style={{ width: 7, height: 7, borderRadius: 'var(--radius-circle)', background: 'var(--color-danger)', display: 'inline-block', animation: 'heroBlink 1.2s infinite' }} />
                       Live now
                     </span>
                   ) : (
                     <span style={{
                       background: 'rgba(255,209,102,0.16)', color: '#FFD166',
-                      border: '1px solid rgba(255,209,102,0.5)', borderRadius: 999,
+                      border: '1px solid rgba(255,209,102,0.5)', borderRadius: 'var(--radius-pill)',
                       padding: '3px 11px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em',
                     }}>
                       Upcoming Tournament
@@ -303,7 +303,7 @@ export default function Games() {
                 style={{
                   background: `linear-gradient(135deg, ${accent}, ${accent}cc)`,
                   color: isLive ? 'var(--color-text)' : '#1a1500',
-                  border: 'none', borderRadius: 14, padding: '15px 32px',
+                  border: 'none', borderRadius: 'var(--radius-lg)', padding: '15px 32px',
                   fontSize: 16, fontWeight: 800, cursor: 'pointer',
                   boxShadow: `0 6px 22px ${accent}44`, whiteSpace: 'nowrap',
                 }}
@@ -314,7 +314,7 @@ export default function Games() {
                 onClick={() => navigate('/arenatournament')}
                 style={{
                   background: 'var(--color-white-a07)', color: 'var(--color-text)',
-                  border: '1px solid var(--color-white-a13)', borderRadius: 12,
+                  border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-lg)',
                   padding: '12px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
                 }}
               >
@@ -350,7 +350,7 @@ export default function Games() {
             {option.disabled ? (
               <div style={{
                 background: 'rgba(255, 215, 0, 0.9)', color: 'var(--color-bg)',
-                padding: '6px 16px', borderRadius: '12px', fontSize: '12px',
+                padding: '6px 16px', borderRadius: 'var(--radius-lg)', fontSize: '12px',
                 fontWeight: '700', boxShadow: '0 2px 8px var(--color-black-a20)', whiteSpace: 'nowrap'
               }}>
                 🔜 Coming Soon
@@ -428,7 +428,7 @@ export default function Games() {
                         display: 'flex', alignItems: 'center', gap: 14,
                         background: 'var(--color-white-a04)',
                         border: `1px solid ${statusColor}44`,
-                        borderRadius: 12, padding: '12px 16px',
+                        borderRadius: 'var(--radius-lg)', padding: '12px 16px',
                       }}
                     >
                       <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>{icon}</span>
@@ -442,7 +442,7 @@ export default function Games() {
                           <span style={{
                             background: `${statusColor}15`, color: statusColor,
                             border: `1px solid ${statusColor}55`,
-                            borderRadius: 999, padding: '2px 9px',
+                            borderRadius: 'var(--radius-pill)', padding: '2px 9px',
                             fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
                           }}>{statusText}</span>
                         </div>
@@ -460,7 +460,7 @@ export default function Games() {
                           flexShrink: 0,
                           background: `${statusColor}1f`, color: statusColor,
                           border: `1px solid ${statusColor}88`,
-                          borderRadius: 10, padding: '9px 18px',
+                          borderRadius: 'var(--radius-md)', padding: '9px 18px',
                           fontSize: 13, fontWeight: 700, cursor: 'pointer',
                           whiteSpace: 'nowrap', transition: 'all 0.15s',
                         }}
@@ -480,7 +480,7 @@ export default function Games() {
                 style={{
                   background: 'rgba(99,102,241,0.12)',
                   border: '1px solid rgba(99,102,241,0.35)',
-                  color: 'var(--color-accent-2)', borderRadius: 20,
+                  color: 'var(--color-accent-2)', borderRadius: 'var(--radius-2xl)',
                   padding: '7px 24px', fontSize: 13, fontWeight: 700,
                   cursor: 'pointer', transition: 'all 0.15s', letterSpacing: '0.02em',
                 }}
@@ -525,7 +525,7 @@ export default function Games() {
                     minWidth: '220px',
                     background: 'var(--color-white-a04)',
                     border: '1px solid var(--color-accent-2-a15)',
-                    borderRadius: '12px',
+                    borderRadius: 'var(--radius-lg)',
                     padding: '14px 16px',
                     cursor: 'pointer',
                     transition: 'border-color 0.15s, background 0.15s',
@@ -540,7 +540,7 @@ export default function Games() {
                     <span style={{ fontWeight: '700', color: 'var(--color-text)', fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       🏆 {(t.name || '').replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim()}
                     </span>
-                    <span style={{ background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)', color: 'var(--color-accent-2)', borderRadius: '999px', padding: '2px 9px', fontSize: '11px', fontWeight: '700', flexShrink: 0 }}>
+                    <span style={{ background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)', color: 'var(--color-accent-2)', borderRadius: 'var(--radius-pill)', padding: '2px 9px', fontSize: '11px', fontWeight: '700', flexShrink: 0 }}>
                       FINISHED
                     </span>
                   </div>
@@ -576,13 +576,13 @@ export default function Games() {
               { icon: '👑', label: 'Beat Crown holder',desc: null,                              value: '+4 pts' },
               { icon: '🎁', label: 'Carry Bonus',      desc: 'From previous tournament',        value: 'up to +4' },
             ].map(({ icon, label, desc, value }) => (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'var(--color-white-a04)', borderRadius: '9px', border: '1px solid var(--color-white-a07)' }}>
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a07)' }}>
                 <span style={{ fontSize: '15px', width: '20px', textAlign: 'center', flexShrink: 0 }}>{icon}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ color: 'var(--color-text)', fontSize: '13px', fontWeight: '600' }}>{label}</div>
                   {desc && <div style={{ color: 'var(--color-text-faint)', fontSize: '11px', marginTop: '1px' }}>{desc}</div>}
                 </div>
-                <span style={{ background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a20)', color: 'var(--color-accent)', borderRadius: '6px', padding: '3px 9px', fontSize: '12px', fontWeight: '700', flexShrink: 0 }}>{value}</span>
+                <span style={{ background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a20)', color: 'var(--color-accent)', borderRadius: 'var(--radius-sm)', padding: '3px 9px', fontSize: '12px', fontWeight: '700', flexShrink: 0 }}>{value}</span>
               </div>
             ))}
           </div>
@@ -596,7 +596,7 @@ export default function Games() {
               { emoji: '👑', label: 'Platinum Crown', req: '3 consecutive wins',  color: 'var(--color-text-muted)' },
               { emoji: '💎', label: 'Gem Crown',      req: '5 tournament wins',   color: 'var(--color-accent-2)' },
             ].map(({ emoji, label, req, color }) => (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'var(--color-white-a04)', borderRadius: '9px', border: '1px solid var(--color-white-a07)' }}>
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'var(--color-white-a04)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a07)' }}>
                 <span style={{ fontSize: '18px', filter: `drop-shadow(0 0 6px ${color})`, width: '20px', textAlign: 'center', flexShrink: 0 }}>{emoji}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ color, fontSize: '13px', fontWeight: '700' }}>{label}</div>
@@ -614,7 +614,7 @@ export default function Games() {
 
             <div style={{ color: 'var(--color-text-faint)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '6px', marginBottom: '2px' }}>Carry-Forward Bonus 🎁</div>
 
-            <div style={{ padding: '12px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: '9px' }}>
+            <div style={{ padding: '12px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-md)' }}>
               <div style={{ color: 'var(--color-text)', fontSize: '13px', lineHeight: '1.6' }}>
                 Play <strong style={{ color: 'var(--color-accent-2)' }}>≥ 3 games</strong> in <strong style={{ color: 'var(--color-accent-2)' }}>3 separate tournaments</strong> → earn <strong style={{ color: 'var(--color-accent-2)' }}>+2 carry pts</strong> (max +4). Auto-applied as your starting score next tournament. Expires in <strong style={{ color: 'var(--color-accent-2)' }}>5 days</strong>.
               </div>

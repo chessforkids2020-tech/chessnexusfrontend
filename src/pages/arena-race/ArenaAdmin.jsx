@@ -17,7 +17,7 @@ const styles = {
     maxWidth: '1200px',
     margin: '0 auto',
     background: 'var(--color-surface)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     padding: '30px',
     boxShadow: '0 20px 40px var(--color-black-a20)',
   },
@@ -47,7 +47,7 @@ const styles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     cursor: 'pointer',
     textDecoration: 'none',
     fontSize: '14px',
@@ -55,7 +55,7 @@ const styles = {
   createSection: {
     background: 'var(--color-surface)',
     padding: '30px',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     marginBottom: '40px',
     border: '1px solid var(--color-surface-2)',
   },
@@ -86,14 +86,14 @@ const styles = {
   },
   input: {
     padding: '12px 16px',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     border: '1px solid var(--color-text-muted)',
     fontSize: '16px',
     transition: 'border-color 0.2s, box-shadow 0.2s',
   },
   select: {
     padding: '12px 16px',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     border: '1px solid var(--color-text-muted)',
     fontSize: '16px',
     background: 'var(--color-surface)',
@@ -103,7 +103,7 @@ const styles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '15px 30px',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     fontSize: '16px',
     fontWeight: '600',
     cursor: 'pointer',
@@ -124,7 +124,7 @@ const styles = {
   },
   raceCard: {
     background: 'var(--color-surface)',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     padding: '12px',
     boxShadow: '0 4px 12px var(--color-black-a20)',
     border: '1px solid var(--color-surface-2)',
@@ -148,7 +148,7 @@ const styles = {
   },
   statusBadge: {
     padding: '6px 12px',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     fontSize: '12px',
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -163,7 +163,7 @@ const styles = {
     textAlign: 'center',
     padding: '12px',
     background: 'var(--color-surface)',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
   },
   infoLabel: {
     fontSize: '12px',
@@ -184,7 +184,7 @@ const styles = {
   },
   actionButton: {
     padding: '8px 16px',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     fontSize: '14px',
     fontWeight: '600',
     cursor: 'pointer',
@@ -220,7 +220,7 @@ const styles = {
   linkDisplay: {
     background: 'var(--color-surface)',
     padding: '8px',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     marginTop: '8px',
     border: '1px solid var(--color-surface-2)',
   },
@@ -243,7 +243,7 @@ const styles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '6px 12px',
-    borderRadius: '6px',
+    borderRadius: 'var(--radius-sm)',
     fontSize: '12px',
     cursor: 'pointer',
     marginLeft: '8px',
@@ -265,7 +265,7 @@ const styles = {
     padding: '20px',
     background: '#d4edda',
     color: '#155724',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     marginBottom: '20px',
   },
   empty: {
@@ -285,7 +285,7 @@ const styles = {
     width: '100%',
     borderCollapse: 'collapse',
     background: 'var(--color-surface)',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     overflow: 'hidden',
     boxShadow: '0 4px 12px var(--color-black-a20)',
     border: '1px solid var(--color-surface-2)',
@@ -316,7 +316,7 @@ const styles = {
   },
   tableButton: {
     padding: '6px 12px',
-    borderRadius: '6px',
+    borderRadius: 'var(--radius-sm)',
     fontSize: '12px',
     fontWeight: '600',
     cursor: 'pointer',
@@ -557,7 +557,7 @@ export default function ArenaAdmin() {
           <div style={styles.subtitle}>Create and manage race arenas for competitive chess puzzles</div>
         </div>
 
-        {error && <div style={{...styles.error, background: '#ffeaea', padding: '15px', borderRadius: '8px', marginBottom: '20px'}}>{error}</div>}
+        {error && <div style={{...styles.error, background: '#ffeaea', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '20px'}}>{error}</div>}
         {success && <div style={styles.success}>{success}</div>}
 
         <div style={styles.createSection}>
@@ -569,7 +569,7 @@ export default function ArenaAdmin() {
             <div style={{
               background: '#e8f5e8',
               padding: '15px',
-              borderRadius: '8px',
+              borderRadius: 'var(--radius-md)',
               marginBottom: '20px',
               border: '1px solid #c3e6c3'
             }}>
@@ -911,7 +911,7 @@ export default function ArenaAdmin() {
         marginTop: '40px',
         background: '#fff8f0',
         border: '1px solid #f0c080',
-        borderRadius: '16px',
+        borderRadius: 'var(--radius-xl)',
         padding: '24px',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
@@ -926,14 +926,14 @@ export default function ArenaAdmin() {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
               onClick={fetchCleanupStats}
-              style={{ background: 'var(--color-surface)', border: '1px solid #f0c080', color: '#7c4a00', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}
+              style={{ background: 'var(--color-surface)', border: '1px solid #f0c080', color: '#7c4a00', padding: '8px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}
             >
               🔍 Check Stats
             </button>
             <button
               onClick={runCleanup}
               disabled={cleanupRunning}
-              style={{ background: cleanupRunning ? '#ccc' : '#e65c00', color: 'var(--color-text)', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: cleanupRunning ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '13px' }}
+              style={{ background: cleanupRunning ? '#ccc' : '#e65c00', color: 'var(--color-text)', border: 'none', padding: '8px 16px', borderRadius: 'var(--radius-md)', cursor: cleanupRunning ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '13px' }}
             >
               {cleanupRunning ? 'Cleaning...' : '🗑️ Run Cleanup Now'}
             </button>
@@ -943,15 +943,15 @@ export default function ArenaAdmin() {
         {cleanupStats && (
           <div style={{ marginTop: '16px' }}>
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '12px' }}>
-              <div style={{ background: 'var(--color-surface)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
+              <div style={{ background: 'var(--color-surface)', border: '1px solid #e0c090', borderRadius: 'var(--radius-md)', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
                 <div style={{ fontSize: '24px', fontWeight: '800', color: '#2d7a2d' }}>{cleanupStats.keptCount}</div>
                 <div style={{ fontSize: '12px', color: '#555' }}>Races Kept</div>
               </div>
-              <div style={{ background: 'var(--color-surface)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
+              <div style={{ background: 'var(--color-surface)', border: '1px solid #e0c090', borderRadius: 'var(--radius-md)', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
                 <div style={{ fontSize: '24px', fontWeight: '800', color: cleanupStats.eligibleForDeletion > 0 ? '#c0392b' : '#555' }}>{cleanupStats.eligibleForDeletion}</div>
                 <div style={{ fontSize: '12px', color: '#555' }}>Ready to Delete</div>
               </div>
-              <div style={{ background: 'var(--color-surface)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '160px' }}>
+              <div style={{ background: 'var(--color-surface)', border: '1px solid #e0c090', borderRadius: 'var(--radius-md)', padding: '12px 20px', textAlign: 'center', minWidth: '160px' }}>
                 <div style={{ fontSize: '14px', fontWeight: '600', color: '#7c4a00' }}>{new Date(cleanupStats.cutoffDate).toDateString()}</div>
                 <div style={{ fontSize: '12px', color: '#555' }}>Cutoff Date</div>
               </div>
@@ -960,7 +960,7 @@ export default function ArenaAdmin() {
               {cleanupStats.breakdown.map((m, i) => (
                 <div key={i} style={{
                   padding: '6px 14px',
-                  borderRadius: '20px',
+                  borderRadius: 'var(--radius-2xl)',
                   fontSize: '13px',
                   fontWeight: '600',
                   background: m.willBeDeleted ? '#fde8e8' : '#e8fde8',

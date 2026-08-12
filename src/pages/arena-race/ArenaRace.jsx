@@ -44,7 +44,7 @@ const styles = {
     background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
     border: '1px solid var(--color-white-a04)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     padding: '30px',
     boxShadow: '0 8px 32px var(--color-black-a50)',
     justifySelf: 'center',
@@ -57,7 +57,7 @@ const styles = {
   statsFlyer: {
     background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     padding: '25px',
     border: '1px solid var(--color-white-a04)',
     display: 'flex',
@@ -69,7 +69,7 @@ const styles = {
   timerTile: {
     background: 'var(--color-surface)',
     backdropFilter: 'blur(5px)',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     padding: '20px',
     textAlign: 'center',
     border: '1px solid rgba(255, 107, 107, 0.15)',
@@ -81,7 +81,7 @@ const styles = {
   scoreTile: {
     background: 'var(--color-surface)',
     backdropFilter: 'blur(5px)',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     padding: '20px',
     textAlign: 'center',
     border: '1px solid rgba(78, 205, 196, 0.15)',
@@ -125,7 +125,7 @@ const styles = {
   leaderboardSection: {
     background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     padding: '25px',
     border: '1px solid var(--color-white-a04)',
     flex: 1,
@@ -136,7 +136,7 @@ const styles = {
     marginBottom: '20px',
     padding: '15px',
     background: 'rgba(23, 23, 23, 0.5)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid var(--color-white-a04)',
   },
   puzzleNumber: {
@@ -166,7 +166,7 @@ const styles = {
   },
   currentPlayer: {
     background: 'var(--color-accent-a12)',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     padding: '12px 15px',
     margin: '0 -10px',
     border: '1px solid var(--color-accent-a20)',
@@ -176,7 +176,7 @@ const styles = {
     textAlign: 'center',
     padding: '20px',
     background: 'var(--color-danger-a12)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid var(--color-danger-a20)',
     backdropFilter: 'blur(10px)',
   },
@@ -185,7 +185,7 @@ const styles = {
     padding: '40px',
     color: 'var(--color-text)',
     background: 'var(--color-surface)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     border: '1px solid var(--color-white-a04)',
     backdropFilter: 'blur(10px)',
     boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -203,7 +203,7 @@ const adminStyles = {
     maxWidth: '1200px',
     margin: '0 auto',
     background: 'var(--color-surface)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     padding: '30px',
     boxShadow: '0 20px 40px var(--color-black-a20)',
   },
@@ -228,7 +228,7 @@ const adminStyles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     cursor: 'pointer',
     textDecoration: 'none',
     fontSize: '14px',
@@ -1118,17 +1118,17 @@ export default function ArenaRace({ isAdminView = false }) {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px', marginBottom: '30px' }}>
-            <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--color-surface-2)' }}>
+            <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', textAlign: 'center', border: '1px solid var(--color-surface-2)' }}>
               <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', textTransform: 'uppercase', fontWeight: '600', marginBottom: '5px' }}>Time Left</div>
               <div style={{ fontSize: '28px', fontWeight: '800', color: timeLeft < 60 ? 'var(--color-danger)' : 'var(--color-surface)' }}>
                 {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
               </div>
             </div>
-            <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--color-surface-2)' }}>
+            <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', textAlign: 'center', border: '1px solid var(--color-surface-2)' }}>
               <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', textTransform: 'uppercase', fontWeight: '600', marginBottom: '5px' }}>Active Players</div>
               <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-accent-2)' }}>{leaderboard.length}</div>
             </div>
-            <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--color-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+            <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', textAlign: 'center', border: '1px solid var(--color-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
               <button 
                 onClick={() => fetchLeaderboard(true)}
                 style={{
@@ -1136,7 +1136,7 @@ export default function ArenaRace({ isAdminView = false }) {
                   background: 'var(--color-surface-2)',
                   color: 'var(--color-text)',
                   border: 'none',
-                  borderRadius: '10px',
+                  borderRadius: 'var(--radius-md)',
                   fontWeight: '700',
                   cursor: 'pointer'
                 }}
@@ -1150,7 +1150,7 @@ export default function ArenaRace({ isAdminView = false }) {
                   background: 'var(--color-danger)',
                   color: 'var(--color-text)',
                   border: 'none',
-                  borderRadius: '10px',
+                  borderRadius: 'var(--radius-md)',
                   fontWeight: '700',
                   cursor: 'pointer'
                 }}
@@ -1160,7 +1160,7 @@ export default function ArenaRace({ isAdminView = false }) {
             </div>
           </div>
 
-          <div style={{ background: 'var(--color-surface)', borderRadius: '16px', border: '1px solid #eee', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', border: '1px solid #eee', overflow: 'hidden' }}>
             <table style={adminStyles.table}>
               <thead>
                 <tr>
@@ -1188,7 +1188,7 @@ export default function ArenaRace({ isAdminView = false }) {
                     <td style={adminStyles.td}>
                       <span style={{
                         padding: '4px 8px',
-                        borderRadius: '6px',
+                        borderRadius: 'var(--radius-sm)',
                         fontSize: '11px',
                         fontWeight: '700',
                         textTransform: 'uppercase',
@@ -1305,7 +1305,7 @@ export default function ArenaRace({ isAdminView = false }) {
                 color: 'var(--color-danger)',
                 border: '1px solid var(--color-danger-a30)',
                 padding: '12px 24px',
-                borderRadius: '12px',
+                borderRadius: 'var(--radius-lg)',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer',
@@ -1338,7 +1338,7 @@ export default function ArenaRace({ isAdminView = false }) {
             marginBottom: '20px',
             padding: '15px',
             backgroundColor: 'var(--color-surface)',
-            borderRadius: '12px',
+            borderRadius: 'var(--radius-lg)',
             border: '1px solid var(--color-accent-a20)',
           }}>
             <div style={{

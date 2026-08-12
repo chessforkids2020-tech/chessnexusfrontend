@@ -13,7 +13,7 @@ export default function CoachingRoomCreate() {
         <p style={{ fontSize: 16, color: 'var(--color-text-faint)', lineHeight: 1.7, margin: '0 0 36px' }}>Set up a live coaching session — broadcast positions to students while they practice in real time.</p>
         <button
           onClick={() => navigate(-1)}
-          style={{ padding: '12px 32px', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)', borderRadius: 14, color: 'var(--color-success)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
+          style={{ padding: '12px 32px', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-lg)', color: 'var(--color-success)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
         >← Go Back</button>
       </div>
     </div>

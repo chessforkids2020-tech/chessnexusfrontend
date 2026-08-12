@@ -115,7 +115,7 @@ const BestRacers = ({ compact = false }) => {
     ...styles.leaderboard,
     background: 'var(--color-white-a04)',
     padding: '14px',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     minWidth: 0,
   } : styles.leaderboard;
 
@@ -250,7 +250,7 @@ const BestRacers = ({ compact = false }) => {
                 <span style={{fontSize: 28}}>🏆</span>
                 <h3 style={{margin: 0, color: 'var(--color-text)', fontSize: '24px'}}>{modalTitle}</h3>
               </div>
-              <button onClick={() => setShowAllModal(false)} style={{border: '1px solid var(--color-white-a20)', background: 'var(--color-white-a10)', color: 'var(--color-text)', padding: '10px 20px', borderRadius: 12, cursor: 'pointer', transition: 'all 0.3s ease', fontWeight: '700'}}>Close</button>
+              <button onClick={() => setShowAllModal(false)} style={{border: '1px solid var(--color-white-a20)', background: 'var(--color-white-a10)', color: 'var(--color-text)', padding: '10px 20px', borderRadius: 'var(--radius-lg)', cursor: 'pointer', transition: 'all 0.3s ease', fontWeight: '700'}}>Close</button>
             </div>
 
             {modalLoading ? (
@@ -305,7 +305,7 @@ const styles = {
   container: {
     background: 'var(--color-surface)',
     padding: '32px 28px',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     marginTop: '40px',
     marginBottom: '40px',
     boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -329,7 +329,7 @@ const styles = {
   leaderboard: {
     background: 'var(--color-black-a35)',
     padding: '20px',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     boxShadow: '0 4px 16px var(--color-black-a35)',
     border: '1px solid var(--color-white-a04)',
     backdropFilter: 'blur(5px)',
@@ -353,7 +353,7 @@ const styles = {
     gap: '12px',
     padding: '12px',
     background: 'var(--color-white-a04)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     transition: 'all 0.3s ease',
     borderLeft: '3px solid var(--color-accent-a30)',
     cursor: 'pointer',
@@ -401,7 +401,7 @@ const styles = {
 // Modal styles appended to styles object
 styles.seeAllButton = {
   padding: '10px 18px',
-  borderRadius: 12,
+  borderRadius: 'var(--radius-lg)',
   border: '1px solid var(--color-accent-a30)',
   background: 'var(--color-accent-a15)',
   color: 'var(--color-accent)',
@@ -413,7 +413,7 @@ styles.seeAllButton = {
 
 styles.seeAllInlineButton = {
   padding: '8px 16px',
-  borderRadius: 12,
+  borderRadius: 'var(--radius-lg)',
   border: '1px solid var(--color-accent-a30)',
   background: 'var(--color-accent-a15)',
   color: 'var(--color-accent)',
@@ -443,7 +443,7 @@ styles.modal = {
   maxHeight: '92vh',
   overflow: 'auto',
   background: 'var(--color-surface)',
-  borderRadius: 24,
+  borderRadius: 'var(--radius-2xl)',
   padding: 32,
   border: '1px solid var(--color-white-a10)',
   backdropFilter: 'blur(20px)',
@@ -458,7 +458,7 @@ styles.modalGrid = {
 
 styles.tableWrapper = {
   background: 'var(--color-black-a35)',
-  borderRadius: '12px',
+  borderRadius: 'var(--radius-lg)',
   boxShadow: '0 4px 16px var(--color-black-a35)',
   border: '1px solid var(--color-white-a04)',
   overflow: 'hidden',

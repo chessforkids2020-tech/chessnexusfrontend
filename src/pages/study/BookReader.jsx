@@ -143,13 +143,13 @@ const styles = {
   boardBlock: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, margin: '8px 0' },
   diagramLabel: { color: 'var(--color-success)', fontWeight: 700 },
   caption: { color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 14, textAlign: 'center' },
-  resetBtn: { background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)', color: 'var(--color-text-muted)', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 13 },
+  resetBtn: { background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)', color: 'var(--color-text-muted)', padding: '6px 12px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 13 },
   nav: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginTop: 24 },
-  navBtn: { background: 'var(--color-success)', color: '#06281d', border: 'none', padding: '10px 18px', borderRadius: 8, cursor: 'pointer', fontWeight: 700 },
+  navBtn: { background: 'var(--color-success)', color: '#06281d', border: 'none', padding: '10px 18px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 700 },
   paywall: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 40 },
-  supportBtn: { marginTop: 16, background: 'var(--color-success)', color: '#06281d', border: 'none', padding: '12px 22px', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 16 },
-  xpBtn: { marginTop: 16, background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent))', color: 'var(--color-text)', border: 'none', padding: '12px 22px', borderRadius: 8, cursor: 'pointer', fontWeight: 800, fontSize: 16 },
-  error: { background: '#fdecea', color: '#c62828', padding: '10px 14px', borderRadius: 6 },
+  supportBtn: { marginTop: 16, background: 'var(--color-success)', color: '#06281d', border: 'none', padding: '12px 22px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 700, fontSize: 16 },
+  xpBtn: { marginTop: 16, background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent))', color: 'var(--color-text)', border: 'none', padding: '12px 22px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: 800, fontSize: 16 },
+  error: { background: '#fdecea', color: '#c62828', padding: '10px 14px', borderRadius: 'var(--radius-sm)' },
 };
 
 export default BookReader;

@@ -28,7 +28,7 @@ const styles = {
     background: "#0b6623",
     color: "#fff",
     border: "none",
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     cursor: "pointer",
     fontSize: 14,
     fontWeight: 600
@@ -41,24 +41,24 @@ const styles = {
   col: {
     background: '#f6fff6',
     padding: 12,
-    borderRadius: 10
+    borderRadius: 'var(--radius-md)'
   },
   colWide: {
     background: '#f6fff6',
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     overflow: 'auto'
   },
   card: {
     background: '#fff',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     boxShadow: '0 8px 20px rgba(0,0,0,0.05)',
     marginBottom: 14
   },
   input: {
     padding: 8,
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     marginTop: 8,
     border: '1px solid #e6f1e6',
     width: '100%'
@@ -68,7 +68,7 @@ const styles = {
     background: '#0b6623',
     color: '#fff',
     border: 'none',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     cursor: 'pointer',
     marginTop: 8,
     fontWeight: 600
@@ -78,7 +78,7 @@ const styles = {
     background: '#f0f9f0',
     color: '#064f28',
     border: '1px solid #d6f0d6',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     cursor: 'pointer',
     fontWeight: 600
   },
@@ -87,7 +87,7 @@ const styles = {
     background: '#0ea5e9',
     color: '#fff',
     border: 'none',
-    borderRadius: 6,
+    borderRadius: 'var(--radius-sm)',
     cursor: 'pointer',
     fontSize: 12,
     fontWeight: 500
@@ -114,13 +114,13 @@ const styles = {
   userChip: {
     padding: '4px 8px',
     background: '#fff',
-    borderRadius: 6,
+    borderRadius: 'var(--radius-sm)',
     border: '1px solid #e6f1e6'
   },
   roundCardCollapsed: {
     background: '#fff',
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     marginBottom: 12,
     cursor: 'pointer',
     transition: 'all 0.2s ease'
@@ -128,7 +128,7 @@ const styles = {
   roundCardExpanded: {
     background: '#fff',
     padding: 12,
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     marginBottom: 12,
     cursor: 'default',
     transition: 'all 0.2s ease'
@@ -136,7 +136,7 @@ const styles = {
   batchCardCollapsed: {
     background: '#f8fff8',
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     border: '1px solid #e6f3ea',
     minWidth: 200,
     cursor: 'pointer',
@@ -145,7 +145,7 @@ const styles = {
   batchCardExpanded: {
     background: '#f8fff8',
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     border: '1px solid #e6f3ea',
     width: 260,
     cursor: 'default',
@@ -563,7 +563,7 @@ export default function AdminContestPage() {
             <div style={{ fontSize: 13, color: '#475b47', marginBottom: 8 }}>Selected Batch ID: {forms.selectedBatchForAssign || <em>none</em>}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 500, minHeight: 300, overflow: 'auto' }}>
               {(Array.isArray(users) ? users : []).map(u => (
-                <label key={u._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 6, background: '#fff', borderRadius: 6 }}>
+                <label key={u._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 6, background: '#fff', borderRadius: 'var(--radius-sm)' }}>
                   <div>{u.displayName || u.username.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</div>
                   <input type="checkbox" checked={(forms.assignUserIds||[]).includes(u._id)} onChange={(e) => {
                     const arr = new Set(forms.assignUserIds || []);
@@ -595,7 +595,7 @@ export default function AdminContestPage() {
                 if (!q) return true;
                 return (p.title || '').toLowerCase().includes(q) || (p._id || '').toLowerCase().includes(q);
               }).slice(0, forms.puzzleLimit || 200).map(p => (
-                <label key={p._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 6, background: '#fff', borderRadius: 6 }}>
+                <label key={p._id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 6, background: '#fff', borderRadius: 'var(--radius-sm)' }}>
                   <div style={{ maxWidth: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</div>
                   <input type="checkbox" checked={(forms.assignPuzzleIds||[]).includes(p._id)} onChange={(e) => {
                     const arr = new Set(forms.assignPuzzleIds || []);

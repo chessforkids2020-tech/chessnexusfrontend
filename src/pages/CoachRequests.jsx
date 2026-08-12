@@ -44,7 +44,7 @@ export default function CoachRequests() {
         <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--color-text)', margin: 0 }}>🎓 Coach Requests</h1>
         <button
           onClick={() => navigate(-1)}
-          style={{ background: 'var(--color-white-a07)', color: 'var(--color-text-muted)', border: '1px solid var(--color-white-a10)', borderRadius: 10, padding: '8px 16px', cursor: 'pointer', fontWeight: 600 }}
+          style={{ background: 'var(--color-white-a07)', color: 'var(--color-text-muted)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', padding: '8px 16px', cursor: 'pointer', fontWeight: 600 }}
         >← Back</button>
       </div>
 
@@ -53,7 +53,7 @@ export default function CoachRequests() {
       </p>
 
       {error && (
-        <div style={{ background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)', color: 'var(--color-danger)', borderRadius: 10, padding: '10px 14px', marginBottom: 16 }}>
+        <div style={{ background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)', color: 'var(--color-danger)', borderRadius: 'var(--radius-md)', padding: '10px 14px', marginBottom: 16 }}>
           {error}
         </div>
       )}
@@ -61,7 +61,7 @@ export default function CoachRequests() {
       {loading ? (
         <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '40px 0' }}>Loading…</div>
       ) : requests.length === 0 ? (
-        <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '40px 0', background: 'rgba(23,23,23,0.6)', border: '1px solid var(--color-white-a04)', borderRadius: 14 }}>
+        <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '40px 0', background: 'rgba(23,23,23,0.6)', border: '1px solid var(--color-white-a04)', borderRadius: 'var(--radius-lg)' }}>
           No pending coach requests.
         </div>
       ) : (
@@ -71,7 +71,7 @@ export default function CoachRequests() {
           return (
             <div
               key={r._id}
-              style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid var(--color-accent-2-a15)', borderRadius: 14, padding: '18px 20px', marginBottom: 14 }}
+              style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid var(--color-accent-2-a15)', borderRadius: 'var(--radius-lg)', padding: '18px 20px', marginBottom: 14 }}
             >
               <div style={{ fontSize: 16, fontWeight: 700, color: '#e9d5ff' }}>
                 Coach {coachName}
@@ -83,12 +83,12 @@ export default function CoachRequests() {
                 <button
                   disabled={busy === r._id}
                   onClick={() => respond(r._id, 'approve')}
-                  style={{ flex: 1, background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: 10, padding: '10px 0', fontSize: 14, fontWeight: 700, cursor: busy === r._id ? 'wait' : 'pointer' }}
+                  style={{ flex: 1, background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-md)', padding: '10px 0', fontSize: 14, fontWeight: 700, cursor: busy === r._id ? 'wait' : 'pointer' }}
                 >✓ Approve</button>
                 <button
                   disabled={busy === r._id}
                   onClick={() => respond(r._id, 'decline')}
-                  style={{ flex: 1, background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: 10, padding: '10px 0', fontSize: 14, fontWeight: 700, cursor: busy === r._id ? 'wait' : 'pointer' }}
+                  style={{ flex: 1, background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', padding: '10px 0', fontSize: 14, fontWeight: 700, cursor: busy === r._id ? 'wait' : 'pointer' }}
                 >✕ Decline</button>
               </div>
             </div>

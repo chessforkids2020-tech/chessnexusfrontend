@@ -54,11 +54,11 @@ export default function BookPositionPicker({ value, onChange }) {
         <PieceSelector selectedPiece={selectedPiece} onSelectPiece={setSelectedPiece} />
         <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
           <button type="button" onClick={() => pushFen(EMPTY_FEN)}
-            style={{ padding: '8px 14px', background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)', borderRadius: 8, color: 'var(--color-danger)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
+            style={{ padding: '8px 14px', background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', color: 'var(--color-danger)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
             🗑 Clear board
           </button>
           <button type="button" onClick={() => pushFen(START_FEN)}
-            style={{ padding: '8px 14px', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)', borderRadius: 8, color: '#0f9d63', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
+            style={{ padding: '8px 14px', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-md)', color: '#0f9d63', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
             ↩ Start position
           </button>
         </div>

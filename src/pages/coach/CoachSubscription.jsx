@@ -262,7 +262,7 @@ export default function CoachSubscription() {
           </div>
           <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
         </div>
-        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(6,182,212,0.15),rgba(16,185,129,0.08))', border: '1px solid rgba(6,182,212,0.4)', borderRadius: 12, padding: '24px 28px' }}>
+        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(6,182,212,0.15),rgba(16,185,129,0.08))', border: '1px solid rgba(6,182,212,0.4)', borderRadius: 'var(--radius-lg)', padding: '24px 28px' }}>
           <div>
             <div className="cs-current-label" style={{ color: '#67e8f9' }}>🏛️ Academy-sponsored</div>
             <div className="cs-current-name" style={{ color: '#a5f3fc', fontSize: 22 }}>{planName} plan — provided by your academy</div>
@@ -287,7 +287,7 @@ export default function CoachSubscription() {
           </div>
           <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
         </div>
-        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(251,191,36,0.15),rgba(245,158,11,0.08))', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 12, padding: '24px 28px' }}>
+        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(251,191,36,0.15),rgba(245,158,11,0.08))', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 'var(--radius-lg)', padding: '24px 28px' }}>
           <div>
             <div className="cs-current-label" style={{ color: '#fbbf24' }}>✨ Admin</div>
             <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 22 }}>Coach access included — free</div>
@@ -311,7 +311,7 @@ export default function CoachSubscription() {
           </div>
           <button className="btn-ghost" onClick={() => navigate('/coach/dashboard')}>← Back to dashboard</button>
         </div>
-        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(251,191,36,0.15),rgba(245,158,11,0.08))', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 12, padding: '24px 28px' }}>
+        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(251,191,36,0.15),rgba(245,158,11,0.08))', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 'var(--radius-lg)', padding: '24px 28px' }}>
           <div>
             <div className="cs-current-label" style={{ color: '#fbbf24' }}>💎 Elite Member</div>
             <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 22 }}>
@@ -340,7 +340,7 @@ export default function CoachSubscription() {
       {err && <div className="cs-err">{err}</div>}
 
       {access.reason === 'exit_trial' && (
-        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.06))', border: '1px solid rgba(245,158,11,0.45)', borderRadius: 12, padding: '18px 24px', marginBottom: 16 }}>
+        <div className="cs-current" style={{ background: 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.06))', border: '1px solid rgba(245,158,11,0.45)', borderRadius: 'var(--radius-lg)', padding: '18px 24px', marginBottom: 16 }}>
           <div>
             <div className="cs-current-label" style={{ color: '#fbbf24' }}>⏳ Academy trial</div>
             <div className="cs-current-name" style={{ color: '#fde68a', fontSize: 20 }}>

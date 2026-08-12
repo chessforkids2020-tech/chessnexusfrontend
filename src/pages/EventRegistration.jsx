@@ -184,7 +184,7 @@ export default function EventRegistration() {
             <h3>🏅 Monthly Focus Challenge Awards:</h3>
             <div style={{ marginTop: '10px', display: 'grid', gap: '8px' }}>
               {event.awards.map((award) => (
-                <div key={award.title} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '8px 12px', background: 'rgba(99,102,241,0.08)', borderRadius: '8px', border: '1px solid rgba(99,102,241,0.2)' }}>
+                <div key={award.title} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '8px 12px', background: 'rgba(99,102,241,0.08)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(99,102,241,0.2)' }}>
                   <span style={{ fontSize: '20px', flexShrink: 0 }}>{award.icon}</span>
                   <div>
                     <strong style={{ color: '#4f46e5' }}>{award.title}</strong>
@@ -198,7 +198,7 @@ export default function EventRegistration() {
 
         {/* Motivation */}
         {event.motivation && (
-          <div className="event-features" style={{ marginBottom: '24px', background: 'linear-gradient(135deg, rgba(99,102,241,0.08), var(--color-accent-2-a12))', border: '1px solid rgba(99,102,241,0.25)', borderRadius: '12px', padding: '18px' }}>
+          <div className="event-features" style={{ marginBottom: '24px', background: 'linear-gradient(135deg, rgba(99,102,241,0.08), var(--color-accent-2-a12))', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 'var(--radius-lg)', padding: '18px' }}>
             <h3 style={{ marginTop: 0, color: 'var(--color-surface-2)' }}>💬 A Message for Every Participant:</h3>
             {event.motivation.split('\n\n').map((para, idx) => (
               <p key={idx} style={{ margin: '8px 0', lineHeight: '1.7', fontSize: '15px', whiteSpace: 'pre-line', color: 'var(--color-text)' }}>{para}</p>

@@ -302,7 +302,7 @@ function LuxuryGoldResults() {
                     textAlign: 'center',
                     padding: '10px',
                     background: 'var(--color-white-a04)',
-                    borderRadius: '10px',
+                    borderRadius: 'var(--radius-md)',
                     border: '1px solid var(--color-white-a10)'
                   }}>
                     <div style={{
@@ -329,7 +329,7 @@ function LuxuryGoldResults() {
             <div key={team._id} style={{
               background: 'linear-gradient(135deg, rgba(255,215,0,0.05) 0%, var(--color-black-a35) 100%)',
               border: `2px solid ${borderColor}44`,
-              borderRadius: '20px',
+              borderRadius: 'var(--radius-2xl)',
               padding: '40px',
               marginBottom: '40px',
               position: 'relative',
@@ -361,7 +361,7 @@ function LuxuryGoldResults() {
                     width: '80px',
                     height: '80px',
                     background: `linear-gradient(135deg, ${borderColor} 0%, ${borderColor}88 100%)`,
-                    borderRadius: '15px',
+                    borderRadius: 'var(--radius-xl)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -418,7 +418,7 @@ function LuxuryGoldResults() {
                       ? `linear-gradient(90deg, ${borderColor}22 0%, var(--color-white-a04) 100%)`
                       : 'var(--color-white-a04)',
                     border: `1px solid ${idx === 0 ? borderColor + '44' : 'var(--color-white-a10)'}`,
-                    borderRadius: '15px',
+                    borderRadius: 'var(--radius-xl)',
                     padding: '25px',
                     transition: 'all 0.3s',
                     cursor: 'pointer'
@@ -446,7 +446,7 @@ function LuxuryGoldResults() {
                           width: '50px',
                           height: '50px',
                           background: idx === 0 ? borderColor : 'var(--color-white-a10)',
-                          borderRadius: '50%',
+                          borderRadius: 'var(--radius-circle)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -486,7 +486,7 @@ function LuxuryGoldResults() {
                       <div style={{
                         background: 'var(--color-white-a10)',
                         padding: '8px 16px',
-                        borderRadius: '10px',
+                        borderRadius: 'var(--radius-md)',
                         fontSize: '14px',
                         color: '#ddd',
                         fontFamily: 'sans-serif',

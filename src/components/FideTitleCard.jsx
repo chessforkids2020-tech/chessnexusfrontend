@@ -13,14 +13,14 @@ import { TITLES, formatPlayerName } from '../utils/playerName';
 const CARD = {
   background: 'linear-gradient(135deg, rgba(180,83,9,0.12), rgba(234,179,8,0.07))',
   border: '1px solid rgba(234,179,8,0.35)',
-  borderRadius: '14px',
+  borderRadius: 'var(--radius-lg)',
   padding: '18px 22px',
   margin: '16px 0',
   backdropFilter: 'blur(10px)',
 };
 const LABEL = { display: 'block', color: 'var(--color-text-muted)', fontSize: '12px', marginBottom: '5px', fontWeight: 600 };
 const INPUT = {
-  width: '100%', padding: '9px 11px', borderRadius: '8px',
+  width: '100%', padding: '9px 11px', borderRadius: 'var(--radius-md)',
   border: '1px solid var(--color-white-a13)', background: 'var(--color-black-a20)',
   color: 'var(--color-text)', fontSize: '14px', outline: 'none',
 };
@@ -121,7 +121,7 @@ export default function FideTitleCard() {
       {rejected && (
         <div style={{
           background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)',
-          borderRadius: '8px', padding: '9px 12px', marginBottom: '12px',
+          borderRadius: 'var(--radius-md)', padding: '9px 12px', marginBottom: '12px',
           color: 'var(--color-danger)', fontSize: '13px',
         }}>
           Your previous claim wasn't approved{state.claim.reviewNote ? `: ${state.claim.reviewNote}` : '.'} You can submit again.
@@ -176,7 +176,7 @@ export default function FideTitleCard() {
         <button
           type="submit" disabled={busy}
           style={{
-            marginTop: '14px', padding: '9px 20px', borderRadius: '9px', border: 'none',
+            marginTop: '14px', padding: '9px 20px', borderRadius: 'var(--radius-md)', border: 'none',
             background: busy ? 'rgba(234,179,8,0.35)' : 'linear-gradient(135deg,var(--color-warning),#d97706)',
             color: 'var(--color-surface)', fontWeight: 700, fontSize: '14px',
             cursor: busy ? 'default' : 'pointer',

@@ -76,12 +76,12 @@ const styles = {
     gap: 14,
     background: 'linear-gradient(135deg, var(--color-warning-a12), rgba(139,92,246,0.08))',
     border: '1px solid var(--color-warning-a30)',
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     padding: '16px 18px',
     fontFamily: 'Poppins, sans-serif',
     boxShadow: '0 10px 30px -18px var(--color-warning-a30)'
   },
-  compact: { padding: '12px 14px', borderRadius: 14, gap: 11 },
+  compact: { padding: '12px 14px', borderRadius: 'var(--radius-lg)', gap: 11 },
   x: {
     position: 'absolute', top: 8, right: 10, background: 'transparent', border: 'none',
     color: 'rgba(253,230,138,0.6)', cursor: 'pointer', fontSize: 13, lineHeight: 1, padding: 2
@@ -92,7 +92,7 @@ const styles = {
   btn: {
     flex: 'none', cursor: 'pointer', border: 'none',
     background: 'linear-gradient(135deg, var(--color-warning), #d97706)', color: '#1f2937',
-    fontWeight: 800, fontSize: 13.5, padding: '10px 16px', borderRadius: 11,
+    fontWeight: 800, fontSize: 13.5, padding: '10px 16px', borderRadius: 'var(--radius-lg)',
     fontFamily: 'Poppins, sans-serif', whiteSpace: 'nowrap'
   }
 };

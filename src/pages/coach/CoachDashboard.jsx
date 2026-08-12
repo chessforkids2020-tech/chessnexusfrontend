@@ -377,7 +377,7 @@ export default function CoachDashboard() {
         <div style={{
           position: 'fixed', top: 20, right: 20, zIndex: 100,
           background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.4)',
-          color: '#67e8f9', borderRadius: 10, padding: '11px 16px',
+          color: '#67e8f9', borderRadius: 'var(--radius-md)', padding: '11px 16px',
           fontSize: 14, fontWeight: 600, backdropFilter: 'blur(10px)',
           boxShadow: '0 12px 30px rgba(0,0,0,0.4)', maxWidth: '90vw',
         }}>
@@ -540,7 +540,7 @@ export default function CoachDashboard() {
                         is exactly what this flow exists to prevent. */}
                     {r.requestNote && (
                       <div style={{
-                        margin: '8px 0 10px', padding: '9px 11px', borderRadius: 9,
+                        margin: '8px 0 10px', padding: '9px 11px', borderRadius: 'var(--radius-md)',
                         background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)',
                         fontSize: 12.5, lineHeight: 1.55, color: '#cbd5e1', whiteSpace: 'pre-wrap',
                       }}>

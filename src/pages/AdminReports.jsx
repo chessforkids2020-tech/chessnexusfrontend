@@ -65,7 +65,7 @@ export default function AdminReports() {
           <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0 }}>
             🚩 User Reports{" "}
             {openCount > 0 && (
-              <span style={{ fontSize: 13, color: "#f59e0b", background: "rgba(245,158,11,0.12)", padding: "3px 10px", borderRadius: 999, marginLeft: 8 }}>
+              <span style={{ fontSize: 13, color: "#f59e0b", background: "rgba(245,158,11,0.12)", padding: "3px 10px", borderRadius: 'var(--radius-pill)', marginLeft: 8 }}>
                 {openCount} open
               </span>
             )}
@@ -100,10 +100,10 @@ export default function AdminReports() {
                 ? `${r.user.displayName || r.user.username} (member)`
                 : `${r.email || "guest"} (guest)`;
               return (
-                <div key={r._id} style={{ padding: "18px 20px", borderRadius: 16, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div key={r._id} style={{ padding: "18px 20px", borderRadius: 'var(--radius-xl)', background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
                     <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>{r.subject}</h3>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: st.color, background: st.bg, padding: "4px 12px", borderRadius: 999, whiteSpace: "nowrap" }}>{st.label}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: st.color, background: st.bg, padding: "4px 12px", borderRadius: 'var(--radius-pill)', whiteSpace: "nowrap" }}>{st.label}</span>
                   </div>
                   <div style={{ fontSize: 12.5, color: "#9ca3af", marginTop: 4 }}>
                     {who} · {fmt(r.createdAt)}
@@ -111,7 +111,7 @@ export default function AdminReports() {
                   <p style={{ marginTop: 10, fontSize: 14.5, lineHeight: 1.6, color: "#d1d5db", whiteSpace: "pre-wrap" }}>{r.details}</p>
 
                   {r.reply && (
-                    <div style={{ marginTop: 12, padding: "12px 14px", borderRadius: 12, background: "rgba(16,185,129,0.06)", borderLeft: "3px solid #10b981" }}>
+                    <div style={{ marginTop: 12, padding: "12px 14px", borderRadius: 'var(--radius-lg)', background: "rgba(16,185,129,0.06)", borderLeft: "3px solid #10b981" }}>
                       <div style={{ fontSize: 12, fontWeight: 700, color: "#34d399", marginBottom: 4 }}>Your reply · {fmt(r.repliedAt)}</div>
                       <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{r.reply}</p>
                     </div>
@@ -124,7 +124,7 @@ export default function AdminReports() {
                         onChange={(e) => setReplyText(e.target.value)}
                         rows={4}
                         placeholder={r.user ? "Reply — appears in the member's inbox…" : "Reply — emailed to the guest…"}
-                        style={{ width: "100%", boxSizing: "border-box", background: "#111827", color: "#e5e7eb", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: 12, fontSize: 14, fontFamily: "inherit", resize: "vertical" }}
+                        style={{ width: "100%", boxSizing: "border-box", background: "#111827", color: "#e5e7eb", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 'var(--radius-md)', padding: 12, fontSize: 14, fontFamily: "inherit", resize: "vertical" }}
                       />
                       <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                         <button onClick={() => sendReply(r._id)} disabled={sending} style={btnPrimary}>
@@ -155,7 +155,7 @@ const btnGhost = {
   background: "rgba(255,255,255,0.05)",
   color: "#e5e7eb",
   border: "1px solid rgba(255,255,255,0.15)",
-  borderRadius: 10,
+  borderRadius: 'var(--radius-md)',
   padding: "8px 16px",
   fontSize: 13.5,
   fontWeight: 600,
@@ -167,7 +167,7 @@ const btnPrimary = {
   background: "linear-gradient(135deg, #06b6d4, #10b981)",
   color: "#04201f",
   border: "none",
-  borderRadius: 10,
+  borderRadius: 'var(--radius-md)',
   padding: "9px 20px",
   fontSize: 14,
   fontWeight: 700,

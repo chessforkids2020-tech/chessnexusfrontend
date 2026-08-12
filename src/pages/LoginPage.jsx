@@ -308,7 +308,7 @@ export default function LoginPage() {
           </h2>
           <p style={styles.subtitle}>Sign in to continue your chess journey</p>
           {stateMessage && (
-            <div style={{ background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.35)', borderRadius: 10, padding: '10px 14px', marginBottom: 16, color: '#d8b4fe', fontSize: 13 }}>
+            <div style={{ background: 'rgba(168,85,247,0.12)', border: '1px solid rgba(168,85,247,0.35)', borderRadius: 'var(--radius-md)', padding: '10px 14px', marginBottom: 16, color: '#d8b4fe', fontSize: 13 }}>
               🔒 {stateMessage}
             </div>
           )}

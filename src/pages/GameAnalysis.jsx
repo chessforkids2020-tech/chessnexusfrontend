@@ -248,7 +248,7 @@ function ProgressHistoryCharts({ history }) {
       backgroundColor: 'rgba(239,68,68,0.6)',
       borderColor: 'var(--color-danger)',
       borderWidth: 1,
-      borderRadius: 4
+      borderRadius: 'var(--radius-sm)'
     }]
   };
 
@@ -789,7 +789,7 @@ export function TrendCharts({ trends }) {
       backgroundColor: 'rgba(239,68,68,0.65)',
       borderColor: 'var(--color-danger)',
       borderWidth: 1,
-      borderRadius: 4
+      borderRadius: 'var(--radius-sm)'
     }]
   };
   const blundersOptions = {
@@ -1910,7 +1910,7 @@ export default function GameAnalysis() {
                   type="button"
                   onClick={() => (showEditor ? setShowEditor(false) : openEditor())}
                   style={{
-                    flexShrink: 0, padding: '0 14px', borderRadius: 12,
+                    flexShrink: 0, padding: '0 14px', borderRadius: 'var(--radius-lg)',
                     border: '1px solid rgba(168,85,247,0.4)', background: 'rgba(168,85,247,0.12)',
                     color: '#c084fc', fontSize: 13, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
                   }}

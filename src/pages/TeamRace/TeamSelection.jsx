@@ -181,13 +181,13 @@ function TeamSelection() {
       </div>
 
       {race && race.status === 'running' && !userTeam && (
-        <div style={{ padding: '20px', background: '#fff3cd', color: '#856404', borderRadius: '8px', margin: '20px', textAlign: 'center', fontWeight: 600 }}>
+        <div style={{ padding: '20px', background: '#fff3cd', color: '#856404', borderRadius: 'var(--radius-md)', margin: '20px', textAlign: 'center', fontWeight: 600 }}>
           🏃 Race is live! Join a team now to start solving puzzles.
         </div>
       )}
 
       {userTeam && (
-        <div style={{ padding: '20px', background: '#d4edda', color: '#155724', borderRadius: '8px', margin: '20px', textAlign: 'center' }}>
+        <div style={{ padding: '20px', background: '#d4edda', color: '#155724', borderRadius: 'var(--radius-md)', margin: '20px', textAlign: 'center' }}>
           ✅ You are already in <strong>{userTeam.teamName}</strong> team!
         </div>
       )}
@@ -224,7 +224,7 @@ function TeamSelection() {
                     </div>
 
                     {isTooUnbalanced && !isUserInThisTeam && (
-                      <div style={{ padding: '6px 10px', background: '#fff3cd', color: '#856404', borderRadius: '6px', fontSize: '12px', margin: '0 0 8px 0', textAlign: 'center' }}>
+                      <div style={{ padding: '6px 10px', background: '#fff3cd', color: '#856404', borderRadius: 'var(--radius-sm)', fontSize: '12px', margin: '0 0 8px 0', textAlign: 'center' }}>
                         ⚖️ Team too large — please join a smaller team
                       </div>
                     )}

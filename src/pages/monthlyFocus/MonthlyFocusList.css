@@ -53,7 +53,7 @@
   padding: 7px 18px;
   background: var(--color-success-a12);
   border: 1px solid var(--color-success-a30);
-  border-radius: 24px;
+  border-radius: var(--radius-2xl);
   font-size: 13px;
   font-weight: 600;
   color: var(--color-success);
@@ -68,7 +68,7 @@
 .mfl-count-dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--color-success);
   animation: mfl-pulse 1.8s infinite;
   flex-shrink: 0;
@@ -94,7 +94,7 @@
 .mfl-card {
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a07);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -130,7 +130,7 @@
 .mfl-status-dot {
   width: 7px;
   height: 7px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--color-success);
   animation: mfl-pulse 1.8s infinite;
   flex-shrink: 0;
@@ -150,7 +150,7 @@
   color: var(--color-text-muted);
   background: var(--color-white-a04);
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
 }
 
 /* Title */
@@ -188,14 +188,14 @@
 
 .mfl-prog-bar-bg {
   height: 5px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--color-white-a07);
   overflow: hidden;
 }
 
 .mfl-prog-bar-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
   transition: width 0.5s ease;
   min-width: 4px;
@@ -212,7 +212,7 @@
   font-size: 11px;
   font-weight: 600;
   padding: 3px 10px;
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   border: 1px solid;
 }
 
@@ -245,7 +245,7 @@
   padding: 12px;
   background: linear-gradient(135deg, var(--color-accent-a20), rgba(129,140,248,0.2));
   border: 1px solid rgba(129,140,248,0.35);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: #c7d2fe;
   font-size: 14px;
   font-weight: 700;
@@ -292,7 +292,7 @@
   padding: 10px 24px;
   background: rgba(129,140,248,0.15);
   border: 1px solid rgba(129,140,248,0.3);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   color: var(--color-accent-2);
   font-size: 14px;
   font-weight: 600;
@@ -322,7 +322,7 @@
   height: 40px;
   border: 3px solid var(--color-white-a07);
   border-top-color: var(--color-accent);
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   animation: mfl-spin 0.8s linear infinite;
 }
 
@@ -359,7 +359,7 @@
   background: linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   border: none;
-  border-radius: 24px;
+  border-radius: var(--radius-2xl);
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
@@ -434,7 +434,7 @@
   padding: 4px 12px;
   background: var(--color-warning-a12);
   border: 1px solid var(--color-warning-a30);
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   font-size: 11px;
   font-weight: 700;
   color: var(--color-warning);

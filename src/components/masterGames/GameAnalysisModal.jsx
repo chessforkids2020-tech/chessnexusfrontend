@@ -515,7 +515,7 @@ const C = {
 
 const st = {
   backdrop: { position: 'fixed', inset: 0, background: 'var(--color-black-a65)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16 },
-  modal: { position: 'relative', background: C.glass, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: `1px solid ${C.border}`, borderRadius: 18, width: 'min(940px, 96vw)', minHeight: 'min(620px, 90vh)', maxHeight: '94vh', overflow: 'auto', boxShadow: '0 30px 80px var(--color-black-a65)', fontFamily: 'Poppins, sans-serif', color: C.text },
+  modal: { position: 'relative', background: C.glass, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-xl)', width: 'min(940px, 96vw)', minHeight: 'min(620px, 90vh)', maxHeight: '94vh', overflow: 'auto', boxShadow: '0 30px 80px var(--color-black-a65)', fontFamily: 'Poppins, sans-serif', color: C.text },
   close: { position: 'absolute', top: '50%', right: 14, transform: 'translateY(-50%)', border: 'none', background: 'transparent', fontSize: 26, lineHeight: 1, cursor: 'pointer', color: C.textMut, zIndex: 4 },
   center: { padding: 60, textAlign: 'center', color: C.textMut },
   body: { display: 'flex', gap: 16, padding: '1px 20px 20px', alignItems: 'flex-start' },
@@ -532,8 +532,8 @@ const st = {
 
   // Footer nav bar (Arena-style): round buttons + a current/total move counter + play.
   footer: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${C.border}` },
-  ctrl: { width: 32, height: 32, borderRadius: '50%', border: `1px solid ${C.borderStrong}`, background: C.panel, color: C.text, cursor: 'pointer', fontSize: 12, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 },
-  playBtn: { width: 38, height: 38, borderRadius: '50%', border: `2px solid ${C.accent}`, background: 'var(--color-accent-2-a15)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 },
+  ctrl: { width: 32, height: 32, borderRadius: 'var(--radius-circle)', border: `1px solid ${C.borderStrong}`, background: C.panel, color: C.text, cursor: 'pointer', fontSize: 12, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 },
+  playBtn: { width: 38, height: 38, borderRadius: 'var(--radius-circle)', border: `2px solid ${C.accent}`, background: 'var(--color-accent-2-a15)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 14, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 },
   counter: { display: 'flex', alignItems: 'baseline', gap: 4, minWidth: 56, justifyContent: 'center', fontVariantNumeric: 'tabular-nums' },
   counterCur: { fontSize: 15, fontWeight: 800, color: 'var(--color-text)' },
   counterSep: { color: C.textFaint },
@@ -550,25 +550,25 @@ const st = {
   // Small toolbar above the notation: tally / subtle analyze button / reset.
   toolbar: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 8, minHeight: 30 },
   tally: { display: 'flex', gap: 14, fontSize: 13, fontWeight: 700 },
-  analyzeBtnSm: { padding: '5px 12px', borderRadius: 8, border: `1px solid ${C.borderStrong}`, background: 'var(--color-accent-2-a15)', color: C.accent, fontWeight: 600, cursor: 'pointer', fontSize: 13 },
+  analyzeBtnSm: { padding: '5px 12px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.borderStrong}`, background: 'var(--color-accent-2-a15)', color: C.accent, fontWeight: 600, cursor: 'pointer', fontSize: 13 },
   analyzeInline: { flex: 1, display: 'flex', alignItems: 'center', gap: 8 },
   analyzeErr: { color: 'var(--color-danger)', fontSize: 12, marginBottom: 6 },
   analyzeLabel: { color: C.text, fontSize: 12, whiteSpace: 'nowrap' },
-  progressTrack: { height: 8, background: 'var(--color-white-a07)', borderRadius: 999, overflow: 'hidden' },
+  progressTrack: { height: 8, background: 'var(--color-white-a07)', borderRadius: 'var(--radius-pill)', overflow: 'hidden' },
   progressFill: { height: '100%', background: C.accent, transition: 'width 200ms ease' },
 
-  notation: { flex: '0 0 auto', height: 390, overflowY: 'auto', lineHeight: 2.1, fontSize: 15, color: C.text, background: 'var(--color-black-a20)', border: `1px solid ${C.border}`, borderRadius: 12, padding: '12px 14px' },
+  notation: { flex: '0 0 auto', height: 390, overflowY: 'auto', lineHeight: 2.1, fontSize: 15, color: C.text, background: 'var(--color-black-a20)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-lg)', padding: '12px 14px' },
   hint: { color: C.textFaint, fontSize: 11, marginTop: 10, paddingTop: 8 },
-  resetBtn: { flexShrink: 0, padding: '5px 10px', borderRadius: 8, border: `1px solid ${C.borderStrong}`, background: 'var(--color-white-a04)', color: C.textMut, cursor: 'pointer', fontSize: 11, whiteSpace: 'nowrap' },
+  resetBtn: { flexShrink: 0, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.borderStrong}`, background: 'var(--color-white-a04)', color: C.textMut, cursor: 'pointer', fontSize: 11, whiteSpace: 'nowrap' },
 
-  card: { display: 'flex', gap: 10, alignItems: 'flex-start', marginTop: 10, padding: '10px 12px', background: C.panel, border: '1px solid', borderRadius: 10 },
+  card: { display: 'flex', gap: 10, alignItems: 'flex-start', marginTop: 10, padding: '10px 12px', background: C.panel, border: '1px solid', borderRadius: 'var(--radius-md)' },
   cardIcon: { fontSize: 18, fontWeight: 800, lineHeight: 1.2 },
-  cardBadge: { display: 'inline-block', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999, textTransform: 'uppercase', letterSpacing: 0.4 },
+  cardBadge: { display: 'inline-block', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-pill)', textTransform: 'uppercase', letterSpacing: 0.4 },
   cardDesc: { color: C.text, fontSize: 13, marginTop: 6, opacity: 0.9 },
 
   moveTokenWrap: { display: 'inline-flex', alignItems: 'center', marginRight: 6 },
   moveNo: { color: C.textFaint, marginRight: 4, fontVariantNumeric: 'tabular-nums' },
-  move: { cursor: 'pointer', padding: '2px 6px', borderRadius: 6 },
+  move: { cursor: 'pointer', padding: '2px 6px', borderRadius: 'var(--radius-sm)' },
   variation: { display: 'block', color: C.textMut, fontSize: 13, margin: '2px 0', paddingLeft: 6, borderLeft: `2px solid ${C.border}` },
   empty: { color: C.textFaint, padding: 12 }
 };

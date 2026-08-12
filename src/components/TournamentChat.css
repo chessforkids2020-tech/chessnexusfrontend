@@ -20,12 +20,12 @@
 
 .tournament-chat-messages::-webkit-scrollbar-track {
   background: var(--color-black-a35);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .tournament-chat-messages::-webkit-scrollbar-thumb {
   background: var(--color-accent-a40);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
 }
 
 .tournament-chat-messages::-webkit-scrollbar-thumb:hover {

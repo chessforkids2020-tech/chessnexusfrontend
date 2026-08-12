@@ -631,7 +631,7 @@ export default function ClubDetailPage() {
                   onChange={e => setCodeInput(e.target.value.toUpperCase())}
                   style={{
                     flex: 1, background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)',
-                    borderRadius: 10, padding: '9px 14px', color: 'var(--color-text)', fontSize: 13,
+                    borderRadius: 'var(--radius-md)', padding: '9px 14px', color: 'var(--color-text)', fontSize: 13,
                     fontFamily: 'monospace', letterSpacing: 2, outline: 'none'
                   }}
                   maxLength={12}

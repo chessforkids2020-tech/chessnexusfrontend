@@ -14,7 +14,7 @@
   max-width: 700px;
   width: 100%;
   background: var(--color-surface);
-  border-radius: 24px;
+  border-radius: var(--radius-2xl);
   padding: 40px;
   border: 1px solid var(--color-white-a10);
   box-shadow: 0 20px 60px var(--color-black-a50);
@@ -27,7 +27,7 @@
   border: 1px solid var(--color-accent-a30);
   color: var(--color-accent);
   padding: 10px 20px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -80,7 +80,7 @@
 
 .event-features {
   background: var(--color-black-a35);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 24px;
   margin-bottom: 32px;
   border: 1px solid var(--color-accent-a20);
@@ -112,7 +112,7 @@
 
 .registration-form {
   background: var(--color-black-a35);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 32px;
   border: 1px solid var(--color-white-a10);
 }
@@ -129,7 +129,7 @@
   background: var(--color-danger-a20);
   color: var(--color-danger);
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   margin-bottom: 20px;
   border: 1px solid var(--color-danger-a30);
   font-size: 14px;
@@ -153,7 +153,7 @@
   padding: 14px 16px;
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a10);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: var(--color-text);
   font-size: 15px;
   transition: all 0.3s ease;
@@ -176,7 +176,7 @@
   padding: 16px;
   background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: var(--color-text);
   font-size: 16px;
   font-weight: 600;

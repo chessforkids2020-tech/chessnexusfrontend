@@ -17,41 +17,41 @@ const styles = {
   header: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
   logo: { fontSize: 20, color: "#072b05", fontWeight: 800 },
   grid: { display: "grid", gridTemplateColumns: "360px 1fr 360px", gap: 14 },
-  col: { background: "#f6fff6", padding: 12, borderRadius: 10 },
-  colWide: { background: "#f6fff6", padding: 12, borderRadius: 10, overflow: "auto" },
-  card: { background: "#fff", padding: 10, borderRadius: 10, marginBottom: 12, boxShadow: "0 8px 20px rgba(0,0,0,0.03)" },
+  col: { background: "#f6fff6", padding: 12, borderRadius: 'var(--radius-md)' },
+  colWide: { background: "#f6fff6", padding: 12, borderRadius: 'var(--radius-md)', overflow: "auto" },
+  card: { background: "#fff", padding: 10, borderRadius: 'var(--radius-md)', marginBottom: 12, boxShadow: "0 8px 20px rgba(0,0,0,0.03)" },
   quickLinksGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12, marginTop: 12 },
-  quickLinkCard: { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 200, padding: 20, background: '#fff', borderRadius: 12, border: '1px solid #e6f1e6', boxShadow: '0 10px 24px rgba(0,0,0,0.04)', cursor: 'pointer', textAlign: 'left', transition: 'transform 0.2s ease, box-shadow 0.2s ease' },
+  quickLinkCard: { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 200, padding: 20, background: '#fff', borderRadius: 'var(--radius-lg)', border: '1px solid #e6f1e6', boxShadow: '0 10px 24px rgba(0,0,0,0.04)', cursor: 'pointer', textAlign: 'left', transition: 'transform 0.2s ease, box-shadow 0.2s ease' },
   quickLinkTitle: { margin: 0, fontSize: 16, fontWeight: 700, color: '#064f28' },
   quickLinkText: { margin: '8px 0 0', color: '#475569', fontSize: 14, lineHeight: 1.5 },
-  quickLinkFooter: { marginTop: 16, alignSelf: 'flex-start', padding: '8px 16px', background: '#f0f9ff', color: '#0369a1', borderRadius: 8, fontWeight: 700, fontSize: 13, border: '1px solid #bae6fd' },
-  input: { padding: 8, borderRadius: 8, marginTop: 8, border: "1px solid #e6f1e6", width: "100%" },
-  primaryBtn: { padding: "8px 12px", background: "#0b6623", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", marginTop: 8 },
-  secondaryBtn: { padding: "8px 12px", background: "#f0f9f0", color: "#064f28", border: "1px solid #d6f0d6", borderRadius: 8, cursor: "pointer" },
-  smallBtn: { padding: "6px 8px", background: "#0ea5e9", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" },
-  roundCard: { background: "#fff", padding: 12, borderRadius: 10, marginBottom: 12 },
-  roundCardCollapsed: { background: "#fff", padding: 12, borderRadius: 10, marginBottom: 12, cursor: "pointer", transition: "all 0.2s ease" },
-  roundCardExpanded: { background: "#fff", padding: 12, borderRadius: 10, marginBottom: 12, cursor: "default", transition: "all 0.2s ease" },
+  quickLinkFooter: { marginTop: 16, alignSelf: 'flex-start', padding: '8px 16px', background: '#f0f9ff', color: '#0369a1', borderRadius: 'var(--radius-md)', fontWeight: 700, fontSize: 13, border: '1px solid #bae6fd' },
+  input: { padding: 8, borderRadius: 'var(--radius-md)', marginTop: 8, border: "1px solid #e6f1e6", width: "100%" },
+  primaryBtn: { padding: "8px 12px", background: "#0b6623", color: "#fff", border: "none", borderRadius: 'var(--radius-md)', cursor: "pointer", marginTop: 8 },
+  secondaryBtn: { padding: "8px 12px", background: "#f0f9f0", color: "#064f28", border: "1px solid #d6f0d6", borderRadius: 'var(--radius-md)', cursor: "pointer" },
+  smallBtn: { padding: "6px 8px", background: "#0ea5e9", color: "#fff", border: "none", borderRadius: 'var(--radius-sm)', cursor: "pointer" },
+  roundCard: { background: "#fff", padding: 12, borderRadius: 'var(--radius-md)', marginBottom: 12 },
+  roundCardCollapsed: { background: "#fff", padding: 12, borderRadius: 'var(--radius-md)', marginBottom: 12, cursor: "pointer", transition: "all 0.2s ease" },
+  roundCardExpanded: { background: "#fff", padding: 12, borderRadius: 'var(--radius-md)', marginBottom: 12, cursor: "default", transition: "all 0.2s ease" },
   roundHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer" },
-  batchCard: { background: "#f8fff8", padding: 10, borderRadius: 8, border: "1px solid #eaf7ea", width: 260, cursor: "pointer", transition: "all 0.2s ease" },
-  batchCardCollapsed: { background: "#f8fff8", padding: 10, borderRadius: 8, border: "1px solid #eaf7ea", minWidth: 200, cursor: "pointer", transition: "all 0.2s ease" },
-  batchCardExpanded: { background: "#f8fff8", padding: 10, borderRadius: 8, border: "1px solid #eaf7ea", width: 260, cursor: "default", transition: "all 0.2s ease" },
+  batchCard: { background: "#f8fff8", padding: 10, borderRadius: 'var(--radius-md)', border: "1px solid #eaf7ea", width: 260, cursor: "pointer", transition: "all 0.2s ease" },
+  batchCardCollapsed: { background: "#f8fff8", padding: 10, borderRadius: 'var(--radius-md)', border: "1px solid #eaf7ea", minWidth: 200, cursor: "pointer", transition: "all 0.2s ease" },
+  batchCardExpanded: { background: "#f8fff8", padding: 10, borderRadius: 'var(--radius-md)', border: "1px solid #eaf7ea", width: 260, cursor: "default", transition: "all 0.2s ease" },
   batchHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
   batchTitle: { fontWeight: 700, flex: 1 },
   expandIcon: { fontSize: 12, color: "#64748b", marginLeft: 8 },
-  userChip: { padding: "4px 8px", background: "#fff", borderRadius: 6, border: "1px solid #e6f1e6" },
+  userChip: { padding: "4px 8px", background: "#fff", borderRadius: 'var(--radius-sm)', border: "1px solid #e6f1e6" },
   usersTableWrap: { 
     marginTop: 16, 
     background: "#fff", 
     padding: 16, 
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
   },
   tableContainer: { 
     overflow: "auto", 
     maxHeight: "600px",
     border: "1px solid #e5e7eb",
-    borderRadius: 8
+    borderRadius: 'var(--radius-md)'
   },
   table: { 
     width: "100%", 
@@ -92,13 +92,13 @@ const styles = {
   },
   roleTag: {
     padding: "4px 8px",
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     fontSize: 11,
     fontWeight: 500
   },
   statusTag: {
     padding: "4px 8px",
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     fontSize: 11,
     fontWeight: 500
   },
@@ -106,7 +106,7 @@ const styles = {
     padding: "4px 8px",
     background: "#fef3c7",
     color: "#d97706",
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     fontSize: 11,
     fontWeight: 500
   },
@@ -130,7 +130,7 @@ const roundsBackupStyles = {
     marginTop: 32,
     background: "#fff",
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     boxShadow: "0 4px 6px rgba(0,0,0,0.05)"
   },
   roundCardsGrid: {
@@ -141,7 +141,7 @@ const roundsBackupStyles = {
   roundBackupCard: {
     background: '#f8fffa',
     border: '2px solid #e6f3ea',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     padding: 16,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
@@ -160,7 +160,7 @@ const roundsBackupStyles = {
     background: '#064f28',
     color: '#fff',
     padding: '4px 8px',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     fontSize: 12,
     fontWeight: 600
   },
@@ -206,7 +206,7 @@ const roundsBackupStyles = {
   batchBackupCard: {
     background: '#fff',
     border: '2px solid #e6f3ea',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     padding: 16,
     cursor: 'pointer',
     transition: 'all 0.2s ease',
@@ -248,20 +248,20 @@ const roundsBackupStyles = {
     background: '#f0f9f0',
     color: '#064f28',
     padding: '2px 6px',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     fontSize: 11,
     fontWeight: 500
   },
   resultsTableWrap: {
     background: '#fff',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     overflow: 'hidden',
     boxShadow: '0 4px 6px rgba(0,0,0,0.05)'
   },
   chartCard: {
     background: '#fff',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     boxShadow: '0 10px 30px rgba(15, 23, 42, 0.06)',
     minHeight: 320,
     display: 'flex',
@@ -279,7 +279,7 @@ const roundsBackupStyles = {
   },
   chartToggleButton: {
     padding: '8px 14px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     border: '1px solid #d1d5db',
     background: '#ffffff',
     color: '#0f172a',
@@ -289,7 +289,7 @@ const roundsBackupStyles = {
   },
   chartToggleButtonActive: {
     padding: '8px 14px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     border: '1px solid #0b6623',
     background: '#0b6623',
     color: '#ffffff',
@@ -299,7 +299,7 @@ const roundsBackupStyles = {
   },
   chartHistoryButton: {
     padding: '8px 14px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     border: '1px solid #94a3b8',
     background: '#f8fafc',
     color: '#0f172a',
@@ -309,7 +309,7 @@ const roundsBackupStyles = {
   },
   chartHistoryButtonActive: {
     padding: '8px 14px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     border: '1px solid #2563eb',
     background: '#2563eb',
     color: '#ffffff',
@@ -326,7 +326,7 @@ const roundsBackupStyles = {
   recordCard: {
     background: '#f8fafc',
     padding: 14,
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid #e2e8f0'
   },
   recordLabel: {
@@ -368,7 +368,7 @@ function AvatarXpPrices() {
     }
   };
 
-  const inputStyle = { width: 90, padding: 6, border: '1px solid #cbd5e1', borderRadius: 6 };
+  const inputStyle = { width: 90, padding: 6, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)' };
 
   return (
     <div style={{ ...styles.card, padding: 16, marginTop: 20, background: '#ffffff', border: '1px solid #e2e8f0' }}>
@@ -470,7 +470,7 @@ function FoundingCoaches() {
   };
 
   const remaining = Math.max(0, fc.total - fc.claimed);
-  const inputStyle = { width: 90, padding: 6, border: '1px solid #cbd5e1', borderRadius: 6 };
+  const inputStyle = { width: 90, padding: 6, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)' };
 
   return (
     <div style={{ ...styles.card, padding: 16, marginTop: 20, background: '#ffffff', border: '1px solid #e2e8f0' }}>
@@ -484,7 +484,7 @@ function FoundingCoaches() {
         <>
           <div style={{
             display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 14,
-            padding: '10px 14px', borderRadius: 8, background: '#f0fdf4', border: '1px solid #bbf7d0',
+            padding: '10px 14px', borderRadius: 'var(--radius-md)', background: '#f0fdf4', border: '1px solid #bbf7d0',
           }}>
             <span style={{ fontSize: 30, fontWeight: 800, color: '#15803d' }}>{remaining}</span>
             <span style={{ fontSize: 13, color: '#166534' }}>
@@ -499,7 +499,7 @@ function FoundingCoaches() {
             </button>
             <button onClick={() => claim(-1)} disabled={saving || fc.claimed <= 0}
                     style={{
-                      padding: '8px 14px', borderRadius: 6, cursor: 'pointer',
+                      padding: '8px 14px', borderRadius: 'var(--radius-sm)', cursor: 'pointer',
                       border: '1px solid #cbd5e1', background: '#fff', color: '#334155',
                       opacity: (saving || fc.claimed <= 0) ? 0.5 : 1,
                     }}>
@@ -553,7 +553,7 @@ function renderNavBadge(count) {
       minWidth: 18, height: 18, padding: '0 5px',
       display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
       fontSize: 11, fontWeight: 800, lineHeight: 1,
-      color: '#fff', background: '#ef4444', borderRadius: 999,
+      color: '#fff', background: '#ef4444', borderRadius: 'var(--radius-pill)',
       boxShadow: '0 0 0 2px #fff',
     }}>
       {count > 99 ? '99+' : count}
@@ -1437,7 +1437,7 @@ function AdminDashboard() {
         </div>
 
         {showAnalyticsHistory && (
-          <div style={{ marginTop: 20, padding: 16, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 12 }}>
+          <div style={{ marginTop: 20, padding: 16, background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 'var(--radius-lg)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
               <div>
                 <div style={{ fontWeight: 700, color: '#0f172a' }}>History</div>
@@ -1581,7 +1581,7 @@ function AdminDashboard() {
               background: "#0b6623",
               color: "#fff",
               border: "none",
-              borderRadius: 8,
+              borderRadius: 'var(--radius-md)',
               cursor: "pointer",
               fontWeight: 600,
               fontSize: 14
@@ -1617,7 +1617,7 @@ function AdminDashboard() {
             background: "#d97706",
             color: "#fff",
             border: "none",
-            borderRadius: 8,
+            borderRadius: 'var(--radius-md)',
             cursor: "pointer",
             fontWeight: 600,
             fontSize: 14
@@ -1631,7 +1631,7 @@ function AdminDashboard() {
               right: -8,
               background: '#ef4444',
               color: '#fff',
-              borderRadius: '50%',
+              borderRadius: 'var(--radius-circle)',
               width: 20,
               height: 20,
               display: 'flex',
@@ -1655,7 +1655,7 @@ function AdminDashboard() {
             background: "#dc2626",
             color: "#fff",
             border: "none",
-            borderRadius: 8,
+            borderRadius: 'var(--radius-md)',
             cursor: "pointer",
             fontWeight: 600,
             fontSize: 14,
@@ -1684,7 +1684,7 @@ function AdminDashboard() {
             minWidth: 20, height: 20, padding: '0 6px',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 12, fontWeight: 800, lineHeight: 1,
-            color: '#fff', background: '#ef4444', borderRadius: 999,
+            color: '#fff', background: '#ef4444', borderRadius: 'var(--radius-pill)',
             boxShadow: '0 0 0 2px #fff',
           }}>
             {badgeCounts.eventSubmissions > 99 ? '99+' : badgeCounts.eventSubmissions}
@@ -1697,7 +1697,7 @@ function AdminDashboard() {
               <span style={{
                 fontSize: 12, fontWeight: 700, color: '#ef4444',
                 background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
-                borderRadius: 999, padding: '2px 10px',
+                borderRadius: 'var(--radius-pill)', padding: '2px 10px',
               }}>
                 {badgeCounts.eventSubmissions} new
               </span>
@@ -1714,7 +1714,7 @@ function AdminDashboard() {
             background: "#064f28",
             color: "#fff",
             border: "none",
-            borderRadius: 8,
+            borderRadius: 'var(--radius-md)',
             cursor: "pointer",
             fontWeight: 600,
             fontSize: 14
@@ -1778,7 +1778,7 @@ function AdminDashboard() {
                           value={replyText}
                           onChange={e => setReplyText(e.target.value)}
                           placeholder="Type your reply here..."
-                          style={{ width: '100%', padding: 8, borderRadius: 6, border: '1px solid #91caff', fontSize: 14, resize: 'vertical', boxSizing: 'border-box' }}
+                          style={{ width: '100%', padding: 8, borderRadius: 'var(--radius-sm)', border: '1px solid #91caff', fontSize: 14, resize: 'vertical', boxSizing: 'border-box' }}
                         />
                         <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
                           <button
@@ -1824,11 +1824,11 @@ function AdminDashboard() {
         </div>
 
         {arenaListCollapsed ? null : arenaTournaments.length === 0 ? (
-          <div style={{ padding: 16, color: '#64748b', textAlign: 'center', background: '#f8fafc', borderRadius: 8 }}>
+          <div style={{ padding: 16, color: '#64748b', textAlign: 'center', background: '#f8fafc', borderRadius: 'var(--radius-md)' }}>
             No tournaments yet.
           </div>
         ) : (
-          <div style={{ overflowX: 'auto', border: '1px solid #e5e7eb', borderRadius: 8 }}>
+          <div style={{ overflowX: 'auto', border: '1px solid #e5e7eb', borderRadius: 'var(--radius-md)' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead style={{ background: '#f9fafb' }}>
                 <tr>
@@ -1856,7 +1856,7 @@ function AdminDashboard() {
                       <td style={{ padding: '10px 8px' }}>
                         <span style={{
                           padding: '3px 8px',
-                          borderRadius: 10,
+                          borderRadius: 'var(--radius-md)',
                           fontSize: 11,
                           fontWeight: 600,
                           background: '#f1f5f9',
@@ -1877,7 +1877,7 @@ function AdminDashboard() {
                           View
                         </button>
                         <button
-                          style={{ padding: '4px 10px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontSize: 12, fontWeight: 600 }}
+                          style={{ padding: '4px 10px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}
                           onClick={() => deleteArenaTournament(t._id, t.name)}
                         >
                           Delete
@@ -2072,7 +2072,7 @@ function AdminDashboard() {
             </div>
             
             {/* Leaderboard summary for batch */}
-            <div style={{ marginBottom: 32, background: '#f8fff8', borderRadius: 10, padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+            <div style={{ marginBottom: 32, background: '#f8fff8', borderRadius: 'var(--radius-md)', padding: 16, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
               <h4 style={{ margin: '0 0 12px 0', color: '#064f28' }}>Batch Leaderboard</h4>
               {batchResults.length === 0 ? (
                 <div style={{ color: '#6b7280', fontSize: 14 }}>No results yet for this batch.</div>
@@ -2174,7 +2174,7 @@ function AdminDashboard() {
                             {result._empty ? (
                               <span style={{
                                 padding: "4px 8px",
-                                borderRadius: 12,
+                                borderRadius: 'var(--radius-lg)',
                                 fontSize: 11,
                                 fontWeight: 500,
                                 background: '#f3f4f6',
@@ -2185,7 +2185,7 @@ function AdminDashboard() {
                             ) : (
                               <span style={{
                                 padding: "4px 8px",
-                                borderRadius: 12,
+                                borderRadius: 'var(--radius-lg)',
                                 fontSize: 11,
                                 fontWeight: 500,
                                 background: result.correct ? '#dcfce7' : '#fee2e2',
@@ -2284,7 +2284,7 @@ function AdminDashboard() {
               onClick={(e) => e.stopPropagation()}
               onSubmit={submitArenaCreate}
               style={{
-                background: '#fff', borderRadius: 12, padding: 24,
+                background: '#fff', borderRadius: 'var(--radius-lg)', padding: 24,
                 width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
               }}
@@ -2304,7 +2304,7 @@ function AdminDashboard() {
               </p>
 
               {arenaCreateError && (
-                <div style={{ background: '#fef2f2', color: '#991b1b', padding: 10, borderRadius: 8, marginBottom: 12, fontSize: 13 }}>
+                <div style={{ background: '#fef2f2', color: '#991b1b', padding: 10, borderRadius: 'var(--radius-md)', marginBottom: 12, fontSize: 13 }}>
                   {arenaCreateError}
                 </div>
               )}
@@ -2317,7 +2317,7 @@ function AdminDashboard() {
                     value={arenaCreateForm.name}
                     onChange={(e) => setArenaCreateForm(f => ({ ...f, name: e.target.value }))}
                     placeholder="e.g. Friday Night Arena"
-                    style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14 }}
+                    style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 14 }}
                     required
                   />
                 </label>
@@ -2327,7 +2327,7 @@ function AdminDashboard() {
                   <select
                     value={arenaCreateForm.tournamentType}
                     onChange={(e) => setArenaCreateForm(f => ({ ...f, tournamentType: e.target.value }))}
-                    style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14, background: '#fff' }}
+                    style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 14, background: '#fff' }}
                   >
                     <option value="standard">Standard</option>
                     <option value="chess960">Chess960</option>
@@ -2345,7 +2345,7 @@ function AdminDashboard() {
                           type="number" min="1" max="60"
                           value={arenaCreateForm.timeControlMinutes}
                           onChange={(e) => setArenaCreateForm(f => ({ ...f, timeControlMinutes: e.target.value }))}
-                          style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14 }}
+                          style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 14 }}
                         />
                       </label>
                       <label>
@@ -2354,7 +2354,7 @@ function AdminDashboard() {
                           type="number" min="0" max="60"
                           value={arenaCreateForm.timeControlIncrement}
                           onChange={(e) => setArenaCreateForm(f => ({ ...f, timeControlIncrement: e.target.value }))}
-                          style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14 }}
+                          style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 14 }}
                         />
                       </label>
                     </div>
@@ -2366,7 +2366,7 @@ function AdminDashboard() {
                           type="number" min="0" max="24"
                           value={arenaCreateForm.tournamentDurationHours}
                           onChange={(e) => setArenaCreateForm(f => ({ ...f, tournamentDurationHours: e.target.value }))}
-                          style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14 }}
+                          style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 14 }}
                         />
                       </label>
                       <label>
@@ -2375,7 +2375,7 @@ function AdminDashboard() {
                           type="number" min="0" max="59"
                           value={arenaCreateForm.tournamentDurationMinutes}
                           onChange={(e) => setArenaCreateForm(f => ({ ...f, tournamentDurationMinutes: e.target.value }))}
-                          style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14 }}
+                          style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 14 }}
                         />
                       </label>
                     </div>
@@ -2397,7 +2397,7 @@ function AdminDashboard() {
                             return updated.slice(0, n);
                           });
                         }}
-                        style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14, background: '#fff' }}
+                        style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 14, background: '#fff' }}
                       >
                         {[2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n} teams</option>)}
                       </select>
@@ -2418,7 +2418,7 @@ function AdminDashboard() {
                                 setArenaTeamNames(updated);
                               }}
                               placeholder={ARENA_TEAM_SUGGESTIONS[i] || `Team ${i + 1}`}
-                              style={{ flex: 1, padding: '6px 8px', border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 13 }}
+                              style={{ flex: 1, padding: '6px 8px', border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 13 }}
                             />
                           </div>
                         ))}
@@ -2434,7 +2434,7 @@ function AdminDashboard() {
                       type="date"
                       value={arenaCreateForm.scheduledStartDate}
                       onChange={(e) => setArenaCreateForm(f => ({ ...f, scheduledStartDate: e.target.value }))}
-                      style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14 }}
+                      style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 14 }}
                       required
                     />
                   </label>
@@ -2444,7 +2444,7 @@ function AdminDashboard() {
                       type="time"
                       value={arenaCreateForm.scheduledStartTime}
                       onChange={(e) => setArenaCreateForm(f => ({ ...f, scheduledStartTime: e.target.value }))}
-                      style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14 }}
+                      style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 14 }}
                       required
                     />
                   </label>
@@ -2456,7 +2456,7 @@ function AdminDashboard() {
                     rows={2}
                     value={arenaCreateForm.description}
                     onChange={(e) => setArenaCreateForm(f => ({ ...f, description: e.target.value }))}
-                    style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 6, fontSize: 14, resize: 'vertical' }}
+                    style={{ width: '100%', padding: 8, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)', fontSize: 14, resize: 'vertical' }}
                   />
                 </label>
               </div>

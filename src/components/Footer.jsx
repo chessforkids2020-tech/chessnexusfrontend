@@ -53,7 +53,7 @@ export default function Footer() {
             font-size: 14px;
             font-weight: 600;
             padding: 8px 16px;
-            border-radius: 20px;
+            border-radius: var(--radius-2xl);
             background: var(--color-accent-a12);
             border: 1px solid var(--color-accent-a20);
             transition: all 0.3s ease;
@@ -112,7 +112,7 @@ export default function Footer() {
             justify-content: center;
             width: 34px;
             height: 34px;
-            border-radius: 50%;
+            border-radius: var(--radius-circle);
             color: var(--color-accent);
             background: var(--color-accent-a12);
             border: 1px solid var(--color-accent-a20);

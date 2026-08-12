@@ -206,7 +206,7 @@ export default function StockfishTest() {
         <h2>🧪 Stockfish Test Laboratory</h2>
         <p>Loading Stockfish... {statusMessage}</p>
         <div style={{ marginTop: '20px' }}>
-          <button onClick={() => navigate('/')} style={{ padding: '10px 20px', backgroundColor: 'var(--color-accent-2)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+          <button onClick={() => navigate('/')} style={{ padding: '10px 20px', backgroundColor: 'var(--color-accent-2)', color: 'white', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer' }}>
             ← Back to Dashboard
           </button>
         </div>

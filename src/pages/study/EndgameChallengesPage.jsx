@@ -64,13 +64,13 @@ const styles = {
   title: { fontSize: 26, fontWeight: 800, margin: 0, letterSpacing: -0.3 },
   subtitle: { color: "var(--color-text-muted)", fontSize: 14, margin: "8px 0 18px", maxWidth: 620, lineHeight: 1.6 },
   secondaryBtn: {
-    flex: "0 0 auto", padding: "9px 16px", borderRadius: 10,
+    flex: "0 0 auto", padding: "9px 16px", borderRadius: 'var(--radius-md)',
     border: "1px solid var(--color-white-a13)", background: "var(--color-white-a04)",
     color: "var(--color-text-muted)", cursor: "pointer", fontSize: 13, fontWeight: 700,
   },
   empty: {
     maxWidth: 460, margin: "40px auto", padding: "32px 28px", textAlign: "center",
-    borderRadius: 16, border: "1px solid var(--color-white-a07)",
+    borderRadius: 'var(--radius-xl)', border: "1px solid var(--color-white-a07)",
     background: "var(--color-white-a04)",
   },
 };

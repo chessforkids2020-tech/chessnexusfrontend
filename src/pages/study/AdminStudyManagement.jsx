@@ -220,7 +220,7 @@ const AdminStudyManagement = () => {
       background: 'var(--color-surface-2)',
       color: 'var(--color-text)',
       border: 'none',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       cursor: 'pointer',
       fontSize: '14px',
       marginBottom: '10px',
@@ -230,7 +230,7 @@ const AdminStudyManagement = () => {
       background: 'var(--color-success)',
       color: 'var(--color-text)',
       border: 'none',
-      borderRadius: '6px',
+      borderRadius: 'var(--radius-sm)',
       cursor: 'pointer',
       fontSize: '16px',
     },
@@ -240,12 +240,12 @@ const AdminStudyManagement = () => {
       marginTop: '12px',
       padding: '10px',
       background: 'linear-gradient(135deg, #eef7ee 0%, #e6f2e6 100%)',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid #dfeedd',
     },
     managementTab: {
       padding: '10px 16px',
-      borderRadius: '6px',
+      borderRadius: 'var(--radius-sm)',
       cursor: 'pointer',
       fontSize: '15px',
       fontWeight: '700',
@@ -268,7 +268,7 @@ const AdminStudyManagement = () => {
     },
     card: {
       background: 'var(--color-surface)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '20px',
       boxShadow: '0 4px 12px var(--color-black-a20)',
       border: '1px solid var(--color-surface-2)',
@@ -291,7 +291,7 @@ const AdminStudyManagement = () => {
     button: {
       padding: '6px 12px',
       border: 'none',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       cursor: 'pointer',
       fontSize: '14px',
     },
@@ -310,7 +310,7 @@ const AdminStudyManagement = () => {
     form: {
       background: 'var(--color-surface)',
       padding: '20px',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       marginBottom: '20px',
     },
     formGroup: {
@@ -325,14 +325,14 @@ const AdminStudyManagement = () => {
       width: '100%',
       padding: '8px',
       border: '1px solid #ddd',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       fontSize: '14px',
     },
     textarea: {
       width: '100%',
       padding: '8px',
       border: '1px solid #ddd',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       fontSize: '14px',
       minHeight: '60px',
     },
@@ -354,7 +354,7 @@ const AdminStudyManagement = () => {
       borderCollapse: 'collapse',
       background: 'var(--color-surface)',
       boxShadow: '0 4px 12px var(--color-black-a20)',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       overflow: 'hidden',
     },
     tableHeader: {
@@ -389,7 +389,7 @@ const AdminStudyManagement = () => {
     },
     modalContent: {
       background: 'var(--color-surface)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '30px',
       maxWidth: '800px',
       maxHeight: '90vh',
@@ -403,7 +403,7 @@ const AdminStudyManagement = () => {
       background: 'var(--color-danger)',
       color: 'var(--color-text)',
       border: 'none',
-      borderRadius: '50%',
+      borderRadius: 'var(--radius-circle)',
       width: '30px',
       height: '30px',
       cursor: 'pointer',
@@ -717,7 +717,7 @@ const AdminStudyManagement = () => {
             <div style={{ 
               background: '#f0f7f0', 
               padding: '20px', 
-              borderRadius: '8px', 
+              borderRadius: 'var(--radius-md)', 
               marginBottom: '20px',
               border: '2px solid var(--color-success)'
             }}>
@@ -844,7 +844,7 @@ const AdminStudyManagement = () => {
             </form>
           )}
 
-          <div style={{ background: 'var(--color-surface)', borderRadius: '8px', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
             <table style={styles.table}>
               <thead>
                 <tr style={styles.tableHeader}>
@@ -930,7 +930,7 @@ const AdminStudyManagement = () => {
                 <div style={{ 
                   background: 'var(--color-surface)', 
                   padding: '10px', 
-                  borderRadius: '4px', 
+                  borderRadius: 'var(--radius-sm)', 
                   marginTop: '8px',
                   fontFamily: 'monospace',
                   fontSize: '13px',
@@ -946,7 +946,7 @@ const AdminStudyManagement = () => {
                   <div style={{ 
                     background: '#f0f7f0', 
                     padding: '15px', 
-                    borderRadius: '4px', 
+                    borderRadius: 'var(--radius-sm)', 
                     marginTop: '8px',
                     lineHeight: '1.6'
                   }}>
@@ -964,7 +964,7 @@ const AdminStudyManagement = () => {
                       style={{ 
                         background: 'var(--color-surface)', 
                         border: '1px solid var(--color-surface-2)',
-                        borderRadius: '8px',
+                        borderRadius: 'var(--radius-md)',
                         padding: '15px',
                         marginBottom: '15px'
                       }}
@@ -980,7 +980,7 @@ const AdminStudyManagement = () => {
                           background: 'var(--color-success)', 
                           color: 'var(--color-text)', 
                           padding: '4px 12px', 
-                          borderRadius: '4px',
+                          borderRadius: 'var(--radius-sm)',
                           fontWeight: 'bold',
                           fontSize: '14px'
                         }}>
@@ -992,7 +992,7 @@ const AdminStudyManagement = () => {
                         <div style={{ 
                           background: 'var(--color-surface)', 
                           padding: '10px', 
-                          borderRadius: '4px', 
+                          borderRadius: 'var(--radius-sm)', 
                           marginTop: '5px',
                           fontFamily: 'monospace',
                           fontSize: '13px'

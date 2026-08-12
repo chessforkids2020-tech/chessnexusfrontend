@@ -35,7 +35,7 @@ const styles = {
   hero: {
     background: 'var(--color-surface)',
     border: '1px solid var(--color-white-a04)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     backdropFilter: 'blur(10px)',
     padding: '15px 20px',
     marginBottom: '20px',
@@ -82,7 +82,7 @@ const styles = {
   glassCard: {
     background: 'var(--color-surface)',
     border: '1px solid var(--color-white-a04)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     backdropFilter: 'blur(10px)',
     padding: '30px',
     boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -125,7 +125,7 @@ const styles = {
   statItem: {
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a04)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     padding: '20px 15px',
     textAlign: 'center',
     transition: 'all 0.3s ease',
@@ -162,7 +162,7 @@ const styles = {
     height: '16px',
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a04)',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     overflow: 'hidden',
   },
   progressFill: {
@@ -181,7 +181,7 @@ const styles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '14px 32px',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     fontSize: '16px',
     fontWeight: '600',
     cursor: 'pointer',
@@ -199,7 +199,7 @@ const styles = {
   chartContainer: {
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a04)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     padding: '8px',
     overflow: 'hidden',
     minHeight: '210px',
@@ -215,7 +215,7 @@ const styles = {
   timeChart: {
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a04)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     padding: '8px',
     overflow: 'hidden',
     minHeight: '210px',
@@ -373,7 +373,7 @@ export default function RaceResults() {
           <div style={{
             background: 'var(--color-warning-a12)',
             border: '1px solid var(--color-warning-a30)',
-            borderRadius: 14,
+            borderRadius: 'var(--radius-lg)',
             padding: '14px 20px',
             marginBottom: 20,
             display: 'flex',
@@ -388,7 +388,7 @@ export default function RaceResults() {
             </div>
             <Link to="/signup-request" style={{
               background: 'linear-gradient(135deg,var(--color-warning),#d97706)',
-              color: 'var(--color-text)', border: 'none', borderRadius: 10,
+              color: 'var(--color-text)', border: 'none', borderRadius: 'var(--radius-md)',
               padding: '8px 18px', fontWeight: 700, fontSize: 13,
               textDecoration: 'none', whiteSpace: 'nowrap',
             }}>Request Account</Link>

@@ -62,7 +62,7 @@ const styles = {
   },
   section: { 
     background: palette.card,
-    borderRadius: '12px', 
+    borderRadius: 'var(--radius-lg)', 
     padding: '24px', 
     marginBottom: '24px', 
     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
@@ -86,7 +86,7 @@ const styles = {
   statCard: { 
     background: palette.card, 
     padding: '16px', 
-    borderRadius: '12px', 
+    borderRadius: 'var(--radius-lg)', 
     border: '1px solid rgba(255,255,255,0.08)',
     textAlign: 'center',
     boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
@@ -135,7 +135,7 @@ const styles = {
   button: { 
     padding: '8px 16px', 
     border: 'none', 
-    borderRadius: '6px', 
+    borderRadius: 'var(--radius-sm)', 
     cursor: 'pointer', 
     fontSize: '0.85rem',
     fontWeight: '500',
@@ -167,7 +167,7 @@ const styles = {
   input: {
     padding: '8px 12px',
     border: '1px solid rgba(255,255,255,0.15)',
-    borderRadius: '6px',
+    borderRadius: 'var(--radius-sm)',
     fontSize: '0.9rem',
     marginRight: '8px',
     marginBottom: '8px',
@@ -177,7 +177,7 @@ const styles = {
   select: {
     padding: '8px 12px',
     border: '1px solid rgba(255,255,255,0.15)',
-    borderRadius: '6px',
+    borderRadius: 'var(--radius-sm)',
     fontSize: '0.9rem',
     marginRight: '8px',
     marginBottom: '8px',
@@ -209,7 +209,7 @@ const styles = {
   modalContent: { 
     background: palette.card, 
     padding: '24px', 
-    borderRadius: '12px', 
+    borderRadius: 'var(--radius-lg)', 
     width: '90%',
     maxWidth: '500px',
     maxHeight: '80vh',
@@ -240,14 +240,14 @@ const styles = {
   },
   card: { 
     background: palette.card,
-    borderRadius: '8px', 
+    borderRadius: 'var(--radius-md)', 
     padding: '16px', 
     border: '1px solid rgba(255,255,255,0.08)',
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
   },
   badge: { 
     padding: '4px 8px', 
-    borderRadius: '12px', 
+    borderRadius: 'var(--radius-lg)', 
     fontSize: '0.75rem',
     fontWeight: '500'
   },
@@ -296,14 +296,14 @@ const styles = {
   buttonStyle: {
     padding: '8px 16px',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: 'var(--radius-sm)',
     cursor: 'pointer',
     fontSize: '0.9rem',
     marginRight: '8px'
   },
   cardStyle: {
     background: palette.card,
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     padding: '16px',
     marginBottom: '16px',
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
@@ -311,7 +311,7 @@ const styles = {
   inputStyle: {
     padding: '8px',
     border: '1px solid rgba(255,255,255,0.15)',
-    borderRadius: '4px',
+    borderRadius: 'var(--radius-sm)',
     fontSize: '0.9rem'
   }
 };
@@ -1178,7 +1178,7 @@ const AdminAttendancePage = () => {
                                     alignItems: 'center',
                                     background: 'rgba(255,255,255,0.06)',
                                     padding: '2px 6px',
-                                    borderRadius: '4px',
+                                    borderRadius: 'var(--radius-sm)',
                                     border: '1px solid #e9ecef'
                                   }}>
                                     <span style={{
@@ -1456,7 +1456,7 @@ const AdminAttendancePage = () => {
       <div style={styles.section}>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '12px'}}>
           <h2 style={{...styles.sectionTitle, margin: 0}}>💳 All Student Payments</h2>
-          <div style={{display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', padding: '10px', background: 'rgba(52,211,153,0.10)', borderRadius: '8px', border: '1px solid rgba(52,211,153,0.3)'}}>
+          <div style={{display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', padding: '10px', background: 'rgba(52,211,153,0.10)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(52,211,153,0.3)'}}>
             <span style={{fontSize: '0.85rem', fontWeight: '600', color: '#34d399'}}>⬇️ Download Monthly Payments:</span>
             <select
               value={downloadPayMonth}
@@ -1728,7 +1728,7 @@ const AdminAttendancePage = () => {
       <div style={{ marginBottom: '16px' }}>
         <button
           onClick={() => nav('/admin')}
-          style={{ padding: '8px 12px', borderRadius: 8, background: '#064f28', color: '#fff', border: 'none', cursor: 'pointer' }}
+          style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', background: '#064f28', color: '#fff', border: 'none', cursor: 'pointer' }}
         >
           ← Back to Dashboard
         </button>

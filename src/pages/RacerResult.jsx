@@ -54,7 +54,7 @@ export default function RacerResult() {
     header: {
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       padding: '40px',
       marginBottom: '30px',
@@ -89,7 +89,7 @@ export default function RacerResult() {
     resultCard: {
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       padding: '30px',
       boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -117,7 +117,7 @@ export default function RacerResult() {
       padding: '20px',
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       backdropFilter: 'blur(10px)',
     },
     actionButtons: {
@@ -129,7 +129,7 @@ export default function RacerResult() {
     button: {
       padding: '14px 32px',
       border: 'none',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '15px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -156,7 +156,7 @@ export default function RacerResult() {
       color: 'var(--color-text-muted)',
       border: '1px solid var(--color-white-a10)',
       padding: '10px 20px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '14px',
       cursor: 'pointer',
       textDecoration: 'none',

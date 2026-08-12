@@ -64,7 +64,7 @@ export default function StudyDuelWaiting() {
   const cardStyle = {
     background: 'rgba(15,15,15,0.7)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     backdropFilter: 'blur(20px)',
     padding: 24,
   };
@@ -73,7 +73,7 @@ export default function StudyDuelWaiting() {
     <div style={{ background: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Segoe UI', sans-serif", color: 'var(--color-text)' }}>
       <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 50% 30%, var(--color-warning-a12) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
       <div style={{ maxWidth: 480, width: '100%', padding: 24, position: 'relative', zIndex: 1 }}>
-        <button onClick={() => navigate(-1)} style={{ padding: '10px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 10, color: 'var(--color-text)', cursor: 'pointer', fontSize: 14, fontWeight: 600, marginBottom: 32 }}>
+        <button onClick={() => navigate(-1)} style={{ padding: '10px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 14, fontWeight: 600, marginBottom: 32 }}>
           ← Back
         </button>
 
@@ -82,7 +82,7 @@ export default function StudyDuelWaiting() {
           <h2 style={{ fontSize: 24, fontWeight: 900, color: 'var(--color-warning)', marginBottom: 8 }}>Waiting for Opponent</h2>
 
           {/* Room code */}
-          <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid var(--color-warning-a30)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+          <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid var(--color-warning-a30)', borderRadius: 'var(--radius-lg)', padding: 20, marginBottom: 24 }}>
             <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 6 }}>ROOM CODE</div>
             <div style={{ fontSize: 36, fontWeight: 900, fontFamily: 'monospace', color: 'var(--color-warning)', letterSpacing: 8 }}>{roomCode}</div>
           </div>
@@ -90,7 +90,7 @@ export default function StudyDuelWaiting() {
           {/* Share button */}
           <button
             onClick={handleCopy}
-            style={{ width: '100%', padding: '12px 0', background: copied ? 'var(--color-success-a12)' : 'var(--color-white-a04)', border: `1px solid ${copied ? 'var(--color-success-a30)' : 'var(--color-white-a10)'}`, borderRadius: 10, color: copied ? 'var(--color-success)' : 'var(--color-text)', cursor: 'pointer', fontSize: 14, fontWeight: 600, marginBottom: 20 }}
+            style={{ width: '100%', padding: '12px 0', background: copied ? 'var(--color-success-a12)' : 'var(--color-white-a04)', border: `1px solid ${copied ? 'var(--color-success-a30)' : 'var(--color-white-a10)'}`, borderRadius: 'var(--radius-md)', color: copied ? 'var(--color-success)' : 'var(--color-text)', cursor: 'pointer', fontSize: 14, fontWeight: 600, marginBottom: 20 }}
           >
             {copied ? '✅ Link Copied!' : '📋 Copy Invite Link'}
           </button>
@@ -112,7 +112,7 @@ export default function StudyDuelWaiting() {
                     padding: '12px 16px',
                     background: p ? 'rgba(251,191,36,0.08)' : 'var(--color-white-a04)',
                     border: `1px solid ${p ? 'var(--color-warning-a30)' : 'var(--color-white-a07)'}`,
-                    borderRadius: 10,
+                    borderRadius: 'var(--radius-md)',
                     marginBottom: 8,
                   }}
                 >
@@ -139,7 +139,7 @@ export default function StudyDuelWaiting() {
               padding: '14px 0',
               background: players.length >= 2 ? 'var(--color-warning-a12)' : 'var(--color-white-a04)',
               border: `2px solid ${players.length >= 2 ? 'var(--color-warning)' : 'var(--color-white-a07)'}`,
-              borderRadius: 12,
+              borderRadius: 'var(--radius-lg)',
               color: players.length >= 2 ? 'var(--color-warning)' : 'var(--color-text-faint)',
               cursor: players.length >= 2 ? 'pointer' : 'not-allowed',
               fontSize: 15,

@@ -13,7 +13,7 @@ export default function StudyDuelCreate() {
         <p style={{ fontSize: 16, color: 'var(--color-text-faint)', lineHeight: 1.7, margin: '0 0 36px' }}>Challenge friends to a live study duel — play through puzzles head-to-head and see who finds the best moves.</p>
         <button
           onClick={() => navigate(-1)}
-          style={{ padding: '12px 32px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 14, color: 'var(--color-accent-2)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
+          style={{ padding: '12px 32px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 'var(--radius-lg)', color: 'var(--color-accent-2)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
         >← Go Back</button>
       </div>
     </div>

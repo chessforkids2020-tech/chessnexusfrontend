@@ -119,7 +119,7 @@ const styles = {
   container: {
     background: 'var(--color-surface)',
     padding: '20px', /* reduced padding to shorten card */
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     marginTop: '16px', /* reduce vertical gap on homepage */
     marginBottom: '12px',
     boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -216,7 +216,7 @@ const styles = {
     fontSize: '0.8em',
     fontWeight: '600',
     padding: '4px 10px',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid',
     background: 'var(--color-white-a04)',
     display: 'inline-block',

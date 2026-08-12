@@ -92,8 +92,8 @@ const st = {
   sub: { color: C.textMut, margin: '0 0 20px', fontSize: 14 },
 
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 16 },
-  playerCard: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: '18px 16px', cursor: 'pointer', textAlign: 'center', color: C.text, transition: 'transform 150ms ease, border-color 150ms ease', boxShadow: '0 8px 30px var(--color-black-a35)' },
-  playerPhoto: { width: 130, height: 130, borderRadius: 14, overflow: 'hidden', background: 'var(--color-white-a07)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' },
+  playerCard: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-xl)', padding: '18px 16px', cursor: 'pointer', textAlign: 'center', color: C.text, transition: 'transform 150ms ease, border-color 150ms ease', boxShadow: '0 8px 30px var(--color-black-a35)' },
+  playerPhoto: { width: 130, height: 130, borderRadius: 'var(--radius-lg)', overflow: 'hidden', background: 'var(--color-white-a07)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' },
   playerPhotoImg: { width: '100%', height: '100%', objectFit: 'cover' },
   playerPhotoPlaceholder: { fontSize: 52, fontWeight: 700, color: C.textFaint },
   playerCardName: { fontSize: 15, fontWeight: 700, color: 'var(--color-text)', lineHeight: 1.25 },

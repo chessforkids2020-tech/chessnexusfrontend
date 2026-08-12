@@ -236,14 +236,14 @@ const st = {
   h1: { fontSize: 26, fontWeight: 700, margin: '0 0 16px', color: 'var(--color-text)' },
 
   filters: { display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16, alignItems: 'center' },
-  input: { padding: '9px 12px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, minWidth: 170, background: C.glass, color: C.text, outline: 'none' },
-  select: { padding: '9px 12px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, background: C.glass, color: C.text, maxWidth: 220, outline: 'none' },
-  clearBtn: { padding: '9px 14px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: 'var(--color-danger-a20)', color: 'var(--color-danger)', cursor: 'pointer', fontSize: 14 },
-  suggestBox: { position: 'absolute', top: '100%', left: 0, right: 0, background: C.glassSolid, border: `1px solid ${C.borderStrong}`, borderRadius: 10, marginTop: 4, zIndex: 20, maxHeight: 240, overflowY: 'auto', boxShadow: '0 12px 30px var(--color-black-a50)', minWidth: 200 },
+  input: { padding: '9px 12px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, fontSize: 14, minWidth: 170, background: C.glass, color: C.text, outline: 'none' },
+  select: { padding: '9px 12px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, fontSize: 14, background: C.glass, color: C.text, maxWidth: 220, outline: 'none' },
+  clearBtn: { padding: '9px 14px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.borderStrong}`, background: 'var(--color-danger-a20)', color: 'var(--color-danger)', cursor: 'pointer', fontSize: 14 },
+  suggestBox: { position: 'absolute', top: '100%', left: 0, right: 0, background: C.glassSolid, border: `1px solid ${C.borderStrong}`, borderRadius: 'var(--radius-md)', marginTop: 4, zIndex: 20, maxHeight: 240, overflowY: 'auto', boxShadow: '0 12px 30px var(--color-black-a50)', minWidth: 200 },
   suggestItem: { padding: '9px 12px', cursor: 'pointer', fontSize: 14, color: C.text },
 
   listMeta: { color: C.textMut, fontSize: 13, marginBottom: 8 },
-  table: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 30px var(--color-black-a35)' },
+  table: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-xl)', overflow: 'hidden', boxShadow: '0 8px 30px var(--color-black-a35)' },
   row: { display: 'flex', alignItems: 'center', padding: '12px 16px', borderBottom: `1px solid ${C.border}`, cursor: 'pointer', fontSize: 14, gap: 8, color: C.text, transition: 'background 120ms ease' },
   headRow: { background: 'var(--color-white-a04)', fontWeight: 700, cursor: 'default', color: C.textMut, fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.4 },
   cPlayers: { flex: '2 1 0', minWidth: 0 },
@@ -255,6 +255,6 @@ const st = {
   empty: { padding: 32, textAlign: 'center', color: C.textFaint },
 
   pager: { display: 'flex', gap: 16, alignItems: 'center', justifyContent: 'center', marginTop: 16 },
-  pageBtn: { padding: '8px 16px', borderRadius: 10, border: `1px solid ${C.border}`, background: C.glass, color: C.text, cursor: 'pointer', fontSize: 14 },
+  pageBtn: { padding: '8px 16px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, background: C.glass, color: C.text, cursor: 'pointer', fontSize: 14 },
   pageInfo: { color: C.textMut, fontSize: 14 }
 };

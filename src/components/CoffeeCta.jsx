@@ -29,7 +29,7 @@ export default function CoffeeCta({
   const variants = {
     pill: {
       padding: '10px 18px',
-      borderRadius: 999,
+      borderRadius: 'var(--radius-pill)',
       fontSize: 14
     },
     floating: {
@@ -37,13 +37,13 @@ export default function CoffeeCta({
       bottom: 22,
       right: 22,
       padding: '12px 18px',
-      borderRadius: 999,
+      borderRadius: 'var(--radius-pill)',
       fontSize: 14,
       zIndex: 60
     },
     inline: {
       padding: '8px 14px',
-      borderRadius: 10,
+      borderRadius: 'var(--radius-md)',
       fontSize: 13
     }
   };

@@ -61,7 +61,7 @@ export default function MyStudiesPage() {
   const cardStyle = {
     background: 'rgba(15,15,15,0.8)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     backdropFilter: 'blur(20px)',
     overflow: 'hidden',
   };
@@ -73,7 +73,7 @@ export default function MyStudiesPage() {
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 28, flexWrap: 'wrap' }}>
-          <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 8, color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
+          <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
             ← Back
           </button>
           <div>
@@ -83,13 +83,13 @@ export default function MyStudiesPage() {
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button
               onClick={() => { setImportOpen(true); setImportErr(''); setImportOk(''); }}
-              style={{ padding: '12px 20px', background: 'rgba(45,212,191,0.12)', border: '1px solid rgba(45,212,191,0.4)', borderRadius: 12, color: '#5eead4', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+              style={{ padding: '12px 20px', background: 'rgba(45,212,191,0.12)', border: '1px solid rgba(45,212,191,0.4)', borderRadius: 'var(--radius-lg)', color: '#5eead4', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
             >
               ♞ Import from Lichess
             </button>
             <button
               onClick={() => navigate('/create-position')}
-              style={{ padding: '12px 22px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 12, color: 'var(--color-accent-2)', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
+              style={{ padding: '12px 22px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 'var(--radius-lg)', color: 'var(--color-accent-2)', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}
             >
               + Add Position
             </button>
@@ -102,7 +102,7 @@ export default function MyStudiesPage() {
             onClick={() => !importBusy && setImportOpen(false)}
             style={{ position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.72)', backdropFilter: 'blur(3px)', display: 'grid', placeItems: 'center', zIndex: 9500, padding: 16 }}
           >
-            <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, background: '#0f1520', border: '1px solid rgba(45,212,191,0.3)', borderRadius: 16, padding: 22 }}>
+            <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, background: '#0f1520', border: '1px solid rgba(45,212,191,0.3)', borderRadius: 'var(--radius-xl)', padding: 22 }}>
               <div style={{ fontSize: 18, fontWeight: 800, color: '#5eead4', marginBottom: 6 }}>♞ Import a Lichess study</div>
               <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: 16 }}>
                 Paste a <b>public</b> (or unlisted) Lichess study link. Each Lichess chapter becomes a chapter here, ready to teach in the live classroom. Private studies won’t import — make it public/unlisted on Lichess first.
@@ -112,13 +112,13 @@ export default function MyStudiesPage() {
                 value={importUrl}
                 onChange={e => setImportUrl(e.target.value)}
                 placeholder="https://lichess.org/study/AbCdEfGh"
-                style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 10, border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, marginBottom: 10 }}
+                style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, marginBottom: 10 }}
               />
               <input
                 value={importName}
                 onChange={e => setImportName(e.target.value)}
                 placeholder="Name for this study (optional)"
-                style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 10, border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, marginBottom: 12 }}
+                style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, marginBottom: 12 }}
               />
               {importErr && <div style={{ color: 'var(--color-danger)', fontSize: 13, marginBottom: 10 }}>{importErr}</div>}
               {importOk && <div style={{ color: 'var(--color-success)', fontSize: 13, marginBottom: 10 }}>{importOk}</div>}
@@ -126,13 +126,13 @@ export default function MyStudiesPage() {
                 <button
                   onClick={runImport}
                   disabled={importBusy || !importUrl.trim()}
-                  style={{ flex: 1, padding: '11px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: importBusy ? 'default' : 'pointer', opacity: (importBusy || !importUrl.trim()) ? 0.6 : 1 }}
+                  style={{ flex: 1, padding: '11px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: importBusy ? 'default' : 'pointer', opacity: (importBusy || !importUrl.trim()) ? 0.6 : 1 }}
                 >
                   {importBusy ? 'Importing…' : 'Import study'}
                 </button>
                 <button
                   onClick={() => !importBusy && setImportOpen(false)}
-                  style={{ padding: '11px 18px', borderRadius: 10, border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, cursor: 'pointer' }}
+                  style={{ padding: '11px 18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
@@ -147,7 +147,7 @@ export default function MyStudiesPage() {
             <button
               key={val}
               onClick={() => setFilter(val)}
-              style={{ padding: '7px 18px', borderRadius: 20, border: `1px solid ${filter === val ? 'var(--color-accent-2)' : 'var(--color-white-a10)'}`, background: filter === val ? 'rgba(99,102,241,0.2)' : 'transparent', color: filter === val ? 'var(--color-accent-2)' : 'var(--color-text-faint)', cursor: 'pointer', fontSize: 13, fontWeight: filter === val ? 700 : 400 }}
+              style={{ padding: '7px 18px', borderRadius: 'var(--radius-2xl)', border: `1px solid ${filter === val ? 'var(--color-accent-2)' : 'var(--color-white-a10)'}`, background: filter === val ? 'rgba(99,102,241,0.2)' : 'transparent', color: filter === val ? 'var(--color-accent-2)' : 'var(--color-text-faint)', cursor: 'pointer', fontSize: 13, fontWeight: filter === val ? 700 : 400 }}
             >{label}</button>
           ))}
           <span style={{ marginLeft: 'auto', fontSize: 13, color: 'var(--color-text-faint)', alignSelf: 'center' }}>{displayed.length} stud{displayed.length !== 1 ? 'ies' : 'y'}</span>
@@ -166,7 +166,7 @@ export default function MyStudiesPage() {
             <div style={{ color: 'var(--color-text-faint)', marginBottom: 24, fontSize: 14 }}>
               Create a position and save it to a Private or Public Study to organise and play through your positions.
             </div>
-            <button onClick={() => navigate('/create-position')} style={{ padding: '14px 32px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 12, color: 'var(--color-accent-2)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+            <button onClick={() => navigate('/create-position')} style={{ padding: '14px 32px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 'var(--radius-lg)', color: 'var(--color-accent-2)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
               + Create Position
             </button>
           </div>
@@ -190,10 +190,10 @@ export default function MyStudiesPage() {
                   <div style={{ padding: '18px 18px 16px' }}>
                     {/* Badges */}
                     <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
-                      <span style={{ padding: '2px 9px', background: tc.bg, borderRadius: 6, fontSize: 11, color: tc.color, fontWeight: 700, textTransform: 'capitalize' }}>
+                      <span style={{ padding: '2px 9px', background: tc.bg, borderRadius: 'var(--radius-sm)', fontSize: 11, color: tc.color, fontWeight: 700, textTransform: 'capitalize' }}>
                         {study.studyType || 'study'}
                       </span>
-                      <span style={{ padding: '2px 9px', background: study.isPublic ? 'var(--color-success-a12)' : 'rgba(107,114,128,0.15)', borderRadius: 6, fontSize: 11, color: study.isPublic ? 'var(--color-success)' : 'var(--color-text-muted)', fontWeight: 600 }}>
+                      <span style={{ padding: '2px 9px', background: study.isPublic ? 'var(--color-success-a12)' : 'rgba(107,114,128,0.15)', borderRadius: 'var(--radius-sm)', fontSize: 11, color: study.isPublic ? 'var(--color-success)' : 'var(--color-text-muted)', fontWeight: 600 }}>
                         {study.isPublic ? '🌐 Public' : '🔒 Private'}
                       </span>
                     </div>

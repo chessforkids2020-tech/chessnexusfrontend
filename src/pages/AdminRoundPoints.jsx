@@ -96,7 +96,7 @@ export default function AdminRoundPoints() {
   }
 
   return (
-    <div style={{ background: "#fff", padding: 20, borderRadius: 12, marginTop: 20 }}>
+    <div style={{ background: "#fff", padding: 20, borderRadius: 'var(--radius-lg)', marginTop: 20 }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20 }}>
         <button
           onClick={() => navigate('/scoreboard')}
@@ -105,7 +105,7 @@ export default function AdminRoundPoints() {
             background: '#6b7280',
             color: '#fff',
             border: 'none',
-            borderRadius: 6,
+            borderRadius: 'var(--radius-sm)',
             cursor: 'pointer',
             marginRight: 20
           }}
@@ -125,11 +125,11 @@ export default function AdminRoundPoints() {
       </div>
 
       {/* Bulk Actions */}
-      <div style={{ marginBottom: 20, padding: 16, backgroundColor: "#f8fffa", borderRadius: 8, border: "1px solid #e6f3ea" }}>
+      <div style={{ marginBottom: 20, padding: 16, backgroundColor: "#f8fffa", borderRadius: 'var(--radius-md)', border: "1px solid #e6f3ea" }}>
         <h4 style={{ margin: 0, color: "#064f28" }}>Bulk Actions</h4>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
-          <button onClick={selectAll} style={{ padding: '6px 12px', background:'#0ea5e9', color:'#fff', border:'none', borderRadius:4 }}>Select All</button>
-          <button onClick={deselectAll} style={{ padding: '6px 12px', background:'#6b7280', color:'#fff', border:'none', borderRadius:4 }}>Deselect All</button>
+          <button onClick={selectAll} style={{ padding: '6px 12px', background:'#0ea5e9', color:'#fff', border:'none', borderRadius: 'var(--radius-sm)' }}>Select All</button>
+          <button onClick={deselectAll} style={{ padding: '6px 12px', background:'#6b7280', color:'#fff', border:'none', borderRadius: 'var(--radius-sm)' }}>Deselect All</button>
           <span style={{ color: '#666' }}>{selectedUsers.size} users selected</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
@@ -139,9 +139,9 @@ export default function AdminRoundPoints() {
             min="0"
             value={bulkPoints}
             onChange={(e) => setBulkPoints(parseInt(e.target.value) || 0)}
-            style={{ width: 80, padding: "6px 8px", border: "2px solid #10b981", borderRadius: 4, fontSize: 14, textAlign: "center" }}
+            style={{ width: 80, padding: "6px 8px", border: "2px solid #10b981", borderRadius: 'var(--radius-sm)', fontSize: 14, textAlign: "center" }}
           />
-          <button onClick={applyBulkPoints} style={{ padding: '6px 12px', background:'#059669', color:'#fff', border:'none', borderRadius:4 }}>Apply to Selected</button>
+          <button onClick={applyBulkPoints} style={{ padding: '6px 12px', background:'#059669', color:'#fff', border:'none', borderRadius: 'var(--radius-sm)' }}>Apply to Selected</button>
         </div>
       </div>
 
@@ -198,9 +198,9 @@ export default function AdminRoundPoints() {
                   </td>
                   <td style={{ padding: 12 }}>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      <button onClick={() => updateUserPoints(user._id, (user.points || 0) + 1)} style={{ padding: '4px 8px', background:'#10b981', color:'#fff', border:'none', borderRadius:4, fontSize:12 }}>+1</button>
-                      <button onClick={() => updateUserPoints(user._id, (user.points || 0) - 1)} style={{ padding: '4px 8px', background:'#ef4444', color:'#fff', border:'none', borderRadius:4, fontSize:12 }}>-1</button>
-                      <button onClick={() => updateUserPoints(user._id, 0)} style={{ padding: '4px 8px', background:'#6b7280', color:'#fff', border:'none', borderRadius:4, fontSize:12 }}>Reset</button>
+                      <button onClick={() => updateUserPoints(user._id, (user.points || 0) + 1)} style={{ padding: '4px 8px', background:'#10b981', color:'#fff', border:'none', borderRadius: 'var(--radius-sm)', fontSize:12 }}>+1</button>
+                      <button onClick={() => updateUserPoints(user._id, (user.points || 0) - 1)} style={{ padding: '4px 8px', background:'#ef4444', color:'#fff', border:'none', borderRadius: 'var(--radius-sm)', fontSize:12 }}>-1</button>
+                      <button onClick={() => updateUserPoints(user._id, 0)} style={{ padding: '4px 8px', background:'#6b7280', color:'#fff', border:'none', borderRadius: 'var(--radius-sm)', fontSize:12 }}>Reset</button>
                     </div>
                   </td>
                 </tr>
@@ -210,7 +210,7 @@ export default function AdminRoundPoints() {
         </div>
       )}
 
-      <div style={{ marginTop: 20, padding: 12, backgroundColor: "#f8fffa", borderRadius: 8, border: "1px solid #e6f3ea" }}>
+      <div style={{ marginTop: 20, padding: 12, backgroundColor: "#f8fffa", borderRadius: 'var(--radius-md)', border: "1px solid #e6f3ea" }}>
         <h4 style={{ margin: 0, color: "#064f28" }}>Admin Instructions</h4>
         <ul style={{ margin: 8, paddingLeft: 20, color: "#666" }}>
           <li><strong>User Assignment:</strong> Users appear here automatically when assigned to batches in this round</li>

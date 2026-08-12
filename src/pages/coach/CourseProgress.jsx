@@ -75,7 +75,7 @@ export default function CourseProgress() {
                     return (
                       <td key={cell.lessonIndex} style={{ padding: 4, textAlign: 'center' }}>
                         <div title={c.title}
-                          style={{ background: c.bg, borderRadius: 6, padding: '6px 0', fontSize: 15 }}>
+                          style={{ background: c.bg, borderRadius: 'var(--radius-sm)', padding: '6px 0', fontSize: 15 }}>
                           {c.icon}
                         </div>
                       </td>

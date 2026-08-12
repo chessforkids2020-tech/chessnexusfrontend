@@ -67,7 +67,7 @@
 .glass-card {
   background: var(--color-surface);
   border: 1px solid var(--color-white-a04);
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px var(--color-black-a50);
@@ -108,7 +108,7 @@
 .section-icon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -134,7 +134,7 @@
 .quick-play-card {
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a04);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 20px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -175,7 +175,7 @@
 .quick-play-badge {
   display: inline-block;
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -193,7 +193,7 @@
 .tournament-card {
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a04);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 20px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -215,7 +215,7 @@
 .tournament-icon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -276,7 +276,7 @@
 .tournament-status {
   display: inline-block;
   padding: 4px 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -424,7 +424,7 @@
   justify-content: space-between;
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a04);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 20px;
   margin-top: 0;
 }
@@ -480,7 +480,7 @@
 .play-option-card {
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a04);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 22px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -506,7 +506,7 @@
 .play-option-icon {
   width: 50px;
   height: 50px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -688,7 +688,7 @@
   height: 40px;
   border: 3px solid var(--color-white-a10);
   border-top: 3px solid #4ECDC4;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
 }

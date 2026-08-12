@@ -193,10 +193,10 @@ function EnginePanel({ fen, numLines = ENGINE_LINES }) {
 }
 
 const engineStyles = {
-  box: { background: "rgba(0,0,0,0.4)", border: "1px solid rgba(6,182,212,0.25)", borderRadius: 12, padding: 12, marginTop: 12, flex: "0 0 auto" },
+  box: { background: "rgba(0,0,0,0.4)", border: "1px solid rgba(6,182,212,0.25)", borderRadius: 'var(--radius-lg)', padding: 12, marginTop: 12, flex: "0 0 auto" },
   head: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
   name: { fontWeight: 800, color: "#ffffff", fontSize: 14 },
-  depth: { fontSize: 12, color: "#06b6d4", border: "1px solid rgba(6,182,212,0.4)", borderRadius: 999, padding: "2px 10px" },
+  depth: { fontSize: 12, color: "#06b6d4", border: "1px solid rgba(6,182,212,0.4)", borderRadius: 'var(--radius-pill)', padding: "2px 10px" },
   empty: { color: "#9ca3af", fontSize: 13, padding: "6px 2px" },
   th: { textAlign: "left", fontSize: 11, letterSpacing: 0.5, textTransform: "uppercase", color: "#6b7280", padding: "4px 6px", borderBottom: "1px solid rgba(255,255,255,0.05)" },
   eval: { fontWeight: 800, fontFamily: "monospace", padding: "6px 6px", borderBottom: "1px solid rgba(255,255,255,0.05)", whiteSpace: "nowrap", verticalAlign: "top" },
@@ -261,7 +261,7 @@ const styles = {
   header: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, flexWrap: "wrap", gap: 12 },
   title: { fontSize: 24, color: "#f1f5f9", fontWeight: 800, margin: 0 },
   subtitle: { margin: "4px 0 18px", color: "#94a3b8", fontSize: 13 },
-  secondaryBtn: { padding: "8px 12px", background: "rgba(255,255,255,0.05)", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, cursor: "pointer", fontWeight: 600 },
+  secondaryBtn: { padding: "8px 12px", background: "rgba(255,255,255,0.05)", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 'var(--radius-md)', cursor: "pointer", fontWeight: 600 },
   cardGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 18 },
   // Wide rectangular banner for the curated challenges, above the type grid.
   challengeBanner: {
@@ -271,7 +271,7 @@ const styles = {
     gap: 18,
     padding: "18px 22px",
     marginBottom: 20,
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     cursor: "pointer",
     overflow: "hidden",
     background: "linear-gradient(120deg, rgba(245,158,11,0.10) 0%, rgba(30,30,34,0.75) 45%, rgba(12,12,14,0.85) 100%)",
@@ -281,7 +281,7 @@ const styles = {
     flexWrap: "wrap",
   },
   challengeIcon: {
-    flex: "0 0 auto", width: 52, height: 52, borderRadius: 14,
+    flex: "0 0 auto", width: 52, height: 52, borderRadius: 'var(--radius-lg)',
     display: "grid", placeItems: "center", fontSize: 26,
     background: "rgba(245,158,11,0.14)", color: "#f59e0b",
     border: "1px solid rgba(245,158,11,0.25)",
@@ -289,7 +289,7 @@ const styles = {
   challengeTitle: { fontSize: 18, fontWeight: 800, color: "#fff", letterSpacing: -0.2 },
   challengeSub: { fontSize: 13, color: "#94a3b8", marginTop: 4, lineHeight: 1.55 },
   challengeCta: {
-    flex: "0 0 auto", padding: "10px 18px", borderRadius: 999,
+    flex: "0 0 auto", padding: "10px 18px", borderRadius: 'var(--radius-pill)',
     background: "rgba(245,158,11,0.14)", color: "#f59e0b",
     border: "1px solid rgba(245,158,11,0.35)",
     fontSize: 13.5, fontWeight: 800, whiteSpace: "nowrap",
@@ -299,7 +299,7 @@ const styles = {
     background: "linear-gradient(160deg, rgba(30,30,34,0.75) 0%, rgba(12,12,14,0.85) 100%)",
     backdropFilter: "blur(20px)",
     padding: "22px 20px",
-    borderRadius: 18,
+    borderRadius: 'var(--radius-xl)',
     border: "1px solid rgba(255,255,255,0.08)",
     boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
     cursor: "pointer",
@@ -312,7 +312,7 @@ const styles = {
     opacity: 0.10, pointerEvents: "none", userSelect: "none", fontWeight: 400,
   },
   cardIconBadge: {
-    width: 54, height: 54, borderRadius: 14, display: "flex", alignItems: "center",
+    width: 54, height: 54, borderRadius: 'var(--radius-lg)', display: "flex", alignItems: "center",
     justifyContent: "center", fontSize: 30, lineHeight: 1, marginBottom: 14,
     border: "1px solid rgba(255,255,255,0.12)",
   },
@@ -324,29 +324,29 @@ const styles = {
     display: "inline-flex", alignItems: "center", gap: 5, letterSpacing: "0.3px",
   },
   toolbar: { display: "flex", gap: 10, alignItems: "center", marginBottom: 14, flexWrap: "wrap" },
-  input: { padding: "8px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "#e2e8f0", minWidth: 260, fontSize: 14 },
-  tableWrap: { background: "rgba(15,15,15,0.6)", backdropFilter: "blur(20px)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", overflow: "auto", boxShadow: "0 6px 16px rgba(0,0,0,0.35)" },
+  input: { padding: "8px 12px", borderRadius: 'var(--radius-md)', border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "#e2e8f0", minWidth: 260, fontSize: 14 },
+  tableWrap: { background: "rgba(15,15,15,0.6)", backdropFilter: "blur(20px)", borderRadius: 'var(--radius-lg)', border: "1px solid rgba(255,255,255,0.08)", overflow: "auto", boxShadow: "0 6px 16px rgba(0,0,0,0.35)" },
   table: { width: "100%", borderCollapse: "collapse", fontSize: 13 },
   th: { padding: "11px 12px", textAlign: "left", fontWeight: 700, color: "#cbd5e1", borderBottom: "2px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.03)", whiteSpace: "nowrap" },
   td: { padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.06)", verticalAlign: "middle", color: "#cbd5e1" },
   rowBtn: { cursor: "pointer" },
-  tag: { padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 700, display: "inline-block", whiteSpace: "nowrap" },
+  tag: { padding: "3px 10px", borderRadius: 'var(--radius-lg)', fontSize: 11, fontWeight: 700, display: "inline-block", whiteSpace: "nowrap" },
   pager: { display: "flex", gap: 10, alignItems: "center", justifyContent: "center", marginTop: 16 },
   // Modal — Obsidian Glass theme (matches src/styles/obsidian-glass.css)
   overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200000, padding: 16 },
-  modal: { background: "rgba(23,23,23,0.95)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 24, padding: 24, maxWidth: 880, width: "100%", maxHeight: "90vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.8)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" },
+  modal: { background: "rgba(23,23,23,0.95)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 'var(--radius-2xl)', padding: 24, maxWidth: 880, width: "100%", maxHeight: "90vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.8)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" },
   modalHead: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 16 },
-  analyzeBtn: { background: "rgba(0,0,0,0.4)", color: "#06b6d4", border: "1px solid rgba(6,182,212,0.4)", borderRadius: 999, padding: "6px 16px", cursor: "pointer", fontWeight: 700, fontSize: 13, alignSelf: "center" },
-  analyzeBtnOn: { background: "linear-gradient(135deg,#06b6d4 0%,#10b981 100%)", color: "#fff", border: "1px solid rgba(6,182,212,0.6)", borderRadius: 999, padding: "6px 16px", cursor: "pointer", fontWeight: 700, fontSize: 13, alignSelf: "center", boxShadow: "0 4px 16px rgba(6,182,212,0.4)" },
+  analyzeBtn: { background: "rgba(0,0,0,0.4)", color: "#06b6d4", border: "1px solid rgba(6,182,212,0.4)", borderRadius: 'var(--radius-pill)', padding: "6px 16px", cursor: "pointer", fontWeight: 700, fontSize: 13, alignSelf: "center" },
+  analyzeBtnOn: { background: "linear-gradient(135deg,#06b6d4 0%,#10b981 100%)", color: "#fff", border: "1px solid rgba(6,182,212,0.6)", borderRadius: 'var(--radius-pill)', padding: "6px 16px", cursor: "pointer", fontWeight: 700, fontSize: 13, alignSelf: "center", boxShadow: "0 4px 16px rgba(6,182,212,0.4)" },
   // ── Play vs Stockfish panel ───────────────────────────────────────────────
-  playPanel: { border: "1px solid rgba(52,211,153,0.3)", background: "rgba(16,185,129,0.06)", borderRadius: 12, padding: 14, marginBottom: 12 },
+  playPanel: { border: "1px solid rgba(52,211,153,0.3)", background: "rgba(16,185,129,0.06)", borderRadius: 'var(--radius-lg)', padding: 14, marginBottom: 12 },
   playHead: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 },
-  lvlBtn: { flex: 1, padding: "6px 0", borderRadius: 8, border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "#cbd5e1", cursor: "pointer", fontSize: 12.5, fontWeight: 700 },
-  lvlBtnOn: { flex: 1, padding: "6px 0", borderRadius: 8, border: "1px solid rgba(52,211,153,0.55)", background: "rgba(16,185,129,0.16)", color: "#6ee7b7", cursor: "pointer", fontSize: 12.5, fontWeight: 800 },
-  playResult: { padding: "8px 10px", borderRadius: 8, background: "rgba(255,255,255,0.06)", color: "#e6e8ee", fontSize: 13, fontWeight: 700, marginBottom: 8 },
+  lvlBtn: { flex: 1, padding: "6px 0", borderRadius: 'var(--radius-md)', border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "#cbd5e1", cursor: "pointer", fontSize: 12.5, fontWeight: 700 },
+  lvlBtnOn: { flex: 1, padding: "6px 0", borderRadius: 'var(--radius-md)', border: "1px solid rgba(52,211,153,0.55)", background: "rgba(16,185,129,0.16)", color: "#6ee7b7", cursor: "pointer", fontSize: 12.5, fontWeight: 800 },
+  playResult: { padding: "8px 10px", borderRadius: 'var(--radius-md)', background: "rgba(255,255,255,0.06)", color: "#e6e8ee", fontSize: 13, fontWeight: 700, marginBottom: 8 },
   playMoves: { maxHeight: 140, overflowY: "auto", lineHeight: 1.9, marginBottom: 10 },
-  playAgainBtn: { width: "100%", padding: "8px 0", borderRadius: 8, border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "#cbd5e1", cursor: "pointer", fontSize: 12.5, fontWeight: 700 },
-  playNote: { padding: "8px 10px", borderRadius: 8, background: "rgba(245,196,81,0.10)", border: "1px solid rgba(245,196,81,0.3)", color: "#f5c451", fontSize: 12.5, marginBottom: 10 },
+  playAgainBtn: { width: "100%", padding: "8px 0", borderRadius: 'var(--radius-md)', border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)", color: "#cbd5e1", cursor: "pointer", fontSize: 12.5, fontWeight: 700 },
+  playNote: { padding: "8px 10px", borderRadius: 'var(--radius-md)', background: "rgba(245,196,81,0.10)", border: "1px solid rgba(245,196,81,0.3)", color: "#f5c451", fontSize: 12.5, marginBottom: 10 },
 
   // Board on the left, everything else (controls + moves + meta) in the right column.
   modalBody: { display: "flex", gap: 28, alignItems: "flex-start", flexWrap: "wrap" },
@@ -362,11 +362,11 @@ const styles = {
   metaRow: { display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.05)", fontSize: 14 },
   metaKey: { color: "#9ca3af" },
   metaVal: { fontWeight: 700, color: "#ffffff", textAlign: "right" },
-  closeBtn: { background: "rgba(0,0,0,0.4)", color: "#9ca3af", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, width: 34, height: 34, cursor: "pointer", fontSize: 18, lineHeight: 1 },
-  navBtn: { background: "rgba(0,0,0,0.4)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "8px 12px", cursor: "pointer", fontWeight: 700 },
-  navBtnPrimary: { background: "linear-gradient(135deg,#06b6d4 0%,#10b981 100%)", color: "#fff", border: "none", borderRadius: 10, padding: "8px 12px", cursor: "pointer", fontWeight: 700, boxShadow: "0 4px 16px rgba(6,182,212,0.4)" },
-  moveList: { display: "flex", flexWrap: "wrap", gap: 4, marginTop: 10, maxHeight: 200, overflowY: "auto", padding: 12, background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 12 },
-  moveChip: (active) => ({ cursor: "pointer", padding: "2px 7px", borderRadius: 6, fontSize: 13, background: active ? "#06b6d4" : "transparent", color: active ? "#0a0a0a" : "#e5e7eb", border: active ? "1px solid #06b6d4" : "1px solid rgba(255,255,255,0.1)" }),
+  closeBtn: { background: "rgba(0,0,0,0.4)", color: "#9ca3af", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 'var(--radius-md)', width: 34, height: 34, cursor: "pointer", fontSize: 18, lineHeight: 1 },
+  navBtn: { background: "rgba(0,0,0,0.4)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 'var(--radius-md)', padding: "8px 12px", cursor: "pointer", fontWeight: 700 },
+  navBtnPrimary: { background: "linear-gradient(135deg,#06b6d4 0%,#10b981 100%)", color: "#fff", border: "none", borderRadius: 'var(--radius-md)', padding: "8px 12px", cursor: "pointer", fontWeight: 700, boxShadow: "0 4px 16px rgba(6,182,212,0.4)" },
+  moveList: { display: "flex", flexWrap: "wrap", gap: 4, marginTop: 10, maxHeight: 200, overflowY: "auto", padding: 12, background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 'var(--radius-lg)' },
+  moveChip: (active) => ({ cursor: "pointer", padding: "2px 7px", borderRadius: 'var(--radius-sm)', fontSize: 13, background: active ? "#06b6d4" : "transparent", color: active ? "#0a0a0a" : "#e5e7eb", border: active ? "1px solid #06b6d4" : "1px solid rgba(255,255,255,0.1)" }),
   loading: { padding: 40, textAlign: "center", color: "#6b7280" },
 };
 
@@ -846,7 +846,7 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
         {isAdmin && showTrainerForm && (() => {
           const pieces = (shownFen.split(" ")[0].match(/[pnbrqkPNBRQK]/g) || []).length;
           const tooBig = pieces > 7;
-          const inputStyle = { padding: "6px 8px", borderRadius: 6, border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.05)", color: "#e2e8f0", fontSize: 13 };
+          const inputStyle = { padding: "6px 8px", borderRadius: 'var(--radius-sm)', border: "1px solid rgba(255,255,255,0.15)", background: "rgba(255,255,255,0.05)", color: "#e2e8f0", fontSize: 13 };
           const submit = async () => {
             setTfBusy(true); setTfMsg("");
             try {
@@ -857,7 +857,7 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
             } finally { setTfBusy(false); }
           };
           return (
-            <div style={{ margin: "0 0 14px", padding: 14, borderRadius: 12, border: "1px solid rgba(245,196,81,0.4)", background: "rgba(245,196,81,0.06)" }}>
+            <div style={{ margin: "0 0 14px", padding: 14, borderRadius: 'var(--radius-lg)', border: "1px solid rgba(245,196,81,0.4)", background: "rgba(245,196,81,0.06)" }}>
               <div style={{ fontWeight: 800, color: "#f5c451", marginBottom: 8 }}>⭐ Add this position to the Endgame Mastery trainer</div>
               <div style={{ fontSize: 12, color: "#cbd5e1", marginBottom: 10, wordBreak: "break-all" }}>
                 FEN: {shownFen} · <strong style={{ color: tooBig ? "#f87171" : "#34d399" }}>{pieces} pieces{tooBig ? " — too many (≤7 needed)" : " ✓"}</strong>
@@ -1023,7 +1023,7 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
             <div style={styles.metaRow}><span style={styles.metaKey}>Starts at move</span><span style={styles.metaVal}>{game.endgameMoveNumber}</span></div>
             <div style={{ marginTop: 12 }}>
               <div style={{ fontSize: 12, color: "#94a3b8", marginBottom: 4 }}>FEN (endgame position)</div>
-              <code style={{ display: "block", fontSize: 11, background: "#1e293b", padding: 8, borderRadius: 6, wordBreak: "break-all", color: "#e2e8f0" }}>
+              <code style={{ display: "block", fontSize: 11, background: "#1e293b", padding: 8, borderRadius: 'var(--radius-sm)', wordBreak: "break-all", color: "#e2e8f0" }}>
                 {game.fen}
               </code>
             </div>

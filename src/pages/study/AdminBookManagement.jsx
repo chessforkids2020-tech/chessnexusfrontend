@@ -433,7 +433,7 @@ const AdminBookManagement = () => {
               <input type="number" min={0} value={book.freeChapters}
                 disabled={book.freeForAll}
                 title={book.freeForAll ? 'Whole book is free — this is ignored' : ''}
-                style={{ width: 56, padding: 4, border: '1px solid #ccc', borderRadius: 4, background: book.freeForAll ? '#f0f0f0' : 'var(--color-text)' }}
+                style={{ width: 56, padding: 4, border: '1px solid #ccc', borderRadius: 'var(--radius-sm)', background: book.freeForAll ? '#f0f0f0' : 'var(--color-text)' }}
                 onChange={(e) => updateFreeChapters(book, Math.max(0, +e.target.value))} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, fontSize: 13, color: book.freeForAll ? '#aaa' : '#555' }}>
@@ -442,7 +442,7 @@ const AdminBookManagement = () => {
                 key={`xp-${book._id}-${book.xpPrice}`}
                 disabled={book.freeForAll}
                 title={book.freeForAll ? 'Whole book is free — this is ignored. 0 = free for everyone.' : '0 = free for everyone'}
-                style={{ width: 72, padding: 4, border: '1px solid #ccc', borderRadius: 4, background: book.freeForAll ? '#f0f0f0' : 'var(--color-text)' }}
+                style={{ width: 72, padding: 4, border: '1px solid #ccc', borderRadius: 'var(--radius-sm)', background: book.freeForAll ? '#f0f0f0' : 'var(--color-text)' }}
                 onBlur={(e) => { const n = Math.max(0, +e.target.value || 0); if (n !== (book.xpPrice || 0)) updateXpPrice(book, n); }} />
             </div>
             <div style={{ ...styles.buttonGroup, marginTop: 10 }}>
@@ -480,34 +480,34 @@ function findInTree(nodes, id) {
 }
 function stripHtml(html) { return String(html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim(); }
 
-const miniBtn = { background: 'none', border: '1px solid #ddd', borderRadius: 4, cursor: 'pointer', fontSize: 12, padding: '1px 6px' };
+const miniBtn = { background: 'none', border: '1px solid #ddd', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: 12, padding: '1px 6px' };
 const styles = {
   container: { maxWidth: 1200, margin: '0 auto', padding: 24 },
   backButton: { background: 'none', border: 'none', color: 'var(--color-success)', cursor: 'pointer', fontSize: 15, padding: 0, marginBottom: 8 },
   title: { fontSize: 28, color: 'var(--color-success)', margin: '4px 0' },
-  error: { background: '#fdecea', color: '#c62828', padding: '10px 14px', borderRadius: 6, marginBottom: 16 },
-  form: { background: 'var(--color-surface)', padding: 20, borderRadius: 8, marginBottom: 24 },
+  error: { background: '#fdecea', color: '#c62828', padding: '10px 14px', borderRadius: 'var(--radius-sm)', marginBottom: 16 },
+  form: { background: 'var(--color-surface)', padding: 20, borderRadius: 'var(--radius-md)', marginBottom: 24 },
   formGroup: { marginBottom: 12 },
   label: { display: 'block', fontWeight: 600, marginBottom: 6, color: 'var(--color-text)' },
-  input: { width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: 6, fontSize: 15, boxSizing: 'border-box' },
+  input: { width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: 'var(--radius-sm)', fontSize: 15, boxSizing: 'border-box' },
   buttonGroup: { display: 'flex', gap: 8, flexWrap: 'wrap' },
-  primaryButton: { background: 'var(--color-success)', color: 'var(--color-text)', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 15 },
-  primaryButtonSm: { background: 'var(--color-success)', color: 'var(--color-text)', border: 'none', padding: '5px 12px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
-  cancelButton: { background: 'var(--color-surface-2)', color: 'var(--color-text)', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 15 },
+  primaryButton: { background: 'var(--color-success)', color: 'var(--color-text)', border: 'none', padding: '10px 18px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: 15 },
+  primaryButtonSm: { background: 'var(--color-success)', color: 'var(--color-text)', border: 'none', padding: '5px 12px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: 13 },
+  cancelButton: { background: 'var(--color-surface-2)', color: 'var(--color-text)', border: 'none', padding: '10px 18px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: 15 },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 18 },
-  card: { background: 'var(--color-surface)', borderRadius: 12, padding: 18, boxShadow: '0 4px 12px var(--color-black-a20)', border: '1px solid var(--color-surface-2)' },
+  card: { background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', padding: 18, boxShadow: '0 4px 12px var(--color-black-a20)', border: '1px solid var(--color-surface-2)' },
   cardTitle: { fontSize: 18, fontWeight: 'bold', color: 'var(--color-success)', margin: '0 0 2px' },
-  coverThumb: { width: 70, height: 95, objectFit: 'cover', borderRadius: 6, border: '1px solid #ddd' },
-  coverPlaceholder: { width: 70, height: 95, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, background: '#eef7ee', borderRadius: 6 },
-  button: { padding: '6px 12px', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 13 },
+  coverThumb: { width: 70, height: 95, objectFit: 'cover', borderRadius: 'var(--radius-sm)', border: '1px solid #ddd' },
+  coverPlaceholder: { width: 70, height: 95, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, background: '#eef7ee', borderRadius: 'var(--radius-sm)' },
+  button: { padding: '6px 12px', border: 'none', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontSize: 13 },
   editButton: { background: 'var(--color-accent-2)', color: 'var(--color-text)' },
   deleteButton: { background: 'var(--color-danger)', color: 'var(--color-text)' },
   manageButton: { background: 'var(--color-success)', color: 'var(--color-text)' },
-  badge: { fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 999 },
+  badge: { fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-pill)' },
   pageRow: { display: 'flex', alignItems: 'center', gap: 6, padding: '6px 0', borderBottom: '1px solid #f0f0f0' },
-  blockCard: { border: '1px solid #e3ebe3', borderRadius: 8, padding: 12, marginBottom: 12, background: '#fbfdfb' },
+  blockCard: { border: '1px solid #e3ebe3', borderRadius: 'var(--radius-md)', padding: 12, marginBottom: 12, background: '#fbfdfb' },
   blockHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  addBlockBtn: { background: '#eef7ee', color: 'var(--color-success)', border: '1px dashed var(--color-success)', padding: '8px 14px', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 600 },
+  addBlockBtn: { background: '#eef7ee', color: 'var(--color-success)', border: '1px dashed var(--color-success)', padding: '8px 14px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 14, fontWeight: 600 },
 };
 
 export default AdminBookManagement;

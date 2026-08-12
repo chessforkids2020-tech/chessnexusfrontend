@@ -6,7 +6,7 @@
   height: 600px;
   max-height: 70vh;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   background: rgba(15, 15, 15, 0.6);
   -webkit-backdrop-filter: blur(12px);
@@ -40,7 +40,7 @@
 .cchat-newbtn {
   background: rgba(52, 211, 153, 0.12);
   border: 1px solid rgba(52, 211, 153, 0.35);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   color: #34d399;
   cursor: pointer;
   font-size: 15px;
@@ -91,7 +91,7 @@
   font-weight: 700;
   min-width: 18px;
   height: 18px;
-  border-radius: 9px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,7 +144,7 @@
   background: rgba(255, 255, 255, 0.07);
   color: #e5e7eb;
   padding: 8px 13px;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   border-top-left-radius: 4px;
   font-size: 14px;
   line-height: 1.5;
@@ -185,7 +185,7 @@
   flex: 1;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: #fff;
   padding: 10px 14px;
   font-size: 14px;
@@ -201,7 +201,7 @@
 .cchat-compose button {
   background: linear-gradient(135deg, #059669, #10b981);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: #fff;
   font-weight: 700;
   padding: 0 22px;
@@ -223,7 +223,7 @@
 .cchat-modal {
   background: #111827;
   border: 1px solid rgba(52, 211, 153, 0.3);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   width: 100%;
   max-width: 420px;
   max-height: 80vh;
@@ -252,7 +252,7 @@
   padding: 10px 12px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   color: #e5e7eb;
   cursor: pointer;
   font-size: 14px;
@@ -266,7 +266,7 @@
   margin: 12px 16px 4px;
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   color: #fff;
   padding: 10px 14px;
   font-size: 14px;
@@ -276,7 +276,7 @@
   margin: 12px 16px 16px;
   background: linear-gradient(135deg, #059669, #10b981);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: #fff;
   font-weight: 700;
   padding: 11px;

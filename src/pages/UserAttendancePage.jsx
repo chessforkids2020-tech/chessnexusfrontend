@@ -53,7 +53,7 @@ const styles = {
   },
   section: {
     background: 'var(--color-surface)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     padding: '28px',
     marginBottom: '24px',
     boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -81,7 +81,7 @@ const styles = {
   statCard: {
     background: 'var(--color-black-a35)',
     padding: '12px 14px',
-    borderRadius: '10px',
+    borderRadius: 'var(--radius-md)',
     border: '1px solid var(--color-white-a04)',
     textAlign: 'center',
     transition: 'all 0.2s ease',
@@ -130,7 +130,7 @@ const styles = {
   button: {
     padding: '12px 24px',
     border: 'none',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     cursor: 'pointer',
     fontSize: '14px',
     fontWeight: '600',
@@ -162,7 +162,7 @@ const styles = {
     padding: '12px 16px',
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a10)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     fontSize: '14px',
     color: 'var(--color-text)',
     transition: 'all 0.3s ease'
@@ -176,7 +176,7 @@ const styles = {
     padding: '12px 16px',
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a10)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     fontSize: '14px',
     color: 'var(--color-text)'
   },
@@ -207,7 +207,7 @@ const styles = {
   modalContent: {
     background: 'var(--color-surface)',
     padding: '32px',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     width: '90%',
     maxWidth: '500px',
     maxHeight: '80vh',
@@ -244,7 +244,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: '8px'
+    borderRadius: 'var(--radius-md)'
   },
   closeBtnHover: {
     background: 'var(--color-danger-a20)',
@@ -258,7 +258,7 @@ const styles = {
   },
   card: {
     background: 'var(--color-surface)',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     padding: '24px',
     border: '1px solid var(--color-white-a04)',
     boxShadow: '0 4px 16px var(--color-black-a35)',
@@ -274,7 +274,7 @@ const styles = {
   },
   badge: {
     padding: '6px 12px',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     fontSize: '12px',
     fontWeight: '600',
     display: 'inline-flex',
@@ -349,7 +349,7 @@ const styles = {
     padding: '12px 20px',
     background: 'var(--color-accent-a15)',
     border: '1px solid var(--color-accent-a30)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     cursor: 'pointer',
     fontSize: '14px',
     fontWeight: '600',
@@ -626,7 +626,7 @@ const UserAttendancePage = () => {
         {next && (
           <div style={{
             background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a30)',
-            borderRadius: 12, padding: '14px 18px', marginBottom: 20,
+            borderRadius: 'var(--radius-lg)', padding: '14px 18px', marginBottom: 20,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             gap: 14, flexWrap: 'wrap',
           }}>
@@ -639,7 +639,7 @@ const UserAttendancePage = () => {
             </div>
             {next.item.meetingLink && (
               <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer"
-                 style={{ padding: '8px 18px', borderRadius: 8, background: 'var(--color-accent)',
+                 style={{ padding: '8px 18px', borderRadius: 'var(--radius-md)', background: 'var(--color-accent)',
                           color: 'var(--color-bg)', fontWeight: 700, textDecoration: 'none' }}>
                 Join
               </a>
@@ -654,14 +654,14 @@ const UserAttendancePage = () => {
               {classes.map(c => (
                 <div key={c._id} style={{
                   background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)',
-                  borderRadius: 10, padding: '14px 16px',
+                  borderRadius: 'var(--radius-md)', padding: '14px 16px',
                 }}>
                   <div style={{ color: 'var(--color-text)', fontWeight: 600 }}>{c.title}</div>
                   <div style={{ color: 'var(--color-text-muted)', fontSize: 13, marginTop: 2 }}>{c.coachName}</div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: '10px 0 6px' }}>
                     {(c.days || []).map(d => (
                       <span key={d} style={{
-                        padding: '3px 9px', borderRadius: 999, fontSize: 12, fontWeight: 600,
+                        padding: '3px 9px', borderRadius: 'var(--radius-pill)', fontSize: 12, fontWeight: 600,
                         background: 'var(--color-accent-a15)', color: 'var(--color-accent)',
                       }}>{localDayLabel(d, c.timeUTC) || DAY_NAMES[d]}</span>
                     ))}
@@ -689,7 +689,7 @@ const UserAttendancePage = () => {
               {upcomingHolidays.map(h => (
                 <div key={h.date} style={{
                   background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a20)',
-                  borderRadius: 8, padding: '10px 14px',
+                  borderRadius: 'var(--radius-md)', padding: '10px 14px',
                   display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
                 }}>
                   <span style={{ color: 'var(--color-danger)', fontWeight: 600 }}>{fmtEnrollDate(h.date)}</span>
@@ -776,7 +776,7 @@ const UserAttendancePage = () => {
         return (
           <div style={{
             background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a30)',
-            borderRadius: 12, padding: '14px 18px', marginBottom: 20,
+            borderRadius: 'var(--radius-lg)', padding: '14px 18px', marginBottom: 20,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             gap: 14, flexWrap: 'wrap',
           }}>
@@ -790,13 +790,13 @@ const UserAttendancePage = () => {
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {next.item.meetingLink && (
                 <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer"
-                   style={{ padding: '8px 18px', borderRadius: 8, background: 'var(--color-accent)',
+                   style={{ padding: '8px 18px', borderRadius: 'var(--radius-md)', background: 'var(--color-accent)',
                             color: 'var(--color-bg)', fontWeight: 700, textDecoration: 'none' }}>
                   Join
                 </a>
               )}
               <button onClick={() => setActiveTab('schedule')}
-                style={{ padding: '8px 18px', borderRadius: 8, cursor: 'pointer',
+                style={{ padding: '8px 18px', borderRadius: 'var(--radius-md)', cursor: 'pointer',
                          background: 'transparent', border: '1px solid var(--color-accent-a40)',
                          color: 'var(--color-accent)', fontWeight: 600 }}>
                 Full schedule
@@ -928,7 +928,7 @@ const UserAttendancePage = () => {
         </button>
       </div>
 
-      <div style={{overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--color-white-a04)'}}>
+      <div style={{overflowX: 'auto', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-white-a04)'}}>
         <table style={styles.table}>
           <thead style={styles.tableHeader}>
             <tr>
@@ -1001,7 +1001,7 @@ const UserAttendancePage = () => {
         </button>
       </div>
 
-      <div style={{overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--color-white-a04)'}}>
+      <div style={{overflowX: 'auto', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-white-a04)'}}>
         <table style={styles.table}>
           <thead style={styles.tableHeader}>
             <tr>
@@ -1111,7 +1111,7 @@ const UserAttendancePage = () => {
               marginLeft: 6, minWidth: 18, height: 18, padding: '0 5px',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 11, fontWeight: 800, lineHeight: 1,
-              color: 'var(--color-text)', background: 'var(--color-danger)', borderRadius: 999,
+              color: 'var(--color-text)', background: 'var(--color-danger)', borderRadius: 'var(--radius-pill)',
             }}>{msgUnread > 99 ? '99+' : msgUnread}</span>
           )}
         </div>

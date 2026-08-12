@@ -43,7 +43,7 @@
   border: 1px solid var(--color-danger-a30);
   color: var(--color-danger);
   padding: 12px 18px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   margin-bottom: 20px;
   font-size: 14px;
 }
@@ -124,7 +124,7 @@
   padding: 0 5px;
   background: var(--color-danger);
   color: var(--color-text);
-  border-radius: 9px;
+  border-radius: var(--radius-md);
   font-size: 11px;
   font-weight: 800;
   line-height: 1;
@@ -154,7 +154,7 @@
   gap: 16px;
   background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 20px 22px;
 }
 
@@ -179,7 +179,7 @@
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 /* ── Stats ── */
@@ -192,7 +192,7 @@
 .mcp-stat {
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a04);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 22px;
   text-align: center;
 }
@@ -231,7 +231,7 @@
   font-weight: 600;
   font-size: 14px;
   padding: 10px 18px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
   font-family: inherit;
@@ -242,7 +242,7 @@
 /* ── Table ── */
 .mcp-table-wrap {
   overflow-x: auto;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--color-white-a07);
   background: rgba(23,23,23,0.6);
 }
@@ -288,7 +288,7 @@
 .mcp-badge {
   display: inline-block;
   padding: 5px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 12px;
   font-weight: 700;
 }
@@ -313,7 +313,7 @@
   margin: 80px auto;
   background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
-  border-radius: 22px;
+  border-radius: var(--radius-2xl);
   padding: 44px 32px;
 }
 
@@ -332,7 +332,7 @@
   font-weight: 600;
   font-size: 14px;
   padding: 12px 26px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   transition: background 0.2s ease;
 }
 
@@ -375,7 +375,7 @@
 .mcp-pay-field > input {
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a10);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 9px 11px;
   color: var(--color-text);
   font-size: 14px;
@@ -398,7 +398,7 @@
   margin: 0 auto 20px;
   background: linear-gradient(160deg, rgba(23,23,23,0.85) 0%, rgba(17,17,17,0.85) 100%);
   border: 1px solid var(--color-white-a07);
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   overflow: hidden;
 }
 
@@ -422,7 +422,7 @@
   justify-content: center;
   background: var(--color-white-a07);
   border: 1px solid var(--color-white-a10);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   flex-shrink: 0;
 }
 
@@ -450,7 +450,7 @@
   gap: 2px;
   background: var(--color-accent-a12);
   border: 1px solid var(--color-accent-a30);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 8px 14px;
   flex-shrink: 0;
 }
@@ -519,7 +519,7 @@
   gap: 10px;
   background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 10px 14px;
 }
 
@@ -554,7 +554,7 @@
 .mcp-assign-card {
   background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 18px 20px;
 }
 
@@ -598,14 +598,14 @@
   flex: 1;
   height: 8px;
   background: var(--color-white-a07);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   overflow: hidden;
 }
 
 .mcp-assign-bar > div {
   height: 100%;
   background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   transition: width 0.3s ease;
 }
 
@@ -627,7 +627,7 @@
   background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 700;
@@ -652,7 +652,7 @@
 .mcp-current-assign {
   background: linear-gradient(135deg, var(--color-accent-2-a15), var(--color-accent-a08));
   border: 1px solid var(--color-accent-2-a30);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 18px 20px;
   margin-bottom: 20px;
 }
@@ -698,7 +698,7 @@
 .mcp-course-card {
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a07);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -710,13 +710,13 @@
 .mcp-lesson-list { margin-top: 10px; }
 .mcp-lesson {
   display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 10px; margin-bottom: 6px;
+  padding: 10px 12px; border-radius: var(--radius-md); margin-bottom: 6px;
   background: var(--color-white-a04);
 }
 .mcp-lesson-idx {
   width: 24px; height: 24px; flex: 0 0 24px;
   display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 50%; font-size: 12px; font-weight: 700;
+  border-radius: var(--radius-circle); font-size: 12px; font-weight: 700;
   background: var(--color-white-a07);
 }
 .mcp-lesson-title { flex: 1; font-weight: 600; }
@@ -727,14 +727,14 @@
 .mcp-lesson-done .mcp-lesson-idx { background: var(--color-success); color: #06240f; }
 .mcp-lesson-done-tag { color: var(--color-success); font-size: 13px; font-weight: 600; }
 .mcp-lesson-play {
-  background: #6366f1; color: var(--color-text); border: none; border-radius: 8px;
+  background: #6366f1; color: var(--color-text); border: none; border-radius: var(--radius-md);
   padding: 6px 14px; font-weight: 600; cursor: pointer;
 }
 .mcp-lesson-play:hover { background: #4f46e5; }
 .mcp-lesson-mark {
   margin-left: 8px;
   background: rgba(34,197,94,0.15); color: var(--color-success);
-  border: 1px solid rgba(34,197,94,0.4); border-radius: 8px;
+  border: 1px solid rgba(34,197,94,0.4); border-radius: var(--radius-md);
   padding: 6px 12px; font-weight: 600; cursor: pointer;
 }
 .mcp-lesson-mark:hover { background: rgba(34,197,94,0.25); }
@@ -742,7 +742,7 @@
 .mcp-lesson-review {
   margin-right: 8px;
   background: var(--color-white-a07); color: inherit;
-  border: 1px solid var(--color-white-a13); border-radius: 8px;
+  border: 1px solid var(--color-white-a13); border-radius: var(--radius-md);
   padding: 5px 12px; font-weight: 600; cursor: pointer;
 }
 .mcp-lesson-review:hover { background: var(--color-white-a13); }
@@ -753,7 +753,7 @@
   position: relative;
   padding-bottom: 56.25%; /* 16:9 */
   height: 0;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--color-bg);
 }
@@ -792,7 +792,7 @@
   flex-wrap: wrap;
   background: linear-gradient(135deg, var(--color-accent-2-a15), var(--color-accent-a12));
   border: 1px solid rgba(139,92,246,0.4);
-  border-radius: 14px; padding: 16px 20px;
+  border-radius: var(--radius-lg); padding: 16px 20px;
 }
 .mcp-nextclass-label {
   font-size: 12px; font-weight: 700; letter-spacing: 0.4px;
@@ -802,7 +802,7 @@
 .mcp-join-btn {
   display: inline-block; text-decoration: none; cursor: pointer;
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); color: var(--color-bg);
-  font-weight: 700; font-size: 13px; padding: 9px 18px; border: none; border-radius: 10px;
+  font-weight: 700; font-size: 13px; padding: 9px 18px; border: none; border-radius: var(--radius-md);
 }
 .mcp-class-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px;
@@ -810,14 +810,14 @@
 }
 .mcp-class-card {
   background: rgba(20,20,28,0.7); border: 1px solid var(--color-accent-2-a15);
-  border-radius: 14px; padding: 16px;
+  border-radius: var(--radius-lg); padding: 16px;
 }
 .mcp-class-title { font-size: 16px; font-weight: 700; color: var(--color-text); }
 .mcp-class-coach { font-size: 12.5px; color: rgba(226,232,240,0.6); margin-top: 2px; }
 .mcp-class-days { display: flex; gap: 5px; flex-wrap: wrap; margin: 10px 0; }
 .mcp-class-daychip {
   font-size: 11px; font-weight: 700; color: var(--color-accent-2);
-  background: var(--color-accent-2-a15); border-radius: 6px; padding: 3px 8px;
+  background: var(--color-accent-2-a15); border-radius: var(--radius-sm); padding: 3px 8px;
 }
 .mcp-class-time { font-size: 13.5px; color: var(--color-text); }
 .mcp-class-tz { font-size: 11px; color: var(--color-text-faint); }
@@ -829,7 +829,7 @@
 .mcp-cal {
   background: rgba(15, 15, 22, 0.6);
   border: 1px solid var(--color-accent-2-a15);
-  border-radius: 16px; padding: 16px; margin: 18px 0 22px;
+  border-radius: var(--radius-xl); padding: 16px; margin: 18px 0 22px;
 }
 .mcp-cal-head {
   display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
@@ -837,7 +837,7 @@
 .mcp-cal-title { font-size: 16px; font-weight: 700; color: var(--color-text); }
 .mcp-cal-nav {
   background: var(--color-accent-2-a15); border: 1px solid var(--color-accent-2-a30);
-  color: var(--color-accent-2); width: 34px; height: 34px; border-radius: 9px; cursor: pointer;
+  color: var(--color-accent-2); width: 34px; height: 34px; border-radius: var(--radius-md); cursor: pointer;
   font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center;
 }
 .mcp-cal-nav:hover { background: var(--color-accent-2-a30); }
@@ -849,7 +849,7 @@
   color: var(--color-text-faint); text-transform: uppercase; padding-bottom: 4px;
 }
 .mcp-cal-cell {
-  min-height: 62px; border-radius: 10px; padding: 5px 6px;
+  min-height: 62px; border-radius: var(--radius-md); padding: 5px 6px;
   /* Empty days: dim, low-contrast */
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a04);
@@ -866,7 +866,7 @@
 .mcp-cal-today { outline: 2px solid rgba(16, 185, 129, 0.7); outline-offset: -2px; }
 .mcp-cal-class {
   margin-top: 3px; font-size: 10.5px; font-weight: 700; color: #e9d5ff;
-  background: var(--color-black-a20); border-radius: 5px; padding: 1px 4px;
+  background: var(--color-black-a20); border-radius: var(--radius-sm); padding: 1px 4px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .mcp-cal-more { font-size: 10px; color: var(--color-accent-2); margin-top: 2px; }
@@ -892,7 +892,7 @@
   font-size: 12px; color: rgba(226,232,240,0.6);
 }
 .mcp-cal-legend-item { display: inline-flex; align-items: center; gap: 6px; }
-.mcp-cal-swatch { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+.mcp-cal-swatch { width: 12px; height: 12px; border-radius: var(--radius-sm); display: inline-block; }
 .mcp-cal-swatch-class {
   background: linear-gradient(150deg, rgba(139,92,246,0.6), var(--color-accent-a40));
   border: 1px solid rgba(139,92,246,0.7);
@@ -920,7 +920,7 @@ button.mcp-cal-cell {
 .mcp-daypop {
   width: 100%; max-width: 420px;
   background: #14141c; border: 1px solid var(--color-accent-2-a30);
-  border-radius: 16px; padding: 18px; box-shadow: 0 20px 60px var(--color-black-a50);
+  border-radius: var(--radius-xl); padding: 18px; box-shadow: 0 20px 60px var(--color-black-a50);
 }
 .mcp-daypop-head {
   display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
@@ -935,7 +935,7 @@ button.mcp-cal-cell {
 .mcp-daypop-class {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   background: var(--color-accent-2-a15); border: 1px solid var(--color-accent-2-a30);
-  border-radius: 12px; padding: 12px 14px;
+  border-radius: var(--radius-lg); padding: 12px 14px;
 }
 .mcp-daypop-class-title { font-size: 15px; font-weight: 700; color: var(--color-text); }
 .mcp-daypop-class-meta { font-size: 12.5px; color: rgba(226, 232, 240, 0.65); margin-top: 3px; }

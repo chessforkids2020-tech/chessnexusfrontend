@@ -30,7 +30,7 @@
   width: 100%;
   padding: 12px 16px;
   margin-bottom: 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--color-white-a13);
   background: var(--color-black-a35);
   color: var(--color-text);
@@ -46,7 +46,7 @@
 
 .cd-chip {
   padding: 9px 17px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -64,7 +64,7 @@
 
 .cd-select {
   padding: 9px 14px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 13px;
   font-family: inherit;
   color: var(--color-text-muted);
@@ -97,7 +97,7 @@
 .cd-card {
   display: block;
   padding: 18px;
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   text-decoration: none;
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a07);
@@ -119,7 +119,7 @@
   flex: none;
   width: 104px;
   aspect-ratio: 1 / 1;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -145,7 +145,7 @@
 .cd-title {
   flex: none;
   padding: 2px 6px;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   font-size: 10.5px;
   font-weight: 800;
   color: #241a05;
@@ -196,7 +196,7 @@
 .cd-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 .cd-tag {
   padding: 3px 9px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 11px;
   font-weight: 600;
   color: var(--color-text-muted);
@@ -227,7 +227,7 @@
   display: inline-block;
   padding: 11px 24px;
   border: none;
-  border-radius: 11px;
+  border-radius: var(--radius-lg);
   font-size: 14px;
   font-weight: 700;
   font-family: inherit;

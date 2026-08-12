@@ -32,7 +32,7 @@ const styles = {
   filterBtn: {
     padding: "10px 20px",
     border: "2px solid var(--color-text)",
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     background: "var(--color-surface)",
     cursor: "pointer",
     fontWeight: 500,
@@ -51,7 +51,7 @@ const styles = {
   requestCard: {
     background: "var(--color-surface)",
     border: "2px solid var(--color-text)",
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     padding: 20,
     transition: "all 0.3s ease",
     boxShadow: "0 2px 8px var(--color-black-a20)"
@@ -78,7 +78,7 @@ const styles = {
   },
   statusBadge: {
     padding: "6px 12px",
-    borderRadius: 20,
+    borderRadius: 'var(--radius-2xl)',
     fontSize: 12,
     fontWeight: 600,
     textTransform: "uppercase"
@@ -120,7 +120,7 @@ const styles = {
   chessInfo: {
     background: "var(--color-surface)",
     padding: 12,
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     marginBottom: 16
   },
   chessLabel: {
@@ -144,7 +144,7 @@ const styles = {
     background: "var(--color-success)",
     color: "var(--color-text)",
     border: "none",
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     cursor: "pointer",
     transition: "all 0.2s"
@@ -155,7 +155,7 @@ const styles = {
     background: "var(--color-danger)",
     color: "var(--color-text)",
     border: "none",
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     cursor: "pointer",
     transition: "all 0.2s"
@@ -165,7 +165,7 @@ const styles = {
     background: "var(--color-surface-2)",
     color: "var(--color-text)",
     border: "none",
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     cursor: "pointer",
     transition: "all 0.2s"
@@ -175,7 +175,7 @@ const styles = {
     background: "#f0f9f0",
     color: "#064f28",
     border: "2px solid #d6f0d6",
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     cursor: "pointer",
     transition: "all 0.2s"

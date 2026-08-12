@@ -227,7 +227,7 @@ const s = {
     color: 'var(--color-text)',
     fontSize: 11,
     fontWeight: 700,
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     padding: '1px 7px',
     minWidth: 18,
     textAlign: 'center'
@@ -246,12 +246,12 @@ const s = {
     padding: '14px 18px',
     background: 'rgba(15,23,42,0.7)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 14
+    borderRadius: 'var(--radius-lg)'
   },
   avatar: {
     width: 44,
     height: 44,
-    borderRadius: '50%',
+    borderRadius: 'var(--radius-circle)',
     background: 'linear-gradient(135deg,var(--color-accent-2),#6d28d9)',
     display: 'flex',
     alignItems: 'center',
@@ -269,7 +269,7 @@ const s = {
     background: 'linear-gradient(135deg,var(--color-accent-2),#6d28d9)',
     color: 'var(--color-text)',
     border: 'none',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     fontSize: 13,
     cursor: 'pointer'
@@ -279,7 +279,7 @@ const s = {
     background: 'rgba(74,222,128,0.2)',
     color: '#4ade80',
     border: '1px solid rgba(74,222,128,0.3)',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     fontSize: 13,
     cursor: 'pointer'
@@ -289,7 +289,7 @@ const s = {
     background: 'var(--color-danger-a12)',
     color: 'var(--color-danger)',
     border: '1px solid var(--color-danger-a20)',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     fontSize: 13,
     cursor: 'pointer'
@@ -299,7 +299,7 @@ const s = {
     background: 'var(--color-danger-a12)',
     color: 'var(--color-danger)',
     border: '1px solid var(--color-danger-a20)',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 600,
     fontSize: 13,
     cursor: 'pointer'
@@ -308,7 +308,7 @@ const s = {
     padding: '5px 12px',
     background: 'rgba(74,222,128,0.15)',
     color: '#4ade80',
-    borderRadius: 20,
+    borderRadius: 'var(--radius-2xl)',
     fontSize: 12,
     fontWeight: 600
   },
@@ -316,7 +316,7 @@ const s = {
     padding: '5px 12px',
     background: 'var(--color-warning-a12)',
     color: 'var(--color-warning)',
-    borderRadius: 20,
+    borderRadius: 'var(--radius-2xl)',
     fontSize: 12,
     fontWeight: 600
   },
@@ -325,7 +325,7 @@ const s = {
     padding: '12px 16px',
     background: 'var(--color-black-a35)',
     border: '1px solid var(--color-white-a10)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     color: 'var(--color-text)',
     fontSize: 15,
     outline: 'none',

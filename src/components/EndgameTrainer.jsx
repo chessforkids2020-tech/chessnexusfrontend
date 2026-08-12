@@ -41,19 +41,19 @@ const PREMIUM_ACCENT = "#f5c451"; // gold — clearly different from the flat br
 const S = {
   band: {
     position: "relative", marginBottom: 26, padding: "18px 18px 6px",
-    borderRadius: 18, border: `1px solid ${PREMIUM_ACCENT}55`,
+    borderRadius: 'var(--radius-xl)', border: `1px solid ${PREMIUM_ACCENT}55`,
     background: "linear-gradient(135deg, rgba(245,196,81,0.10), rgba(245,196,81,0.03))",
   },
   bandHead: { display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" },
   bandTitle: { fontSize: 18, fontWeight: 900, color: "#fde9b8", margin: 0, letterSpacing: "-0.2px" },
   bandRibbon: {
     fontSize: 11, fontWeight: 800, color: "#1a1206", background: PREMIUM_ACCENT,
-    padding: "2px 8px", borderRadius: 999, letterSpacing: "0.4px",
+    padding: "2px 8px", borderRadius: 'var(--radius-pill)', letterSpacing: "0.4px",
   },
   bandSub: { margin: "6px 0 16px", color: "#cdb989", fontSize: 13 },
   grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(210px, 1fr))", gap: 14 },
   card: {
-    position: "relative", cursor: "pointer", padding: "18px 16px", borderRadius: 16,
+    position: "relative", cursor: "pointer", padding: "18px 16px", borderRadius: 'var(--radius-xl)',
     border: `1px solid ${PREMIUM_ACCENT}44`,
     background: "linear-gradient(160deg, rgba(40,33,12,0.65) 0%, rgba(16,13,6,0.85) 100%)",
     overflow: "hidden", transition: "transform .16s, border-color .16s, box-shadow .16s",
@@ -61,52 +61,52 @@ const S = {
   cardTop: { position: "absolute", top: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${PREMIUM_ACCENT}, transparent)` },
   cardGlyph: { position: "absolute", right: -6, bottom: -16, fontSize: 96, opacity: 0.12, color: PREMIUM_ACCENT, pointerEvents: "none" },
   cardIcon: {
-    width: 48, height: 48, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
+    width: 48, height: 48, borderRadius: 'var(--radius-lg)', display: "flex", alignItems: "center", justifyContent: "center",
     fontSize: 26, marginBottom: 12, background: `${PREMIUM_ACCENT}1f`, color: PREMIUM_ACCENT, border: `1px solid ${PREMIUM_ACCENT}44`,
   },
   cardLabel: { fontSize: 15, fontWeight: 800, color: "#fde9b8", position: "relative", zIndex: 1 },
   cardCount: { fontSize: 26, fontWeight: 900, color: PREMIUM_ACCENT, marginTop: 2, position: "relative", zIndex: 1 },
   cardSub: { fontSize: 11.5, color: "#cdb989", fontWeight: 600, marginLeft: 6 },
   cardHint: { fontSize: 12, fontWeight: 800, color: PREMIUM_ACCENT, marginTop: 10, position: "relative", zIndex: 1 },
-  backBtn: { background: "var(--color-white-a04)", color: "var(--color-text)", border: "1px solid var(--color-white-a13)", borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontWeight: 700, fontSize: 13 },
+  backBtn: { background: "var(--color-white-a04)", color: "var(--color-text)", border: "1px solid var(--color-white-a13)", borderRadius: 'var(--radius-md)', padding: "6px 12px", cursor: "pointer", fontWeight: 700, fontSize: 13 },
   // list rows
   listRow: {
     display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", marginBottom: 8,
-    borderRadius: 12, border: "1px solid var(--color-white-a07)", background: "rgba(20,17,8,0.5)",
+    borderRadius: 'var(--radius-lg)', border: "1px solid var(--color-white-a07)", background: "rgba(20,17,8,0.5)",
   },
   goalBadge: (goal) => ({
-    fontSize: 11, fontWeight: 800, padding: "3px 9px", borderRadius: 999, whiteSpace: "nowrap",
+    fontSize: 11, fontWeight: 800, padding: "3px 9px", borderRadius: 'var(--radius-pill)', whiteSpace: "nowrap",
     background: goal === "draw" ? "var(--color-warning-a12)" : "var(--color-success-a12)",
     color: goal === "draw" ? "var(--color-warning)" : "var(--color-success)",
   }),
-  playBtn: { background: `linear-gradient(135deg, ${PREMIUM_ACCENT}, #e0a92e)`, color: "#1a1206", border: "none", borderRadius: 10, padding: "8px 16px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
-  lockBtn: { background: "rgba(245,196,81,0.14)", color: PREMIUM_ACCENT, border: `1px solid ${PREMIUM_ACCENT}55`, borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
+  playBtn: { background: `linear-gradient(135deg, ${PREMIUM_ACCENT}, #e0a92e)`, color: "#1a1206", border: "none", borderRadius: 'var(--radius-md)', padding: "8px 16px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
+  lockBtn: { background: "rgba(245,196,81,0.14)", color: PREMIUM_ACCENT, border: `1px solid ${PREMIUM_ACCENT}55`, borderRadius: 'var(--radius-md)', padding: "8px 14px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
   // play modal
   overlay: { position: "fixed", inset: 0, background: "var(--color-black-a65)", backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200000, padding: 16 },
-  modal: { position: "relative", background: "var(--color-surface)", color: "var(--color-text)", border: "1px solid var(--color-white-a10)", borderRadius: 22, padding: "12px 22px 22px", maxWidth: 960, width: "100%", maxHeight: "92vh", overflow: "auto" },
+  modal: { position: "relative", background: "var(--color-surface)", color: "var(--color-text)", border: "1px solid var(--color-white-a10)", borderRadius: 'var(--radius-2xl)', padding: "12px 22px 22px", maxWidth: 960, width: "100%", maxHeight: "92vh", overflow: "auto" },
   verdict: (kind) => ({
-    marginTop: 12, padding: "10px 14px", borderRadius: 12, fontWeight: 800, fontSize: 14,
+    marginTop: 12, padding: "10px 14px", borderRadius: 'var(--radius-lg)', fontWeight: 800, fontSize: 14,
     background: kind === "mastered" ? "var(--color-success-a12)" : kind === "slip" ? "var(--color-warning-a12)" : "var(--color-danger-a12)",
     color: kind === "mastered" ? "var(--color-success)" : kind === "slip" ? "var(--color-warning)" : "var(--color-danger)",
   }),
   // Study-mode: move chips (like the study/analysis pop-up), engine + mode buttons.
-  analyzeBtn: { background: "var(--color-accent-a15)", color: "var(--color-accent)", border: "1px solid var(--color-accent-a40)", borderRadius: 10, padding: "7px 14px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
-  playSwitchBtn: { background: `linear-gradient(135deg, ${PREMIUM_ACCENT}, #e0a92e)`, color: "#1a1206", border: "none", borderRadius: 10, padding: "7px 14px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
-  moveWrap: { display: "flex", flexWrap: "wrap", gap: "2px 6px", alignItems: "center", background: "var(--color-black-a35)", borderRadius: 12, padding: 12, maxHeight: 220, overflowY: "auto", lineHeight: 1.7 },
+  analyzeBtn: { background: "var(--color-accent-a15)", color: "var(--color-accent)", border: "1px solid var(--color-accent-a40)", borderRadius: 'var(--radius-md)', padding: "7px 14px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
+  playSwitchBtn: { background: `linear-gradient(135deg, ${PREMIUM_ACCENT}, #e0a92e)`, color: "#1a1206", border: "none", borderRadius: 'var(--radius-md)', padding: "7px 14px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
+  moveWrap: { display: "flex", flexWrap: "wrap", gap: "2px 6px", alignItems: "center", background: "var(--color-black-a35)", borderRadius: 'var(--radius-lg)', padding: 12, maxHeight: 220, overflowY: "auto", lineHeight: 1.7 },
   moveNum: { color: "var(--color-text-faint)", fontSize: 13, fontWeight: 700, marginLeft: 6 },
   // Plain clickable move text — no box. Only the active move gets a subtle highlight.
   moveChip: (active) => ({
-    padding: "1px 4px", borderRadius: 5, fontSize: 14, fontWeight: 700, cursor: "pointer",
+    padding: "1px 4px", borderRadius: 'var(--radius-sm)', fontSize: 14, fontWeight: 700, cursor: "pointer",
     background: active ? PREMIUM_ACCENT : "transparent",
     color: active ? "#1a1206" : "var(--color-text)",
   }),
   startChip: (active) => ({
-    padding: "4px 10px", borderRadius: 8, fontSize: 12.5, fontWeight: 800, cursor: "pointer",
+    padding: "4px 10px", borderRadius: 'var(--radius-md)', fontSize: 12.5, fontWeight: 800, cursor: "pointer",
     background: active ? PREMIUM_ACCENT : "var(--color-white-a04)",
     color: active ? "#1a1206" : "var(--color-text-muted)", border: `1px solid ${active ? PREMIUM_ACCENT : "var(--color-white-a10)"}`,
   }),
   navRow: { display: "flex", gap: 6, alignItems: "center", justifyContent: "center", marginTop: 10 },
-  navBtn: { background: "var(--color-white-a04)", border: "1px solid var(--color-white-a10)", color: "var(--color-text)", borderRadius: 8, padding: "5px 12px", cursor: "pointer", fontSize: 14 },
+  navBtn: { background: "var(--color-white-a04)", border: "1px solid var(--color-white-a10)", color: "var(--color-text)", borderRadius: 'var(--radius-md)', padding: "5px 12px", cursor: "pointer", fontSize: 14 },
 };
 
 // Board size that fits the study pop-up in the viewport. The modal is capped at
@@ -508,7 +508,7 @@ function PlayView({ pick, onResult, onBack }) {
                 onClick={() => setLevel(key)}
                 disabled={status === "thinking"}
                 style={{
-                  flex: 1, padding: "6px 8px", borderRadius: 8, cursor: status === "thinking" ? "default" : "pointer",
+                  flex: 1, padding: "6px 8px", borderRadius: 'var(--radius-md)', cursor: status === "thinking" ? "default" : "pointer",
                   fontSize: 12.5, fontWeight: 700,
                   border: level === key ? "1px solid var(--color-success)" : "1px solid var(--color-white-a13)",
                   background: level === key ? "rgba(52,211,153,0.15)" : "var(--color-black-a20)",
@@ -519,7 +519,7 @@ function PlayView({ pick, onResult, onBack }) {
               </button>
             ))}
           </div>
-          <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--color-black-a35)", marginBottom: 10 }}>
+          <div style={{ padding: "10px 12px", borderRadius: 'var(--radius-md)', background: "var(--color-black-a35)", marginBottom: 10 }}>
             <div style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 700 }}>Stockfish eval (your side)</div>
             <div style={{ fontSize: 18, fontWeight: 900, color: evalColor }}>
               {status === "thinking" ? "Stockfish thinking…" : evalText}
@@ -699,7 +699,7 @@ export default function EndgameTrainer({ emptyFallback = null }) {
       <p style={S.bandSub}>Hand-picked positions worth knowing. Study the perfect line, explore with Stockfish, then play it out vs perfect defense.</p>
       {data.coach && !data.coach.subscribed && data.coach.free && (
         <div style={{
-          margin: "0 0 12px", padding: "9px 13px", borderRadius: 10,
+          margin: "0 0 12px", padding: "9px 13px", borderRadius: 'var(--radius-md)',
           background: "rgba(250,204,21,0.10)", border: "1px solid rgba(250,204,21,0.35)",
           color: "#fde9b8", fontSize: 13, lineHeight: 1.5,
         }}>

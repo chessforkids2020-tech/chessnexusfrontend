@@ -73,7 +73,7 @@ function AvatarFallback({ name, speaking }) {
   const letter = (name || '?').trim().charAt(0).toUpperCase();
   return (
     <div style={{
-      width: 64, height: 64, borderRadius: '50%', display: 'grid', placeItems: 'center',
+      width: 64, height: 64, borderRadius: 'var(--radius-circle)', display: 'grid', placeItems: 'center',
       fontSize: 26, fontWeight: 800, color: '#04211d',
       background: 'linear-gradient(135deg,#06b6d4,#10b981)',
       boxShadow: speaking ? '0 0 0 3px #22c55e' : 'none',
@@ -173,16 +173,16 @@ function FxPreview({ effects, blurOn, deviceId }) {
   }, [blurOn, deviceId]);
 
   return (
-    <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', borderRadius: 12, overflow: 'hidden', background: '#000', marginBottom: 14 }}>
+    <div style={{ position: 'relative', width: '100%', aspectRatio: '4/3', borderRadius: 'var(--radius-lg)', overflow: 'hidden', background: '#000', marginBottom: 14 }}>
       {/* Canvas = light/colour preview (shown when blur is off, or while blur loads). */}
       <canvas ref={canvasRef} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)', display: blurOn && blurPreviewReady ? 'none' : 'block' }} />
       {/* Video = the ACTUAL blurred output (shown once the blur processor is ready). */}
       <video ref={blurVideoRef} autoPlay playsInline muted style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scaleX(-1)', display: blurOn && blurPreviewReady ? 'block' : 'none' }} />
-      <span style={{ position: 'absolute', left: 8, bottom: 8, fontSize: 11, fontWeight: 700, background: 'rgba(0,0,0,0.55)', padding: '2px 8px', borderRadius: 6 }}>
+      <span style={{ position: 'absolute', left: 8, bottom: 8, fontSize: 11, fontWeight: 700, background: 'rgba(0,0,0,0.55)', padding: '2px 8px', borderRadius: 'var(--radius-sm)' }}>
         Live preview — you
       </span>
       {blurOn && (
-        <span style={{ position: 'absolute', right: 8, bottom: 8, fontSize: 11, background: 'rgba(6,182,212,0.85)', color: '#04222a', padding: '2px 8px', borderRadius: 6, fontWeight: 700 }}>
+        <span style={{ position: 'absolute', right: 8, bottom: 8, fontSize: 11, background: 'rgba(6,182,212,0.85)', color: '#04222a', padding: '2px 8px', borderRadius: 'var(--radius-sm)', fontWeight: 700 }}>
           {blurPreviewReady ? '🌫️ Blur active' : '🌫️ Starting blur…'}
         </span>
       )}
@@ -561,7 +561,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
                   onClick={onFixVideo}
                   style={{
                     background: '#facc15', color: '#111', border: 'none',
-                    borderRadius: 8, padding: '6px 12px', fontSize: 12,
+                    borderRadius: 'var(--radius-md)', padding: '6px 12px', fontSize: 12,
                     fontWeight: 800, cursor: 'pointer',
                   }}
                 >
@@ -574,7 +574,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
         : (
           <div style={{ display: 'grid', placeItems: 'center', height: '100%', gap: 8 }}>
             {avatarUrl
-              ? <img src={avatarUrl} alt={label} style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', boxShadow: speaking ? '0 0 0 3px #22c55e' : 'none' }} />
+              ? <img src={avatarUrl} alt={label} style={{ width: 64, height: 64, borderRadius: 'var(--radius-circle)', objectFit: 'cover', boxShadow: speaking ? '0 0 0 3px #22c55e' : 'none' }} />
               : <AvatarFallback name={label} speaking={speaking} />}
             {camConnecting && (
               <div style={{ fontSize: 11, color: '#facc15', fontWeight: 600 }}>
@@ -609,7 +609,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
                 onClick={onFixVideo}
                 style={{
                   background: '#facc15', color: '#111', border: 'none',
-                  borderRadius: 8, padding: '6px 12px', fontSize: 12,
+                  borderRadius: 'var(--radius-md)', padding: '6px 12px', fontSize: 12,
                   fontWeight: 800, cursor: 'pointer',
                 }}
               >
@@ -632,7 +632,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
           style={{
             position: 'absolute', top: 6, right: 6,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            width: 24, height: 24, borderRadius: '50%',
+            width: 24, height: 24, borderRadius: 'var(--radius-circle)',
             background: 'rgba(0,0,0,0.62)', color: '#f87171',
             boxShadow: '0 1px 4px rgba(0,0,0,0.5)',
           }}
@@ -641,7 +641,7 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
         </div>
       )}
 
-      {label && <div style={{ position: 'absolute', bottom: 6, left: 8, fontSize: 12, color: '#fff', background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: 6 }}>{label}</div>}
+      {label && <div style={{ position: 'absolute', bottom: 6, left: 8, fontSize: 12, color: '#fff', background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: 'var(--radius-sm)' }}>{label}</div>}
     </div>
   );
 }
@@ -806,7 +806,7 @@ const EG_LABEL = {
 
 const nt = {
   wrap: { width: 300, flexShrink: 0, maxHeight: '70vh', display: 'flex', flexDirection: 'column',
-    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, overflow: 'hidden' },
+    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' },
   title: { flexShrink: 0, padding: '9px 12px', fontSize: 12, fontWeight: 800, color: '#67e8f9', borderBottom: '1px solid rgba(255,255,255,0.06)' },
   // flex:1 + minHeight:0 makes the moves area fill the whole card height and scroll
   // WITHIN it. overflowX:hidden + wordBreak keep moves WRAPPING to new lines and
@@ -817,7 +817,7 @@ const nt = {
   // A SAN move is atomic — "O-O", "O-O-O", "Bxc3+" must never break INSIDE the token
   // (the container's overflowWrap:anywhere was splitting "O-O" into "O-" / "O").
   // inline-block + nowrap keeps each move whole; wrapping still happens between moves.
-  mv: { color: '#e2e8f0', padding: '1px 5px', borderRadius: 5, marginRight: 2, display: 'inline-block', whiteSpace: 'nowrap' },
+  mv: { color: '#e2e8f0', padding: '1px 5px', borderRadius: 'var(--radius-sm)', marginRight: 2, display: 'inline-block', whiteSpace: 'nowrap' },
   mvOn: { background: 'rgba(6,182,212,0.3)', color: '#fff', fontWeight: 700 },
   variation: { color: '#9ca3af', fontSize: 12, margin: '2px 0 2px 12px', borderLeft: '2px solid rgba(255,255,255,0.1)', paddingLeft: 6 },
 };
@@ -883,7 +883,7 @@ function WaitingRoom({ note, user, joinCode }) {
           <div style={{ animation: 'wrBob 3s ease-in-out infinite', marginBottom: 18 }}>
             <div style={{ ...wr.avatarRing, animation: 'wrPulse 2.4s infinite' }}>
               {avatar
-                ? <img src={avatar} alt="" style={{ width: 76, height: 76, borderRadius: '50%', objectFit: 'cover' }} />
+                ? <img src={avatar} alt="" style={{ width: 76, height: 76, borderRadius: 'var(--radius-circle)', objectFit: 'cover' }} />
                 : <img src="/logo.png" alt="Chess Nexus" style={{ width: 60, height: 60, objectFit: 'contain' }} />}
             </div>
           </div>
@@ -899,7 +899,7 @@ function WaitingRoom({ note, user, joinCode }) {
           {/* Animated "getting ready" dots */}
           <div style={{ display: 'flex', gap: 7, margin: '18px 0 6px', justifyContent: 'center' }}>
             {[0, 1, 2].map(i => (
-              <span key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: '#10b981', animation: `wrDot 1.4s ${i * 0.2}s infinite` }} />
+              <span key={i} style={{ width: 10, height: 10, borderRadius: 'var(--radius-circle)', background: '#10b981', animation: `wrDot 1.4s ${i * 0.2}s infinite` }} />
             ))}
           </div>
 
@@ -959,37 +959,37 @@ const wr = {
   wrap: { position: 'relative', minHeight: '100vh', overflow: 'hidden', display: 'grid', placeItems: 'center',
     background: 'radial-gradient(1100px 560px at 15% -10%, rgba(6,182,212,0.12), transparent 60%), radial-gradient(1000px 560px at 85% 0%, rgba(16,185,129,0.12), transparent 60%), #0b0f14',
     color: '#eef2f6', fontFamily: "'Poppins',sans-serif" },
-  statusPill: { display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 4, padding: '5px 13px', borderRadius: 999,
+  statusPill: { display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 4, padding: '5px 13px', borderRadius: 'var(--radius-pill)',
     fontSize: 11.5, fontWeight: 700, letterSpacing: '0.03em', textTransform: 'uppercase',
     color: '#6ee7b7', background: 'rgba(16,185,129,0.10)', border: '1px solid rgba(52,211,153,0.28)' },
-  statusDot: { width: 7, height: 7, borderRadius: '50%', background: '#10b981', animation: 'wrDot 1.4s infinite' },
+  statusDot: { width: 7, height: 7, borderRadius: 'var(--radius-circle)', background: '#10b981', animation: 'wrDot 1.4s infinite' },
   floaters: { position: 'absolute', inset: 0, pointerEvents: 'none' },
   // Card + leaderboard sit side by side (wrap to stacked on narrow screens).
   row: { position: 'relative', zIndex: 1, display: 'flex', gap: 16, alignItems: 'stretch',
     justifyContent: 'center', flexWrap: 'wrap', width: '94%', maxWidth: 860, maxHeight: '94vh' },
   card: { flex: '1 1 380px', textAlign: 'center', padding: '30px 26px', maxWidth: 480,
-    background: 'rgba(18,26,38,0.7)', border: '1px solid rgba(16,185,129,0.22)', borderRadius: 22,
+    background: 'rgba(18,26,38,0.7)', border: '1px solid rgba(16,185,129,0.22)', borderRadius: 'var(--radius-2xl)',
     backdropFilter: 'blur(10px)', boxShadow: '0 24px 70px -30px rgba(0,0,0,0.8)' },
-  avatarRing: { width: 92, height: 92, margin: '0 auto', borderRadius: '50%', display: 'grid', placeItems: 'center',
+  avatarRing: { width: 92, height: 92, margin: '0 auto', borderRadius: 'var(--radius-circle)', display: 'grid', placeItems: 'center',
     background: 'linear-gradient(135deg, rgba(6,182,212,0.25), rgba(16,185,129,0.25))', border: '2px solid rgba(16,185,129,0.5)' },
   hi: { margin: '0 0 6px', fontSize: 26, fontWeight: 800,
     background: 'linear-gradient(90deg,#67e8f9,#34d399,#67e8f9)', backgroundSize: '200% auto',
     WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
     animation: 'wrShine 4s linear infinite' },
   sub: { margin: 0, color: '#9fb4c4', fontSize: 14.5, lineHeight: 1.6 },
-  tipBox: { marginTop: 16, padding: '14px 16px', borderRadius: 14, background: 'rgba(6,182,212,0.08)',
+  tipBox: { marginTop: 16, padding: '14px 16px', borderRadius: 'var(--radius-lg)', background: 'rgba(6,182,212,0.08)',
     border: '1px solid rgba(6,182,212,0.2)', textAlign: 'left' },
   tipLabel: { display: 'flex', alignItems: 'center', fontSize: 11, fontWeight: 800, letterSpacing: 1, color: '#67e8f9', marginBottom: 6, textTransform: 'uppercase' },
   tipText: { fontSize: 14, color: '#e2e8f0', lineHeight: 1.5, minHeight: 42 },
   // Leaderboard — side panel
   lbBox: { flex: '1 1 300px', maxWidth: 360, alignSelf: 'stretch', overflowY: 'auto',
-    padding: '18px 16px 14px', borderRadius: 18, background: 'rgba(245,158,11,0.06)',
+    padding: '18px 16px 14px', borderRadius: 'var(--radius-xl)', background: 'rgba(245,158,11,0.06)',
     border: '1px solid rgba(245,158,11,0.22)', textAlign: 'left', backdropFilter: 'blur(10px)' },
   lbTitle: { display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 800, color: '#fcd34d', marginBottom: 14, textAlign: 'center' },
-  lbRow: { display: 'flex', alignItems: 'center', gap: 9, padding: '6px 8px', borderRadius: 10 },
+  lbRow: { display: 'flex', alignItems: 'center', gap: 9, padding: '6px 8px', borderRadius: 'var(--radius-md)' },
   lbMe: { background: 'rgba(16,185,129,0.14)', border: '1px solid rgba(16,185,129,0.3)' },
   lbRank: { width: 22, textAlign: 'center', fontWeight: 800, fontSize: 14, color: '#e2e8f0', flexShrink: 0 },
-  lbAvatar: { width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 },
+  lbAvatar: { width: 28, height: 28, borderRadius: 'var(--radius-circle)', objectFit: 'cover', flexShrink: 0 },
   lbAvatarFallback: { background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', display: 'grid', placeItems: 'center', fontSize: 13, fontWeight: 800 },
   lbName: { flex: 1, fontSize: 13.5, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   lbXp: { fontSize: 12.5, fontWeight: 800, color: '#34d399', flexShrink: 0 },
@@ -1011,7 +1011,7 @@ function ClockRow({ game, hasClock }) {
   const pill = (color) => (
     <span style={{
       fontVariantNumeric: 'tabular-nums', fontWeight: 800, fontSize: 14,
-      padding: '3px 10px', borderRadius: 8, minWidth: 62, textAlign: 'center',
+      padding: '3px 10px', borderRadius: 'var(--radius-md)', minWidth: 62, textAlign: 'center',
       background: color === 'white' ? '#f1f5f9' : '#1f2937',
       color: color === 'white' ? '#0f172a' : '#e2e8f0',
       border: game.status === 'active' && turn === color ? '2px solid #22c55e' : '2px solid transparent',
@@ -1308,7 +1308,7 @@ function PlayerClock({ name, color, game, hasClock, active }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12,
-      padding: '8px 14px', borderRadius: 10, width: '100%', boxSizing: 'border-box',
+      padding: '8px 14px', borderRadius: 'var(--radius-md)', width: '100%', boxSizing: 'border-box',
       background: active ? 'rgba(34,197,94,0.12)' : 'rgba(255,255,255,0.04)',
       border: active ? '1px solid rgba(34,197,94,0.5)' : '1px solid rgba(255,255,255,0.08)',
     }}>
@@ -1339,13 +1339,13 @@ function MoveNotation({ moves = [], viewPly, onJump }) {
     return (
       <span onClick={onJump ? () => onJump(ply) : undefined}
         style={{ flex: 1, color: on ? '#fff' : '#e2e8f0', fontWeight: 600, cursor: onJump ? 'pointer' : 'default',
-          borderRadius: 5, padding: '0 5px', background: on ? 'rgba(6,182,212,0.35)' : 'transparent',
+          borderRadius: 'var(--radius-sm)', padding: '0 5px', background: on ? 'rgba(6,182,212,0.35)' : 'transparent',
           display: 'inline-block', whiteSpace: 'nowrap' }}>{san}</span>
     );
   };
   return (
     <div style={{ flex: 1, minHeight: 120, maxHeight: 300, overflowY: 'auto', width: '100%',
-      background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '8px 6px' }}>
+      background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-md)', padding: '8px 6px' }}>
       {rows.length === 0
         ? <div style={{ color: '#6b7280', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>No moves yet</div>
         : rows.map(r => (
@@ -1403,7 +1403,7 @@ function useMoveNav(moves, liveFen) {
 function NavControls({ nav }) {
   const btn = (label, onClick, disabled, title) => (
     <button onClick={onClick} disabled={disabled} title={title}
-      style={{ padding: '5px 10px', borderRadius: 7, border: '1px solid rgba(255,255,255,0.14)',
+      style={{ padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.14)',
         background: disabled ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)',
         color: disabled ? '#4b5563' : '#e2e8f0', cursor: disabled ? 'default' : 'pointer', fontSize: 14, fontWeight: 700 }}>
       {label}
@@ -1557,7 +1557,7 @@ function SimulCoachStage({ simul, activeBoard, boardWidth, onMove, onFocus, onEn
           return (
             <button key={b.id} onClick={() => onFocus && onFocus(b.id)} title={`Play ${b.studentName}`}
               style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', position: 'relative' }}>
-              <div style={{ borderRadius: 6, padding: 2, border: isActive ? '2px solid #22c55e' : '2px solid transparent',
+              <div style={{ borderRadius: 'var(--radius-sm)', padding: 2, border: isActive ? '2px solid #22c55e' : '2px solid transparent',
                 boxShadow: isActive ? '0 0 0 2px rgba(34,197,94,0.25)' : 'none' }}>
                 <Chessboard position={b.fen} lastMove={b.lastMove} boardWidth={104} draggable={false} orientation={coachColor} />
               </div>
@@ -1882,58 +1882,58 @@ function ActivitiesStage({ races, tournaments, loading, onReload, onClose,
 }
 
 const as = {
-  wrap: { flex: 1, minWidth: 0, background: 'rgba(20,20,30,0.5)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: 16, overflowY: 'auto', maxHeight: 'calc(100vh - 120px)' },
+  wrap: { flex: 1, minWidth: 0, background: 'rgba(20,20,30,0.5)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-lg)', padding: 16, overflowY: 'auto', maxHeight: 'calc(100vh - 120px)' },
   head: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 14 },
-  ghost: { padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13, textDecoration: 'none' },
-  create: { padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(6,182,212,0.4)', background: 'rgba(6,182,212,0.12)', color: '#67e8f9', cursor: 'pointer', fontSize: 13, fontWeight: 700, textDecoration: 'none' },
-  empty: { padding: 30, textAlign: 'center', color: 'rgba(226,232,240,0.6)', fontSize: 14, border: '1px dashed rgba(255,255,255,0.14)', borderRadius: 12 },
+  ghost: { padding: '7px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13, textDecoration: 'none' },
+  create: { padding: '7px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(6,182,212,0.4)', background: 'rgba(6,182,212,0.12)', color: '#67e8f9', cursor: 'pointer', fontSize: 13, fontWeight: 700, textDecoration: 'none' },
+  empty: { padding: 30, textAlign: 'center', color: 'rgba(226,232,240,0.6)', fontSize: 14, border: '1px dashed rgba(255,255,255,0.14)', borderRadius: 'var(--radius-lg)' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 12 },
-  card: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 14 },
+  card: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-lg)', padding: 14 },
   cardName: { fontSize: 15, fontWeight: 700, color: '#f1f5f9' },
   cardMeta: { fontSize: 12.5, color: '#a78bfa', margin: '6px 0' },
   cardSub: { fontSize: 12, color: 'rgba(226,232,240,0.6)', marginBottom: 10 },
-  watch: { display: 'inline-block', padding: '7px 14px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 700, fontSize: 13, cursor: 'pointer', textDecoration: 'none' },
+  watch: { display: 'inline-block', padding: '7px 14px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 700, fontSize: 13, cursor: 'pointer', textDecoration: 'none' },
   foot: { marginTop: 14, fontSize: 12, color: '#6b7280', textAlign: 'center' },
   tabs: { display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 12 },
-  tab: { padding: '8px 16px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: 'rgba(226,232,240,0.75)', cursor: 'pointer', fontSize: 14, fontWeight: 700 },
+  tab: { padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: 'rgba(226,232,240,0.75)', cursor: 'pointer', fontSize: 14, fontWeight: 700 },
   tabOn: { background: 'rgba(6,182,212,0.16)', border: '1px solid #06b6d4', color: '#67e8f9' },
 };
 
 // Styles for "♟ Play in class" (coach setup + live grid).
 const cg = {
-  section: { background: 'rgba(6,182,212,0.06)', border: '1px solid rgba(6,182,212,0.22)', borderRadius: 12, padding: 14, marginBottom: 6 },
+  section: { background: 'rgba(6,182,212,0.06)', border: '1px solid rgba(6,182,212,0.22)', borderRadius: 'var(--radius-lg)', padding: 14, marginBottom: 6 },
   secHead: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 8, color: '#e2e8f0' },
   hint: { fontSize: 12.5, color: 'rgba(226,232,240,0.7)', marginBottom: 10, lineHeight: 1.5 },
   controls: { display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 },
   lbl: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#cbd5e1' },
-  select: { padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', fontSize: 13 },
-  ghostBtn: { padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13, fontWeight: 600 },
+  select: { padding: '6px 10px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', fontSize: 13 },
+  ghostBtn: { padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13, fontWeight: 600 },
   // ── Vs Computer panel ──
   pane: { display: 'flex', flexDirection: 'column', gap: 10, padding: '4px 2px' },
   paneHead: { fontSize: 14, fontWeight: 800, color: '#f8fafc' },
   paneNote: { fontSize: 12.5, color: '#9ca3af', lineHeight: 1.55 },
   lobbyBox: { display: 'flex', flexDirection: 'column', gap: 9, alignItems: 'flex-start' },
   lobbyLine: { fontSize: 13, color: '#e2e8f0', fontWeight: 600 },
-  primaryBtn: { padding: '9px 16px', borderRadius: 10, border: 'none', background: '#22c55e', color: '#052e16', cursor: 'pointer', fontSize: 13.5, fontWeight: 800 },
+  primaryBtn: { padding: '9px 16px', borderRadius: 'var(--radius-md)', border: 'none', background: '#22c55e', color: '#052e16', cursor: 'pointer', fontSize: 13.5, fontWeight: 800 },
   setupRow: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' },
   setupLabel: { fontSize: 12, color: '#9ca3af', fontWeight: 600 },
-  select: { padding: '7px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(0,0,0,0.3)', color: '#e2e8f0', fontSize: 13 },
+  select: { padding: '7px 10px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(0,0,0,0.3)', color: '#e2e8f0', fontSize: 13 },
   pairList: { display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 8 },
   pairRow: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   pairNo: { fontSize: 12.5, fontWeight: 700, color: '#9ca3af', minWidth: 56 },
-  rmBtn: { width: 26, height: 26, borderRadius: 6, border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.12)', color: '#fca5a5', cursor: 'pointer', fontSize: 13 },
-  rmBtn2: { padding: '4px 12px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.12)', color: '#fca5a5', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 },
+  rmBtn: { width: 26, height: 26, borderRadius: 'var(--radius-sm)', border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.12)', color: '#fca5a5', cursor: 'pointer', fontSize: 13 },
+  rmBtn2: { padding: '4px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.12)', color: '#fca5a5', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 },
   free: { fontSize: 12, color: '#fcd34d', marginBottom: 10 },
-  startBtn: { padding: '9px 20px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: 'pointer' },
-  endBtn: { padding: '6px 14px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.14)', color: '#fca5a5', cursor: 'pointer', fontSize: 13, fontWeight: 700 },
+  startBtn: { padding: '9px 20px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: 'pointer' },
+  endBtn: { padding: '6px 14px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.14)', color: '#fca5a5', cursor: 'pointer', fontSize: 13, fontWeight: 700 },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 12 },
-  card: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' },
+  card: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-lg)', padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' },
   cardSpot: { border: '2px solid #22c55e', boxShadow: '0 0 0 3px rgba(34,197,94,0.18)' },
   players: { display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: 12.5, fontWeight: 700, color: '#e2e8f0', gap: 8, marginBottom: 6 },
   result: { fontSize: 13, fontWeight: 800, color: '#6ee7b7', marginTop: 6, textAlign: 'center' },
-  spotBtn: { marginTop: 6, padding: '6px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 },
+  spotBtn: { marginTop: 6, padding: '6px 14px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 },
   spotBtnOn: { border: '1px solid #22c55e', background: 'rgba(34,197,94,0.15)', color: '#6ee7b7' },
-  reviewBtn: { padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(139,92,246,0.5)', background: 'rgba(139,92,246,0.14)', color: '#c4b5fd', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 },
+  reviewBtn: { padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(139,92,246,0.5)', background: 'rgba(139,92,246,0.14)', color: '#c4b5fd', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 },
 };
 
 export default function LiveClassroomPage({ mode = 'host' }) {
@@ -3644,7 +3644,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
               <button id="p-stop" style="flex:1;background:#dc2626;color:#fff">Stop</button>
             </div>
           </div>`;
-        const btnCss = 'padding:7px 6px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#e2e8f0;font-size:14px;cursor:pointer';
+        const btnCss = 'padding:7px 6px;border-radius: var(--radius-md);border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:#e2e8f0;font-size:14px;cursor:pointer';
         doc.querySelectorAll('button').forEach(b => { b.style.cssText += btnCss; });
 
         const mic = doc.getElementById('p-mic');
@@ -3717,7 +3717,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
 
         popTiles.forEach(p => {
           const cell = doc.createElement('div');
-          cell.style.cssText = `position:relative;flex:0 0 auto;width:${popTileW}px;aspect-ratio:4/3;background:linear-gradient(135deg,#141a24,#0f141c);border-radius:9px;overflow:hidden;display:grid;place-items:center`;
+          cell.style.cssText = `position:relative;flex:0 0 auto;width:${popTileW}px;aspect-ratio:4/3;background:linear-gradient(135deg,#141a24,#0f141c);border-radius: var(--radius-md);overflow:hidden;display:grid;place-items:center`;
           if (p.videoTrack) {
             const v = doc.createElement('video');
             v.autoplay = true; v.playsInline = true; v.muted = true;
@@ -3728,13 +3728,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             // Camera-off avatar — scale it to the tile (min of width/height) so it's a
             // big readable circle, not a lost 44px dot in a large cell.
             const av = doc.createElement('div');
-            av.style.cssText = 'width:min(28vw,28vh);height:min(28vw,28vh);max-width:180px;max-height:180px;border-radius:50%;background:linear-gradient(135deg,#06b6d4,#10b981);color:#04211d;display:grid;place-items:center;font-weight:800;font-size:min(12vw,12vh);line-height:1';
+            av.style.cssText = 'width:min(28vw,28vh);height:min(28vw,28vh);max-width:180px;max-height:180px;border-radius: var(--radius-circle);background:linear-gradient(135deg,#06b6d4,#10b981);color:#04211d;display:grid;place-items:center;font-weight:800;font-size:min(12vw,12vh);line-height:1';
             av.textContent = (p.name || '?').charAt(0).toUpperCase();
             cell.appendChild(av);
           }
           const nm = doc.createElement('span');
           nm.textContent = p.name + (p.isLocal ? ' (you)' : '');
-          nm.style.cssText = 'position:absolute;left:10px;bottom:10px;font-size:min(2.4vw,15px);font-weight:600;background:rgba(0,0,0,0.6);padding:4px 11px;border-radius:8px;max-width:calc(100% - 40px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+          nm.style.cssText = 'position:absolute;left:10px;bottom:10px;font-size:min(2.4vw,15px);font-weight:600;background:rgba(0,0,0,0.6);padding:4px 11px;border-radius: var(--radius-md);max-width:calc(100% - 40px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
           cell.appendChild(nm);
           grid.appendChild(cell);
         });
@@ -4141,11 +4141,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         >
           👥 {allTiles.length}
           {isHost && waitingNow.length > 0 && (
-            <span style={{ position: 'absolute', top: -6, right: -6, background: '#f59e0b', color: '#241a05', borderRadius: 999, fontSize: 10, fontWeight: 800, minWidth: 16, height: 16, display: 'grid', placeItems: 'center', padding: '0 4px' }}>{waitingNow.length}</span>
+            <span style={{ position: 'absolute', top: -6, right: -6, background: '#f59e0b', color: '#241a05', borderRadius: 'var(--radius-pill)', fontSize: 10, fontWeight: 800, minWidth: 16, height: 16, display: 'grid', placeItems: 'center', padding: '0 4px' }}>{waitingNow.length}</span>
           )}
           {/* ✋ badge when students have hands up (coach sees it at a glance). */}
           {isHost && raisedHandIds.length > 0 && (
-            <span style={{ position: 'absolute', bottom: -6, right: -6, background: '#f59e0b', color: '#241a05', borderRadius: 999, fontSize: 10, fontWeight: 800, minWidth: 16, height: 16, display: 'grid', placeItems: 'center', padding: '0 4px' }} title={`${raisedHandIds.length} hand(s) up`}>✋{raisedHandIds.length}</span>
+            <span style={{ position: 'absolute', bottom: -6, right: -6, background: '#f59e0b', color: '#241a05', borderRadius: 'var(--radius-pill)', fontSize: 10, fontWeight: 800, minWidth: 16, height: 16, display: 'grid', placeItems: 'center', padding: '0 4px' }} title={`${raisedHandIds.length} hand(s) up`}>✋{raisedHandIds.length}</span>
           )}
         </button>
         {/* Host: clear every raised hand in one click. Students frequently raise and
@@ -4297,7 +4297,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       {lk.deviceIssue && (
         <div style={{
           position: 'fixed', bottom: 150, left: '50%', transform: 'translateX(-50%)',
-          zIndex: 100003, padding: '12px 18px', borderRadius: 14, maxWidth: 460,
+          zIndex: 100003, padding: '12px 18px', borderRadius: 'var(--radius-lg)', maxWidth: 460,
           border: '1px solid rgba(248,113,113,0.5)', background: 'rgba(30,10,10,0.97)',
           color: '#fecaca', fontSize: 13, lineHeight: 1.5, textAlign: 'center',
           boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
@@ -4318,7 +4318,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             type="button"
             onClick={() => lk.retryDevices?.()}
             style={{
-              marginTop: 9, padding: '7px 16px', borderRadius: 999, border: 'none',
+              marginTop: 9, padding: '7px 16px', borderRadius: 'var(--radius-pill)', border: 'none',
               background: '#f87171', color: '#180a0a', fontWeight: 800,
               fontSize: 13, cursor: 'pointer',
             }}
@@ -4334,7 +4334,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           onClick={() => lk.enableAudio?.()}
           style={{
             position: 'fixed', bottom: 90, left: '50%', transform: 'translateX(-50%)',
-            zIndex: 100003, padding: '10px 18px', borderRadius: 999,
+            zIndex: 100003, padding: '10px 18px', borderRadius: 'var(--radius-pill)',
             border: '1px solid rgba(6,182,212,0.5)', background: 'rgba(10,15,30,0.96)',
             color: '#67e8f9', fontWeight: 700, fontSize: 14, cursor: 'pointer',
             boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
@@ -5189,8 +5189,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       <div key={p.identity} style={s.partRow}>
                         <span style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0 }}>
                           {p.avatar
-                            ? <img src={p.avatar} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover' }} />
-                            : <span style={{ width: 24, height: 24, borderRadius: '50%', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 800 }}>{(p.name || '?').charAt(0).toUpperCase()}</span>}
+                            ? <img src={p.avatar} alt="" style={{ width: 24, height: 24, borderRadius: 'var(--radius-circle)', objectFit: 'cover' }} />
+                            : <span style={{ width: 24, height: 24, borderRadius: 'var(--radius-circle)', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', display: 'grid', placeItems: 'center', fontSize: 12, fontWeight: 800 }}>{(p.name || '?').charAt(0).toUpperCase()}</span>}
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: 13 }}>
                             {raisedHandIds.map(String).includes(String(p.identity)) && (
                               // Host can click to lower it; for everyone else it's
@@ -5556,55 +5556,55 @@ const s = {
   center: { minHeight: '100vh', display: 'grid', placeItems: 'center', background: '#0b0f14', color: '#e2e8f0', fontFamily: "'Poppins',sans-serif", fontSize: 15 },
   topbar: { display: 'flex', alignItems: 'center', gap: 10, padding: '6px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)', flexWrap: 'wrap' },
   noteBar: { display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', background: 'rgba(245,158,11,0.12)', color: '#fcd34d', fontSize: 13 },
-  noteClose: { flex: '0 0 auto', width: 24, height: 24, borderRadius: 6, border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.12)', color: '#fcd34d', cursor: 'pointer', fontSize: 12, lineHeight: 1, display: 'grid', placeItems: 'center' },
+  noteClose: { flex: '0 0 auto', width: 24, height: 24, borderRadius: 'var(--radius-sm)', border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.12)', color: '#fcd34d', cursor: 'pointer', fontSize: 12, lineHeight: 1, display: 'grid', placeItems: 'center' },
   body: { display: 'flex', gap: 16, padding: '12px 16px 16px', flexWrap: 'nowrap', alignItems: 'flex-start', justifyContent: 'flex-start', minHeight: 'calc(100vh - 62px)' },
   // Positions list beside the board (from a chosen study/chapter).
   // Host controls overlaid on a student's video tile — bottom-right, fading in on
   // hover so they don't clutter the grid while still being one click away.
   tileCtl: {
     position: 'absolute', bottom: 8, right: 8, zIndex: 4,
-    display: 'flex', gap: 4, padding: 3, borderRadius: 8,
+    display: 'flex', gap: 4, padding: 3, borderRadius: 'var(--radius-md)',
     background: 'rgba(10,12,18,0.72)', backdropFilter: 'blur(6px)',
   },
   tileBtn: {
     display: 'grid', placeItems: 'center', width: 26, height: 26, padding: 0,
-    borderRadius: 6, border: '1px solid rgba(255,255,255,0.14)',
+    borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.14)',
     background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13,
   },
   tileBtnOn: { background: 'rgba(6,182,212,0.22)', borderColor: 'rgba(6,182,212,0.55)', color: '#67e8f9' },
   tileBtnAsk: { background: 'rgba(245,158,11,0.18)', borderColor: 'rgba(245,158,11,0.5)', color: '#fcd34d' },
   tileBtnAsked: { background: 'rgba(52,211,153,0.20)', borderColor: 'rgba(52,211,153,0.55)', color: '#6ee7b7' },
   posList: { width: 180, flexShrink: 0, maxHeight: '70vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 5,
-    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 10 },
+    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-lg)', padding: 10 },
   posListTitle: { flexShrink: 0, fontSize: 12, fontWeight: 800, color: '#67e8f9', marginBottom: 2 },
   // flexShrink:0 is REQUIRED: without it, a long list (e.g. 23 positions) in the
   // flex-column posList gets vertically SQUISHED to fit maxHeight, smearing the text.
   // With it, each row keeps its height and the container scrolls instead.
-  posItem: { flexShrink: 0, textAlign: 'left', padding: '7px 9px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)',
+  posItem: { flexShrink: 0, textAlign: 'left', padding: '7px 9px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.08)',
     background: 'rgba(255,255,255,0.04)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12.5, lineHeight: 1.3,
     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   srcTabs: { display: 'flex', gap: 6 },
-  srcTab: { flex: 1, padding: '6px 8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)',
+  srcTab: { flex: 1, padding: '6px 8px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.12)',
     background: 'rgba(255,255,255,0.04)', color: '#9ca3af', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 },
   srcTabOn: { background: 'rgba(6,182,212,0.15)', color: '#67e8f9', borderColor: 'rgba(6,182,212,0.4)' },
   // Host load-position panel under the board.
   loadPanel: { marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8,
-    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 10 },
+    background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-lg)', padding: 10 },
   // Spans the FULL stage row (board + Stockfish/Moves column) rather than sitting
   // inside the board column. `flexBasis: 100%` forces a line break in the wrapping
   // row, and `order: 1` puts it after both columns regardless of source position.
   loadPanelSpan: { flexBasis: '100%', width: '100%', minWidth: 0, order: 1, boxSizing: 'border-box' },
   stepRow: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, flexWrap: 'wrap' },
-  stepBtn: { padding: '5px 10px', borderRadius: 7, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12.5 },
-  loadInput: { width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#e2e8f0', fontSize: 12.5, resize: 'vertical', fontFamily: 'monospace' },
-  loadBtn: { flex: 1, padding: '7px 12px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 700, cursor: 'pointer', fontSize: 13 },
-  ghostSm: { padding: '7px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13 },
+  stepBtn: { padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12.5 },
+  loadInput: { width: '100%', boxSizing: 'border-box', padding: '8px 10px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', color: '#e2e8f0', fontSize: 12.5, resize: 'vertical', fontFamily: 'monospace' },
+  loadBtn: { flex: 1, padding: '7px 12px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 700, cursor: 'pointer', fontSize: 13 },
+  ghostSm: { padding: '7px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13 },
   // "Save to my study" inline panel on the teaching board.
-  savePanel: { display: 'flex', flexDirection: 'column', gap: 7, marginTop: 8, padding: 12, borderRadius: 10,
+  savePanel: { display: 'flex', flexDirection: 'column', gap: 7, marginTop: 8, padding: 12, borderRadius: 'var(--radius-md)',
     border: '1px solid rgba(45,212,191,0.3)', background: 'rgba(45,212,191,0.06)' },
   saveLbl: { display: 'flex', flexDirection: 'column', gap: 4, fontSize: 12, color: '#cbd5e1', fontWeight: 600 },
   // "Save current position here" — pinned under the loaded chapter's positions list.
-  createPosBtn: { flexShrink: 0, marginTop: 6, padding: '9px', borderRadius: 10,
+  createPosBtn: { flexShrink: 0, marginTop: 6, padding: '9px', borderRadius: 'var(--radius-md)',
     border: '1px solid rgba(45,212,191,0.4)', background: 'rgba(45,212,191,0.12)',
     color: '#5eead4', fontSize: 12.5, fontWeight: 700, cursor: 'pointer' },
   editorOverlay: { position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.72)', backdropFilter: 'blur(3px)',
@@ -5612,25 +5612,25 @@ const s = {
   // Student "coach wants you to unmute" consent popup.
   unmuteOverlay: { position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.78)', backdropFilter: 'blur(4px)',
     display: 'grid', placeItems: 'center', zIndex: 9600, padding: 16 },
-  unmuteCard: { background: 'rgba(15,20,28,0.98)', border: '1px solid rgba(6,182,212,0.4)', borderRadius: 18,
+  unmuteCard: { background: 'rgba(15,20,28,0.98)', border: '1px solid rgba(6,182,212,0.4)', borderRadius: 'var(--radius-xl)',
     padding: '28px 26px', width: 'min(92vw, 380px)', textAlign: 'center', boxShadow: '0 24px 70px rgba(0,0,0,0.7)' },
-  unmuteYes: { padding: '11px 20px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#10b981,#059669)',
+  unmuteYes: { padding: '11px 20px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,#10b981,#059669)',
     color: '#fff', fontWeight: 800, fontSize: 14.5, cursor: 'pointer' },
-  unmuteNo: { padding: '11px 20px', borderRadius: 10, border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.14)',
+  unmuteNo: { padding: '11px 20px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.14)',
     color: '#fca5a5', fontWeight: 700, fontSize: 14.5, cursor: 'pointer' },
-  editorModal: { background: 'rgba(15,20,28,0.98)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 16,
+  editorModal: { background: 'rgba(15,20,28,0.98)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 'var(--radius-xl)',
     padding: 18, width: 'min(94vw, 720px)', maxHeight: '92vh', overflowY: 'auto', boxShadow: '0 24px 70px rgba(0,0,0,0.6)' },
   editorHead: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, fontSize: 13, fontWeight: 600, color: '#cbd5e1', marginBottom: 14, lineHeight: 1.4 },
-  editorX: { flex: '0 0 auto', width: 24, height: 24, borderRadius: 6, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12, lineHeight: 1 },
+  editorX: { flex: '0 0 auto', width: 24, height: 24, borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12, lineHeight: 1 },
   editorBody: { display: 'flex', gap: 16, alignItems: 'flex-start' },
-  puzBar: { display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 10,
+  puzBar: { display: 'flex', alignItems: 'center', gap: 8, padding: '8px 10px', borderRadius: 'var(--radius-md)',
     border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)' },
-  puzCard: { padding: '10px 8px', borderRadius: 10, border: '1px solid rgba(6,182,212,0.3)', background: 'rgba(6,182,212,0.1)', color: '#a5f3fc', fontWeight: 700, fontSize: 13, cursor: 'pointer' },
+  puzCard: { padding: '10px 8px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(6,182,212,0.3)', background: 'rgba(6,182,212,0.1)', color: '#a5f3fc', fontWeight: 700, fontSize: 13, cursor: 'pointer' },
   // Banner shown to the presenter while they share (keeps their controls usable).
   shareBanner: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
     padding: '8px 16px', background: 'rgba(16,185,129,0.14)', color: '#a7f3d0',
     borderBottom: '1px solid rgba(16,185,129,0.3)', fontSize: 13.5, fontWeight: 600 },
-  shareStop: { padding: '5px 12px', borderRadius: 8, border: '1px solid rgba(239,68,68,0.4)',
+  shareStop: { padding: '5px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(239,68,68,0.4)',
     background: 'rgba(239,68,68,0.15)', color: '#fca5a5', fontWeight: 700, cursor: 'pointer', fontSize: 12.5 },
   // Main stage — fills the width; the right rail sits beside it.
   // Stage takes the remaining width and may shrink; its wide inner row (positions +
@@ -5647,25 +5647,25 @@ const s = {
   // When the grid itself is fullscreened, fill the screen with a solid backdrop.
   videoGridFs: { background: '#0a0a0a', padding: 16, boxSizing: 'border-box', height: '100%', alignContent: 'center' },
   // Empty-stage prompt shown when the host moved videos out and no board is up.
-  stagePlaceholder: { flex: 1, minHeight: 320, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 14, border: '1px dashed rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.02)' },
+  stagePlaceholder: { flex: 1, minHeight: 320, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', borderRadius: 'var(--radius-lg)', border: '1px dashed rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.02)' },
   // Right rail: thumbnails (when the stage shows board/screen) + waiting room.
   // Right rail. On a laptop this is ~320px; on a big monitor it GROWS (clamp scales
   // it with viewport width) so the docked coach video isn't an ant on a 32" screen.
   side: { flex: '0 1 clamp(320px, 24vw, 560px)', minWidth: 260, display: 'flex', flexDirection: 'column', gap: 12 },
   thumbCol: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, width: '100%', minWidth: 0 },
-  camSelect: { padding: '6px 8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: '#151a22', color: '#e2e8f0', fontSize: 12, maxWidth: 170, cursor: 'pointer' },
-  waitCard: { background: 'rgba(23,23,23,0.72)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: 12 },
+  camSelect: { padding: '6px 8px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.12)', background: '#151a22', color: '#e2e8f0', fontSize: 12, maxWidth: 170, cursor: 'pointer' },
+  waitCard: { background: 'rgba(23,23,23,0.72)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-lg)', padding: 12 },
   waitCardHot: { border: '1px solid rgba(245,158,11,0.45)', boxShadow: '0 0 14px rgba(245,158,11,0.15)' },
   panelDivider: { height: 1, background: 'rgba(255,255,255,0.08)', margin: '2px 0 12px' },
-  gameRow: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' },
-  gameResult: { flex: 'none', width: 42, textAlign: 'center', fontSize: 11, fontWeight: 800, padding: '2px 0', borderRadius: 6, border: '1px solid' },
-  waitBadge: { background: '#f59e0b', color: '#241a05', borderRadius: 999, fontSize: 12, fontWeight: 800, padding: '1px 8px' },
+  gameRow: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' },
+  gameResult: { flex: 'none', width: 42, textAlign: 'center', fontSize: 11, fontWeight: 800, padding: '2px 0', borderRadius: 'var(--radius-sm)', border: '1px solid' },
+  waitBadge: { background: '#f59e0b', color: '#241a05', borderRadius: 'var(--radius-pill)', fontSize: 12, fontWeight: 800, padding: '1px 8px' },
   waitRow: { display: 'flex', alignItems: 'center', gap: 6, padding: '6px 0', borderTop: '1px solid rgba(255,255,255,0.05)' },
   partRow: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderTop: '1px solid rgba(255,255,255,0.05)' },
-  present: { padding: '5px 10px', borderRadius: 6, border: 'none', background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 12 },
-  catchup: { padding: '5px 10px', borderRadius: 6, border: '1px solid rgba(245,158,11,0.4)', background: 'rgba(245,158,11,0.14)', color: '#fcd34d', fontWeight: 700, cursor: 'pointer', fontSize: 12 },
-  remove: { padding: '5px 10px', borderRadius: 6, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.12)', color: '#fca5a5', fontWeight: 600, cursor: 'pointer', fontSize: 12 },
-  tiny: { padding: '3px 8px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 11 },
+  present: { padding: '5px 10px', borderRadius: 'var(--radius-sm)', border: 'none', background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 12 },
+  catchup: { padding: '5px 10px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(245,158,11,0.4)', background: 'rgba(245,158,11,0.14)', color: '#fcd34d', fontWeight: 700, cursor: 'pointer', fontSize: 12 },
+  remove: { padding: '5px 10px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.12)', color: '#fca5a5', fontWeight: 600, cursor: 'pointer', fontSize: 12 },
+  tiny: { padding: '3px 8px', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 11 },
   // ── Participants list: table-style header + icon-only host controls ────────
   // Each control column is a FIXED 30px so the heading above lines up with the
   // button below, and the name column keeps every remaining pixel.
@@ -5678,7 +5678,7 @@ const s = {
   ctrlCell: { display: 'flex', gap: 4, flex: '0 0 auto' },
   ctrlHead: { width: 30, textAlign: 'center', display: 'inline-block' },
   ctrlBtn: {
-    width: 30, height: 26, padding: 0, borderRadius: 7, cursor: 'pointer',
+    width: 30, height: 26, padding: 0, borderRadius: 'var(--radius-md)', cursor: 'pointer',
     border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)',
     fontSize: 13, lineHeight: 1, display: 'grid', placeItems: 'center', flex: '0 0 auto',
   },
@@ -5687,23 +5687,23 @@ const s = {
   ctrlBtnOn: {
     border: '1px solid rgba(245,158,11,0.55)', background: 'rgba(245,158,11,0.16)',
   },
-  iconBtn: { padding: '6px 10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer', fontSize: 15 },
+  iconBtn: { padding: '6px 10px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', cursor: 'pointer', fontSize: 15 },
   // Host video-placement segmented control (dock / float / pop / hide).
-  vmodeGroup: { display: 'inline-flex', gap: 2, padding: 2, borderRadius: 9, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)' },
-  vmodeBtn: { width: 30, height: 28, borderRadius: 7, border: 'none', background: 'transparent', color: '#9ca3af', cursor: 'pointer', fontSize: 14, display: 'grid', placeItems: 'center', lineHeight: 1 },
+  vmodeGroup: { display: 'inline-flex', gap: 2, padding: 2, borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)' },
+  vmodeBtn: { width: 30, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', color: '#9ca3af', cursor: 'pointer', fontSize: 14, display: 'grid', placeItems: 'center', lineHeight: 1 },
   vmodeBtnOn: { background: 'rgba(6,182,212,0.18)', color: '#67e8f9', boxShadow: 'inset 0 0 0 1px rgba(6,182,212,0.4)' },
   // Floating video box (Zoom-style) — sits over the board, host drags/resizes it.
-  vFloat: { position: 'fixed', zIndex: 80, background: 'rgba(13,16,22,0.94)', backdropFilter: 'blur(14px)', border: '1px solid rgba(6,182,212,0.35)', borderRadius: 14, boxShadow: '0 20px 60px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', overflow: 'hidden', userSelect: 'none' },
+  vFloat: { position: 'fixed', zIndex: 80, background: 'rgba(13,16,22,0.94)', backdropFilter: 'blur(14px)', border: '1px solid rgba(6,182,212,0.35)', borderRadius: 'var(--radius-lg)', boxShadow: '0 20px 60px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', overflow: 'hidden', userSelect: 'none' },
   vFloatHead: { display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', cursor: 'grab', background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.08)' },
   vFloatTitle: { fontSize: 12, fontWeight: 700, color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: 6 },
   vFloatBody: { flex: 1, minHeight: 0, minWidth: 0, width: '100%', overflow: 'auto', padding: 8, display: 'flex', flexWrap: 'wrap', gap: 6, alignContent: 'center', justifyContent: 'center' },
   vFloatResize: { position: 'absolute', right: 3, bottom: 3, width: 16, height: 16, cursor: 'nwse-resize', color: '#6b7280', display: 'grid', placeItems: 'center', fontSize: 11, touchAction: 'none' },
-  vfBtn: { width: 26, height: 22, borderRadius: 6, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#cbd5e1', cursor: 'pointer', fontSize: 11, display: 'grid', placeItems: 'center' },
+  vfBtn: { width: 26, height: 22, borderRadius: 'var(--radius-sm)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.06)', color: '#cbd5e1', cursor: 'pointer', fontSize: 11, display: 'grid', placeItems: 'center' },
   // "Show video" pill shown when videos are hidden.
-  showVideoPill: { position: 'fixed', bottom: 20, right: 20, zIndex: 80, display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 16px', borderRadius: 12, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, fontSize: 13, cursor: 'pointer', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' },
+  showVideoPill: { position: 'fixed', bottom: 20, right: 20, zIndex: 80, display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 16px', borderRadius: 'var(--radius-lg)', border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, fontSize: 13, cursor: 'pointer', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' },
   // ── Video effects panel ──
   fxOverlay: { position: 'fixed', inset: 0, zIndex: 9600, background: 'rgba(3,7,12,0.78)', display: 'grid', placeItems: 'center', padding: 16 },
-  fxPanel: { width: 'min(440px, 94vw)', background: 'rgba(15,20,28,0.98)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 16, padding: 20, boxShadow: '0 24px 70px rgba(0,0,0,0.6)', maxHeight: '90vh', overflowY: 'auto' },
+  fxPanel: { width: 'min(440px, 94vw)', background: 'rgba(15,20,28,0.98)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 'var(--radius-xl)', padding: 20, boxShadow: '0 24px 70px rgba(0,0,0,0.6)', maxHeight: '90vh', overflowY: 'auto' },
   fxHead: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 17, fontWeight: 800, color: '#f1f5f9', marginBottom: 6 },
   fxNote: { fontSize: 12.5, color: '#9ca3af', margin: '0 0 16px', lineHeight: 1.5 },
   fxRow: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, padding: '8px 0', cursor: 'pointer' },
@@ -5711,7 +5711,7 @@ const s = {
   fxSliders: { display: 'flex', flexDirection: 'column', gap: 12, padding: '8px 0 4px' },
   fxSlider: { display: 'flex', flexDirection: 'column', gap: 5, fontSize: 12.5, color: '#9ca3af' },
   fxHint: { fontSize: 11.5, color: '#6b7280', margin: '8px 0 0', lineHeight: 1.5 },
-  zoomBtn: { minWidth: 26, height: 26, padding: '0 6px', borderRadius: 7, border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12, lineHeight: 1, display: 'inline-grid', placeItems: 'center' },
+  zoomBtn: { minWidth: 26, height: 26, padding: '0 6px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.06)', color: '#e2e8f0', cursor: 'pointer', fontSize: 12, lineHeight: 1, display: 'inline-grid', placeItems: 'center' },
   // Drag-to-resize corner, matching the Analyze board's diagonal grip.
   resizeHandle: {
     position: 'absolute', right: 6, bottom: 6, width: 18, height: 18, zIndex: 6,
@@ -5722,32 +5722,32 @@ const s = {
   // Dark "share your screen" pre-prompt.
   shareOverlay: { position: 'fixed', inset: 0, zIndex: 9500, display: 'grid', placeItems: 'center',
     background: 'rgba(3,6,10,0.72)', backdropFilter: 'blur(6px)' },
-  shareModal: { width: 'min(420px, 92%)', textAlign: 'center', padding: '28px 26px', borderRadius: 20,
+  shareModal: { width: 'min(420px, 92%)', textAlign: 'center', padding: '28px 26px', borderRadius: 'var(--radius-2xl)',
     background: 'linear-gradient(180deg, rgba(18,26,38,0.98), rgba(10,15,23,0.99))',
     border: '1px solid rgba(52,211,153,0.22)', boxShadow: '0 30px 90px -30px rgba(0,0,0,0.85)', color: '#f0f4ff' },
-  shareCancel: { padding: '10px 18px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.14)', background: 'transparent', color: '#cbd5e1', fontWeight: 700, cursor: 'pointer' },
-  shareGo: { padding: '10px 18px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, cursor: 'pointer' },
+  shareCancel: { padding: '10px 18px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.14)', background: 'transparent', color: '#cbd5e1', fontWeight: 700, cursor: 'pointer' },
+  shareGo: { padding: '10px 18px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, cursor: 'pointer' },
   // Zoom-style mic/camera buttons: icon + word, green when on, red when off.
   mediaBtn: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, minWidth: 56,
-    padding: '5px 8px', borderRadius: 10, cursor: 'pointer', fontSize: 11, fontWeight: 700, lineHeight: 1.1 },
+    padding: '5px 8px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 11, fontWeight: 700, lineHeight: 1.1 },
   mediaOn: { background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.4)', color: '#6ee7b7' },
   mediaOff: { background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#fca5a5' },
   // Mic/Camera button + inline device-picker caret (Zoom-style ˅ next to the icon).
   mediaWrap: { position: 'relative', display: 'inline-flex', alignItems: 'stretch', gap: 2 },
-  devCaret: { width: 18, padding: 0, borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: '#9ca3af', cursor: 'pointer', fontSize: 13, lineHeight: 1, display: 'grid', placeItems: 'center' },
+  devCaret: { width: 18, padding: 0, borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: '#9ca3af', cursor: 'pointer', fontSize: 13, lineHeight: 1, display: 'grid', placeItems: 'center' },
   devCaretOn: { borderColor: 'rgba(6,182,212,0.5)', color: '#67e8f9', background: 'rgba(6,182,212,0.12)' },
   devBackdrop: { position: 'fixed', inset: 0, zIndex: 60 },
   devMenu: { position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 61, minWidth: 220, maxWidth: 300,
-    background: '#161a24', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 10, padding: 6,
+    background: '#161a24', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 'var(--radius-md)', padding: 6,
     boxShadow: '0 14px 40px rgba(0,0,0,0.5)' },
   devMenuHead: { fontSize: 11, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '4px 8px 6px' },
   devMenuEmpty: { fontSize: 12.5, color: '#9ca3af', padding: '6px 8px' },
   devItem: { display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', background: 'transparent',
-    border: 'none', color: '#e2e8f0', padding: '8px 8px', borderRadius: 7, cursor: 'pointer', fontSize: 13 },
+    border: 'none', color: '#e2e8f0', padding: '8px 8px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 13 },
   devItemOn: { background: 'rgba(6,182,212,0.14)', color: '#67e8f9' },
   devCheck: { width: 14, flexShrink: 0, color: '#67e8f9', fontWeight: 800 },
   devLabel: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
-  screenBtn: { padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(6,182,212,0.4)', background: 'rgba(6,182,212,0.12)', color: '#67e8f9', cursor: 'pointer', fontWeight: 600 },
-  endBtn: { padding: '6px 14px', borderRadius: 8, border: 'none', background: '#ef4444', color: '#fff', fontWeight: 700, cursor: 'pointer' },
-  ghost: { padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', marginTop: 12 },
+  screenBtn: { padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(6,182,212,0.4)', background: 'rgba(6,182,212,0.12)', color: '#67e8f9', cursor: 'pointer', fontWeight: 600 },
+  endBtn: { padding: '6px 14px', borderRadius: 'var(--radius-md)', border: 'none', background: '#ef4444', color: '#fff', fontWeight: 700, cursor: 'pointer' },
+  ghost: { padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', marginTop: 12 },
 };

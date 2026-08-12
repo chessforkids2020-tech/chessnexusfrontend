@@ -13,12 +13,12 @@ const s = {
     overflow: 'hidden',
   },
   blob1: {
-    position: 'fixed', borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
+    position: 'fixed', borderRadius: 'var(--radius-circle)', pointerEvents: 'none', zIndex: 0,
     width: 700, height: 700, top: -150, left: -200,
     background: 'radial-gradient(circle, var(--color-accent-2-a12) 0%, transparent 70%)',
   },
   blob2: {
-    position: 'fixed', borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
+    position: 'fixed', borderRadius: 'var(--radius-circle)', pointerEvents: 'none', zIndex: 0,
     width: 600, height: 600, bottom: -120, right: -160,
     background: 'radial-gradient(circle, var(--color-accent-2-a15) 0%, transparent 70%)',
   },
@@ -37,7 +37,7 @@ const s = {
     marginBottom: 36,
     background: 'var(--color-surface)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 20,
+    borderRadius: 'var(--radius-2xl)',
     padding: '22px 28px',
     backdropFilter: 'blur(18px)',
     boxShadow: '0 8px 32px var(--color-black-a50), inset 0 1px 0 var(--color-white-a04)',
@@ -63,14 +63,14 @@ const s = {
     fontWeight: 600,
     letterSpacing: '0.6px',
     padding: '4px 12px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     marginLeft: 4,
   },
   backBtn: {
     background: 'var(--color-black-a35)',
     color: 'var(--color-text-muted)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     padding: '10px 20px',
     fontFamily: "'DM Sans', sans-serif",
     fontSize: 14,
@@ -90,7 +90,7 @@ const s = {
   card: {
     background: 'var(--color-surface)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 20,
+    borderRadius: 'var(--radius-2xl)',
     padding: '24px 22px 20px',
     backdropFilter: 'blur(18px)',
     boxShadow: '0 8px 32px var(--color-black-a35)',
@@ -106,7 +106,7 @@ const s = {
     top: 0, left: '10%', right: '10%',
     height: 1,
     background: 'linear-gradient(90deg, transparent, var(--color-accent), transparent)',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     opacity: 0.5,
   },
 
@@ -133,12 +133,12 @@ const s = {
     fontSize: 13,
     fontWeight: 600,
     padding: '3px 10px',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
   },
   cardDivider: {
     height: 1,
     background: 'var(--color-white-a04)',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
   },
   timestamp: {
     fontSize: 11,
@@ -152,7 +152,7 @@ const s = {
     padding: '70px 20px',
     background: 'var(--color-surface)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 20,
+    borderRadius: 'var(--radius-2xl)',
     backdropFilter: 'blur(18px)',
     boxShadow: '0 8px 32px var(--color-black-a50)',
   },
@@ -172,7 +172,7 @@ const s = {
     height: 36,
     border: '3px solid var(--color-white-a07)',
     borderTop: '3px solid var(--color-accent)',
-    borderRadius: '50%',
+    borderRadius: 'var(--radius-circle)',
     margin: '0 auto 20px',
     animation: 'spin 0.8s linear infinite',
   },
@@ -354,7 +354,7 @@ function EventSubmissions() {
                               background: 'var(--color-danger)',
                               color: 'var(--color-text)',
                               border: 'none',
-                              borderRadius: 4,
+                              borderRadius: 'var(--radius-sm)',
                               padding: '4px 8px',
                               fontSize: 12,
                               cursor: 'pointer'
@@ -451,7 +451,7 @@ function EventSubmissions() {
                                   title={!sub.email ? 'No email on this submission' : 'Send confirmation email'}
                                   style={{
                                     background: confirmId === sub._id ? '#334155' : 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent-2))',
-                                    color: 'var(--color-text)', border: 'none', borderRadius: 6, padding: '6px 12px',
+                                    color: 'var(--color-text)', border: 'none', borderRadius: 'var(--radius-sm)', padding: '6px 12px',
                                     fontSize: 12, fontWeight: 600, cursor: sub.email ? 'pointer' : 'not-allowed',
                                     opacity: sub.email ? 1 : 0.5,
                                   }}
@@ -468,24 +468,24 @@ function EventSubmissions() {
                                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                                       <input value={confirmForm.day} onChange={e => setConfirmForm({ ...confirmForm, day: e.target.value })}
                                         placeholder="Day (e.g. Monday)"
-                                        style={{ flex: '1 1 160px', padding: '9px 11px', borderRadius: 8, border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13 }} />
+                                        style={{ flex: '1 1 160px', padding: '9px 11px', borderRadius: 'var(--radius-md)', border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13 }} />
                                       <input value={confirmForm.time} onChange={e => setConfirmForm({ ...confirmForm, time: e.target.value })}
                                         placeholder="Time IST (e.g. 4 – 6 PM)"
-                                        style={{ flex: '1 1 160px', padding: '9px 11px', borderRadius: 8, border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13 }} />
+                                        style={{ flex: '1 1 160px', padding: '9px 11px', borderRadius: 'var(--radius-md)', border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13 }} />
                                     </div>
                                     <input value={confirmForm.zoomLink} onChange={e => setConfirmForm({ ...confirmForm, zoomLink: e.target.value })}
                                       placeholder="Zoom link (https://zoom.us/j/…)"
-                                      style={{ padding: '9px 11px', borderRadius: 8, border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13 }} />
+                                      style={{ padding: '9px 11px', borderRadius: 'var(--radius-md)', border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13 }} />
                                     <textarea value={confirmForm.note} onChange={e => setConfirmForm({ ...confirmForm, note: e.target.value })}
                                       placeholder="Optional note to include in the email…" rows={2}
-                                      style={{ padding: '9px 11px', borderRadius: 8, border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13, resize: 'vertical' }} />
+                                      style={{ padding: '9px 11px', borderRadius: 'var(--radius-md)', border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13, resize: 'vertical' }} />
                                     <div style={{ display: 'flex', gap: 10 }}>
                                       <button onClick={() => sendConfirm(sub._id)} disabled={confirmSending}
-                                        style={{ background: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent-2))', color: 'var(--color-text)', border: 'none', borderRadius: 8, padding: '9px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: confirmSending ? 0.6 : 1 }}>
+                                        style={{ background: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent-2))', color: 'var(--color-text)', border: 'none', borderRadius: 'var(--radius-md)', padding: '9px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: confirmSending ? 0.6 : 1 }}>
                                         {confirmSending ? 'Sending…' : '📧 Send confirmation email'}
                                       </button>
                                       <button onClick={() => setConfirmId(null)} disabled={confirmSending}
-                                        style={{ background: '#334155', color: 'var(--color-text-muted)', border: 'none', borderRadius: 8, padding: '9px 18px', fontSize: 13, cursor: 'pointer' }}>
+                                        style={{ background: '#334155', color: 'var(--color-text-muted)', border: 'none', borderRadius: 'var(--radius-md)', padding: '9px 18px', fontSize: 13, cursor: 'pointer' }}>
                                         Cancel
                                       </button>
                                     </div>

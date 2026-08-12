@@ -54,10 +54,10 @@ const C = {
 const st = {
   card: { position: 'relative', display: 'flex', gap: 14, alignItems: 'center', textAlign: 'left',
     background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
-    border: `1px solid ${C.border}`, borderRadius: 14, padding: 12, cursor: 'pointer',
+    border: `1px solid ${C.border}`, borderRadius: 'var(--radius-lg)', padding: 12, cursor: 'pointer',
     color: C.text, transition: 'transform 150ms ease, border-color 150ms ease',
     boxShadow: '0 8px 30px var(--color-black-a35)', width: '100%' },
-  board: { flexShrink: 0, borderRadius: 8, overflow: 'hidden', boxShadow: '0 2px 10px var(--color-black-a35)' },
+  board: { flexShrink: 0, borderRadius: 'var(--radius-md)', overflow: 'hidden', boxShadow: '0 2px 10px var(--color-black-a35)' },
   info: { flex: 1, minWidth: 0 },
   players: { fontSize: 16, fontWeight: 700, color: 'var(--color-text)', lineHeight: 1.35 },
   event: { fontSize: 13, color: C.textMut, marginTop: 6 },

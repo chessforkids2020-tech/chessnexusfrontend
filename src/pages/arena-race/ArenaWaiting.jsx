@@ -351,7 +351,7 @@ export default function ArenaWaiting() {
       padding: '32px 28px',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -391,7 +391,7 @@ export default function ArenaWaiting() {
     card: {
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       padding: '32px',
       boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -400,7 +400,7 @@ export default function ArenaWaiting() {
       padding: '20px',
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       marginBottom: '16px',
       transition: 'all 0.3s ease',
     },
@@ -421,7 +421,7 @@ export default function ArenaWaiting() {
     statusCard: {
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       padding: '12px',
       textAlign: 'center',
@@ -445,7 +445,7 @@ export default function ArenaWaiting() {
     playersCard: {
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       padding: '32px',
       boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -467,7 +467,7 @@ export default function ArenaWaiting() {
     playerCard: {
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '16px',
       display: 'flex',
       alignItems: 'center',
@@ -477,7 +477,7 @@ export default function ArenaWaiting() {
     playerAvatar: {
       width: '48px',
       height: '48px',
-      borderRadius: '50%',
+      borderRadius: 'var(--radius-circle)',
       background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       display: 'flex',
       alignItems: 'center',
@@ -510,7 +510,7 @@ export default function ArenaWaiting() {
     },
     playerStatus: {
       padding: '6px 14px',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       fontSize: '11px',
       fontWeight: '600',
       textTransform: 'uppercase',
@@ -532,7 +532,7 @@ export default function ArenaWaiting() {
       padding: '80px 20px',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -550,7 +550,7 @@ export default function ArenaWaiting() {
       padding: '60px 40px',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -559,7 +559,7 @@ export default function ArenaWaiting() {
       color: 'var(--color-danger)',
       border: '1px solid var(--color-danger-a20)',
       padding: '16px 24px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '16px',
       fontWeight: '600',
       marginBottom: '32px',
@@ -569,7 +569,7 @@ export default function ArenaWaiting() {
       color: 'var(--color-text)',
       border: 'none',
       padding: '14px 32px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '15px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -682,7 +682,7 @@ export default function ArenaWaiting() {
               marginTop: '20px', 
               padding: '16px',
               background: 'var(--color-black-a35)',
-              borderRadius: '12px',
+              borderRadius: 'var(--radius-lg)',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '12px'
@@ -703,7 +703,7 @@ export default function ArenaWaiting() {
                   padding: '8px 16px',
                   background: copied ? 'var(--color-success-a30)' : 'var(--color-accent-a20)',
                   border: `1px solid ${copied ? 'var(--color-success-a30)' : 'var(--color-accent-a30)'}`,
-                  borderRadius: '8px',
+                  borderRadius: 'var(--radius-md)',
                   color: copied ? 'var(--color-success)' : 'var(--color-accent)',
                   cursor: 'pointer',
                   fontSize: '13px',
@@ -727,7 +727,7 @@ export default function ArenaWaiting() {
                     style={{
                       background: 'var(--color-danger-a12)',
                       border: '1px solid var(--color-danger-a30)',
-                      borderRadius: '10px',
+                      borderRadius: 'var(--radius-md)',
                       padding: '12px 20px',
                       color: 'var(--color-danger)',
                       fontSize: '14px',
@@ -747,7 +747,7 @@ export default function ArenaWaiting() {
                     style={{
                       background: 'var(--color-danger-a20)',
                       border: '1px solid rgba(239, 68, 68, 0.5)',
-                      borderRadius: '10px',
+                      borderRadius: 'var(--radius-md)',
                       padding: '14px 20px',
                       color: 'var(--color-danger)',
                       fontSize: '14px',
@@ -770,7 +770,7 @@ export default function ArenaWaiting() {
                       ? 'rgba(107, 114, 128, 0.5)' 
                       : 'linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)',
                     border: 'none',
-                    borderRadius: '12px',
+                    borderRadius: 'var(--radius-lg)',
                     color: 'var(--color-text)',
                     cursor: (!canStartRace || startingRace) ? 'not-allowed' : 'pointer',
                     boxShadow: (!canStartRace || startingRace)
@@ -952,7 +952,7 @@ export default function ArenaWaiting() {
                           <td style={{ padding: '12px 12px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                               <div style={{
-                                width: '32px', height: '32px', borderRadius: '50%',
+                                width: '32px', height: '32px', borderRadius: 'var(--radius-circle)',
                                 background: isMe ? 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))' : 'var(--color-white-a07)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 fontSize: '14px', fontWeight: '700', color: 'var(--color-text)', flexShrink: 0,
@@ -962,7 +962,7 @@ export default function ArenaWaiting() {
                               <div style={{ minWidth: 0 }}>
                                 <div style={{ fontSize: '14px', fontWeight: '600', color: isMe ? 'var(--color-accent)' : 'var(--color-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                   <PlayerName displayName={player.displayName} username={player.username} userId={player.userId} />
-                                  {isMe && <span style={{ fontSize: '10px', background: 'var(--color-accent-a20)', color: 'var(--color-accent)', border: '1px solid var(--color-accent-a30)', borderRadius: '4px', padding: '1px 6px', fontWeight: '700' }}>You</span>}
+                                  {isMe && <span style={{ fontSize: '10px', background: 'var(--color-accent-a20)', color: 'var(--color-accent)', border: '1px solid var(--color-accent-a30)', borderRadius: 'var(--radius-sm)', padding: '1px 6px', fontWeight: '700' }}>You</span>}
                                 </div>
                               </div>
                             </div>
@@ -971,7 +971,7 @@ export default function ArenaWaiting() {
                           <td style={{ padding: '12px 12px', textAlign: 'center' }}>
                             <span style={{
                               display: 'inline-block',
-                              padding: '4px 12px', borderRadius: '6px',
+                              padding: '4px 12px', borderRadius: 'var(--radius-sm)',
                               fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em',
                               background: isReady ? 'var(--color-success-a12)' : 'var(--color-warning-a12)',
                               color: isReady ? 'var(--color-success)' : 'var(--color-warning)',
@@ -994,7 +994,7 @@ export default function ArenaWaiting() {
                     onClick={() => setPlayersPage(p => Math.max(0, p - 1))}
                     disabled={safePlayersPage === 0}
                     style={{
-                      padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
+                      padding: '6px 14px', borderRadius: 'var(--radius-md)', fontSize: '13px', fontWeight: '600',
                       background: safePlayersPage === 0 ? 'var(--color-white-a04)' : 'var(--color-accent-a15)',
                       color: safePlayersPage === 0 ? 'var(--color-text-faint)' : 'var(--color-accent)',
                       border: `1px solid ${safePlayersPage === 0 ? 'var(--color-white-a07)' : 'var(--color-accent-a30)'}`,
@@ -1009,7 +1009,7 @@ export default function ArenaWaiting() {
                       key={i}
                       onClick={() => setPlayersPage(i)}
                       style={{
-                        width: '34px', height: '34px', borderRadius: '8px', fontSize: '13px', fontWeight: '700',
+                        width: '34px', height: '34px', borderRadius: 'var(--radius-md)', fontSize: '13px', fontWeight: '700',
                         background: i === safePlayersPage ? 'var(--color-accent-a20)' : 'var(--color-white-a04)',
                         color: i === safePlayersPage ? 'var(--color-accent)' : 'var(--color-text-muted)',
                         border: `1px solid ${i === safePlayersPage ? 'var(--color-accent-a40)' : 'var(--color-white-a07)'}`,
@@ -1024,7 +1024,7 @@ export default function ArenaWaiting() {
                     onClick={() => setPlayersPage(p => Math.min(totalPages - 1, p + 1))}
                     disabled={safePlayersPage === totalPages - 1}
                     style={{
-                      padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
+                      padding: '6px 14px', borderRadius: 'var(--radius-md)', fontSize: '13px', fontWeight: '600',
                       background: safePlayersPage === totalPages - 1 ? 'var(--color-white-a04)' : 'var(--color-accent-a15)',
                       color: safePlayersPage === totalPages - 1 ? 'var(--color-text-faint)' : 'var(--color-accent)',
                       border: `1px solid ${safePlayersPage === totalPages - 1 ? 'var(--color-white-a07)' : 'var(--color-accent-a30)'}`,

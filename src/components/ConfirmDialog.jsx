@@ -60,7 +60,7 @@ const ConfirmDialog = () => {
     },
     dialog: {
       background: 'var(--color-surface)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '24px',
       maxWidth: '400px',
       width: '90%',
@@ -80,7 +80,7 @@ const ConfirmDialog = () => {
     },
     button: {
       padding: '8px 16px',
-      borderRadius: '6px',
+      borderRadius: 'var(--radius-sm)',
       fontSize: '14px',
       fontWeight: '500',
       cursor: 'pointer',

@@ -20,7 +20,7 @@ const metaInputStyle = {
   boxSizing: 'border-box',
   background: 'var(--color-black-a35)',
   border: '1px solid var(--color-white-a13)',
-  borderRadius: 8,
+  borderRadius: 'var(--radius-md)',
   color: 'var(--color-text)',
   padding: '10px 12px',
   fontSize: 13,
@@ -32,7 +32,7 @@ const metaInputStyle = {
 
 const metaBtnStyle = (primary, busy) => ({
   padding: '8px 16px',
-  borderRadius: 8,
+  borderRadius: 'var(--radius-md)',
   fontSize: 13,
   fontWeight: 600,
   cursor: busy ? 'default' : 'pointer',
@@ -533,10 +533,10 @@ const UserStudyPuzzleView = () => {
     grid: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: `linear-gradient(${currentColor.accentColor} 1px, transparent 1px), linear-gradient(90deg, ${currentColor.accentColor} 1px, transparent 1px)`, backgroundSize: '50px 50px', pointerEvents: 'none', zIndex: 0, opacity: 0.5 },
     container: { maxWidth: '1600px', margin: '0 auto', position: 'relative', zIndex: 1 },
     header: { textAlign: 'center', marginBottom: 10, position: 'relative' },
-    backButton: { position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 16, cursor: 'pointer', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, zIndex: 2 },
-    toggleButton: { position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 16, cursor: 'pointer', fontSize: 14, fontWeight: 600, display: isMobile ? 'flex' : 'none', alignItems: 'center', gap: 8, zIndex: 2 },
+    backButton: { position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, zIndex: 2 },
+    toggleButton: { position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: isMobile ? 'flex' : 'none', alignItems: 'center', gap: 8, zIndex: 2 },
     mainContent: { display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 0, minHeight: 600 },
-    leftPanel: { flex: isMobile ? 'none' : '0 0 300px', display: isMobile && !showPuzzleList ? 'none' : 'flex', flexDirection: 'column', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 20, backdropFilter: 'blur(20px)', padding: 16, overflowY: 'auto', maxHeight: isMobile ? 400 : 700, position: isMobile ? 'absolute' : 'static', top: isMobile ? 100 : 'auto', left: isMobile ? 20 : 'auto', right: isMobile ? 20 : 'auto', zIndex: isMobile ? 1000 : 'auto', boxShadow: isMobile ? '0 20px 60px var(--color-black-a50)' : 'none' },
+    leftPanel: { flex: isMobile ? 'none' : '0 0 300px', display: isMobile && !showPuzzleList ? 'none' : 'flex', flexDirection: 'column', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: 16, overflowY: 'auto', maxHeight: isMobile ? 400 : 700, position: isMobile ? 'absolute' : 'static', top: isMobile ? 100 : 'auto', left: isMobile ? 20 : 'auto', right: isMobile ? 20 : 'auto', zIndex: isMobile ? 1000 : 'auto', boxShadow: isMobile ? '0 20px 60px var(--color-black-a50)' : 'none' },
     tableHeaderRow: { borderBottom: `2px solid ${currentColor.color}40` },
     tableHeader: { padding: '5px 8px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: currentColor.color, letterSpacing: '0.5px', textTransform: 'uppercase' },
     tableRow: { borderBottom: '1px solid var(--color-white-a04)', cursor: 'pointer', transition: 'all 0.3s' },
@@ -544,26 +544,26 @@ const UserStudyPuzzleView = () => {
     tableCell: { padding: '5px 8px', textAlign: 'center', fontSize: 13, fontWeight: 600, color: 'var(--color-text-muted)' },
     tableCellName: { padding: '5px 8px', textAlign: 'left', fontSize: 13, fontWeight: 600, color: 'var(--color-text)' },
     centerPanel: { flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: isMobile ? 0 : '0 0 0 8px', order: isMobile ? -1 : 0 },
-    chessboardContainer: { marginBottom: 24, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 20, backdropFilter: 'blur(20px)', padding: '0px 10px 10px 10px' },
+    chessboardContainer: { marginBottom: 24, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: '0px 10px 10px 10px' },
     controlButtons: { display: 'flex', gap: 8, marginTop: 20, flexWrap: 'wrap', justifyContent: 'center' },
-    btn: { padding: '12px 24px', border: '1px solid var(--color-white-a07)', borderRadius: 14, cursor: 'pointer', fontSize: 15, fontWeight: 600, transition: 'all 0.3s', background: 'var(--color-surface)', backdropFilter: 'blur(10px)', color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 },
+    btn: { padding: '12px 24px', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', cursor: 'pointer', fontSize: 15, fontWeight: 600, transition: 'all 0.3s', background: 'var(--color-surface)', backdropFilter: 'blur(10px)', color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 },
     navBtn: { borderColor: currentColor.color + '40', color: currentColor.color },
     navBtnDisabled: { background: 'rgba(23,23,23,0.8)', borderColor: 'var(--color-white-a04)', color: 'var(--color-text-faint)', cursor: 'not-allowed' },
     resetBtn: { borderColor: 'var(--color-text-muted)', color: 'var(--color-text-muted)' },
     solBtn: { background: currentColor.accentColor, borderColor: currentColor.color + '60', color: 'var(--color-text)' },
-    rightPanel: { flex: isMobile ? 'none' : '0 0 350px', width: isMobile ? '100%' : 'auto', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 20, backdropFilter: 'blur(20px)', padding: 24, overflowY: 'auto', maxHeight: isMobile ? 'none' : 700, order: isMobile ? 1 : 0 },
-    turnIndicator: { display: 'flex', alignItems: 'center', gap: 12, padding: 16, background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 14, marginBottom: 20 },
-    movesContainer: { background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 14, padding: 20, marginBottom: 20, minHeight: 180 },
+    rightPanel: { flex: isMobile ? 'none' : '0 0 350px', width: isMobile ? '100%' : 'auto', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: 24, overflowY: 'auto', maxHeight: isMobile ? 'none' : 700, order: isMobile ? 1 : 0 },
+    turnIndicator: { display: 'flex', alignItems: 'center', gap: 12, padding: 16, background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', marginBottom: 20 },
+    movesContainer: { background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', padding: 20, marginBottom: 20, minHeight: 180 },
     sectionTitle: { fontSize: 16, fontWeight: 700, color: currentColor.color, marginBottom: 16, letterSpacing: '-0.5px' },
     movesList: { fontFamily: 'monospace', fontSize: 15, lineHeight: '1.8', color: 'var(--color-text)' },
     moveRow: { marginBottom: 8, display: 'flex', gap: 12, alignItems: 'center' },
-    solutionContainer: { background: 'var(--color-black-a35)', border: `1px solid ${currentColor.color}40`, borderRadius: 14, padding: 20, marginBottom: 20 },
+    solutionContainer: { background: 'var(--color-black-a35)', border: `1px solid ${currentColor.color}40`, borderRadius: 'var(--radius-lg)', padding: 20, marginBottom: 20 },
     solutionText: { fontFamily: 'monospace', fontSize: 15, lineHeight: '1.8', color: currentColor.color, fontWeight: 600, whiteSpace: 'pre-wrap', wordBreak: 'break-word' },
-    descContainer: { background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 14, padding: 20 },
+    descContainer: { background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', padding: 20 },
     descText: { fontSize: 15, lineHeight: 1.6, color: 'var(--color-text-muted)' },
     mobileOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--color-black-a65)', zIndex: 999, display: isMobile && showPuzzleList ? 'block' : 'none' },
-    loading: { textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 18, padding: 60, fontStyle: 'italic', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 20, backdropFilter: 'blur(20px)' },
-    error: { textAlign: 'center', color: 'var(--color-danger)', fontSize: 18, padding: 60, fontWeight: 500, background: 'var(--color-surface)', border: '1px solid var(--color-danger-a20)', borderRadius: 20, backdropFilter: 'blur(20px)' },
+    loading: { textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 18, padding: 60, fontStyle: 'italic', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)' },
+    error: { textAlign: 'center', color: 'var(--color-danger)', fontSize: 18, padding: 60, fontWeight: 500, background: 'var(--color-surface)', border: '1px solid var(--color-danger-a20)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)' },
   };
 
   if (loading) return (
@@ -580,11 +580,11 @@ const UserStudyPuzzleView = () => {
 
   const createModal = showCreateModal ? (
     <div style={{ position: 'fixed', inset: 0, background: 'var(--color-black-a65)', zIndex: 5000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: isMobile ? 8 : 24, overflowY: 'auto' }} onClick={e => { if (e.target === e.currentTarget) setShowCreateModal(false); }}>
-      <div style={{ background: '#111827', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 20, width: '100%', maxWidth: 980, margin: 'auto', boxShadow: '0 24px 64px var(--color-black-a65)' }}>
+      <div style={{ background: '#111827', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 'var(--radius-2xl)', width: '100%', maxWidth: 980, margin: 'auto', boxShadow: '0 24px 64px var(--color-black-a65)' }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderBottom: '1px solid var(--color-white-a07)' }}>
           <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-accent-2)' }}>♟️ Create New Position</div>
-          <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: 22, cursor: 'pointer', lineHeight: 1, padding: '2px 10px', borderRadius: 8, transition: 'color 0.15s' }}>✕</button>
+          <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: 22, cursor: 'pointer', lineHeight: 1, padding: '2px 10px', borderRadius: 'var(--radius-md)', transition: 'color 0.15s' }}>✕</button>
         </div>
         {/* Body */}
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 24, padding: 24 }}>
@@ -599,9 +599,9 @@ const UserStudyPuzzleView = () => {
             />
             <FenBar fen={editorChess.fen()} onFenChange={handleEditorFenChange} />
             <div style={{ display: 'flex', gap: 6 }}>
-              <button onClick={() => handleEditorFenChange('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 8, color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Start</button>
-              <button onClick={() => handleEditorFenChange('8/8/8/8/8/8/8/8 w - - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 8, color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Empty</button>
-              <button onClick={() => setEditorOrientation(o => o === 'white' ? 'black' : 'white')} style={{ flex: 1, padding: '7px 0', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 8, color: 'var(--color-accent-2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>⇅ Flip</button>
+              <button onClick={() => handleEditorFenChange('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Start</button>
+              <button onClick={() => handleEditorFenChange('8/8/8/8/8/8/8/8 w - - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Empty</button>
+              <button onClick={() => setEditorOrientation(o => o === 'white' ? 'black' : 'white')} style={{ flex: 1, padding: '7px 0', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 'var(--radius-md)', color: 'var(--color-accent-2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>⇅ Flip</button>
             </div>
           </div>
           {/* Right: Piece selector + Setup controls + Form */}
@@ -614,20 +614,20 @@ const UserStudyPuzzleView = () => {
                 placeholder="Title (optional)"
                 value={posTitle}
                 onChange={e => setPosTitle(e.target.value)}
-                style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 10, color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }}
               />
               <textarea
                 placeholder="Description (optional)"
                 value={posDesc}
                 onChange={e => setPosDesc(e.target.value)}
                 rows={3}
-                style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 10, color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, resize: 'vertical', fontFamily: 'inherit', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, resize: 'vertical', fontFamily: 'inherit', outline: 'none', width: '100%', boxSizing: 'border-box' }}
               />
               <input
                 placeholder="Solution moves (e.g. Nh5 Nc3 Nf4)"
                 value={posSolution}
                 onChange={e => setPosSolution(e.target.value)}
-                style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 10, color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, fontFamily: 'monospace', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, fontFamily: 'monospace', outline: 'none', width: '100%', boxSizing: 'border-box' }}
               />
             </div>
           </div>
@@ -639,11 +639,11 @@ const UserStudyPuzzleView = () => {
             {posError && <div style={{ color: 'var(--color-danger)', fontSize: 13, fontWeight: 600, marginTop: 4 }}>❌ {posError}</div>}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => setShowCreateModal(false)} style={{ padding: '10px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 12, color: 'var(--color-text-muted)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+            <button onClick={() => setShowCreateModal(false)} style={{ padding: '10px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-lg)', color: 'var(--color-text-muted)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
             <button
               onClick={handleCreatePosition}
               disabled={!!editorValidErr || posCreating}
-              style={{ padding: '10px 28px', background: editorValidErr ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.85)', border: '1px solid rgba(99,102,241,0.5)', borderRadius: 12, color: 'var(--color-text)', fontSize: 14, fontWeight: 700, cursor: editorValidErr || posCreating ? 'not-allowed' : 'pointer', opacity: editorValidErr ? 0.6 : 1, transition: 'all 0.2s' }}
+              style={{ padding: '10px 28px', background: editorValidErr ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.85)', border: '1px solid rgba(99,102,241,0.5)', borderRadius: 'var(--radius-lg)', color: 'var(--color-text)', fontSize: 14, fontWeight: 700, cursor: editorValidErr || posCreating ? 'not-allowed' : 'pointer', opacity: editorValidErr ? 0.6 : 1, transition: 'all 0.2s' }}
             >{posCreating ? '⏳ Creating...' : '✓ Create this position'}</button>
           </div>
         </div>
@@ -682,7 +682,7 @@ const UserStudyPuzzleView = () => {
           <div>This chapter has no positions yet.</div>
           <motion.button
             onClick={openCreateModal}
-            style={{ padding: '14px 36px', background: 'rgba(99,102,241,0.8)', border: '1px solid rgba(99,102,241,0.5)', borderRadius: 14, color: 'var(--color-text)', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}
+            style={{ padding: '14px 36px', background: 'rgba(99,102,241,0.8)', border: '1px solid rgba(99,102,241,0.5)', borderRadius: 'var(--radius-lg)', color: 'var(--color-text)', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}
             whileHover={{ scale: 1.05, background: '#6366f1' }}
           >➕ Create First Position</motion.button>
         </div>
@@ -764,7 +764,7 @@ const UserStudyPuzzleView = () => {
                               style={{
                                 background: 'var(--color-danger-a12)',
                                 border: '1px solid var(--color-danger-a30)',
-                                borderRadius: 6,
+                                borderRadius: 'var(--radius-sm)',
                                 color: 'var(--color-danger)',
                                 cursor: 'pointer',
                                 fontSize: 12,
@@ -787,7 +787,7 @@ const UserStudyPuzzleView = () => {
                 <div style={{ marginTop: 14, flexShrink: 0 }}>
                   <motion.button
                     onClick={openCreateModal}
-                    style={{ width: '100%', padding: '11px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 12, color: 'var(--color-accent-2)', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}
+                    style={{ width: '100%', padding: '11px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 'var(--radius-lg)', color: 'var(--color-accent-2)', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}
                     whileHover={{ background: 'rgba(99,102,241,0.25)', scale: 1.02 }}
                   >
                     ➕ Create Position
@@ -841,11 +841,11 @@ const UserStudyPuzzleView = () => {
               </div>
               <button
                 onClick={toggleAnalysis}
-                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'var(--color-danger-a12)' : 'rgba(56,189,248,0.12)', color: anMode ? 'var(--color-danger)' : '#38bdf8', border: `1px solid ${anMode ? 'var(--color-danger-a30)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '5px 14px', borderRadius: 'var(--radius-2xl)', cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'var(--color-danger-a12)' : 'rgba(56,189,248,0.12)', color: anMode ? 'var(--color-danger)' : '#38bdf8', border: `1px solid ${anMode ? 'var(--color-danger-a30)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
               >{anMode ? '■ Stop' : '🔍 Analyse'}</button>
             </div>
             {anMode && (
-              <div style={{ marginBottom: 14, padding: '10px 12px', borderRadius: 10, background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
+              <div style={{ marginBottom: 14, padding: '10px 12px', borderRadius: 'var(--radius-md)', background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
                   <span style={{ fontSize: 20, fontWeight: 800, color: '#e0f2fe', fontVariantNumeric: 'tabular-nums' }}>
                     {anEval == null ? '…'
@@ -887,14 +887,14 @@ const UserStudyPuzzleView = () => {
               </div>
               <button
                 onClick={toggleSfMode}
-                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '5px 14px', borderRadius: 'var(--radius-2xl)', cursor: 'pointer', fontSize: 12, fontWeight: 700, background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
               >{sfMode ? '■ Stop' : '▶ Play vs Stockfish'}</button>
             </div>
             {sfMode && (
               <>
                 <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
                   {['easy', 'medium', 'hard'].map(lvl => (
-                    <button key={lvl} onClick={() => setSfLevel(lvl)} style={{ flex: 1, padding: '4px 0', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontWeight: 700, textTransform: 'capitalize', background: sfLevel === lvl ? 'rgba(34,197,94,0.18)' : 'var(--color-white-a04)', color: sfLevel === lvl ? 'var(--color-success)' : 'var(--color-text-faint)', border: `1px solid ${sfLevel === lvl ? 'rgba(34,197,94,0.4)' : 'var(--color-white-a07)'}` }}>{lvl.charAt(0).toUpperCase() + lvl.slice(1)}</button>
+                    <button key={lvl} onClick={() => setSfLevel(lvl)} style={{ flex: 1, padding: '4px 0', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 11, fontWeight: 700, textTransform: 'capitalize', background: sfLevel === lvl ? 'rgba(34,197,94,0.18)' : 'var(--color-white-a04)', color: sfLevel === lvl ? 'var(--color-success)' : 'var(--color-text-faint)', border: `1px solid ${sfLevel === lvl ? 'rgba(34,197,94,0.4)' : 'var(--color-white-a07)'}` }}>{lvl.charAt(0).toUpperCase() + lvl.slice(1)}</button>
                   ))}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginBottom: 14, textAlign: 'center' }}>

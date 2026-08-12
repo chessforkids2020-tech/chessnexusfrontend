@@ -55,7 +55,7 @@
   color: var(--color-text-muted);
   border: 1px solid var(--color-white-a10);
   padding: 10px 20px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -75,7 +75,7 @@
   text-align: center;
   padding: 80px 20px;
   background: var(--color-surface);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   box-shadow: 0 8px 32px var(--color-black-a50);
   margin-top: 40px;
   border: 1px solid var(--color-white-a04);
@@ -120,7 +120,7 @@
 .race-card {
   background: var(--color-surface);
   border: 1px solid var(--color-white-a04);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 25px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -210,7 +210,7 @@
   color: white;
   border: none;
   padding: 14px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
@@ -246,7 +246,7 @@ span[style*="backgroundColor"] {
 /* Loading state styling */
 div[style*="padding: '40px'"] {
   background: var(--color-surface);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   box-shadow: 0 8px 32px var(--color-black-a50);
   border: 1px solid var(--color-white-a04);
   color: var(--color-text-muted);

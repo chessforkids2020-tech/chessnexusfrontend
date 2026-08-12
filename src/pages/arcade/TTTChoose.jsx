@@ -192,7 +192,7 @@ export default function TTTChoose() {
             background: "rgba(20, 25, 35, 0.6)",
             backdropFilter: "blur(20px)",
             border: "1px solid var(--color-white-a04)",
-            borderRadius: 40,
+            borderRadius: 'var(--radius-2xl)',
             padding: "32px 28px",
             marginBottom: 28,
             textAlign: "center",
@@ -250,7 +250,7 @@ export default function TTTChoose() {
                 background: "rgba(20, 25, 35, 0.6)",
                 backdropFilter: "blur(20px)",
                 border: "1px solid var(--color-white-a04)",
-                borderRadius: 40,
+                borderRadius: 'var(--radius-2xl)',
                 padding: 32,
                 marginBottom: 20
               }}>
@@ -280,7 +280,7 @@ export default function TTTChoose() {
                       <div
                         style={{
                           padding: "24px 16px",
-                          borderRadius: 24,
+                          borderRadius: 'var(--radius-2xl)',
                           textAlign: "center",
                           background: boardSize === s 
                             ? `linear-gradient(145deg, ${color}15, ${color}05)`
@@ -308,7 +308,7 @@ export default function TTTChoose() {
                         <span style={{ 
                           display: "inline-block",
                           padding: "4px 12px", 
-                          borderRadius: 20, 
+                          borderRadius: 'var(--radius-2xl)', 
                           fontSize: 10, 
                           fontWeight: 600, 
                           textTransform: "uppercase", 
@@ -334,7 +334,7 @@ export default function TTTChoose() {
                               style={{ 
                                 aspectRatio: "1", 
                                 background: boardSize === s ? `${color}40` : "var(--color-white-a10)", 
-                                borderRadius: 4,
+                                borderRadius: 'var(--radius-sm)',
                                 transition: "all 0.2s ease"
                               }} 
                             />
@@ -347,7 +347,7 @@ export default function TTTChoose() {
                           style={{
                             marginTop: 20,
                             background: boardSize === s ? color : "var(--color-white-a04)",
-                            borderRadius: 40,
+                            borderRadius: 'var(--radius-2xl)',
                             padding: "10px 20px",
                             width: "100%",
                             color: boardSize === s ? "var(--color-text)" : "var(--color-text-muted)",
@@ -383,7 +383,7 @@ export default function TTTChoose() {
                   style={{
                     background: "linear-gradient(135deg, #f43f5e 0%, #fb7185 100%)",
                     border: "none",
-                    borderRadius: 40,
+                    borderRadius: 'var(--radius-2xl)',
                     padding: "18px 24px",
                     fontSize: 16,
                     fontWeight: 600,
@@ -416,7 +416,7 @@ export default function TTTChoose() {
                   style={{
                     background: "transparent",
                     border: "1px solid var(--color-white-a10)",
-                    borderRadius: 40,
+                    borderRadius: 'var(--radius-2xl)',
                     padding: "14px 24px",
                     fontSize: 14,
                     fontWeight: 500,
@@ -448,7 +448,7 @@ export default function TTTChoose() {
               background: "rgba(20, 25, 35, 0.6)",
               backdropFilter: "blur(20px)",
               border: "1px solid var(--color-white-a04)",
-              borderRadius: 40,
+              borderRadius: 'var(--radius-2xl)',
               padding: 48,
               textAlign: "center"
             }}>
@@ -514,7 +514,7 @@ export default function TTTChoose() {
                 style={{
                   background: "var(--color-white-a04)",
                   border: "1px solid var(--color-white-a10)",
-                  borderRadius: 40,
+                  borderRadius: 'var(--radius-2xl)',
                   padding: "14px 32px",
                   color: "var(--color-text-muted)",
                   fontSize: 14,
@@ -554,7 +554,7 @@ export default function TTTChoose() {
               background: "rgba(20, 25, 35, 0.6)",
               backdropFilter: "blur(20px)",
               border: "1px solid var(--color-white-a04)",
-              borderRadius: 40,
+              borderRadius: 'var(--radius-2xl)',
               padding: 40,
               position: "relative",
               overflow: "hidden"
@@ -592,7 +592,7 @@ export default function TTTChoose() {
                 <div style={{
                   background: "rgba(244,63,94,0.08)",
                   border: "1px solid rgba(244,63,94,0.2)",
-                  borderRadius: 24,
+                  borderRadius: 'var(--radius-2xl)',
                   padding: "20px",
                   marginBottom: 32,
                   textAlign: "center"
@@ -621,7 +621,7 @@ export default function TTTChoose() {
                     style={{
                       background: copied ? "var(--color-success-a12)" : "rgba(244,63,94,0.15)",
                       border: copied ? "1px solid var(--color-success-a30)" : "1px solid rgba(244,63,94,0.3)",
-                      borderRadius: 40,
+                      borderRadius: 'var(--radius-2xl)',
                       padding: "12px 24px",
                       color: copied ? "var(--color-success)" : "#f43f5e",
                       fontSize: 14,
@@ -684,7 +684,7 @@ export default function TTTChoose() {
                             ? "1px solid var(--color-success-a30)"
                             : "1px solid var(--color-success-a12)"
                           : "1px solid var(--color-white-a04)",
-                        borderRadius: 24,
+                        borderRadius: 'var(--radius-2xl)',
                         padding: "24px 16px",
                         textAlign: "center",
                         position: "relative",
@@ -727,7 +727,7 @@ export default function TTTChoose() {
                           top: 12,
                           right: 12,
                           background: "var(--color-success)",
-                          borderRadius: 20,
+                          borderRadius: 'var(--radius-2xl)',
                           padding: "4px 8px",
                           fontSize: 10,
                           fontWeight: 600,
@@ -763,7 +763,7 @@ export default function TTTChoose() {
                       style={{
                         background: "linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)",
                         border: "none",
-                        borderRadius: 40,
+                        borderRadius: 'var(--radius-2xl)',
                         padding: "18px 32px",
                         fontSize: 16,
                         fontWeight: 600,

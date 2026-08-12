@@ -97,7 +97,7 @@ function DebugPanel({ logs, onClose }) {
         background: '#1e1e1e',
         color: 'var(--color-text)',
         border: '1px solid var(--color-text)',
-        borderRadius: '8px',
+        borderRadius: 'var(--radius-md)',
         zIndex: 9999,
         fontFamily: 'monospace',
         fontSize: '12px',
@@ -131,7 +131,7 @@ function DebugPanel({ logs, onClose }) {
               fontSize: '12px',
               marginRight: '8px',
               padding: '4px 8px',
-              borderRadius: '4px',
+              borderRadius: 'var(--radius-sm)',
             }}
           >
             Copy Logs

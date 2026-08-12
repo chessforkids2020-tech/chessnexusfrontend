@@ -240,7 +240,7 @@ const AdminTestManagement = () => {
     },
     panel: {
       background: 'var(--color-surface)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '20px',
       border: '1px solid var(--color-white-a10)',
     },
@@ -262,7 +262,7 @@ const AdminTestManagement = () => {
     },
     listItem: {
       background: 'rgba(38, 38, 38, 0.8)',
-      borderRadius: '10px',
+      borderRadius: 'var(--radius-md)',
       padding: '12px 15px',
       cursor: 'pointer',
       transition: 'all 0.2s',
@@ -284,7 +284,7 @@ const AdminTestManagement = () => {
     },
     button: {
       padding: '8px 16px',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: 'none',
       cursor: 'pointer',
       fontSize: '14px',
@@ -321,7 +321,7 @@ const AdminTestManagement = () => {
     },
     input: {
       padding: '10px 14px',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid var(--color-white-a20)',
       background: 'rgba(38, 38, 38, 0.8)',
       color: 'var(--color-text)',
@@ -329,7 +329,7 @@ const AdminTestManagement = () => {
     },
     textarea: {
       padding: '10px 14px',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid var(--color-white-a20)',
       background: 'rgba(38, 38, 38, 0.8)',
       color: 'var(--color-text)',
@@ -351,7 +351,7 @@ const AdminTestManagement = () => {
     },
     modalContent: {
       background: 'var(--color-surface-2)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '25px',
       maxWidth: '600px',
       width: '90%',
@@ -372,7 +372,7 @@ const AdminTestManagement = () => {
     },
     alert: {
       padding: '12px 16px',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       marginBottom: '15px',
       fontSize: '14px',
     },
@@ -394,7 +394,7 @@ const AdminTestManagement = () => {
     smallBtn: {
       padding: '4px 10px',
       fontSize: '12px',
-      borderRadius: '6px',
+      borderRadius: 'var(--radius-sm)',
     },
     chessboardContainer: {
       width: '200px',
@@ -412,7 +412,7 @@ const AdminTestManagement = () => {
       fontFamily: 'monospace',
       background: 'var(--color-black-a35)',
       padding: '4px 8px',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       fontSize: '12px',
       color: 'var(--color-warning)',
     },
@@ -464,7 +464,7 @@ const AdminTestManagement = () => {
                   <div style={styles.listItemMeta}>
                     <span style={{
                       padding: '2px 8px',
-                      borderRadius: '4px',
+                      borderRadius: 'var(--radius-sm)',
                       fontSize: '11px',
                       fontWeight: '600',
                       marginRight: '8px',

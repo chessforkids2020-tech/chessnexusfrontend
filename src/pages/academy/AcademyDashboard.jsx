@@ -84,9 +84,9 @@ export default function AcademyDashboard() {
   const grain = graphs?.grain || 'day';
   const labels = (graphs?.students || []).map(p => shortLabel(p.label, grain));
   const col = (arr) => (arr || []).map(p => p.count);
-  const barData = { labels, datasets: [{ label: 'Students joined', data: col(graphs?.students), backgroundColor: 'rgba(6,182,212,0.6)', borderRadius: 6 }] };
+  const barData = { labels, datasets: [{ label: 'Students joined', data: col(graphs?.students), backgroundColor: 'rgba(6,182,212,0.6)', borderRadius: 'var(--radius-sm)' }] };
   const lineData = { labels, datasets: [{ label: 'Classes', data: col(graphs?.classes), borderColor: 'var(--color-success)', backgroundColor: 'var(--color-success-a12)', fill: true, tension: 0.3 }] };
-  const activityData = { labels, datasets: [{ label: 'Activities', data: col(graphs?.activities), backgroundColor: 'rgba(167,139,250,0.6)', borderRadius: 6 }] };
+  const activityData = { labels, datasets: [{ label: 'Activities', data: col(graphs?.activities), backgroundColor: 'rgba(167,139,250,0.6)', borderRadius: 'var(--radius-sm)' }] };
   const fee = graphs?.feeRequests || {};
   const feeData = {
     labels,

@@ -120,11 +120,11 @@ function MoveList({ tree, activeId, onGo }) {
 }
 
 const mt = {
-  wrap: { background: 'var(--color-black-a20)', border: '1px solid var(--color-white-a07)', borderRadius: 10, overflow: 'hidden', fontSize: 15 },
+  wrap: { background: 'var(--color-black-a20)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-md)', overflow: 'hidden', fontSize: 15 },
   row: { display: 'grid', gridTemplateColumns: '44px 1fr 1fr', alignItems: 'stretch' },
   num: { display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8b93a7', background: 'var(--color-white-a04)', fontVariantNumeric: 'tabular-nums', padding: '6px 0', fontSize: 13 },
   col: { padding: '6px 12px', borderLeft: '1px solid var(--color-white-a04)', display: 'flex', alignItems: 'center' },
-  move: { cursor: 'pointer', padding: '2px 8px', borderRadius: 6, color: '#e7eaf0', fontWeight: 700 },
+  move: { cursor: 'pointer', padding: '2px 8px', borderRadius: 'var(--radius-sm)', color: '#e7eaf0', fontWeight: 700 },
   moveActive: { background: 'var(--color-accent-2)', color: 'var(--color-text)' },
   moveNoted: { borderBottom: '2px solid #f5c451' },
   commentRow: { padding: '8px 14px', color: 'var(--color-text-muted)', fontSize: 13.5, background: 'var(--color-white-a04)', borderTop: '1px solid var(--color-white-a04)', lineHeight: 1.6 },
@@ -146,41 +146,41 @@ const C = {
 
 const st = {
   modeBar: { display: 'flex', gap: 6, marginBottom: 14 },
-  mode: { padding: '7px 14px', borderRadius: 9, border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 700, fontSize: 13 },
+  mode: { padding: '7px 14px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 700, fontSize: 13 },
   modeOn: { background: 'var(--color-accent-a15)', color: C.active, borderColor: C.active },
   cards: { display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'flex-start' },
-  boardCard: { flex: '0 0 auto', background: C.glass, border: `1px solid ${C.border}`, borderRadius: 16, padding: 10, alignSelf: 'flex-start', display: 'inline-flex', flexDirection: 'column' },
+  boardCard: { flex: '0 0 auto', background: C.glass, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-xl)', padding: 10, alignSelf: 'flex-start', display: 'inline-flex', flexDirection: 'column' },
   // Chessboard reserves gutter space only on the sides that draw labels (bottom+left),
   // so there is no empty TOP margin to pull up over — a negative marginTop here would
   // clip the top rank.
   boardArea: { position: 'relative', display: 'inline-flex', lineHeight: 0, overflow: 'visible' },
-  rightCard: { flex: '1 1 320px', minWidth: 280, background: C.glass, border: `1px solid ${C.border}`, borderRadius: 16, padding: 14, minHeight: '78vh', maxHeight: '92vh', display: 'flex', flexDirection: 'column' },
+  rightCard: { flex: '1 1 320px', minWidth: 280, background: C.glass, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-xl)', padding: 14, minHeight: '78vh', maxHeight: '92vh', display: 'flex', flexDirection: 'column' },
   rightScroll: { overflowY: 'auto', flex: '1 1 auto', minHeight: 220 },
   rightPinned: { flexShrink: 0, paddingTop: 12, marginTop: 4, borderTop: `1px solid ${C.border}` },
   h: { fontSize: 15, fontWeight: 800, color: 'var(--color-text)', margin: '0 0 8px' },
   sub: { color: C.textMut, fontSize: 12.5, margin: '0 0 12px' },
   row: { display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 },
-  input: { padding: '7px 10px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--color-white-a04)', color: C.text, fontSize: 13 },
-  btn: { padding: '8px 14px', borderRadius: 9, border: 'none', background: `linear-gradient(135deg, ${C.accent}, #7c5cf0)`, color: '#0a0713', cursor: 'pointer', fontWeight: 800, fontSize: 13 },
-  ghost: { padding: '7px 12px', borderRadius: 9, border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontSize: 13 },
-  ghostSm: { padding: '4px 10px', borderRadius: 8, border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontSize: 12 },
-  engineBtn: { padding: '8px 14px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 600, fontSize: 13 },
-  engineBtnSm: { padding: '4px 10px', borderRadius: 8, border: `1px solid ${C.borderStrong}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 600, fontSize: 12 },
+  input: { padding: '7px 10px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, background: 'var(--color-white-a04)', color: C.text, fontSize: 13 },
+  btn: { padding: '8px 14px', borderRadius: 'var(--radius-md)', border: 'none', background: `linear-gradient(135deg, ${C.accent}, #7c5cf0)`, color: '#0a0713', cursor: 'pointer', fontWeight: 800, fontSize: 13 },
+  ghost: { padding: '7px 12px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontSize: 13 },
+  ghostSm: { padding: '4px 10px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontSize: 12 },
+  engineBtn: { padding: '8px 14px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.borderStrong}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 600, fontSize: 13 },
+  engineBtnSm: { padding: '4px 10px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.borderStrong}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 600, fontSize: 12 },
   engineBtnOn: { background: 'var(--color-accent-2-a15)', color: C.accent, borderColor: C.accent },
-  lineRow: { display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', marginBottom: 6, borderRadius: 10, border: `1px solid ${C.border}`, background: 'var(--color-white-a04)' },
+  lineRow: { display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', marginBottom: 6, borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, background: 'var(--color-white-a04)' },
   sanChips: { display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 },
-  chip: { padding: '2px 7px', borderRadius: 6, background: 'var(--color-white-a07)', color: C.text, fontSize: 12.5, fontWeight: 600 },
-  exRow: { display: 'grid', gridTemplateColumns: '48px 1fr 70px', gap: 8, alignItems: 'center', padding: '5px 6px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--color-white-a04)', cursor: 'pointer', color: C.text, fontSize: 13, marginBottom: 3 },
-  fb: (ok) => ({ marginTop: 10, padding: '8px 12px', borderRadius: 9, fontWeight: 700, fontSize: 13, background: ok ? 'rgba(52,211,153,0.15)' : 'var(--color-danger-a12)', color: ok ? C.good : C.bad }),
-  locked: { padding: 24, textAlign: 'center', border: `1px solid ${C.gold}55`, borderRadius: 16, background: 'linear-gradient(135deg, rgba(245,196,81,0.10), rgba(245,196,81,0.03))' },
-  goldBtn: { padding: '10px 20px', borderRadius: 10, border: 'none', background: `linear-gradient(135deg, ${C.gold}, #e0a92e)`, color: '#1a1206', cursor: 'pointer', fontWeight: 800, marginTop: 12 },
+  chip: { padding: '2px 7px', borderRadius: 'var(--radius-sm)', background: 'var(--color-white-a07)', color: C.text, fontSize: 12.5, fontWeight: 600 },
+  exRow: { display: 'grid', gridTemplateColumns: '48px 1fr 70px', gap: 8, alignItems: 'center', padding: '5px 6px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, background: 'var(--color-white-a04)', cursor: 'pointer', color: C.text, fontSize: 13, marginBottom: 3 },
+  fb: (ok) => ({ marginTop: 10, padding: '8px 12px', borderRadius: 'var(--radius-md)', fontWeight: 700, fontSize: 13, background: ok ? 'rgba(52,211,153,0.15)' : 'var(--color-danger-a12)', color: ok ? C.good : C.bad }),
+  locked: { padding: 24, textAlign: 'center', border: `1px solid ${C.gold}55`, borderRadius: 'var(--radius-xl)', background: 'linear-gradient(135deg, rgba(245,196,81,0.10), rgba(245,196,81,0.03))' },
+  goldBtn: { padding: '10px 20px', borderRadius: 'var(--radius-md)', border: 'none', background: `linear-gradient(135deg, ${C.gold}, #e0a92e)`, color: '#1a1206', cursor: 'pointer', fontWeight: 800, marginTop: 12 },
 
   // Full-width "Your Repertoire" section below the board.
-  repSection: { marginTop: 18, background: C.glass, border: `1px solid ${C.border}`, borderRadius: 16, padding: 16 },
+  repSection: { marginTop: 18, background: C.glass, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-xl)', padding: 16 },
   repGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 },
-  repCard: { border: `1px solid ${C.border}`, borderRadius: 12, padding: 12, background: 'var(--color-white-a04)' },
+  repCard: { border: `1px solid ${C.border}`, borderRadius: 'var(--radius-lg)', padding: 12, background: 'var(--color-white-a04)' },
   sanChipsSmall: { display: 'flex', flexWrap: 'wrap', gap: 3 },
-  chipSmall: { padding: '1px 6px', borderRadius: 5, background: 'var(--color-white-a07)', color: C.text, fontSize: 11.5, fontWeight: 600 },
+  chipSmall: { padding: '1px 6px', borderRadius: 'var(--radius-sm)', background: 'var(--color-white-a07)', color: C.text, fontSize: 11.5, fontWeight: 600 },
 };
 
 
@@ -231,7 +231,7 @@ export default function RepertoireTab() {
     <div>
       {access.coach && !access.coach.subscribed && access.coach.free && (
         <div style={{
-          margin: '0 0 12px', padding: '9px 13px', borderRadius: 10,
+          margin: '0 0 12px', padding: '9px 13px', borderRadius: 'var(--radius-md)',
           background: 'rgba(250,204,21,0.10)', border: '1px solid rgba(250,204,21,0.35)',
           color: C.text, fontSize: 13, lineHeight: 1.5,
         }}>
@@ -520,7 +520,7 @@ function BuildMode({ access, onWalletChange }) {
 
     {/* Comment box for the current move — full width, above Your Repertoire. */}
     {currentNode && currentNode.san && (
-      <div style={{ marginTop: 14, padding: 12, borderRadius: 12, border: `1px solid ${C.border}`, background: 'var(--color-black-a20)' }}>
+      <div style={{ marginTop: 14, padding: 12, borderRadius: 'var(--radius-lg)', border: `1px solid ${C.border}`, background: 'var(--color-black-a20)' }}>
         <div style={{ ...st.sub, marginBottom: 6 }}>💬 Comment on <strong style={{ color: 'var(--color-text)' }}>{currentNode.san}</strong>:</div>
         <textarea
           style={{ ...st.input, width: '100%', minHeight: 60, resize: 'vertical', boxSizing: 'border-box' }}
@@ -669,7 +669,7 @@ function DrillLine({ line, remaining, onGraded }) {
         {!done && myMoveNow() && <div style={{ color: C.active, fontWeight: 700, fontSize: 13 }}>Your move ({Math.floor(ply / 2) + 1}).</div>}
         {wrong && <div style={st.fb(false)}>Not your line — try again (or use the hint).</div>}
         {lastNote && (
-          <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 9, background: 'rgba(245,196,81,0.10)', border: `1px solid ${C.gold}44`, fontSize: 13, color: '#fde9b8' }}>
+          <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 'var(--radius-md)', background: 'rgba(245,196,81,0.10)', border: `1px solid ${C.gold}44`, fontSize: 13, color: '#fde9b8' }}>
             💬 <strong>{lastNote.san}:</strong> {lastNote.text}
           </div>
         )}

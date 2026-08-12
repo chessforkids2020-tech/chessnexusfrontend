@@ -161,7 +161,7 @@ const StudyMode = ({ result, onClose }) => {
               onDrop={onPieceDrop}
               orientation="white"
               boardStyle={{
-                borderRadius: '8px',
+                borderRadius: 'var(--radius-md)',
                 boxShadow: '0 4px 12px var(--color-black-a35)'
               }}
               boardWidth={boardSize}
@@ -282,7 +282,7 @@ const styles = {
   },
   modal: {
     backgroundColor: 'var(--color-surface)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     maxWidth: '900px',
     width: '100%',
     maxHeight: '90vh',
@@ -309,7 +309,7 @@ const styles = {
     cursor: 'pointer',
     color: 'var(--color-text-faint)',
     padding: '5px',
-    borderRadius: '4px'
+    borderRadius: 'var(--radius-sm)'
   },
   content: {
     display: 'flex',
@@ -330,13 +330,13 @@ const styles = {
     marginBottom: '20px',
     padding: '15px',
     backgroundColor: 'var(--color-surface)',
-    borderRadius: '8px'
+    borderRadius: 'var(--radius-md)'
   },
   moveAnalysis: {
     marginBottom: '20px',
     padding: '15px',
     backgroundColor: 'var(--color-surface)',
-    borderRadius: '8px'
+    borderRadius: 'var(--radius-md)'
   },
   moveComparison: {
     marginTop: '10px'
@@ -348,7 +348,7 @@ const styles = {
     fontFamily: 'monospace',
     backgroundColor: 'var(--color-surface)',
     padding: '8px',
-    borderRadius: '4px',
+    borderRadius: 'var(--radius-sm)',
     border: '1px solid var(--color-text)',
     marginTop: '4px'
   },
@@ -356,7 +356,7 @@ const styles = {
     marginBottom: '20px',
     padding: '15px',
     backgroundColor: 'var(--color-surface)',
-    borderRadius: '8px'
+    borderRadius: 'var(--radius-md)'
   },
   buttonGroup: {
     display: 'flex',
@@ -369,7 +369,7 @@ const styles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '8px 16px',
-    borderRadius: '6px',
+    borderRadius: 'var(--radius-sm)',
     cursor: 'pointer',
     fontSize: '0.9em',
     transition: 'background-color 0.2s ease'
@@ -378,7 +378,7 @@ const styles = {
     marginTop: '10px',
     padding: '10px',
     backgroundColor: 'var(--color-accent-a12)',
-    borderRadius: '4px',
+    borderRadius: 'var(--radius-sm)',
     fontSize: '0.9em'
   },
   currentMove: {
@@ -390,7 +390,7 @@ const styles = {
   instructions: {
     padding: '15px',
     backgroundColor: 'var(--color-warning-a12)',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     border: '1px solid #fde047'
   },
   instructionsList: {

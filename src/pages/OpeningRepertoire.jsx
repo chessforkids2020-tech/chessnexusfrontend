@@ -21,7 +21,7 @@ export default function OpeningRepertoire() {
         </div>
         <button
           onClick={() => navigate('/master-games')}
-          style={{ padding: '8px 14px', borderRadius: 10, border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', cursor: 'pointer', fontWeight: 700, fontSize: 13, flexShrink: 0 }}
+          style={{ padding: '8px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', cursor: 'pointer', fontWeight: 700, fontSize: 13, flexShrink: 0 }}
         >
           ← Master Games
         </button>

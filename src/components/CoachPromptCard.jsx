@@ -27,7 +27,7 @@ export default function CoachPromptCard() {
       <div style={{
         background: 'linear-gradient(135deg, var(--color-accent-a12), var(--color-accent-2-a12))',
         border: '1px solid var(--color-accent-a30)',
-        borderRadius: '14px',
+        borderRadius: 'var(--radius-lg)',
         padding: '16px 22px',
         margin: '16px 0',
         display: 'flex',
@@ -59,7 +59,7 @@ export default function CoachPromptCard() {
             color: 'var(--color-bg)',
             border: 'none',
             padding: '9px 18px',
-            borderRadius: '10px',
+            borderRadius: 'var(--radius-md)',
             fontWeight: 600,
             fontSize: '13px',
             cursor: 'pointer'
@@ -77,7 +77,7 @@ export default function CoachPromptCard() {
     <div style={{
       background: 'linear-gradient(135deg, var(--color-warning-a12), var(--color-accent-a06))',
       border: '1px solid var(--color-accent-a30)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '22px 26px',
       margin: '20px 0',
       display: 'flex',
@@ -117,7 +117,7 @@ export default function CoachPromptCard() {
           color: 'var(--color-bg)',
           border: 'none',
           padding: '11px 22px',
-          borderRadius: '10px',
+          borderRadius: 'var(--radius-md)',
           fontWeight: 600,
           fontSize: '14px',
           cursor: 'pointer',

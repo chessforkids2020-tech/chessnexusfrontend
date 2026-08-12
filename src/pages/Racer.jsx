@@ -15,7 +15,7 @@ const styles = {
     marginBottom: '30px',
     padding: '20px',
     background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))',
-    borderRadius: '15px',
+    borderRadius: 'var(--radius-xl)',
     color: 'var(--color-text)',
     boxShadow: '0 8px 25px var(--color-black-a20)',
   },
@@ -36,7 +36,7 @@ const styles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '12px 24px',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     fontSize: '14px',
     cursor: 'pointer',
     textDecoration: 'none',
@@ -51,7 +51,7 @@ const styles = {
   },
   card: {
     background: 'var(--color-surface)',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     padding: '25px',
     boxShadow: '0 8px 25px var(--color-black-a20)',
     border: '2px solid var(--color-surface-2)',
@@ -86,7 +86,7 @@ const styles = {
     textAlign: 'center',
     padding: '15px',
     background: 'var(--color-surface)',
-    borderRadius: '10px',
+    borderRadius: 'var(--radius-md)',
     border: '1px solid var(--color-surface-2)',
   },
   statNumber: {
@@ -108,7 +108,7 @@ const styles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '12px 24px',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     fontSize: '14px',
     fontWeight: '600',
     cursor: 'pointer',
@@ -121,7 +121,7 @@ const styles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '12px 24px',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     fontSize: '14px',
     fontWeight: '600',
     cursor: 'pointer',
@@ -130,7 +130,7 @@ const styles = {
   },
   tableContainer: {
     background: 'var(--color-surface)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     overflow: 'hidden',
     boxShadow: '0 4px 12px var(--color-black-a20)',
     marginTop: '20px',
@@ -174,7 +174,7 @@ const styles = {
     padding: '30px',
     color: 'var(--color-danger)',
     background: '#fef2f2',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     margin: '20px 0',
   },
   modalOverlay: {
@@ -191,7 +191,7 @@ const styles = {
   },
   modal: {
     background: 'var(--color-surface)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     padding: '24px',
     maxWidth: '500px',
     width: '90%',
@@ -223,7 +223,7 @@ const styles = {
     width: '100%',
     padding: '10px 12px',
     border: '2px solid var(--color-surface-2)',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     fontSize: '14px',
     backgroundColor: 'var(--color-surface)',
     transition: 'border-color 0.2s',
@@ -239,7 +239,7 @@ const styles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
-    borderRadius: '6px',
+    borderRadius: 'var(--radius-sm)',
     fontSize: '14px',
     fontWeight: '500',
     cursor: 'pointer',
@@ -250,7 +250,7 @@ const styles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
-    borderRadius: '6px',
+    borderRadius: 'var(--radius-sm)',
     fontSize: '14px',
     fontWeight: '500',
     cursor: 'pointer',
@@ -618,7 +618,7 @@ export default function Racer() {
                   padding: '6px 12px',
                   background: topic.puzzles > 0 ? '#f0f9f0' : 'var(--color-text)',
                   color: topic.puzzles > 0 ? '#064f28' : 'var(--color-text-faint)',
-                  borderRadius: '20px',
+                  borderRadius: 'var(--radius-2xl)',
                   fontSize: '12px',
                   fontWeight: '500',
                   border: `1px solid ${topic.puzzles > 0 ? '#bbf7d0' : 'var(--color-text)'}`
@@ -752,7 +752,7 @@ export default function Racer() {
                     padding: '4px 8px',
                     background: '#f0f9f0',
                     color: '#064f28',
-                    borderRadius: '12px',
+                    borderRadius: 'var(--radius-lg)',
                     fontSize: '11px',
                     fontWeight: '500',
                   }}>
@@ -913,7 +913,7 @@ export default function Racer() {
                       justifyContent: 'space-between',
                       padding: '12px',
                       border: '1px solid var(--color-surface-2)',
-                      borderRadius: '8px',
+                      borderRadius: 'var(--radius-md)',
                       marginBottom: '8px',
                       background: 'var(--color-surface)'
                     }}>
@@ -1062,7 +1062,7 @@ export default function Racer() {
             ) : racerDetails ? (
               <div style={styles.modalContent}>
                 {/* User Info */}
-                <div style={{ marginBottom: '24px', padding: '16px', background: 'var(--color-surface)', borderRadius: '8px' }}>
+                <div style={{ marginBottom: '24px', padding: '16px', background: 'var(--color-surface)', borderRadius: 'var(--radius-md)' }}>
                   <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>User Information</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
                     <div><strong>Display Name:</strong> {racerDetails.user.displayName}</div>
@@ -1117,7 +1117,7 @@ export default function Racer() {
                           alignItems: 'center',
                           padding: '12px',
                           background: 'var(--color-surface)',
-                          borderRadius: '8px',
+                          borderRadius: 'var(--radius-md)',
                           border: '1px solid var(--color-surface-2)'
                         }}>
                           <div style={{ fontWeight: '600' }}>{topic.topic}</div>
@@ -1137,7 +1137,7 @@ export default function Racer() {
                 {racerDetails.recentActivity.length > 0 && (
                   <div style={{ marginBottom: '24px' }}>
                     <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>🕒 Recent Activity</h3>
-                    <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--color-surface-2)', borderRadius: '8px' }}>
+                    <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--color-surface-2)', borderRadius: 'var(--radius-md)' }}>
                       {racerDetails.recentActivity.map((activity, index) => (
                         <div key={index} style={{
                           padding: '8px 12px',
@@ -1172,7 +1172,7 @@ export default function Racer() {
                 {racerDetails.performanceTimeline.length > 0 && (
                   <div style={{ marginBottom: '24px' }}>
                     <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>📈 Performance Over Time</h3>
-                    <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid var(--color-surface-2)', borderRadius: '8px' }}>
+                    <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid var(--color-surface-2)', borderRadius: 'var(--radius-md)' }}>
                       {racerDetails.performanceTimeline.map((day, index) => (
                         <div key={index} style={{
                           padding: '6px 12px',

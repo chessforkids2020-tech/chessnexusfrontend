@@ -853,7 +853,7 @@ function InviteTab({ user }) {
             return (
               <div key={tier} style={{
                 display: 'flex', alignItems: 'center', gap: 12,
-                padding: '8px 10px', borderRadius: 8, marginBottom: 4,
+                padding: '8px 10px', borderRadius: 'var(--radius-md)', marginBottom: 4,
                 background: isCurrent ? 'rgba(168,85,247,0.1)' : 'transparent',
                 border: isCurrent ? '1px solid rgba(168,85,247,0.25)' : '1px solid transparent',
                 opacity: (!unlocked && tier !== 'none') ? 0.45 : 1,
@@ -1298,7 +1298,7 @@ function ClubsTab() {
                     type="button"
                     onClick={() => setCreateForm(f => ({ ...f, isPrivate: false }))}
                     style={{
-                      padding: '12px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+                      padding: '12px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
                       background: !createForm.isPrivate ? 'rgba(34,197,94,0.15)' : 'var(--color-white-a04)',
                       border: !createForm.isPrivate ? '2px solid rgba(34,197,94,0.45)' : '2px solid var(--color-white-a07)',
                       color: 'var(--color-text)', transition: 'all 0.15s'
@@ -1312,7 +1312,7 @@ function ClubsTab() {
                     type="button"
                     onClick={() => setCreateForm(f => ({ ...f, isPrivate: true }))}
                     style={{
-                      padding: '12px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+                      padding: '12px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
                       background: createForm.isPrivate ? 'var(--color-accent-2-a15)' : 'var(--color-white-a04)',
                       border: createForm.isPrivate ? '2px solid rgba(139,92,246,0.45)' : '2px solid var(--color-white-a07)',
                       color: 'var(--color-text)', transition: 'all 0.15s'

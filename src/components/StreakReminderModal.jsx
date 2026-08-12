@@ -118,7 +118,7 @@ const S = {
   card: {
     position: 'relative',
     background: 'var(--color-surface)', border: '1px solid var(--color-accent-a30)',
-    borderRadius: 18, padding: '26px 24px 22px', maxWidth: 460, width: '100%',
+    borderRadius: 'var(--radius-xl)', padding: '26px 24px 22px', maxWidth: 460, width: '100%',
     boxShadow: '0 24px 60px var(--color-black-a50)', textAlign: 'center',
   },
   x: {
@@ -137,7 +137,7 @@ const S = {
   dayLabel: { fontSize: 14, color: 'var(--color-text-muted)', fontWeight: 600 },
   dots: { display: 'flex', gap: 7, justifyContent: 'center', margin: '12px 0 14px' },
   dot: {
-    width: 9, height: 9, borderRadius: '50%',
+    width: 9, height: 9, borderRadius: 'var(--radius-circle)',
     background: 'var(--color-border-strong)',
   },
   dotOn: { background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))' },
@@ -146,7 +146,7 @@ const S = {
 
   list: {
     textAlign: 'left', background: 'var(--color-white-a04)',
-    border: '1px solid var(--color-border)', borderRadius: 12,
+    border: '1px solid var(--color-border)', borderRadius: 'var(--radius-lg)',
     padding: '12px 14px', marginBottom: 14,
   },
   listHead: {
@@ -169,7 +169,7 @@ const S = {
   footWarn: { color: 'var(--color-warning)' },
   link: { color: 'var(--color-accent)', fontWeight: 700, textDecoration: 'none' },
   primary: {
-    width: '100%', padding: '11px 16px', borderRadius: 10, border: 'none',
+    width: '100%', padding: '11px 16px', borderRadius: 'var(--radius-md)', border: 'none',
     background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
     color: '#04210f', fontWeight: 800, fontSize: 14.5, cursor: 'pointer',
   },

@@ -313,7 +313,7 @@ const UserTestPlay = () => {
       marginBottom: '20px',
       padding: '15px 20px',
       background: 'var(--color-surface)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       border: '1px solid var(--color-white-a10)',
     },
     titleSection: {
@@ -342,7 +342,7 @@ const UserTestPlay = () => {
     },
     boardSection: {
       background: 'var(--color-surface)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       padding: '25px',
       border: '1px solid var(--color-white-a10)',
     },
@@ -357,7 +357,7 @@ const UserTestPlay = () => {
     },
     card: {
       background: 'var(--color-surface)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '20px',
       border: '1px solid var(--color-white-a10)',
     },
@@ -369,14 +369,14 @@ const UserTestPlay = () => {
     progressBar: {
       height: '8px',
       background: 'var(--color-white-a10)',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       overflow: 'hidden',
       marginBottom: '10px',
     },
     progressFill: {
       height: '100%',
       background: 'linear-gradient(90deg, var(--color-warning), var(--color-danger))',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       transition: 'width 0.3s ease',
     },
     stat: {
@@ -398,7 +398,7 @@ const UserTestPlay = () => {
     message: {
       textAlign: 'center',
       padding: '15px',
-      borderRadius: '10px',
+      borderRadius: 'var(--radius-md)',
       fontSize: '16px',
       fontWeight: '500',
     },
@@ -415,7 +415,7 @@ const UserTestPlay = () => {
     playerTurn: {
       textAlign: 'center',
       padding: '15px',
-      borderRadius: '10px',
+      borderRadius: 'var(--radius-md)',
       background: playerColor === 'white' 
         ? 'var(--color-white-a10)' 
         : 'var(--color-black-a35)',
@@ -426,7 +426,7 @@ const UserTestPlay = () => {
     button: {
       width: '100%',
       padding: '14px',
-      borderRadius: '10px',
+      borderRadius: 'var(--radius-md)',
       border: 'none',
       fontSize: '15px',
       fontWeight: '500',
@@ -536,7 +536,7 @@ const UserTestPlay = () => {
                   orientation={playerColor}
                   boardWidth={boardSize}
                   boardStyle={{
-                    borderRadius: '10px',
+                    borderRadius: 'var(--radius-md)',
                     boxShadow: '0 10px 30px var(--color-black-a50)',
                   }}
                   draggable={!waitingForStockfish && !isSolved && !testFinished}

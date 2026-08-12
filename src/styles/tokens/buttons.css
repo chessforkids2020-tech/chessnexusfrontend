@@ -1,0 +1,132 @@
+/* styles/tokens/buttons.css
+ *
+ * ONE SIZING BASELINE FOR EVERY BUTTON CONVENTION.
+ *
+ * The app grew eight parallel button vocabularies — .btn-primary, .btn-ghost,
+ * .mkt-btn, .sh-btn-*, .cap-btn, .atg-ctrl-btn, .focus-btn, .obsidian-button —
+ * across ~177 files, each with its own hand-picked padding and radius:
+ *
+ *     .btn-primary      10px 14px   radius 10px
+ *     .btn-secondary     8px 16px   radius  4px
+ *     .btn-ghost         9px 14px   radius  9px
+ *     .mkt-btn          13px 26px   radius 14px
+ *     .obsidian-button  14px 32px   radius 12px
+ *
+ * That is why the same action looks like a different control on different
+ * pages, which is the complaint that started this work.
+ *
+ * WHY REDEFINE RATHER THAN CONSOLIDATE
+ *
+ * Renaming everything to one canonical class would touch ~177 files and every
+ * JSX call site, for zero user-visible gain over simply making the existing
+ * names agree. So the names all stay; this file just points their SIZING at the
+ * shared --btn-* tokens. Callers do not change, and buttons converge.
+ *
+ * WHAT THIS FILE DOES NOT DO
+ *
+ * It sets geometry only — padding, radius, font-size, weight, min-height. It
+ * deliberately does not set colour: each convention keeps its own fill, which is
+ * already themed via the design tokens. Mixing the two here would make a
+ * genuinely-different button (a danger button, a pill filter) impossible to
+ * express without fighting this file.
+ *
+ * LOAD ORDER
+ *
+ * Imported in main.jsx AFTER the token files but BEFORE any page CSS, and every
+ * selector here is a single class (specificity 0,1,0). So a page that really
+ * does need a different size still wins simply by being more specific or later
+ * — no !important anywhere, nothing to fight.
+ */
+
+/* ── Default: medium ─────────────────────────────────────────────────── */
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger,
+.mkt-btn,
+.mkt-btn-primary,
+.mkt-btn-ghost,
+.sh-btn-primary,
+.sh-btn-secondary,
+.obsidian-button,
+.focus-btn,
+.nav-btn,
+.atg-ctrl-btn {
+  padding: var(--btn-pad-md);
+  border-radius: var(--btn-radius);
+  font-size: var(--btn-font-md);
+  font-weight: var(--btn-weight);
+  font-family: inherit;
+  line-height: 1.2;
+  min-height: var(--btn-h-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  transition: background var(--dur-fast), border-color var(--dur-fast),
+              color var(--dur-fast), transform var(--dur-fast);
+}
+
+/* ── Small: dense controls, chips, table actions ─────────────────────── */
+.btn-sm,
+.cap-btn,
+.btn-back,
+.lb-page-btn,
+.cb-icon-btn,
+.gr-ctrl-btn {
+  padding: var(--btn-pad-sm);
+  border-radius: var(--radius-md);
+  font-size: var(--btn-font-sm);
+  font-weight: var(--btn-weight);
+  font-family: inherit;
+  line-height: 1.2;
+  min-height: var(--btn-h-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  cursor: pointer;
+  transition: background var(--dur-fast), border-color var(--dur-fast),
+              color var(--dur-fast);
+}
+
+/* ── Large: hero and primary page CTAs ───────────────────────────────── */
+.btn-lg,
+.hp-hero-btn,
+.mkt-btn-lg {
+  padding: var(--btn-pad-lg);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  min-height: var(--btn-h-lg);
+}
+
+/* ── Disabled ────────────────────────────────────────────────────────────
+   One consistent disabled treatment. Previously some buttons dimmed, some
+   greyed, some did nothing at all and stayed clickable-looking while inert. */
+.btn:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-ghost:disabled,
+.mkt-btn:disabled,
+.sh-btn-primary:disabled,
+.obsidian-button:disabled,
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Icon-only ───────────────────────────────────────────────────────────
+   Square, so a lone glyph is not stretched by the horizontal padding above. */
+.btn-icon {
+  padding: 0;
+  width: var(--btn-h-md);
+  min-height: var(--btn-h-md);
+  border-radius: var(--btn-radius);
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+}

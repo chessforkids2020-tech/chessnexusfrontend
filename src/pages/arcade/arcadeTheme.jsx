@@ -56,7 +56,7 @@ function GlassCard({ children, style = {}, hover = false, onClick, className }) 
   const base = {
     background: T.glass,
     border: `1px solid ${T.glassBorder}`,
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     boxShadow: T.glassShadow,
     padding: 16,
   };
@@ -70,7 +70,7 @@ function GradHeading({ children, size = 28, style = {} }) {
 }
 
 function Btn({ children, onClick, primary, ghost, full, style = {} }) {
-  const base = { border: "none", borderRadius: 12, padding: "10px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: T.font };
+  const base = { border: "none", borderRadius: 'var(--radius-lg)', padding: "10px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: T.font };
   const primaryStyle = primary ? { background: T.accentGrad, color: "var(--color-text)", boxShadow: T.accentGlow } : {};
   const ghostStyle = ghost ? { background: "transparent", border: "1px solid var(--color-white-a07)", color: T.textMuted } : {};
   const fullStyle = full ? { width: "100%" } : {};
@@ -82,7 +82,7 @@ function Btn({ children, onClick, primary, ghost, full, style = {} }) {
 function ErrorBanner({ message, onClose }) {
   if (!message) return null;
   return (
-    <div style={{ background: `${T.wrong}15`, border: `1px solid ${T.wrong}40`, borderRadius: 10, padding: "10px 14px", color: T.wrong, marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div style={{ background: `${T.wrong}15`, border: `1px solid ${T.wrong}40`, borderRadius: 'var(--radius-md)', padding: "10px 14px", color: T.wrong, marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div>{message}</div>
       {onClose && <button onClick={onClose} style={{ background: 'none', border: 'none', color: T.wrong, cursor: 'pointer' }}>×</button>}
     </div>
@@ -106,7 +106,7 @@ function getUser() {
 function OnlineDot({ connected, username }) {
   return (
     <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-      <div style={{ width: 10, height: 10, borderRadius: 10, background: connected ? T.correct : T.wrong }} />
+      <div style={{ width: 10, height: 10, borderRadius: 'var(--radius-md)', background: connected ? T.correct : T.wrong }} />
       <div style={{ color: connected ? T.correct : T.wrong, fontSize: 12 }}>{connected ? `Connected as ${username}` : 'Connecting...'}</div>
     </div>
   );

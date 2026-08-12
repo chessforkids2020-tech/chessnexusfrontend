@@ -35,7 +35,7 @@
 .event-page-container::after {
   content: '';
   position: fixed;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   pointer-events: none;
   z-index: 0;
 }
@@ -58,7 +58,7 @@
   max-width: 520px;
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  border-radius: 24px;
+  border-radius: var(--radius-2xl);
   padding: 48px 40px 44px;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -76,7 +76,7 @@
   top: 0; left: 10%; right: 10%;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--glow-cyan), transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   opacity: 0.6;
 }
 
@@ -98,7 +98,7 @@
   letter-spacing: 0.8px;
   text-transform: uppercase;
   padding: 6px 14px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   margin-bottom: 22px;
 }
 .event-date-badge::before {
@@ -125,7 +125,7 @@
   width: 48px;
   height: 2px;
   background: linear-gradient(90deg, var(--glow-cyan), var(--glow-emerald));
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   margin: 0 auto 20px;
   opacity: 0.6;
 }
@@ -145,7 +145,7 @@
   color: var(--color-text);
   padding: 14px 36px;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-family: 'DM Sans', sans-serif;
   font-size: 15px;
   font-weight: 600;

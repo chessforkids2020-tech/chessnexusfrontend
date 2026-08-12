@@ -348,7 +348,7 @@ function AdminTeamRaceManage() {
             )}
             {(race.scheduledStartTime && race.status !== 'running' && race.status !== 'finished') && (
               <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
-                <div style={{ background: '#0b1220', color: '#ffd166', padding: '10px 14px', borderRadius: 10, fontSize: '20px', fontWeight: 700 }}>
+                <div style={{ background: '#0b1220', color: '#ffd166', padding: '10px 14px', borderRadius: 'var(--radius-md)', fontSize: '20px', fontWeight: 700 }}>
                   STARTS IN {formatCountdown(race.scheduledStartTime)}
                 </div>
               </div>
@@ -358,7 +358,7 @@ function AdminTeamRaceManage() {
                 backgroundColor: getTimerColor(),
                 color: 'white',
                 padding: '8px 16px',
-                borderRadius: '8px',
+                borderRadius: 'var(--radius-md)',
                 fontWeight: 'bold',
                 fontSize: '18px',
                 marginLeft: '10px',

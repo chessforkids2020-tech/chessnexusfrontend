@@ -114,7 +114,7 @@ export default function CoachNotificationBell() {
             minWidth: 18, height: 18, padding: '0 5px',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 11, fontWeight: 800, lineHeight: 1,
-            color: '#fff', background: '#ef4444', borderRadius: 999,
+            color: '#fff', background: '#ef4444', borderRadius: 'var(--radius-pill)',
             boxShadow: '0 0 0 2px rgba(15,23,42,0.9)',
           }}>
             {totalCount > 99 ? '99+' : totalCount}
@@ -127,7 +127,7 @@ export default function CoachNotificationBell() {
           position: 'absolute', top: 'calc(100% + 8px)', right: 0, zIndex: 50,
           width: 320, maxWidth: '90vw',
           background: 'rgba(20,20,30,0.98)', border: '1px solid rgba(6,182,212,0.3)',
-          borderRadius: 12, padding: 12, backdropFilter: 'blur(10px)',
+          borderRadius: 'var(--radius-lg)', padding: 12, backdropFilter: 'blur(10px)',
           boxShadow: '0 18px 40px rgba(0,0,0,0.5)',
         }}>
           {studentReqs.length > 0 && (
@@ -146,12 +146,12 @@ export default function CoachNotificationBell() {
                   <span style={{ display: 'flex', gap: 6, flex: 'none' }}>
                     <button onClick={() => answer(r._id, 'approve')} style={{
                       background: 'rgba(16,185,129,0.18)', border: '1px solid rgba(16,185,129,0.45)',
-                      color: '#6ee7b7', borderRadius: 7, padding: '3px 10px', fontSize: 12,
+                      color: '#6ee7b7', borderRadius: 'var(--radius-md)', padding: '3px 10px', fontSize: 12,
                       fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
                     }}>Accept</button>
                     <button onClick={() => answer(r._id, 'decline')} style={{
                       background: 'transparent', border: '1px solid rgba(255,255,255,0.18)',
-                      color: '#94a3b8', borderRadius: 7, padding: '3px 10px', fontSize: 12,
+                      color: '#94a3b8', borderRadius: 'var(--radius-md)', padding: '3px 10px', fontSize: 12,
                       fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit',
                     }}>Decline</button>
                   </span>
@@ -172,7 +172,7 @@ export default function CoachNotificationBell() {
             <div style={{ display: 'grid', gap: 8 }}>
               {latest.map(r => (
                 <div key={r._id} style={{
-                  background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: '9px 11px',
+                  background: 'rgba(255,255,255,0.04)', borderRadius: 'var(--radius-md)', padding: '9px 11px',
                 }}>
                   <div style={{ color: '#fff', fontSize: 13.5, fontWeight: 600 }}>
                     {r.studentName || 'Student'}
@@ -192,7 +192,7 @@ export default function CoachNotificationBell() {
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
             <button onClick={goToRequests} style={{
               padding: '6px 12px',
-              borderRadius: 8,
+              borderRadius: 'var(--radius-md)',
               fontSize: 12.5,
               fontWeight: 700,
               fontFamily: 'inherit',

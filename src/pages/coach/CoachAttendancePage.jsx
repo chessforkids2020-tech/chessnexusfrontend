@@ -387,7 +387,7 @@ function TabPlayers() {
       )}
 
       {error && (
-        <div style={{ marginBottom: 16, padding: '10px 14px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 8, color: '#fca5a5', fontSize: 13 }}>
+        <div style={{ marginBottom: 16, padding: '10px 14px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 'var(--radius-md)', color: '#fca5a5', fontSize: 13 }}>
           ⚠ {error} — make sure the backend server is running with the latest code.
         </div>
       )}
@@ -995,7 +995,7 @@ function TabPayments() {
     <div>
       <div style={{
         background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.3)',
-        borderRadius: 12, padding: '12px 16px', marginBottom: 18, fontSize: 13.5, lineHeight: 1.6, color: 'rgba(226,232,240,0.85)'
+        borderRadius: 'var(--radius-lg)', padding: '12px 16px', marginBottom: 18, fontSize: 13.5, lineHeight: 1.6, color: 'rgba(226,232,240,0.85)'
       }}>
         💰 <strong>Parents pay you directly.</strong> In ChessNexus you simply track and verify these
         payments yourself — the payment stays entirely between you and the parent. It goes straight to

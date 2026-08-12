@@ -56,7 +56,7 @@ const styles = {
   },
   contentWrapper: {
     background: 'var(--obsidian-surface-elevated, var(--color-surface))',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     boxShadow: 'var(--obsidian-shadow, 0 8px 32px var(--color-black-a50))',
     padding: 'clamp(16px, 4vw, 32px) clamp(12px, 3vw, 28px)',
     border: '1px solid var(--obsidian-border, var(--color-border))',
@@ -88,7 +88,7 @@ const styles = {
   },
   highestPointCard: {
     background: 'var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)))',
-    borderRadius: '18px',
+    borderRadius: 'var(--radius-xl)',
     padding: 'clamp(16px, 3vw, 20px)',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
@@ -121,7 +121,7 @@ const styles = {
   },
   dailyPuzzleCard: {
     background: 'var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)))',
-    borderRadius: '18px',
+    borderRadius: 'var(--radius-xl)',
     padding: 'clamp(16px, 4vw, 24px)',
     border: '1px solid var(--obsidian-border, var(--color-border))',
     boxShadow: '0 12px 30px rgba(2, 6, 23, 0.22)',
@@ -187,7 +187,7 @@ const styles = {
   },
   ratingCard: {
     background: 'var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)))',
-    borderRadius: '18px',
+    borderRadius: 'var(--radius-xl)',
     padding: 'clamp(16px, 3vw, 20px)',
     border: '1px solid var(--obsidian-border, var(--color-border))',
     boxShadow: '0 12px 30px rgba(2, 6, 23, 0.22)',
@@ -201,7 +201,7 @@ const styles = {
   },
   ratingItem: {
     background: 'var(--color-accent-a12)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     padding: 'clamp(12px, 3vw, 16px)',
     textAlign: 'center',
     border: '1px solid var(--obsidian-border, var(--color-border))',
@@ -226,7 +226,7 @@ const styles = {
   },
   puzzleRatingCard: {
     background: 'var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)))',
-    borderRadius: '18px',
+    borderRadius: 'var(--radius-xl)',
     padding: 'clamp(16px, 3vw, 20px)',
     border: '1px solid var(--obsidian-border, var(--color-border))',
     boxShadow: '0 12px 30px rgba(2, 6, 23, 0.22)',
@@ -239,7 +239,7 @@ const styles = {
   },
   focusCard: {
     background: 'var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)))',
-    borderRadius: '18px',
+    borderRadius: 'var(--radius-xl)',
     padding: 'clamp(16px, 3vw, 24px)',
     border: '1px solid var(--obsidian-border, var(--color-border))',
     boxShadow: '0 12px 30px rgba(2, 6, 23, 0.22)',
@@ -264,7 +264,7 @@ const styles = {
   },
   focusStatItem: {
     background: 'rgba(168, 85, 247, 0.1)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     padding: 'clamp(12px, 3vw, 16px)',
     textAlign: 'center',
     border: '1px solid var(--obsidian-border, var(--color-border))',
@@ -291,7 +291,7 @@ const styles = {
   focusBadge: {
     display: 'inline-block',
     padding: '3px 10px',
-    borderRadius: '999px',
+    borderRadius: 'var(--radius-pill)',
     fontSize: 'clamp(10px, 2.5vw, 11px)',
     fontWeight: '600',
     letterSpacing: '0.5px',
@@ -334,7 +334,7 @@ const styles = {
     marginTop: '16px',
     padding: '16px',
     background: 'rgba(251,191,36,0.07)',
-    borderRadius: '14px',
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid var(--color-warning-a20)',
   },
   mfOfficialLabel: {
@@ -360,7 +360,7 @@ const styles = {
     flex: '1 1 90px',
     minWidth: '80px',
     background: 'rgba(23,23,23,0.6)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     padding: '12px 10px',
     textAlign: 'center',
     border: '1px solid var(--color-border)',
@@ -393,7 +393,7 @@ const styles = {
     flexWrap: 'wrap',
     padding: '12px 16px',
     background: 'rgba(99,102,241,0.1)',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid rgba(99,102,241,0.25)',
     fontSize: 'clamp(12px, 2.8vw, 14px)',
     color: 'var(--obsidian-text-soft, #dbeafe)',
@@ -407,7 +407,7 @@ const styles = {
   mfTableWrap: {
     marginTop: '16px',
     overflowX: 'auto',
-    borderRadius: '12px',
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid var(--color-border)',
   },
   mfTable: {
@@ -664,7 +664,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
 
   return (
     <div style={section !== 'all' ? { ...styles.container, margin: 0, padding: 0 } : styles.container}>
-      <div style={section !== 'all' ? { ...styles.contentWrapper, borderRadius: '24px', height: '100%' } : styles.contentWrapper}>
+      <div style={section !== 'all' ? { ...styles.contentWrapper, borderRadius: 'var(--radius-2xl)', height: '100%' } : styles.contentWrapper}>
         {/* Top Section: Two Columns (race points left, daily puzzles right) */}
         <div style={styles.topSection}>
           {/* Left Column: Highest Points — practice tab only (not puzzlestats) */}
@@ -868,7 +868,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                     alignItems: 'center',
                     gap: '6px',
                     padding: '10px 16px',
-                    borderRadius: '10px',
+                    borderRadius: 'var(--radius-md)',
                     background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
                     color: '#04201f',
                     fontWeight: 700,

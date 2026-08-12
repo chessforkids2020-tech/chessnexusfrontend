@@ -37,7 +37,7 @@ export default function AnalysisMoveTree({ tree, currentId, accentColor = 'var(-
             background: isCurrent ? accentColor : 'transparent',
             color: isCurrent ? 'var(--color-bg)' : 'var(--color-text)',
             border: 'none',
-            borderRadius: 4,
+            borderRadius: 'var(--radius-sm)',
             cursor: 'pointer',
             fontFamily: 'monospace',
             fontSize: 13.5,

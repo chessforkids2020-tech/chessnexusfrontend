@@ -2,7 +2,7 @@
 .mmb-card {
   background: rgba(20, 25, 35, 0.7);
   border: 1px solid var(--color-warning-a20);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 16px;
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
@@ -22,7 +22,7 @@
   color: var(--color-warning);
   background: var(--color-warning-a12);
   border: 1px solid var(--color-warning-a30);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 3px 10px;
   margin-bottom: 6px;
 }
@@ -47,19 +47,19 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
 
 /* ── Feedback + reveal ────────────────────────────────────────────── */
-.mmb-fb { border-radius: 12px; padding: 11px 14px; font-size: 14px; font-weight: 700; }
+.mmb-fb { border-radius: var(--radius-lg); padding: 11px 14px; font-size: 14px; font-weight: 700; }
 .mmb-fb-correct { background: var(--color-success-a12); border: 1px solid var(--color-success-a30); color: var(--color-success); }
 .mmb-fb-wrong { background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); color: #fda4af; }
 
 .mmb-reveal {
   background: var(--color-white-a04);
   border: 1px solid var(--color-warning-a20);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 14px;
   display: flex;
   flex-direction: column;
@@ -72,7 +72,7 @@
 
 .mmb-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .mmb-line-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-faint); }
-.mmb-line-move { font-family: 'Courier New', monospace; font-size: 13px; background: var(--color-white-a07); border-radius: 6px; padding: 2px 7px; color: var(--color-text); }
+.mmb-line-move { font-family: 'Courier New', monospace; font-size: 13px; background: var(--color-white-a07); border-radius: var(--radius-sm); padding: 2px 7px; color: var(--color-text); }
 
 .mmb-context { display: flex; flex-direction: column; gap: 2px; border-top: 1px solid var(--color-white-a07); padding-top: 9px; }
 .mmb-context-players { font-weight: 700; font-size: 14px; color: var(--color-text); }
@@ -83,7 +83,7 @@
 .mmb-skeleton {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: linear-gradient(100deg, var(--color-white-a04) 30%, var(--color-white-a10) 50%, var(--color-white-a04) 70%);
   background-size: 200% 100%;
   animation: mmbShimmer 1.4s infinite;
@@ -97,7 +97,7 @@
 @media (max-width: 640px) {
   .mmb-card {
     padding: 12px 4px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
   }
   .mmb-board {
     border-radius: 0;

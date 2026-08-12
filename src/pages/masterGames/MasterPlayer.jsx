@@ -142,8 +142,8 @@ const st = {
   inner: { maxWidth: 1000, margin: '0 auto' },
   back: { background: 'transparent', border: 'none', color: C.accent, cursor: 'pointer', fontSize: 14, padding: 0, marginBottom: 16 },
 
-  header: { display: 'flex', gap: 20, alignItems: 'center', padding: 20, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, boxShadow: '0 8px 30px var(--color-black-a35)', marginBottom: 20 },
-  avatar: { width: 110, height: 110, borderRadius: '50%', overflow: 'hidden', background: 'var(--color-white-a07)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  header: { display: 'flex', gap: 20, alignItems: 'center', padding: 20, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-xl)', boxShadow: '0 8px 30px var(--color-black-a35)', marginBottom: 20 },
+  avatar: { width: 110, height: 110, borderRadius: 'var(--radius-circle)', overflow: 'hidden', background: 'var(--color-white-a07)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   avatarImg: { width: '100%', height: '100%', objectFit: 'cover' },
   avatarPlaceholder: { fontSize: 44, fontWeight: 700, color: C.textFaint },
   headerInfo: { flex: 1, minWidth: 0 },
@@ -154,7 +154,7 @@ const st = {
   playerBioEmpty: { color: C.textFaint, fontSize: 13, marginTop: 10, fontStyle: 'italic' },
 
   listMeta: { color: C.textMut, fontSize: 13, marginBottom: 8 },
-  table: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 30px var(--color-black-a35)' },
+  table: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-xl)', overflow: 'hidden', boxShadow: '0 8px 30px var(--color-black-a35)' },
   row: { display: 'flex', alignItems: 'center', padding: '12px 16px', borderBottom: `1px solid ${C.border}`, cursor: 'pointer', fontSize: 14, gap: 8, color: C.text, transition: 'background 120ms ease' },
   headRow: { background: 'var(--color-white-a04)', fontWeight: 700, cursor: 'default', color: C.textMut, fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.4 },
   cPlayers: { flex: '2 1 0', minWidth: 0 },
@@ -166,6 +166,6 @@ const st = {
   empty: { padding: 32, textAlign: 'center', color: C.textFaint },
 
   pager: { display: 'flex', gap: 16, alignItems: 'center', justifyContent: 'center', marginTop: 16 },
-  pageBtn: { padding: '8px 16px', borderRadius: 10, border: `1px solid ${C.border}`, background: C.glass, color: C.text, cursor: 'pointer', fontSize: 14 },
+  pageBtn: { padding: '8px 16px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, background: C.glass, color: C.text, cursor: 'pointer', fontSize: 14 },
   pageInfo: { color: C.textMut, fontSize: 14 }
 };

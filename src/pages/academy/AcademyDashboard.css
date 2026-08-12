@@ -1,8 +1,8 @@
 /* Academy dashboard — dark theme, matches the coach area palette. */
 .acad-wrap { max-width: 1100px; margin: 0 auto; padding: 24px 18px; color: var(--color-text); font-family: 'Poppins', sans-serif; }
 .acad-empty, .acad-empty-inline { color: rgba(226,232,240,0.6); font-size: 14px; }
-.acad-error { background: var(--color-danger-a12); border: 1px solid var(--color-danger-a30); color: var(--color-danger); padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; }
-.acad-msg { background: var(--color-success-a12); border: 1px solid var(--color-success-a30); color: var(--color-success); padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; }
+.acad-error { background: var(--color-danger-a12); border: 1px solid var(--color-danger-a30); color: var(--color-danger); padding: 10px 14px; border-radius: var(--radius-md); margin-bottom: 14px; }
+.acad-msg { background: var(--color-success-a12); border: 1px solid var(--color-success-a30); color: var(--color-success); padding: 10px 14px; border-radius: var(--radius-md); margin-bottom: 14px; }
 
 .acad-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
 .acad-head h1 { font-size: 26px; margin: 0 0 4px; color: var(--color-text); }
@@ -11,23 +11,23 @@
 
 /* KPI cards */
 .acad-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 22px; }
-.acad-kpi { background: var(--color-surface); border: 1px solid var(--color-white-a07); border-radius: 14px; padding: 16px; text-align: center; }
+.acad-kpi { background: var(--color-surface); border: 1px solid var(--color-white-a07); border-radius: var(--radius-lg); padding: 16px; text-align: center; }
 .acad-kpi-v { font-size: 30px; font-weight: 800; color: var(--color-accent); line-height: 1; }
 .acad-kpi-l { font-size: 12.5px; color: rgba(226,232,240,0.6); margin-top: 6px; }
 
 /* Charts */
 .acad-charts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 22px; }
-.acad-chart-card { background: var(--color-surface); border: 1px solid var(--color-white-a07); border-radius: 14px; padding: 16px; }
+.acad-chart-card { background: var(--color-surface); border: 1px solid var(--color-white-a07); border-radius: var(--radius-lg); padding: 16px; }
 .acad-chart-card h3 { font-size: 14px; margin: 0 0 12px; color: var(--color-text); }
 .acad-chart { height: 200px; }
 @media (max-width: 720px) { .acad-charts { grid-template-columns: 1fr; } }
 
 /* Invite */
-.acad-invite { background: var(--color-accent-a06); border: 1px solid var(--color-accent-a20); border-radius: 14px; padding: 16px; margin-bottom: 22px; }
+.acad-invite { background: var(--color-accent-a06); border: 1px solid var(--color-accent-a20); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 22px; }
 .acad-invite h3 { font-size: 15px; margin: 0 0 10px; color: var(--color-text); }
 .acad-invite-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.acad-invite-row input { flex: 1; min-width: 180px; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--color-white-a13); background: var(--color-black-a35); color: var(--color-text); outline: none; }
-.acad-invite-row select { padding: 9px 12px; border-radius: 9px; border: 1px solid var(--color-white-a13); background: var(--color-surface); color: var(--color-text); }
+.acad-invite-row input { flex: 1; min-width: 180px; padding: 9px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-white-a13); background: var(--color-black-a35); color: var(--color-text); outline: none; }
+.acad-invite-row select { padding: 9px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-white-a13); background: var(--color-surface); color: var(--color-text); }
 .acad-invite-hint { font-size: 12px; color: var(--color-text-faint); margin: 8px 0 0; }
 
 /* Coaches table */
@@ -37,11 +37,11 @@
 .acad-table th { text-align: left; color: var(--color-text-faint); font-weight: 600; padding: 8px 10px; border-bottom: 2px solid var(--color-white-a07); }
 .acad-table td { padding: 8px 10px; border-bottom: 1px solid var(--color-white-a04); color: var(--color-text); }
 .acad-coach-name { background: none; border: none; color: var(--color-accent); font-weight: 700; cursor: pointer; padding: 0; font-size: 13.5px; }
-.acad-role { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; text-transform: capitalize; }
+.acad-role { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-pill); text-transform: capitalize; }
 .acad-role-head { color: var(--color-warning); background: var(--color-warning-a12); }
 .acad-role-managing { color: var(--color-accent-2); background: rgba(99,102,241,0.14); }
 .acad-role-coach { color: var(--color-success); background: var(--color-success-a12); }
-.acad-remove { font-size: 12px; font-weight: 700; color: var(--color-danger); background: none; border: 1px solid var(--color-danger-a30); border-radius: 7px; padding: 3px 10px; cursor: pointer; }
+.acad-remove { font-size: 12px; font-weight: 700; color: var(--color-danger); background: none; border: 1px solid var(--color-danger-a30); border-radius: var(--radius-md); padding: 3px 10px; cursor: pointer; }
 .acad-remove:hover { background: var(--color-danger-a12); }
 
 .acad-roster-cell { background: var(--color-white-a04); }
@@ -50,12 +50,12 @@
 .acad-muted { color: var(--color-text-faint); font-size: 12.5px; }
 
 /* Billing panel */
-.acad-billing { background: var(--color-accent-a06); border: 1px solid var(--color-accent-a20); border-radius: 14px; padding: 16px; margin-bottom: 22px; }
+.acad-billing { background: var(--color-accent-a06); border: 1px solid var(--color-accent-a20); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 22px; }
 .acad-billing h3 { font-size: 15px; margin: 0 0 6px; color: var(--color-text); }
 .acad-billing-controls { display: flex; gap: 16px; margin: 12px 0; flex-wrap: wrap; }
 .acad-billing-controls label { font-size: 12.5px; color: rgba(226,232,240,0.7); display: flex; align-items: center; gap: 8px; }
-.acad-billing-controls select { padding: 6px 10px; border-radius: 8px; border: 1px solid var(--color-white-a13); background: var(--color-surface); color: var(--color-text); }
-.acad-table select { padding: 5px 9px; border-radius: 7px; border: 1px solid var(--color-white-a13); background: var(--color-surface); color: var(--color-text); }
+.acad-billing-controls select { padding: 6px 10px; border-radius: var(--radius-md); border: 1px solid var(--color-white-a13); background: var(--color-surface); color: var(--color-text); }
+.acad-table select { padding: 5px 9px; border-radius: var(--radius-md); border: 1px solid var(--color-white-a13); background: var(--color-surface); color: var(--color-text); }
 .acad-quote { max-width: 380px; margin-left: auto; margin-top: 14px; }
 .acad-quote-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13.5px; color: var(--color-text); border-bottom: 1px solid var(--color-white-a07); }
 .acad-quote-disc { color: var(--color-success); }
@@ -63,7 +63,7 @@
 .acad-pay { width: 100%; margin-top: 10px; padding: 10px; }
 
 /* Join-academy landing card */
-.acad-join-card { background: var(--color-surface); border: 1px solid var(--color-accent-a20); border-radius: 18px; padding: 32px 26px; text-align: center; margin-top: 24px; }
+.acad-join-card { background: var(--color-surface); border: 1px solid var(--color-accent-a20); border-radius: var(--radius-xl); padding: 32px 26px; text-align: center; margin-top: 24px; }
 .acad-join-emoji { font-size: 44px; margin-bottom: 8px; }
 .acad-join-card h1 { font-size: 24px; margin: 0 0 6px; color: var(--color-text); }
 .acad-join-sub { color: rgba(226,232,240,0.75); font-size: 14px; margin: 0 0 16px; }
@@ -71,23 +71,23 @@
 .acad-join-card .btn-primary { min-width: 180px; }
 
 /* Join link + pending requests on dashboard */
-.acad-joinlink { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--color-accent-a06); border: 1px dashed var(--color-accent-a40); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; }
+.acad-joinlink { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: var(--color-accent-a06); border: 1px dashed var(--color-accent-a40); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 16px; }
 .acad-joinlink-label { font-size: 12px; color: rgba(226,232,240,0.6); }
 .acad-joinlink-url { font-size: 13px; color: var(--color-accent); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
-.acad-joinlink button { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--color-accent); background: var(--color-accent-a12); border: 1px solid var(--color-accent-a40); border-radius: 7px; padding: 5px 12px; cursor: pointer; }
-.acad-req { background: var(--color-warning-a12); border: 1px solid var(--color-warning-a30); border-radius: 12px; padding: 14px 16px; margin-bottom: 22px; }
+.acad-joinlink button { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--color-accent); background: var(--color-accent-a12); border: 1px solid var(--color-accent-a40); border-radius: var(--radius-md); padding: 5px 12px; cursor: pointer; }
+.acad-req { background: var(--color-warning-a12); border: 1px solid var(--color-warning-a30); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 22px; }
 .acad-req h3 { font-size: 14px; margin: 0 0 10px; color: var(--color-warning); }
 .acad-req-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px dashed var(--color-white-a07); font-size: 13.5px; }
 .acad-req-btns { display: flex; gap: 6px; }
-.acad-req-approve { font-size: 12px; font-weight: 700; color: #04211d; background: var(--color-success); border: none; border-radius: 7px; padding: 5px 12px; cursor: pointer; }
-.acad-req-decline { font-size: 12px; font-weight: 600; color: var(--color-text-muted); background: none; border: 1px solid var(--color-white-a13); border-radius: 7px; padding: 5px 12px; cursor: pointer; }
+.acad-req-approve { font-size: 12px; font-weight: 700; color: #04211d; background: var(--color-success); border: none; border-radius: var(--radius-md); padding: 5px 12px; cursor: pointer; }
+.acad-req-decline { font-size: 12px; font-weight: 600; color: var(--color-text-muted); background: none; border: 1px solid var(--color-white-a13); border-radius: var(--radius-md); padding: 5px 12px; cursor: pointer; }
 
 /* Academy plan cards (billing page) */
 .acad-fam-tabs { display: inline-flex; gap: 6px; margin-left: auto; }
-.acad-fam-tabs button { border: 1px solid var(--color-white-a10); background: var(--color-white-a04); color: rgba(226,232,240,0.7); border-radius: 10px; padding: 7px 14px; font-weight: 700; font-size: 13px; cursor: pointer; }
+.acad-fam-tabs button { border: 1px solid var(--color-white-a10); background: var(--color-white-a04); color: rgba(226,232,240,0.7); border-radius: var(--radius-md); padding: 7px 14px; font-weight: 700; font-size: 13px; cursor: pointer; }
 .acad-fam-tabs button.is-active { background: linear-gradient(135deg,var(--color-accent),var(--color-accent-2)); color: #04211d; border-color: transparent; }
 .acad-plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 18px; align-items: stretch; }
-.acad-plan-card { background: var(--color-surface); border: 1px solid var(--color-white-a07); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; height: 100%; }
+.acad-plan-card { background: var(--color-surface); border: 1px solid var(--color-white-a07); border-radius: var(--radius-xl); padding: 18px; display: flex; flex-direction: column; height: 100%; }
 .acad-plan-card.is-current { border-color: var(--color-accent-a40); box-shadow: 0 0 16px var(--color-accent-a15); }
 .acad-plan-name { font-size: 17px; font-weight: 800; color: var(--color-text); }
 .acad-plan-price { font-size: 26px; font-weight: 800; color: var(--color-accent); margin: 6px 0; }
@@ -103,30 +103,30 @@
 .acad-plan-card .acad-plan-percoach { flex: 0 0 auto; }
 .acad-plan-card .acad-plan-total { margin-top: auto; }
 .acad-plan-card .btn-primary, .acad-plan-card .btn-ghost {
-  width: 100%; padding: 9px 14px; font-size: 13.5px; border-radius: 9px;
+  width: 100%; padding: 9px 14px; font-size: 13.5px; border-radius: var(--radius-md);
 }
 .acad-plan-warn { font-size: 11.5px; color: var(--color-warning); margin-top: 8px; text-align: center; }
 
 /* Settings */
 .acad-set-field { margin-bottom: 18px; }
 .acad-set-field > label { display: block; font-size: 13px; color: rgba(226,232,240,0.7); margin-bottom: 6px; font-weight: 600; }
-.acad-set-field input[type=text], .acad-set-field > input { width: 100%; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--color-white-a13); background: var(--color-black-a35); color: var(--color-text); outline: none; }
+.acad-set-field input[type=text], .acad-set-field > input { width: 100%; padding: 9px 12px; border-radius: var(--radius-md); border: 1px solid var(--color-white-a13); background: var(--color-black-a35); color: var(--color-text); outline: none; }
 .acad-toggle { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--color-text); cursor: pointer; }
 .acad-toggle input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--color-accent); }
 
 /* Overview period toggle */
-.acad-period-toggle { display: inline-flex; gap: 6px; background: var(--color-white-a04); border: 1px solid var(--color-white-a07); border-radius: 12px; padding: 4px; }
-.acad-period-toggle button { border: none; background: transparent; color: rgba(226,232,240,0.65); border-radius: 9px; padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.acad-period-toggle { display: inline-flex; gap: 6px; background: var(--color-white-a04); border: 1px solid var(--color-white-a07); border-radius: var(--radius-lg); padding: 4px; }
+.acad-period-toggle button { border: none; background: transparent; color: rgba(226,232,240,0.65); border-radius: var(--radius-md); padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
 .acad-period-toggle button.is-active { background: linear-gradient(135deg,var(--color-accent),var(--color-accent-2)); color: #04211d; }
 @media (max-width: 560px) { .acad-head { flex-direction: column; align-items: flex-start; gap: 12px; } .acad-period-toggle { width: 100%; } .acad-period-toggle button { flex: 1; } }
 
 /* Settings: current plan status card */
-.acad-plan-status { background: linear-gradient(135deg, var(--color-accent-a08), var(--color-accent-2-a12)); border: 1px solid var(--color-accent-a20); border-radius: 16px; padding: 18px; margin-bottom: 22px; }
+.acad-plan-status { background: linear-gradient(135deg, var(--color-accent-a08), var(--color-accent-2-a12)); border: 1px solid var(--color-accent-a20); border-radius: var(--radius-xl); padding: 18px; margin-bottom: 22px; }
 .acad-plan-status-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: rgba(226,232,240,0.6); font-weight: 700; }
 .acad-plan-status-link { color: var(--color-accent); font-size: 12.5px; font-weight: 700; text-decoration: none; }
 .acad-plan-status-name { font-size: 22px; font-weight: 800; color: var(--color-accent); margin: 6px 0 12px; }
 .acad-plan-status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
-.acad-plan-status-grid > div { text-align: center; background: var(--color-white-a04); border: 1px solid var(--color-white-a07); border-radius: 12px; padding: 12px 6px; }
+.acad-plan-status-grid > div { text-align: center; background: var(--color-white-a04); border: 1px solid var(--color-white-a07); border-radius: var(--radius-lg); padding: 12px 6px; }
 .acad-plan-status-grid strong { display: block; font-size: 22px; font-weight: 800; color: var(--color-text); }
 .acad-plan-status-grid span { font-size: 11.5px; color: var(--color-text-faint); }
 .acad-plan-status-warn { margin-top: 12px; font-size: 12.5px; color: var(--color-warning); }
@@ -134,7 +134,7 @@
 .acad-plan-status-none { color: rgba(226,232,240,0.8); font-size: 14px; }
 
 /* Message-a-coach button (Coaches page) */
-.acad-msg-btn { font-size: 12px; font-weight: 700; color: var(--color-accent); background: var(--color-accent-a12); border: 1px solid var(--color-accent-a40); border-radius: 7px; padding: 4px 10px; cursor: pointer; }
+.acad-msg-btn { font-size: 12px; font-weight: 700; color: var(--color-accent); background: var(--color-accent-a12); border: 1px solid var(--color-accent-a40); border-radius: var(--radius-md); padding: 4px 10px; cursor: pointer; }
 .acad-msg-btn:hover { background: var(--color-accent-a20); }
 
 /* Academy plan card — per-coach clarity */
@@ -145,7 +145,7 @@
    plans show a little empty green, which is fine. It's a min-height (NOT a fixed
    height), so if a plan ever has MORE content it grows to show it all — never a
    scrollbar; the whole card grows instead. */
-.acad-plan-percoach { background: var(--color-success-a12); border: 1px solid var(--color-success-a20); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; min-height: 272px; }
+.acad-plan-percoach { background: var(--color-success-a12); border: 1px solid var(--color-success-a20); border-radius: var(--radius-lg); padding: 12px 14px; margin-bottom: 12px; min-height: 272px; }
 .acad-plan-percoach-head { font-size: 12.5px; font-weight: 800; color: var(--color-success); margin-bottom: 8px; letter-spacing: 0.02em; }
 .acad-plan-percoach .acad-plan-feats { margin: 0; }
 .acad-plan-percoach .acad-plan-feats li { color: rgba(226,232,240,0.85); }
@@ -167,10 +167,10 @@
   display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a07);
-  border-radius: 16px; padding: 20px; margin-bottom: 16px;
+  border-radius: var(--radius-xl); padding: 20px; margin-bottom: 16px;
 }
 .acad-coach-photo {
-  width: 72px; height: 72px; border-radius: 50%; object-fit: cover; flex: 0 0 auto;
+  width: 72px; height: 72px; border-radius: var(--radius-circle); object-fit: cover; flex: 0 0 auto;
   border: 2px solid var(--color-white-a13);
 }
 .acad-coach-photo--none {
@@ -178,7 +178,7 @@
   color: var(--color-text-muted); background: var(--color-white-a07);
 }
 .acad-coach-title {
-  display: inline-block; margin-right: 8px; padding: 2px 8px; border-radius: 6px;
+  display: inline-block; margin-right: 8px; padding: 2px 8px; border-radius: var(--radius-sm);
   font-size: 13px; font-weight: 800; color: #0b1120; background: var(--color-warning); vertical-align: middle;
 }
 .acad-coach-verified { margin-left: 8px; color: var(--color-success); font-size: 18px; }
@@ -186,7 +186,7 @@
 .acad-coach-spec { color: var(--color-text-muted); font-size: 13px; margin-top: 8px; }
 .acad-coach-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
 .acad-tag {
-  padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600;
+  padding: 3px 9px; border-radius: var(--radius-pill); font-size: 11.5px; font-weight: 600;
   color: var(--color-text-muted); background: var(--color-white-a07); border: 1px solid var(--color-white-a10);
 }
 
@@ -202,7 +202,7 @@
 }
 .acad-stat {
   background: var(--color-white-a04); border: 1px solid var(--color-white-a07);
-  border-radius: 12px; padding: 14px 16px;
+  border-radius: var(--radius-lg); padding: 14px 16px;
 }
 .acad-stat-label {
   font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
@@ -214,7 +214,7 @@
 /* ── Panels ── */
 .acad-panel {
   background: var(--color-white-a04); border: 1px solid var(--color-white-a07);
-  border-radius: 14px; padding: 18px; margin-bottom: 16px;
+  border-radius: var(--radius-lg); padding: 18px; margin-bottom: 16px;
 }
 .acad-panel h3 { margin: 0 0 14px; color: var(--color-text); font-size: 15px; }
 
@@ -222,9 +222,9 @@
 .acad-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .acad-bar-label { flex: 0 0 84px; font-size: 12.5px; color: var(--color-text-muted); }
 .acad-bar-track {
-  flex: 1; height: 10px; border-radius: 999px; background: var(--color-white-a07); overflow: hidden;
+  flex: 1; height: 10px; border-radius: var(--radius-pill); background: var(--color-white-a07); overflow: hidden;
 }
-.acad-bar-fill { display: block; height: 100%; border-radius: 999px; }
+.acad-bar-fill { display: block; height: 100%; border-radius: var(--radius-pill); }
 .acad-bar-val { flex: 0 0 40px; text-align: right; font-size: 12.5px; font-weight: 700; color: var(--color-text); }
 
 /* ── Calendars ── */
@@ -234,7 +234,7 @@
 }
 .acad-cal {
   background: var(--color-white-a04); border: 1px solid var(--color-white-a07);
-  border-radius: 14px; padding: 16px;
+  border-radius: var(--radius-lg); padding: 16px;
 }
 .acad-cal-head { color: var(--color-text); font-size: 14px; font-weight: 700; margin-bottom: 12px; }
 .acad-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
@@ -242,7 +242,7 @@
   text-align: center; font-size: 10.5px; font-weight: 700; color: var(--color-text-faint); padding-bottom: 4px;
 }
 .acad-cal-cell {
-  aspect-ratio: 1; border-radius: 6px; border: 1px solid var(--color-white-a07);
+  aspect-ratio: 1; border-radius: var(--radius-sm); border: 1px solid var(--color-white-a07);
   background: var(--color-white-a04);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
 }
@@ -253,7 +253,7 @@
 
 /* ── Pills ── */
 .acad-pill {
-  display: inline-block; padding: 2px 9px; border-radius: 999px;
+  display: inline-block; padding: 2px 9px; border-radius: var(--radius-pill);
   font-size: 11px; font-weight: 700; text-transform: capitalize;
 }
 .acad-pill--ok   { color: var(--color-success); background: var(--color-success-a12); }
@@ -272,7 +272,7 @@
   gap: 10px; margin-bottom: 16px;
 }
 .acad-fee-card {
-  border-radius: 12px; padding: 14px 16px;
+  border-radius: var(--radius-lg); padding: 14px 16px;
   border: 1px solid var(--color-white-a07); background: var(--color-white-a04);
 }
 .acad-fee-label { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
@@ -291,7 +291,7 @@
 .acad-fee-cells { display: flex; gap: 6px; flex-wrap: wrap; }
 .acad-fee-cell {
   display: flex; flex-direction: column; align-items: flex-start; gap: 1px;
-  min-width: 62px; padding: 4px 8px; border-radius: 7px;
+  min-width: 62px; padding: 4px 8px; border-radius: var(--radius-md);
   background: rgba(52,211,153,0.10); border: 1px solid rgba(52,211,153,0.28);
 }
 .acad-fee-cell--empty {

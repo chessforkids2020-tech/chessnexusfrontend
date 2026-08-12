@@ -81,7 +81,7 @@ export default function TournamentChat({ tournamentId }) {
       flexDirection: 'column',
       height: '100%',
       background: 'var(--color-black-a20)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       overflow: 'hidden',
       border: '1px solid var(--color-white-a04)',
       backdropFilter: 'blur(5px)',
@@ -173,7 +173,7 @@ export default function TournamentChat({ tournamentId }) {
             padding: '12px',
             background: 'rgba(168, 85, 247, 0.08)',
             border: '1px solid rgba(168, 85, 247, 0.25)',
-            borderRadius: '12px',
+            borderRadius: 'var(--radius-lg)',
             color: 'var(--color-accent-2)',
             fontSize: '13px',
           }}>
@@ -193,7 +193,7 @@ export default function TournamentChat({ tournamentId }) {
                   padding: '12px 16px',
                   background: 'var(--color-black-a35)',
                   border: '1px solid var(--color-white-a10)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '14px',
                   fontFamily: 'inherit',
                   color: 'var(--color-text)',
@@ -221,7 +221,7 @@ export default function TournamentChat({ tournamentId }) {
                   border: inputMessage.trim()
                     ? '1px solid var(--color-accent-a30)'
                     : '1px solid rgba(107, 114, 128, 0.2)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '14px',
                   fontWeight: '600',
                   cursor: inputMessage.trim() ? 'pointer' : 'not-allowed',

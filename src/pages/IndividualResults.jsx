@@ -297,7 +297,7 @@ const IndividualResults = () => {
       padding: '32px 28px',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -323,7 +323,7 @@ const IndividualResults = () => {
     batchInfoItem: {
       background: 'var(--color-black-a35)',
       padding: '8px 16px',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid var(--color-white-a04)',
     },
     timerDisplay: {
@@ -334,7 +334,7 @@ const IndividualResults = () => {
       marginTop: '20px',
       padding: '20px',
       background: 'var(--color-accent-a12)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       border: '1px solid var(--color-accent-a20)',
       backdropFilter: 'blur(10px)',
     },
@@ -346,7 +346,7 @@ const IndividualResults = () => {
       marginTop: '20px',
       padding: '20px',
       background: 'var(--color-danger-a12)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       border: '1px solid var(--color-danger-a20)',
       backdropFilter: 'blur(10px)',
     },
@@ -390,7 +390,7 @@ const IndividualResults = () => {
     statCard: {
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       padding: '28px',
       boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -415,7 +415,7 @@ const IndividualResults = () => {
     tableSection: {
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       padding: '32px',
       marginBottom: '40px',
@@ -435,7 +435,7 @@ const IndividualResults = () => {
     },
     tableContainer: {
       overflowX: 'auto',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       border: '1px solid var(--color-white-a04)',
       background: 'var(--color-black-a35)',
     },
@@ -498,7 +498,7 @@ const IndividualResults = () => {
       marginTop: '4px',
       background: 'var(--color-black-a35)',
       padding: '4px 8px',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       display: 'inline-block',
       border: '1px solid var(--color-white-a04)',
     },
@@ -509,7 +509,7 @@ const IndividualResults = () => {
       padding: '12px',
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       minWidth: '200px',
       transition: 'all 0.3s ease',
     },
@@ -543,7 +543,7 @@ const IndividualResults = () => {
       fontWeight: '600',
       padding: '8px',
       background: 'var(--color-success-a12)',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid var(--color-success-a20)',
     },
     analysisHint: {
@@ -556,14 +556,14 @@ const IndividualResults = () => {
       marginTop: '12px',
       padding: '12px',
       background: 'var(--color-warning-a12)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       border: '1px solid var(--color-warning-a20)',
     },
     timeoutAnalysis: {
       marginTop: '12px',
       padding: '12px',
       background: 'var(--color-accent-2-a15)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       border: '1px solid var(--color-accent-2-a15)',
     },
     moveComparison: {
@@ -590,7 +590,7 @@ const IndividualResults = () => {
     },
     moveComparisonItem: {
       padding: '4px 6px',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       background: 'var(--color-black-a35)',
       minWidth: '90px',
       border: '1px solid var(--color-white-a04)',
@@ -599,13 +599,13 @@ const IndividualResults = () => {
       marginTop: '12px',
       padding: '10px',
       background: 'var(--color-danger-a12)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       border: '1px solid var(--color-danger-a20)',
     },
     resultBadge: {
       color: 'var(--color-text)',
       padding: '12px 16px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       textAlign: 'center',
       fontWeight: 'bold',
       fontSize: '14px',
@@ -630,7 +630,7 @@ const IndividualResults = () => {
       fontWeight: 'bold',
       background: 'var(--color-warning-a12)',
       padding: '6px 10px',
-      borderRadius: '6px',
+      borderRadius: 'var(--radius-sm)',
       border: '1px solid var(--color-warning-a20)',
     },
     userMovesActual: {
@@ -641,7 +641,7 @@ const IndividualResults = () => {
       fontWeight: 'bold',
       padding: '8px 12px',
       background: 'var(--color-danger-a12)',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid var(--color-danger-a20)',
     },
     completeMoves: {
@@ -651,7 +651,7 @@ const IndividualResults = () => {
       color: 'var(--color-text-muted)',
       padding: '8px 12px',
       background: 'var(--color-black-a35)',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid var(--color-white-a04)',
     },
     onlyBotMoves: {
@@ -691,7 +691,7 @@ const IndividualResults = () => {
       background: 'var(--color-accent-a12)',
       color: 'var(--color-text)',
       padding: '24px',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       fontSize: '18px',
       lineHeight: '1.6',
       border: '1px solid var(--color-accent-a20)',
@@ -707,7 +707,7 @@ const IndividualResults = () => {
       color: 'var(--color-text)',
       border: 'none',
       padding: '16px 32px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '16px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -719,7 +719,7 @@ const IndividualResults = () => {
       padding: '60px 20px',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -743,7 +743,7 @@ const IndividualResults = () => {
       padding: '60px 40px',
       background: 'var(--color-danger-a12)',
       border: '1px solid var(--color-danger-a20)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -763,7 +763,7 @@ const IndividualResults = () => {
       padding: '60px 40px',
       background: 'var(--color-surface)',
       border: '2px dashed var(--color-warning-a30)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       backdropFilter: 'blur(10px)',
       margin: '20px 0',
     },
@@ -801,7 +801,7 @@ const IndividualResults = () => {
       marginBottom: '2px',
       padding: '4px 8px',
       background: 'var(--color-black-a20)',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
     },
     moveSequenceNumber: {
       fontWeight: 'bold',
@@ -824,14 +824,14 @@ const IndividualResults = () => {
       marginBottom: '4px',
       padding: '4px 8px',
       background: 'var(--color-accent-a12)',
-      borderRadius: '6px',
+      borderRadius: 'var(--radius-sm)',
       border: '1px solid var(--color-accent-a20)',
     },
     completeSequence: {
       marginTop: '12px',
       padding: '12px',
       background: 'var(--color-black-a35)',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       border: '1px solid var(--color-white-a04)',
     },
     fullMoveSequence: {
@@ -844,7 +844,7 @@ const IndividualResults = () => {
     userMoveInSequence: {
       padding: '4px 6px',
       background: 'var(--color-accent-a20)',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       border: '1px solid var(--color-accent-a30)',
       color: 'var(--color-accent)',
       fontWeight: 'bold',
@@ -852,7 +852,7 @@ const IndividualResults = () => {
     botMoveInSequence: {
       padding: '4px 6px',
       background: 'var(--color-success-a20)',
-      borderRadius: '4px',
+      borderRadius: 'var(--radius-sm)',
       border: '1px solid var(--color-success-a30)',
       color: 'var(--color-success)',
       fontWeight: 'bold',
@@ -876,7 +876,7 @@ const IndividualResults = () => {
         max-width: 100% !important;
       }
       .individual-results-table-container {
-        border-radius: 12px !important;
+        border-radius: var(--radius-lg) !important;
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
       }
@@ -905,7 +905,7 @@ const IndividualResults = () => {
       }
       .individual-results-header {
         padding: 20px 15px !important;
-        border-radius: 15px !important;
+        border-radius: var(--radius-xl) !important;
       }
       .individual-results-title {
         font-size: 28px !important;
@@ -920,10 +920,10 @@ const IndividualResults = () => {
         padding: 15px !important;
         margin: 0 auto 20px auto !important;
         max-width: 100% !important;
-        border-radius: 15px !important;
+        border-radius: var(--radius-xl) !important;
       }
       .individual-results-table-container {
-        border-radius: 10px !important;
+        border-radius: var(--radius-md) !important;
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
         scrollbar-width: thin !important;

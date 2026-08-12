@@ -136,7 +136,7 @@ const UserTestResult = () => {
     },
     gradeCard: {
       background: 'var(--color-surface)',
-      borderRadius: '24px',
+      borderRadius: 'var(--radius-2xl)',
       padding: '40px',
       border: '1px solid var(--color-white-a10)',
       textAlign: 'center',
@@ -163,7 +163,7 @@ const UserTestResult = () => {
     },
     statCard: {
       background: 'var(--color-surface)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '25px',
       border: '1px solid var(--color-white-a10)',
       textAlign: 'center',
@@ -180,7 +180,7 @@ const UserTestResult = () => {
     },
     puzzlesCard: {
       background: 'var(--color-surface)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       padding: '25px',
       border: '1px solid var(--color-white-a10)',
       marginBottom: '30px',
@@ -198,7 +198,7 @@ const UserTestResult = () => {
     },
     puzzleItem: {
       padding: '15px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       textAlign: 'center',
       cursor: 'pointer',
       transition: 'all 0.2s',
@@ -235,7 +235,7 @@ const UserTestResult = () => {
     },
     modalContent: {
       background: 'var(--color-surface-2)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       padding: '30px',
       maxWidth: '700px',
       width: '90%',
@@ -269,7 +269,7 @@ const UserTestResult = () => {
       fontFamily: 'monospace',
       background: 'var(--color-black-a35)',
       padding: '12px',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       color: 'var(--color-warning)',
       fontSize: '14px',
       wordBreak: 'break-all',
@@ -281,7 +281,7 @@ const UserTestResult = () => {
     },
     button: {
       padding: '16px 32px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       border: 'none',
       fontSize: '16px',
       fontWeight: '600',
@@ -485,7 +485,7 @@ const UserTestResult = () => {
                       padding: '10px',
                       background: 'var(--color-accent-2-a15)',
                       border: '1px solid rgba(139, 92, 246, 0.4)',
-                      borderRadius: '8px',
+                      borderRadius: 'var(--radius-md)',
                       color: 'var(--color-accent-2)',
                       cursor: 'pointer',
                       fontSize: '14px',
@@ -511,7 +511,7 @@ const UserTestResult = () => {
                       padding: '10px',
                       background: 'var(--color-accent-a20)',
                       border: '1px solid var(--color-accent-a40)',
-                      borderRadius: '8px',
+                      borderRadius: 'var(--radius-md)',
                       color: 'var(--color-accent)',
                       cursor: 'pointer',
                       fontSize: '14px',
@@ -541,14 +541,14 @@ const UserTestResult = () => {
                       <>
                         <div style={styles.moveSection}>
                           <div style={{ ...styles.moveLabel, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ background: 'var(--color-danger-a20)', color: 'var(--color-danger)', borderRadius: '4px', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>OPENING</span>
+                            <span style={{ background: 'var(--color-danger-a20)', color: 'var(--color-danger)', borderRadius: 'var(--radius-sm)', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>OPENING</span>
                             Opening Move:
                           </div>
                           <div style={{ ...styles.moveCode, color: 'var(--color-danger)' }}>{botMove}</div>
                         </div>
                         <div style={styles.moveSection}>
                           <div style={{ ...styles.moveLabel, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ background: 'rgba(34,197,94,0.2)', color: '#86efac', borderRadius: '4px', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>YOU</span>
+                            <span style={{ background: 'rgba(34,197,94,0.2)', color: '#86efac', borderRadius: 'var(--radius-sm)', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>YOU</span>
                             Correct Solution:
                           </div>
                           <div style={{ ...styles.moveCode, color: '#86efac' }}>{userSolution}</div>

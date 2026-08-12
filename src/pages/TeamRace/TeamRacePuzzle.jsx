@@ -868,7 +868,7 @@ function TeamRacePuzzle() {
                   padding: '10px 20px',
                   background: 'linear-gradient(135deg, var(--color-danger) 0%, #c82333 100%)',
                   border: 'none',
-                  borderRadius: '8px',
+                  borderRadius: 'var(--radius-md)',
                   color: 'var(--color-text)',
                   fontWeight: '600',
                   cursor: 'pointer',

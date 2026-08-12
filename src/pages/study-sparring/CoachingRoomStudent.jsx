@@ -124,7 +124,7 @@ export default function CoachingRoomStudent() {
   const cardStyle = {
     background: 'rgba(15,15,15,0.7)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     backdropFilter: 'blur(20px)',
     padding: 20,
   };
@@ -139,7 +139,7 @@ export default function CoachingRoomStudent() {
           <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-success)', marginTop: 12 }}>Session Ended</div>
           <div style={{ color: 'var(--color-text-faint)', marginTop: 8, marginBottom: 20 }}>Your teacher has ended the coaching session.</div>
           <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--color-accent-2)', marginBottom: 20 }}>{accuracy}% accuracy</div>
-          <button onClick={() => navigate(-1)} style={{ padding: '12px 32px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 10, color: 'var(--color-text)', cursor: 'pointer', fontSize: 15, fontWeight: 700 }}>Back</button>
+          <button onClick={() => navigate(-1)} style={{ padding: '12px 32px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 15, fontWeight: 700 }}>Back</button>
         </div>
       </div>
     );
@@ -151,14 +151,14 @@ export default function CoachingRoomStudent() {
       <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
-          <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 8, color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>← Leave</button>
+          <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>← Leave</button>
           <div>
             <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-success)' }}>🎓 Coaching Room: {roomCode}</div>
             <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>{joined ? 'Connected' : 'Joining...'}</div>
           </div>
           {teacherWatching && (
-            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px', background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 8 }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', animation: 'pulse 2s infinite' }} />
+            <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px', background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 'var(--radius-md)' }}>
+              <div style={{ width: 8, height: 8, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', animation: 'pulse 2s infinite' }} />
               <span style={{ color: 'var(--color-success)', fontSize: 12, fontWeight: 600 }}>Teacher is watching</span>
             </div>
           )}
@@ -211,7 +211,7 @@ export default function CoachingRoomStudent() {
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase' }}>Moves</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {userMoves.map((m, i) => (
-                    <span key={i} style={{ padding: '3px 8px', borderRadius: 4, fontSize: 12, fontFamily: 'monospace', background: QUALITY_COLORS[qualities[i]] + '20', color: QUALITY_COLORS[qualities[i]], border: `1px solid ${QUALITY_COLORS[qualities[i]]}40` }}>
+                    <span key={i} style={{ padding: '3px 8px', borderRadius: 'var(--radius-sm)', fontSize: 12, fontFamily: 'monospace', background: QUALITY_COLORS[qualities[i]] + '20', color: QUALITY_COLORS[qualities[i]], border: `1px solid ${QUALITY_COLORS[qualities[i]]}40` }}>
                       {m}{QUALITY_SYMBOLS[qualities[i]]}
                     </span>
                   ))}

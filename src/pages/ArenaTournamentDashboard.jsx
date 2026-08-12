@@ -245,7 +245,7 @@ export default function ArenaTournamentDashboard() {
             padding: 10px 4px !important;
             border-bottom: 0 !important;
             border: 1px solid var(--color-white-a07);
-            border-radius: 12px;
+            border-radius: var(--radius-lg);
           }
           /* Shrink the medal so three fit comfortably. */
           .atd-recent-row > :first-child {
@@ -459,13 +459,13 @@ export default function ArenaTournamentDashboard() {
                         <div style={{
                           position: "absolute", top: "50%", transform: "translateY(-50%)",
                           left: `${100 / 12}%`, right: `${100 / 12}%`,
-                          height: 3, borderRadius: 999, background: "var(--color-white-a10)",
+                          height: 3, borderRadius: 'var(--radius-pill)', background: "var(--color-white-a10)",
                         }} />
                         {/* filled track up to active tier */}
                         <div style={{
                           position: "absolute", top: "50%", transform: "translateY(-50%)",
                           left: `${100 / 12}%`,
-                          height: 3, borderRadius: 999,
+                          height: 3, borderRadius: 'var(--radius-pill)',
                           background: tier === "none" ? "transparent"
                             : tier === "bronze"   ? "#c08457"
                             : tier === "silver"   ? "linear-gradient(90deg,#c08457,var(--color-text))"
@@ -571,7 +571,7 @@ export default function ArenaTournamentDashboard() {
                                 </div>
                                 <div style={{ minWidth: 0 }}>
                                   <div style={{ fontWeight: 700, fontSize: 13.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
-                                  <span style={{ fontSize: 11, fontWeight: 700, color: tc.color, background: tc.bg, borderRadius: 6, padding: "1px 7px", display: "inline-block", marginTop: 3 }}>
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: tc.color, background: tc.bg, borderRadius: 'var(--radius-sm)', padding: "1px 7px", display: "inline-block", marginTop: 3 }}>
                                     {typeLabel(t.tournamentType)}
                                   </span>
                                 </div>
@@ -693,7 +693,7 @@ export default function ArenaTournamentDashboard() {
               ) : (
                 <Card>
                   <SectionLabel>Performance Overview</SectionLabel>
-                  <div style={{ marginTop: 14, borderRadius: 12, overflow: "hidden", border: "1px solid var(--color-white-a07)" }}>
+                  <div style={{ marginTop: 14, borderRadius: 'var(--radius-lg)', overflow: "hidden", border: "1px solid var(--color-white-a07)" }}>
                     {/* header row */}
                     <div style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", background: "var(--color-white-a04)", padding: "8px 10px" }}>
                       {["Type", "Played", "Wins", "Top 3", "Win %", "Points"].map((h, i) => (
@@ -707,7 +707,7 @@ export default function ArenaTournamentDashboard() {
                       return (
                         <div key={row.type} style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", padding: "9px 10px", borderTop: "1px solid var(--color-white-a04)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
-                            <span style={{ width: 22, height: 22, borderRadius: 6, background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <span style={{ width: 22, height: 22, borderRadius: 'var(--radius-sm)', background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                               {TYPE_ICON[row.type] || "♞"}
                             </span>
                             <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--color-text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(row.type)}</span>
@@ -824,7 +824,7 @@ function MonthStatsCard({ title, rows, compareRows = [], showArrows = false }) {
   return (
     <Card>
       <SectionLabel>{title} · By Type</SectionLabel>
-      <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid var(--color-white-a07)", marginTop: 12 }}>
+      <div style={{ borderRadius: 'var(--radius-lg)', overflow: "hidden", border: "1px solid var(--color-white-a07)", marginTop: 12 }}>
         <div style={{ display: "grid", gridTemplateColumns: COLS, background: "var(--color-white-a04)", padding: "9px 12px" }}>
           {HEADERS.map((h, i) => (
             <div key={h} style={{ fontSize: 9.5, fontWeight: 700, color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", textAlign: i === 0 ? "left" : "center" }}>{h}</div>
@@ -837,7 +837,7 @@ function MonthStatsCard({ title, rows, compareRows = [], showArrows = false }) {
           return (
             <div key={r.type} style={{ display: "grid", gridTemplateColumns: COLS, padding: "10px 12px", borderTop: "1px solid var(--color-white-a04)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                <span style={{ width: 22, height: 22, borderRadius: 6, background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <span style={{ width: 22, height: 22, borderRadius: 'var(--radius-sm)', background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {TYPE_ICON[r.type] || "♞"}
                 </span>
                 <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--color-text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(r.type)}</span>
@@ -887,7 +887,7 @@ function LifetimeStatsCard({ rows }) {
       <div style={{ fontSize: 11, color: "var(--color-text-faint)", marginTop: 3, marginBottom: 12 }}>
         Every finished tournament since you joined. Win / Lose / Draw count individual games.
       </div>
-      <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid var(--color-white-a07)" }}>
+      <div style={{ borderRadius: 'var(--radius-lg)', overflow: "hidden", border: "1px solid var(--color-white-a07)" }}>
         {/* header */}
         <div style={{ display: "grid", gridTemplateColumns: COLS, background: "var(--color-white-a04)", padding: "9px 12px" }}>
           {HEADERS.map((h, i) => (
@@ -901,7 +901,7 @@ function LifetimeStatsCard({ rows }) {
           return (
             <div key={r.type} style={{ display: "grid", gridTemplateColumns: COLS, padding: "10px 12px", borderTop: "1px solid var(--color-white-a04)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
-                <span style={{ width: 24, height: 24, borderRadius: 6, background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 12, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <span style={{ width: 24, height: 24, borderRadius: 'var(--radius-sm)', background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 12, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {TYPE_ICON[r.type] || "♞"}
                 </span>
                 <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--color-text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(r.type)}</span>
@@ -1142,14 +1142,14 @@ function GamesPanel({ name, onBack }) {
       <main className="atg-main">
         <div className="atg-games-section atg-games-section--full">
           {/* Analysis tip banner */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, background: "linear-gradient(135deg, var(--color-accent-a12), var(--color-accent-2-a12))", border: "1px solid var(--color-accent-a20)", borderRadius: 12, padding: "12px 18px", marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, background: "linear-gradient(135deg, var(--color-accent-a12), var(--color-accent-2-a12))", border: "1px solid var(--color-accent-a20)", borderRadius: 'var(--radius-lg)', padding: "12px 18px", marginBottom: 16 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
               <span style={{ fontSize: 20, flexShrink: 0 }}>🔍</span>
               <span style={{ fontSize: 13.5, fontWeight: 600, color: "var(--color-text-muted)", lineHeight: 1.4 }}>
                 Analyze your games in the <strong style={{ color: "var(--color-accent)" }}>Analysis page</strong> — find blunders, mistakes and inaccuracies.
               </span>
             </div>
-            <Link to="/game-analysis" style={{ flexShrink: 0, textDecoration: "none", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-accent-2))", borderRadius: 9, padding: "7px 16px", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap" }}>
+            <Link to="/game-analysis" style={{ flexShrink: 0, textDecoration: "none", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-accent-2))", borderRadius: 'var(--radius-md)', padding: "7px 16px", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap" }}>
               Analyze my game →
             </Link>
           </div>
@@ -1305,8 +1305,8 @@ function BlunderDnaCard() {
             <div key={d.key} style={{ display: "flex", alignItems: "center", gap: 10, margin: "9px 0" }}>
               <span style={{ flex: "0 0 42px", textAlign: "right", fontSize: 14, fontWeight: 800, color: "var(--color-text)", fontVariantNumeric: "tabular-nums" }}>{d.pct}%</span>
               <span style={{ flex: "0 0 108px", fontSize: 12.5, color: "var(--color-text-muted)" }}>{d.label}</span>
-              <div style={{ flex: 1, height: 8, background: "var(--color-white-a07)", borderRadius: 999, overflow: "hidden" }}>
-                <div style={{ width: `${d.pct}%`, height: "100%", borderRadius: 999, background: DNA_COLORS[d.key] || "var(--color-accent)", transition: "width .5s ease" }} />
+              <div style={{ flex: 1, height: 8, background: "var(--color-white-a07)", borderRadius: 'var(--radius-pill)', overflow: "hidden" }}>
+                <div style={{ width: `${d.pct}%`, height: "100%", borderRadius: 'var(--radius-pill)', background: DNA_COLORS[d.key] || "var(--color-accent)", transition: "width .5s ease" }} />
               </div>
             </div>
           ))}
@@ -1325,7 +1325,7 @@ const SectionLabel = ({ children, center, style: extra }) => (
   </div>
 );
 const Chip = ({ icon, children, color }) => (
-  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 700, color, background: "var(--color-black-a35)", border: "1px solid var(--color-white-a07)", borderRadius: 999, padding: "4px 12px" }}>
+  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 700, color, background: "var(--color-black-a35)", border: "1px solid var(--color-white-a07)", borderRadius: 'var(--radius-pill)', padding: "4px 12px" }}>
     <span style={{ display: "inline-flex" }}>{icon}</span>{children}
   </span>
 );
@@ -1336,7 +1336,7 @@ const MiniStat = ({ label, value }) => (
   </div>
 );
 const Boost = ({ icon, title, sub, pts, color }) => (
-  <div style={{ flex: 1, background: "var(--color-white-a04)", border: "1px solid var(--color-white-a07)", borderRadius: 12, padding: "12px 14px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 90 }}>
+  <div style={{ flex: 1, background: "var(--color-white-a04)", border: "1px solid var(--color-white-a07)", borderRadius: 'var(--radius-lg)', padding: "12px 14px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 90 }}>
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
       <span style={{ fontSize: 20 }}>{icon}</span>
       <div>
@@ -1418,7 +1418,7 @@ const MarathonPodiumCard = ({ counts, best }) => {
               {s.count > 1 && (
                 <span style={{
                   position: "absolute", bottom: 2, right: -4,
-                  minWidth: 18, height: 18, padding: "0 5px", borderRadius: 999,
+                  minWidth: 18, height: 18, padding: "0 5px", borderRadius: 'var(--radius-pill)',
                   background: "var(--color-black-a65)", border: "1px solid var(--color-white-a13)",
                   color: s.color, fontSize: 11, fontWeight: 800,
                   display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1,
@@ -1517,7 +1517,7 @@ const S = {
   colSide:     { display: "grid", gap: 16, minWidth: 0 },
 
   // ── Cards — obsidian glass ─────────────────────────────────────────────────
-  card:        { background: "var(--color-surface)", border: "1px solid var(--color-white-a04)", borderRadius: 18, padding: "18px 20px", boxShadow: "0 8px 32px var(--color-black-a50)", WebkitBackdropFilter: "blur(10px)", backdropFilter: "blur(10px)", position: "relative", overflow: "hidden" },
+  card:        { background: "var(--color-surface)", border: "1px solid var(--color-white-a04)", borderRadius: 'var(--radius-xl)', padding: "18px 20px", boxShadow: "0 8px 32px var(--color-black-a50)", WebkitBackdropFilter: "blur(10px)", backdropFilter: "blur(10px)", position: "relative", overflow: "hidden" },
   cardHighlight: { background: "linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-accent-2-a12) 100%)", border: "1px solid var(--color-accent-a30)", boxShadow: "0 8px 32px var(--color-accent-a12)" },
 
   // ── Avatar ─────────────────────────────────────────────────────────────────
@@ -1525,30 +1525,30 @@ const S = {
   verified:    { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: "50%", background: "var(--color-accent)", color: "var(--color-text)", fontSize: 11, fontWeight: 800 },
 
   // ── Stat tile ─────────────────────────────────────────────────────────────
-  tile:        { background: "var(--color-black-a35)", border: "1px solid var(--color-accent-a15)", borderRadius: 12, padding: "12px 10px", textAlign: "center" },
+  tile:        { background: "var(--color-black-a35)", border: "1px solid var(--color-accent-a15)", borderRadius: 'var(--radius-lg)', padding: "12px 10px", textAlign: "center" },
 
   // ── Buttons ────────────────────────────────────────────────────────────────
-  ghostBtn:    { textDecoration: "none", color: "var(--color-text)", background: "var(--color-white-a04)", border: "1px solid var(--color-white-a10)", borderRadius: 10, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" },
-  joinBtn:     { display: "inline-block", textDecoration: "none", textAlign: "center", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-accent-2))", borderRadius: 9, padding: "5px 13px", fontSize: 12, fontWeight: 700, marginTop: 5, whiteSpace: "nowrap" },
-  footerBtn:   { display: "block", textAlign: "center", textDecoration: "none", color: "var(--color-text-muted)", background: "var(--color-black-a35)", border: "1px solid var(--color-white-a07)", borderRadius: 10, padding: "10px", fontSize: 13, fontWeight: 600, marginTop: 14, fontFamily: "inherit" },
+  ghostBtn:    { textDecoration: "none", color: "var(--color-text)", background: "var(--color-white-a04)", border: "1px solid var(--color-white-a10)", borderRadius: 'var(--radius-md)', padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" },
+  joinBtn:     { display: "inline-block", textDecoration: "none", textAlign: "center", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-accent-2))", borderRadius: 'var(--radius-md)', padding: "5px 13px", fontSize: 12, fontWeight: 700, marginTop: 5, whiteSpace: "nowrap" },
+  footerBtn:   { display: "block", textAlign: "center", textDecoration: "none", color: "var(--color-text-muted)", background: "var(--color-black-a35)", border: "1px solid var(--color-white-a07)", borderRadius: 'var(--radius-md)', padding: "10px", fontSize: 13, fontWeight: 600, marginTop: 14, fontFamily: "inherit" },
 
   // ── Links & badges ────────────────────────────────────────────────────────
   linkSmall:   { color: "var(--color-accent)", textDecoration: "none", fontSize: 12.5, fontWeight: 700 },
-  earlyBirdBadge: { fontSize: 9.5, fontWeight: 700, color: "var(--color-success)", background: "var(--color-success-a12)", border: "1px solid var(--color-success-a20)", borderRadius: 6, padding: "2px 6px", lineHeight: 1.4, display: "inline-block", textAlign: "center", marginBottom: 4 },
-  winnerBadge: { fontSize: 11, fontWeight: 800, color: "var(--color-text)", background: "linear-gradient(135deg,var(--color-warning),var(--color-danger))", borderRadius: 6, padding: "2px 10px", letterSpacing: "0.04em" },
+  earlyBirdBadge: { fontSize: 9.5, fontWeight: 700, color: "var(--color-success)", background: "var(--color-success-a12)", border: "1px solid var(--color-success-a20)", borderRadius: 'var(--radius-sm)', padding: "2px 6px", lineHeight: 1.4, display: "inline-block", textAlign: "center", marginBottom: 4 },
+  winnerBadge: { fontSize: 11, fontWeight: 800, color: "var(--color-text)", background: "linear-gradient(135deg,var(--color-warning),var(--color-danger))", borderRadius: 'var(--radius-sm)', padding: "2px 10px", letterSpacing: "0.04em" },
 
   // ── Progress bar ──────────────────────────────────────────────────────────
-  progressTrack: { height: 6, borderRadius: 999, background: "var(--color-white-a07)", marginTop: 12, overflow: "hidden" },
-  progressFill:  { height: "100%", background: "linear-gradient(90deg,var(--color-accent),var(--color-accent-2))", borderRadius: 999 },
+  progressTrack: { height: 6, borderRadius: 'var(--radius-pill)', background: "var(--color-white-a07)", marginTop: 12, overflow: "hidden" },
+  progressFill:  { height: "100%", background: "linear-gradient(90deg,var(--color-accent),var(--color-accent-2))", borderRadius: 'var(--radius-pill)' },
 
   // ── List rows ─────────────────────────────────────────────────────────────
   upcomingRow: { display: "flex", alignItems: "center", gap: 12, padding: "11px 0", borderBottom: "1px solid var(--color-white-a04)" },
   recentRow:   { display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid var(--color-white-a04)" },
-  typeIconBox: { width: 38, height: 38, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800 },
+  typeIconBox: { width: 38, height: 38, borderRadius: 'var(--radius-md)', display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800 },
 
   // ── Trophy showcase "View All" + modal ─────────────────────────────────────
-  viewAllTrophiesBtn: { color: "var(--color-accent)", background: "var(--color-accent-a08)", border: "1px solid var(--color-accent-a30)", borderRadius: 999, padding: "3px 9px", fontSize: 10.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", alignSelf: "center" },
+  viewAllTrophiesBtn: { color: "var(--color-accent)", background: "var(--color-accent-a08)", border: "1px solid var(--color-accent-a30)", borderRadius: 'var(--radius-pill)', padding: "3px 9px", fontSize: 10.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", alignSelf: "center" },
   trophyOverlay: { position: "fixed", inset: 0, background: "var(--color-black-a65)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 20 },
-  trophyModal: { background: "var(--color-surface)", border: "1px solid var(--color-white-a07)", borderRadius: 18, padding: "22px 24px", maxWidth: 720, width: "100%", maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px var(--color-black-a65)" },
-  trophyCloseBtn: { background: "var(--color-white-a07)", border: "1px solid var(--color-white-a10)", borderRadius: 8, color: "var(--color-text)", width: 32, height: 32, fontSize: 15, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center" },
+  trophyModal: { background: "var(--color-surface)", border: "1px solid var(--color-white-a07)", borderRadius: 'var(--radius-xl)', padding: "22px 24px", maxWidth: 720, width: "100%", maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px var(--color-black-a65)" },
+  trophyCloseBtn: { background: "var(--color-white-a07)", border: "1px solid var(--color-white-a10)", borderRadius: 'var(--radius-md)', color: "var(--color-text)", width: 32, height: 32, fontSize: 15, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center" },
 };

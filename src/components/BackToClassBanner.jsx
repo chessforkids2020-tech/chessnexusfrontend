@@ -71,11 +71,11 @@ const S = {
   },
   text: { display: 'inline-flex', alignItems: 'center', gap: 8, color: '#e6e8ee', fontSize: 14, fontWeight: 600 },
   dot: {
-    width: 9, height: 9, borderRadius: '50%', background: 'var(--color-danger)', flex: 'none',
+    width: 9, height: 9, borderRadius: 'var(--radius-circle)', background: 'var(--color-danger)', flex: 'none',
     boxShadow: '0 0 8px 1px rgba(239,68,68,0.8)',
   },
   btn: {
-    padding: '8px 18px', borderRadius: 999, cursor: 'pointer',
+    padding: '8px 18px', borderRadius: 'var(--radius-pill)', cursor: 'pointer',
     fontSize: 14, fontWeight: 800, whiteSpace: 'nowrap',
     color: '#04211d', border: '1px solid transparent',
     background: 'linear-gradient(135deg,var(--color-accent) 0%,var(--color-accent-2) 100%)',

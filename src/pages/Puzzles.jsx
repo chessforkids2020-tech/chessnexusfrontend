@@ -1022,7 +1022,7 @@ export default function Puzzles() {
     infoCard: {
       background: 'white',
       padding: '20px',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       boxShadow: '0 4px 6px -1px var(--color-black-a20), 0 2px 4px -1px var(--color-black-a20)',
     },
     label: {
@@ -1042,13 +1042,13 @@ export default function Puzzles() {
       textAlign: 'center',
       padding: '20px',
       background: 'linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       color: 'white',
       boxShadow: '0 10px 15px -3px rgba(37, 99, 235, 0.3)',
     },
     turnIndicator: {
       padding: '12px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       textAlign: 'center',
       fontWeight: 'bold',
       transition: 'all 0.3s ease',
@@ -1060,7 +1060,7 @@ export default function Puzzles() {
       background: 'var(--color-success)',
       color: 'white',
       border: 'none',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '16px',
       fontWeight: '700',
       cursor: 'pointer',
@@ -1082,7 +1082,7 @@ export default function Puzzles() {
     },
     modalContent: {
       background: 'white',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '30px',
       maxWidth: '400px',
       width: '90%',
@@ -1109,7 +1109,7 @@ export default function Puzzles() {
       background: 'var(--color-surface)',
       color: 'var(--color-text-faint)',
       border: 'none',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       cursor: 'pointer',
       fontWeight: '600',
       transition: 'all 0.2s',
@@ -1119,7 +1119,7 @@ export default function Puzzles() {
       background: 'var(--color-danger)',
       color: 'white',
       border: 'none',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       cursor: 'pointer',
       fontWeight: '600',
       transition: 'all 0.2s',
@@ -1136,12 +1136,12 @@ export default function Puzzles() {
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 100,
-      borderRadius: '4px'
+      borderRadius: 'var(--radius-sm)'
     },
     overlayContent: {
       background: 'white',
       padding: '30px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       textAlign: 'center',
       maxWidth: '300px',
       boxShadow: '0 10px 25px var(--color-black-a35)'
@@ -1154,7 +1154,7 @@ export default function Puzzles() {
       {/* Guest Login Popup — shown after 5 guest puzzles */}
       {showGuestLoginPopup && (
         <div style={{ position: 'fixed', inset: 0, background: 'var(--color-black-a65)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: 'var(--color-surface-2)', borderRadius: 20, padding: '36px 32px', maxWidth: 420, width: '90%', textAlign: 'center', boxShadow: '0 24px 60px var(--color-black-a50)', border: '1px solid var(--color-white-a07)' }}>
+          <div style={{ background: 'var(--color-surface-2)', borderRadius: 'var(--radius-2xl)', padding: '36px 32px', maxWidth: 420, width: '90%', textAlign: 'center', boxShadow: '0 24px 60px var(--color-black-a50)', border: '1px solid var(--color-white-a07)' }}>
             <div style={{ fontSize: 52, marginBottom: 12 }}>🏆</div>
             <h2 style={{ color: 'var(--color-text)', fontSize: 22, fontWeight: 800, marginBottom: 10 }}>Amazing! You solved 5 puzzles!</h2>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.6 }}>
@@ -1162,13 +1162,13 @@ export default function Puzzles() {
             </p>
             <a
               href="/login"
-              style={{ display: 'block', background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))', color: 'var(--color-text)', padding: '14px 28px', borderRadius: 12, fontWeight: 700, textDecoration: 'none', fontSize: 16, marginBottom: 14, boxShadow: '0 4px 15px rgba(59,130,246,0.4)' }}
+              style={{ display: 'block', background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))', color: 'var(--color-text)', padding: '14px 28px', borderRadius: 'var(--radius-lg)', fontWeight: 700, textDecoration: 'none', fontSize: 16, marginBottom: 14, boxShadow: '0 4px 15px rgba(59,130,246,0.4)' }}
             >
               Login to ChessNexus 🚀
             </a>
             <a
               href="/register"
-              style={{ display: 'block', background: 'var(--color-white-a07)', color: 'var(--color-text-muted)', padding: '12px 28px', borderRadius: 12, fontWeight: 600, textDecoration: 'none', fontSize: 15, marginBottom: 14, border: '1px solid var(--color-white-a10)' }}
+              style={{ display: 'block', background: 'var(--color-white-a07)', color: 'var(--color-text-muted)', padding: '12px 28px', borderRadius: 'var(--radius-lg)', fontWeight: 600, textDecoration: 'none', fontSize: 15, marginBottom: 14, border: '1px solid var(--color-white-a10)' }}
             >
               Create Free Account
             </a>
@@ -1351,7 +1351,7 @@ export default function Puzzles() {
                 <img
                   src="/images/dailypuzzles.png"
                   alt="Daily Puzzles"
-                  style={{ width: 56, height: 56, borderRadius: 12, objectFit: 'cover', marginTop: -16 }}
+                  style={{ width: 56, height: 56, borderRadius: 'var(--radius-lg)', objectFit: 'cover', marginTop: -16 }}
                 />
                 <div style={{ textAlign: 'left' }}>
                   <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--color-text)' }}>Training Complete! 🎉</div>
@@ -1365,7 +1365,7 @@ export default function Puzzles() {
               <div style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)',
-                borderRadius: 12, padding: '8px 24px',
+                borderRadius: 'var(--radius-lg)', padding: '8px 24px',
               }}>
                 <span style={{ fontSize: 26, fontWeight: 900, color: 'var(--color-accent-2)' }}>{totalPoints || '—'}</span>
                 <span style={{ fontSize: 11, color: '#93c5fd', fontWeight: 600 }}>Rating</span>
@@ -1397,7 +1397,7 @@ export default function Puzzles() {
         {dailyStatus === 'active' && (
           <div style={{
             boxShadow: '0 25px 50px -12px var(--color-black-a50)',
-            borderRadius: '4px',
+            borderRadius: 'var(--radius-sm)',
             position: 'relative',
             opacity: gameOver ? 0.8 : 1,
             transition: 'opacity 0.3s',
@@ -1426,7 +1426,7 @@ export default function Puzzles() {
                       background: 'var(--color-success)',
                       color: 'white',
                       border: 'none',
-                      borderRadius: '8px',
+                      borderRadius: 'var(--radius-md)',
                       fontSize: '16px',
                       fontWeight: '600',
                       cursor: 'pointer',
@@ -1451,7 +1451,7 @@ export default function Puzzles() {
                 background: 'var(--color-black-a65)',
                 color: 'white',
                 padding: '20px',
-                borderRadius: '10px',
+                borderRadius: 'var(--radius-md)',
                 zIndex: 10,
                 display: 'flex',
                 flexDirection: 'column',
@@ -1463,7 +1463,7 @@ export default function Puzzles() {
                   height: '40px',
                   border: '4px solid #f3f3f3',
                   borderTop: '4px solid var(--color-accent-2)',
-                  borderRadius: '50%',
+                  borderRadius: 'var(--radius-circle)',
                   animation: 'spin 1s linear infinite'
                 }}></div>
                 <div>Opponent is thinking...</div>

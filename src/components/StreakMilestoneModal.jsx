@@ -190,7 +190,7 @@ const S = {
   },
   card: {
     background: 'var(--color-surface)', border: '1px solid var(--color-border-strong)',
-    borderRadius: 18, padding: '28px 26px', maxWidth: 460, width: '100%',
+    borderRadius: 'var(--radius-xl)', padding: '28px 26px', maxWidth: 460, width: '100%',
     textAlign: 'center', boxShadow: '0 24px 60px var(--color-black-a50)',
   },
   flame: { fontSize: 46, lineHeight: 1 },
@@ -199,7 +199,7 @@ const S = {
   bodyQuiet: { margin: '0 0 18px', fontSize: 13, lineHeight: 1.55, color: 'var(--color-text-muted)' },
   cost: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
-    gap: 10, padding: '9px 12px', marginBottom: 10, borderRadius: 10,
+    gap: 10, padding: '9px 12px', marginBottom: 10, borderRadius: 'var(--radius-md)',
     background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a30)',
     fontSize: 13, color: 'var(--color-text)',
   },
@@ -208,18 +208,18 @@ const S = {
   primaryOff: { opacity: 0.5, cursor: 'not-allowed' },
   warn: {
     textAlign: 'left', background: 'var(--color-warning-a12)',
-    border: '1px solid var(--color-warning-a30)', borderRadius: 10,
+    border: '1px solid var(--color-warning-a30)', borderRadius: 'var(--radius-md)',
     padding: '10px 12px', marginBottom: 16, color: 'var(--color-warning)', fontSize: 13,
   },
   warnBody: { margin: '4px 0 0', color: 'var(--color-text)', fontSize: 12.5, lineHeight: 1.5 },
   link: { color: 'var(--color-warning)', fontWeight: 700 },
   primary: {
-    width: '100%', padding: '11px 16px', borderRadius: 10, border: 'none',
+    width: '100%', padding: '11px 16px', borderRadius: 'var(--radius-md)', border: 'none',
     background: 'var(--color-success)', color: '#04210f', fontWeight: 800, fontSize: 14.5,
     cursor: 'pointer', marginBottom: 8,
   },
   ghost: {
-    width: '100%', padding: '9px 16px', borderRadius: 10,
+    width: '100%', padding: '9px 16px', borderRadius: 'var(--radius-md)',
     border: '1px solid var(--color-border-strong)', background: 'transparent',
     color: 'var(--color-text-muted)', fontWeight: 600, fontSize: 13.5, cursor: 'pointer',
   },

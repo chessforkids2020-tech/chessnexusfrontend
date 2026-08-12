@@ -39,7 +39,7 @@ export default function StudyPuzzleSidebar() {
             fontSize: '24px',
             width: '44px',
             height: '44px',
-            borderRadius: '12px',
+            borderRadius: 'var(--radius-lg)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -102,7 +102,7 @@ export default function StudyPuzzleSidebar() {
       fontSize: '24px',
       width: '40px',
       height: '40px',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -116,7 +116,7 @@ export default function StudyPuzzleSidebar() {
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: '6px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
       color: 'var(--color-text)',
@@ -148,7 +148,7 @@ export default function StudyPuzzleSidebar() {
       background: 'var(--color-surface)',
       color: 'var(--color-text)',
       padding: '8px 12px',
-      borderRadius: '8px',
+      borderRadius: 'var(--radius-md)',
       fontSize: '12px',
       fontWeight: '600',
       whiteSpace: 'nowrap',
@@ -220,7 +220,7 @@ export default function StudyPuzzleSidebar() {
           onMouseEnter={(e) => handleMouseEnter(e, "Chess Nexus")}
           onMouseLeave={handleMouseLeave}
         >
-          <img src="/logo.png" alt="Chess Nexus" style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 4 }} />
+          <img src="/logo.png" alt="Chess Nexus" style={{ width: 28, height: 28, objectFit: "contain", borderRadius: 'var(--radius-sm)' }} />
           <div className="tooltip" style={styles.tooltip}></div>
         </div>
         <div 

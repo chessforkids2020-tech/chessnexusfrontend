@@ -324,12 +324,12 @@ const s = {
     position: 'relative',
     display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 30, flexWrap: 'wrap',
     background: 'linear-gradient(135deg, rgba(20,26,34,0.85), rgba(14,19,26,0.7))',
-    border: `1px solid ${C.border}`, borderRadius: 20, padding: '28px 30px',
+    border: `1px solid ${C.border}`, borderRadius: 'var(--radius-2xl)', padding: '28px 30px',
     boxShadow: '0 20px 50px -30px rgba(0,0,0,0.8)',
   },
   heroMain: { minWidth: 280, flex: '1 1 420px' },
   eyebrow: { display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 11.5, fontWeight: 800, letterSpacing: '0.16em', textTransform: 'uppercase', color: C.green, marginBottom: 14 },
-  liveDot: { width: 7, height: 7, borderRadius: '50%', background: '#34d399', boxShadow: '0 0 0 4px rgba(52,211,153,0.18)' },
+  liveDot: { width: 7, height: 7, borderRadius: 'var(--radius-circle)', background: '#34d399', boxShadow: '0 0 0 4px rgba(52,211,153,0.18)' },
   // Hero title — large, bold, white (a display heading; bigger than in-app h1 on purpose).
   h1: { margin: '0 0 10px', fontSize: 'clamp(26px, 3.4vw, 38px)', fontWeight: 800, lineHeight: 1.08, letterSpacing: '-0.02em', color: '#f4f8fb' },
   sub: { color: C.dim, fontSize: 12.5, margin: 0, lineHeight: 1.5, maxWidth: 400 },
@@ -339,9 +339,9 @@ const s = {
   chip: {
     position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, minWidth: 118, flex: '1 1 118px', maxWidth: 150,
     background: 'linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015))', border: `1px solid ${C.border}`,
-    borderRadius: 16, padding: '16px 14px 14px',
+    borderRadius: 'var(--radius-xl)', padding: '16px 14px 14px',
   },
-  chipIc: { display: 'grid', placeItems: 'center', width: 38, height: 38, borderRadius: '50%', marginBottom: 6, color: C.green, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(52,211,153,0.28)' },
+  chipIc: { display: 'grid', placeItems: 'center', width: 38, height: 38, borderRadius: 'var(--radius-circle)', marginBottom: 6, color: C.green, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(52,211,153,0.28)' },
   chipIcGreen: { color: C.green, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(52,211,153,0.28)' },
   chipIcBlue: { color: '#60a5fa', background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(96,165,250,0.3)' },
   chipVal: { fontSize: 28, fontWeight: 800, color: '#f4f8fb', lineHeight: 1, fontVariantNumeric: 'tabular-nums' },
@@ -353,7 +353,7 @@ const s = {
   usage: {
     position: 'relative',
     display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
-    marginTop: 16, padding: '11px 16px', borderRadius: 12, fontSize: 13,
+    marginTop: 16, padding: '11px 16px', borderRadius: 'var(--radius-lg)', fontSize: 13,
     color: '#cbd5e1', background: 'rgba(255,255,255,0.03)', border: `1px solid ${C.border}`,
   },
   usageFull: { color: '#fcd34d', background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.3)' },
@@ -361,52 +361,52 @@ const s = {
 
   // ── Cards ──
   card: {
-    position: 'relative', background: C.panel, border: `1px solid ${C.border}`, borderRadius: 18,
+    position: 'relative', background: C.panel, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-xl)',
     padding: '20px 20px 18px', marginTop: 18, boxShadow: '0 14px 40px -28px rgba(0,0,0,0.8)',
     backdropFilter: 'blur(8px)',
   },
   // Card heading matches the app's .cb-card h3 (15px), not a tiny uppercase label.
   cardTitle: { display: 'flex', alignItems: 'center', gap: 9, fontSize: 15, fontWeight: 700, color: C.text, marginBottom: 16 },
-  cardTitleIc: { display: 'grid', placeItems: 'center', width: 26, height: 26, borderRadius: 8, color: C.cyan, background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.24)' },
+  cardTitleIc: { display: 'grid', placeItems: 'center', width: 26, height: 26, borderRadius: 'var(--radius-md)', color: C.cyan, background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.24)' },
   upsell: { color: C.dim, fontSize: 12.5, marginTop: 14, marginBottom: 0 },
   upsellLink: { color: C.cyan, fontWeight: 700, textDecoration: 'none' },
 
-  pendingCard: { position: 'relative', maxWidth: 520, margin: '52px auto 0', textAlign: 'center', background: C.panel, border: '1px solid rgba(6,182,212,0.22)', borderRadius: 20, padding: '34px 30px', boxShadow: '0 20px 50px -30px rgba(0,0,0,0.8)' },
-  pendingIcon: { width: 64, height: 64, margin: '0 auto 16px', display: 'grid', placeItems: 'center', borderRadius: '50%', color: C.cyan, background: 'rgba(6,182,212,0.10)', border: '1px solid rgba(6,182,212,0.28)' },
-  pendingHint: { marginTop: 22, padding: '13px 15px', borderRadius: 12, fontSize: 13, color: '#cbd5e1', background: 'rgba(6,182,212,0.07)', border: '1px solid rgba(6,182,212,0.18)', textAlign: 'left', lineHeight: 1.5 },
+  pendingCard: { position: 'relative', maxWidth: 520, margin: '52px auto 0', textAlign: 'center', background: C.panel, border: '1px solid rgba(6,182,212,0.22)', borderRadius: 'var(--radius-2xl)', padding: '34px 30px', boxShadow: '0 20px 50px -30px rgba(0,0,0,0.8)' },
+  pendingIcon: { width: 64, height: 64, margin: '0 auto 16px', display: 'grid', placeItems: 'center', borderRadius: 'var(--radius-circle)', color: C.cyan, background: 'rgba(6,182,212,0.10)', border: '1px solid rgba(6,182,212,0.28)' },
+  pendingHint: { marginTop: 22, padding: '13px 15px', borderRadius: 'var(--radius-lg)', fontSize: 13, color: '#cbd5e1', background: 'rgba(6,182,212,0.07)', border: '1px solid rgba(6,182,212,0.18)', textAlign: 'left', lineHeight: 1.5 },
 
   label: { display: 'block', fontSize: 12, color: C.dim, marginBottom: 6, fontWeight: 600 },
-  input: { width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 11, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.04)', color: C.text, fontSize: 14, fontFamily: 'inherit', outline: 'none' },
-  primary: { display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 22px', borderRadius: 11, border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#ffffff', fontWeight: 800, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 10px 26px -12px rgba(52,211,153,0.6)' },
+  input: { width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-lg)', border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.04)', color: C.text, fontSize: 14, fontFamily: 'inherit', outline: 'none' },
+  primary: { display: 'inline-flex', alignItems: 'center', gap: 7, padding: '11px 22px', borderRadius: 'var(--radius-lg)', border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#ffffff', fontWeight: 800, fontSize: 14, cursor: 'pointer', whiteSpace: 'nowrap', boxShadow: '0 10px 26px -12px rgba(52,211,153,0.6)' },
 
   // ── Meeting list ──
   listHead: { display: 'flex', alignItems: 'center', gap: 10, margin: '30px 0 14px', fontSize: 18, fontWeight: 700 },
-  count: { fontSize: 11.5, fontWeight: 800, color: C.cyan, background: 'rgba(6,182,212,0.14)', borderRadius: 999, padding: '2px 10px' },
+  count: { fontSize: 11.5, fontWeight: 800, color: C.cyan, background: 'rgba(6,182,212,0.14)', borderRadius: 'var(--radius-pill)', padding: '2px 10px' },
 
   skeletonWrap: { display: 'grid', gap: 12 },
-  skeleton: { height: 108, borderRadius: 18, background: 'linear-gradient(100deg, rgba(255,255,255,0.03) 30%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 70%)', border: `1px solid ${C.border}` },
+  skeleton: { height: 108, borderRadius: 'var(--radius-xl)', background: 'linear-gradient(100deg, rgba(255,255,255,0.03) 30%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 70%)', border: `1px solid ${C.border}` },
 
-  empty: { position: 'relative', padding: '44px 20px', textAlign: 'center', border: `1px dashed ${C.border}`, borderRadius: 18, background: 'rgba(255,255,255,0.02)' },
-  emptyIcon: { width: 58, height: 58, margin: '0 auto 12px', display: 'grid', placeItems: 'center', borderRadius: '50%', color: C.green, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(52,211,153,0.22)' },
+  empty: { position: 'relative', padding: '44px 20px', textAlign: 'center', border: `1px dashed ${C.border}`, borderRadius: 'var(--radius-xl)', background: 'rgba(255,255,255,0.02)' },
+  emptyIcon: { width: 58, height: 58, margin: '0 auto 12px', display: 'grid', placeItems: 'center', borderRadius: 'var(--radius-circle)', color: C.green, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(52,211,153,0.22)' },
 
   meeting: {
-    position: 'relative', background: C.panel, border: `1px solid ${C.border}`, borderRadius: 18,
+    position: 'relative', background: C.panel, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-xl)',
     padding: 18, boxShadow: '0 14px 40px -30px rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
     transition: 'border-color .16s ease',
   },
   meetingTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14, flexWrap: 'wrap' },
   meetingLead: { display: 'flex', alignItems: 'center', gap: 14, minWidth: 0, flex: '1 1 240px' },
-  meetingAvatar: { width: 46, height: 46, flex: 'none', display: 'grid', placeItems: 'center', borderRadius: 13, color: C.cyan, background: 'linear-gradient(135deg, rgba(6,182,212,0.16), rgba(16,185,129,0.12))', border: '1px solid rgba(6,182,212,0.24)' },
+  meetingAvatar: { width: 46, height: 46, flex: 'none', display: 'grid', placeItems: 'center', borderRadius: 'var(--radius-lg)', color: C.cyan, background: 'linear-gradient(135deg, rgba(6,182,212,0.16), rgba(16,185,129,0.12))', border: '1px solid rgba(6,182,212,0.24)' },
   meetingName: { fontWeight: 700, fontSize: 15, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   meetingMeta: { display: 'flex', gap: 7, flexWrap: 'wrap', marginTop: 8 },
-  pill: { display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11.5, fontWeight: 600, color: C.dim, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 999, padding: '4px 10px' },
+  pill: { display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11.5, fontWeight: 600, color: C.dim, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-pill)', padding: '4px 10px' },
   meetingActions: { display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' },
 
-  start: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', boxShadow: '0 8px 20px -10px rgba(16,185,129,0.7)' },
-  ghost: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 14px', borderRadius: 10, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.05)', color: C.text, cursor: 'pointer', fontWeight: 600, fontSize: 13 },
-  iconDanger: { display: 'grid', placeItems: 'center', width: 36, height: 36, borderRadius: 10, border: '1px solid rgba(239,68,68,0.28)', background: 'rgba(239,68,68,0.10)', color: '#fca5a5', cursor: 'pointer' },
+  start: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', boxShadow: '0 8px 20px -10px rgba(16,185,129,0.7)' },
+  ghost: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 14px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.05)', color: C.text, cursor: 'pointer', fontWeight: 600, fontSize: 13 },
+  iconDanger: { display: 'grid', placeItems: 'center', width: 36, height: 36, borderRadius: 'var(--radius-md)', border: '1px solid rgba(239,68,68,0.28)', background: 'rgba(239,68,68,0.10)', color: '#fca5a5', cursor: 'pointer' },
 
   linkRow: { display: 'flex', alignItems: 'center', gap: 10, marginTop: 15, flexWrap: 'wrap' },
   linkLabel: { display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, color: C.dim, textTransform: 'uppercase', letterSpacing: '0.05em', flexShrink: 0 },
-  linkbox: { flex: 1, minWidth: 200, fontFamily: 'ui-monospace,monospace', fontSize: 12.5, color: '#67e8f9', background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.2)', borderRadius: 9, padding: '9px 11px', wordBreak: 'break-all' },
+  linkbox: { flex: 1, minWidth: 200, fontFamily: 'ui-monospace,monospace', fontSize: 12.5, color: '#67e8f9', background: 'rgba(6,182,212,0.08)', border: '1px solid rgba(6,182,212,0.2)', borderRadius: 'var(--radius-md)', padding: '9px 11px', wordBreak: 'break-all' },
 };

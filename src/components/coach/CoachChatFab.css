@@ -12,7 +12,7 @@
   background: linear-gradient(135deg, #059669, #10b981);
   color: #fff;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
@@ -34,7 +34,7 @@
   background: #ef4444;
   color: #fff;
   border: 2px solid #0a0a0a;
-  border-radius: 11px;
+  border-radius: var(--radius-lg);
   font-size: 12px;
   font-weight: 800;
   display: flex;
@@ -64,7 +64,7 @@
   flex-direction: column;
   background: #0f0f0f;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.7);
 }
@@ -85,7 +85,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
 }
 .ccfab-close:hover { color: #fff; background: rgba(0, 0, 0, 0.7); }
 .ccfab-popup-body { flex: 1; min-height: 0; overflow: hidden; padding: 14px; }

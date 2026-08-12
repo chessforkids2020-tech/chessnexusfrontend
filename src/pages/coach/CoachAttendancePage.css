@@ -59,7 +59,7 @@
 .cap-card {
   background: rgba(20, 20, 30, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 20px 24px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
@@ -85,7 +85,7 @@
   margin-bottom: 4px;
 }
 .cap-stat-card {
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 20px 22px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
@@ -156,7 +156,7 @@
 .cap-badge {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   font-size: 11px;
   font-weight: 600;
   line-height: 1.6;
@@ -173,7 +173,7 @@
 .cap-break-badge {
   display: inline-block;
   padding: 1px 6px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   font-size: 10px;
   background: rgba(245,158,11,0.2);
   color: #fcd34d;
@@ -184,7 +184,7 @@
 .cap-input {
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 8px 12px;
   color: #e2e8f0;
   font-size: 13px;
@@ -210,7 +210,7 @@
 /* ── Buttons ─────────────────────────────────────── */
 .cap-btn {
   padding: 7px 14px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   border: 1px solid;
   font-size: 12px;
   font-weight: 500;
@@ -232,7 +232,7 @@
 .cap-icon-btn {
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   color: #e2e8f0;
   width: 30px; height: 30px;
   cursor: pointer;
@@ -249,7 +249,7 @@
 .cap-player-card {
   background: rgba(20,20,30,0.6);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 16px 20px;
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
@@ -257,7 +257,7 @@
 .cap-player-break { opacity: 0.65; border-color: rgba(245,158,11,0.2); }
 .cap-player-top   { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .cap-player-avatar {
-  width: 40px; height: 40px; border-radius: 50%;
+  width: 40px; height: 40px; border-radius: var(--radius-circle);
   background: linear-gradient(135deg, #06b6d4, #0e7490);
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; font-weight: 700; color: #fff; flex-shrink: 0;
@@ -288,12 +288,12 @@
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: rgba(255,255,255,0.02);
   flex-wrap: wrap;
 }
 .cap-att-avatar {
-  width: 34px; height: 34px; border-radius: 50%;
+  width: 34px; height: 34px; border-radius: var(--radius-circle);
   background: linear-gradient(135deg, #06b6d4, #0e7490);
   display: flex; align-items: center; justify-content: center;
   font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
@@ -321,7 +321,7 @@
   align-items: center;
   gap: 5px;
   padding: 2px 4px 2px 6px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
 }
@@ -339,7 +339,7 @@
 .cap-att-chip-x:disabled { opacity: 0.4; cursor: default; }
 .cap-att-btn {
   padding: 5px 12px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(255,255,255,0.05);
   color: rgba(226,232,240,0.7);
@@ -369,7 +369,7 @@
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: rgba(255,255,255,0.02);
   border-left: 3px solid transparent;
   flex-wrap: wrap;
@@ -398,7 +398,7 @@
 }
 .cap-hist-cell {
   width: 48px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 6px 4px;
   text-align: center;
   cursor: default;

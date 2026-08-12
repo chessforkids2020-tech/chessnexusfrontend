@@ -325,7 +325,7 @@ export default function MonthlyFocusDashboard() {
                     background: 'var(--color-warning-a12)',
                     color: 'var(--color-warning)',
                     padding: '10px',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-md)',
                     textAlign: 'center',
                     marginBottom: '12px',
                     fontSize: '13px',
@@ -342,7 +342,7 @@ export default function MonthlyFocusDashboard() {
                     background: 'var(--color-warning-a12)',
                     color: 'var(--color-warning)',
                     padding: '10px',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-md)',
                     textAlign: 'center',
                     marginBottom: '12px',
                     fontSize: '13px',
@@ -357,7 +357,7 @@ export default function MonthlyFocusDashboard() {
                 <p className="task-type-badge" style={{
                   display: 'inline-block',
                   padding: '6px 14px',
-                  borderRadius: '20px',
+                  borderRadius: 'var(--radius-2xl)',
                   fontSize: '12px',
                   marginBottom: '12px',
                   background: day.taskType === 'puzzles' ? 'var(--color-accent-a15)' : 
@@ -412,7 +412,7 @@ export default function MonthlyFocusDashboard() {
               padding: '60px 20px', 
               color: 'var(--color-text-muted)',
               background: 'rgba(23, 23, 23, 0.5)',
-              borderRadius: '16px',
+              borderRadius: 'var(--radius-xl)',
               border: '1px solid var(--color-white-a04)'
             }}>
               <p style={{ fontSize: '1.1em', margin: 0 }}>No days created yet. Check back soon!</p>

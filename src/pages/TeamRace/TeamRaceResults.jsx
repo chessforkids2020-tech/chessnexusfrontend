@@ -116,7 +116,7 @@ function TeamRaceResults() {
     return (
       <div className="tournament-leaderboard-container">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '3px solid transparent', borderTopColor: 'var(--color-accent)', borderLeftColor: 'var(--color-success)', animation: 'tr-spin 0.9s linear infinite' }} />
+          <div style={{ width: '48px', height: '48px', borderRadius: 'var(--radius-circle)', border: '3px solid transparent', borderTopColor: 'var(--color-accent)', borderLeftColor: 'var(--color-success)', animation: 'tr-spin 0.9s linear infinite' }} />
           <div style={{ color: 'var(--color-accent)', fontSize: '14px', fontFamily: 'Inter, system-ui, sans-serif' }}>Loading results...</div>
         </div>
       </div>
@@ -205,7 +205,7 @@ function TeamRaceResults() {
                       <td className="rank-cell">{medals[i] || i + 1}</td>
                       <td className="player-cell">
                         <div className="player-cell-content">
-                          <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: col, boxShadow: `0 0 8px ${col}`, flexShrink: 0 }} />
+                          <div style={{ width: '10px', height: '10px', borderRadius: 'var(--radius-circle)', background: col, boxShadow: `0 0 8px ${col}`, flexShrink: 0 }} />
                           <span style={{ fontWeight: '700', color: col }}>{team.teamName}</span>
                         </div>
                       </td>
@@ -245,8 +245,8 @@ function TeamRaceResults() {
                       </td>
                       <td>
                         {r.teamId?.teamName ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '2px 8px', borderRadius: '12px', background: `${col}22`, border: `1px solid ${col}55`, fontSize: '12px', fontWeight: '600', color: col, whiteSpace: 'nowrap' }}>
-                            <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: col, display: 'inline-block' }} />
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '2px 8px', borderRadius: 'var(--radius-lg)', background: `${col}22`, border: `1px solid ${col}55`, fontSize: '12px', fontWeight: '600', color: col, whiteSpace: 'nowrap' }}>
+                            <span style={{ width: '7px', height: '7px', borderRadius: 'var(--radius-circle)', background: col, display: 'inline-block' }} />
                             {r.teamId.teamName}
                           </span>
                         ) : '—'}

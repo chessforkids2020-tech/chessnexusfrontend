@@ -39,7 +39,7 @@ const styles = {
     marginBottom: '40px',
     background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     padding: '30px',
     border: '1px solid var(--color-white-a04)',
     boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -79,7 +79,7 @@ const styles = {
     zIndex: 950,
   },
   trophy: {
-    borderRadius: '50%',
+    borderRadius: 'var(--radius-circle)',
     background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
     border: '2px solid var(--color-white-a10)',
@@ -115,7 +115,7 @@ const styles = {
   tableContainer: {
     background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     padding: '25px',
     border: '1px solid var(--color-white-a04)',
     boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -146,7 +146,7 @@ const styles = {
   },
   userHighlight: {
     background: 'var(--color-accent-a12)',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     border: '1px solid var(--color-accent-a20)',
   },
   rank: {
@@ -187,7 +187,7 @@ const styles = {
     color: 'var(--color-accent)',
     border: '1px solid var(--color-accent-a30)',
     padding: '16px 40px',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     fontSize: '16px',
     fontWeight: '700',
     cursor: 'pointer',
@@ -207,7 +207,7 @@ const styles = {
     padding: '60px 40px',
     color: 'var(--color-text)',
     background: 'var(--color-surface)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     border: '1px solid var(--color-white-a04)',
     backdropFilter: 'blur(10px)',
     boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -225,7 +225,7 @@ const styles = {
     textAlign: 'center',
     padding: '30px',
     background: 'var(--color-danger-a12)',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     border: '1px solid var(--color-danger-a30)',
     backdropFilter: 'blur(10px)',
     fontSize: '16px',
@@ -267,7 +267,7 @@ const adminStyles = {
     maxWidth: '1200px',
     margin: '0 auto',
     background: 'var(--color-surface)',
-    borderRadius: '20px',
+    borderRadius: 'var(--radius-2xl)',
     padding: '30px',
     boxShadow: '0 20px 40px var(--color-black-a20)',
     position: 'relative',
@@ -294,7 +294,7 @@ const adminStyles = {
     color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
-    borderRadius: '8px',
+    borderRadius: 'var(--radius-md)',
     cursor: 'pointer',
     textDecoration: 'none',
     fontSize: '14px',
@@ -515,7 +515,7 @@ export default function ArenaResult({ isAdminView = false }) {
             )}
           </div>
 
-          <div style={{ background: 'var(--color-surface)', borderRadius: '16px', border: '1px solid #eee', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', border: '1px solid #eee', overflow: 'hidden' }}>
             <table style={adminStyles.table}>
               <thead>
                 <tr>
@@ -570,7 +570,7 @@ export default function ArenaResult({ isAdminView = false }) {
                 background: 'linear-gradient(135deg, var(--color-accent-2), #764ba2)',
                 color: 'var(--color-text)',
                 border: 'none',
-                borderRadius: '12px',
+                borderRadius: 'var(--radius-lg)',
                 fontWeight: '700',
                 cursor: 'pointer'
               }}

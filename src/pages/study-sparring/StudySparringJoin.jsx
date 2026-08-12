@@ -13,7 +13,7 @@ export default function StudySparringJoin() {
         <p style={{ fontSize: 16, color: 'var(--color-text-faint)', lineHeight: 1.7, margin: '0 0 36px' }}>Join a friend's duel or connect to a live coaching session using a room code.</p>
         <button
           onClick={() => navigate(-1)}
-          style={{ padding: '12px 32px', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 14, color: 'var(--color-warning)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
+          style={{ padding: '12px 32px', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 'var(--radius-lg)', color: 'var(--color-warning)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}
         >← Go Back</button>
       </div>
     </div>

@@ -247,7 +247,7 @@ export default function BuyMeACoffee() {
 
           <div style={{ maxWidth: 460, margin: '0 auto' }}>
             {!thankYou ? (
-              <div style={{ background: C.panel, border: `1px solid ${C.panelBorder}`, borderRadius: 20, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', overflow: 'hidden' }}>
+              <div style={{ background: C.panel, border: `1px solid ${C.panelBorder}`, borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', overflow: 'hidden' }}>
 
                 {/* Amount header */}
                 <div style={{ textAlign: 'center', padding: '28px 24px 20px', borderBottom: `1px solid ${C.panelBorder}` }}>
@@ -266,10 +266,10 @@ export default function BuyMeACoffee() {
                 {/* Badge preview */}
                 <div style={{ padding: '20px 24px', borderBottom: `1px solid ${C.panelBorder}` }}>
                   <div style={{ color: C.textDim, fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 12 }}>What you'll get</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 12, padding: '10px 14px', marginBottom: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 'var(--radius-lg)', padding: '10px 14px', marginBottom: 12 }}>
                     <span style={{ color: C.text, fontWeight: 700, fontSize: 16 }}>{user?.displayName || 'You'}</span>
                     <span style={{ fontSize: 18 }}>☕</span>
-                    <span style={{ color: C.amber, fontSize: 11, fontWeight: 600, background: 'var(--color-warning-a12)', padding: '2px 8px', borderRadius: 999 }}>Preview</span>
+                    <span style={{ color: C.amber, fontSize: 11, fontWeight: 600, background: 'var(--color-warning-a12)', padding: '2px 8px', borderRadius: 'var(--radius-pill)' }}>Preview</span>
                   </div>
                   <p style={{ color: C.textDim, fontSize: 13, lineHeight: 1.65, margin: 0 }}>
                     A <strong style={{ color: 'var(--color-warning)' }}>☕ supporter badge</strong> appears next to your display name for{' '}
@@ -283,7 +283,7 @@ export default function BuyMeACoffee() {
                     type="button"
                     disabled={submitting}
                     onClick={handlePayNow}
-                    style={{ ...styles.primaryBtn, width: '100%', fontSize: 15, padding: '14px 20px', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxSizing: 'border-box', opacity: submitting ? 0.7 : 1 }}
+                    style={{ ...styles.primaryBtn, width: '100%', fontSize: 15, padding: '14px 20px', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxSizing: 'border-box', opacity: submitting ? 0.7 : 1 }}
                   >
                     {submitting ? 'Opening payment…' : 'Confirm & Pay with Razorpay ☕'}
                   </button>
@@ -302,7 +302,7 @@ export default function BuyMeACoffee() {
                 <button
                   type="button"
                   onClick={() => navigate('/dashboard')}
-                  style={{ ...styles.primaryBtn, marginTop: 18, padding: '10px 24px', borderRadius: 12 }}
+                  style={{ ...styles.primaryBtn, marginTop: 18, padding: '10px 24px', borderRadius: 'var(--radius-lg)' }}
                 >
                   Go to my dashboard →
                 </button>
@@ -533,7 +533,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             type="button"
             disabled={!canContinue}
             onClick={handleContinue}
-            style={{ ...styles.primaryBtn, padding: '13px 32px', fontSize: 15, borderRadius: 14, opacity: canContinue ? 1 : 0.5, cursor: canContinue ? 'pointer' : 'not-allowed' }}
+            style={{ ...styles.primaryBtn, padding: '13px 32px', fontSize: 15, borderRadius: 'var(--radius-lg)', opacity: canContinue ? 1 : 0.5, cursor: canContinue ? 'pointer' : 'not-allowed' }}
           >
             Continue · {currency === 'INR' ? '₹' : '$'}{effectiveAmount} for {effectiveMonths}{' '}
             {effectiveMonths === 1 ? 'month' : 'months'} →
@@ -601,7 +601,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             <button
               type="button"
               onClick={() => { if (!user) { navigate('/login'); return; } window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              style={{ ...styles.primaryBtn, marginTop: 16, padding: '11px 24px', borderRadius: 12, fontSize: 14 }}
+              style={{ ...styles.primaryBtn, marginTop: 16, padding: '11px 24px', borderRadius: 'var(--radius-lg)', fontSize: 14 }}
             >
               Claim Founding Supporter ☕
             </button>
@@ -728,7 +728,7 @@ const styles = {
   hero: {
     background: C.panel,
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 20,
+    borderRadius: 'var(--radius-2xl)',
     padding: '28px 26px',
     backdropFilter: 'blur(14px)',
     WebkitBackdropFilter: 'blur(14px)'
@@ -736,7 +736,7 @@ const styles = {
   heroBadge: {
     display: 'inline-block',
     padding: '6px 12px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     background: C.amberSoft,
     border: `1px solid ${C.amberBorder}`,
     color: 'var(--color-warning)',
@@ -760,7 +760,7 @@ const styles = {
     marginTop: 16,
     display: 'inline-block',
     padding: '8px 14px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     background: 'var(--color-success-a12)',
     border: '1px solid var(--color-success-a30)',
     color: '#a7f3d0',
@@ -771,7 +771,7 @@ const styles = {
     marginTop: 16,
     display: 'inline-block',
     padding: '8px 14px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     background: 'var(--color-accent-a12)',
     border: '1px solid var(--color-accent-a40)',
     color: 'var(--color-accent)',
@@ -782,7 +782,7 @@ const styles = {
     marginTop: 16,
     display: 'inline-block',
     padding: '8px 14px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     background: 'var(--color-warning-a12)',
     border: '1px solid var(--color-warning-a30)',
     color: 'var(--color-warning)',
@@ -797,7 +797,7 @@ const styles = {
     alignItems: 'flex-start',
     background: 'linear-gradient(135deg, var(--color-accent-2-a12), var(--color-accent-a06))',
     border: '1px solid rgba(52,211,153,0.34)',
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     padding: '18px 20px',
   },
   xpPerkIcon: {
@@ -808,7 +808,7 @@ const styles = {
     height: 44,
     display: 'grid',
     placeItems: 'center',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     background: 'var(--color-success-a12)',
     border: '1px solid rgba(52,211,153,0.3)',
   },
@@ -819,7 +819,7 @@ const styles = {
     marginTop: 22,
     background: 'linear-gradient(135deg, var(--color-warning-a12), rgba(139,92,246,0.08))',
     border: '1px solid var(--color-warning-a30)',
-    borderRadius: 20,
+    borderRadius: 'var(--radius-2xl)',
     padding: '22px 24px',
     backdropFilter: 'blur(14px)',
     WebkitBackdropFilter: 'blur(14px)'
@@ -834,7 +834,7 @@ const styles = {
   eliteBadge: {
     display: 'inline-block',
     padding: '5px 12px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     background: 'var(--color-warning-a20)',
     border: `1px solid ${C.amberBorder}`,
     color: 'var(--color-warning)',
@@ -870,7 +870,7 @@ const styles = {
     gap: 10,
     background: 'var(--color-white-a04)',
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     padding: '11px 14px'
   },
   whyGrid: {
@@ -882,7 +882,7 @@ const styles = {
   whyCard: {
     background: C.panel,
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 14,
+    borderRadius: 'var(--radius-lg)',
     padding: 16
   },
   sectionTitleRow: {
@@ -903,14 +903,14 @@ const styles = {
     display: 'inline-flex',
     background: 'var(--color-white-a04)',
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     padding: 4
   },
   currencyBtn: {
     background: 'transparent',
     border: 'none',
     padding: '6px 14px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     color: C.textDim,
     fontWeight: 600,
     fontSize: 13,
@@ -931,7 +931,7 @@ const styles = {
     minWidth: 90,
     background: C.panel,
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     padding: '10px 14px',
     color: C.textDim,
     fontWeight: 600,
@@ -953,7 +953,7 @@ const styles = {
     cursor: 'pointer',
     background: C.panel,
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     padding: 18,
     textAlign: 'center',
     color: C.text,
@@ -987,7 +987,7 @@ const styles = {
     color: '#1a1206',
     background: 'linear-gradient(135deg, #f5c451, #e0a92e)',
     padding: '2px 8px',
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
   },
   tierEliteHint: {
     marginTop: 8,
@@ -1011,7 +1011,7 @@ const styles = {
     alignItems: 'center',
     background: 'var(--color-white-a04)',
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     padding: '6px 10px'
   },
   currencyPrefix: { color: C.textDim, marginRight: 6, fontWeight: 600 },
@@ -1034,7 +1034,7 @@ const styles = {
   payCard: {
     background: C.panel,
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 14,
+    borderRadius: 'var(--radius-lg)',
     padding: 16,
     textAlign: 'center',
     color: C.text,
@@ -1045,14 +1045,14 @@ const styles = {
     marginTop: 14,
     background: C.panel,
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 14,
+    borderRadius: 'var(--radius-lg)',
     padding: 16
   },
   confirmBox: {
     marginTop: 18,
     background: 'var(--color-warning-a12)',
     border: `1px solid ${C.amberBorder}`,
-    borderRadius: 14,
+    borderRadius: 'var(--radius-lg)',
     padding: 16
   },
   confirmRow: {
@@ -1065,7 +1065,7 @@ const styles = {
     flex: '1 1 220px',
     background: 'var(--color-white-a04)',
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     padding: '10px 12px',
     color: C.text,
     fontSize: 14,
@@ -1076,7 +1076,7 @@ const styles = {
     color: '#1f2937',
     border: 'none',
     padding: '10px 18px',
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     fontWeight: 700,
     cursor: 'pointer',
     fontFamily: 'Poppins, sans-serif'
@@ -1086,7 +1086,7 @@ const styles = {
     color: C.textDim,
     border: `1px solid ${C.panelBorder}`,
     padding: '10px 16px',
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     cursor: 'pointer',
     fontFamily: 'Poppins, sans-serif'
   },
@@ -1094,7 +1094,7 @@ const styles = {
     marginTop: 18,
     background: 'var(--color-success-a12)',
     border: '1px solid var(--color-success-a30)',
-    borderRadius: 14,
+    borderRadius: 'var(--radius-lg)',
     padding: 18,
     textAlign: 'center'
   },
@@ -1102,7 +1102,7 @@ const styles = {
     textAlign: 'center',
     background: 'linear-gradient(135deg, var(--color-warning-a12), rgba(139,92,246,0.07))',
     border: '1px solid var(--color-warning-a30)',
-    borderRadius: 18,
+    borderRadius: 'var(--radius-xl)',
     padding: '30px 24px',
     backdropFilter: 'blur(14px)',
     WebkitBackdropFilter: 'blur(14px)'
@@ -1110,7 +1110,7 @@ const styles = {
   foundingBanner: {
     marginBottom: 14,
     padding: '10px 16px',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     background: 'var(--color-warning-a12)',
     border: '1px solid var(--color-warning-a30)',
     color: C.textDim,
@@ -1127,7 +1127,7 @@ const styles = {
     alignItems: 'center',
     background: C.panel,
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 999,
+    borderRadius: 'var(--radius-pill)',
     padding: '6px 12px'
   }
 };

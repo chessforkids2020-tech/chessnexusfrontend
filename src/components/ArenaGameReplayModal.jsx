@@ -158,7 +158,7 @@ const S = {
   modal: {
     width: '100%', maxWidth: 820, maxHeight: '90vh', overflowY: 'auto',
     background: 'rgba(17,20,32,0.98)', border: '1px solid var(--color-accent-a30)',
-    borderRadius: 16, padding: 18, boxShadow: '0 20px 60px var(--color-black-a65)',
+    borderRadius: 'var(--radius-xl)', padding: 18, boxShadow: '0 20px 60px var(--color-black-a65)',
   },
   head: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   closeBtn: { background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: 18, cursor: 'pointer' },
@@ -168,7 +168,7 @@ const S = {
   movesCol: {
     flex: '1 1 200px', minWidth: 180, alignSelf: 'stretch',
     display: 'flex', flexDirection: 'column',
-    background: 'var(--color-black-a20)', border: '1px solid var(--color-white-a07)', borderRadius: 10,
+    background: 'var(--color-black-a20)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-md)',
     overflow: 'hidden',
   },
   movesTitle: {
@@ -178,11 +178,11 @@ const S = {
   movesScroll: { overflowY: 'auto', padding: 6, maxHeight: 420 },
   moveRow: { display: 'grid', gridTemplateColumns: '28px 1fr 1fr', alignItems: 'center', gap: 4 },
   moveNum: { fontSize: 12, color: 'var(--color-text-faint)', textAlign: 'right', paddingRight: 4 },
-  moveCell: { fontSize: 13, color: 'var(--color-text-muted)', padding: '3px 7px', borderRadius: 6, cursor: 'pointer' },
+  moveCell: { fontSize: 13, color: 'var(--color-text-muted)', padding: '3px 7px', borderRadius: 'var(--radius-sm)', cursor: 'pointer' },
   moveCellActive: { background: 'var(--color-accent-a30)', color: 'var(--color-accent)', fontWeight: 700 },
   controls: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 },
   navBtn: {
     background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)',
-    color: 'var(--color-text)', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 14,
+    color: 'var(--color-text)', borderRadius: 'var(--radius-md)', padding: '6px 12px', cursor: 'pointer', fontSize: 14,
   },
 };

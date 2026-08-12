@@ -219,7 +219,7 @@ export default function ArcadeLobby() {
             background: "rgba(20, 25, 35, 0.6)",
             backdropFilter: "blur(20px)",
             border: "1px solid var(--color-white-a04)",
-            borderRadius: 40,
+            borderRadius: 'var(--radius-2xl)',
             padding: "32px 28px",
             marginBottom: 28,
             textAlign: "center",
@@ -282,7 +282,7 @@ export default function ArcadeLobby() {
                   border: hoveredOption === "quick" 
                     ? `1px solid ${meta.color}40`
                     : "1px solid var(--color-white-a04)",
-                  borderRadius: 32,
+                  borderRadius: 'var(--radius-2xl)',
                   position: "relative",
                   overflow: "hidden",
                   transition: "all 0.2s ease",
@@ -339,7 +339,7 @@ export default function ArcadeLobby() {
                         gameType === "ttt" ? "#fb7185" : "var(--color-accent-2)"
                       } 100%)`,
                       border: "none",
-                      borderRadius: 40,
+                      borderRadius: 'var(--radius-2xl)',
                       padding: "14px 28px",
                       fontSize: 15,
                       fontWeight: 600,
@@ -383,7 +383,7 @@ export default function ArcadeLobby() {
                   border: hoveredOption === "create" 
                     ? `1px solid ${meta.color}40`
                     : "1px solid var(--color-white-a04)",
-                  borderRadius: 32,
+                  borderRadius: 'var(--radius-2xl)',
                   padding: "28px 32px",
                   display: "flex",
                   alignItems: "center",
@@ -444,7 +444,7 @@ export default function ArcadeLobby() {
                       border: hoveredOption === "create" 
                         ? `1px solid ${meta.color}60`
                         : "1px solid var(--color-white-a10)",
-                      borderRadius: 40,
+                      borderRadius: 'var(--radius-2xl)',
                       padding: "14px 28px",
                       fontSize: 15,
                       fontWeight: 600,
@@ -487,7 +487,7 @@ export default function ArcadeLobby() {
                   border: hoveredOption === "join" 
                     ? `1px solid ${meta.color}40`
                     : "1px solid var(--color-white-a04)",
-                  borderRadius: 32,
+                  borderRadius: 'var(--radius-2xl)',
                   position: "relative",
                   overflow: "hidden",
                   transition: "all 0.2s ease",
@@ -544,7 +544,7 @@ export default function ArcadeLobby() {
                       border: hoveredOption === "join" 
                         ? `1px solid ${meta.color}60`
                         : "1px solid var(--color-white-a10)",
-                      borderRadius: 40,
+                      borderRadius: 'var(--radius-2xl)',
                       padding: "14px 28px",
                       fontSize: 15,
                       fontWeight: 600,
@@ -607,7 +607,7 @@ export default function ArcadeLobby() {
               background: "rgba(20, 25, 35, 0.6)",
               backdropFilter: "blur(20px)",
               border: "1px solid var(--color-white-a04)",
-              borderRadius: 40,
+              borderRadius: 'var(--radius-2xl)',
               padding: 40,
               textAlign: "center"
             }}>
@@ -642,7 +642,7 @@ export default function ArcadeLobby() {
                   boxSizing: "border-box",
                   background: "var(--color-black-a35)",
                   border: `1px solid ${joinCode.length === 6 ? meta.color : "var(--color-white-a10)"}`,
-                  borderRadius: 24,
+                  borderRadius: 'var(--radius-2xl)',
                   color: "var(--color-text)",
                   fontSize: 32,
                   fontWeight: 700,
@@ -660,7 +660,7 @@ export default function ArcadeLobby() {
                   style={{
                     background: "var(--color-white-a04)",
                     border: "1px solid var(--color-white-a10)",
-                    borderRadius: 40,
+                    borderRadius: 'var(--radius-2xl)',
                     padding: "16px 24px",
                     fontSize: 15,
                     fontWeight: 600,
@@ -690,7 +690,7 @@ export default function ArcadeLobby() {
                         } 100%)`
                       : "var(--color-white-a04)",
                     border: "none",
-                    borderRadius: 40,
+                    borderRadius: 'var(--radius-2xl)',
                     padding: "16px 24px",
                     fontSize: 15,
                     fontWeight: 600,
@@ -722,7 +722,7 @@ export default function ArcadeLobby() {
               background: "rgba(20, 25, 35, 0.6)",
               backdropFilter: "blur(20px)",
               border: "1px solid var(--color-white-a04)",
-              borderRadius: 40,
+              borderRadius: 'var(--radius-2xl)',
               padding: 40,
               position: "relative",
               overflow: "hidden"
@@ -760,7 +760,7 @@ export default function ArcadeLobby() {
                 <div style={{
                   background: `${meta.color}08`,
                   border: `1px solid ${meta.color}20`,
-                  borderRadius: 24,
+                  borderRadius: 'var(--radius-2xl)',
                   padding: "20px",
                   marginBottom: 32,
                   textAlign: "center"
@@ -789,7 +789,7 @@ export default function ArcadeLobby() {
                     style={{
                       background: copied ? "var(--color-success-a12)" : `${meta.color}15`,
                       border: copied ? "1px solid var(--color-success-a30)" : `1px solid ${meta.color}30`,
-                      borderRadius: 40,
+                      borderRadius: 'var(--radius-2xl)',
                       padding: "12px 24px",
                       color: copied ? "var(--color-success)" : meta.color,
                       fontSize: 14,
@@ -852,7 +852,7 @@ export default function ArcadeLobby() {
                             ? "1px solid var(--color-success-a30)"
                             : "1px solid var(--color-success-a12)"
                           : "1px solid var(--color-white-a04)",
-                        borderRadius: 24,
+                        borderRadius: 'var(--radius-2xl)',
                         padding: "24px 16px",
                         textAlign: "center",
                         position: "relative",
@@ -895,7 +895,7 @@ export default function ArcadeLobby() {
                           top: 12,
                           right: 12,
                           background: "var(--color-success)",
-                          borderRadius: 20,
+                          borderRadius: 'var(--radius-2xl)',
                           padding: "4px 8px",
                           fontSize: 10,
                           fontWeight: 600,
@@ -931,7 +931,7 @@ export default function ArcadeLobby() {
                       style={{
                         background: "linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)",
                         border: "none",
-                        borderRadius: 40,
+                        borderRadius: 'var(--radius-2xl)',
                         padding: "18px 32px",
                         fontSize: 16,
                         fontWeight: 600,

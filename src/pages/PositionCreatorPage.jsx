@@ -36,7 +36,7 @@ export default function PositionCreatorPage() {
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>🔒</div>
           <div style={{ color: 'var(--color-danger)', fontSize: 16, marginBottom: 12 }}>{loadError}</div>
-          <button onClick={() => navigate(-1)} style={{ padding: '8px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 8, color: 'var(--color-text)', cursor: 'pointer' }}>← Back</button>
+          <button onClick={() => navigate(-1)} style={{ padding: '8px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer' }}>← Back</button>
         </div>
       </div>
     );
@@ -46,7 +46,7 @@ export default function PositionCreatorPage() {
     <div style={{ minHeight: '100vh', background: 'var(--color-bg)', padding: '16px 20px' }}>
       <button
         onClick={() => navigate(-1)}
-        style={{ marginBottom: 14, padding: '7px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 8, color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+        style={{ marginBottom: 14, padding: '7px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
       >
         ← Back
       </button>

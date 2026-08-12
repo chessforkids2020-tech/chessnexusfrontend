@@ -21,7 +21,7 @@ function CrownBadge({ tier }) {
       title={c.label}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: '3px',
-        padding: '2px 6px', borderRadius: '999px',
+        padding: '2px 6px', borderRadius: 'var(--radius-pill)',
         background: c.bg, border: `1px solid ${c.border}`,
         boxShadow: c.glow, color: c.color,
         fontSize: '11px', fontWeight: '700', lineHeight: 1,
@@ -255,7 +255,7 @@ export default function ArenaTournamentLobby() {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, Arial, sans-serif', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a12) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
-        <div style={{ color: 'var(--color-text)', fontSize: '24px', fontWeight: '600', position: 'relative', zIndex: 1, textAlign: 'center', background: 'var(--color-surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 20px 40px var(--color-black-a50)' }}>
+        <div style={{ color: 'var(--color-text)', fontSize: '24px', fontWeight: '600', position: 'relative', zIndex: 1, textAlign: 'center', background: 'var(--color-surface)', padding: '40px', borderRadius: 'var(--radius-2xl)', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 20px 40px var(--color-black-a50)' }}>
           <div style={{ fontSize: '48px', marginBottom: '20px', color: 'var(--color-accent)' }}>⏳</div>
           Loading tournament...
         </div>
@@ -267,12 +267,12 @@ export default function ArenaTournamentLobby() {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, Arial, sans-serif', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a12) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
-        <div style={{ background: 'var(--color-danger-a12)', borderRadius: '20px', padding: '40px', maxWidth: '500px', textAlign: 'center', border: '1px solid var(--color-danger-a20)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', position: 'relative', zIndex: 1, boxShadow: '0 20px 40px var(--color-black-a50)' }}>
+        <div style={{ background: 'var(--color-danger-a12)', borderRadius: 'var(--radius-2xl)', padding: '40px', maxWidth: '500px', textAlign: 'center', border: '1px solid var(--color-danger-a20)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', position: 'relative', zIndex: 1, boxShadow: '0 20px 40px var(--color-black-a50)' }}>
           <h2 style={{ color: 'var(--color-danger)', marginBottom: '20px', fontSize: '28px', fontWeight: '700' }}>Error</h2>
           <p style={{ color: 'var(--color-danger)', marginBottom: '30px', fontSize: '16px' }}>{error}</p>
           <button
             onClick={() => navigate('/arenatournament')}
-            style={{ padding: '14px 28px', background: 'var(--color-accent-a15)', color: 'var(--color-accent)', border: '1px solid var(--color-accent-a30)', borderRadius: '12px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
+            style={{ padding: '14px 28px', background: 'var(--color-accent-a15)', color: 'var(--color-accent)', border: '1px solid var(--color-accent-a30)', borderRadius: 'var(--radius-lg)', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
             onMouseEnter={(e) => { e.target.style.background = 'var(--color-accent-a20)'; e.target.style.transform = 'translateY(-2px)'; }}
             onMouseLeave={(e) => { e.target.style.background = 'var(--color-accent-a15)'; e.target.style.transform = 'translateY(0)'; }}
           >
@@ -293,8 +293,8 @@ export default function ArenaTournamentLobby() {
           onClick={(e) => { if (e.target === e.currentTarget) { setShowTeamPicker(false); setSelectedTeamId(null); } }}
           style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'var(--color-black-a65)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
         >
-          <div style={{ background: 'linear-gradient(145deg, #111827, #0d1117)', border: '1px solid rgba(168,85,247,0.4)', borderRadius: '20px', padding: '28px', width: '100%', maxWidth: '520px', boxShadow: '0 0 60px rgba(168,85,247,0.25), 0 24px 64px var(--color-black-a65)', position: 'relative' }}>
-            <button onClick={() => { setShowTeamPicker(false); setSelectedTeamId(null); }} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(107,114,128,0.2)', border: '1px solid rgba(107,114,128,0.3)', color: 'var(--color-text-muted)', borderRadius: '8px', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>✕</button>
+          <div style={{ background: 'linear-gradient(145deg, #111827, #0d1117)', border: '1px solid rgba(168,85,247,0.4)', borderRadius: 'var(--radius-2xl)', padding: '28px', width: '100%', maxWidth: '520px', boxShadow: '0 0 60px rgba(168,85,247,0.25), 0 24px 64px var(--color-black-a65)', position: 'relative' }}>
+            <button onClick={() => { setShowTeamPicker(false); setSelectedTeamId(null); }} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(107,114,128,0.2)', border: '1px solid rgba(107,114,128,0.3)', color: 'var(--color-text-muted)', borderRadius: 'var(--radius-md)', width: '32px', height: '32px', fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>✕</button>
 
             <div style={{ marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontSize: '22px' }}>⚔️</span>
@@ -315,14 +315,14 @@ export default function ArenaTournamentLobby() {
                   <div
                     key={team.teamId}
                     onClick={() => !isFull && setSelectedTeamId(team.teamId)}
-                    style={{ padding: '14px', borderRadius: '14px', border: isSelected ? `2px solid ${team.color}` : `1px solid ${team.color}44`, background: isSelected ? `${team.color}1f` : `${team.color}0a`, cursor: isFull ? 'not-allowed' : 'pointer', opacity: isFull ? 0.4 : 1, transition: 'all 0.18s', boxShadow: isSelected ? `0 0 20px ${team.color}44` : 'none', userSelect: 'none' }}
+                    style={{ padding: '14px', borderRadius: 'var(--radius-lg)', border: isSelected ? `2px solid ${team.color}` : `1px solid ${team.color}44`, background: isSelected ? `${team.color}1f` : `${team.color}0a`, cursor: isFull ? 'not-allowed' : 'pointer', opacity: isFull ? 0.4 : 1, transition: 'all 0.18s', boxShadow: isSelected ? `0 0 20px ${team.color}44` : 'none', userSelect: 'none' }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <div style={{ width: '13px', height: '13px', borderRadius: '50%', background: team.color, boxShadow: `0 0 8px ${team.color}`, flexShrink: 0 }} />
+                      <div style={{ width: '13px', height: '13px', borderRadius: 'var(--radius-circle)', background: team.color, boxShadow: `0 0 8px ${team.color}`, flexShrink: 0 }} />
                       <span style={{ fontWeight: '800', color: team.color, fontSize: '14px', lineHeight: 1.2 }}>{team.teamName}</span>
                     </div>
-                    <div style={{ height: '4px', borderRadius: '99px', background: 'var(--color-white-a07)', marginBottom: '6px', overflow: 'hidden' }}>
-                      <div style={{ height: '100%', width: `${Math.min((count / 30) * 100, 100)}%`, background: isFull ? 'var(--color-danger)' : team.color, borderRadius: '99px', transition: 'width 0.3s' }} />
+                    <div style={{ height: '4px', borderRadius: 'var(--radius-pill)', background: 'var(--color-white-a07)', marginBottom: '6px', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${Math.min((count / 30) * 100, 100)}%`, background: isFull ? 'var(--color-danger)' : team.color, borderRadius: 'var(--radius-pill)', transition: 'width 0.3s' }} />
                     </div>
                     <div style={{ fontSize: '12px', color: isFull ? 'var(--color-danger)' : 'var(--color-text-muted)', fontWeight: isFull ? '700' : '400' }}>
                       {isFull ? '🔒 Full' : `${count} / 30 players`}
@@ -335,15 +335,15 @@ export default function ArenaTournamentLobby() {
             {selectedTeamId && (() => {
               const t = tournament.teams.find(t => t.teamId === selectedTeamId);
               return t ? (
-                <div style={{ marginBottom: '16px', padding: '10px 14px', borderRadius: '10px', background: `${t.color}15`, border: `1px solid ${t.color}44`, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: t.color }} />
+                <div style={{ marginBottom: '16px', padding: '10px 14px', borderRadius: 'var(--radius-md)', background: `${t.color}15`, border: `1px solid ${t.color}44`, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ width: '10px', height: '10px', borderRadius: 'var(--radius-circle)', background: t.color }} />
                   <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>Joining as <strong style={{ color: t.color }}>{t.teamName}</strong></span>
                 </div>
               ) : null;
             })()}
 
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => { setShowTeamPicker(false); setSelectedTeamId(null); }} style={{ padding: '12px 22px', background: 'rgba(107,114,128,0.15)', color: 'var(--color-text-muted)', border: '1px solid rgba(107,114,128,0.25)', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
+              <button onClick={() => { setShowTeamPicker(false); setSelectedTeamId(null); }} style={{ padding: '12px 22px', background: 'rgba(107,114,128,0.15)', color: 'var(--color-text-muted)', border: '1px solid rgba(107,114,128,0.25)', borderRadius: 'var(--radius-md)', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
                 Cancel
               </button>
               <button
@@ -373,7 +373,7 @@ export default function ArenaTournamentLobby() {
                   }
                 }}
                 disabled={!selectedTeamId || joining}
-                style={{ flex: 1, padding: '12px 22px', background: (!selectedTeamId || joining) ? 'rgba(107,114,128,0.2)' : 'linear-gradient(135deg, rgba(168,85,247,0.4), rgba(139,92,246,0.5))', color: (!selectedTeamId || joining) ? 'var(--color-text-faint)' : 'var(--color-text)', border: (!selectedTeamId || joining) ? '1px solid rgba(107,114,128,0.2)' : '1px solid rgba(168,85,247,0.5)', borderRadius: '10px', fontSize: '15px', fontWeight: '800', cursor: (!selectedTeamId || joining) ? 'not-allowed' : 'pointer', boxShadow: (selectedTeamId && !joining) ? '0 0 20px rgba(168,85,247,0.35)' : 'none', transition: 'all 0.2s' }}
+                style={{ flex: 1, padding: '12px 22px', background: (!selectedTeamId || joining) ? 'rgba(107,114,128,0.2)' : 'linear-gradient(135deg, rgba(168,85,247,0.4), rgba(139,92,246,0.5))', color: (!selectedTeamId || joining) ? 'var(--color-text-faint)' : 'var(--color-text)', border: (!selectedTeamId || joining) ? '1px solid rgba(107,114,128,0.2)' : '1px solid rgba(168,85,247,0.5)', borderRadius: 'var(--radius-md)', fontSize: '15px', fontWeight: '800', cursor: (!selectedTeamId || joining) ? 'not-allowed' : 'pointer', boxShadow: (selectedTeamId && !joining) ? '0 0 20px rgba(168,85,247,0.35)' : 'none', transition: 'all 0.2s' }}
               >
                 {joining ? '⏳ Joining...' : selectedTeamId ? `⚔️ Join ${tournament.teams.find(t => t.teamId === selectedTeamId)?.teamName}` : 'Select a Team First'}
               </button>
@@ -384,19 +384,19 @@ export default function ArenaTournamentLobby() {
 
       {/* Toasts */}
       {earlyBirdToast && (
-        <div style={{ position: 'fixed', top: '24px', left: '50%', transform: 'translateX(-50%)', zIndex: 9999, background: 'linear-gradient(135deg, var(--color-warning), #d97706)', color: 'var(--color-bg)', fontWeight: '700', fontSize: '16px', padding: '14px 28px', borderRadius: '16px', boxShadow: '0 8px 32px rgba(245, 158, 11, 0.5)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'fadeInDown 0.3s ease' }}>
+        <div style={{ position: 'fixed', top: '24px', left: '50%', transform: 'translateX(-50%)', zIndex: 9999, background: 'linear-gradient(135deg, var(--color-warning), #d97706)', color: 'var(--color-bg)', fontWeight: '700', fontSize: '16px', padding: '14px 28px', borderRadius: 'var(--radius-xl)', boxShadow: '0 8px 32px rgba(245, 158, 11, 0.5)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'fadeInDown 0.3s ease' }}>
           <span style={{ fontSize: '22px' }}>🐦</span>
           Early Bird Bonus! <span style={{ color: 'var(--color-surface)' }}>+3 points</span> for joining early!
         </div>
       )}
       {carryBonusToast > 0 && (
-        <div style={{ position: 'fixed', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 9998, background: 'linear-gradient(135deg, var(--color-accent-2), #4f46e5)', color: 'var(--color-text)', fontWeight: '700', fontSize: '16px', padding: '14px 28px', borderRadius: '16px', boxShadow: '0 8px 32px rgba(124,58,237,0.5)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'fadeInDown 0.3s ease' }}>
+        <div style={{ position: 'fixed', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 9998, background: 'linear-gradient(135deg, var(--color-accent-2), #4f46e5)', color: 'var(--color-text)', fontWeight: '700', fontSize: '16px', padding: '14px 28px', borderRadius: 'var(--radius-xl)', boxShadow: '0 8px 32px rgba(124,58,237,0.5)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'fadeInDown 0.3s ease' }}>
           <span style={{ fontSize: '22px' }}>🎁</span>
           Carry Bonus Applied! <span style={{ color: '#ddd6fe' }}>+{carryBonusToast} pts</span> from previous tournament!
         </div>
       )}
       {carryExpiredToast && (
-        <div style={{ position: 'fixed', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 9998, background: 'linear-gradient(135deg, var(--color-text-faint), #1f2937)', color: 'var(--color-text)', fontWeight: '700', fontSize: '16px', padding: '14px 28px', borderRadius: '16px', boxShadow: '0 8px 32px var(--color-black-a50)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'fadeInDown 0.3s ease', border: '1px solid var(--color-white-a10)' }}>
+        <div style={{ position: 'fixed', top: '80px', left: '50%', transform: 'translateX(-50%)', zIndex: 9998, background: 'linear-gradient(135deg, var(--color-text-faint), #1f2937)', color: 'var(--color-text)', fontWeight: '700', fontSize: '16px', padding: '14px 28px', borderRadius: 'var(--radius-xl)', boxShadow: '0 8px 32px var(--color-black-a50)', display: 'flex', alignItems: 'center', gap: '10px', animation: 'fadeInDown 0.3s ease', border: '1px solid var(--color-white-a10)' }}>
           <span style={{ fontSize: '22px' }}>⚠️</span>
           Your carry bonus has expired!
         </div>
@@ -409,17 +409,17 @@ export default function ArenaTournamentLobby() {
 
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
             {tournament?.tournamentType === 'team_battle' && (
-              <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)' }}>⚔️ Team Battle · {tournament.teamCount} teams</span>
+              <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)' }}>⚔️ Team Battle · {tournament.teamCount} teams</span>
             )}
             {tournament?.tournamentType === 'chess960' && (
-              <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)' }}>🎲 Chess960 — Random Positions</span>
+              <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)' }}>🎲 Chess960 — Random Positions</span>
             )}
             {tournament?.tournamentType === 'bullet_blitz_marathon' && (
-              <span style={{ padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '700', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)' }}>⚡ Bullet Blitz Marathon</span>
+              <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '700', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)' }}>⚡ Bullet Blitz Marathon</span>
             )}
           </div>
 
-          <div style={{ background: 'var(--color-black-a35)', borderRadius: '16px', padding: '20px', marginBottom: '20px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
+          <div style={{ background: 'var(--color-black-a35)', borderRadius: 'var(--radius-xl)', padding: '20px', marginBottom: '20px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
             <div className="at-lobby-stats-grid">
               <div>
                 <div style={{ color: 'var(--color-text-muted)', display: 'block', fontSize: '13px', marginBottom: '6px', fontWeight: '600' }}>Time Control</div>
@@ -455,7 +455,7 @@ export default function ArenaTournamentLobby() {
           </div>
 
           {tournament?.status === 'scheduled' && (
-            <div style={{ background: 'var(--color-warning-a12)', borderRadius: '12px', padding: '20px', marginBottom: '20px', textAlign: 'center', border: '1px solid var(--color-warning-a20)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
+            <div style={{ background: 'var(--color-warning-a12)', borderRadius: 'var(--radius-lg)', padding: '20px', marginBottom: '20px', textAlign: 'center', border: '1px solid var(--color-warning-a20)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
               <div style={{ color: 'var(--color-warning)', display: 'block', fontSize: '13px', marginBottom: '8px', fontWeight: '600' }}>Tournament starts in</div>
               <div style={{ color: 'var(--color-warning)', fontSize: '28px', fontWeight: '800', marginBottom: '8px' }}>{timeUntilStart}</div>
               <div style={{ color: 'var(--color-warning)', fontSize: '14px', fontWeight: '500' }}>{formatDate(tournament?.scheduledStartTime)}</div>
@@ -463,7 +463,7 @@ export default function ArenaTournamentLobby() {
           )}
 
           {tournament?.status === 'active' && timeUntilEnd && (
-            <div style={{ background: 'var(--color-success-a12)', borderRadius: '12px', padding: '20px', marginBottom: '20px', textAlign: 'center', border: '1px solid var(--color-success-a20)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
+            <div style={{ background: 'var(--color-success-a12)', borderRadius: 'var(--radius-lg)', padding: '20px', marginBottom: '20px', textAlign: 'center', border: '1px solid var(--color-success-a20)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
               <div style={{ color: 'var(--color-success)', display: 'block', fontSize: '13px', marginBottom: '8px', fontWeight: '600' }}>Tournament ends in</div>
               <div style={{ color: 'var(--color-success)', fontSize: '28px', fontWeight: '800' }}>{timeUntilEnd}</div>
             </div>
@@ -471,7 +471,7 @@ export default function ArenaTournamentLobby() {
 
           {isCreator && !tournament?.isAutoScheduled && (tournament?.status === 'scheduled' || tournament?.status === 'lobby' || (tournament?.status === 'active' && !tournament?.actualStartTime)) && (
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ padding: '16px', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a20)', borderRadius: '12px', marginBottom: '16px', textAlign: 'center', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
+              <div style={{ padding: '16px', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a20)', borderRadius: 'var(--radius-lg)', marginBottom: '16px', textAlign: 'center', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
                 <strong style={{ color: 'var(--color-warning)', fontSize: '15px' }}>
                   {tournament?.status === 'lobby'
                     ? 'Tournament is ready to start! Click to begin the tournament.'
@@ -485,7 +485,7 @@ export default function ArenaTournamentLobby() {
               <button
                 onClick={handleStartTournament}
                 disabled={starting}
-                style={{ width: '100%', padding: '18px', background: starting ? 'rgba(107, 114, 128, 0.3)' : 'var(--color-accent-a15)', color: starting ? 'var(--color-text-muted)' : 'var(--color-accent)', border: starting ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid var(--color-accent-a30)', borderRadius: '12px', fontSize: '18px', fontWeight: '700', cursor: starting ? 'not-allowed' : 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', position: 'relative', overflow: 'hidden' }}
+                style={{ width: '100%', padding: '18px', background: starting ? 'rgba(107, 114, 128, 0.3)' : 'var(--color-accent-a15)', color: starting ? 'var(--color-text-muted)' : 'var(--color-accent)', border: starting ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid var(--color-accent-a30)', borderRadius: 'var(--radius-lg)', fontSize: '18px', fontWeight: '700', cursor: starting ? 'not-allowed' : 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', position: 'relative', overflow: 'hidden' }}
                 onMouseEnter={(e) => { if (!starting) { e.target.style.background = 'var(--color-accent-a20)'; e.target.style.transform = 'translateY(-2px)'; } }}
                 onMouseLeave={(e) => { if (!starting) { e.target.style.background = 'var(--color-accent-a15)'; e.target.style.transform = 'translateY(0)'; } }}
               >
@@ -496,13 +496,13 @@ export default function ArenaTournamentLobby() {
 
           {tournament?.status === 'active' && myParticipant && (
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ padding: '16px', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a20)', borderRadius: '12px', marginBottom: '12px', textAlign: 'center', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
+              <div style={{ padding: '16px', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a20)', borderRadius: 'var(--radius-lg)', marginBottom: '12px', textAlign: 'center', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
                 <strong style={{ color: 'var(--color-success)', fontSize: '15px' }}>🏆 Tournament is live! Click below to join the action.</strong>
               </div>
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button
                   onClick={() => navigate('/arenatournament')}
-                  style={{ flex: 1, padding: '14px', background: 'var(--color-white-a04)', color: 'var(--color-text)', border: '1px solid var(--color-white-a10)', borderRadius: '12px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
+                  style={{ flex: 1, padding: '14px', background: 'var(--color-white-a04)', color: 'var(--color-text)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-lg)', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
                   onMouseEnter={(e) => { e.target.style.background = 'var(--color-accent-a15)'; e.target.style.borderColor = 'var(--color-accent-a30)'; e.target.style.color = 'var(--color-accent)'; e.target.style.transform = 'translateY(-2px)'; }}
                   onMouseLeave={(e) => { e.target.style.background = 'var(--color-white-a04)'; e.target.style.borderColor = 'var(--color-white-a10)'; e.target.style.color = 'var(--color-text)'; e.target.style.transform = 'translateY(0)'; }}
                 >
@@ -510,7 +510,7 @@ export default function ArenaTournamentLobby() {
                 </button>
                 <button
                   onClick={() => navigate(`/arenatournament/live/${tournamentId}`)}
-                  style={{ flex: 1, padding: '14px', background: 'var(--color-success-a12)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: '12px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
+                  style={{ flex: 1, padding: '14px', background: 'var(--color-success-a12)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-lg)', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
                   onMouseEnter={(e) => { e.target.style.background = 'var(--color-success-a20)'; e.target.style.transform = 'translateY(-2px)'; }}
                   onMouseLeave={(e) => { e.target.style.background = 'var(--color-success-a12)'; e.target.style.transform = 'translateY(0)'; }}
                 >
@@ -522,13 +522,13 @@ export default function ArenaTournamentLobby() {
 
           {!myParticipant && tournament?.status !== 'finished' && (
             <div style={{ marginBottom: '20px' }}>
-              <div style={{ padding: '16px', background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a20)', borderRadius: '12px', marginBottom: '12px', textAlign: 'center', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
+              <div style={{ padding: '16px', background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a20)', borderRadius: 'var(--radius-lg)', marginBottom: '12px', textAlign: 'center', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
                 <strong style={{ color: 'var(--color-accent)', fontSize: '15px' }}>👋 You are viewing this tournament. Join now to participate!</strong>
               </div>
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button
                   onClick={() => navigate('/arenatournament')}
-                  style={{ flex: 1, padding: '14px', background: 'var(--color-white-a04)', color: 'var(--color-text)', border: '1px solid var(--color-white-a10)', borderRadius: '12px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
+                  style={{ flex: 1, padding: '14px', background: 'var(--color-white-a04)', color: 'var(--color-text)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-lg)', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
                   onMouseEnter={(e) => { e.target.style.background = 'var(--color-accent-a15)'; e.target.style.borderColor = 'var(--color-accent-a30)'; e.target.style.color = 'var(--color-accent)'; e.target.style.transform = 'translateY(-2px)'; }}
                   onMouseLeave={(e) => { e.target.style.background = 'var(--color-white-a04)'; e.target.style.borderColor = 'var(--color-white-a10)'; e.target.style.color = 'var(--color-text)'; e.target.style.transform = 'translateY(0)'; }}
                 >
@@ -537,7 +537,7 @@ export default function ArenaTournamentLobby() {
                 <button
                   onClick={handleJoinTournament}
                   disabled={joining}
-                  style={{ flex: 1, padding: '14px', background: joining ? 'rgba(107,114,128,0.3)' : 'var(--color-accent-a15)', color: joining ? 'var(--color-text-muted)' : 'var(--color-accent)', border: joining ? '1px solid rgba(107,114,128,0.2)' : '1px solid var(--color-accent-a30)', borderRadius: '12px', fontSize: '15px', fontWeight: '600', cursor: joining ? 'not-allowed' : 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
+                  style={{ flex: 1, padding: '14px', background: joining ? 'rgba(107,114,128,0.3)' : 'var(--color-accent-a15)', color: joining ? 'var(--color-text-muted)' : 'var(--color-accent)', border: joining ? '1px solid rgba(107,114,128,0.2)' : '1px solid var(--color-accent-a30)', borderRadius: 'var(--radius-lg)', fontSize: '15px', fontWeight: '600', cursor: joining ? 'not-allowed' : 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
                   onMouseEnter={(e) => { if (!joining) { e.target.style.background = 'var(--color-accent-a20)'; e.target.style.transform = 'translateY(-2px)'; } }}
                   onMouseLeave={(e) => { if (!joining) { e.target.style.background = 'var(--color-accent-a15)'; e.target.style.transform = 'translateY(0)'; } }}
                 >
@@ -557,7 +557,7 @@ export default function ArenaTournamentLobby() {
                     position: 'relative',
                     background: `${team.color}0e`,
                     border: `1px solid ${team.color}40`,
-                    borderRadius: '14px',
+                    borderRadius: 'var(--radius-lg)',
                     padding: '16px 18px',
                     overflow: 'hidden',
                     boxShadow: isMyTeam ? `0 0 14px ${team.color}33` : 'none'
@@ -565,9 +565,9 @@ export default function ArenaTournamentLobby() {
                     {/* top accent bar */}
                     <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: team.color, borderRadius: '14px 14px 0 0', opacity: 0.8 }} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: team.color, boxShadow: `0 0 8px ${team.color}`, flexShrink: 0 }} />
+                      <div style={{ width: '10px', height: '10px', borderRadius: 'var(--radius-circle)', background: team.color, boxShadow: `0 0 8px ${team.color}`, flexShrink: 0 }} />
                       <span style={{ fontSize: '15px', fontWeight: '800', color: team.color, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{team.teamName}</span>
-                      {isMyTeam && <span style={{ fontSize: '10px', fontWeight: '700', color: team.color, background: `${team.color}22`, border: `1px solid ${team.color}55`, borderRadius: '6px', padding: '1px 6px', flexShrink: 0 }}>You</span>}
+                      {isMyTeam && <span style={{ fontSize: '10px', fontWeight: '700', color: team.color, background: `${team.color}22`, border: `1px solid ${team.color}55`, borderRadius: 'var(--radius-sm)', padding: '1px 6px', flexShrink: 0 }}>You</span>}
                     </div>
                     <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-text)', lineHeight: 1, marginBottom: '2px' }}>{count}</div>
                     <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', fontWeight: '500' }}>player{count !== 1 ? 's' : ''}</div>
@@ -578,7 +578,7 @@ export default function ArenaTournamentLobby() {
           )}
 
           {tournament?.description && (
-            <div style={{ padding: '20px', background: 'var(--color-black-a35)', borderRadius: '12px', marginBottom: '20px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
+            <div style={{ padding: '20px', background: 'var(--color-black-a35)', borderRadius: 'var(--radius-lg)', marginBottom: '20px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}>
               <div style={{ color: 'var(--color-text-muted)', display: 'block', marginBottom: '12px', fontSize: '14px', fontWeight: '600' }}>Description</div>
               <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.6', margin: 0, fontStyle: 'italic' }}>"{tournament.description}"</p>
             </div>
@@ -592,7 +592,7 @@ export default function ArenaTournamentLobby() {
             <div style={{ padding: '22px 24px 16px', borderBottom: '1px solid var(--color-white-a07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Players</span>
-                <span style={{ background: 'var(--color-accent-a15)', border: '1px solid var(--color-accent-a30)', color: 'var(--color-accent)', borderRadius: '20px', padding: '2px 12px', fontSize: '14px', fontWeight: '700', WebkitTextFillColor: 'var(--color-accent)' }}>{participants.length}</span>
+                <span style={{ background: 'var(--color-accent-a15)', border: '1px solid var(--color-accent-a30)', color: 'var(--color-accent)', borderRadius: 'var(--radius-2xl)', padding: '2px 12px', fontSize: '14px', fontWeight: '700', WebkitTextFillColor: 'var(--color-accent)' }}>{participants.length}</span>
               </h2>
               {participants.length > 0 && (
                 <span style={{ fontSize: '13px', color: 'var(--color-text-faint)', fontWeight: '500' }}>
@@ -663,7 +663,7 @@ export default function ArenaTournamentLobby() {
                       {/* Rank */}
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {globalIndex < 3 ? (
-                          <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: rankBgs[globalIndex], border: `1px solid ${rankColors[globalIndex]}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '800', color: rankColors[globalIndex], flexShrink: 0 }}>
+                          <div style={{ width: '22px', height: '22px', borderRadius: 'var(--radius-circle)', background: rankBgs[globalIndex], border: `1px solid ${rankColors[globalIndex]}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: '800', color: rankColors[globalIndex], flexShrink: 0 }}>
                             {globalIndex + 1}
                           </div>
                         ) : (
@@ -674,7 +674,7 @@ export default function ArenaTournamentLobby() {
                       {/* Player info */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '7px', minWidth: 0 }}>
                         {/* Online dot */}
-                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0, background: isOnline ? 'var(--color-success)' : 'transparent', border: isOnline ? 'none' : '1px solid #334155', boxShadow: isOnline ? '0 0 6px var(--color-success)' : 'none' }} title={isOnline ? 'Online' : 'Offline'} />
+                        <span style={{ width: '8px', height: '8px', borderRadius: 'var(--radius-circle)', flexShrink: 0, background: isOnline ? 'var(--color-success)' : 'transparent', border: isOnline ? 'none' : '1px solid #334155', boxShadow: isOnline ? '0 0 6px var(--color-success)' : 'none' }} title={isOnline ? 'Online' : 'Offline'} />
                         {/* Crown emoji */}
                         {crown && (
                           <span title={crown.label} style={{ fontSize: '14px', flexShrink: 0, filter: `drop-shadow(0 0 4px ${crown.color})` }}>{crown.emoji}</span>
@@ -722,7 +722,7 @@ export default function ArenaTournamentLobby() {
                         <span style={{ flex: 1, minWidth: 0 }} />
                         {/* You tag */}
                         {isMe && (
-                          <span style={{ fontSize: '11px', color: 'var(--color-accent)', fontWeight: '700', background: 'var(--color-accent-a20)', border: '1px solid var(--color-accent-a30)', padding: '2px 7px', borderRadius: '8px', flexShrink: 0, letterSpacing: '0.02em' }}>you</span>
+                          <span style={{ fontSize: '11px', color: 'var(--color-accent)', fontWeight: '700', background: 'var(--color-accent-a20)', border: '1px solid var(--color-accent-a30)', padding: '2px 7px', borderRadius: 'var(--radius-md)', flexShrink: 0, letterSpacing: '0.02em' }}>you</span>
                         )}
                         {p.earlyBirdBonus && <span title="Early Bird +3 pts" style={{ fontSize: '13px', flexShrink: 0 }}>🐦</span>}
                         {p.carryBonusApplied > 0 && <span title={`Carry Bonus +${p.carryBonusApplied} pts`} style={{ fontSize: '13px', flexShrink: 0 }}>🎁</span>}
@@ -732,8 +732,8 @@ export default function ArenaTournamentLobby() {
                       {tournament?.tournamentType === 'team_battle' && (
                         <div style={{ display: 'flex', justifyContent: 'center' }}>
                           {p.teamColor ? (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 9px', borderRadius: '10px', background: `${p.teamColor}18`, border: `1px solid ${p.teamColor}44`, fontSize: '12px', fontWeight: '700', color: p.teamColor, whiteSpace: 'nowrap' }}>
-                              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: p.teamColor, flexShrink: 0 }} />
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 9px', borderRadius: 'var(--radius-md)', background: `${p.teamColor}18`, border: `1px solid ${p.teamColor}44`, fontSize: '12px', fontWeight: '700', color: p.teamColor, whiteSpace: 'nowrap' }}>
+                              <span style={{ width: '6px', height: '6px', borderRadius: 'var(--radius-circle)', background: p.teamColor, flexShrink: 0 }} />
                               {p.teamName}
                             </span>
                           ) : <span style={{ fontSize: '13px', color: '#334155' }}>—</span>}
@@ -753,19 +753,19 @@ export default function ArenaTournamentLobby() {
                       <button
                         onClick={() => setParticipantPage(p => Math.max(0, p - 1))}
                         disabled={participantPage === 0}
-                        style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', color: participantPage === 0 ? 'var(--color-surface-2)' : 'var(--color-text-muted)', border: '1px solid transparent', borderRadius: '8px', cursor: participantPage === 0 ? 'default' : 'pointer', fontWeight: '700', fontSize: '18px', lineHeight: 1 }}
+                        style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', color: participantPage === 0 ? 'var(--color-surface-2)' : 'var(--color-text-muted)', border: '1px solid transparent', borderRadius: 'var(--radius-md)', cursor: participantPage === 0 ? 'default' : 'pointer', fontWeight: '700', fontSize: '18px', lineHeight: 1 }}
                       >‹</button>
                       {pages.map(pg => (
                         <button
                           key={pg}
                           onClick={() => setParticipantPage(pg)}
-                          style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: pg === participantPage ? 'var(--color-accent-a20)' : 'transparent', color: pg === participantPage ? 'var(--color-accent)' : 'var(--color-text-faint)', border: pg === participantPage ? '1px solid var(--color-accent-a40)' : '1px solid transparent', borderRadius: '8px', cursor: 'pointer', fontWeight: pg === participantPage ? '800' : '500', fontSize: '14px' }}
+                          style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: pg === participantPage ? 'var(--color-accent-a20)' : 'transparent', color: pg === participantPage ? 'var(--color-accent)' : 'var(--color-text-faint)', border: pg === participantPage ? '1px solid var(--color-accent-a40)' : '1px solid transparent', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: pg === participantPage ? '800' : '500', fontSize: '14px' }}
                         >{pg + 1}</button>
                       ))}
                       <button
                         onClick={() => setParticipantPage(p => Math.min(totalPages - 1, p + 1))}
                         disabled={participantPage === totalPages - 1}
-                        style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', color: participantPage === totalPages - 1 ? 'var(--color-surface-2)' : 'var(--color-text-muted)', border: '1px solid transparent', borderRadius: '8px', cursor: participantPage === totalPages - 1 ? 'default' : 'pointer', fontWeight: '700', fontSize: '18px', lineHeight: 1 }}
+                        style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', color: participantPage === totalPages - 1 ? 'var(--color-surface-2)' : 'var(--color-text-muted)', border: '1px solid transparent', borderRadius: 'var(--radius-md)', cursor: participantPage === totalPages - 1 ? 'default' : 'pointer', fontWeight: '700', fontSize: '18px', lineHeight: 1 }}
                       >›</button>
                     </div>
                   );
@@ -787,7 +787,7 @@ export default function ArenaTournamentLobby() {
         <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
           <button
             onClick={() => navigate('/arenatournament')}
-            style={{ flex: 1, padding: '16px', background: 'var(--color-white-a04)', color: 'var(--color-text)', border: '1px solid var(--color-white-a10)', borderRadius: '12px', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
+            style={{ flex: 1, padding: '16px', background: 'var(--color-white-a04)', color: 'var(--color-text)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-lg)', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
             onMouseEnter={(e) => { e.target.style.background = 'var(--color-accent-a15)'; e.target.style.borderColor = 'var(--color-accent-a30)'; e.target.style.color = 'var(--color-accent)'; e.target.style.transform = 'translateY(-2px)'; }}
             onMouseLeave={(e) => { e.target.style.background = 'var(--color-white-a04)'; e.target.style.borderColor = 'var(--color-white-a10)'; e.target.style.color = 'var(--color-text)'; e.target.style.transform = 'translateY(0)'; }}
           >

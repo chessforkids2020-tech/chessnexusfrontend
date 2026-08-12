@@ -190,7 +190,7 @@ export default function BingoChoose() {
             background: "rgba(20, 25, 35, 0.6)",
             backdropFilter: "blur(20px)",
             border: "1px solid var(--color-white-a04)",
-            borderRadius: 40,
+            borderRadius: 'var(--radius-2xl)',
             padding: "32px 28px",
             marginBottom: 28,
             textAlign: "center",
@@ -248,7 +248,7 @@ export default function BingoChoose() {
                 background: "rgba(20, 25, 35, 0.6)",
                 backdropFilter: "blur(20px)",
                 border: "1px solid var(--color-white-a04)",
-                borderRadius: 40,
+                borderRadius: 'var(--radius-2xl)',
                 padding: 32,
                 marginBottom: 20
               }}>
@@ -278,7 +278,7 @@ export default function BingoChoose() {
                       <div
                         style={{
                           padding: "24px 16px",
-                          borderRadius: 24,
+                          borderRadius: 'var(--radius-2xl)',
                           textAlign: "center",
                           background: boardSize === s
                             ? `linear-gradient(145deg, ${color}15, ${color}05)`
@@ -306,7 +306,7 @@ export default function BingoChoose() {
                         <span style={{
                           display: "inline-block",
                           padding: "4px 12px",
-                          borderRadius: 20,
+                          borderRadius: 'var(--radius-2xl)',
                           fontSize: 10,
                           fontWeight: 600,
                           textTransform: "uppercase",
@@ -334,7 +334,7 @@ export default function BingoChoose() {
                                 style={{
                                   aspectRatio: "1",
                                   background: boardSize === s ? `${color}40` : "var(--color-white-a10)",
-                                  borderRadius: 4,
+                                  borderRadius: 'var(--radius-sm)',
                                   display: "flex",
                                   alignItems: "center",
                                   justifyContent: "center",
@@ -355,7 +355,7 @@ export default function BingoChoose() {
                           style={{
                             marginTop: 20,
                             background: boardSize === s ? color : "var(--color-white-a04)",
-                            borderRadius: 40,
+                            borderRadius: 'var(--radius-2xl)',
                             padding: "10px 20px",
                             width: "100%",
                             color: boardSize === s ? "var(--color-text)" : "var(--color-text-muted)",
@@ -391,7 +391,7 @@ export default function BingoChoose() {
                   style={{
                     background: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)",
                     border: "none",
-                    borderRadius: 40,
+                    borderRadius: 'var(--radius-2xl)',
                     padding: "18px 24px",
                     fontSize: 16,
                     fontWeight: 600,
@@ -424,7 +424,7 @@ export default function BingoChoose() {
                   style={{
                     background: "transparent",
                     border: "1px solid var(--color-white-a10)",
-                    borderRadius: 40,
+                    borderRadius: 'var(--radius-2xl)',
                     padding: "14px 24px",
                     fontSize: 14,
                     fontWeight: 500,
@@ -456,7 +456,7 @@ export default function BingoChoose() {
               background: "rgba(20, 25, 35, 0.6)",
               backdropFilter: "blur(20px)",
               border: "1px solid var(--color-white-a04)",
-              borderRadius: 40,
+              borderRadius: 'var(--radius-2xl)',
               padding: 48,
               textAlign: "center"
             }}>
@@ -522,7 +522,7 @@ export default function BingoChoose() {
                 style={{
                   background: "var(--color-white-a04)",
                   border: "1px solid var(--color-white-a10)",
-                  borderRadius: 40,
+                  borderRadius: 'var(--radius-2xl)',
                   padding: "14px 32px",
                   color: "var(--color-text-muted)",
                   fontSize: 14,
@@ -562,7 +562,7 @@ export default function BingoChoose() {
               background: "rgba(20, 25, 35, 0.6)",
               backdropFilter: "blur(20px)",
               border: "1px solid var(--color-white-a04)",
-              borderRadius: 40,
+              borderRadius: 'var(--radius-2xl)',
               padding: 40,
               position: "relative",
               overflow: "hidden"
@@ -600,7 +600,7 @@ export default function BingoChoose() {
                 <div style={{
                   background: "var(--color-accent-a08)",
                   border: "1px solid var(--color-accent-a20)",
-                  borderRadius: 24,
+                  borderRadius: 'var(--radius-2xl)',
                   padding: "20px",
                   marginBottom: 32,
                   textAlign: "center"
@@ -629,7 +629,7 @@ export default function BingoChoose() {
                     style={{
                       background: copied ? "var(--color-success-a12)" : "var(--color-accent-a15)",
                       border: copied ? "1px solid var(--color-success-a30)" : "1px solid var(--color-accent-a30)",
-                      borderRadius: 40,
+                      borderRadius: 'var(--radius-2xl)',
                       padding: "12px 24px",
                       color: copied ? "var(--color-success)" : "var(--color-accent)",
                       fontSize: 14,
@@ -692,7 +692,7 @@ export default function BingoChoose() {
                             ? "1px solid var(--color-success-a30)"
                             : "1px solid var(--color-success-a12)"
                           : "1px solid var(--color-white-a04)",
-                        borderRadius: 24,
+                        borderRadius: 'var(--radius-2xl)',
                         padding: "24px 16px",
                         textAlign: "center",
                         position: "relative",
@@ -735,7 +735,7 @@ export default function BingoChoose() {
                           top: 12,
                           right: 12,
                           background: "var(--color-success)",
-                          borderRadius: 20,
+                          borderRadius: 'var(--radius-2xl)',
                           padding: "4px 8px",
                           fontSize: 10,
                           fontWeight: 600,
@@ -771,7 +771,7 @@ export default function BingoChoose() {
                       style={{
                         background: "linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)",
                         border: "none",
-                        borderRadius: 40,
+                        borderRadius: 'var(--radius-2xl)',
                         padding: "18px 32px",
                         fontSize: 16,
                         fontWeight: 600,

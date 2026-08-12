@@ -48,7 +48,7 @@ export default function UserAvatar({
   const box = {
     width: size,
     height: size,
-    borderRadius: '50%',
+    borderRadius: 'var(--radius-circle)',
     overflow: 'hidden',
     display: 'flex',
     alignItems: 'center',

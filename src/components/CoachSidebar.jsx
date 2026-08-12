@@ -142,7 +142,7 @@ export default function CoachSidebar({ onNavigate }) {
               onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(34,197,94,0.10)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
             >
-              <span style={{ width: 7, height: 7, borderRadius: 999, flexShrink: 0,
+              <span style={{ width: 7, height: 7, borderRadius: 'var(--radius-pill)', flexShrink: 0,
                 background: onlineStudents.length > 0 ? 'var(--color-success)' : 'var(--color-text-faint)',
                 boxShadow: onlineStudents.length > 0 ? '0 0 6px var(--color-success)' : 'none' }} />
               <span>👥 {onlineStudents.length}</span>
@@ -186,12 +186,12 @@ export default function CoachSidebar({ onNavigate }) {
               position: 'fixed', bottom: window.innerHeight - rect.top + 8, left: rect.left,
               width: 'max-content', minWidth: 240, maxWidth: 320,
               background: 'var(--color-bg)', border: '1px solid rgba(34,197,94,0.3)',
-              borderRadius: 14, boxShadow: '0 -8px 32px var(--color-black-a65)', zIndex: 9999,
+              borderRadius: 'var(--radius-lg)', boxShadow: '0 -8px 32px var(--color-black-a65)', zIndex: 9999,
               backdropFilter: 'blur(16px)', maxHeight: '60vh', overflowY: 'auto', padding: 12,
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, paddingBottom: 8, borderBottom: '1px solid var(--color-white-a07)' }}>
                 <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 7 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 999, background: 'var(--color-success)', boxShadow: '0 0 6px var(--color-success)' }} />
+                  <span style={{ width: 8, height: 8, borderRadius: 'var(--radius-pill)', background: 'var(--color-success)', boxShadow: '0 0 6px var(--color-success)' }} />
                   Students online <span style={{ color: 'var(--color-success)', fontWeight: 800 }}>{onlineStudents.length}</span>
                 </span>
                 <button onClick={() => setShowOnline(false)}
@@ -205,15 +205,15 @@ export default function CoachSidebar({ onNavigate }) {
                 onlineStudents.map(s => (
                   <div key={s._id}
                     onClick={() => { setShowOnline(false); go('/coach/dashboard'); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: 10, padding: '9px 11px', marginBottom: 8, cursor: 'pointer' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-md)', padding: '9px 11px', marginBottom: 8, cursor: 'pointer' }}
                     onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(34,197,94,0.4)'; e.currentTarget.style.background = 'rgba(34,197,94,0.08)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-white-a07)'; e.currentTarget.style.background = 'var(--color-white-a04)'; }}
                     title={s.groupTag ? `Batch: ${s.groupTag}` : ''}
                   >
-                    <span style={{ width: 7, height: 7, borderRadius: 999, background: 'var(--color-success)', boxShadow: '0 0 5px var(--color-success)', flexShrink: 0 }} />
+                    <span style={{ width: 7, height: 7, borderRadius: 'var(--radius-pill)', background: 'var(--color-success)', boxShadow: '0 0 5px var(--color-success)', flexShrink: 0 }} />
                     {s.profilePhotoUrl
-                      ? <img src={s.profilePhotoUrl} alt="" style={{ width: 26, height: 26, borderRadius: 999, objectFit: 'cover', flexShrink: 0 }} />
-                      : <span style={{ width: 26, height: 26, borderRadius: 999, background: 'rgba(34,197,94,0.2)', color: '#86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{(s.displayName || '?').charAt(0).toUpperCase()}</span>}
+                      ? <img src={s.profilePhotoUrl} alt="" style={{ width: 26, height: 26, borderRadius: 'var(--radius-pill)', objectFit: 'cover', flexShrink: 0 }} />
+                      : <span style={{ width: 26, height: 26, borderRadius: 'var(--radius-pill)', background: 'rgba(34,197,94,0.2)', color: '#86efac', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{(s.displayName || '?').charAt(0).toUpperCase()}</span>}
                     <span style={{ flex: 1, fontSize: 13, color: 'var(--color-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.displayName}</span>
                   </div>
                 ))
@@ -230,7 +230,7 @@ export default function CoachSidebar({ onNavigate }) {
 const baseItem = {
   display: 'flex', alignItems: 'center', gap: '10px',
   padding: '7px 12px 7px 10px', color: 'var(--color-text)', cursor: 'pointer',
-  borderRadius: '12px', transition: 'all 0.2s ease', fontSize: '14px',
+  borderRadius: 'var(--radius-lg)', transition: 'all 0.2s ease', fontSize: '14px',
   fontWeight: 500, fontFamily: "'Poppins', sans-serif",
   whiteSpace: 'nowrap', overflow: 'hidden', background: 'transparent',
   border: '1px solid transparent',
@@ -267,11 +267,11 @@ const styles = {
     height: '1px', margin: '8px 12px',
     background: 'linear-gradient(90deg, transparent, var(--color-accent-a30), transparent)',
   },
-  inviteBanner: { margin: '0 10px 8px', padding: '10px 12px', borderRadius: 10, background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)' },
+  inviteBanner: { margin: '0 10px 8px', padding: '10px 12px', borderRadius: 'var(--radius-md)', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)' },
   inviteText: { fontSize: 12, color: 'var(--color-warning)', fontWeight: 600, marginBottom: 8, lineHeight: 1.35 },
   inviteBtns: { display: 'flex', gap: 6 },
-  inviteAccept: { flex: 1, padding: '5px 0', borderRadius: 7, border: 'none', background: 'var(--color-success)', color: '#04211d', fontWeight: 700, fontSize: 12, cursor: 'pointer' },
-  inviteDecline: { flex: 1, padding: '5px 0', borderRadius: 7, border: '1px solid var(--color-white-a13)', background: 'transparent', color: 'var(--color-text-muted)', fontWeight: 600, fontSize: 12, cursor: 'pointer' },
+  inviteAccept: { flex: 1, padding: '5px 0', borderRadius: 'var(--radius-md)', border: 'none', background: 'var(--color-success)', color: '#04211d', fontWeight: 700, fontSize: 12, cursor: 'pointer' },
+  inviteDecline: { flex: 1, padding: '5px 0', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'transparent', color: 'var(--color-text-muted)', fontWeight: 600, fontSize: 12, cursor: 'pointer' },
   navMenu: { display: 'flex', flexDirection: 'column', gap: '6px', padding: '0 10px', flex: 1, overflowY: 'auto' },
   navItem: baseItem,
   navItemActive: {
@@ -286,7 +286,7 @@ const styles = {
   footerCard: {
     display: 'flex', alignItems: 'stretch',
     background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)',
-    borderRadius: '12px', overflow: 'hidden',
+    borderRadius: 'var(--radius-lg)', overflow: 'hidden',
   },
   footerHalf: {
     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
@@ -299,7 +299,7 @@ const styles = {
   upgradeBtn: {
     margin: 0, padding: '6px 10px',
     background: 'transparent', color: 'var(--color-accent)',
-    border: '1px solid var(--color-accent-a40)', borderRadius: '10px',
+    border: '1px solid var(--color-accent-a40)', borderRadius: 'var(--radius-md)',
     fontSize: '12px', fontWeight: 700, fontFamily: "'Poppins', sans-serif",
     cursor: 'pointer', transition: 'background 0.2s ease',
   },

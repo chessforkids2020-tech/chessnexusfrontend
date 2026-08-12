@@ -64,7 +64,7 @@ export default function RoomCodeBadge({ code, label = 'Room code', style, showLi
         style={{
           fontFamily: 'monospace', fontSize: 18, fontWeight: 800, letterSpacing: 2,
           color: 'var(--color-accent)', background: 'var(--color-accent-a12)',
-          border: '1px solid var(--color-accent-a30)', borderRadius: 8,
+          border: '1px solid var(--color-accent-a30)', borderRadius: 'var(--radius-md)',
           padding: '5px 12px', cursor: 'text', userSelect: 'all',
         }}
       >
@@ -74,7 +74,7 @@ export default function RoomCodeBadge({ code, label = 'Room code', style, showLi
         onClick={onCopy}
         title="Copy room code"
         style={{
-          padding: '6px 14px', borderRadius: 8, fontSize: 12.5, fontWeight: 600,
+          padding: '6px 14px', borderRadius: 'var(--radius-md)', fontSize: 12.5, fontWeight: 600,
           cursor: 'pointer', whiteSpace: 'nowrap',
           background: copied ? 'var(--color-success-a20)' : 'var(--color-accent-a15)',
           border: `1px solid ${copied ? 'var(--color-success-a30)' : 'var(--color-accent-a30)'}`,
@@ -88,7 +88,7 @@ export default function RoomCodeBadge({ code, label = 'Room code', style, showLi
           onClick={onCopyLink}
           title="Copy the full waiting-room link to paste into class chat"
           style={{
-            padding: '6px 14px', borderRadius: 8, fontSize: 12.5, fontWeight: 600,
+            padding: '6px 14px', borderRadius: 'var(--radius-md)', fontSize: 12.5, fontWeight: 600,
             cursor: 'pointer', whiteSpace: 'nowrap',
             background: linkState === 'copied' ? 'var(--color-success-a20)' : 'var(--color-accent-2-a15)',
             border: `1px solid ${linkState === 'copied' ? 'var(--color-success-a30)' : 'rgba(167,139,250,0.4)'}`,

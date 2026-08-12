@@ -187,7 +187,7 @@ const StudyOverview = () => {
       position: 'relative',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '24px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(20px)',
       overflow: 'hidden',
       transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -198,7 +198,7 @@ const StudyOverview = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      borderRadius: '24px',
+      borderRadius: 'var(--radius-2xl)',
       padding: '1px',
       background: 'linear-gradient(135deg, transparent, currentColor, transparent)',
       WebkitMask: 'linear-gradient(var(--color-text) 0 0) content-box, linear-gradient(var(--color-text) 0 0)',
@@ -262,7 +262,7 @@ const StudyOverview = () => {
     difficultyBadge: {
       display: 'inline-block',
       padding: '4px 12px',
-      borderRadius: '6px',
+      borderRadius: 'var(--radius-sm)',
       fontSize: '11px',
       fontWeight: '700',
       textTransform: 'uppercase',
@@ -285,7 +285,7 @@ const StudyOverview = () => {
     statBox: {
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '16px 12px',
       textAlign: 'center',
       transition: 'all 0.3s ease',
@@ -317,7 +317,7 @@ const StudyOverview = () => {
       padding: '20px 16px',
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       textDecoration: 'none',
       color: 'var(--color-text)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -381,16 +381,16 @@ const StudyOverview = () => {
           {/* Beginners Academy — for absolute newbies: how pieces move, square names, etc.
               Coming soon: card is shown but disabled until the module is ready. */}
           <motion.div
-            style={{ position: 'relative', background: 'rgba(45,212,191,0.06)', border: '1px solid rgba(45,212,191,0.25)', borderRadius: 18, padding: '24px 22px', cursor: 'default', opacity: 0.7 }}
+            style={{ position: 'relative', background: 'rgba(45,212,191,0.06)', border: '1px solid rgba(45,212,191,0.25)', borderRadius: 'var(--radius-xl)', padding: '24px 22px', cursor: 'default', opacity: 0.7 }}
           >
-            <div style={{ position: 'absolute', top: 12, right: 12, fontSize: 11, fontWeight: 800, letterSpacing: 0.5, textTransform: 'uppercase', color: '#2dd4bf', background: 'rgba(45,212,191,0.14)', border: '1px solid rgba(45,212,191,0.35)', borderRadius: 999, padding: '3px 10px' }}>Coming Soon</div>
+            <div style={{ position: 'absolute', top: 12, right: 12, fontSize: 11, fontWeight: 800, letterSpacing: 0.5, textTransform: 'uppercase', color: '#2dd4bf', background: 'rgba(45,212,191,0.14)', border: '1px solid rgba(45,212,191,0.35)', borderRadius: 'var(--radius-pill)', padding: '3px 10px' }}>Coming Soon</div>
             <div style={{ fontSize: 32, marginBottom: 10 }}>🎓</div>
             <div style={{ fontSize: 17, fontWeight: 800, color: '#2dd4bf', marginBottom: 6 }}>Beginners Academy</div>
             <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Brand new to chess? Learn how every piece moves, square names, captures and more — step by step with your Nexus Coach.</div>
           </motion.div>
 
           <motion.div
-            style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid var(--color-warning-a20)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid var(--color-warning-a20)', borderRadius: 'var(--radius-xl)', padding: '24px 22px', cursor: 'pointer' }}
             whileHover={{ scale: 1.03, background: 'var(--color-warning-a12)', boxShadow: '0 12px 40px var(--color-warning-a12)' }}
             onClick={() => navigate('/public-studies')}
           >
@@ -402,7 +402,7 @@ const StudyOverview = () => {
           {/* Books card — only shown when the admin has published at least one book. */}
           {hasBooks && (
             <motion.div
-              style={{ background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a20)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+              style={{ background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a20)', borderRadius: 'var(--radius-xl)', padding: '24px 22px', cursor: 'pointer' }}
               whileHover={{ scale: 1.03, background: 'var(--color-success-a12)', boxShadow: '0 12px 40px var(--color-success-a12)' }}
               onClick={() => navigate('/study/books')}
             >
@@ -413,7 +413,7 @@ const StudyOverview = () => {
           )}
 
           <motion.div
-            style={{ background: 'rgba(34,211,238,0.06)', border: '1px solid var(--color-accent-a15)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            style={{ background: 'rgba(34,211,238,0.06)', border: '1px solid var(--color-accent-a15)', borderRadius: 'var(--radius-xl)', padding: '24px 22px', cursor: 'pointer' }}
             whileHover={{ scale: 1.03, background: 'var(--color-accent-a15)', boxShadow: '0 12px 40px var(--color-accent-a15)' }}
             onClick={() => navigate('/study/endgames')}
           >
@@ -741,7 +741,7 @@ const StudyOverview = () => {
         {/* Quick-access feature cards — bottom row */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16, marginTop: 32 }}>
           <motion.div
-            style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            style={{ background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 'var(--radius-xl)', padding: '24px 22px', cursor: 'pointer' }}
             whileHover={{ scale: 1.03, background: 'rgba(52,211,153,0.1)', boxShadow: '0 12px 40px rgba(52,211,153,0.12)' }}
             onClick={() => navigate('/my-studies')}
           >
@@ -751,7 +751,7 @@ const StudyOverview = () => {
           </motion.div>
 
           <motion.div
-            style={{ background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a20)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            style={{ background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a20)', borderRadius: 'var(--radius-xl)', padding: '24px 22px', cursor: 'pointer' }}
             whileHover={{ scale: 1.03, background: 'var(--color-danger-a12)', boxShadow: '0 12px 40px var(--color-danger-a12)' }}
             onClick={() => navigate('/study/sparring/duel/create')}
           >
@@ -761,7 +761,7 @@ const StudyOverview = () => {
           </motion.div>
 
           <motion.div
-            style={{ background: 'rgba(239,68,68,0.04)', border: '1px solid var(--color-danger-a12)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            style={{ background: 'rgba(239,68,68,0.04)', border: '1px solid var(--color-danger-a12)', borderRadius: 'var(--radius-xl)', padding: '24px 22px', cursor: 'pointer' }}
             whileHover={{ scale: 1.03, background: 'var(--color-danger-a12)', boxShadow: '0 12px 40px var(--color-danger-a12)' }}
             onClick={() => navigate('/study/sparring/join')}
           >

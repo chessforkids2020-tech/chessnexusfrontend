@@ -71,14 +71,14 @@ export default function AdminFeedback() {
       background: filter === id ? 'rgba(6,182,212,0.18)' : 'rgba(255,255,255,0.04)',
       color: filter === id ? C.cyan : C.dim,
       border: `1px solid ${filter === id ? 'rgba(6,182,212,0.4)' : C.border}`,
-      borderRadius: 999, padding: '6px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+      borderRadius: 'var(--radius-pill)', padding: '6px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
     }}>{label}</button>
   );
 
   const statusBadge = (status) => {
-    if (status === 'reviewed') return <span style={{ fontSize: 11, fontWeight: 700, color: C.green, background: 'rgba(16,185,129,0.14)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 999, padding: '2px 8px' }}>REVIEWED</span>;
-    if (status === 'archived') return <span style={{ fontSize: 11, fontWeight: 700, color: C.faint, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 999, padding: '2px 8px' }}>ARCHIVED</span>;
-    return <span style={{ fontSize: 11, fontWeight: 700, color: C.amber, background: 'rgba(245,158,11,0.14)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 999, padding: '2px 8px' }}>NEW</span>;
+    if (status === 'reviewed') return <span style={{ fontSize: 11, fontWeight: 700, color: C.green, background: 'rgba(16,185,129,0.14)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>REVIEWED</span>;
+    if (status === 'archived') return <span style={{ fontSize: 11, fontWeight: 700, color: C.faint, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>ARCHIVED</span>;
+    return <span style={{ fontSize: 11, fontWeight: 700, color: C.amber, background: 'rgba(245,158,11,0.14)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>NEW</span>;
   };
 
   return (
@@ -93,8 +93,8 @@ export default function AdminFeedback() {
             </p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={load} style={{ background: 'rgba(255,255,255,0.06)', color: C.text, border: `1px solid ${C.border}`, borderRadius: 8, padding: '8px 14px', fontSize: 13, cursor: 'pointer' }}>↻ Refresh</button>
-            <button onClick={() => nav('/admin')} style={{ background: 'rgba(255,255,255,0.06)', color: C.text, border: `1px solid ${C.border}`, borderRadius: 8, padding: '8px 14px', fontSize: 13, cursor: 'pointer' }}>← Dashboard</button>
+            <button onClick={load} style={{ background: 'rgba(255,255,255,0.06)', color: C.text, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-md)', padding: '8px 14px', fontSize: 13, cursor: 'pointer' }}>↻ Refresh</button>
+            <button onClick={() => nav('/admin')} style={{ background: 'rgba(255,255,255,0.06)', color: C.text, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-md)', padding: '8px 14px', fontSize: 13, cursor: 'pointer' }}>← Dashboard</button>
           </div>
         </div>
 
@@ -109,19 +109,19 @@ export default function AdminFeedback() {
         {loading ? (
           <div style={{ color: C.dim, textAlign: 'center', padding: 60 }}>Loading feedback…</div>
         ) : shown.length === 0 ? (
-          <div style={{ background: C.panel, border: `1px dashed ${C.border}`, borderRadius: 14, padding: 48, textAlign: 'center', color: C.dim }}>
+          <div style={{ background: C.panel, border: `1px dashed ${C.border}`, borderRadius: 'var(--radius-lg)', padding: 48, textAlign: 'center', color: C.dim }}>
             <div style={{ fontSize: 34, marginBottom: 8 }}>💡</div>
             No feedback {filter !== 'all' ? `in "${filter}"` : 'yet'}.
           </div>
         ) : (
           <div style={{ display: 'grid', gap: 14 }}>
             {shown.map(f => (
-              <div key={f._id} style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 14, padding: '18px 20px', backdropFilter: 'blur(10px)' }}>
+              <div key={f._id} style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-lg)', padding: '18px 20px', backdropFilter: 'blur(10px)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                     {statusBadge(f.status)}
                     {typeof f.accountAgeDays === 'number' && (
-                      <span style={{ fontSize: 11, fontWeight: 600, color: C.dim, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 999, padding: '2px 8px' }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: C.dim, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>
                         {f.accountAgeDays === 0 ? 'joined today' : `${f.accountAgeDays}d old`}
                       </span>
                     )}
@@ -140,15 +140,15 @@ export default function AdminFeedback() {
                   </span>
                   <div style={{ display: 'flex', gap: 8 }}>
                     {f.status !== 'reviewed' && (
-                      <button onClick={() => setStatus(f._id, 'reviewed')} style={{ background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>✓ Reviewed</button>
+                      <button onClick={() => setStatus(f._id, 'reviewed')} style={{ background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>✓ Reviewed</button>
                     )}
                     {f.status !== 'archived' && (
-                      <button onClick={() => setStatus(f._id, 'archived')} style={{ background: 'rgba(255,255,255,0.06)', color: C.dim, border: `1px solid ${C.border}`, borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Archive</button>
+                      <button onClick={() => setStatus(f._id, 'archived')} style={{ background: 'rgba(255,255,255,0.06)', color: C.dim, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-sm)', padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Archive</button>
                     )}
                     {f.status !== 'new' && (
-                      <button onClick={() => setStatus(f._id, 'new')} style={{ background: 'rgba(245,158,11,0.12)', color: '#fcd34d', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Mark new</button>
+                      <button onClick={() => setStatus(f._id, 'new')} style={{ background: 'rgba(245,158,11,0.12)', color: '#fcd34d', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 'var(--radius-sm)', padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Mark new</button>
                     )}
-                    <button onClick={() => remove(f._id)} style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
+                    <button onClick={() => remove(f._id)} style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 'var(--radius-sm)', padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
                   </div>
                 </div>
               </div>

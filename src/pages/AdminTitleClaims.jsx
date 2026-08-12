@@ -41,7 +41,7 @@ function ProofViewer({ claimId }) {
   if (err) return <div style={{ color: '#b91c1c', fontSize: 13 }}>{err}</div>;
   if (!url) return <div style={{ color: '#64748b', fontSize: 13 }}>Loading certificate…</div>;
 
-  const box = { width: '100%', maxHeight: 420, borderRadius: 8, border: '1px solid #e2e8f0', background: '#f8fafc' };
+  const box = { width: '100%', maxHeight: 420, borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', background: '#f8fafc' };
   return (
     <div>
       {mime === 'application/pdf'
@@ -60,7 +60,7 @@ const BACK_BTN = {
   background: '#f0f9f0',
   color: '#064f28',
   border: '2px solid #d6f0d6',
-  borderRadius: 8,
+  borderRadius: 'var(--radius-md)',
   fontWeight: 600,
   cursor: 'pointer',
   whiteSpace: 'nowrap',
@@ -121,7 +121,7 @@ export default function AdminTitleClaims() {
 
       {error && (
         <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#b91c1c',
-                      borderRadius: 8, padding: '9px 12px', marginBottom: 14, fontSize: 13 }}>
+                      borderRadius: 'var(--radius-md)', padding: '9px 12px', marginBottom: 14, fontSize: 13 }}>
           {error}
         </div>
       )}
@@ -135,7 +135,7 @@ export default function AdminTitleClaims() {
       <div style={{ display: 'grid', gap: 16 }}>
         {claims.map((c) => (
           <div key={c._id} style={{
-            background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12,
+            background: '#fff', border: '1px solid #e2e8f0', borderRadius: 'var(--radius-lg)',
             padding: 18, boxShadow: '0 8px 20px rgba(0,0,0,0.03)',
             display: 'grid', gridTemplateColumns: 'minmax(240px, 1fr) minmax(260px, 340px)', gap: 20,
           }}>
@@ -169,14 +169,14 @@ export default function AdminTitleClaims() {
                 value={notes[c._id] || ''}
                 onChange={(e) => setNotes({ ...notes, [c._id]: e.target.value })}
                 style={{ width: '100%', marginTop: 14, padding: '8px 10px', fontSize: 13,
-                         border: '1px solid #e2e8f0', borderRadius: 8, outline: 'none' }}
+                         border: '1px solid #e2e8f0', borderRadius: 'var(--radius-md)', outline: 'none' }}
               />
 
               <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
                 <button
                   disabled={busyId === c._id}
                   onClick={() => decide(c._id, 'approve')}
-                  style={{ padding: '9px 18px', border: 'none', borderRadius: 8, fontWeight: 700,
+                  style={{ padding: '9px 18px', border: 'none', borderRadius: 'var(--radius-md)', fontWeight: 700,
                            fontSize: 13.5, cursor: 'pointer', color: '#fff', background: '#059669' }}
                 >
                   {busyId === c._id ? 'Saving…' : `Approve ${c.claimedTitle}`}
@@ -184,7 +184,7 @@ export default function AdminTitleClaims() {
                 <button
                   disabled={busyId === c._id}
                   onClick={() => decide(c._id, 'reject')}
-                  style={{ padding: '9px 18px', borderRadius: 8, fontWeight: 700, fontSize: 13.5,
+                  style={{ padding: '9px 18px', borderRadius: 'var(--radius-md)', fontWeight: 700, fontSize: 13.5,
                            cursor: 'pointer', color: '#b91c1c', background: '#fff', border: '1px solid #fecaca' }}
                 >
                   Reject

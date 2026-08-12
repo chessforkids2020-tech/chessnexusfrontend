@@ -174,7 +174,7 @@ export default function AcademyCoaches() {
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: '#141a2a', border: '1px solid var(--color-white-a10)', borderRadius: 14, padding: 22, width: 'min(420px, 94vw)', boxShadow: '0 24px 60px var(--color-black-a35)' }}
+            style={{ background: '#141a2a', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-lg)', padding: 22, width: 'min(420px, 94vw)', boxShadow: '0 24px 60px var(--color-black-a35)' }}
           >
             <h3 style={{ margin: '0 0 4px', color: 'var(--color-text)' }}>➕ Add a coach</h3>
             <p style={{ margin: '0 0 16px', color: '#9aa4bf', fontSize: 13, lineHeight: 1.5 }}>
@@ -195,7 +195,7 @@ export default function AcademyCoaches() {
               onKeyDown={e => { if (e.key === 'Enter' && !inviteBusy) sendInvite(); }}
               placeholder="e.g. coachqueen"
               autoFocus
-              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', marginBottom: 12, boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '10px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', marginBottom: 12, boxSizing: 'border-box' }}
             />
             {inviteErr && <div className="acad-error" style={{ marginBottom: 12 }}>⚠️ {inviteErr}</div>}
 

@@ -418,7 +418,7 @@ export default function HomepagePuzzle() {
           marginBottom: '10px',
           padding: '8px',
           backgroundColor: 'var(--color-success-a12)',
-          borderRadius: '6px',
+          borderRadius: 'var(--radius-sm)',
           border: '1px solid #c8e6c9'
         }}>
           Solution: {Array.isArray(puzzle.solution) ? puzzle.solution.join(' ') : puzzle.solution}
@@ -432,7 +432,7 @@ export default function HomepagePuzzle() {
           textAlign: 'center',
           padding: '10px 20px', // Reduced padding
           backgroundColor: 'var(--color-warning-a12)',
-          borderRadius: '8px',
+          borderRadius: 'var(--radius-md)',
           border: '2px solid var(--color-warning)',
           width: '100%' // Ensure it takes full width
         }}>
@@ -447,7 +447,7 @@ export default function HomepagePuzzle() {
               backgroundColor: 'var(--color-success)',
               color: 'white',
               border: 'none',
-              borderRadius: '6px',
+              borderRadius: 'var(--radius-sm)',
               cursor: 'pointer',
               fontWeight: 'bold',
               boxShadow: '0 2px 4px var(--color-black-a20)',
@@ -473,7 +473,7 @@ export default function HomepagePuzzle() {
             alignItems: 'center', justifyContent: 'center',
             background: 'rgba(10,10,20,0.82)',
             backdropFilter: 'blur(6px)',
-            borderRadius: '8px',
+            borderRadius: 'var(--radius-md)',
             zIndex: 10,
             gap: '10px',
           }}>

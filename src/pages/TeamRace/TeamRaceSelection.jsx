@@ -109,7 +109,7 @@ function TeamRaceSelection() {
               border: '1px solid rgba(251,191,36,0.5)',
               color: 'var(--color-warning)',
               padding: '8px 18px',
-              borderRadius: '8px',
+              borderRadius: 'var(--radius-md)',
               fontWeight: 700,
               cursor: 'pointer',
               fontSize: '13px',
@@ -152,7 +152,7 @@ function TeamRaceSelection() {
                     backgroundColor: badge.color,
                     color: 'white',
                     padding: '6px 14px',
-                    borderRadius: '12px',
+                    borderRadius: 'var(--radius-lg)',
                     fontSize: '13px',
                     fontWeight: 'bold'
                   }}>
@@ -217,7 +217,7 @@ function TeamRaceSelection() {
               <div key={race._id} style={{
                 background: 'rgba(139,92,246,0.07)',
                 border: '1px solid var(--color-accent-2-a15)',
-                borderRadius: 14,
+                borderRadius: 'var(--radius-lg)',
                 padding: '16px 18px',
               }}>
                 <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 15, marginBottom: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

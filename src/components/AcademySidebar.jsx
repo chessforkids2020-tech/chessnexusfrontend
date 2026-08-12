@@ -80,7 +80,7 @@ export default function AcademySidebar({ onNavigate }) {
 
 const baseItem = {
   display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-  borderRadius: '10px', color: 'var(--color-text)', cursor: 'pointer', fontSize: '13px',
+  borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: '13px',
   fontWeight: 500, fontFamily: "'Poppins', sans-serif",
   whiteSpace: 'nowrap', overflow: 'hidden', background: 'transparent',
   border: '1px solid transparent',
@@ -118,9 +118,9 @@ const styles = {
   },
   navIcon: { fontSize: '17px', flexShrink: 0, width: '20px', textAlign: 'center' },
   navLabel: { flex: 1, fontWeight: 600 },
-  badge: { background: 'var(--color-warning)', color: '#04211d', fontSize: 10, fontWeight: 800, borderRadius: 999, padding: '1px 6px', minWidth: 16, textAlign: 'center' },
+  badge: { background: 'var(--color-warning)', color: '#04211d', fontSize: 10, fontWeight: 800, borderRadius: 'var(--radius-pill)', padding: '1px 6px', minWidth: 16, textAlign: 'center' },
   footer: { display: 'flex', flexDirection: 'column', gap: '6px', padding: '0 10px', paddingBottom: '4px' },
-  footerCard: { display: 'flex', alignItems: 'stretch', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: '12px', overflow: 'hidden' },
+  footerCard: { display: 'flex', alignItems: 'stretch', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' },
   footerHalf: {
     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
     padding: '9px 4px', cursor: 'pointer', color: 'rgba(226,232,240,0.82)',

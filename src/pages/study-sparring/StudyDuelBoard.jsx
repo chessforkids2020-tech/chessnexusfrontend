@@ -184,7 +184,7 @@ export default function StudyDuelBoard() {
   const cardStyle = {
     background: 'rgba(15,15,15,0.7)',
     border: '1px solid var(--color-white-a07)',
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     backdropFilter: 'blur(20px)',
     padding: 20,
   };
@@ -198,7 +198,7 @@ export default function StudyDuelBoard() {
       <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-          <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 8, color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
+          <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
             ← Leave
           </button>
           <div style={{ flex: 1 }}>
@@ -210,7 +210,7 @@ export default function StudyDuelBoard() {
             padding: '8px 16px',
             background: isMyTurn ? 'var(--color-success-a12)' : 'var(--color-warning-a12)',
             border: `1px solid ${isMyTurn ? 'var(--color-success-a30)' : 'var(--color-warning-a30)'}`,
-            borderRadius: 10,
+            borderRadius: 'var(--radius-md)',
             color: isMyTurn ? 'var(--color-success)' : 'var(--color-warning)',
             fontWeight: 700,
             fontSize: 13,
@@ -281,7 +281,7 @@ export default function StudyDuelBoard() {
                   {userMoves.map((m, i) => (
                     <span key={i} style={{
                       padding: '3px 8px',
-                      borderRadius: 4,
+                      borderRadius: 'var(--radius-sm)',
                       fontSize: 13,
                       fontFamily: 'monospace',
                       background: QUALITY_COLORS[myQualities[i]] + '20',
@@ -307,7 +307,7 @@ export default function StudyDuelBoard() {
               <div style={{ ...cardStyle, borderColor: 'rgba(99,102,241,0.4)', background: 'rgba(99,102,241,0.08)' }}>
                 <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--color-accent-2)', marginBottom: 16 }}>🏁 Duel Complete!</div>
                 {results.map((p, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--color-black-a35)', borderRadius: 8, marginBottom: 8 }}>
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--color-black-a35)', borderRadius: 'var(--radius-md)', marginBottom: 8 }}>
                     <span style={{ fontWeight: 700, color: 'var(--color-text)' }}>{p.username}</span>
                     <span style={{ color: 'var(--color-accent-2)', fontWeight: 700 }}>{p.accuracy}% accuracy</span>
                   </div>
@@ -319,7 +319,7 @@ export default function StudyDuelBoard() {
                 )}
                 <button
                   onClick={() => navigate('/study/sparring/duel/create')}
-                  style={{ width: '100%', marginTop: 16, padding: '12px 0', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 10, color: 'var(--color-warning)', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}
+                  style={{ width: '100%', marginTop: 16, padding: '12px 0', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 'var(--radius-md)', color: 'var(--color-warning)', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}
                 >
                   ⚔ New Duel
                 </button>

@@ -1302,7 +1302,7 @@ export default function CoachAssignments() {
                             style={{
                               whiteSpace: 'nowrap',
                               padding: '0 14px',
-                              borderRadius: 8,
+                              borderRadius: 'var(--radius-md)',
                               cursor: 'pointer',
                               fontSize: 13,
                               fontWeight: 600,

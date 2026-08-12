@@ -5,7 +5,7 @@
 .at-shell {
   position: relative;
   overflow: hidden;
-  border-radius: 24px;
+  border-radius: var(--radius-2xl);
   padding: 14px;
   height: 100%;
   background:
@@ -45,7 +45,7 @@
   height: 32px;
   display: grid;
   place-items: center;
-  border-radius: 11px;
+  border-radius: var(--radius-lg);
   color: var(--obsidian-accent, #7dd3fc);
   background: var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)));
   box-shadow: inset 0 1px 0 var(--color-white-a07), 0 10px 24px var(--color-accent-a15);
@@ -68,7 +68,7 @@
   display: inline-flex;
   padding: 3px;
   gap: 3px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a07);
   box-shadow: inset 0 1px 0 var(--color-white-a04);
@@ -79,7 +79,7 @@
   height: 34px;
   padding: 0 16px;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--obsidian-text-muted, var(--color-text-muted));
   font-size: 13px;
@@ -104,7 +104,7 @@
 }
 
 .at-chart-card {
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   border: 1px solid var(--obsidian-border, var(--color-border));
   background: var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)));
   box-shadow: inset 0 1px 0 var(--color-white-a04);
@@ -128,7 +128,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px;
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--obsidian-border, var(--color-border));
   background: linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04));
 }
@@ -138,7 +138,7 @@
   height: 40px;
   display: grid;
   place-items: center;
-  border-radius: 13px;
+  border-radius: var(--radius-lg);
   color: var(--obsidian-accent, #7dd3fc);
   background: var(--color-accent-a08);
   box-shadow: inset 0 1px 0 var(--color-white-a07), 0 12px 20px var(--color-accent-a12);
@@ -213,7 +213,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: linear-gradient(180deg, rgba(30, 41, 59, 0.78), rgba(15, 23, 42, 0.96));
   border: 1px solid var(--color-border);
   box-shadow: inset 0 1px 0 var(--color-white-a04);
@@ -223,7 +223,7 @@
   content: '';
   position: absolute;
   inset: 6px;
-  border-radius: 9px;
+  border-radius: var(--radius-md);
   background: radial-gradient(circle at center, rgba(6, 182, 212, calc(0.18 + var(--at-intensity) * 0.25)), transparent 68%);
   opacity: calc(var(--at-intensity));
 }
@@ -244,7 +244,7 @@
   inset: 50% auto auto 50%;
   width: 8px;
   height: 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--color-surface);
   transform: translate(-50%, -50%);
   box-shadow: 0 0 0 4px var(--color-white-a07);
@@ -281,7 +281,7 @@
 
 .at-chart-badge {
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--obsidian-border-strong, rgba(125, 211, 252, 0.32));
   background: var(--color-accent-a08);
   color: var(--obsidian-text-soft, #dbeafe);
@@ -343,7 +343,7 @@
 
   .at-shell {
     padding: 10px;
-    border-radius: 16px;
+    border-radius: var(--radius-xl);
   }
 
   /* The chart card is INSIDE the shell — on a phone it doesn't need its own
@@ -392,12 +392,12 @@
     grid-template-columns: 26px minmax(0, 1fr) auto;
     gap: 8px;
     padding: 7px 10px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
   }
   .at-metric-icon {
     width: 26px;
     height: 26px;
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     box-shadow: none;          /* the heavy glow reads as "important" */
   }
   .at-metric-icon svg { width: 14px; height: 14px; }

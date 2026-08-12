@@ -109,7 +109,7 @@ export default function ArcadeHome() {
                   background: "rgba(20, 25, 35, 0.6)",
                   backdropFilter: "blur(20px)",
                   border: "1px solid var(--color-white-a04)",
-                  borderRadius: 32,
+                  borderRadius: 'var(--radius-2xl)',
                   padding: 32,
                   display: "flex",
                   flexDirection: "column",
@@ -165,7 +165,7 @@ export default function ArcadeHome() {
                     </h2>
                     <span style={{ 
                       padding: "4px 12px", 
-                      borderRadius: 20, 
+                      borderRadius: 'var(--radius-2xl)', 
                       fontSize: 11, 
                       fontWeight: 600, 
                       textTransform: "uppercase", 
@@ -224,7 +224,7 @@ export default function ArcadeHome() {
                       marginTop: "auto",
                       background: gradient,
                       border: "none",
-                      borderRadius: 16,
+                      borderRadius: 'var(--radius-xl)',
                       padding: "16px 24px",
                       fontSize: 16,
                       fontWeight: 600,

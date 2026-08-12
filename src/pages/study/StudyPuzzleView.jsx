@@ -506,7 +506,7 @@ const StudyPuzzleView = () => {
       WebkitBackdropFilter: 'blur(20px)',
       color: 'var(--color-text)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       cursor: 'pointer',
       fontSize: '14px',
       fontWeight: '600',
@@ -528,7 +528,7 @@ const StudyPuzzleView = () => {
       WebkitBackdropFilter: 'blur(20px)',
       color: 'var(--color-text)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       cursor: 'pointer',
       fontSize: '14px',
       fontWeight: '600',
@@ -549,7 +549,7 @@ const StudyPuzzleView = () => {
       display: isMobile && !showPuzzleList ? 'none' : 'block',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(20px)',
       padding: '24px',
       overflowY: 'auto',
@@ -626,7 +626,7 @@ const StudyPuzzleView = () => {
       marginBottom: '24px',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(20px)',
       padding: '0px 10px 10px 10px',
     },
@@ -640,7 +640,7 @@ const StudyPuzzleView = () => {
     button: {
       padding: '12px 24px',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '14px',
+      borderRadius: 'var(--radius-lg)',
       cursor: 'pointer',
       fontSize: '15px',
       fontWeight: '600',
@@ -677,7 +677,7 @@ const StudyPuzzleView = () => {
       width: isMobile ? '100%' : 'auto',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(20px)',
       padding: '24px',
       overflowY: 'auto',
@@ -691,7 +691,7 @@ const StudyPuzzleView = () => {
       padding: '16px',
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '14px',
+      borderRadius: 'var(--radius-lg)',
       marginBottom: '20px',
     },
     kingIcon: {
@@ -706,7 +706,7 @@ const StudyPuzzleView = () => {
     movesContainer: {
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '14px',
+      borderRadius: 'var(--radius-lg)',
       padding: '20px',
       marginBottom: '20px',
       minHeight: '180px',
@@ -746,7 +746,7 @@ const StudyPuzzleView = () => {
     solutionContainer: {
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '14px',
+      borderRadius: 'var(--radius-lg)',
       padding: '20px',
       marginBottom: '20px',
     },
@@ -760,7 +760,7 @@ const StudyPuzzleView = () => {
     descriptionContainer: {
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '14px',
+      borderRadius: 'var(--radius-lg)',
       padding: '20px',
     },
     descriptionText: {
@@ -776,7 +776,7 @@ const StudyPuzzleView = () => {
       fontStyle: 'italic',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(20px)',
     },
     error: {
@@ -787,7 +787,7 @@ const StudyPuzzleView = () => {
       fontWeight: '500',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-danger-a20)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(20px)',
     },
     mobileOverlay: {
@@ -1045,11 +1045,11 @@ const StudyPuzzleView = () => {
               </div>
               <button
                 onClick={toggleAnalysis}
-                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'var(--color-danger-a12)' : 'rgba(56,189,248,0.12)', color: anMode ? 'var(--color-danger)' : '#38bdf8', border: `1px solid ${anMode ? 'var(--color-danger-a30)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '5px 14px', borderRadius: 'var(--radius-2xl)', cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'var(--color-danger-a12)' : 'rgba(56,189,248,0.12)', color: anMode ? 'var(--color-danger)' : '#38bdf8', border: `1px solid ${anMode ? 'var(--color-danger-a30)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
               >{anMode ? '■ Stop' : '🔍 Analyse'}</button>
             </div>
             {anMode && (
-              <div style={{ marginBottom: 14, padding: '10px 12px', borderRadius: 10, background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
+              <div style={{ marginBottom: 14, padding: '10px 12px', borderRadius: 'var(--radius-md)', background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
                   <span style={{ fontSize: 20, fontWeight: 800, color: '#e0f2fe', fontVariantNumeric: 'tabular-nums' }}>
                     {anEval == null ? '…'
@@ -1092,14 +1092,14 @@ const StudyPuzzleView = () => {
               </div>
               <button
                 onClick={toggleSfMode}
-                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '5px 14px', borderRadius: 'var(--radius-2xl)', cursor: 'pointer', fontSize: 12, fontWeight: 700, background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
               >{sfMode ? '■ Stop' : '▶ Play vs Stockfish'}</button>
             </div>
             {sfMode && (
               <>
                 <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
                   {['easy', 'medium', 'hard'].map(lvl => (
-                    <button key={lvl} onClick={() => setSfLevel(lvl)} style={{ flex: 1, padding: '4px 0', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontWeight: 700, textTransform: 'capitalize', background: sfLevel === lvl ? 'rgba(34,197,94,0.18)' : 'var(--color-white-a04)', color: sfLevel === lvl ? 'var(--color-success)' : 'var(--color-text-faint)', border: `1px solid ${sfLevel === lvl ? 'rgba(34,197,94,0.4)' : 'var(--color-white-a07)'}` }}>{lvl.charAt(0).toUpperCase() + lvl.slice(1)}</button>
+                    <button key={lvl} onClick={() => setSfLevel(lvl)} style={{ flex: 1, padding: '4px 0', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 11, fontWeight: 700, textTransform: 'capitalize', background: sfLevel === lvl ? 'rgba(34,197,94,0.18)' : 'var(--color-white-a04)', color: sfLevel === lvl ? 'var(--color-success)' : 'var(--color-text-faint)', border: `1px solid ${sfLevel === lvl ? 'rgba(34,197,94,0.4)' : 'var(--color-white-a07)'}` }}>{lvl.charAt(0).toUpperCase() + lvl.slice(1)}</button>
                   ))}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginBottom: 14, textAlign: 'center' }}>

@@ -78,7 +78,7 @@ export default function AdminTestimonials() {
       background: filter === id ? 'rgba(6,182,212,0.18)' : 'rgba(255,255,255,0.04)',
       color: filter === id ? C.cyan : C.dim,
       border: `1px solid ${filter === id ? 'rgba(6,182,212,0.4)' : C.border}`,
-      borderRadius: 999, padding: '6px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
+      borderRadius: 'var(--radius-pill)', padding: '6px 14px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
     }}>{label}</button>
   );
 
@@ -94,8 +94,8 @@ export default function AdminTestimonials() {
             </p>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={load} style={{ background: 'rgba(255,255,255,0.06)', color: C.text, border: `1px solid ${C.border}`, borderRadius: 8, padding: '8px 14px', fontSize: 13, cursor: 'pointer' }}>↻ Refresh</button>
-            <button onClick={() => nav('/admin')} style={{ background: 'rgba(255,255,255,0.06)', color: C.text, border: `1px solid ${C.border}`, borderRadius: 8, padding: '8px 14px', fontSize: 13, cursor: 'pointer' }}>← Dashboard</button>
+            <button onClick={load} style={{ background: 'rgba(255,255,255,0.06)', color: C.text, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-md)', padding: '8px 14px', fontSize: 13, cursor: 'pointer' }}>↻ Refresh</button>
+            <button onClick={() => nav('/admin')} style={{ background: 'rgba(255,255,255,0.06)', color: C.text, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-md)', padding: '8px 14px', fontSize: 13, cursor: 'pointer' }}>← Dashboard</button>
           </div>
         </div>
 
@@ -110,20 +110,20 @@ export default function AdminTestimonials() {
         {loading ? (
           <div style={{ color: C.dim, textAlign: 'center', padding: 60 }}>Loading testimonials…</div>
         ) : shown.length === 0 ? (
-          <div style={{ background: C.panel, border: `1px dashed ${C.border}`, borderRadius: 14, padding: 48, textAlign: 'center', color: C.dim }}>
+          <div style={{ background: C.panel, border: `1px dashed ${C.border}`, borderRadius: 'var(--radius-lg)', padding: 48, textAlign: 'center', color: C.dim }}>
             <div style={{ fontSize: 34, marginBottom: 8 }}>💬</div>
             No testimonials {filter !== 'all' ? `in "${filter}"` : 'yet'}.
           </div>
         ) : (
           <div style={{ display: 'grid', gap: 14 }}>
             {shown.map(t => (
-              <div key={t._id} style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 14, padding: '18px 20px', backdropFilter: 'blur(10px)' }}>
+              <div key={t._id} style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-lg)', padding: '18px 20px', backdropFilter: 'blur(10px)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <Stars n={t.rating} />
-                    {t.status === 'approved' && <span style={{ fontSize: 11, fontWeight: 700, color: C.green, background: 'rgba(16,185,129,0.14)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 999, padding: '2px 8px' }}>APPROVED</span>}
-                    {t.status === 'hidden' && <span style={{ fontSize: 11, fontWeight: 700, color: C.faint, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 999, padding: '2px 8px' }}>HIDDEN</span>}
-                    {t.featured && <span style={{ fontSize: 11, fontWeight: 700, color: C.amber, background: 'rgba(245,158,11,0.14)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 999, padding: '2px 8px' }}>★ ON HOMEPAGE</span>}
+                    {t.status === 'approved' && <span style={{ fontSize: 11, fontWeight: 700, color: C.green, background: 'rgba(16,185,129,0.14)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>APPROVED</span>}
+                    {t.status === 'hidden' && <span style={{ fontSize: 11, fontWeight: 700, color: C.faint, background: 'rgba(255,255,255,0.05)', border: `1px solid ${C.border}`, borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>HIDDEN</span>}
+                    {t.featured && <span style={{ fontSize: 11, fontWeight: 700, color: C.amber, background: 'rgba(245,158,11,0.14)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>★ ON HOMEPAGE</span>}
                   </div>
                   <span style={{ color: C.faint, fontSize: 12 }}>{new Date(t.createdAt).toLocaleString()}</span>
                 </div>
@@ -142,17 +142,17 @@ export default function AdminTestimonials() {
                         background: t.featured ? 'linear-gradient(135deg,#f59e0b,#d97706)' : 'rgba(245,158,11,0.12)',
                         color: t.featured ? '#241a05' : '#fcd34d',
                         border: t.featured ? 'none' : '1px solid rgba(245,158,11,0.35)',
-                        borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                        borderRadius: 'var(--radius-sm)', padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer',
                       }}>
                       {t.featured ? '★ On homepage' : '☆ Feature on homepage'}
                     </button>
                     {t.status !== 'approved' && (
-                      <button onClick={() => setStatus(t._id, 'approved')} style={{ background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>✓ Approve</button>
+                      <button onClick={() => setStatus(t._id, 'approved')} style={{ background: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', border: 'none', borderRadius: 'var(--radius-sm)', padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>✓ Approve</button>
                     )}
                     {t.status !== 'hidden' && (
-                      <button onClick={() => setStatus(t._id, 'hidden')} style={{ background: 'rgba(255,255,255,0.06)', color: C.dim, border: `1px solid ${C.border}`, borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Hide</button>
+                      <button onClick={() => setStatus(t._id, 'hidden')} style={{ background: 'rgba(255,255,255,0.06)', color: C.dim, border: `1px solid ${C.border}`, borderRadius: 'var(--radius-sm)', padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Hide</button>
                     )}
-                    <button onClick={() => remove(t._id)} style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 6, padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
+                    <button onClick={() => remove(t._id)} style={{ background: 'rgba(239,68,68,0.12)', color: '#fca5a5', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 'var(--radius-sm)', padding: '6px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
                   </div>
                 </div>
               </div>

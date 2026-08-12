@@ -207,7 +207,7 @@ const S = {
   meta: { fontSize: 12.5, color: '#9ca3af' },
   endBtn: {
     background: 'rgba(248,113,113,0.15)', border: '1px solid rgba(248,113,113,0.4)',
-    color: '#fca5a5', borderRadius: 9, padding: '5px 12px', fontSize: 12,
+    color: '#fca5a5', borderRadius: 'var(--radius-md)', padding: '5px 12px', fontSize: 12,
     fontWeight: 700, cursor: 'pointer',
   },
   grid: {
@@ -216,7 +216,7 @@ const S = {
   },
   cell: {
     background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: 12, padding: 8, cursor: 'pointer', display: 'flex',
+    borderRadius: 'var(--radius-lg)', padding: 8, cursor: 'pointer', display: 'flex',
     flexDirection: 'column', alignItems: 'center', gap: 6, color: 'inherit',
   },
   cellOn: { borderColor: '#22c55e', boxShadow: '0 0 0 2px rgba(34,197,94,0.3)' },
@@ -226,7 +226,7 @@ const S = {
   },
   reviewBtn: {
     marginTop: 2, width: '100%', background: 'rgba(6,182,212,0.14)',
-    border: '1px solid rgba(6,182,212,0.4)', color: '#67e8f9', borderRadius: 8,
+    border: '1px solid rgba(6,182,212,0.4)', color: '#67e8f9', borderRadius: 'var(--radius-md)',
     padding: '6px 10px', fontSize: 11.5, fontWeight: 700, cursor: 'pointer',
     fontFamily: 'inherit',
   },
@@ -237,7 +237,7 @@ const S = {
   watching: { fontSize: 12.5, color: '#9ca3af' },
   switchBtn: {
     background: 'rgba(6,182,212,0.14)', border: '1px solid rgba(6,182,212,0.4)',
-    color: '#67e8f9', borderRadius: 9, padding: '7px 15px', fontSize: 12.5,
+    color: '#67e8f9', borderRadius: 'var(--radius-md)', padding: '7px 15px', fontSize: 12.5,
     fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
   },
   moves: {

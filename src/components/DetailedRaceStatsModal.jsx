@@ -192,7 +192,7 @@ const styles = {
   },
   modalContent: {
     background: 'var(--color-surface)',
-    borderRadius: '24px',
+    borderRadius: 'var(--radius-2xl)',
     boxShadow: '0 20px 60px var(--color-black-a65)',
     maxWidth: '700px',
     width: '90%',
@@ -229,7 +229,7 @@ const styles = {
     cursor: 'pointer',
     width: '40px',
     height: '40px',
-    borderRadius: '50%',
+    borderRadius: 'var(--radius-circle)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -249,7 +249,7 @@ const styles = {
   },
   tableContainer: {
     background: 'var(--color-black-a20)',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     overflow: 'hidden',
     border: '1px solid var(--color-white-a04)',
     '-webkit-backdrop-filter': 'blur(5px)',

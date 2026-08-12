@@ -3,7 +3,7 @@
 .ca-pgn-game {
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
 }
 .ca-pgn-game-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; color: #e2e8f0; }
@@ -13,12 +13,12 @@
   flex: 1; min-width: 0;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px; padding: 8px 10px; color: #e2e8f0; font-size: 13px; outline: none;
+  border-radius: var(--radius-md); padding: 8px 10px; color: #e2e8f0; font-size: 13px; outline: none;
 }
 .ca-blunder-row input:focus { border-color: rgba(139,92,246,0.5); }
 .ca-link-add {
   align-self: flex-start; background: none; border: 1px dashed rgba(139,92,246,0.4);
-  color: #a78bfa; border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+  color: #a78bfa; border-radius: var(--radius-md); padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer;
 }
 .ca-link-danger { background: none; border: none; color: #f87171; cursor: pointer; font-size: 13px; font-weight: 600; }
 
@@ -31,7 +31,7 @@
 .ca-card {
   background: rgba(20,20,30,0.6);
   border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   padding: 18px 20px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
@@ -70,7 +70,7 @@
   color: #67e8f9;
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   text-transform: capitalize;
   border: 1px solid rgba(6,182,212,0.3);
 }
@@ -86,7 +86,7 @@
 .ca-edit-students {
   margin: 10px 0 14px;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   border: 1px solid rgba(6,182,212,0.25);
   background: rgba(6,182,212,0.06);
 }
@@ -116,7 +116,7 @@
   align-items: center;
   gap: 6px;
   padding: 5px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(255,255,255,0.04);
   font-size: 12.5px;
@@ -151,7 +151,7 @@
 .ca-progress {
   background: rgba(0,0,0,0.25);
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
 }
 
 .ca-progress-label {
@@ -174,7 +174,7 @@
 .ca-type-card {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 10px 12px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -228,13 +228,13 @@
   overflow-y: auto;
   background: rgba(0,0,0,0.25);
   padding: 10px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
 }
 
 .ca-student-pill {
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 16px;
+  border-radius: var(--radius-xl);
   padding: 5px 11px;
   font-size: 12.5px;
   color: #cbd5e1;
@@ -271,7 +271,7 @@
 .ca-results {
   margin-top: 10px;
   background: rgba(0,0,0,0.25);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 8px;
   overflow-x: auto;
 }
@@ -313,7 +313,7 @@
   display: inline-block;
   padding: 2px 8px;
   margin: 2px 4px 2px 0;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 12px;
   font-weight: 600;
   border: 1px solid transparent;
@@ -326,7 +326,7 @@
 .ca-status {
   font-size: 11px;
   padding: 2px 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   white-space: nowrap;
 }
 .ca-status-completed   { background: rgba(16,185,129,0.18); color: #6ee7b7; }
@@ -352,7 +352,7 @@
 .ca-assigned-pill {
   font-size: 11.5px;
   padding: 3px 9px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   white-space: nowrap;
 }
 
@@ -365,7 +365,7 @@
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.12);
   color: #cbd5e1;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   padding: 1px 8px;
   font-size: 11px;
   cursor: pointer;
@@ -387,7 +387,7 @@
   gap: 10px;
   flex-wrap: wrap;
   padding: 4px 8px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: rgba(255,255,255,0.03);
 }
 .ca-hist-list li.passed { background: rgba(16,185,129,0.1); }
@@ -404,7 +404,7 @@
 .ca-reuse-bar {
   background: rgba(139, 92, 246, 0.06);
   border: 1px solid rgba(139, 92, 246, 0.22);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 12px 14px;
   margin-bottom: 14px;
 }
@@ -416,7 +416,7 @@
 .ca-reuse-chip {
   display: inline-flex; align-items: center; gap: 6px;
   background: rgba(139, 92, 246, 0.14); border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 8px; padding: 3px 8px; font-size: 12px; color: #c4b5fd;
+  border-radius: var(--radius-md); padding: 3px 8px; font-size: 12px; color: #c4b5fd;
 }
 .ca-reuse-chip button {
   background: none; border: none; color: rgba(226, 232, 240, 0.5);
@@ -430,7 +430,7 @@
   color: #9ca3af;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 10px 12px;
   margin-bottom: 12px;
 }

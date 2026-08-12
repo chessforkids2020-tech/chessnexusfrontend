@@ -29,7 +29,7 @@
   color: white;
   border: none;
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
@@ -47,7 +47,7 @@
   color: white;
   border: none;
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s;
@@ -75,7 +75,7 @@
 .modal-content {
   background: white;
   padding: 30px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   width: 90%;
   max-width: 650px;
   max-height: calc(100vh - 40px);
@@ -95,13 +95,13 @@
 
 .modal-content::-webkit-scrollbar-track {
   background: #f5f5f5;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: 1px solid #ddd;
 }
 
 .modal-content::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, var(--color-accent-2) 0%, #764ba2 100%);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: 2px solid #f5f5f5;
 }
 
@@ -131,7 +131,7 @@
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -162,7 +162,7 @@
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
@@ -178,7 +178,7 @@
   color: var(--color-text);
   border: none;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s;
@@ -197,7 +197,7 @@
 .race-card {
   background: white;
   border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 20px;
   box-shadow: 0 2px 8px var(--color-black-a20);
   transition: transform 0.2s, box-shadow 0.2s;
@@ -249,7 +249,7 @@
   color: white;
   border: none;
   padding: 10px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
@@ -265,7 +265,7 @@
   color: white;
   border: none;
   padding: 10px 15px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s;

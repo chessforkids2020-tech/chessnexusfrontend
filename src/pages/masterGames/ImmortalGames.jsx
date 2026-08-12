@@ -95,9 +95,9 @@ const st = {
   sub: { color: C.textMut, margin: '0 0 20px', fontSize: 14 },
 
   filters: { display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14, alignItems: 'center' },
-  input: { padding: '9px 12px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, minWidth: 170, background: C.glass, color: C.text, outline: 'none' },
-  select: { padding: '9px 12px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, background: C.glass, color: C.text, maxWidth: 240, outline: 'none' },
-  clearBtn: { padding: '9px 14px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: 'var(--color-danger-a20)', color: 'var(--color-danger)', cursor: 'pointer', fontSize: 14 },
+  input: { padding: '9px 12px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, fontSize: 14, minWidth: 170, background: C.glass, color: C.text, outline: 'none' },
+  select: { padding: '9px 12px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.border}`, fontSize: 14, background: C.glass, color: C.text, maxWidth: 240, outline: 'none' },
+  clearBtn: { padding: '9px 14px', borderRadius: 'var(--radius-md)', border: `1px solid ${C.borderStrong}`, background: 'var(--color-danger-a20)', color: 'var(--color-danger)', cursor: 'pointer', fontSize: 14 },
 
   listMeta: { color: C.textMut, fontSize: 13, marginBottom: 10 },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 14 },

@@ -250,7 +250,7 @@ export default function ArenaJoin() {
       padding: '32px 24px',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
@@ -272,7 +272,7 @@ export default function ArenaJoin() {
     card: {
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
       padding: '20px',
       boxShadow: '0 8px 32px var(--color-black-a50)',
@@ -291,7 +291,7 @@ export default function ArenaJoin() {
     roomCard: {
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '16px',
+      borderRadius: 'var(--radius-xl)',
       padding: '24px',
       marginBottom: '20px',
       transition: 'all 0.3s ease',
@@ -320,7 +320,7 @@ export default function ArenaJoin() {
     statBox: {
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '16px',
     },
     statLabel: {
@@ -339,7 +339,7 @@ export default function ArenaJoin() {
     progressCard: {
       background: 'linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-accent-2-a12) 100%)',
       border: '1px solid var(--color-accent-a20)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '20px',
       marginBottom: '20px',
     },
@@ -369,7 +369,7 @@ export default function ArenaJoin() {
     timerBox: {
       background: 'linear-gradient(135deg, var(--color-accent-a15) 0%, var(--color-accent-2-a15) 100%)',
       border: '2px solid var(--color-accent-a30)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '20px',
       textAlign: 'center',
       marginBottom: '20px',
@@ -403,7 +403,7 @@ export default function ArenaJoin() {
       display: 'block',
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a10)',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       padding: '20px',
       fontSize: '32px',
       fontWeight: '700',
@@ -420,7 +420,7 @@ export default function ArenaJoin() {
       color: 'var(--color-text)',
       border: 'none',
       padding: '16px 40px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '16px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -432,7 +432,7 @@ export default function ArenaJoin() {
       color: 'var(--color-text-muted)',
       border: '1px solid var(--color-white-a10)',
       padding: '16px 40px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '16px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -445,7 +445,7 @@ export default function ArenaJoin() {
     status: {
       textAlign: 'center',
       padding: '12px 20px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '14px',
       fontWeight: '600',
       marginBottom: '20px',
@@ -483,7 +483,7 @@ export default function ArenaJoin() {
     publicRaceCard: {
       background: 'var(--color-surface)',
       border: '1px solid var(--color-accent-a30)',
-      borderRadius: '20px',
+      borderRadius: 'var(--radius-2xl)',
       padding: '24px',
       marginBottom: '16px',
       display: 'flex',
@@ -497,7 +497,7 @@ export default function ArenaJoin() {
       color: 'var(--color-text)',
       border: 'none',
       padding: '12px 24px',
-      borderRadius: '12px',
+      borderRadius: 'var(--radius-lg)',
       fontSize: '15px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -660,7 +660,7 @@ export default function ArenaJoin() {
                 <h2 style={{ ...styles.sectionTitle, justifyContent: 'flex-start', margin: 0 }}>
                   <span>🏁</span> Today's Arena Races
                 </h2>
-                <span style={{ background: 'var(--color-accent-a15)', color: 'var(--color-accent)', borderRadius: 20, padding: '3px 12px', fontSize: 13, fontWeight: 700 }}>
+                <span style={{ background: 'var(--color-accent-a15)', color: 'var(--color-accent)', borderRadius: 'var(--radius-2xl)', padding: '3px 12px', fontSize: 13, fontWeight: 700 }}>
                   {sorted.length} race{sorted.length !== 1 ? 's' : ''} today
                 </span>
               </div>
@@ -715,18 +715,18 @@ export default function ArenaJoin() {
                           <div style={{ color: 'var(--color-accent)', fontWeight: 700, fontFamily: 'monospace', fontSize: 12, letterSpacing: 1 }}>ROOM: {race.roomId}</div>
                         </div>
                         {isLive && (
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, color: 'var(--color-success)', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 'var(--radius-2xl)', padding: '3px 10px', fontSize: 11, fontWeight: 700, color: 'var(--color-success)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                            <span style={{ width: 6, height: 6, borderRadius: 'var(--radius-circle)', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
                             LIVE
                           </span>
                         )}
                         {!isLive && isSoon && (
-                          <span style={{ background: 'var(--color-warning-a12)', color: 'var(--color-warning)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          <span style={{ background: 'var(--color-warning-a12)', color: 'var(--color-warning)', borderRadius: 'var(--radius-2xl)', padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
                             SOON
                           </span>
                         )}
                         {!isLive && !isSoon && (
-                          <span style={{ background: 'var(--color-accent-a12)', color: 'var(--color-accent)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          <span style={{ background: 'var(--color-accent-a12)', color: 'var(--color-accent)', borderRadius: 'var(--radius-2xl)', padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
                             SCHEDULED
                           </span>
                         )}
@@ -734,7 +734,7 @@ export default function ArenaJoin() {
 
                       {/* Countdown only (no date / start time) */}
                       {fmtStartTime && (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--color-black-a35)', borderRadius: 10, padding: '10px 14px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--color-black-a35)', borderRadius: 'var(--radius-md)', padding: '10px 14px' }}>
                           <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                             {isLive ? 'In progress' : 'Starts in'}
                           </div>
@@ -923,7 +923,7 @@ export default function ArenaJoin() {
                 <div key={race._id} style={{
                   background: 'var(--color-white-a04)',
                   border: '1px solid var(--color-white-a07)',
-                  borderRadius: 14,
+                  borderRadius: 'var(--radius-lg)',
                   padding: '16px 18px',
                 }}>
                   <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 15, marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

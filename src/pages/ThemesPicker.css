@@ -89,7 +89,7 @@
   text-align: left;
   background: #161b22;
   border: 1px solid var(--color-white-a07);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 14px 16px;
   cursor: pointer;
   font-family: inherit;
@@ -113,7 +113,7 @@
   font-size: 20px;
   background: var(--accent-soft);
   border: 1px solid var(--accent-line);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
 }
 
 .tp-card-text {

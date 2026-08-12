@@ -39,24 +39,24 @@ const styles = {
   header: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, flexWrap: "wrap", gap: 12 },
   title: { fontSize: 22, color: "#072b05", fontWeight: 800, margin: 0 },
   subtitle: { margin: "4px 0 0", color: "#64748b", fontSize: 13 },
-  secondaryBtn: { padding: "8px 12px", background: "#f0f9f0", color: "#064f28", border: "1px solid #d6f0d6", borderRadius: 8, cursor: "pointer", fontWeight: 600 },
-  primaryBtn: { padding: "8px 12px", background: "#0b6623", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontWeight: 600 },
+  secondaryBtn: { padding: "8px 12px", background: "#f0f9f0", color: "#064f28", border: "1px solid #d6f0d6", borderRadius: 'var(--radius-md)', cursor: "pointer", fontWeight: 600 },
+  primaryBtn: { padding: "8px 12px", background: "#0b6623", color: "#fff", border: "none", borderRadius: 'var(--radius-md)', cursor: "pointer", fontWeight: 600 },
   summaryGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12, marginBottom: 20 },
-  summaryCard: { background: "#fff", padding: 16, borderRadius: 12, border: "1px solid #e6f1e6", boxShadow: "0 6px 16px rgba(0,0,0,0.04)" },
+  summaryCard: { background: "#fff", padding: 16, borderRadius: 'var(--radius-lg)', border: "1px solid #e6f1e6", boxShadow: "0 6px 16px rgba(0,0,0,0.04)" },
   summaryLabel: { fontSize: 12, color: "#64748b", marginBottom: 6 },
   summaryValue: { fontSize: 24, fontWeight: 800, color: "#064f28" },
   summarySub: { fontSize: 12, color: "#94a3b8", marginTop: 4 },
   toolbar: { display: "flex", gap: 10, alignItems: "center", marginBottom: 14, flexWrap: "wrap" },
-  input: { padding: "8px 12px", borderRadius: 8, border: "1px solid #d6e3d6", minWidth: 240, fontSize: 14 },
-  select: { padding: "8px 12px", borderRadius: 8, border: "1px solid #d6e3d6", fontSize: 14, background: "#fff" },
-  tableWrap: { background: "#fff", borderRadius: 12, border: "1px solid #e6f1e6", overflow: "auto", boxShadow: "0 6px 16px rgba(0,0,0,0.04)" },
+  input: { padding: "8px 12px", borderRadius: 'var(--radius-md)', border: "1px solid #d6e3d6", minWidth: 240, fontSize: 14 },
+  select: { padding: "8px 12px", borderRadius: 'var(--radius-md)', border: "1px solid #d6e3d6", fontSize: 14, background: "#fff" },
+  tableWrap: { background: "#fff", borderRadius: 'var(--radius-lg)', border: "1px solid #e6f1e6", overflow: "auto", boxShadow: "0 6px 16px rgba(0,0,0,0.04)" },
   table: { width: "100%", borderCollapse: "collapse", fontSize: 13 },
   th: { padding: "12px 10px", textAlign: "left", fontWeight: 700, color: "#374151", borderBottom: "2px solid #e5e7eb", background: "#f9fafb", whiteSpace: "nowrap", position: "sticky", top: 0 },
   td: { padding: "10px", borderBottom: "1px solid #f3f4f6", verticalAlign: "top" },
   name: { fontWeight: 700, color: "#0f172a" },
   muted: { color: "#94a3b8", fontSize: 12 },
-  tag: { padding: "3px 10px", borderRadius: 12, fontSize: 11, fontWeight: 700, display: "inline-block" },
-  smallBtn: { padding: "5px 10px", border: "none", borderRadius: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, marginRight: 6 },
+  tag: { padding: "3px 10px", borderRadius: 'var(--radius-lg)', fontSize: 11, fontWeight: 700, display: "inline-block" },
+  smallBtn: { padding: "5px 10px", border: "none", borderRadius: 'var(--radius-sm)', cursor: "pointer", fontSize: 12, fontWeight: 600, marginRight: 6 },
   pager: { display: "flex", gap: 10, alignItems: "center", justifyContent: "center", marginTop: 16 },
 };
 
@@ -244,7 +244,7 @@ export default function AdminSupporters() {
         <form
           onSubmit={submitAdd}
           style={{
-            background: "#fff", border: "1px solid #e6f1e6", borderRadius: 12,
+            background: "#fff", border: "1px solid #e6f1e6", borderRadius: 'var(--radius-lg)',
             padding: 16, marginBottom: 16, boxShadow: "0 6px 16px rgba(0,0,0,0.04)",
           }}
         >

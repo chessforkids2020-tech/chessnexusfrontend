@@ -864,7 +864,7 @@ export default function FocusTaskPage() {
                 ))}
 
                 {task.taskType === 'find_mistakes' && result.correctAnswers && result.correctAnswers.length > 0 && (
-                  <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-white-a04)', color: 'var(--color-text)', padding: '15px', borderRadius: '12px', marginTop: '15px', backdropFilter: 'blur(10px)' }}>
+                  <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-white-a04)', color: 'var(--color-text)', padding: '15px', borderRadius: 'var(--radius-lg)', marginTop: '15px', backdropFilter: 'blur(10px)' }}>
                     <div style={{ marginBottom: '15px' }}>
                       <strong style={{ color: 'var(--color-accent)' }}>Game PGN:</strong>
                       <div 
@@ -879,7 +879,7 @@ export default function FocusTaskPage() {
                       </div>
                     </div>
                     {result.correctAnswers.map((ans, idx) => (
-                      <div key={idx} style={{ marginTop: '15px', padding: '12px', background: ans.type === 'best_move' ? 'var(--color-success-a12)' : 'var(--color-danger-a12)', border: ans.type === 'best_move' ? '1px solid var(--color-success-a30)' : '1px solid var(--color-danger-a30)', borderRadius: '10px' }}>
+                      <div key={idx} style={{ marginTop: '15px', padding: '12px', background: ans.type === 'best_move' ? 'var(--color-success-a12)' : 'var(--color-danger-a12)', border: ans.type === 'best_move' ? '1px solid var(--color-success-a30)' : '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)' }}>
                         <div style={{ fontWeight: 'bold', marginBottom: '5px', color: ans.type === 'best_move' ? 'var(--color-success)' : 'var(--color-danger)' }}>
                           {ans.type === 'best_move' ? '🎯 Best Move' : '💥 Blunder'} - Move {ans.moveNumber}
                         </div>
@@ -1092,7 +1092,7 @@ export default function FocusTaskPage() {
             {/* Engine-judged status banner */}
             {task.content.engineJudged && (
               <div style={{
-                marginBottom: '20px', padding: '12px 16px', borderRadius: '10px',
+                marginBottom: '20px', padding: '12px 16px', borderRadius: 'var(--radius-md)',
                 background: engineError ? 'var(--color-danger-a12)' : engineReady ? 'var(--color-success-a12)' : 'var(--color-warning-a12)',
                 border: `1px solid ${engineError ? 'var(--color-danger-a30)' : engineReady ? 'var(--color-success-a30)' : 'var(--color-warning-a30)'}`,
                 color: engineError ? 'var(--color-danger)' : engineReady ? 'var(--color-success)' : 'var(--color-warning)',
@@ -1132,12 +1132,12 @@ export default function FocusTaskPage() {
                           background: verdict === 'pass' ? 'var(--color-success-a20)' : 'var(--color-danger-a20)',
                           color: verdict === 'pass' ? 'var(--color-success)' : 'var(--color-danger)',
                           border: `1px solid ${verdict === 'pass' ? 'var(--color-success-a30)' : 'rgba(239,68,68,0.5)'}`,
-                          padding: '4px 14px', borderRadius: '20px', fontWeight: 700, fontSize: '13px'
+                          padding: '4px 14px', borderRadius: 'var(--radius-2xl)', fontWeight: 700, fontSize: '13px'
                         }}>
                           {verdict === 'pass' ? '✓ Solved!' : '✗ Not quite'}
                         </span>
                       ) : (
-                        <span style={{ background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', padding: '4px 14px', borderRadius: '20px', fontWeight: 700, fontSize: '13px' }}>
+                        <span style={{ background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', padding: '4px 14px', borderRadius: 'var(--radius-2xl)', fontWeight: 700, fontSize: '13px' }}>
                           ✓ Solution submitted!
                         </span>
                       )
@@ -1177,7 +1177,7 @@ export default function FocusTaskPage() {
                               color: 'var(--color-accent)',
                               border: '1px solid var(--color-accent-a40)',
                               padding: '3px 10px',
-                              borderRadius: '12px',
+                              borderRadius: 'var(--radius-lg)',
                               fontSize: '13px',
                               fontWeight: 600,
                               fontFamily: 'monospace'
@@ -1388,7 +1388,7 @@ export default function FocusTaskPage() {
                         backdropFilter: 'blur(10px)',
                         color: 'var(--color-text)',
                         padding: '15px 20px',
-                        borderRadius: '12px',
+                        borderRadius: 'var(--radius-lg)',
                         border: '1px solid var(--color-border-strong)',
                         boxShadow: '0 4px 6px var(--color-black-a20)'
                       }}
@@ -1413,7 +1413,7 @@ export default function FocusTaskPage() {
                             border: answers?.answers?.[index] === option 
                               ? '2px solid var(--color-success)' 
                               : '2px solid var(--color-border-strong)',
-                            borderRadius: '8px',
+                            borderRadius: 'var(--radius-md)',
                             background: answers?.answers?.[index] === option 
                               ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9))' 
                               : 'rgba(30, 41, 59, 0.75)',
@@ -1452,7 +1452,7 @@ export default function FocusTaskPage() {
                           padding: '10px',
                           marginTop: '10px',
                           border: '1px solid var(--color-text)',
-                          borderRadius: '6px',
+                          borderRadius: 'var(--radius-sm)',
                           fontSize: '13px',
                           fontFamily: 'inherit'
                         }}
@@ -1474,7 +1474,7 @@ export default function FocusTaskPage() {
                 Paste Your Game PGN
               </h4>
               
-              <div style={{ background: '#eff6ff', padding: '15px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #93c5fd' }}>
+              <div style={{ background: '#eff6ff', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '20px', border: '1px solid #93c5fd' }}>
                 <h5 style={{ margin: '0 0 10px 0', fontSize: '14px', color: '#1e40af' }}>ℹ️ Instructions:</h5>
                 <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '13px', color: '#1e40af' }}>
                   <li>Play a chess game on Lichess or Chess.com</li>
@@ -1494,7 +1494,7 @@ export default function FocusTaskPage() {
                     minHeight: '150px',
                     padding: '12px',
                     border: '2px solid var(--color-text-muted)',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-md)',
                     fontFamily: 'monospace',
                     fontSize: '12px',
                     resize: 'vertical'
@@ -1513,7 +1513,7 @@ export default function FocusTaskPage() {
                     width: '200px',
                     padding: '10px',
                     border: '2px solid var(--color-text-muted)',
-                    borderRadius: '8px',
+                    borderRadius: 'var(--radius-md)',
                     fontSize: '14px'
                   }}
                   value={userSide}
@@ -1537,7 +1537,7 @@ export default function FocusTaskPage() {
               )}
 
               {analyzingPgn && (
-                <div style={{ marginTop: '15px', padding: '15px', background: 'var(--color-warning)', borderRadius: '8px', border: '1px solid var(--color-warning)' }}>
+                <div style={{ marginTop: '15px', padding: '15px', background: 'var(--color-warning)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-warning)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ fontSize: '20px', animation: 'spin 1s linear infinite' }}>⚙️</div>
                     <div>
@@ -1559,7 +1559,7 @@ export default function FocusTaskPage() {
                 return (
                 <div style={{ marginTop: '20px' }}>
                   {/* Side Toggle Tabs */}
-                  <div style={{ display: 'flex', gap: '0', marginBottom: '20px', borderRadius: '8px', overflow: 'hidden', border: '2px solid var(--color-text-muted)' }}>
+                  <div style={{ display: 'flex', gap: '0', marginBottom: '20px', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '2px solid var(--color-text-muted)' }}>
                     {['white', 'black'].map(s => {
                       const sd = pgnAnalysisResult[s] || { totalBlunders: 0, totalMistakes: 0, totalInaccuracies: 0 };
                       const isActive = viewSide === s;
@@ -1605,7 +1605,7 @@ export default function FocusTaskPage() {
                     <div style={{ 
                       background: passed ? '#d1fae5' : '#fee2e2',
                       padding: '20px',
-                      borderRadius: '12px',
+                      borderRadius: 'var(--radius-lg)',
                       textAlign: 'center',
                       marginBottom: '20px',
                       border: `2px solid ${passed ? 'var(--color-success)' : 'var(--color-danger)'}`
@@ -1635,7 +1635,7 @@ export default function FocusTaskPage() {
                     <div style={{ 
                       background: 'var(--color-surface)',
                       padding: '15px',
-                      borderRadius: '12px',
+                      borderRadius: 'var(--radius-lg)',
                       textAlign: 'center',
                       marginBottom: '20px',
                       border: '2px solid var(--color-text-muted)'
@@ -1670,13 +1670,13 @@ export default function FocusTaskPage() {
                               margin: '10px 0',
                               background: c.bg,
                               border: `2px solid ${c.border}`,
-                              borderRadius: '8px'
+                              borderRadius: 'var(--radius-md)'
                             }}
                           >
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
                               <span style={{ 
                                 background: c.badgeBg, color: c.badge, padding: '2px 8px', 
-                                borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', textTransform: 'capitalize'
+                                borderRadius: 'var(--radius-sm)', fontSize: '12px', fontWeight: 'bold', textTransform: 'capitalize'
                               }}>
                                 {c.icon} {issue.classification}
                               </span>
@@ -1706,7 +1706,7 @@ export default function FocusTaskPage() {
                     <div style={{ 
                       padding: '20px',
                       background: '#d1fae5',
-                      borderRadius: '8px',
+                      borderRadius: 'var(--radius-md)',
                       textAlign: 'center',
                       color: '#166534',
                       border: '2px solid var(--color-success)'
@@ -1734,7 +1734,7 @@ export default function FocusTaskPage() {
             </div>
 
             {pgnAnalysisResult && (
-              <div className="focus-card" style={{ background: '#fffbeb', padding: '15px', borderRadius: '8px' }}>
+              <div className="focus-card" style={{ background: '#fffbeb', padding: '15px', borderRadius: 'var(--radius-md)' }}>
                 <p style={{ margin: 0, fontSize: '14px', color: '#92400e' }}>
                   <strong>Ready to submit:</strong> Analysis complete. Click "Submit Answers" below to complete this day.
                 </p>

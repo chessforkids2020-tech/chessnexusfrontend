@@ -14,7 +14,7 @@ function BoardSwatch({ light, dark, size = 44 }) {
   return (
     <div style={{
       width: size, height: size,
-      borderRadius: 6,
+      borderRadius: 'var(--radius-sm)',
       overflow: 'hidden',
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
@@ -36,7 +36,7 @@ function PieceSwatch({ pathFn, light, dark, size = 56 }) {
   return (
     <div style={{
       width: size, height: size,
-      borderRadius: 6,
+      borderRadius: 'var(--radius-sm)',
       overflow: 'hidden',
       position: 'relative',
       boxShadow: '0 2px 8px var(--color-black-a35)',
@@ -107,7 +107,7 @@ function OptionCard({ isActive, onClick, defaultBadge, children }) {
           position: 'absolute', top: 6, right: 6,
           background: 'var(--color-surface-2)', color: 'var(--color-text-muted)',
           fontSize: 9, fontWeight: 600,
-          padding: '1px 5px', borderRadius: 4,
+          padding: '1px 5px', borderRadius: 'var(--radius-sm)',
           letterSpacing: '0.5px', textTransform: 'uppercase',
         }}>DEFAULT</span>
       )}
@@ -277,8 +277,8 @@ export default function SettingsPage() {
                       border: `1px solid ${t.swatch.accent}55`,
                     }} />
                     <span style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 1 }}>
-                      <span style={{ height: 7, width: '75%', borderRadius: 4, background: t.swatch.text, opacity: 0.85 }} />
-                      <span style={{ height: 7, width: '45%', borderRadius: 4, background: t.swatch.accent }} />
+                      <span style={{ height: 7, width: '75%', borderRadius: 'var(--radius-sm)', background: t.swatch.text, opacity: 0.85 }} />
+                      <span style={{ height: 7, width: '45%', borderRadius: 'var(--radius-sm)', background: t.swatch.accent }} />
                     </span>
                   </div>
 
@@ -354,7 +354,7 @@ export default function SettingsPage() {
               gap: 16,
               padding: '14px 18px',
               background: 'var(--color-black-a20)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-md)',
               border: '1px solid var(--color-white-a07)',
             }}>
               <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>Active theme:</span>
@@ -424,7 +424,7 @@ export default function SettingsPage() {
               gap: 16,
               padding: '14px 18px',
               background: 'var(--color-black-a20)',
-              borderRadius: 10,
+              borderRadius: 'var(--radius-md)',
               border: '1px solid var(--color-white-a07)',
             }}>
               <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>Active pieces:</span>

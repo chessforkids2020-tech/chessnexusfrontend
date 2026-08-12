@@ -52,13 +52,13 @@ function BingoCard({ label, card, marked, color, isActive, size, turnText }) {
   return (
     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, opacity: isActive ? 1 : 0.7, transition:"opacity 0.3s" }}>
       <div style={{ color, fontWeight:700, fontSize:14, letterSpacing:"0.5px", textTransform:"uppercase" }}>{label}</div>
-      <div style={{ background: T.glass, padding:8, border: isActive ? `2px solid ${color}60` : `1px solid ${color}25`, borderRadius:12, boxShadow: isActive ? `0 0 16px ${color}20` : "none", transition:"all 0.3s" }}>
+      <div style={{ background: T.glass, padding:8, border: isActive ? `2px solid ${color}60` : `1px solid ${color}25`, borderRadius: 'var(--radius-lg)', boxShadow: isActive ? `0 0 16px ${color}20` : "none", transition:"all 0.3s" }}>
         <div style={{ display:"grid", gridTemplateColumns:`repeat(${size},1fr)`, gap:3 }}>
           {safeCard.map((theme, i) => {
             const mk = markedSet.has(i);
             const themeStr = theme == null ? "" : typeof theme === "object" ? (theme.name || theme.theme || JSON.stringify(theme)) : String(theme);
             return (
-              <div key={i} style={{ width:cs, height:cs, display:"flex", alignItems:"center", justifyContent:"center", background: mk ? `${color}25` : "var(--color-white-a07)", border: mk ? `1px solid ${color}70` : "1px solid var(--color-white-a13)", borderRadius:7, fontSize: mk ? 18 : size === 3 ? 11 : size === 4 ? 10 : 9, color: mk ? color : "var(--color-text-muted)", fontWeight: mk ? 700 : 500, textAlign:"center", lineHeight:1.2, padding:3, transition:"all 0.2s" }}>
+              <div key={i} style={{ width:cs, height:cs, display:"flex", alignItems:"center", justifyContent:"center", background: mk ? `${color}25` : "var(--color-white-a07)", border: mk ? `1px solid ${color}70` : "1px solid var(--color-white-a13)", borderRadius: 'var(--radius-md)', fontSize: mk ? 18 : size === 3 ? 11 : size === 4 ? 10 : 9, color: mk ? color : "var(--color-text-muted)", fontWeight: mk ? 700 : 500, textAlign:"center", lineHeight:1.2, padding:3, transition:"all 0.2s" }}>
                 {mk ? "✓" : <span style={{ textTransform:"capitalize" }}>{themeStr}</span>}
               </div>
             );
@@ -66,7 +66,7 @@ function BingoCard({ label, card, marked, color, isActive, size, turnText }) {
         </div>
       </div>
       {/* Turn indicator below the bingo card */}
-      <div style={{ padding:"4px 14px", borderRadius:8, fontSize:12, fontWeight:700, letterSpacing:"0.3px", background: isActive ? `${color}18` : "transparent", border: isActive ? `1px solid ${color}40` : "1px solid transparent", color: isActive ? color : T.textDim, transition:"all 0.3s" }}>
+      <div style={{ padding:"4px 14px", borderRadius: 'var(--radius-md)', fontSize:12, fontWeight:700, letterSpacing:"0.3px", background: isActive ? `${color}18` : "transparent", border: isActive ? `1px solid ${color}40` : "1px solid transparent", color: isActive ? color : T.textDim, transition:"all 0.3s" }}>
         {turnText}
       </div>
     </div>
@@ -590,7 +590,7 @@ export default function ArcadeGame() {
 
         {/* Disconnect warning */}
         {disconnectMsg && (
-          <div style={{ background:`${T.wrong}12`, border:`1px solid ${T.wrong}35`, borderRadius:10, padding:"8px 16px", marginBottom:10, color:T.wrong, fontSize:13, textAlign:"center" }}>
+          <div style={{ background:`${T.wrong}12`, border:`1px solid ${T.wrong}35`, borderRadius: 'var(--radius-md)', padding:"8px 16px", marginBottom:10, color:T.wrong, fontSize:13, textAlign:"center" }}>
             ⚠️ {disconnectMsg}
           </div>
         )}
@@ -628,7 +628,7 @@ export default function ArcadeGame() {
               </div>
 
               {/* Turn banner */}
-              <div style={{ width:"100%", background:`${playerColors[currentTurn]}12`, border:`1px solid ${playerColors[currentTurn]}35`, borderRadius:10, padding:"8px 16px", color:playerColors[currentTurn], fontWeight:600, fontSize:14, textAlign:"center" }}>
+              <div style={{ width:"100%", background:`${playerColors[currentTurn]}12`, border:`1px solid ${playerColors[currentTurn]}35`, borderRadius: 'var(--radius-md)', padding:"8px 16px", color:playerColors[currentTurn], fontWeight:600, fontSize:14, textAlign:"center" }}>
                 {phase === "bot_moving"      ? "♟️ Opponent is making a move..."
                 : phase === "waiting_puzzle" ? "⏳ Loading next puzzle..."
                 : isMyTurn
@@ -657,7 +657,7 @@ export default function ArcadeGame() {
                       onClick={() => handleCellClick(i)}
                       onMouseEnter={() => setHoveredCell(i)}
                       onMouseLeave={() => setHoveredCell(null)}
-                      style={{ width:cellSize, height:cellSize, display:"flex", alignItems:"center", justifyContent:"center", background: cell ? `${playerColors[cell]}15` : hov ? "var(--color-accent-a12)" : "var(--color-white-a04)", border: cell ? `1px solid ${playerColors[cell]}50` : hov ? "1px solid var(--color-accent-a40)" : "1px solid var(--color-white-a04)", borderRadius:10, cursor: !cell && isMyTurn && phase === "pending_cell" ? "pointer" : "default", transition:"all 0.15s", fontSize: size === 3 ? 34 : size === 4 ? 26 : 20, fontWeight:900, color: cell ? playerColors[cell] : T.textDim, transform: hov ? "scale(1.06)" : "scale(1)" }}>
+                      style={{ width:cellSize, height:cellSize, display:"flex", alignItems:"center", justifyContent:"center", background: cell ? `${playerColors[cell]}15` : hov ? "var(--color-accent-a12)" : "var(--color-white-a04)", border: cell ? `1px solid ${playerColors[cell]}50` : hov ? "1px solid var(--color-accent-a40)" : "1px solid var(--color-white-a04)", borderRadius: 'var(--radius-md)', cursor: !cell && isMyTurn && phase === "pending_cell" ? "pointer" : "default", transition:"all 0.15s", fontSize: size === 3 ? 34 : size === 4 ? 26 : 20, fontWeight:900, color: cell ? playerColors[cell] : T.textDim, transform: hov ? "scale(1.06)" : "scale(1)" }}>
                       {cell ? playerSymbols[cell] : (hov ? "?" : "")}
                     </div>
                   );
@@ -683,7 +683,7 @@ export default function ArcadeGame() {
             {/* Back button — top left, aligned with board */}
             <button
               onClick={() => { sessionStorage.removeItem("arcade_session"); navigate("/arcade"); }}
-              style={{ position:"absolute", top:0, left:0, zIndex:10, background:"var(--color-white-a07)", border:"1px solid var(--color-white-a13)", borderRadius:8, padding:"5px 12px", color:"var(--color-text-muted)", fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:T.font, transition:"all 0.2s" }}
+              style={{ position:"absolute", top:0, left:0, zIndex:10, background:"var(--color-white-a07)", border:"1px solid var(--color-white-a13)", borderRadius: 'var(--radius-md)', padding:"5px 12px", color:"var(--color-text-muted)", fontSize:12, fontWeight:600, cursor:"pointer", fontFamily:T.font, transition:"all 0.2s" }}
               onMouseEnter={e => { e.currentTarget.style.background="var(--color-accent-a15)"; e.currentTarget.style.borderColor="var(--color-accent-a40)"; e.currentTarget.style.color=T.accent1; }}
               onMouseLeave={e => { e.currentTarget.style.background="var(--color-white-a07)"; e.currentTarget.style.borderColor="var(--color-white-a13)"; e.currentTarget.style.color="var(--color-text-muted)"; }}
             >← Arcade</button>
@@ -732,7 +732,7 @@ export default function ArcadeGame() {
                           background: ok ? `${T.correct}25` : bad ? `${T.wrong}25` : waitingResult ? "var(--color-accent-a20)" : can ? "var(--color-white-a07)" : "var(--color-white-a04)", 
                           border: ok ? `2px solid ${T.correct}` : bad ? `2px solid ${T.wrong}` : waitingResult ? `2px solid ${T.accent1}` : can ? "1px solid var(--color-white-a20)" : "1px solid var(--color-white-a07)", 
                           color: ok ? T.correct : bad ? T.wrong : waitingResult ? T.accent1 : can ? "var(--color-text)" : T.textDim, 
-                          borderRadius:8, padding:"7px 14px", fontSize:12, 
+                          borderRadius: 'var(--radius-md)', padding:"7px 14px", fontSize:12, 
                           fontWeight: (can || isSel) ? 600 : 400, 
                           cursor: can ? "pointer" : "default", fontFamily:T.font, transition:"all 0.2s", textTransform:"capitalize", letterSpacing: "0.3px",
                           transform: isSel ? "scale(1.05)" : "scale(1)"
@@ -756,7 +756,7 @@ export default function ArcadeGame() {
                         background: selTheme === "__pass__" ? "var(--color-warning-a20)" : "var(--color-white-a04)",
                         border: selTheme === "__pass__" ? "2px solid var(--color-warning)" : "1px dashed var(--color-white-a20)",
                         color: selTheme === "__pass__" ? "var(--color-warning)" : "var(--color-text-muted)",
-                        borderRadius:8, padding:"7px 22px", fontSize:12,
+                        borderRadius: 'var(--radius-md)', padding:"7px 22px", fontSize:12,
                         fontWeight: 600, cursor: selTheme ? "default" : "pointer",
                         fontFamily:T.font, transition:"all 0.2s", letterSpacing:"0.3px"
                       }}

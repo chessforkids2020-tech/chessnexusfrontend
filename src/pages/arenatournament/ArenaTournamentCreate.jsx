@@ -132,7 +132,7 @@ export default function ArenaTournamentCreate() {
       }}>
         <div style={{
           background: 'var(--color-surface)',
-          borderRadius: '20px',
+          borderRadius: 'var(--radius-2xl)',
           padding: '40px',
           boxShadow: '0 20px 40px var(--color-black-a50)',
           border: '1px solid var(--color-white-a04)',
@@ -163,7 +163,7 @@ export default function ArenaTournamentCreate() {
               background: 'var(--color-danger-a12)',
               color: 'var(--color-danger)',
               padding: '16px',
-              borderRadius: '12px',
+              borderRadius: 'var(--radius-lg)',
               marginBottom: '20px',
               border: '1px solid var(--color-danger-a20)',
               backdropFilter: 'blur(5px)',
@@ -192,7 +192,7 @@ export default function ArenaTournamentCreate() {
                   style={{
                     flex: '1 1 140px',
                     padding: '14px 16px',
-                    borderRadius: '12px',
+                    borderRadius: 'var(--radius-lg)',
                     border: `2px solid ${tournamentType === 'standard' ? 'var(--color-accent)' : 'var(--color-white-a10)'}`,
                     background: tournamentType === 'standard' ? 'var(--color-accent-a12)' : 'var(--color-black-a35)',
                     cursor: 'pointer',
@@ -209,7 +209,7 @@ export default function ArenaTournamentCreate() {
                   style={{
                     flex: '1 1 140px',
                     padding: '14px 16px',
-                    borderRadius: '12px',
+                    borderRadius: 'var(--radius-lg)',
                     border: `2px solid ${tournamentType === 'bullet_blitz_marathon' ? 'var(--color-warning)' : 'var(--color-white-a10)'}`,
                     background: tournamentType === 'bullet_blitz_marathon' ? 'var(--color-warning-a12)' : 'var(--color-black-a35)',
                     cursor: 'pointer',
@@ -226,7 +226,7 @@ export default function ArenaTournamentCreate() {
                   style={{
                     flex: '1 1 140px',
                     padding: '14px 16px',
-                    borderRadius: '12px',
+                    borderRadius: 'var(--radius-lg)',
                     border: `2px solid ${isTeamBattle ? 'var(--color-accent-2)' : 'var(--color-white-a10)'}`,
                     background: isTeamBattle ? 'rgba(168,85,247,0.1)' : 'var(--color-black-a35)',
                     cursor: 'pointer',
@@ -243,7 +243,7 @@ export default function ArenaTournamentCreate() {
                   style={{
                     flex: '1 1 140px',
                     padding: '14px 16px',
-                    borderRadius: '12px',
+                    borderRadius: 'var(--radius-lg)',
                     border: `2px solid ${isChess960 ? 'var(--color-success)' : 'var(--color-white-a10)'}`,
                     background: isChess960 ? 'rgba(34,197,94,0.1)' : 'var(--color-black-a35)',
                     cursor: 'pointer',
@@ -261,7 +261,7 @@ export default function ArenaTournamentCreate() {
                 <div style={{
                   marginTop: '12px',
                   padding: '14px 16px',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   background: 'var(--color-warning-a12)',
                   border: '1px solid var(--color-warning-a30)'
                 }}>
@@ -288,7 +288,7 @@ export default function ArenaTournamentCreate() {
                 <div style={{
                   marginTop: '12px',
                   padding: '14px 16px',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   background: 'rgba(168,85,247,0.08)',
                   border: '1px solid rgba(168,85,247,0.3)'
                 }}>
@@ -315,7 +315,7 @@ export default function ArenaTournamentCreate() {
                         padding: '10px 14px',
                         background: 'var(--color-black-a35)',
                         border: '1px solid rgba(168,85,247,0.4)',
-                        borderRadius: '10px',
+                        borderRadius: 'var(--radius-md)',
                         color: 'var(--color-text)',
                         fontSize: '14px',
                         fontFamily: 'inherit',
@@ -342,7 +342,7 @@ export default function ArenaTournamentCreate() {
                         const COLORS = ['var(--color-danger)','var(--color-accent-2)','var(--color-success)','var(--color-warning)','var(--color-accent-2)','#ec4899','#14b8a6','#f97316','var(--color-accent-2)','#e11d48'];
                         return (
                           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: COLORS[i], flexShrink: 0 }} />
+                            <div style={{ width: '10px', height: '10px', borderRadius: 'var(--radius-circle)', background: COLORS[i], flexShrink: 0 }} />
                             <input
                               type="text"
                               value={teamNames[i] || ''}
@@ -358,7 +358,7 @@ export default function ArenaTournamentCreate() {
                                 padding: '7px 10px',
                                 background: 'var(--color-black-a35)',
                                 border: `1px solid ${COLORS[i]}55`,
-                                borderRadius: '8px',
+                                borderRadius: 'var(--radius-md)',
                                 color: 'var(--color-text)',
                                 fontSize: '13px',
                                 fontFamily: 'inherit',
@@ -380,7 +380,7 @@ export default function ArenaTournamentCreate() {
                 <div style={{
                   marginTop: '12px',
                   padding: '14px 16px',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   background: 'rgba(34,197,94,0.08)',
                   border: '1px solid rgba(34,197,94,0.3)'
                 }}>
@@ -445,7 +445,7 @@ export default function ArenaTournamentCreate() {
                   padding: '14px',
                   background: 'var(--color-black-a35)',
                   border: '1px solid var(--color-white-a10)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '16px',
                   fontFamily: 'inherit',
                   color: 'var(--color-text)',
@@ -486,7 +486,7 @@ export default function ArenaTournamentCreate() {
                   padding: '14px',
                   background: 'var(--color-black-a35)',
                   border: '1px solid var(--color-white-a10)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '16px',
                   fontFamily: 'inherit',
                   color: 'var(--color-text)',
@@ -539,7 +539,7 @@ export default function ArenaTournamentCreate() {
                   padding: '14px',
                   background: 'var(--color-black-a35)',
                   border: '1px solid var(--color-white-a10)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '16px',
                   fontFamily: 'inherit',
                   color: 'var(--color-text)',
@@ -590,7 +590,7 @@ export default function ArenaTournamentCreate() {
                       padding: '14px',
                       background: 'var(--color-black-a35)',
                       border: '1px solid var(--color-white-a10)',
-                      borderRadius: '12px',
+                      borderRadius: 'var(--radius-lg)',
                       fontSize: '16px',
                       fontFamily: 'inherit',
                       color: 'var(--color-text)',
@@ -630,7 +630,7 @@ export default function ArenaTournamentCreate() {
                       padding: '14px',
                       background: 'var(--color-black-a35)',
                       border: '1px solid var(--color-white-a10)',
-                      borderRadius: '12px',
+                      borderRadius: 'var(--radius-lg)',
                       fontSize: '16px',
                       fontFamily: 'inherit',
                       color: 'var(--color-text)',
@@ -673,7 +673,7 @@ export default function ArenaTournamentCreate() {
                   padding: '14px',
                   background: 'var(--color-black-a35)',
                   border: '1px solid var(--color-white-a10)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '16px',
                   fontFamily: 'inherit',
                   color: 'var(--color-text)',
@@ -712,7 +712,7 @@ export default function ArenaTournamentCreate() {
                   padding: '14px',
                   background: 'var(--color-black-a35)',
                   border: '1px solid var(--color-white-a10)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '16px',
                   fontFamily: 'inherit',
                   color: 'var(--color-text)',
@@ -759,7 +759,7 @@ export default function ArenaTournamentCreate() {
                   padding: '14px',
                   background: 'var(--color-black-a35)',
                   border: '1px solid var(--color-white-a10)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '16px',
                   fontFamily: 'inherit',
                   color: 'var(--color-text)',
@@ -789,7 +789,7 @@ export default function ArenaTournamentCreate() {
                   background: 'var(--color-white-a04)',
                   color: 'var(--color-text)',
                   border: '1px solid var(--color-white-a10)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '16px',
                   fontWeight: '600',
                   cursor: 'pointer',
@@ -821,7 +821,7 @@ export default function ArenaTournamentCreate() {
                   background: loading ? 'rgba(107, 114, 128, 0.3)' : 'var(--color-accent-a15)',
                   color: loading ? 'var(--color-text-muted)' : 'var(--color-accent)',
                   border: loading ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid var(--color-accent-a30)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                   fontSize: '16px',
                   fontWeight: '600',
                   cursor: loading ? 'not-allowed' : 'pointer',

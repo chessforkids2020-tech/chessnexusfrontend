@@ -20,7 +20,7 @@ import { useBoardTheme, CUSTOM_THEME_ID } from '../contexts/BoardThemeContext';
 function Swatch({ light, dark, size = 56 }) {
   const cell = { width: size / 2, height: size / 2 };
   return (
-    <div style={{ width: size, height: size, display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: 6, overflow: 'hidden', flexShrink: 0 }}>
+    <div style={{ width: size, height: size, display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: 'var(--radius-sm)', overflow: 'hidden', flexShrink: 0 }}>
       <div style={{ ...cell, background: light }} />
       <div style={{ ...cell, background: dark }} />
       <div style={{ ...cell, background: dark }} />
@@ -87,27 +87,27 @@ export default function CustomBoardColors() {
       marginBottom: 28, padding: '18px 20px',
       background: 'rgba(0,0,0,0.25)',
       border: '1px solid rgba(255,255,255,0.08)',
-      borderRadius: 12,
+      borderRadius: 'var(--radius-lg)',
     },
     head: { display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
     title: { fontSize: 15, fontWeight: 700, color: '#e2e8f0' },
     sub: { fontSize: 12, color: '#64748b', marginTop: 3, lineHeight: 1.5 },
     btn: {
-      background: '#f59e0b', color: '#111', border: 'none', borderRadius: 10,
+      background: '#f59e0b', color: '#111', border: 'none', borderRadius: 'var(--radius-md)',
       padding: '9px 16px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
     },
     ghost: {
       background: 'rgba(255,255,255,0.06)', color: '#e2e8f0',
-      border: '1px solid rgba(255,255,255,0.16)', borderRadius: 10,
+      border: '1px solid rgba(255,255,255,0.16)', borderRadius: 'var(--radius-md)',
       padding: '8px 14px', fontSize: 12.5, fontWeight: 600, cursor: 'pointer',
     },
     swatchBtn: (active) => ({
       display: 'flex', alignItems: 'center', gap: 10,
       background: 'rgba(255,255,255,0.04)',
       border: `1px solid ${active ? '#f59e0b' : 'rgba(255,255,255,0.14)'}`,
-      borderRadius: 10, padding: '8px 12px', cursor: 'pointer', color: '#e2e8f0',
+      borderRadius: 'var(--radius-md)', padding: '8px 12px', cursor: 'pointer', color: '#e2e8f0',
     }),
-    chip: (c) => ({ width: 26, height: 26, borderRadius: 6, background: c, border: '1px solid rgba(255,255,255,0.2)' }),
+    chip: (c) => ({ width: 26, height: 26, borderRadius: 'var(--radius-sm)', background: c, border: '1px solid rgba(255,255,255,0.2)' }),
     hex: { fontFamily: 'monospace', fontSize: 12.5 },
     err: { color: '#f87171', fontSize: 12.5, marginTop: 10 },
     ok: { color: '#34d399', fontSize: 12.5, marginTop: 10, fontWeight: 600 },

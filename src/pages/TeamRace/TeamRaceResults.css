@@ -27,7 +27,7 @@
 .tournament-leaderboard-container::after {
   content: '';
   position: fixed;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   pointer-events: none;
   filter: blur(90px);
   opacity: 0.10;
@@ -53,7 +53,7 @@
   padding: 8px 18px;
   background: var(--obs-glass);
   border: 1px solid var(--obs-border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   color: var(--obs-cyan);
   font-size: 13px;
   font-weight: 600;
@@ -103,7 +103,7 @@
   width: min(31%, 270px);
   padding: 16px 14px 0;
   border: 1px solid var(--obs-border);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   background:
     linear-gradient(180deg, var(--color-white-a07) 0%, var(--color-white-a04) 100%),
     var(--color-white-a04);
@@ -116,7 +116,7 @@
   position: absolute;
   width: 140px;
   height: 140px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   top: -58px;
   left: 50%;
   transform: translateX(-50%);
@@ -132,7 +132,7 @@
   justify-content: center;
   width: 112px;
   height: 112px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: radial-gradient(circle at 30% 28%, var(--color-text-faint) 0%, var(--color-white-a04) 62%);
   border: 1px solid var(--color-white-a20);
   box-shadow: 0 6px 24px var(--color-accent-a20);
@@ -162,7 +162,7 @@
   text-transform: uppercase;
   letter-spacing: 0.14em;
   border: 1px solid;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 5px 11px;
   background: var(--color-white-a04);
   font-weight: 700;
@@ -171,7 +171,7 @@
 .elegant-podium .team-dot {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
 }
 
 .elegant-podium .trophy-team-name {
@@ -199,7 +199,7 @@
   height: 20px;
   margin-top: 4px;
   position: relative;
-  border-radius: 12px 12px 0 0;
+  border-radius: var(--radius-lg) 12px 0 0;
   border: 1px solid var(--color-white-a20);
   border-bottom: none;
   background:
@@ -253,7 +253,7 @@
 .leaderboard-table-container {
   background: var(--obs-surface);
   border: 1px solid var(--obs-border);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);

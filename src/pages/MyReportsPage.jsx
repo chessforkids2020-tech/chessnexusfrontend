@@ -45,7 +45,7 @@ export default function MyReportsPage() {
         <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0 }}>📨 My Reports</h1>
         <Link
           to="/report"
-          style={{ textDecoration: "none", color: "var(--color-accent)", fontWeight: 700, fontSize: 14, padding: "8px 16px", borderRadius: 12, background: "var(--color-accent-a12)", border: "1px solid var(--color-accent-a30)" }}
+          style={{ textDecoration: "none", color: "var(--color-accent)", fontWeight: 700, fontSize: 14, padding: "8px 16px", borderRadius: 'var(--radius-lg)', background: "var(--color-accent-a12)", border: "1px solid var(--color-accent-a30)" }}
         >
           + New report
         </Link>
@@ -69,11 +69,11 @@ export default function MyReportsPage() {
             return (
               <div
                 key={r._id}
-                style={{ padding: "18px 20px", borderRadius: 16, background: "var(--color-white-a04)", border: "1px solid var(--color-white-a07)" }}
+                style={{ padding: "18px 20px", borderRadius: 'var(--radius-xl)', background: "var(--color-white-a04)", border: "1px solid var(--color-white-a07)" }}
               >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
                   <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>{r.subject}</h3>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: st.color, background: st.bg, padding: "4px 12px", borderRadius: 999, whiteSpace: "nowrap" }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: st.color, background: st.bg, padding: "4px 12px", borderRadius: 'var(--radius-pill)', whiteSpace: "nowrap" }}>
                     {st.label}
                   </span>
                 </div>
@@ -81,7 +81,7 @@ export default function MyReportsPage() {
                 <p style={{ marginTop: 10, fontSize: 14.5, lineHeight: 1.6, color: "var(--color-text-muted)", whiteSpace: "pre-wrap" }}>{r.details}</p>
 
                 {r.reply ? (
-                  <div style={{ marginTop: 14, padding: "14px 16px", borderRadius: 12, background: "var(--color-success-a12)", borderLeft: "3px solid var(--color-success)" }}>
+                  <div style={{ marginTop: 14, padding: "14px 16px", borderRadius: 'var(--radius-lg)', background: "var(--color-success-a12)", borderLeft: "3px solid var(--color-success)" }}>
                     <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-success)", marginBottom: 6 }}>
                       ♟️ Chess Nexus Team replied · {fmt(r.repliedAt)}
                     </div>

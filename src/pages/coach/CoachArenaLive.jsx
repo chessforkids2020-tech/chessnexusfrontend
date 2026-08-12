@@ -181,7 +181,7 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
                   onClick={sendLinkToClass}
                   title="Post the join link into class chat for every student"
                   style={{
-                    padding: '6px 14px', borderRadius: 8, fontSize: 12.5, fontWeight: 700,
+                    padding: '6px 14px', borderRadius: 'var(--radius-md)', fontSize: 12.5, fontWeight: 700,
                     cursor: 'pointer', whiteSpace: 'nowrap',
                     background: sentToClass ? 'rgba(16,185,129,0.2)' : 'rgba(6,182,212,0.15)',
                     border: `1px solid ${sentToClass ? 'rgba(16,185,129,0.5)' : 'rgba(6,182,212,0.35)'}`,

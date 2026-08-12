@@ -14,7 +14,7 @@
 .bap-modal {
   background: rgba(20, 20, 22, 0.98);
   border: 1px solid var(--color-accent-2-a30);
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   width: 100%;
   max-width: 760px;
   max-height: 92vh;
@@ -61,7 +61,7 @@
   background: var(--color-white-a07);
   border: 1px solid var(--color-white-a10);
   color: var(--color-text);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 6px 12px;
   cursor: pointer;
   font-size: 14px;
@@ -89,7 +89,7 @@
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a10);
   color: var(--color-text-muted);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding: 5px 12px;
   font-size: 12px;
   cursor: pointer;
@@ -121,7 +121,7 @@
 .bap-find-input {
   background: var(--color-white-a04);
   border: 1px solid var(--color-white-a10);
-  border-radius: 9px;
+  border-radius: var(--radius-md);
   padding: 10px 12px;
   color: var(--color-text);
   font-size: 14px;
@@ -135,7 +135,7 @@
   background: linear-gradient(135deg, var(--color-accent-2), var(--color-accent));
   color: var(--color-text);
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 11px 18px;
   font-size: 14px;
   font-weight: 700;

@@ -457,7 +457,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                   placeholder="e.g. Batch A"
                   onChange={e => setGroupTag(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') saveGroup(); if (e.key === 'Escape') { setEditingGroup(false); setGroupTag(data?.link?.groupTag || ''); } }}
-                  style={{ padding: '2px 8px', borderRadius: 6 }}
+                  style={{ padding: '2px 8px', borderRadius: 'var(--radius-sm)' }}
                 />
                 <button type="button" className="btn-ghost" onClick={saveGroup} disabled={savingGroup}>
                   {savingGroup ? 'Saving…' : 'Save'}
@@ -511,7 +511,7 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           onChange={(e) => setNotes(e.target.value)}
           maxLength={1000}
           placeholder="Private notes about this student (only you see these)…"
-          style={{ width: '100%', minHeight: 70, resize: 'vertical', boxSizing: 'border-box', padding: 10, borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: '#e7eaf0', fontSize: 14 }}
+          style={{ width: '100%', minHeight: 70, resize: 'vertical', boxSizing: 'border-box', padding: 10, borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: '#e7eaf0', fontSize: 14 }}
         />
       </div>
 

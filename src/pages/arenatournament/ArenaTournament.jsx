@@ -85,7 +85,7 @@ export default function ArenaTournament() {
         <div style={{
           position: 'relative',
           background: 'var(--color-surface)',
-          borderRadius: '20px',
+          borderRadius: 'var(--radius-2xl)',
           padding: '40px',
           boxShadow: '0 20px 40px var(--color-black-a50)',
           marginBottom: '30px',
@@ -114,7 +114,7 @@ export default function ArenaTournament() {
             };
             const c = user?.arenaCrownTier && crownMap[user.arenaCrownTier];
             const badgeBase = {
-              width: '44px', height: '44px', borderRadius: '50%', display: 'flex',
+              width: '44px', height: '44px', borderRadius: 'var(--radius-circle)', display: 'flex',
               alignItems: 'center', justifyContent: 'center', fontSize: '22px',
               flexShrink: 0, cursor: 'default',
               backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
@@ -134,7 +134,7 @@ export default function ArenaTournament() {
             const progress = user?.arenaCarryQualifyingCount || 0;
             const badgeBase = {
               position: 'relative',
-              width: '44px', height: '44px', borderRadius: '50%', display: 'flex',
+              width: '44px', height: '44px', borderRadius: 'var(--radius-circle)', display: 'flex',
               alignItems: 'center', justifyContent: 'center', fontSize: '22px',
               flexShrink: 0, cursor: 'default',
               backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
@@ -153,7 +153,7 @@ export default function ArenaTournament() {
               <span title={tipNo} style={{ ...badgeBase, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', opacity: progress > 0 ? 0.7 : 0.45 }}>
                 🎁
                 {progress > 0 && (
-                  <span style={{ position: 'absolute', bottom: '-4px', right: '-4px', background: 'var(--color-accent-2)', color: 'var(--color-text)', borderRadius: '999px', padding: '0 5px', fontSize: '10px', fontWeight: '800', lineHeight: '15px', border: '1px solid var(--color-black-a35)' }}>{progress}/3</span>
+                  <span style={{ position: 'absolute', bottom: '-4px', right: '-4px', background: 'var(--color-accent-2)', color: 'var(--color-text)', borderRadius: 'var(--radius-pill)', padding: '0 5px', fontSize: '10px', fontWeight: '800', lineHeight: '15px', border: '1px solid var(--color-black-a35)' }}>{progress}/3</span>
                 )}
               </span>
             );
@@ -192,7 +192,7 @@ export default function ArenaTournament() {
                 background: 'var(--color-accent-a15)',
                 color: 'var(--color-accent)',
                 border: '1px solid var(--color-accent-a30)',
-                borderRadius: '12px',
+                borderRadius: 'var(--radius-lg)',
                 fontSize: '18px',
                 fontWeight: '700',
                 cursor: 'pointer',
@@ -223,7 +223,7 @@ export default function ArenaTournament() {
                 background: 'var(--color-success-a12)',
                 color: 'var(--color-success)',
                 border: '1px solid var(--color-success-a30)',
-                borderRadius: '12px',
+                borderRadius: 'var(--radius-lg)',
                 fontSize: '18px',
                 fontWeight: '700',
                 cursor: 'pointer',
@@ -250,7 +250,7 @@ export default function ArenaTournament() {
         {/* Tournaments List Section */}
         <div style={{
           background: 'var(--color-surface)',
-          borderRadius: '20px',
+          borderRadius: 'var(--radius-2xl)',
           padding: '40px',
           boxShadow: '0 20px 40px var(--color-black-a50)',
           border: '1px solid var(--color-white-a04)',
@@ -275,7 +275,7 @@ export default function ArenaTournament() {
               textAlign: 'center', 
               padding: '60px 30px',
               background: 'var(--color-surface)',
-              borderRadius: '20px',
+              borderRadius: 'var(--radius-2xl)',
               border: '1px solid var(--color-white-a04)',
               boxShadow: '0 8px 32px var(--color-black-a50)',
               color: 'var(--color-text)',
@@ -291,7 +291,7 @@ export default function ArenaTournament() {
               background: 'var(--color-danger-a12)',
               color: 'var(--color-danger)',
               padding: '24px',
-              borderRadius: '12px',
+              borderRadius: 'var(--radius-lg)',
               textAlign: 'center',
               border: '1px solid var(--color-danger-a20)',
               backdropFilter: 'blur(10px)',
@@ -305,7 +305,7 @@ export default function ArenaTournament() {
               textAlign: 'center', 
               padding: '60px 30px',
               background: 'var(--color-surface)',
-              borderRadius: '20px',
+              borderRadius: 'var(--radius-2xl)',
               border: '1px dashed var(--color-white-a10)',
               color: 'var(--color-text-muted)',
               backdropFilter: 'blur(10px)',
@@ -327,7 +327,7 @@ export default function ArenaTournament() {
                   style={{
                     padding: '24px',
                     background: 'var(--color-black-a35)',
-                    borderRadius: '16px',
+                    borderRadius: 'var(--radius-xl)',
                     border: '1px solid var(--color-white-a04)',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     cursor: 'pointer',
@@ -379,13 +379,13 @@ export default function ArenaTournament() {
                       </h3>
                       {/* Tournament type badge */}
                       {tournament.tournamentType === 'team_battle' && (
-                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)', marginBottom: '6px' }}>⚔️ Team Battle</span>
+                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)', marginBottom: '6px' }}>⚔️ Team Battle</span>
                       )}
                       {tournament.tournamentType === 'chess960' && (
-                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)', marginBottom: '6px' }}>🎲 Chess960</span>
+                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)', marginBottom: '6px' }}>🎲 Chess960</span>
                       )}
                       {tournament.tournamentType === 'bullet_blitz_marathon' && (
-                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)', marginBottom: '6px' }}>⚡ Marathon</span>
+                        <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '11px', fontWeight: '700', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)', marginBottom: '6px' }}>⚡ Marathon</span>
                       )}
                       <div style={{
                         fontSize: '14px',
@@ -400,7 +400,7 @@ export default function ArenaTournament() {
                       padding: '8px 16px',
                       background: getStatusColor(tournament.status),
                       color: 'white',
-                      borderRadius: '20px',
+                      borderRadius: 'var(--radius-2xl)',
                       fontSize: '14px',
                       fontWeight: '600',
                       textTransform: 'uppercase',
@@ -491,7 +491,7 @@ export default function ArenaTournament() {
         {recentFinished.length > 0 && (
           <div style={{
             background: 'var(--color-surface)',
-            borderRadius: '20px',
+            borderRadius: 'var(--radius-2xl)',
             padding: '40px',
             boxShadow: '0 20px 40px var(--color-black-a50)',
             border: '1px solid var(--color-accent-2-a15)',
@@ -523,7 +523,7 @@ export default function ArenaTournament() {
                   style={{
                     padding: '20px 24px',
                     background: 'var(--color-black-a35)',
-                    borderRadius: '14px',
+                    borderRadius: 'var(--radius-lg)',
                     border: '1px solid var(--color-accent-2-a15)',
                     cursor: 'pointer',
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -551,7 +551,7 @@ export default function ArenaTournament() {
                     padding: '6px 14px',
                     background: 'var(--color-accent-2-a15)',
                     color: 'var(--color-accent-2)',
-                    borderRadius: '20px',
+                    borderRadius: 'var(--radius-2xl)',
                     fontSize: '12px',
                     fontWeight: '700',
                     textTransform: 'uppercase',
@@ -567,10 +567,10 @@ export default function ArenaTournament() {
                       {tournament.name}
                     </div>
                     {tournament.tournamentType === 'team_battle' && (
-                      <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)', marginBottom: '3px' }}>⚔️ Team Battle</span>
+                      <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 'var(--radius-2xl)', fontSize: '10px', fontWeight: '700', background: 'rgba(168,85,247,0.15)', color: 'var(--color-accent-2)', border: '1px solid rgba(168,85,247,0.3)', marginBottom: '3px' }}>⚔️ Team Battle</span>
                     )}
                     {tournament.tournamentType === 'chess960' && (
-                      <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '20px', fontSize: '10px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)', marginBottom: '3px' }}>🎲 Chess960</span>
+                      <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 'var(--radius-2xl)', fontSize: '10px', fontWeight: '700', background: 'rgba(34,197,94,0.15)', color: 'var(--color-success)', border: '1px solid rgba(34,197,94,0.3)', marginBottom: '3px' }}>🎲 Chess960</span>
                     )}
                     <div style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>
                       by <span style={{ color: 'var(--color-accent)' }}>{tournament.creatorDisplayName || tournament.creatorUsername}</span>
@@ -625,7 +625,7 @@ export default function ArenaTournament() {
             background: 'var(--color-white-a04)',
             color: 'var(--color-text)',
             border: '1px solid var(--color-white-a10)',
-            borderRadius: '12px',
+            borderRadius: 'var(--radius-lg)',
             fontSize: '16px',
             fontWeight: '600',
             cursor: 'pointer',

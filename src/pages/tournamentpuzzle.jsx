@@ -1147,7 +1147,7 @@ const styles = {
     background: 'rgba(30, 41, 59, 0.7)',
     backdropFilter: 'blur(20px)',
     padding: 16, 
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     border: '1px solid rgba(99, 102, 241, 0.2)',
     boxShadow: '0 8px 32px var(--color-black-a35), 0 0 20px rgba(99, 102, 241, 0.1)',
     position: 'relative',
@@ -1179,7 +1179,7 @@ const styles = {
     padding: 20,
     background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid rgba(99, 102, 241, 0.2)',
     boxShadow: '0 4px 12px var(--color-black-a20)'
   },
@@ -1198,7 +1198,7 @@ const styles = {
     textAlign: 'center',
     padding: 20,
     background: 'rgba(15, 23, 42, 0.9)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid rgba(99, 102, 241, 0.3)',
     boxShadow: '0 4px 12px var(--color-black-a20)'
   },
@@ -1222,7 +1222,7 @@ const styles = {
     textAlign: 'center',
     padding: 16,
     background: 'rgba(15, 23, 42, 0.9)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid rgba(99, 102, 241, 0.3)'
   },
   glassGameModeIndicator: {
@@ -1249,7 +1249,7 @@ const styles = {
     textAlign: 'center',
     padding: 16,
     background: 'rgba(15, 23, 42, 0.9)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid rgba(99, 102, 241, 0.3)'
   },
   glassMovesValue: {
@@ -1263,7 +1263,7 @@ const styles = {
     textAlign: 'center',
     padding: 16,
     background: 'rgba(15, 23, 42, 0.9)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid rgba(99, 102, 241, 0.3)'
   },
   glassDifficultyValue: {
@@ -1296,7 +1296,7 @@ const styles = {
   },
   glassModeButton: { 
     padding: "12px 24px", 
-    borderRadius: 10, 
+    borderRadius: 'var(--radius-md)', 
     border: "1px solid var(--color-accent-2-a30)",
     background: 'var(--color-accent-2-a15)',
     color: "var(--color-accent-2)", 
@@ -1309,7 +1309,7 @@ const styles = {
   },
   glassSubmitButton: { 
     padding: "12px 24px", 
-    borderRadius: 10, 
+    borderRadius: 'var(--radius-md)', 
     border: "1px solid var(--color-warning-a30)",
     background: 'var(--color-warning-a20)',
     color: "var(--color-warning)", 
@@ -1322,7 +1322,7 @@ const styles = {
   },
   glassSubmitSection: {
     background: 'rgba(15, 23, 42, 0.9)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid rgba(99, 102, 241, 0.3)',
     padding: 16,
     textAlign: 'center'
@@ -1338,7 +1338,7 @@ const styles = {
   glassNotationSection: {
     flex: 1,
     background: 'rgba(15, 23, 42, 0.9)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid rgba(99, 102, 241, 0.3)',
     padding: 16,
     display: 'flex',
@@ -1357,7 +1357,7 @@ const styles = {
     maxHeight: 'calc(100vh - 260px)',
     overflowY: 'auto',
     border: '1px solid rgba(99, 102, 241, 0.2)',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     padding: 12,
     background: 'rgba(15, 23, 42, 0.7)'
   },
@@ -1390,7 +1390,7 @@ const styles = {
   },
   glassStatusSection: {
     background: 'rgba(15, 23, 42, 0.9)',
-    borderRadius: 12,
+    borderRadius: 'var(--radius-lg)',
     border: '1px solid rgba(99, 102, 241, 0.3)',
     padding: 16
   },
@@ -1408,7 +1408,7 @@ const styles = {
     marginTop: 12,
     padding: 10,
     background: 'rgba(15, 23, 42, 0.7)',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     border: '1px solid rgba(99, 102, 241, 0.2)'
   },
   glassModeText: {
@@ -1532,7 +1532,7 @@ const styles = {
     backgroundColor: 'rgba(15, 23, 42, 0.95)',
     backdropFilter: 'blur(20px)',
     padding: 30,
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     border: '1px solid var(--color-danger-a30)',
     boxShadow: '0 20px 40px var(--color-black-a35)',
     textAlign: 'center',
@@ -1558,7 +1558,7 @@ const styles = {
     background: 'var(--color-danger-a20)',
     border: '1px solid var(--color-danger-a30)',
     color: "var(--color-danger)",
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     cursor: "pointer",
     fontWeight: 600,
     fontSize: '14px',
@@ -1576,7 +1576,7 @@ const styles = {
     padding: 40,
     background: 'var(--color-surface)',
     backdropFilter: 'blur(20px)',
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     border: '1px solid rgba(99, 102, 241, 0.2)',
     boxShadow: '0 8px 32px var(--color-black-a35)'
   },
@@ -1585,7 +1585,7 @@ const styles = {
     height: 50,
     border: '4px solid rgba(99, 102, 241, 0.3)',
     borderTop: '4px solid #6366f1',
-    borderRadius: '50%',
+    borderRadius: 'var(--radius-circle)',
     animation: 'spin 1s linear infinite',
     marginBottom: 20
   },
@@ -1600,7 +1600,7 @@ const styles = {
     background: 'var(--color-surface)',
     backdropFilter: 'blur(20px)',
     padding: '30px',
-    borderRadius: 16,
+    borderRadius: 'var(--radius-xl)',
     textAlign: 'center',
     border: '1px solid var(--color-danger-a20)',
     boxShadow: '0 8px 32px var(--color-black-a35)',
@@ -1611,7 +1611,7 @@ const styles = {
     padding: "12px 24px",
     background: 'rgba(99, 102, 241, 0.2)',
     color: "var(--color-accent-2)",
-    borderRadius: 10,
+    borderRadius: 'var(--radius-md)',
     border: "none",
     cursor: "pointer",
     fontWeight: 600,

@@ -88,7 +88,7 @@ const styles = {
   },
   infoCard: {
     background: 'var(--color-white-a04)',
-    borderRadius: '16px',
+    borderRadius: 'var(--radius-xl)',
     border: '1px solid var(--color-white-a07)',
     textAlign: 'left',
     padding: '18px 20px',
@@ -118,17 +118,17 @@ const styles = {
     fontSize: '14px', color: 'var(--color-accent)', transition: 'all 0.3s ease',
   },
   input: {
-    padding: '8px 12px', borderRadius: '12px', border: '1px solid var(--color-accent-a30)',
+    padding: '8px 12px', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-accent-a30)',
     width: '100%', fontFamily: "'Poppins', sans-serif", background: 'var(--color-black-a35)',
     color: 'var(--color-text)', boxSizing: 'border-box',
   },
   saveBtn: {
     cursor: 'pointer', background: 'linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent) 100%)',
-    color: 'white', border: 'none', borderRadius: '12px', padding: '8px 12px', fontWeight: 600,
+    color: 'white', border: 'none', borderRadius: 'var(--radius-lg)', padding: '8px 12px', fontWeight: 600,
   },
   cancelBtn: {
     cursor: 'pointer', background: 'var(--color-danger-a12)', color: 'var(--color-danger)',
-    border: '1px solid var(--color-danger-a30)', borderRadius: '12px', padding: '8px 12px', fontWeight: 600,
+    border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-lg)', padding: '8px 12px', fontWeight: 600,
   },
 };
 
@@ -167,7 +167,7 @@ export default function ProfilePanel() {
       <div style={{
         textAlign: 'center', padding: '40px 24px',
         background: 'rgba(168,85,247,0.07)', border: '1px solid rgba(168,85,247,0.25)',
-        borderRadius: '16px',
+        borderRadius: 'var(--radius-xl)',
       }}>
         <div style={{ fontSize: 40, marginBottom: 14 }}>🔒</div>
         <div style={{ color: 'var(--color-accent-2)', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Guest Account</div>
@@ -243,7 +243,7 @@ export default function ProfilePanel() {
     <section style={{
       background: 'var(--color-white-a04)',
       border: '1px solid var(--color-white-a07)',
-      borderRadius: 16,
+      borderRadius: 'var(--radius-xl)',
       padding: '28px 24px',
     }}>
       <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>👤 Your Profile</h2>
@@ -271,7 +271,7 @@ export default function ProfilePanel() {
                 <span style={{
                   background: 'linear-gradient(135deg, var(--color-warning-a20), var(--color-warning-a12))',
                   border: '1px solid rgba(251,191,36,0.55)', color: 'var(--color-warning)',
-                  fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '8px',
+                  fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-md)',
                   whiteSpace: 'nowrap', textShadow: '0 0 8px var(--color-warning-a30)',
                 }}>💎 Elite</span>
               )}
@@ -279,7 +279,7 @@ export default function ProfilePanel() {
                 background: user.isCoach ? 'var(--color-accent-a20)' : 'var(--color-success-a12)',
                 border: `1px solid ${user.isCoach ? 'var(--color-accent-a40)' : 'var(--color-success-a30)'}`,
                 color: user.isCoach ? 'var(--color-accent)' : 'var(--color-success)',
-                fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '8px', whiteSpace: 'nowrap',
+                fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: 'var(--radius-md)', whiteSpace: 'nowrap',
               }}>{user.isCoach ? '🎓 Coach' : '♟ Player'}</span>
             </div>
           )}

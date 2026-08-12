@@ -20,7 +20,7 @@
   width: min(560px, 100%);
   background: linear-gradient(180deg, rgba(18, 26, 38, 0.98), rgba(10, 15, 23, 0.99));
   border: 1px solid rgba(52, 211, 153, 0.22);
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   padding: 28px 28px 30px;
   box-shadow: 0 30px 90px -30px var(--color-black-a65);
   animation: bdm-rise 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -33,7 +33,7 @@
   right: 16px;
   width: 34px;
   height: 34px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-white-a10);
   background: var(--color-white-a04);
   color: #b3bfce;
@@ -56,7 +56,7 @@
 .bdm-slot-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .bdm-slot-n {
   width: 26px; height: 26px; flex: none;
-  display: grid; place-items: center; border-radius: 50%;
+  display: grid; place-items: center; border-radius: var(--radius-circle);
   font-size: 12px; font-weight: 700; color: #04211d;
   background: linear-gradient(150deg, var(--color-accent-2), var(--color-accent-2));
 }
@@ -64,7 +64,7 @@
   flex: 1 1 0;
   min-width: 0;
   padding: 11px 12px;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-white-a13);
   background: var(--color-white-a04);
   color: #f0f4ff;

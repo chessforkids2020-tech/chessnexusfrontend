@@ -124,7 +124,7 @@
   padding: 10px 30px;
   background: transparent;
   border: none;
-  border-radius: 25px;
+  border-radius: var(--radius-2xl);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   box-shadow: none;
@@ -207,7 +207,7 @@
   background: var(--bg-tertiary);
   -webkit-backdrop-filter: blur(15px);
   backdrop-filter: blur(15px);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   padding: 20px 25px;
   min-width: 180px;
   display: flex;
@@ -247,7 +247,7 @@
   align-items: center;
   justify-content: center;
   background: var(--color-black-a35);
-  border-radius: 15px;
+  border-radius: var(--radius-xl);
   animation: iconPulse 2s infinite;
 }
 
@@ -290,7 +290,7 @@
   width: 10px;
   height: 10px;
   background: #06D6A0;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   animation: dotPulse 1.5s infinite;
 }
 
@@ -353,7 +353,7 @@
 .time-control-group {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   padding: 25px;
   -webkit-backdrop-filter: var(--glass-blur);
   backdrop-filter: var(--glass-blur);
@@ -400,7 +400,7 @@
   align-items: center;
   justify-content: center;
   background: var(--color-black-a35);
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   border: 2px solid var(--color-white-a10);
   color: var(--group-color);
   filter: drop-shadow(0 0 20px var(--group-color));
@@ -444,7 +444,7 @@
 .time-button {
   background: var(--bg-tertiary);
   border: 2px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 18px 10px;
   color: var(--color-text-muted);
   font-size: 1.2rem;
@@ -506,7 +506,7 @@
 .statistics-section {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 25px;
+  border-radius: var(--radius-2xl);
   padding: 40px;
   margin-top: 40px;
   -webkit-backdrop-filter: var(--glass-blur);
@@ -525,7 +525,7 @@
 .stat-card {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   padding: 25px;
   transition: all 0.3s ease;
   position: relative;
@@ -562,7 +562,7 @@
   align-items: center;
   padding: 10px 15px;
   background: var(--color-black-a20);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
 }
 
@@ -603,7 +603,7 @@
 
 .stat-progress {
   height: 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: var(--color-black-a35);
   display: flex;
   overflow: hidden;
@@ -647,7 +647,7 @@
 .matchmaking-modal {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 30px;
+  border-radius: var(--radius-2xl);
   padding: 35px;
   max-width: 650px;
   width: 90%;
@@ -690,7 +690,7 @@
   margin: 25px 0;
   padding: 20px;
   background: var(--color-black-a35);
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   border: 1px solid var(--border-color);
 }
 
@@ -737,7 +737,7 @@
 
 .match-stat {
   background: var(--bg-tertiary);
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   padding: 20px 25px;
   min-width: 180px;
   display: flex;
@@ -783,7 +783,7 @@
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
   animation: boardRotate 6s linear infinite;
-  border-radius: 15px;
+  border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: 0 15px 50px var(--color-black-a50);
 }
@@ -853,7 +853,7 @@
 .player-avatar {
   width: 100px;
   height: 100px;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   background: var(--color-black-a35);
   border: 3px solid var(--color-white-a13);
   display: flex;
@@ -872,7 +872,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+  border-radius: var(--radius-circle);
   border: 3px solid rgba(6, 182, 212, 0.6);
   animation: avatarPulse 2s infinite;
 }
@@ -915,7 +915,7 @@
   background: var(--accent-gradient);
   color: white;
   padding: 10px 30px;
-  border-radius: 25px;
+  border-radius: var(--radius-2xl);
   font-size: 1.6rem;
   font-weight: 900;
   letter-spacing: 3px;
@@ -960,7 +960,7 @@
   color: var(--color-danger);
   border: 2px solid var(--color-danger-a30);
   padding: 15px 40px;
-  border-radius: 15px;
+  border-radius: var(--radius-xl);
   font-size: 1.2rem;
   font-weight: 800;
   cursor: pointer;
@@ -1107,7 +1107,7 @@
 
   .matchmaking-modal {
     padding: 20px;
-    border-radius: 20px;
+    border-radius: var(--radius-2xl);
     max-width: 95%;
   }
 

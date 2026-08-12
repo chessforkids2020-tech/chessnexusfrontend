@@ -316,7 +316,7 @@ export default function CoachArenaTournamentLive() {
       {/* ── Chat ── */}
       <div className="coach-section">
         <div className="coach-section-head"><h2>Tournament chat</h2></div>
-        <div style={{ background: 'rgba(20,20,28,0.7)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 14, padding: 12 }}>
+        <div style={{ background: 'rgba(20,20,28,0.7)', border: '1px solid rgba(139,92,246,0.25)', borderRadius: 'var(--radius-lg)', padding: 12 }}>
           <div style={{ maxHeight: 260, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
             {chat.length === 0 ? (
               <div style={{ color: 'rgba(226,232,240,0.5)', fontSize: 13, padding: 8 }}>No messages yet. Say hello to your class 👋</div>
