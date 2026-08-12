@@ -91,6 +91,24 @@
     "#000000": "var(--color-bg)",
     "#000": "var(--color-bg)",
 
+    "_on_accent": [
+      "Near-black inks used for text sitting ON a bright accent fill (a filled",
+      "button, a badge). They map to --color-bg rather than a text token: the",
+      "point is 'the darkest thing in this theme', so the label stays legible",
+      "whatever accent is behind it."
+    ],
+    "#04211d": "var(--color-bg)",
+    "#04110d": "var(--color-bg)",
+    "#04210f": "var(--color-bg)",
+    "#04121a": "var(--color-bg)",
+    "#062611": "var(--color-bg)",
+    "#06121a": "var(--color-bg)",
+    "#111827": "var(--color-surface)",
+    "#8899aa": "var(--color-text-muted)",
+    "#b3bfce": "var(--color-text-muted)",
+    "#ec4899": "var(--color-accent-2)",
+    "#f0f4ff": "var(--color-text)",
+
     "_bootstrap": "Bootstrap-era semantic colours still present in older pages.",
     "#dc3545": "var(--color-danger)",
     "#28a745": "var(--color-success)",
@@ -261,6 +279,17 @@
     "rgba(255,215,0,0.15)": "var(--color-warning-a12)",
     "rgba(255,215,0,0.2)": "var(--color-warning-a20)",
     "rgba(255,215,0,0.3)": "var(--color-warning-a30)",
+
+    "_emerald_alpha": "rgba(52,211,153,*) — the success green at alphas the ladder does not carry. Used decoratively on the homepage, so it follows the accent.",
+    "rgba(52,211,153,0)": "transparent",
+    "rgba(52,211,153,0.1)": "var(--color-accent-a12)",
+    "rgba(52,211,153,0.14)": "var(--color-accent-a15)",
+    "rgba(52,211,153,0.28)": "var(--color-accent-a30)",
+    "rgba(52,211,153,0.55)": "var(--color-accent-a40)",
+    "rgba(52,211,153,0.6)": "var(--color-accent-a40)",
+    "rgba(52,211,153,0.7)": "var(--color-accent-a40)",
+    "rgba(139,92,246,0.45)": "var(--color-accent-2-a30)",
+    "rgba(6,182,212,0.6)": "var(--color-accent-a40)",
 
     "_strong_alpha": "Deliberately heavy alphas, kept distinct from the standard ladder because the emphasis is the point.",
     "rgba(0,0,0,0.7)": "var(--color-black-a65)",

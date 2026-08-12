@@ -59,14 +59,14 @@ const CONTEST_CONFIG = {
   arena_race:            { icon: '🧩', name: 'Arena Race',            desc: 'Fast-paced puzzle race',        color: 'var(--color-accent-2)' },
   team_race:             { icon: '👥', name: 'Team Race',             desc: 'Race together with your team',  color: 'var(--color-accent)' },
   monthly_focus:         { icon: '🎯', name: 'Monthly Focus',         desc: 'Daily focus tasks all month',   color: 'var(--color-warning)' },
-  arena_tournament:      { icon: '🏆', name: 'Arena Tournament',      desc: 'Full competitive tournament',   color: '#ec4899' },
+  arena_tournament:      { icon: '🏆', name: 'Arena Tournament',      desc: 'Full competitive tournament',   color: 'var(--color-accent-2)' },
   '3d_arena_tournament': { icon: '🎮', name: '3D Arena Tournament',   desc: 'Live chess in 3D — feel real!', color: 'var(--color-accent-2)', link: 'http://localhost:5174' },
 };
 
 // Arena Tournament formats — each shown as its own row under the tournament card.
 // activityType (DB) → display config. Order defines render order.
 const TOURNAMENT_FORMATS = [
-  { type: 'arena_tournament',      icon: '🏆', name: 'Standard',    desc: 'Classic competitive tournament', color: '#ec4899' },
+  { type: 'arena_tournament',      icon: '🏆', name: 'Standard',    desc: 'Classic competitive tournament', color: 'var(--color-accent-2)' },
   { type: 'team_tournament',       icon: '🥇', name: 'Team Battle', desc: 'Teams clash for the crown',      color: 'var(--color-warning)' },
   { type: 'chess960',              icon: '🔀', name: 'Chess960',    desc: 'Randomized starting position',   color: 'var(--color-accent)' },
   { type: 'bullet_blitz_marathon', icon: '⚡', name: 'Marathon',    desc: 'Endurance bullet & blitz',       color: 'var(--color-accent-2)' },
