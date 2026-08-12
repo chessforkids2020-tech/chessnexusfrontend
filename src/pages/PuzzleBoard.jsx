@@ -1168,7 +1168,7 @@ function TournamentPuzzle() {
                 style={{
                   ...styles.glassSubmitButton,
                   ...(isPuzzleCompleted ? {
-                    background: 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
+                    background: 'linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)',
                     boxShadow: '0 8px 32px var(--color-success-a30)',
                     animation: 'pulse 2s infinite'
                   } : {})

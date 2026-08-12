@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 
 const typeColors = {
-  basics:     { color: 'var(--color-success)', bg: 'var(--color-success-a12)', gradient: 'linear-gradient(135deg,var(--color-success),var(--color-accent))' },
+  basics:     { color: 'var(--color-success)', bg: 'var(--color-success-a12)', gradient: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent))' },
   positional: { color: '#6366f1', bg: 'rgba(99,102,241,0.15)', gradient: 'linear-gradient(135deg,#6366f1,var(--color-accent-2))' },
 };
 

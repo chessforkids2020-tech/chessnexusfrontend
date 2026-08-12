@@ -26,7 +26,7 @@
   right: 0;
   bottom: 0;
   background: radial-gradient(circle at 30% 40%, var(--color-accent-a08) 0%, transparent 50%), 
-              radial-gradient(circle at 70% 60%, var(--color-success-a12) 0%, transparent 50%);
+              radial-gradient(circle at 70% 60%, var(--color-accent-2-a12) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
   animation: pulse-bg 8s ease-in-out infinite;
@@ -123,7 +123,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 2.2em;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -175,7 +175,7 @@
 .focus-dashboard.no-focus h2 {
   font-family: 'Orbitron', sans-serif;
   font-size: 2.5em;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -189,7 +189,7 @@
 }
 
 .focus-dashboard.error button {
-  background: linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-success-a20) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-accent-2-a20) 100%);
   border: 1px solid var(--color-accent-a30);
   color: var(--color-accent);
   padding: 14px 32px;
@@ -203,7 +203,7 @@
 }
 
 .focus-dashboard.error button:hover {
-  background: linear-gradient(135deg, var(--color-accent-a30) 0%, var(--color-success-a30) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a30) 0%, var(--color-accent-2-a30) 100%);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px var(--color-accent-a40);
 }
@@ -333,7 +333,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 2.4em;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -394,7 +394,7 @@
   font-size: 2.4em;
   font-weight: 800;
   line-height: 1;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -438,7 +438,7 @@
   margin: 0 0 24px 0;
   font-size: 1.8em;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -456,7 +456,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 12px rgba(6, 182, 212, 0.6);
   position: relative;
@@ -499,7 +499,7 @@
   margin-bottom: 30px;
   font-size: 1.8em;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -541,7 +541,7 @@
 }
 
 .task-card.completed::before {
-  background: linear-gradient(90deg, var(--color-success), var(--color-success));
+  background: linear-gradient(90deg, var(--color-accent-2), var(--color-accent-2));
   box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
 }
 
@@ -550,7 +550,7 @@
 }
 
 .task-card.available::before {
-  background: linear-gradient(90deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
 }
 
 .task-card.available:hover {
@@ -599,7 +599,7 @@
 }
 
 .countdown-timer {
-  background: linear-gradient(135deg, var(--color-success), var(--color-success)) !important;
+  background: linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2)) !important;
   color: var(--color-text) !important;
   padding: 14px !important;
   border-radius: 12px !important;
@@ -652,7 +652,7 @@
 }
 
 .xp-reward {
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -668,7 +668,7 @@
 }
 
 .start-task-btn {
-  background: linear-gradient(135deg, var(--color-success), var(--color-success)) !important;
+  background: linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2)) !important;
   color: white;
   text-decoration: none;
   padding: 10px 20px;
@@ -755,7 +755,7 @@
   margin: 0 0 24px 0;
   font-size: 1.8em;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -800,7 +800,7 @@
 }
 
 .leaderboard-item .xp {
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -810,7 +810,7 @@
 
 .view-full-btn {
   display: inline-block;
-  background: linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-success-a20) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-accent-2-a20) 100%);
   border: 1px solid var(--color-accent-a30);
   color: var(--color-accent);
   text-decoration: none;
@@ -825,7 +825,7 @@
 }
 
 .view-full-btn:hover {
-  background: linear-gradient(135deg, var(--color-accent-a30) 0%, var(--color-success-a30) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a30) 0%, var(--color-accent-2-a30) 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px var(--color-accent-a40);
   text-decoration: none;
@@ -862,7 +862,7 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: white;
   box-shadow: 0 4px 16px var(--color-accent-a40);
   border: 1px solid var(--color-white-a20);
@@ -1076,7 +1076,7 @@
   margin: 0 0 8px 0;
   font-size: 1.35em;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1552,7 +1552,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--color-success-a12), transparent);
+  background: linear-gradient(135deg, var(--color-accent-2-a12), transparent);
   pointer-events: none;
 }
 .tm-done   { border-color: var(--color-success-a30)  !important; background: var(--color-success-a12) !important; }
@@ -1587,7 +1587,7 @@
   filter: drop-shadow(0 2px 8px var(--color-success-a30));
 }
 .tm-start-btn {
-  background: linear-gradient(135deg, var(--color-success), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2));
   color: white; text-decoration: none;
   padding: 14px 36px; border-radius: 30px;
   font-size: 1.05em; font-weight: 700;
@@ -1628,7 +1628,7 @@
 }
 .bs-header h2 {
   margin: 0; font-size: 1.45em; font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .bs-current-pill {
@@ -1702,7 +1702,7 @@
 .perf-graph h2, .activity-feed h2 {
   margin: 0 0 4px;
   font-size: 1.3em; font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .pg-sub, .af-sub { margin: 0 0 22px; font-size: 0.85em; color: var(--color-text-faint); }
@@ -1724,7 +1724,7 @@
   position: absolute; bottom: 0; left: 0; right: 0;
   border-radius: 6px 6px 0 0;
 }
-.pg-fill-done    { background: linear-gradient(180deg, var(--color-success), var(--color-success)); box-shadow: 0 -3px 10px var(--color-success-a30); }
+.pg-fill-done    { background: linear-gradient(180deg, var(--color-accent-2), var(--color-accent-2)); box-shadow: 0 -3px 10px var(--color-success-a30); }
 .pg-fill-perfect { background: linear-gradient(180deg, var(--color-warning), var(--color-warning)); box-shadow: 0 -3px 10px rgba(255,215,0,0.6); }
 .pg-fill-empty   { background: var(--color-white-a04); }
 .pg-label { font-size: 0.72em; color: var(--color-text-faint); font-weight: 700; }

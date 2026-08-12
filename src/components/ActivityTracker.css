@@ -10,7 +10,7 @@
   height: 100%;
   background:
     radial-gradient(circle at top left, var(--color-accent-a08), transparent 34%),
-    radial-gradient(circle at bottom right, var(--color-success-a12), transparent 28%),
+    radial-gradient(circle at bottom right, var(--color-accent-2-a12), transparent 28%),
     var(--obsidian-surface-elevated, var(--color-surface));
   border: 1px solid var(--obsidian-border, var(--color-border));
   box-shadow: var(--obsidian-shadow, 0 24px 80px rgba(3, 8, 20, 0.55)), inset 0 1px 0 var(--color-white-a04);

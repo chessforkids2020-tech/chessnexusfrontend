@@ -64,7 +64,7 @@ const S = {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     gap: 14, flexWrap: 'wrap',
     padding: '10px 16px',
-    background: 'linear-gradient(135deg, var(--color-accent-a15), var(--color-success-a12))',
+    background: 'linear-gradient(135deg, var(--color-accent-a15), var(--color-accent-2-a12))',
     borderBottom: '1px solid rgba(52,211,153,0.35)',
     backdropFilter: 'blur(8px)',
     WebkitBackdropFilter: 'blur(8px)',
@@ -78,7 +78,7 @@ const S = {
     padding: '8px 18px', borderRadius: 999, cursor: 'pointer',
     fontSize: 14, fontWeight: 800, whiteSpace: 'nowrap',
     color: '#04211d', border: '1px solid transparent',
-    background: 'linear-gradient(135deg,var(--color-accent) 0%,var(--color-success) 100%)',
+    background: 'linear-gradient(135deg,var(--color-accent) 0%,var(--color-accent-2) 100%)',
     boxShadow: '0 6px 18px rgba(52,211,153,0.35)',
   },
 };

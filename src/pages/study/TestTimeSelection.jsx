@@ -47,7 +47,7 @@ const TestTimeSelection = () => {
       fontSize: '28px',
       fontWeight: '700',
       margin: '0 0 10px 0',
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -79,7 +79,7 @@ const TestTimeSelection = () => {
       color: 'var(--color-text)',
     },
     timeCardSelected: {
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       color: 'var(--color-text)',
       borderColor: 'var(--color-accent-a30)',
       transform: 'translateY(-5px)',

@@ -5,9 +5,15 @@
   display: flex;
   flex-direction: column;
   background: var(--color-bg);
+  /* Ambient page glow. Uses the ACCENT, not --color-success.
+     Success is semantically green in every theme (a tick is green whatever the
+     palette), so decorating the page with it left an emerald wash beside the
+     sidebar that only agreed with the original cyan/emerald design — on
+     Obsidian Rose or Deep Ember it visibly fought the accent. Ambient chrome
+     has no semantic meaning, so it should follow the accent. */
   background-image:
-    radial-gradient(circle at 45% 55%, var(--color-success-a12) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(2, 13, 24, 0.2) 0%, transparent 50%);
+    radial-gradient(circle at 45% 55%, var(--color-accent-a08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%);
 }
 
 .user-content-wrapper {

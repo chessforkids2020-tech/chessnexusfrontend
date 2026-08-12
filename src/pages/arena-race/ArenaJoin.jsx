@@ -234,7 +234,7 @@ export default function ArenaJoin() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-accent-2-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -258,7 +258,7 @@ export default function ArenaJoin() {
       fontSize: '48px',
       fontWeight: '700',
       margin: '0 0 12px 0',
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -337,7 +337,7 @@ export default function ArenaJoin() {
       fontWeight: '600',
     },
     progressCard: {
-      background: 'linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-success-a12) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-accent-2-a12) 100%)',
       border: '1px solid var(--color-accent-a20)',
       borderRadius: '12px',
       padding: '20px',
@@ -416,7 +416,7 @@ export default function ArenaJoin() {
       transition: 'all 0.3s ease',
     },
     button: {
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       color: 'var(--color-text)',
       border: 'none',
       padding: '16px 40px',
@@ -493,7 +493,7 @@ export default function ArenaJoin() {
       boxShadow: '0 8px 32px var(--color-accent-a12)',
     },
     publicJoinButton: {
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       color: 'var(--color-text)',
       border: 'none',
       padding: '12px 24px',
@@ -766,10 +766,10 @@ export default function ArenaJoin() {
                         style={{
                           ...styles.publicJoinButton,
                           background: isLive
-                            ? 'linear-gradient(135deg, var(--color-success), var(--color-success))'
+                            ? 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))'
                             : isSoon
                             ? 'linear-gradient(135deg, var(--color-warning), #d97706)'
-                            : 'linear-gradient(135deg, var(--color-accent), var(--color-success))',
+                            : 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
                         }}
                       >
                         {isLive ? '🚀 Join Now — Live!' : isSoon ? '⚡ Join — Starting Soon' : '👀 Preview & Wait'}

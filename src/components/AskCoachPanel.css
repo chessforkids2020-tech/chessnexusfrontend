@@ -24,7 +24,7 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
 }
 
 /* ── Header: icon beside the text, not stacked above it ─────────────── */
@@ -98,7 +98,7 @@
   padding: 11px 20px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
   color: #04211d;
   font-size: 14px;
   font-weight: 800;

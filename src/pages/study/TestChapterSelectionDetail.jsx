@@ -77,7 +77,7 @@ const TestChapterSelectionDetail = () => {
       fontSize: '28px',
       fontWeight: '700',
       margin: '0 0 10px 0',
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',

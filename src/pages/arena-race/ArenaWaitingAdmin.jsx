@@ -150,7 +150,7 @@ const styles = {
     borderRadius: '12px',
   },
   startButton: {
-    background: 'linear-gradient(135deg, var(--color-success), #20c997)',
+    background: 'linear-gradient(135deg, var(--color-accent-2), #20c997)',
     color: 'var(--color-text)',
     border: 'none',
     padding: '15px 30px',

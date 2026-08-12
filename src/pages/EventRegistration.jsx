@@ -198,7 +198,7 @@ export default function EventRegistration() {
 
         {/* Motivation */}
         {event.motivation && (
-          <div className="event-features" style={{ marginBottom: '24px', background: 'linear-gradient(135deg, rgba(99,102,241,0.08), var(--color-success-a12))', border: '1px solid rgba(99,102,241,0.25)', borderRadius: '12px', padding: '18px' }}>
+          <div className="event-features" style={{ marginBottom: '24px', background: 'linear-gradient(135deg, rgba(99,102,241,0.08), var(--color-accent-2-a12))', border: '1px solid rgba(99,102,241,0.25)', borderRadius: '12px', padding: '18px' }}>
             <h3 style={{ marginTop: 0, color: 'var(--color-surface-2)' }}>💬 A Message for Every Participant:</h3>
             {event.motivation.split('\n\n').map((para, idx) => (
               <p key={idx} style={{ margin: '8px 0', lineHeight: '1.7', fontSize: '15px', whiteSpace: 'pre-line', color: 'var(--color-text)' }}>{para}</p>

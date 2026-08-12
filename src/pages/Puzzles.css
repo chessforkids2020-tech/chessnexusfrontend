@@ -18,7 +18,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), 
+  background: radial-gradient(circle at 20% 50%, var(--color-accent-2-a12) 0%, transparent 50%), 
               radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
@@ -95,7 +95,7 @@
   transform: translateX(-50%);
   width: 200px;
   height: 200px;
-  background: radial-gradient(circle, var(--color-success-a20) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--color-accent-2-a20) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -112,7 +112,7 @@
   font-size: 56px;
   font-weight: 900;
   line-height: 1;
-  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 50%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 50%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -184,7 +184,7 @@
 }
 
 .lp-status-card.done {
-  background: linear-gradient(135deg, var(--color-success-a12), rgba(16,185,129,0.04));
+  background: linear-gradient(135deg, var(--color-accent-2-a12), rgba(16,185,129,0.04));
   border-color: var(--color-success-a30);
 }
 
@@ -406,7 +406,7 @@
 }
 
 .lp-dot.correct {
-  background: linear-gradient(135deg, var(--color-success-a20), var(--color-success-a12));
+  background: linear-gradient(135deg, var(--color-accent-2-a20), var(--color-accent-2-a12));
   border: 1.5px solid var(--color-success-a30);
   color: var(--color-success);
 }
@@ -437,7 +437,7 @@
 }
 
 .lp-cta.next {
-  background: linear-gradient(135deg, var(--color-success), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2));
   box-shadow: 0 4px 20px var(--color-success-a30);
 }
 
@@ -726,7 +726,7 @@
 .current-rating-value {
   font-size: 42px;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

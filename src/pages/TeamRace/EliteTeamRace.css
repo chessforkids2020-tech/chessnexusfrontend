@@ -159,7 +159,7 @@
   cursor: not-allowed;
 }
 
-.btn-elite-start  { background: linear-gradient(135deg, var(--color-success), var(--color-success)); color: var(--color-text); border: none; padding: 11px 22px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.18s; box-shadow: 0 4px 16px var(--color-success-a30); }
+.btn-elite-start  { background: linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2)); color: var(--color-text); border: none; padding: 11px 22px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.18s; box-shadow: 0 4px 16px var(--color-success-a30); }
 .btn-elite-start:hover  { transform: translateY(-2px); box-shadow: 0 8px 24px var(--color-success-a30); }
 .btn-elite-run    { background: linear-gradient(135deg, var(--cyan), var(--color-accent-2)); color: var(--color-text); border: none; padding: 11px 22px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.18s; box-shadow: 0 4px 16px var(--color-accent-a30); }
 .btn-elite-run:hover    { transform: translateY(-2px); box-shadow: 0 8px 24px var(--color-accent-a40); }

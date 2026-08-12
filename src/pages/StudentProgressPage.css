@@ -28,7 +28,7 @@
   pointer-events: none;
   background:
     radial-gradient(60% 55% at 12% 6%, var(--color-accent-a12), transparent 60%),
-    radial-gradient(55% 55% at 88% 94%, var(--color-success-a12), transparent 62%);
+    radial-gradient(55% 55% at 88% 94%, var(--color-accent-2-a12), transparent 62%);
 }
 
 .sp-inner {

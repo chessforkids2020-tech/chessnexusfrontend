@@ -38,7 +38,7 @@ const metaBtnStyle = (primary, busy) => ({
   cursor: busy ? 'default' : 'pointer',
   opacity: busy ? 0.6 : 1,
   border: primary ? 'none' : '1px solid var(--color-white-a13)',
-  background: primary ? 'linear-gradient(135deg,var(--color-success),#047857)' : 'var(--color-white-a07)',
+  background: primary ? 'linear-gradient(135deg,var(--color-accent-2),#047857)' : 'var(--color-white-a07)',
   color: primary ? 'var(--color-text)' : 'var(--color-text-muted)',
 });
 
@@ -124,7 +124,7 @@ const UserStudyPuzzleView = () => {
   const anFenRef = useRef('');   // FEN the current search is running on (for SAN + POV)
 
   const typeColors = {
-    basics:     { color: 'var(--color-success)', gradient: 'linear-gradient(135deg,var(--color-success),var(--color-accent))', accentColor: 'var(--color-success-a12)', bgColor: 'var(--color-success-a20)' },
+    basics:     { color: 'var(--color-success)', gradient: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent))', accentColor: 'var(--color-success-a12)', bgColor: 'var(--color-success-a20)' },
     positional: { color: '#6366f1', gradient: 'linear-gradient(135deg,#6366f1,var(--color-accent-2))', accentColor: 'rgba(99,102,241,0.15)',  bgColor: 'rgba(99,102,241,0.2)'  },
   };
 

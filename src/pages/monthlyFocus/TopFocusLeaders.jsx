@@ -189,7 +189,7 @@ const styles = {
     fontSize: '0.95em',
     fontWeight: '700',
     textAlign: 'center',
-    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',

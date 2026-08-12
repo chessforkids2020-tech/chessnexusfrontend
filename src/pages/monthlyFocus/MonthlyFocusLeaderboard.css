@@ -28,7 +28,7 @@
   background:
     radial-gradient(ellipse 70% 55% at  8%  0%, var(--color-accent-a12)   0%, transparent 60%),
     radial-gradient(ellipse 55% 45% at 92% 95%, var(--color-accent-2-a15)  0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 55% 50%, var(--color-success-a12)  0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 55% 50%, var(--color-accent-2-a12)  0%, transparent 60%),
     radial-gradient(ellipse 90% 70% at 25% 85%, var(--color-accent-a06)   0%, transparent 55%);
   pointer-events: none;
   z-index: 0;
@@ -162,7 +162,7 @@
   gap: 8px;
   font-size: 1.9em;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -208,7 +208,7 @@
   margin: 0 0 24px 0;
   font-size: 1.5em;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -250,7 +250,7 @@
 .stat-value {
   font-size: 1.8em;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -319,7 +319,7 @@
   margin: 0 0 32px 0;
   font-size: 1.8em;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -421,7 +421,7 @@
 .podium-xp {
   font-size: 1.5em;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -485,7 +485,7 @@
   margin: 0 0 24px 0;
   font-size: 1.8em;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -586,7 +586,7 @@
 }
 
 .you-badge {
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   padding: 4px 10px;
   border-radius: 12px;
@@ -607,7 +607,7 @@
 .xp-value {
   font-weight: 800;
   font-size: 1.1em;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -690,7 +690,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   border-radius: 4px;
   transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 12px var(--color-accent-a40);
@@ -779,7 +779,7 @@
 
 .empty-leaderboard h3 {
   font-size: 1.8em;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -816,7 +816,7 @@
   align-items: center;
   justify-content: center;
   padding: 14px 32px;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   border: none;
   border-radius: 25px;

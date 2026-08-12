@@ -782,7 +782,7 @@ export default function ArcadeGame() {
               <div style={{ fontSize:64, marginBottom:14 }}>
                 {isDraw ? "🤝" : winner === playerNum ? "🏆" : "😔"}
               </div>
-              <GradHeading size={30} style={{ marginBottom:8, ...(isDraw ? {} : { background: winner === playerNum ? "linear-gradient(135deg,var(--color-success),var(--color-accent))" : "linear-gradient(135deg,var(--color-danger),var(--color-warning))", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }) }}>
+              <GradHeading size={30} style={{ marginBottom:8, ...(isDraw ? {} : { background: winner === playerNum ? "linear-gradient(135deg,var(--color-accent-2),var(--color-accent))" : "linear-gradient(135deg,var(--color-danger),var(--color-warning))", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }) }}>
                 {isDraw ? "It's a Draw!" : winner === playerNum ? "You Win! 🎉" : "You Lose!"}
               </GradHeading>
               {gameType === "bingo" && !isDraw && winner === playerNum && (

@@ -130,7 +130,7 @@ export default function LiveClassChat({ sessionId, isHost }) {
 
 const s = {
   fab: { position: 'fixed', right: 20, bottom: 20, width: 56, height: 56, borderRadius: '50%',
-    border: 'none', background: 'linear-gradient(135deg,var(--color-accent),var(--color-success))', color: '#04211d',
+    border: 'none', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04211d',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     cursor: 'pointer', zIndex: 9000, boxShadow: '0 8px 24px var(--color-black-a50)' },
   fabOpen: { background: 'rgba(30,41,59,0.95)', color: 'var(--color-text)' },
@@ -143,7 +143,7 @@ const s = {
     fontFamily: "'Poppins',sans-serif" },
   head: { padding: '10px 12px 10px 14px', fontWeight: 800, color: 'var(--color-accent)',
     display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
-    background: 'linear-gradient(135deg,var(--color-accent-a15),var(--color-success-a12))', borderBottom: '1px solid var(--color-white-a07)' },
+    background: 'linear-gradient(135deg,var(--color-accent-a15),var(--color-accent-2-a12))', borderBottom: '1px solid var(--color-white-a07)' },
   blockBtn: { padding: '5px 10px', borderRadius: 8, border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a07)', color: 'var(--color-text)', fontSize: 12, fontWeight: 700, cursor: 'pointer' },
   blockBtnOn: { background: 'var(--color-danger-a20)', border: '1px solid var(--color-danger-a30)', color: 'var(--color-danger)' },
   disabledRow: { padding: '14px 12px', textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 13, borderTop: '1px solid var(--color-white-a07)' },

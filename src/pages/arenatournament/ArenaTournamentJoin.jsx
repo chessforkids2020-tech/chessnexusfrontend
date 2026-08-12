@@ -131,7 +131,7 @@ export default function ArenaTournamentJoin() {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-success-a12) 0%, transparent 50%)',
+        background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a12) 0%, transparent 50%)',
         pointerEvents: 'none',
         zIndex: 0
       }} />
@@ -156,7 +156,7 @@ export default function ArenaTournamentJoin() {
             fontSize: '32px',
             fontWeight: '800',
             marginBottom: '10px',
-            background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+            background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
@@ -302,7 +302,7 @@ export default function ArenaTournamentJoin() {
                 fontWeight: '700', 
                 color: 'var(--color-text)', 
                 marginBottom: '20px',
-                background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+                background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
@@ -510,7 +510,7 @@ export default function ArenaTournamentJoin() {
                         <div style={{
                           position: 'absolute',
                           top: 0, left: 0, right: 0, bottom: 0,
-                          background: 'linear-gradient(90deg, transparent, var(--color-success-a20), transparent)',
+                          background: 'linear-gradient(90deg, transparent, var(--color-accent-2-a20), transparent)',
                           animation: 'shimmer 1.5s infinite'
                         }} />
                       </>

@@ -123,7 +123,7 @@ const styles = {
     color: 'var(--color-text)', boxSizing: 'border-box',
   },
   saveBtn: {
-    cursor: 'pointer', background: 'linear-gradient(135deg, var(--color-success) 0%, var(--color-accent) 100%)',
+    cursor: 'pointer', background: 'linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent) 100%)',
     color: 'white', border: 'none', borderRadius: '12px', padding: '8px 12px', fontWeight: 600,
   },
   cancelBtn: {

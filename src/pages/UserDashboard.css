@@ -9,7 +9,7 @@
    ==================================== */
 
 .event-notification {
-  background: linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-success-a12) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-accent-2-a12) 100%);
   border: 1px solid var(--color-accent-a30);
   border-radius: var(--radius-xl);
   padding: 16px 20px;
@@ -32,7 +32,7 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-success), var(--color-accent));
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2), var(--color-accent));
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
@@ -143,13 +143,13 @@
 }
 
 .event-notification-btn-register {
-  background: linear-gradient(135deg, var(--color-success-a20), var(--color-accent-a20));
+  background: linear-gradient(135deg, var(--color-accent-2-a20), var(--color-accent-a20));
   border: 1px solid var(--color-success-a30);
   color: var(--color-success);
 }
 
 .event-notification-btn-register:hover {
-  background: linear-gradient(135deg, var(--color-success-a30), var(--color-accent-a30));
+  background: linear-gradient(135deg, var(--color-accent-2-a30), var(--color-accent-a30));
   border-color: var(--color-success);
   color: var(--color-text);
   transform: translateY(-1px);
@@ -305,7 +305,7 @@ button[style*="closeButton"]:hover {
   --obsidian-pill: var(--color-black-a35);
   --obsidian-shadow: 0 8px 32px var(--color-black-a50);
   --obsidian-glow: 0 12px 40px var(--color-accent-a30);
-  --obsidian-button: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  --obsidian-button: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   min-height: 100vh;
   background: var(--color-bg);
   position: relative;
@@ -319,7 +319,7 @@ button[style*="closeButton"]:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%),
+  background: radial-gradient(circle at 20% 50%, var(--color-accent-2-a12) 0%, transparent 50%),
               radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
@@ -368,7 +368,7 @@ button[style*="closeButton"]:hover {
   font-size: 34px;
   margin: 0;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -485,7 +485,7 @@ button[style*="closeButton"]:hover {
 
 /* Join Button */
 .join-btn {
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   box-shadow: 0 4px 16px var(--color-accent-a40);
 }
@@ -817,7 +817,7 @@ button[style*="closeButton"]:hover {
   font-size: 28px;
   color: var(--color-text);
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -922,7 +922,7 @@ button[style*="closeButton"]:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, var(--color-accent-a06) 0%, var(--color-success-a12) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a06) 0%, var(--color-accent-2-a12) 100%);
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
@@ -958,7 +958,7 @@ button[style*="closeButton"]:hover {
   font-weight: 700;
   color: var(--color-text);
   margin: 0 0 8px 0;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1224,7 +1224,7 @@ button[style*="closeButton"]:hover {
 
 .progress-fill-mini {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-success), var(--color-success));
+  background: linear-gradient(90deg, var(--color-accent-2), var(--color-accent-2));
   border-radius: var(--radius-sm);
   transition: width 0.3s ease;
 }
@@ -1290,7 +1290,7 @@ button[style*="closeButton"]:hover {
    ==================================== */
 
 .event-notification {
-  background: linear-gradient(135deg, var(--color-accent-a12), var(--color-success-a12));
+  background: linear-gradient(135deg, var(--color-accent-a12), var(--color-accent-2-a12));
   border: 1px solid var(--color-accent-a30);
   border-radius: var(--radius-lg);
   padding: 16px 20px;

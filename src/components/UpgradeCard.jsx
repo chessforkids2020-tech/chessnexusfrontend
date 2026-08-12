@@ -13,7 +13,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const cardStyle = {
-  background: 'linear-gradient(135deg, var(--color-accent-a12), var(--color-success-a12))',
+  background: 'linear-gradient(135deg, var(--color-accent-a12), var(--color-accent-2-a12))',
   border: '1px solid var(--color-accent-a30)',
   borderRadius: 14,
   padding: 22,
@@ -44,7 +44,7 @@ export default function UpgradeCard() {
         </div>
         <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
           <button onClick={goCoach} style={{
-            background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)', color: '#04211d',
+            background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)', color: '#04211d',
             border: 'none', borderRadius: 10, padding: '11px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer',
           }}>🎓 Become a Coach</button>
           <button onClick={goSupport} style={{

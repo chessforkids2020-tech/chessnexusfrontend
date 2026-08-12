@@ -34,7 +34,7 @@
   font-size: 72px;
   font-weight: 800;
   color: #04211d;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
 }
 .pc-photo img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -166,7 +166,7 @@ a.pc-hr:hover strong { text-decoration: underline; }
   padding: 26px 24px;
   border-radius: 16px;
   text-align: center;
-  background: linear-gradient(135deg, var(--color-accent-a12), var(--color-success-a12));
+  background: linear-gradient(135deg, var(--color-accent-a12), var(--color-accent-2-a12));
   border: 1px solid var(--color-accent-a30);
 }
 .pc-cta h2 { margin: 0 0 6px; font-size: 19px; font-weight: 800; color: var(--color-text); }
@@ -185,7 +185,7 @@ a.pc-hr:hover strong { text-decoration: underline; }
 }
 .pc-btn-primary {
   color: #04211d;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
   border: none;
   font-weight: 800;
 }

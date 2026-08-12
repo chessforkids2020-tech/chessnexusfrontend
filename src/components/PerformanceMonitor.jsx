@@ -869,7 +869,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                     gap: '6px',
                     padding: '10px 16px',
                     borderRadius: '10px',
-                    background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))',
+                    background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
                     color: '#04201f',
                     fontWeight: 700,
                     fontSize: '13px',

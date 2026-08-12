@@ -29,7 +29,7 @@
   padding: 30px 30px 26px;
   background:
     radial-gradient(circle at 15% 20%, var(--color-accent-a15) 0%, transparent 55%),
-    radial-gradient(circle at 85% 90%, var(--color-success-a12) 0%, transparent 55%),
+    radial-gradient(circle at 85% 90%, var(--color-accent-2-a12) 0%, transparent 55%),
     var(--color-white-a04);
   border: 1px solid var(--color-accent-a20);
   box-shadow: 0 16px 48px var(--color-accent-a12);
@@ -38,7 +38,7 @@
 .sr-head::before {
   content: '';
   position: absolute; inset: 0 0 auto 0; height: 3px;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-success), var(--color-accent));
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2), var(--color-accent));
   background-size: 200% 100%;
   animation: sr-shimmer 6s linear infinite;
 }
@@ -48,7 +48,7 @@
 .sr-streak-badge {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 6px 14px; border-radius: 999px;
-  background: linear-gradient(135deg, var(--color-accent-a20), var(--color-success-a20));
+  background: linear-gradient(135deg, var(--color-accent-a20), var(--color-accent-2-a20));
   border: 1px solid var(--color-success-a30);
   font-size: 12.5px; font-weight: 700; color: var(--color-success);
   margin-bottom: 12px;
@@ -58,7 +58,7 @@
   font-size: clamp(28px, 5vw, 42px);
   font-weight: 800;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, #e6edf3 0%, var(--color-accent) 55%, var(--color-success) 100%);
+  background: linear-gradient(135deg, #e6edf3 0%, var(--color-accent) 55%, var(--color-accent-2) 100%);
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
   text-wrap: balance;
@@ -83,7 +83,7 @@
   position: relative;
   margin: 20px 0 6px;
   padding: 20px 22px 20px 58px;
-  background: linear-gradient(135deg, var(--color-accent-a08), var(--color-success-a12));
+  background: linear-gradient(135deg, var(--color-accent-a08), var(--color-accent-2-a12));
   border: 1px solid var(--color-accent-a30);
   border-radius: 14px;
 }
@@ -128,7 +128,7 @@
 }
 .sr-help.is-open {
   color: #04210f; border-color: transparent;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
 }
 /* The revealed text: indented slightly so it reads as belonging to the
    heading it came from rather than to the content below it. */
@@ -256,7 +256,7 @@
 .sr-cat-n {
   font-size: 30px; font-weight: 800; line-height: 1.1;
   font-variant-numeric: tabular-nums;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -266,7 +266,7 @@
 /* ── Practice plan ────────────────────────────────────────────────── */
 .sr-plan { display: flex; flex-wrap: wrap; gap: 10px; }
 .sr-day {
-  background: linear-gradient(135deg, var(--color-success-a12), var(--color-accent-a06));
+  background: linear-gradient(135deg, var(--color-accent-2-a12), var(--color-accent-a06));
   border: 1px solid var(--color-success-a30);
   border-radius: 12px; padding: 13px 18px; min-width: 112px;
 }
@@ -292,7 +292,7 @@
 .sr-imp-ic {
   flex: none; width: 40px; height: 40px; border-radius: 11px;
   display: grid; place-items: center; font-size: 19px;
-  background: linear-gradient(135deg, var(--color-accent-a15), var(--color-success-a12));
+  background: linear-gradient(135deg, var(--color-accent-a15), var(--color-accent-2-a12));
   border: 1px solid var(--color-accent-a20);
 }
 .sr-imp-body { flex: 1; min-width: 0; }
@@ -301,7 +301,7 @@
 .sr-imp-cta {
   flex: none;
   padding: 9px 15px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
   color: #04210f; font-size: 12.5px; font-weight: 800;
   text-decoration: none; white-space: nowrap;
   transition: transform 0.16s ease, box-shadow 0.16s ease;

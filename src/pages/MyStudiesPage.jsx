@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import api from '../api';
 
 const typeColors = {
-  basics:     { color: 'var(--color-success)', bg: 'var(--color-success-a12)', gradient: 'linear-gradient(135deg,var(--color-success),var(--color-accent))' },
+  basics:     { color: 'var(--color-success)', bg: 'var(--color-success-a12)', gradient: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent))' },
   positional: { color: '#6366f1', bg: 'rgba(99,102,241,0.15)', gradient: 'linear-gradient(135deg,#6366f1,var(--color-accent-2))' },
   other:      { color: 'var(--color-warning)', bg: 'var(--color-warning-a12)', gradient: 'linear-gradient(135deg,var(--color-warning),var(--color-danger))' },
 };
@@ -126,7 +126,7 @@ export default function MyStudiesPage() {
                 <button
                   onClick={runImport}
                   disabled={importBusy || !importUrl.trim()}
-                  style={{ flex: 1, padding: '11px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,var(--color-accent),var(--color-success))', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: importBusy ? 'default' : 'pointer', opacity: (importBusy || !importUrl.trim()) ? 0.6 : 1 }}
+                  style={{ flex: 1, padding: '11px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: importBusy ? 'default' : 'pointer', opacity: (importBusy || !importUrl.trim()) ? 0.6 : 1 }}
                 >
                   {importBusy ? 'Importing…' : 'Import study'}
                 </button>

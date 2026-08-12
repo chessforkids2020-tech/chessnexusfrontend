@@ -512,7 +512,7 @@ export default function ArenaTournamentLeaderboard() {
 
           {/* Personal Summary Card */}
           {mySummary && (
-            <div style={{ marginBottom: '24px', padding: '20px 24px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--color-accent-a08) 0%, var(--color-success-a12) 100%)', border: '1px solid var(--color-accent-a20)' }}>
+            <div style={{ marginBottom: '24px', padding: '20px 24px', borderRadius: '16px', background: 'linear-gradient(135deg, var(--color-accent-a08) 0%, var(--color-accent-2-a12) 100%)', border: '1px solid var(--color-accent-a20)' }}>
               <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-accent)', marginBottom: '14px', letterSpacing: '0.5px' }}>📊 Your Summary — {mySummary.tournamentName || tournament?.name}</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                 {[

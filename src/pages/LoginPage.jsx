@@ -128,7 +128,7 @@ export default function LoginPage() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: "radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)",
+      background: "radial-gradient(circle at 20% 50%, var(--color-accent-2-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)",
       pointerEvents: "none",
       zIndex: 0
     },
@@ -150,7 +150,7 @@ export default function LoginPage() {
     },
     title: {
       textAlign: "center",
-      background: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)",
+      background: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
       backgroundClip: "text",
@@ -197,7 +197,7 @@ export default function LoginPage() {
       fontSize: "16px",
       borderRadius: "12px",
       border: "none",
-      background: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)",
+      background: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)",
       color: "var(--color-text)",
       cursor: "pointer",
       fontWeight: "600",

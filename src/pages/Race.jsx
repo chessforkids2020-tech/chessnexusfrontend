@@ -59,7 +59,7 @@ function RaceCard({ race, onJoin }) {
           onClick={() => onJoin(race)}
           style={{
             marginLeft: 12, flexShrink: 0,
-            background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+            background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
             color: 'var(--color-text)', border: 'none', borderRadius: 10,
             padding: '8px 16px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
           }}
@@ -330,7 +330,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
+    background: 'radial-gradient(circle at 20% 50%, var(--color-accent-2-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
     pointerEvents: 'none',
     zIndex: 0,
   },

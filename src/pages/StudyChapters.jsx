@@ -136,7 +136,7 @@ const StudyChapters = () => {
     },
     nextButton: {
       padding: '12px 24px',
-      background: 'linear-gradient(135deg, var(--color-success), var(--color-success))',
+      background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))',
       color: 'var(--color-text)',
       border: 'none',
       borderRadius: '8px',

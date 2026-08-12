@@ -149,7 +149,7 @@ const StudyTestResult = () => {
       fontSize: '28px',
       fontWeight: '700',
       marginBottom: '10px',
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -268,7 +268,7 @@ const StudyTestResult = () => {
       boxShadow: '0 4px 12px var(--color-black-a35)',
     },
     primaryButton: {
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       color: 'var(--color-text)',
     },
     secondaryButton: {
@@ -356,7 +356,7 @@ const StudyTestResult = () => {
     },
     viewButton: {
       padding: '8px 16px',
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       border: 'none',
       borderRadius: '8px',
       color: 'var(--color-text)',

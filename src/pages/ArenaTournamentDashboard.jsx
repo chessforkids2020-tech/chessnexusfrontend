@@ -265,7 +265,7 @@ export default function ArenaTournamentDashboard() {
       {/* obsidian background glows */}
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
         <div style={{ position: "absolute", top: "-20%", left: "-10%", width: "50%", height: "50%", background: "radial-gradient(circle, var(--color-accent-a06) 0%, transparent 70%)", borderRadius: "50%" }} />
-        <div style={{ position: "absolute", bottom: "-10%", right: "-5%", width: "40%", height: "40%", background: "radial-gradient(circle, var(--color-success-a12) 0%, transparent 70%)", borderRadius: "50%" }} />
+        <div style={{ position: "absolute", bottom: "-10%", right: "-5%", width: "40%", height: "40%", background: "radial-gradient(circle, var(--color-accent-2-a12) 0%, transparent 70%)", borderRadius: "50%" }} />
       </div>
       <div style={{ position: "relative", zIndex: 1 }}>
       <SEO title={`${isPublic ? `${ownerName}'s ` : ""}Arena Tournament Dashboard — Chess Nexus`} noIndex />
@@ -1142,14 +1142,14 @@ function GamesPanel({ name, onBack }) {
       <main className="atg-main">
         <div className="atg-games-section atg-games-section--full">
           {/* Analysis tip banner */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, background: "linear-gradient(135deg, var(--color-accent-a12), var(--color-success-a12))", border: "1px solid var(--color-accent-a20)", borderRadius: 12, padding: "12px 18px", marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, background: "linear-gradient(135deg, var(--color-accent-a12), var(--color-accent-2-a12))", border: "1px solid var(--color-accent-a20)", borderRadius: 12, padding: "12px 18px", marginBottom: 16 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
               <span style={{ fontSize: 20, flexShrink: 0 }}>🔍</span>
               <span style={{ fontSize: 13.5, fontWeight: 600, color: "var(--color-text-muted)", lineHeight: 1.4 }}>
                 Analyze your games in the <strong style={{ color: "var(--color-accent)" }}>Analysis page</strong> — find blunders, mistakes and inaccuracies.
               </span>
             </div>
-            <Link to="/game-analysis" style={{ flexShrink: 0, textDecoration: "none", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-success))", borderRadius: 9, padding: "7px 16px", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap" }}>
+            <Link to="/game-analysis" style={{ flexShrink: 0, textDecoration: "none", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-accent-2))", borderRadius: 9, padding: "7px 16px", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap" }}>
               Analyze my game →
             </Link>
           </div>
@@ -1518,7 +1518,7 @@ const S = {
 
   // ── Cards — obsidian glass ─────────────────────────────────────────────────
   card:        { background: "var(--color-surface)", border: "1px solid var(--color-white-a04)", borderRadius: 18, padding: "18px 20px", boxShadow: "0 8px 32px var(--color-black-a50)", WebkitBackdropFilter: "blur(10px)", backdropFilter: "blur(10px)", position: "relative", overflow: "hidden" },
-  cardHighlight: { background: "linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-success-a12) 100%)", border: "1px solid var(--color-accent-a30)", boxShadow: "0 8px 32px var(--color-accent-a12)" },
+  cardHighlight: { background: "linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-accent-2-a12) 100%)", border: "1px solid var(--color-accent-a30)", boxShadow: "0 8px 32px var(--color-accent-a12)" },
 
   // ── Avatar ─────────────────────────────────────────────────────────────────
   avatar:      { width: 72, height: 72, borderRadius: "50%", background: "var(--color-black-a35)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800, overflow: "hidden", flexShrink: 0, border: "2px solid var(--color-accent-a40)", boxShadow: "0 0 22px var(--color-accent-a30)" },
@@ -1529,7 +1529,7 @@ const S = {
 
   // ── Buttons ────────────────────────────────────────────────────────────────
   ghostBtn:    { textDecoration: "none", color: "var(--color-text)", background: "var(--color-white-a04)", border: "1px solid var(--color-white-a10)", borderRadius: 10, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" },
-  joinBtn:     { display: "inline-block", textDecoration: "none", textAlign: "center", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-success))", borderRadius: 9, padding: "5px 13px", fontSize: 12, fontWeight: 700, marginTop: 5, whiteSpace: "nowrap" },
+  joinBtn:     { display: "inline-block", textDecoration: "none", textAlign: "center", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-accent-2))", borderRadius: 9, padding: "5px 13px", fontSize: 12, fontWeight: 700, marginTop: 5, whiteSpace: "nowrap" },
   footerBtn:   { display: "block", textAlign: "center", textDecoration: "none", color: "var(--color-text-muted)", background: "var(--color-black-a35)", border: "1px solid var(--color-white-a07)", borderRadius: 10, padding: "10px", fontSize: 13, fontWeight: 600, marginTop: 14, fontFamily: "inherit" },
 
   // ── Links & badges ────────────────────────────────────────────────────────
@@ -1539,7 +1539,7 @@ const S = {
 
   // ── Progress bar ──────────────────────────────────────────────────────────
   progressTrack: { height: 6, borderRadius: 999, background: "var(--color-white-a07)", marginTop: 12, overflow: "hidden" },
-  progressFill:  { height: "100%", background: "linear-gradient(90deg,var(--color-accent),var(--color-success))", borderRadius: 999 },
+  progressFill:  { height: "100%", background: "linear-gradient(90deg,var(--color-accent),var(--color-accent-2))", borderRadius: 999 },
 
   // ── List rows ─────────────────────────────────────────────────────────────
   upcomingRow: { display: "flex", alignItems: "center", gap: 12, padding: "11px 0", borderBottom: "1px solid var(--color-white-a04)" },

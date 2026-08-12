@@ -375,7 +375,7 @@ function MonthCalendar({ byDateMap }) {
               >✕</button>
             </div>
             {/* Top shimmer line */}
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, var(--color-accent), var(--color-success), var(--color-accent))', backgroundSize: '200% 100%' }} />
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, var(--color-accent), var(--color-accent-2), var(--color-accent))', backgroundSize: '200% 100%' }} />
             {byDateMap[selectedDateStr]?.length === 0 || !byDateMap[selectedDateStr] ? (
               <div style={{ color: 'var(--color-text-faint)', fontSize: 14, textAlign: 'center', padding: '30px 0' }}>No activities scheduled on this day.</div>
             ) : (
@@ -656,7 +656,7 @@ export default function SchedulePage() {
         canonical="/schedule"
       />
       {/* Radial gradient overlay — same as dashboard */}
-      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 20% 50%, var(--color-accent-2-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
       <style>{`
         @keyframes schedPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
         @keyframes schedShimmer { 0%{background-position:200% center} 100%{background-position:-200% center} }
@@ -713,7 +713,7 @@ export default function SchedulePage() {
       {/* Header */}
       <div style={{ position: 'relative', zIndex: 1, padding: '40px 20px 30px', textAlign: 'center', borderBottom: '1px solid var(--color-white-a07)' }}>
         <div style={{ fontSize: 40, marginBottom: 8 }}>📅</div>
-        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Activity Schedule</h1>
+        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Activity Schedule</h1>
         <p style={{ color: 'var(--color-text-muted)', marginTop: 8, fontSize: 14 }}>
           All times shown in your local timezone ({Intl.DateTimeFormat().resolvedOptions().timeZone})
         </p>

@@ -26,7 +26,7 @@
   right: 0;
   bottom: 0;
   background: radial-gradient(circle at 30% 40%, var(--color-accent-a08) 0%, transparent 50%), 
-              radial-gradient(circle at 70% 60%, var(--color-success-a12) 0%, transparent 50%);
+              radial-gradient(circle at 70% 60%, var(--color-accent-2-a12) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
   animation: pulse-bg 8s ease-in-out infinite;
@@ -131,7 +131,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 2em;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -198,7 +198,7 @@
 }
 
 .focus-btn-primary {
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: white;
   border: 1px solid var(--color-white-a20);
   box-shadow: 0 4px 16px var(--color-accent-a40);
@@ -210,7 +210,7 @@
 }
 
 .focus-btn-success {
-  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%);
   color: white;
   border: 1px solid var(--color-white-a20);
   box-shadow: 0 4px 16px var(--color-success-a30);
@@ -265,7 +265,7 @@
   font-size: 2.2em;
   font-weight: 900;
   margin: 0 0 16px 0;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -392,7 +392,7 @@
   color: var(--color-success);
   font-weight: 700;
   font-size: 1.05em;
-  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -665,7 +665,7 @@
 }
 
 .focus-tactics-btn-active {
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: white;
   border-color: transparent;
   box-shadow: 0 4px 16px var(--color-accent-a40);
@@ -689,7 +689,7 @@
 }
 
 .focus-result-success {
-  background: linear-gradient(135deg, var(--color-success-a20) 0%, rgba(5, 150, 105, 0.2) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2-a20) 0%, rgba(5, 150, 105, 0.2) 100%);
   border-color: var(--color-success-a30);
 }
 
@@ -708,7 +708,7 @@
   font-size: 2.5em;
   font-weight: 900;
   margin: 0 0 16px 0;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -718,7 +718,7 @@
   font-size: 3em;
   font-weight: 800;
   margin: 16px 0;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -252,14 +252,14 @@ const styles = {
   brandText: {
     fontFamily: "'Georgia', 'Times New Roman', serif",
     fontSize: '15px', fontWeight: 600, letterSpacing: '0.5px',
-    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
     WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
   },
   brandSub: {
     fontFamily: "'Georgia', 'Times New Roman', serif",
     fontSize: '26px', fontWeight: 700, letterSpacing: '1px',
     fontStyle: 'italic',
-    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
     WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
     marginTop: '-2px',
   },

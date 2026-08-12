@@ -715,7 +715,7 @@ const styles = {
     inset: 0,
     background:
       'radial-gradient(circle at 20% 10%, var(--color-accent-a12), transparent 40%), ' +
-      'radial-gradient(circle at 85% 0%, var(--color-success-a12), transparent 45%), ' +
+      'radial-gradient(circle at 85% 0%, var(--color-accent-2-a12), transparent 45%), ' +
       'radial-gradient(circle at 50% 100%, var(--color-warning-a12), transparent 50%)',
     pointerEvents: 'none'
   },
@@ -795,7 +795,7 @@ const styles = {
     display: 'flex',
     gap: 16,
     alignItems: 'flex-start',
-    background: 'linear-gradient(135deg, var(--color-success-a12), var(--color-accent-a06))',
+    background: 'linear-gradient(135deg, var(--color-accent-2-a12), var(--color-accent-a06))',
     border: '1px solid rgba(52,211,153,0.34)',
     borderRadius: 16,
     padding: '18px 20px',
@@ -917,7 +917,7 @@ const styles = {
     cursor: 'pointer'
   },
   currencyBtnActive: {
-    background: 'linear-gradient(135deg, var(--color-accent-a20), var(--color-success-a20))',
+    background: 'linear-gradient(135deg, var(--color-accent-a20), var(--color-accent-2-a20))',
     color: C.text,
     boxShadow: '0 0 0 1px var(--color-accent-a40)'
   },

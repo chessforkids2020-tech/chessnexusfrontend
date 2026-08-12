@@ -5,7 +5,7 @@ export default function CoachingRoomCreate() {
   const navigate = useNavigate();
   return (
     <div style={{ fontFamily: "'Segoe UI', sans-serif", background: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 30% 20%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 70% 70%, var(--color-accent-a06) 0%, transparent 50%)', pointerEvents: 'none' }} />
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 30% 20%, var(--color-accent-2-a12) 0%, transparent 50%), radial-gradient(circle at 70% 70%, var(--color-accent-a06) 0%, transparent 50%)', pointerEvents: 'none' }} />
       <div style={{ textAlign: 'center', maxWidth: 480, position: 'relative', zIndex: 1 }}>
         <div style={{ fontSize: 72, marginBottom: 24, filter: 'drop-shadow(0 0 32px var(--color-success-a30))' }}>🎓</div>
         <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-success)', letterSpacing: 3, textTransform: 'uppercase', marginBottom: 16 }}>Coaching Room</div>

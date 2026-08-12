@@ -14,7 +14,7 @@ const styles = {
     alignItems: 'center',
     marginBottom: '30px',
     padding: '20px',
-    background: 'linear-gradient(135deg, var(--color-success), var(--color-success))',
+    background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))',
     borderRadius: '15px',
     color: 'var(--color-text)',
     boxShadow: '0 8px 25px var(--color-black-a20)',
@@ -104,7 +104,7 @@ const styles = {
     letterSpacing: '0.5px',
   },
   button: {
-    background: 'linear-gradient(135deg, var(--color-success), var(--color-success))',
+    background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))',
     color: 'var(--color-text)',
     border: 'none',
     padding: '12px 24px',
@@ -246,7 +246,7 @@ const styles = {
     transition: 'background-color 0.2s',
   },
   saveButton: {
-    background: 'linear-gradient(135deg, var(--color-success), var(--color-success))',
+    background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))',
     color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',

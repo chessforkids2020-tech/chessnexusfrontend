@@ -4,7 +4,7 @@ import './arcade.css';
 // Shared theme, layout helpers, and constants for arcade pages
 const T = {
   bg: "var(--color-bg)",
-  bgRadial: "radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)",
+  bgRadial: "radial-gradient(circle at 20% 50%, var(--color-accent-2-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)",
   glass: "var(--color-surface)",
   glassBorder: "var(--color-white-a04)",
   glassShadow: "0 8px 32px var(--color-black-a50)",
@@ -12,7 +12,7 @@ const T = {
   blurHeavy: "blur(12px)",
   accent1: "var(--color-accent)",
   accent2: "var(--color-success)",
-  accentGrad: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)",
+  accentGrad: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)",
   accentGlow: "0 4px 16px var(--color-accent-a40)",
   text: "var(--color-text)",
   textMuted: "var(--color-text-muted)",

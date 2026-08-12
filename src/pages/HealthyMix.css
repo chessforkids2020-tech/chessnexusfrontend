@@ -593,7 +593,7 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
   animation: hmMarkPop 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .hm-mark-ok {
-  background: linear-gradient(135deg, var(--color-success-a20), var(--color-success-a12));
+  background: linear-gradient(135deg, var(--color-accent-2-a20), var(--color-accent-2-a12));
   color: var(--hm-good);
   border: 1px solid var(--color-success-a30);
   box-shadow: 0 0 12px var(--color-success-a12);
@@ -662,7 +662,7 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
 .hm-status-solved {
   border-color: var(--color-success-a30);
   color: var(--hm-good);
-  background: linear-gradient(90deg, var(--color-success-a12), var(--color-white-a04));
+  background: linear-gradient(90deg, var(--color-accent-2-a12), var(--color-white-a04));
 }
 .hm-status-solved .hm-status-dot { background: var(--hm-good); box-shadow: 0 0 14px var(--hm-good); }
 .hm-status-failed {

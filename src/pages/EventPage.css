@@ -42,7 +42,7 @@
 .event-page-container::before {
   width: 700px; height: 700px;
   top: -150px; left: -200px;
-  background: radial-gradient(circle, var(--color-success-a12) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--color-accent-2-a12) 0%, transparent 70%);
 }
 .event-page-container::after {
   width: 600px; height: 600px;

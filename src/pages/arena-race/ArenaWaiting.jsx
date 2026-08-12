@@ -284,7 +284,7 @@ export default function ArenaWaiting() {
             icon: '⏰',
             text: 'Chess Nexus Hosted Race',
             subtext: `STARTS IN ${countdown}`,
-            gradient: 'linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-success-a20) 100%)',
+            gradient: 'linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-accent-2-a20) 100%)',
             border: 'var(--color-accent-a30)',
             textColor: 'var(--color-accent)'
           };
@@ -303,7 +303,7 @@ export default function ArenaWaiting() {
           icon: '🏁',
           text: 'Race Started!',
           subtext: 'Redirecting to race...',
-          gradient: 'linear-gradient(135deg, var(--color-success-a20) 0%, rgba(52, 211, 153, 0.2) 100%)',
+          gradient: 'linear-gradient(135deg, var(--color-accent-2-a20) 0%, rgba(52, 211, 153, 0.2) 100%)',
           border: 'var(--color-success-a30)',
           textColor: 'var(--color-success)'
         };
@@ -334,7 +334,7 @@ export default function ArenaWaiting() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-accent-2-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -359,7 +359,7 @@ export default function ArenaWaiting() {
       fontSize: '42px',
       fontWeight: '700',
       margin: '0 0 8px 0',
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -478,7 +478,7 @@ export default function ArenaWaiting() {
       width: '48px',
       height: '48px',
       borderRadius: '50%',
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -565,7 +565,7 @@ export default function ArenaWaiting() {
       marginBottom: '32px',
     },
     retryButton: {
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       color: 'var(--color-text)',
       border: 'none',
       padding: '14px 32px',
@@ -768,7 +768,7 @@ export default function ArenaWaiting() {
                     fontWeight: '700',
                     background: (!canStartRace || startingRace)
                       ? 'rgba(107, 114, 128, 0.5)' 
-                      : 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
+                      : 'linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)',
                     border: 'none',
                     borderRadius: '12px',
                     color: 'var(--color-text)',
@@ -953,7 +953,7 @@ export default function ArenaWaiting() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                               <div style={{
                                 width: '32px', height: '32px', borderRadius: '50%',
-                                background: isMe ? 'linear-gradient(135deg,var(--color-accent),var(--color-success))' : 'var(--color-white-a07)',
+                                background: isMe ? 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))' : 'var(--color-white-a07)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 fontSize: '14px', fontWeight: '700', color: 'var(--color-text)', flexShrink: 0,
                               }}>

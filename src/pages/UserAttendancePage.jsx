@@ -26,7 +26,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
+    background: 'radial-gradient(circle at 20% 50%, var(--color-accent-2-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
     pointerEvents: 'none',
     zIndex: 0
   },
@@ -41,7 +41,7 @@ const styles = {
     fontSize: '34px',
     fontWeight: '700',
     marginBottom: '8px',
-    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text'
@@ -141,7 +141,7 @@ const styles = {
     gap: '8px'
   },
   primaryBtn: {
-    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
     color: 'var(--color-text)',
     boxShadow: '0 4px 16px var(--color-accent-a40)'
   },
@@ -227,7 +227,7 @@ const styles = {
     fontSize: '20px',
     fontWeight: '600',
     color: 'var(--color-text)',
-    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text'
@@ -340,7 +340,7 @@ const styles = {
     fontSize: '20px',
     fontWeight: '600',
     color: 'var(--color-text)',
-    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text'

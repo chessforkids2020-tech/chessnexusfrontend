@@ -58,7 +58,7 @@
   width: 26px; height: 26px; flex: none;
   display: grid; place-items: center; border-radius: 50%;
   font-size: 12px; font-weight: 700; color: #04211d;
-  background: linear-gradient(150deg, var(--color-success), var(--color-success));
+  background: linear-gradient(150deg, var(--color-accent-2), var(--color-accent-2));
 }
 .bdm-select {
   flex: 1 1 0;

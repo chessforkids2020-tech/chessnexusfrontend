@@ -85,7 +85,7 @@
 /* Academy plan cards (billing page) */
 .acad-fam-tabs { display: inline-flex; gap: 6px; margin-left: auto; }
 .acad-fam-tabs button { border: 1px solid var(--color-white-a10); background: var(--color-white-a04); color: rgba(226,232,240,0.7); border-radius: 10px; padding: 7px 14px; font-weight: 700; font-size: 13px; cursor: pointer; }
-.acad-fam-tabs button.is-active { background: linear-gradient(135deg,var(--color-accent),var(--color-success)); color: #04211d; border-color: transparent; }
+.acad-fam-tabs button.is-active { background: linear-gradient(135deg,var(--color-accent),var(--color-accent-2)); color: #04211d; border-color: transparent; }
 .acad-plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 18px; align-items: stretch; }
 .acad-plan-card { background: var(--color-surface); border: 1px solid var(--color-white-a07); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; height: 100%; }
 .acad-plan-card.is-current { border-color: var(--color-accent-a40); box-shadow: 0 0 16px var(--color-accent-a15); }
@@ -117,11 +117,11 @@
 /* Overview period toggle */
 .acad-period-toggle { display: inline-flex; gap: 6px; background: var(--color-white-a04); border: 1px solid var(--color-white-a07); border-radius: 12px; padding: 4px; }
 .acad-period-toggle button { border: none; background: transparent; color: rgba(226,232,240,0.65); border-radius: 9px; padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-.acad-period-toggle button.is-active { background: linear-gradient(135deg,var(--color-accent),var(--color-success)); color: #04211d; }
+.acad-period-toggle button.is-active { background: linear-gradient(135deg,var(--color-accent),var(--color-accent-2)); color: #04211d; }
 @media (max-width: 560px) { .acad-head { flex-direction: column; align-items: flex-start; gap: 12px; } .acad-period-toggle { width: 100%; } .acad-period-toggle button { flex: 1; } }
 
 /* Settings: current plan status card */
-.acad-plan-status { background: linear-gradient(135deg, var(--color-accent-a08), var(--color-success-a12)); border: 1px solid var(--color-accent-a20); border-radius: 16px; padding: 18px; margin-bottom: 22px; }
+.acad-plan-status { background: linear-gradient(135deg, var(--color-accent-a08), var(--color-accent-2-a12)); border: 1px solid var(--color-accent-a20); border-radius: 16px; padding: 18px; margin-bottom: 22px; }
 .acad-plan-status-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: rgba(226,232,240,0.6); font-weight: 700; }
 .acad-plan-status-link { color: var(--color-accent); font-size: 12.5px; font-weight: 700; text-decoration: none; }
 .acad-plan-status-name { font-size: 22px; font-weight: 800; color: var(--color-accent); margin: 6px 0 12px; }

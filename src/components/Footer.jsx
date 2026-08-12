@@ -163,7 +163,7 @@ export default function Footer() {
             background: linear-gradient(90deg,
               transparent,
               var(--color-accent-a30) 30%,
-              var(--color-success-a30) 70%,
+              var(--color-accent-2-a30) 70%,
               transparent
             );
           }

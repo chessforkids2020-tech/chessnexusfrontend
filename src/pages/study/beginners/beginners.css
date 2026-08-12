@@ -6,7 +6,7 @@
 
 /* Header: title + reward points + mood emoji */
 .ba-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
-.ba-title { font-size: 26px; font-weight: 900; background: linear-gradient(135deg,var(--color-accent),var(--color-success)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.ba-title { font-size: 26px; font-weight: 900; background: linear-gradient(135deg,var(--color-accent),var(--color-accent-2)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .ba-sub { color: rgba(226,232,240,0.65); font-size: 14px; margin: 2px 0 18px; }
 .ba-stats { display: flex; align-items: center; gap: 14px; }
 .ba-mood { font-size: 38px; line-height: 1; }
@@ -42,7 +42,7 @@
 .ba-hud { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; font-size: 13.5px; font-weight: 700; }
 .ba-hud span { background: var(--color-white-a04); border: 1px solid var(--color-white-a10); border-radius: 8px; padding: 5px 10px; }
 .ba-hud .ba-hud-stars { color: var(--color-warning); }
-.ba-primary { padding: 10px 22px; border-radius: 10px; border: none; background: linear-gradient(135deg,var(--color-accent),var(--color-success)); color: #04211d; font-weight: 800; font-size: 14px; cursor: pointer; }
+.ba-primary { padding: 10px 22px; border-radius: 10px; border: none; background: linear-gradient(135deg,var(--color-accent),var(--color-accent-2)); color: #04211d; font-weight: 800; font-size: 14px; cursor: pointer; }
 .ba-ghost { padding: 9px 18px; border-radius: 10px; border: 1px solid var(--color-white-a13); background: var(--color-white-a04); color: var(--color-text); font-weight: 700; font-size: 13.5px; cursor: pointer; }
 
 /* Level dots */

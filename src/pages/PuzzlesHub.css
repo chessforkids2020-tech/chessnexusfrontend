@@ -148,7 +148,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--color-success-a12) 0%, rgba(52,211,153,0.04) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2-a12) 0%, rgba(52,211,153,0.04) 100%);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -158,7 +158,7 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  background: linear-gradient(135deg, var(--color-success), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2));
   color: var(--color-text);
   font-size: 11px;
   font-weight: 800;
@@ -189,7 +189,7 @@
   font-size: 30px;
   font-weight: 900;
   margin: 0 0 10px;
-  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 60%, #a7f3d0 100%);
+  background: linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 60%, #a7f3d0 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -224,7 +224,7 @@
   display: block;
   cursor: pointer;
   text-decoration: none;
-  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   font-weight: 800;
   font-size: 15px;
@@ -289,7 +289,7 @@
 }
 
 .hub-mini--puzzles::before {
-  background: linear-gradient(135deg, var(--color-success-a12), rgba(52,211,153,0.08));
+  background: linear-gradient(135deg, var(--color-accent-2-a12), rgba(52,211,153,0.08));
 }
 
 .hub-mini--blunder::before {
@@ -385,7 +385,7 @@
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: var(--color-bg);
-  background: linear-gradient(135deg, var(--color-success), var(--color-accent));
+  background: linear-gradient(135deg, var(--color-accent-2), var(--color-accent));
   padding: 4px 10px;
   border-radius: 999px;
   flex-shrink: 0;
@@ -454,7 +454,7 @@
 }
 
 .hub-focus-active-badge {
-  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
   color: var(--color-bg);
   font-size: 10px;
   font-weight: 800;
@@ -485,7 +485,7 @@
   font-size: 24px;
   font-weight: 900;
   margin: 0 0 8px;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -554,7 +554,7 @@
 
 .hub-focus-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
   border-radius: 999px;
   transition: width 0.6s ease;
 }
@@ -597,7 +597,7 @@
 }
 
 .hub-focus-cta {
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: var(--color-bg);
   font-weight: 800;
   font-size: 14px;
@@ -673,23 +673,23 @@
 .btn-text  { position: relative; z-index: 1; letter-spacing: 0.4px; }
 
 .scoreboard-btn {
-  background: linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-success-a20) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-accent-2-a20) 100%);
   color: var(--color-accent);
   border: 1px solid var(--color-accent-a30);
 }
 .scoreboard-btn:hover {
-  background: linear-gradient(135deg, var(--color-accent-a30) 0%, var(--color-success-a30) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a30) 0%, var(--color-accent-2-a30) 100%);
   box-shadow: 0 8px 24px var(--color-accent-a30);
   transform: translateY(-3px);
 }
 
 .contest-btn {
-  background: linear-gradient(135deg, var(--color-success-a20) 0%, var(--color-warning-a20) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2-a20) 0%, var(--color-warning-a20) 100%);
   color: var(--color-success);
   border: 1px solid var(--color-success-a30);
 }
 .contest-btn:hover {
-  background: linear-gradient(135deg, var(--color-success-a30) 0%, var(--color-warning-a30) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2-a30) 0%, var(--color-warning-a30) 100%);
   box-shadow: 0 8px 24px var(--color-success-a30);
   transform: translateY(-3px);
 }
@@ -752,7 +752,7 @@
   align-items: center;
   padding: 26px 30px;
   border-bottom: 2px solid var(--color-accent-a20);
-  background: linear-gradient(135deg, var(--color-accent-a08) 0%, var(--color-success-a12) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a08) 0%, var(--color-accent-2-a12) 100%);
 }
 
 .modal-title {
@@ -761,7 +761,7 @@
   font-weight: 900;
   color: var(--color-text);
   margin: 0;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -816,7 +816,7 @@
 }
 
 .rule-number {
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   width: 30px; height: 30px;
   border-radius: 50%;
@@ -845,7 +845,7 @@
 
 .modal-action-btn {
   padding: 13px 40px;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   border: none;
   border-radius: 12px;
@@ -935,7 +935,7 @@
   right: 0;
   bottom: 0;
   background: radial-gradient(circle at 20% 50%, var(--color-accent-a08) 0%, transparent 50%), 
-              radial-gradient(circle at 80% 80%, var(--color-success-a12) 0%, transparent 50%);
+              radial-gradient(circle at 80% 80%, var(--color-accent-2-a12) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
   animation: pulse-bg 8s ease-in-out infinite;
@@ -970,7 +970,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 56px;
   font-weight: 900;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1176,7 +1176,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, var(--color-accent-a06) 0%, var(--color-success-a12) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a06) 0%, var(--color-accent-2-a12) 100%);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -1215,7 +1215,7 @@
   font-weight: 700;
   color: var(--color-text);
   margin: 0 0 6px 0;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1315,25 +1315,25 @@
 }
 
 .scoreboard-btn {
-  background: linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-success-a20) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-accent-2-a20) 100%);
   color: var(--color-accent);
   border: 1px solid var(--color-accent-a30);
 }
 
 .scoreboard-btn:hover {
-  background: linear-gradient(135deg, var(--color-accent-a30) 0%, var(--color-success-a30) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a30) 0%, var(--color-accent-2-a30) 100%);
   box-shadow: 0 8px 24px var(--color-accent-a40);
   transform: translateY(-4px);
 }
 
 .contest-btn {
-  background: linear-gradient(135deg, var(--color-success-a20) 0%, var(--color-warning-a20) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2-a20) 0%, var(--color-warning-a20) 100%);
   color: var(--color-success);
   border: 1px solid var(--color-success-a30);
 }
 
 .contest-btn:hover {
-  background: linear-gradient(135deg, var(--color-success-a30) 0%, var(--color-warning-a30) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2-a30) 0%, var(--color-warning-a30) 100%);
   box-shadow: 0 8px 24px var(--color-success-a30);
   transform: translateY(-4px);
 }
@@ -1389,7 +1389,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, var(--color-accent-a06) 0%, var(--color-success-a12) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a06) 0%, var(--color-accent-2-a12) 100%);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -1424,7 +1424,7 @@
   margin: 0 0 12px 0;
   position: relative;
   z-index: 1;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1498,7 +1498,7 @@
   align-items: center;
   padding: 28px 32px;
   border-bottom: 2px solid var(--color-accent-a20);
-  background: linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-success-a12) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-accent-2-a12) 100%);
 }
 
 .modal-title {
@@ -1507,7 +1507,7 @@
   font-weight: 900;
   color: var(--color-text);
   margin: 0;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1574,7 +1574,7 @@
 }
 
 .rule-number {
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   width: 32px;
   height: 32px;
@@ -1604,7 +1604,7 @@
 
 .modal-action-btn {
   padding: 14px 40px;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   border: none;
   border-radius: 12px;
@@ -1775,7 +1775,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, var(--color-accent-a06) 0%, var(--color-success-a12) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a06) 0%, var(--color-accent-2-a12) 100%);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -1821,7 +1821,7 @@
   margin: 0 0 8px 0;
   font-size: 1.5em;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1835,7 +1835,7 @@
 }
 
 .focus-start-button {
-  background: linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-success-a20) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-accent-2-a20) 100%);
   border: 1px solid var(--color-accent-a30);
   color: var(--color-accent);
   padding: 14px 28px;
@@ -1851,7 +1851,7 @@
 }
 
 .monthly-focus-full-card:hover .focus-start-button {
-  background: linear-gradient(135deg, var(--color-accent-a30) 0%, var(--color-success-a30) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a30) 0%, var(--color-accent-2-a30) 100%);
   transform: translateX(6px);
   box-shadow: 0 6px 20px var(--color-accent-a40);
 }
@@ -1863,7 +1863,7 @@
 }
 
 .quick-card.monthly-focus-card::before {
-  background: linear-gradient(135deg, var(--color-accent-a06) 0%, var(--color-success-a12) 100%);
+  background: linear-gradient(135deg, var(--color-accent-a06) 0%, var(--color-accent-2-a12) 100%);
 }
 
 .quick-card.monthly-focus-card:hover {
@@ -1916,7 +1916,7 @@
 
 .progress-fill-mini {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-success), var(--color-accent));
+  background: linear-gradient(90deg, var(--color-accent-2), var(--color-accent));
   border-radius: 2px;
   transition: width 0.3s ease;
 }
@@ -1997,7 +1997,7 @@
   position: absolute;
   top: 0; left: 0; bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, var(--color-success), var(--color-accent));
+  background: linear-gradient(180deg, var(--color-accent-2), var(--color-accent));
   border-radius: 4px 0 0 4px;
 }
 
@@ -2005,7 +2005,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--color-success-a12) 0%, var(--color-accent-a06) 100%);
+  background: linear-gradient(135deg, var(--color-accent-2-a12) 0%, var(--color-accent-a06) 100%);
   opacity: 0;
   transition: opacity 0.35s ease;
 }
@@ -2103,13 +2103,13 @@
 
 .hub-focus-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-success), var(--color-accent));
+  background: linear-gradient(90deg, var(--color-accent-2), var(--color-accent));
   border-radius: 4px;
   transition: width 0.4s ease;
 }
 
 .hub-focus-cta {
-  background: linear-gradient(135deg, var(--color-success), var(--color-accent));
+  background: linear-gradient(135deg, var(--color-accent-2), var(--color-accent));
   color: var(--color-text);
   padding: 14px 28px;
   border-radius: 14px;
@@ -2176,7 +2176,7 @@
 
 .hub-card--ttt::before  { background: linear-gradient(90deg, #f43f5e, #fb7185); }
 .hub-card--bingo::before { background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2)); }
-.hub-card--daily::before { background: linear-gradient(90deg, var(--color-success), var(--color-accent)); }
+.hub-card--daily::before { background: linear-gradient(90deg, var(--color-accent-2), var(--color-accent)); }
 .hub-card--contest::before { background: linear-gradient(90deg, var(--color-warning), var(--color-danger)); }
 
 .hub-card:hover {

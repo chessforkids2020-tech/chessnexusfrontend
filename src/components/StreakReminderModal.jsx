@@ -130,7 +130,7 @@ const S = {
   flame: { fontSize: 30 },
   dayCount: {
     fontSize: 40, fontWeight: 800, lineHeight: 1,
-    background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))',
+    background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
     WebkitBackgroundClip: 'text', backgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
   },
@@ -140,7 +140,7 @@ const S = {
     width: 9, height: 9, borderRadius: '50%',
     background: 'var(--color-border-strong)',
   },
-  dotOn: { background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))' },
+  dotOn: { background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))' },
   title: { margin: '0 0 6px', fontSize: 20, fontWeight: 800, color: 'var(--color-text)' },
   sub: { margin: '0 0 18px', fontSize: 13.5, lineHeight: 1.55, color: 'var(--color-text-muted)' },
 
@@ -170,7 +170,7 @@ const S = {
   link: { color: 'var(--color-accent)', fontWeight: 700, textDecoration: 'none' },
   primary: {
     width: '100%', padding: '11px 16px', borderRadius: 10, border: 'none',
-    background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))',
+    background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
     color: '#04210f', fontWeight: 800, fontSize: 14.5, cursor: 'pointer',
   },
 };

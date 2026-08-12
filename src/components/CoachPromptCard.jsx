@@ -25,7 +25,7 @@ export default function CoachPromptCard() {
   if (coachStatus.isCoach) {
     return (
       <div style={{
-        background: 'linear-gradient(135deg, var(--color-accent-a12), var(--color-success-a12))',
+        background: 'linear-gradient(135deg, var(--color-accent-a12), var(--color-accent-2-a12))',
         border: '1px solid var(--color-accent-a30)',
         borderRadius: '14px',
         padding: '16px 22px',
@@ -55,7 +55,7 @@ export default function CoachPromptCard() {
         <button
           onClick={() => navigate('/coach/dashboard')}
           style={{
-            background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))',
+            background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
             color: 'var(--color-bg)',
             border: 'none',
             padding: '9px 18px',
@@ -100,7 +100,7 @@ export default function CoachPromptCard() {
       <div style={{ flex: 1, minWidth: '220px' }}>
         <div style={{
           color: 'var(--color-text)', fontWeight: 700, fontSize: '17px', marginBottom: '4px',
-          background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))',
+          background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
           WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent'
         }}>
           Are you a chess coach?
@@ -113,7 +113,7 @@ export default function CoachPromptCard() {
       <button
         onClick={() => navigate('/coach/onboarding')}
         style={{
-          background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))',
+          background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))',
           color: 'var(--color-bg)',
           border: 'none',
           padding: '11px 22px',

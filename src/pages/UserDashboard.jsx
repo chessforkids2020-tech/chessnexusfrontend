@@ -2014,10 +2014,10 @@ export default function UserDashboard() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                           <div style={{ display: 'flex', background: 'var(--color-black-a35)', borderRadius: 'var(--radius-md)', padding: 2, gap: 2 }}>
                             {['24h','7d'].map(r => (
-                              <button key={r} onClick={() => setPuzzleCardRange(r)} style={{ border: 'none', cursor: 'pointer', padding: '2px 8px', borderRadius: 'var(--radius-sm)', fontSize: 10, fontWeight: 700, background: puzzleCardRange === r ? 'linear-gradient(135deg,var(--color-accent),var(--color-success))' : 'transparent', color: puzzleCardRange === r ? '#04201f' : 'var(--color-text-faint)', transition: 'all 0.15s' }}>{r}</button>
+                              <button key={r} onClick={() => setPuzzleCardRange(r)} style={{ border: 'none', cursor: 'pointer', padding: '2px 8px', borderRadius: 'var(--radius-sm)', fontSize: 10, fontWeight: 700, background: puzzleCardRange === r ? 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))' : 'transparent', color: puzzleCardRange === r ? '#04201f' : 'var(--color-text-faint)', transition: 'all 0.15s' }}>{r}</button>
                             ))}
                           </div>
-                          <Link to={viewedDN ? `/player/${encodeURIComponent(viewedDN)}/puzzle-dashboard` : '/puzzle-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: 'linear-gradient(135deg,var(--color-accent),var(--color-success))', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
+                          <Link to={viewedDN ? `/player/${encodeURIComponent(viewedDN)}/puzzle-dashboard` : '/puzzle-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
                         </div>
                       </div>
                       <div className="dash-ring-row" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -2063,7 +2063,7 @@ export default function UserDashboard() {
                           <span style={{ fontSize: 15 }}>🏟️</span>
                           <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Tournament</span>
                         </div>
-                        <Link to={isPublicView ? `/arena-tournament-dashboard/${encodeURIComponent(routeDisplayName)}` : '/arena-tournament-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: 'linear-gradient(135deg,var(--color-accent),var(--color-success))', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
+                        <Link to={isPublicView ? `/arena-tournament-dashboard/${encodeURIComponent(routeDisplayName)}` : '/arena-tournament-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {arenaStats.map((s, i) => (

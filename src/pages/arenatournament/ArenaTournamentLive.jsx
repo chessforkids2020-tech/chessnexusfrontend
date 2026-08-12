@@ -1221,7 +1221,7 @@ export default function ArenaTournamentLive() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-success-a12) 0%, transparent 50%)',
+          background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a12) 0%, transparent 50%)',
           pointerEvents: 'none',
           zIndex: 0
         }} />
@@ -1378,7 +1378,7 @@ export default function ArenaTournamentLive() {
           <div className="at-live-chat-inner" style={{ padding: 0, borderRadius: '16px', overflow: 'hidden' }}>
             {/* Individual Leaderboard header */}
             <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--color-white-a07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: '17px', fontWeight: '700', margin: 0, background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <h3 style={{ fontSize: '17px', fontWeight: '700', margin: 0, background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 🏆 Leaderboard
               </h3>
               <div style={{ color: 'var(--color-text-muted)', fontSize: '12px', fontWeight: '500' }}>{leaderboard.length} players</div>
@@ -2002,7 +2002,7 @@ export default function ArenaTournamentLive() {
               fontWeight: '700',
               color: 'var(--color-text)',
               marginBottom: '12px',
-              background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+              background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'

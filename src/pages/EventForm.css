@@ -51,7 +51,7 @@
 .event-form-page::before {
   width: 700px; height: 700px;
   top: -120px; left: -180px;
-  background: radial-gradient(circle, var(--color-success-a12) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--color-accent-2-a12) 0%, transparent 70%);
 }
 .event-form-page::after {
   width: 600px; height: 600px;
@@ -264,7 +264,7 @@
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-success-a20), var(--color-accent-a12));
+  background: linear-gradient(135deg, var(--color-accent-2-a20), var(--color-accent-a12));
   border: 1px solid var(--color-success-a30);
   font-size: 34px;
   color: var(--glow-emerald);

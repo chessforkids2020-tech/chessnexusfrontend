@@ -16,12 +16,12 @@ const StudyChapterSelection = () => {
   const studyTypeColors = {
     basic: {
       color: 'var(--color-success)',
-      gradient: 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
+      gradient: 'linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)',
       accentColor: 'var(--color-success-a12)'
     },
     positional: {
       color: 'var(--color-accent)',
-      gradient: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      gradient: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       accentColor: 'var(--color-accent-a15)'
     },
     realtime: {
@@ -96,7 +96,7 @@ const StudyChapterSelection = () => {
       background: `
         radial-gradient(circle at 30% 20%, var(--color-accent-a15) 0%, transparent 50%),
         radial-gradient(circle at 70% 60%, var(--color-danger-a12) 0%, transparent 50%),
-        radial-gradient(circle at 50% 90%, var(--color-success-a12) 0%, transparent 50%)
+        radial-gradient(circle at 50% 90%, var(--color-accent-2-a12) 0%, transparent 50%)
       `,
       pointerEvents: 'none',
       zIndex: 0,

@@ -685,7 +685,7 @@ export default function BingoChoose() {
                       key={num}
                       style={{
                         background: p
-                          ? "linear-gradient(145deg, var(--color-success-a12), rgba(16,185,129,0.02))"
+                          ? "linear-gradient(145deg, var(--color-accent-2-a12), rgba(16,185,129,0.02))"
                           : "var(--color-white-a04)",
                         border: p
                           ? isReady
@@ -769,7 +769,7 @@ export default function BingoChoose() {
                     <button
                       onClick={handleReady}
                       style={{
-                        background: "linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)",
+                        background: "linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)",
                         border: "none",
                         borderRadius: 40,
                         padding: "18px 32px",
@@ -819,7 +819,7 @@ export default function BingoChoose() {
                         <div style={{
                           width: `${(readyCount / 2) * 100}%`,
                           height: "100%",
-                          background: "linear-gradient(90deg, var(--color-success), var(--color-success))",
+                          background: "linear-gradient(90deg, var(--color-accent-2), var(--color-accent-2))",
                           borderRadius: 2,
                           transition: "width 0.3s ease"
                         }} />

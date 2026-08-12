@@ -86,10 +86,10 @@
   background: linear-gradient(160deg, rgba(23, 26, 34, 0.96), rgba(15, 18, 26, 0.96));
   border-color: var(--color-white-a10);
 }
-.chub-hero-plain::before { background: linear-gradient(90deg, var(--color-accent), var(--color-success)); }
+.chub-hero-plain::before { background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2)); }
 .chub-hero-plain .chub-title em { color: var(--color-accent); }
 .chub-hero-plain .chub-cta {
-  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
   color: #04211d;
   box-shadow: 0 10px 26px var(--color-accent-a30);
 }

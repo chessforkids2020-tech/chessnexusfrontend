@@ -206,7 +206,7 @@ const StudyTest = () => {
       fontSize: '28px',
       fontWeight: '700',
       margin: '0 0 10px 0',
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -330,7 +330,7 @@ const StudyTest = () => {
       boxShadow: '0 4px 12px var(--color-black-a35)',
     },
     nextButton: {
-      background: 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%)',
       color: 'var(--color-text)',
     },
     finishButton: {

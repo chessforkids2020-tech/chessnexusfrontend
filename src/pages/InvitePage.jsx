@@ -293,7 +293,7 @@ const s = {
     whiteSpace: 'nowrap',
     transition: 'all 0.2s'
   },
-  btnCopied: { background: 'linear-gradient(135deg,var(--color-success),#047857)' },
+  btnCopied: { background: 'linear-gradient(135deg,var(--color-accent-2),#047857)' },
   hint: { color: 'var(--color-text-faint)', fontSize: 13, margin: 0 },
   statsRow: { display: 'flex', gap: 16, marginBottom: 20 },
   stat: {

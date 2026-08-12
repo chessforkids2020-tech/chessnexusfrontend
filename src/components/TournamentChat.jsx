@@ -89,7 +89,7 @@ export default function TournamentChat({ tournamentId }) {
     }}>
       <div style={{
         padding: '16px',
-        background: 'linear-gradient(135deg, var(--color-accent-a15), var(--color-success-a12))',
+        background: 'linear-gradient(135deg, var(--color-accent-a15), var(--color-accent-2-a12))',
         color: 'var(--color-accent)',
         fontWeight: '700',
         fontSize: '16px',

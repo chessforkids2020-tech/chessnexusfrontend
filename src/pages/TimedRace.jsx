@@ -470,7 +470,7 @@ export default function TimedRace() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-accent-2-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -587,7 +587,7 @@ export default function TimedRace() {
       transition: 'all 0.3s ease',
     },
     button: {
-      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
       color: 'var(--color-text)',
       border: 'none',
       padding: '14px 32px',
@@ -718,7 +718,7 @@ export default function TimedRace() {
                     <div style={styles.placeholderIcon}>🎉</div>
                     <div style={styles.placeholderText}>
                       <strong style={{ 
-                        background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+                        background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text',
@@ -888,7 +888,7 @@ export default function TimedRace() {
                     <div style={styles.placeholderIcon}>🎉</div>
                     <div style={styles.placeholderText}>
                       <strong style={{ 
-                        background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+                        background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text',

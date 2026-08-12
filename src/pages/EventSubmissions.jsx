@@ -15,7 +15,7 @@ const s = {
   blob1: {
     position: 'fixed', borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
     width: 700, height: 700, top: -150, left: -200,
-    background: 'radial-gradient(circle, var(--color-success-a12) 0%, transparent 70%)',
+    background: 'radial-gradient(circle, var(--color-accent-2-a12) 0%, transparent 70%)',
   },
   blob2: {
     position: 'fixed', borderRadius: '50%', pointerEvents: 'none', zIndex: 0,
@@ -50,7 +50,7 @@ const s = {
     fontWeight: 800,
     margin: 0,
     letterSpacing: '-0.5px',
-    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
@@ -450,7 +450,7 @@ function EventSubmissions() {
                                   disabled={!sub.email}
                                   title={!sub.email ? 'No email on this submission' : 'Send confirmation email'}
                                   style={{
-                                    background: confirmId === sub._id ? '#334155' : 'linear-gradient(135deg,var(--color-success),var(--color-success))',
+                                    background: confirmId === sub._id ? '#334155' : 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent-2))',
                                     color: 'var(--color-text)', border: 'none', borderRadius: 6, padding: '6px 12px',
                                     fontSize: 12, fontWeight: 600, cursor: sub.email ? 'pointer' : 'not-allowed',
                                     opacity: sub.email ? 1 : 0.5,
@@ -481,7 +481,7 @@ function EventSubmissions() {
                                       style={{ padding: '9px 11px', borderRadius: 8, border: '1px solid #334155', background: 'var(--color-surface)', color: '#f0f0f0', fontSize: 13, resize: 'vertical' }} />
                                     <div style={{ display: 'flex', gap: 10 }}>
                                       <button onClick={() => sendConfirm(sub._id)} disabled={confirmSending}
-                                        style={{ background: 'linear-gradient(135deg,var(--color-success),var(--color-success))', color: 'var(--color-text)', border: 'none', borderRadius: 8, padding: '9px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: confirmSending ? 0.6 : 1 }}>
+                                        style={{ background: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent-2))', color: 'var(--color-text)', border: 'none', borderRadius: 8, padding: '9px 18px', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: confirmSending ? 0.6 : 1 }}>
                                         {confirmSending ? 'Sending…' : '📧 Send confirmation email'}
                                       </button>
                                       <button onClick={() => setConfirmId(null)} disabled={confirmSending}

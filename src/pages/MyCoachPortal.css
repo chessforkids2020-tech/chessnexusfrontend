@@ -18,7 +18,7 @@
   inset: 0;
   background:
     radial-gradient(circle at 20% 40%, var(--color-accent-a08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, var(--color-success-a12) 0%, transparent 50%);
+    radial-gradient(circle at 80% 80%, var(--color-accent-2-a12) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
@@ -29,7 +29,7 @@
   font-size: 32px;
   font-weight: 800;
   margin: 0 0 6px;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -218,7 +218,7 @@
 .mcp-month-label {
   font-size: 18px;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -409,7 +409,7 @@
   padding: 24px 24px 22px;
   background:
     radial-gradient(circle at 0% 0%, var(--color-accent-a15) 0%, transparent 60%),
-    radial-gradient(circle at 100% 0%, var(--color-success-a12) 0%, transparent 55%);
+    radial-gradient(circle at 100% 0%, var(--color-accent-2-a12) 0%, transparent 55%);
   border-bottom: 1px solid var(--color-white-a07);
 }
 
@@ -604,7 +604,7 @@
 
 .mcp-assign-bar > div {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-success));
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2));
   border-radius: 999px;
   transition: width 0.3s ease;
 }
@@ -624,7 +624,7 @@
 
 .mcp-assign-btn {
   margin-top: 12px;
-  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   color: var(--color-text);
   border: none;
   border-radius: 10px;
@@ -801,7 +801,7 @@
 .mcp-nextclass-when { font-size: 16px; font-weight: 600; color: var(--color-text); margin-top: 3px; }
 .mcp-join-btn {
   display: inline-block; text-decoration: none; cursor: pointer;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-success)); color: var(--color-bg);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); color: var(--color-bg);
   font-weight: 700; font-size: 13px; padding: 9px 18px; border: none; border-radius: 10px;
 }
 .mcp-class-grid {

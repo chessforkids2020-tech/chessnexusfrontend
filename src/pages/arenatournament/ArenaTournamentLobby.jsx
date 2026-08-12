@@ -254,7 +254,7 @@ export default function ArenaTournamentLobby() {
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, Arial, sans-serif', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-success-a12) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a12) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
         <div style={{ color: 'var(--color-text)', fontSize: '24px', fontWeight: '600', position: 'relative', zIndex: 1, textAlign: 'center', background: 'var(--color-surface)', padding: '40px', borderRadius: '20px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 20px 40px var(--color-black-a50)' }}>
           <div style={{ fontSize: '48px', marginBottom: '20px', color: 'var(--color-accent)' }}>⏳</div>
           Loading tournament...
@@ -266,7 +266,7 @@ export default function ArenaTournamentLobby() {
   if (error) {
     return (
       <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Inter, Arial, sans-serif', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-success-a12) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a12) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
         <div style={{ background: 'var(--color-danger-a12)', borderRadius: '20px', padding: '40px', maxWidth: '500px', textAlign: 'center', border: '1px solid var(--color-danger-a20)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', position: 'relative', zIndex: 1, boxShadow: '0 20px 40px var(--color-black-a50)' }}>
           <h2 style={{ color: 'var(--color-danger)', marginBottom: '20px', fontSize: '28px', fontWeight: '700' }}>Error</h2>
           <p style={{ color: 'var(--color-danger)', marginBottom: '30px', fontSize: '16px' }}>{error}</p>
@@ -591,7 +591,7 @@ export default function ArenaTournamentLobby() {
             {/* ── Header ── */}
             <div style={{ padding: '22px 24px 16px', borderBottom: '1px solid var(--color-white-a07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Players</span>
+                <span style={{ background: 'linear-gradient(135deg, var(--color-accent), var(--color-accent-2))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Players</span>
                 <span style={{ background: 'var(--color-accent-a15)', border: '1px solid var(--color-accent-a30)', color: 'var(--color-accent)', borderRadius: '20px', padding: '2px 12px', fontSize: '14px', fontWeight: '700', WebkitTextFillColor: 'var(--color-accent)' }}>{participants.length}</span>
               </h2>
               {participants.length > 0 && (
