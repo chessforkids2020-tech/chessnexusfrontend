@@ -125,8 +125,14 @@ export default function StreakReportPage() {
       puzzleAccuracy: pt.puzzleAccuracy ?? null,
       bestStreak:     pt.bestStreak     ?? null,
       daysPractised:  pt.daysPractised  ?? null,
-      arenaGames:     pt.arenaGames     ?? null,
-      externalGames:  pt.externalGames  ?? null,
+      // Games from bySource — the games actually collected and analysed. NOT
+      // StreakDay.externalGames, which is a streak GATE: it stops counting once
+      // a day has one external game, so it reported 9 for a student with 26
+      // analysed games.
+      arenaGames:     games.bySource?.chessnexus ?? null,
+      externalGames:  (games.bySource?.lichess != null || games.bySource?.chesscom != null)
+        ? (games.bySource.lichess || 0) + (games.bySource.chesscom || 0)
+        : null,
       endgamesPlayed: pt.endgames       ?? null,
       studies:        pt.studies        ?? null,
     };
@@ -475,7 +481,10 @@ export default function StreakReportPage() {
                     <>
                       <ul>
                         {src.lines.map(l => <li key={l}>{l}</li>)}
-                        {pt?.arenaGames > 0 && <li>{pt.arenaGames} arena game{pt.arenaGames === 1 ? '' : 's'}</li>}
+                        {/* n, not pt.arenaGames: this is the count of games
+                            actually collected for the report, so it agrees with
+                            the headline and with the comparison table. */}
+                        {n > 0 && <li>{n} arena game{n === 1 ? '' : 's'}</li>}
                         {pt?.endgames > 0 && <li>{pt.endgames} endgame{pt.endgames === 1 ? '' : 's'} played out</li>}
                         {pt?.studies > 0 && <li>{pt.studies} study chapter{pt.studies === 1 ? '' : 's'}</li>}
                       </ul>
