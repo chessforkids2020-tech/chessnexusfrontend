@@ -103,7 +103,7 @@
   bottom: 0;
   width: 60px;
   max-width: 80vw;
-  background: white;
+  background: var(--color-surface);
   z-index: 100000;
   box-shadow: 2px 0 10px var(--color-black-a20);
   animation: slideInLeft 0.3s ease;

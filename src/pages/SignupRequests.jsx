@@ -33,7 +33,7 @@ const styles = {
     padding: "10px 20px",
     border: "2px solid var(--color-text)",
     borderRadius: 8,
-    background: "var(--color-text)",
+    background: "var(--color-surface)",
     cursor: "pointer",
     fontWeight: 500,
     transition: "all 0.2s"
@@ -49,7 +49,7 @@ const styles = {
     gap: 20
   },
   requestCard: {
-    background: "var(--color-text)",
+    background: "var(--color-surface)",
     border: "2px solid var(--color-text)",
     borderRadius: 12,
     padding: 20,
@@ -118,7 +118,7 @@ const styles = {
     fontWeight: 500
   },
   chessInfo: {
-    background: "var(--color-text)",
+    background: "var(--color-surface)",
     padding: 12,
     borderRadius: 8,
     marginBottom: 16
@@ -162,7 +162,7 @@ const styles = {
   },
   deleteBtn: {
     padding: "10px 16px",
-    background: "var(--color-text-faint)",
+    background: "var(--color-surface-2)",
     color: "var(--color-text)",
     border: "none",
     borderRadius: 8,

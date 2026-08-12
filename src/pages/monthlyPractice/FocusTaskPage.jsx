@@ -1633,7 +1633,7 @@ export default function FocusTaskPage() {
                   {/* Opponent side info banner */}
                   {!isUserSide && (
                     <div style={{ 
-                      background: 'var(--color-text)',
+                      background: 'var(--color-surface)',
                       padding: '15px',
                       borderRadius: '12px',
                       textAlign: 'center',

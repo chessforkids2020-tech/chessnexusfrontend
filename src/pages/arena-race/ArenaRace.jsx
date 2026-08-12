@@ -202,7 +202,7 @@ const adminStyles = {
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
-    background: 'var(--color-text)',
+    background: 'var(--color-surface)',
     borderRadius: '20px',
     padding: '30px',
     boxShadow: '0 20px 40px var(--color-black-a20)',
@@ -224,7 +224,7 @@ const adminStyles = {
     position: 'absolute',
     top: '20px',
     left: '20px',
-    background: 'var(--color-text-faint)',
+    background: 'var(--color-surface-2)',
     color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
@@ -1133,7 +1133,7 @@ export default function ArenaRace({ isAdminView = false }) {
                 onClick={() => fetchLeaderboard(true)}
                 style={{
                   padding: '12px 20px',
-                  background: 'var(--color-text-faint)',
+                  background: 'var(--color-surface-2)',
                   color: 'var(--color-text)',
                   border: 'none',
                   borderRadius: '10px',
@@ -1160,7 +1160,7 @@ export default function ArenaRace({ isAdminView = false }) {
             </div>
           </div>
 
-          <div style={{ background: 'var(--color-text)', borderRadius: '16px', border: '1px solid #eee', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--color-surface)', borderRadius: '16px', border: '1px solid #eee', overflow: 'hidden' }}>
             <table style={adminStyles.table}>
               <thead>
                 <tr>

@@ -1106,7 +1106,7 @@ export default function Puzzles() {
     },
     modalCancelBtn: {
       padding: '10px 20px',
-      background: 'var(--color-text)',
+      background: 'var(--color-surface)',
       color: 'var(--color-text-faint)',
       border: 'none',
       borderRadius: '8px',

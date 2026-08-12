@@ -217,7 +217,7 @@ const AdminStudyManagement = () => {
     },
     backToDashboardButton: {
       padding: '8px 16px',
-      background: 'var(--color-text-faint)',
+      background: 'var(--color-surface-2)',
       color: 'var(--color-text)',
       border: 'none',
       borderRadius: '4px',
@@ -256,7 +256,7 @@ const AdminStudyManagement = () => {
       boxShadow: '0 4px 6px var(--color-black-a20)'
     },
     inactiveTab: {
-      background: 'var(--color-text)',
+      background: 'var(--color-surface)',
       color: '#495057',
       border: '1px solid #e9efe9'
     },
@@ -267,7 +267,7 @@ const AdminStudyManagement = () => {
       marginBottom: '40px',
     },
     card: {
-      background: 'var(--color-text)',
+      background: 'var(--color-surface)',
       borderRadius: '12px',
       padding: '20px',
       boxShadow: '0 4px 12px var(--color-black-a20)',
@@ -341,18 +341,18 @@ const AdminStudyManagement = () => {
       gap: '10px',
     },
     cancelButton: {
-      background: 'var(--color-text-faint)',
+      background: 'var(--color-surface-2)',
       color: 'var(--color-text)',
     },
     backButton: {
-      background: 'var(--color-text-faint)',
+      background: 'var(--color-surface-2)',
       color: 'var(--color-text)',
       marginBottom: '20px',
     },
     table: {
       width: '100%',
       borderCollapse: 'collapse',
-      background: 'var(--color-text)',
+      background: 'var(--color-surface)',
       boxShadow: '0 4px 12px var(--color-black-a20)',
       borderRadius: '8px',
       overflow: 'hidden',
@@ -388,7 +388,7 @@ const AdminStudyManagement = () => {
       zIndex: 1000,
     },
     modalContent: {
-      background: 'var(--color-text)',
+      background: 'var(--color-surface)',
       borderRadius: '12px',
       padding: '30px',
       maxWidth: '800px',
@@ -844,7 +844,7 @@ const AdminStudyManagement = () => {
             </form>
           )}
 
-          <div style={{ background: 'var(--color-text)', borderRadius: '8px', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--color-surface)', borderRadius: '8px', overflow: 'hidden' }}>
             <table style={styles.table}>
               <thead>
                 <tr style={styles.tableHeader}>
@@ -962,7 +962,7 @@ const AdminStudyManagement = () => {
                     <div 
                       key={idx} 
                       style={{ 
-                        background: 'var(--color-text)', 
+                        background: 'var(--color-surface)', 
                         border: '1px solid var(--color-surface-2)',
                         borderRadius: '8px',
                         padding: '15px',

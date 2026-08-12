@@ -417,7 +417,7 @@ export default function HomepagePuzzle() {
           fontWeight: 'bold', 
           marginBottom: '10px',
           padding: '8px',
-          backgroundColor: '#e8f5e9',
+          backgroundColor: 'var(--color-success-a12)',
           borderRadius: '6px',
           border: '1px solid #c8e6c9'
         }}>
@@ -431,7 +431,7 @@ export default function HomepagePuzzle() {
           marginBottom: '1px',  // Changed from marginTop to marginBottom
           textAlign: 'center',
           padding: '10px 20px', // Reduced padding
-          backgroundColor: '#fff3cd',
+          backgroundColor: 'var(--color-warning-a12)',
           borderRadius: '8px',
           border: '2px solid var(--color-warning)',
           width: '100%' // Ensure it takes full width

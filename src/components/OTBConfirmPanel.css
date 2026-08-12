@@ -132,7 +132,7 @@
 }
 .otb-confirm-progress-bar {
   height: 6px;
-  background: var(--color-text-faint);
+  background: var(--color-surface-2);
   border-radius: 3px;
   overflow: hidden;
   margin-bottom: 6px;
@@ -155,7 +155,7 @@
   margin-bottom: 14px;
 }
 .otb-confirm-side-badge {
-  background: var(--color-text-faint);
+  background: var(--color-surface-2);
   color: var(--color-text);
   border-radius: 4px;
   padding: 1px 6px;
@@ -190,12 +190,12 @@
 }
 
 .otb-confirm-cancel {
-  background: var(--color-text-faint);
+  background: var(--color-surface-2);
   color: var(--color-text);
 }
 
 .otb-confirm-cancel:hover:not(:disabled) {
-  background: var(--color-text-faint);
+  background: var(--color-surface-2);
 }
 
 .otb-confirm-submit {

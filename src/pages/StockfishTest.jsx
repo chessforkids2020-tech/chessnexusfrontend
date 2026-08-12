@@ -441,7 +441,7 @@ const styles = {
   },
   statusBox: {
     padding: "12px",
-    backgroundColor: "var(--color-text)",
+    backgroundColor: "var(--color-surface)",
     borderRadius: "6px",
     marginBottom: "16px"
   },
@@ -491,7 +491,7 @@ const styles = {
   modeInfo: {
     fontSize: "12px",
     color: "var(--color-text-faint)",
-    backgroundColor: "var(--color-text)",
+    backgroundColor: "var(--color-surface)",
     padding: "8px",
     borderRadius: "4px"
   },

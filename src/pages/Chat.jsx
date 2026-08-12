@@ -804,7 +804,7 @@ const Chat = () => {
                   {user?.role === 'admin' && String(p._id) !== String(user._id || user.id) && (
                     <button 
                       className="btn-primary btn-remove-small" 
-                      style={{ backgroundColor: '#ff4d4d' }}
+                      style={{ backgroundColor: 'var(--color-danger)' }}
                       onClick={() => handleRemoveUserFromGroup(p._id)}
                     >
                       Remove

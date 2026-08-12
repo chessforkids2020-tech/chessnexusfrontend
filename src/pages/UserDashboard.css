@@ -1244,7 +1244,7 @@ button[style*="closeButton"]:hover {
 }
 
 .focus-button:hover {
-  background: var(--color-text-faint);
+  background: var(--color-surface-2);
   border-color: var(--color-text-muted);
   transform: translateX(2px);
 }

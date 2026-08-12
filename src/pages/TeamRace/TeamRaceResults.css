@@ -216,7 +216,7 @@
   right: 10%;
   top: 6px;
   height: 1px;
-  background: var(--color-text-faint);
+  background: var(--color-surface-2);
 }
 
 .elegant-podium .podium-base::after {

@@ -16,7 +16,7 @@ const styles = {
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
-    background: 'var(--color-text)',
+    background: 'var(--color-surface)',
     borderRadius: '20px',
     padding: '30px',
     boxShadow: '0 20px 40px var(--color-black-a20)',
@@ -43,7 +43,7 @@ const styles = {
     position: 'absolute',
     top: '20px',
     left: '20px',
-    background: 'var(--color-text-faint)',
+    background: 'var(--color-surface-2)',
     color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
@@ -96,7 +96,7 @@ const styles = {
     borderRadius: '8px',
     border: '1px solid var(--color-text-muted)',
     fontSize: '16px',
-    background: 'var(--color-text)',
+    background: 'var(--color-surface)',
   },
   createButton: {
     background: 'linear-gradient(135deg, var(--color-success), #20c997)',
@@ -123,7 +123,7 @@ const styles = {
     boxSizing: 'border-box',
   },
   raceCard: {
-    background: 'var(--color-text)',
+    background: 'var(--color-surface)',
     borderRadius: '8px',
     padding: '12px',
     boxShadow: '0 4px 12px var(--color-black-a20)',
@@ -196,7 +196,7 @@ const styles = {
     color: 'var(--color-text)',
   },
   secondaryAction: {
-    background: 'var(--color-text-faint)',
+    background: 'var(--color-surface-2)',
     color: 'var(--color-text)',
   },
   successAction: {
@@ -212,7 +212,7 @@ const styles = {
     color: '#212529',
   },
   disabledAction: {
-    background: 'var(--color-text-faint)',
+    background: 'var(--color-surface-2)',
     color: 'var(--color-text)',
     cursor: 'not-allowed',
     opacity: 0.6,
@@ -284,7 +284,7 @@ const styles = {
   table: {
     width: '100%',
     borderCollapse: 'collapse',
-    background: 'var(--color-text)',
+    background: 'var(--color-surface)',
     borderRadius: '8px',
     overflow: 'hidden',
     boxShadow: '0 4px 12px var(--color-black-a20)',
@@ -926,7 +926,7 @@ export default function ArenaAdmin() {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
               onClick={fetchCleanupStats}
-              style={{ background: 'var(--color-text)', border: '1px solid #f0c080', color: '#7c4a00', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}
+              style={{ background: 'var(--color-surface)', border: '1px solid #f0c080', color: '#7c4a00', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}
             >
               🔍 Check Stats
             </button>
@@ -943,15 +943,15 @@ export default function ArenaAdmin() {
         {cleanupStats && (
           <div style={{ marginTop: '16px' }}>
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '12px' }}>
-              <div style={{ background: 'var(--color-text)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
+              <div style={{ background: 'var(--color-surface)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
                 <div style={{ fontSize: '24px', fontWeight: '800', color: '#2d7a2d' }}>{cleanupStats.keptCount}</div>
                 <div style={{ fontSize: '12px', color: '#555' }}>Races Kept</div>
               </div>
-              <div style={{ background: 'var(--color-text)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
+              <div style={{ background: 'var(--color-surface)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
                 <div style={{ fontSize: '24px', fontWeight: '800', color: cleanupStats.eligibleForDeletion > 0 ? '#c0392b' : '#555' }}>{cleanupStats.eligibleForDeletion}</div>
                 <div style={{ fontSize: '12px', color: '#555' }}>Ready to Delete</div>
               </div>
-              <div style={{ background: 'var(--color-text)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '160px' }}>
+              <div style={{ background: 'var(--color-surface)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '160px' }}>
                 <div style={{ fontSize: '14px', fontWeight: '600', color: '#7c4a00' }}>{new Date(cleanupStats.cutoffDate).toDateString()}</div>
                 <div style={{ fontSize: '12px', color: '#555' }}>Cutoff Date</div>
               </div>

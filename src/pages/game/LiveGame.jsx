@@ -479,7 +479,7 @@ export default function LiveGame() {
 
         {/* Notation Panel */}
         <div style={{
-          backgroundColor: 'var(--color-text)',
+          backgroundColor: 'var(--color-surface)',
           borderRadius: '10px',
           boxShadow: '0 2px 10px var(--color-black-a20)',
           padding: '15px',

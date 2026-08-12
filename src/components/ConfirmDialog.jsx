@@ -59,7 +59,7 @@ const ConfirmDialog = () => {
       zIndex: 1000,
     },
     dialog: {
-      background: 'white',
+      background: 'var(--color-surface)',
       borderRadius: '12px',
       padding: '24px',
       maxWidth: '400px',
@@ -88,7 +88,7 @@ const ConfirmDialog = () => {
       transition: 'all 0.2s',
     },
     cancelButton: {
-      backgroundColor: 'var(--color-text)',
+      backgroundColor: 'var(--color-surface)',
       color: 'var(--color-text-faint)',
       border: '1px solid var(--color-text-muted)',
     },

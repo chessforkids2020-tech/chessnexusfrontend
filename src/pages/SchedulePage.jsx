@@ -556,7 +556,7 @@ function TodayTimetable({ byDateMap, items, tick }) {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 6, flexWrap: 'wrap' }}>
                     <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{fmtIstTime(item)}</span>
-                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--color-text-faint)', display: 'inline-block' }} />
+                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--color-surface-2)', display: 'inline-block' }} />
                     <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{item.durationMinutes} min</span>
                     <span style={{ background: `${col}22`, color: col, borderRadius: 20, padding: '1px 8px', fontSize: 11, fontWeight: 600 }}>
                       {ACTIVITY_LABELS[item.activityType] || 'Activity'}

@@ -270,7 +270,7 @@ const AdminBookManagement = () => {
                     {block.type === 'text' ? (
                       <ReactQuill theme="snow" value={block.contentHtml}
                         onChange={(html) => updateBlock(idx, { contentHtml: html })}
-                        style={{ background: 'var(--color-text)' }} />
+                        style={{ background: 'var(--color-surface)' }} />
                     ) : (
                       <div>
                         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
@@ -493,9 +493,9 @@ const styles = {
   buttonGroup: { display: 'flex', gap: 8, flexWrap: 'wrap' },
   primaryButton: { background: 'var(--color-success)', color: 'var(--color-text)', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 15 },
   primaryButtonSm: { background: 'var(--color-success)', color: 'var(--color-text)', border: 'none', padding: '5px 12px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
-  cancelButton: { background: 'var(--color-text-faint)', color: 'var(--color-text)', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 15 },
+  cancelButton: { background: 'var(--color-surface-2)', color: 'var(--color-text)', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 15 },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 18 },
-  card: { background: 'var(--color-text)', borderRadius: 12, padding: 18, boxShadow: '0 4px 12px var(--color-black-a20)', border: '1px solid var(--color-surface-2)' },
+  card: { background: 'var(--color-surface)', borderRadius: 12, padding: 18, boxShadow: '0 4px 12px var(--color-black-a20)', border: '1px solid var(--color-surface-2)' },
   cardTitle: { fontSize: 18, fontWeight: 'bold', color: 'var(--color-success)', margin: '0 0 2px' },
   coverThumb: { width: 70, height: 95, objectFit: 'cover', borderRadius: 6, border: '1px solid #ddd' },
   coverPlaceholder: { width: 70, height: 95, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, background: '#eef7ee', borderRadius: 6 },

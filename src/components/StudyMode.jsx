@@ -281,7 +281,7 @@ const styles = {
     padding: '20px'
   },
   modal: {
-    backgroundColor: 'var(--color-text)',
+    backgroundColor: 'var(--color-surface)',
     borderRadius: '12px',
     maxWidth: '900px',
     width: '100%',
@@ -295,7 +295,7 @@ const styles = {
     alignItems: 'center',
     padding: '20px',
     borderBottom: '1px solid var(--color-text)',
-    backgroundColor: 'var(--color-text)'
+    backgroundColor: 'var(--color-surface)'
   },
   title: {
     margin: 0,
@@ -329,13 +329,13 @@ const styles = {
   puzzleInfo: {
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: 'var(--color-text)',
+    backgroundColor: 'var(--color-surface)',
     borderRadius: '8px'
   },
   moveAnalysis: {
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: 'var(--color-text)',
+    backgroundColor: 'var(--color-surface)',
     borderRadius: '8px'
   },
   moveComparison: {
@@ -346,7 +346,7 @@ const styles = {
   },
   moveList: {
     fontFamily: 'monospace',
-    backgroundColor: 'var(--color-text)',
+    backgroundColor: 'var(--color-surface)',
     padding: '8px',
     borderRadius: '4px',
     border: '1px solid var(--color-text)',
@@ -355,7 +355,7 @@ const styles = {
   solutionControls: {
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: 'var(--color-text)',
+    backgroundColor: 'var(--color-surface)',
     borderRadius: '8px'
   },
   buttonGroup: {
@@ -377,7 +377,7 @@ const styles = {
   progressInfo: {
     marginTop: '10px',
     padding: '10px',
-    backgroundColor: '#eff6ff',
+    backgroundColor: 'var(--color-accent-a12)',
     borderRadius: '4px',
     fontSize: '0.9em'
   },
@@ -389,7 +389,7 @@ const styles = {
   },
   instructions: {
     padding: '15px',
-    backgroundColor: '#fefce8',
+    backgroundColor: 'var(--color-warning-a12)',
     borderRadius: '8px',
     border: '1px solid #fde047'
   },

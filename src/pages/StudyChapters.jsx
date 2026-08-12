@@ -93,7 +93,7 @@ const StudyChapters = () => {
     container: {
       maxWidth: '1400px',
       margin: '0 auto',
-      background: 'var(--color-text)',
+      background: 'var(--color-surface)',
       borderRadius: '20px',
       padding: '20px',
       boxShadow: '0 20px 40px var(--color-black-a20)',
@@ -113,7 +113,7 @@ const StudyChapters = () => {
       marginBottom: '8px',
       borderRadius: '8px',
       cursor: 'pointer',
-      background: 'var(--color-text)',
+      background: 'var(--color-surface)',
       border: '2px solid var(--color-surface-2)',
       transition: 'all 0.2s ease',
     },
@@ -159,7 +159,7 @@ const StudyChapters = () => {
     moveItem: {
       padding: '8px',
       marginBottom: '4px',
-      background: 'var(--color-text)',
+      background: 'var(--color-surface)',
       borderRadius: '4px',
       fontFamily: 'monospace',
     },

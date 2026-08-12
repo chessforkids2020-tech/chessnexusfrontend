@@ -3,7 +3,11 @@
   padding: 20px 20px;
   text-align: center;
 
- background: var(--color-text);
+  /* A translucent SURFACE, not a text colour. The sweep mapped the original
+     rgba(255,255,255,0.9) onto --color-text (which is near-white) because the
+     map treats high-alpha white as type; correct for a label, wrong for a
+     panel. --color-surface is the right token for a bar that holds content. */
+  background: var(--color-surface);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
   border-top: 3px solid rgba(255, 107, 107, 0.25);

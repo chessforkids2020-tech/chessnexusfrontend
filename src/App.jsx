@@ -241,7 +241,7 @@ function ProtectedRoute({ children, requiredRole, noGuest, allowCoach }) {
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
         <div>Loading authentication...</div>
-        <div style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
+        <div style={{ marginTop: '20px', fontSize: '14px', color: 'var(--color-text-faint)' }}>
           If this takes too long, try refreshing the page or <a href="/login">logging in again</a>
         </div>
         {showDebug && (
@@ -384,8 +384,8 @@ function GuestAllowedRoute({ children }) {
   if (guestError && !user) {
     return (
       <div style={{ textAlign: 'center', padding: 50 }}>
-        <div style={{ marginBottom: 12, color: '#ef4444' }}>Could not create guest session.</div>
-        <a href="/login" style={{ color: '#06b6d4' }}>Log in instead →</a>
+        <div style={{ marginBottom: 12, color: 'var(--color-danger)' }}>Could not create guest session.</div>
+        <a href="/login" style={{ color: 'var(--color-accent)' }}>Log in instead →</a>
       </div>
     );
   }
@@ -432,7 +432,11 @@ const styles = {
     minHeight: "100vh",
     display: "flex",
     flexDirection: "column",
-    backgroundColor: "#f5f5dc",
+    // Was #f5f5dc — beige, from an early light-themed version of the app. It
+    // sits on the ROOT container, so wherever a page did not paint its own
+    // background it showed through: the "half the screen changes theme, half
+    // stays green" effect.
+    backgroundColor: "var(--color-bg)",
     fontFamily: "Poppins, sans-serif",
   },
   content: {

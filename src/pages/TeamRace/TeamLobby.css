@@ -376,7 +376,7 @@
 }
 
 .pagination-dot:hover:not(.active) {
-  background: var(--color-text-faint);
+  background: var(--color-surface-2);
 }
 
 .player-row {

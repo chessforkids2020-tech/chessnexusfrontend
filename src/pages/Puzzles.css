@@ -146,7 +146,7 @@
   flex-shrink: 0;
 }
 .lp-simple-circle.white {
-  background: var(--color-text);
+  background: var(--color-surface);
   box-shadow: 0 0 6px rgba(241,245,249,0.4);
   border: 1px solid var(--color-text-faint);
 }
@@ -209,7 +209,7 @@
 }
 
 .lp-color-disc.white {
-  background: var(--color-text);
+  background: var(--color-surface);
   color: #111827;
   border-color: rgba(241,245,249,0.3);
   box-shadow: 0 0 16px rgba(241,245,249,0.15);

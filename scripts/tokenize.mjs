@@ -50,6 +50,11 @@ const EXCLUDE_PATTERNS = [
   /BoardThemeContext/i,
   /PieceThemeContext/i,
   /CustomBoardColors/i,
+  // The theme registry itself. Its `swatch` hexes are DATA: each one previews a
+  // theme in that theme's OWN colours so all six can be compared side by side in
+  // the picker. Rewriting them to var(--color-accent) would make every swatch
+  // render in the currently-active theme — six identical chips.
+  /UiThemeContext/i,
   /Chessboard/i,
   /PositionEditor/,
   /[\\/]pages[\\/]Admin/,

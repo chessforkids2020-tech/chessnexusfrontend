@@ -483,7 +483,7 @@
   flex-shrink: 0;
 }
 .atg-dot-white {
-  background: var(--color-text);
+  background: var(--color-surface);
   border: 1px solid var(--color-text-faint);
   box-shadow: 0 0 4px var(--color-text-faint);
 }

@@ -43,7 +43,7 @@
 }
 
 .btn-back {
-  background: var(--color-text-faint);
+  background: var(--color-surface-2);
   color: white;
   border: none;
   padding: 12px 24px;

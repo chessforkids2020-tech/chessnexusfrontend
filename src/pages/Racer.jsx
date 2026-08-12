@@ -32,7 +32,7 @@ const styles = {
     opacity: '0.9',
   },
   backButton: {
-    background: 'var(--color-text-faint)',
+    background: 'var(--color-surface-2)',
     color: 'var(--color-text)',
     border: 'none',
     padding: '12px 24px',
@@ -50,7 +50,7 @@ const styles = {
     marginTop: '20px',
   },
   card: {
-    background: 'var(--color-text)',
+    background: 'var(--color-surface)',
     borderRadius: '16px',
     padding: '25px',
     boxShadow: '0 8px 25px var(--color-black-a20)',
@@ -117,7 +117,7 @@ const styles = {
     marginRight: '10px',
   },
   secondaryButton: {
-    background: 'var(--color-text-faint)',
+    background: 'var(--color-surface-2)',
     color: 'var(--color-text)',
     border: 'none',
     padding: '12px 24px',
@@ -129,7 +129,7 @@ const styles = {
     boxShadow: '0 4px 15px rgba(108, 117, 125, 0.3)',
   },
   tableContainer: {
-    background: 'var(--color-text)',
+    background: 'var(--color-surface)',
     borderRadius: '12px',
     overflow: 'hidden',
     boxShadow: '0 4px 12px var(--color-black-a20)',
@@ -141,7 +141,7 @@ const styles = {
     fontSize: 14,
   },
   tableHeader: {
-    background: 'var(--color-text)',
+    background: 'var(--color-surface)',
     position: 'sticky',
     top: 0,
     zIndex: 1,
@@ -190,7 +190,7 @@ const styles = {
     zIndex: 1000,
   },
   modal: {
-    background: 'var(--color-text)',
+    background: 'var(--color-surface)',
     borderRadius: '12px',
     padding: '24px',
     maxWidth: '500px',
@@ -225,7 +225,7 @@ const styles = {
     border: '2px solid var(--color-surface-2)',
     borderRadius: '8px',
     fontSize: '14px',
-    backgroundColor: 'var(--color-text)',
+    backgroundColor: 'var(--color-surface)',
     transition: 'border-color 0.2s',
     boxSizing: 'border-box',
   },
@@ -235,7 +235,7 @@ const styles = {
     gap: '12px',
   },
   cancelButton: {
-    background: 'var(--color-text-faint)',
+    background: 'var(--color-surface-2)',
     color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',

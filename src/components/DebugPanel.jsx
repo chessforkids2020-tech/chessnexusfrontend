@@ -110,7 +110,7 @@ function DebugPanel({ logs, onClose }) {
       <div
         style={{
           padding: '8px',
-          background: 'var(--color-text)',
+          background: 'var(--color-surface)',
           borderRadius: '8px 8px 0 0',
           cursor: 'move',
           display: 'flex',
