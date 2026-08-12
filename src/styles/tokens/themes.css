@@ -280,17 +280,20 @@ html {
   --color-black-a65: rgb(0 0 0 / 0.65);
 
   /* ── Sidebar ──
-     The nav rail needs a visible identity, and a flat --sidebar-bg cannot give
-     it one: every palette here is a near-black, so sidebar-vs-page contrast
-     measures 1.01–1.04, i.e. indistinguishable. Switching themes appeared to
-     leave the sidebar untouched.
-     So it is painted as the sidebar colour with a faint accent wash over it.
-     The wash is what actually carries the theme — warm in Deep Ember, violet in
-     Purple Haze — while staying dark enough to sit behind white nav text. */
+     A faint accent wash over the sidebar colour. Every palette here is a
+     near-black, so sidebar-vs-page contrast measures 1.01–1.04 — a flat
+     --sidebar-bg would leave the rail looking identical in all six themes.
+     The wash is what carries the theme: warm in Deep Ember, violet in Purple
+     Haze, while staying dark enough to sit behind white nav text.
+
+     Obsidian Glass overrides this back to flat black (see below): its whole
+     identity is the pure-obsidian look, and a tint would be wrong there. */
+  --sidebar-wash-1: var(--color-accent-a08);
+  --sidebar-wash-2: var(--color-accent-a06);
   --sidebar-surface: linear-gradient(
     180deg,
-    var(--color-accent-a08) 0%,
-    var(--color-accent-a06) 40%,
+    var(--sidebar-wash-1) 0%,
+    var(--sidebar-wash-2) 40%,
     transparent 100%
   ), var(--color-sidebar-bg);
   /* The rail's right-hand edge: a theme-coloured hairline rather than a grey
@@ -319,4 +322,26 @@ html {
      win over the UI theme. */
   --color-board-dark: var(--board-dark);
   --color-board-light: var(--board-light);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   PER-THEME OVERRIDES OF DERIVED TOKENS
+
+   Must come AFTER the :root block above, since these override values that
+   block computes. Each needs a reason — a theme that just wants a different
+   accent belongs in its palette block near the top of this file, not here.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Obsidian Glass keeps a FLAT BLACK sidebar.
+   The accent wash above exists because the other five palettes are all
+   near-black and would otherwise show no theme in the rail at all. Obsidian
+   Glass is different by design: "pure obsidian dark" is the whole identity,
+   its page background is #050505 rather than the #0B0C0C the others share,
+   and the sidebar was black before this theming work. Tinting it cyan changed
+   the one theme that was already correct. */
+[data-theme="obsidianGlass"] {
+  --sidebar-wash-1: transparent;
+  --sidebar-wash-2: transparent;
+  --sidebar-edge: var(--color-white-a07);
 }
