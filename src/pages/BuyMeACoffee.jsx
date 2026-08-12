@@ -65,11 +65,6 @@ const DURATIONS = [
 ];
 
 const DEFAULT_MONTHS = 3;          // 3 months selected by default
-// Minimum per-tier base for a custom amount. Matches MIN_BASE in
-// backend/routes/coffee.js — it previously read 299 here against the server's
-// 100, and also sat ABOVE this page's own cheapest tier (149), so a custom
-// amount could be rejected for being less than an advertised price.
-const MIN_BASE = { INR: 100, USD: 3 };
 
 // How many early backers get the permanent 👑 Founding Supporter badge. Purely a
 // front-end display incentive for the empty/early state — honest scarcity ("first N").
@@ -82,7 +77,6 @@ export default function BuyMeACoffee() {
   const [currency, setCurrency] = useState('INR');
   const [months, setMonths] = useState(DEFAULT_MONTHS); // duration tab; 3 by default
   const [selectedCoffeeId, setSelectedCoffeeId] = useState('espresso'); // espresso default
-  const [customBase, setCustomBase] = useState(''); // manual per-coffee amount
   const [info, setInfo] = useState({ payment: {}, supporters: [] });
   const [myStatus, setMyStatus] = useState({ active: false, pendingCount: 0 });
   // Founding spots remaining, from the backend's DISTINCT founder count. Never derive
@@ -104,7 +98,6 @@ export default function BuyMeACoffee() {
   const userToggledCurrency = useRef(false);
 
   const coffees = currency === 'INR' ? COFFEE_TIERS_INR : COFFEE_TIERS_USD;
-  const minBase = MIN_BASE[currency];
 
   useEffect(() => {
     let mounted = true;
@@ -132,36 +125,35 @@ export default function BuyMeACoffee() {
     return () => { mounted = false; };
   }, [user]);
 
-  // The active coffee — either a preset tier or the manual "Your Amount" card.
-  const isCustom = customBase !== '';
-  const customNum = Number(customBase);
+  // The three tiers are the only options.
+  //
+  // A free-text "Your Amount" card used to sit beside them. It is gone: the
+  // thing being bought is a TITLE, and a title is defined by its tier. An
+  // arbitrary amount has no title, so the page had to guess one from the
+  // number — which meant ₹500 typed and ₹500 clicked could give different
+  // results, and nothing on screen explained why.
   const selectedCoffee = useMemo(
     () => coffees.find(c => c.id === selectedCoffeeId) || coffees[1],
     [coffees, selectedCoffeeId]
   );
-  const baseAmount = isCustom
-    ? (Number.isFinite(customNum) ? customNum : 0)
-    : (selectedCoffee?.base || 0);
+  const baseAmount = selectedCoffee?.base || 0;
 
   const effectiveMonths = months;
-  const effectiveAmount = baseAmount * months;            // coffee price × months
-  // A CUSTOM amount earns the highest tier it covers, rather than the literal
-  // id 'custom'. TIER_TITLES on the server only knows simple/espresso/latte, so
-  // sending 'custom' would silently deny a title to someone who typed ₹500 —
-  // while the person who clicked the ₹500 tier gets NX.
-  const effectiveTierId = isCustom
-    ? (coffees.slice().reverse().find(c => baseAmount >= c.base)?.id || 'simple')
-    : (selectedCoffee?.id || 'espresso');
-  const customBelowMin = isCustom && Number.isFinite(customNum) && customNum < minBase;
-  const canContinue = baseAmount >= minBase;
+  const effectiveAmount = baseAmount * months;            // tier price × months
+  const effectiveTierId = selectedCoffee?.id || 'espresso';
+  const canContinue = baseAmount > 0;
+
+  // The name used in the "this is how it will look" previews. Falls back to a
+  // placeholder for a signed-out visitor, who is exactly the person the preview
+  // has to convince.
+  const previewName = user?.displayName || user?.username || 'YourName';
 
   const switchCurrency = (c) => {
     userToggledCurrency.current = true;
-    setCurrency(c); // coffee/month selection preserved; prices recompute for the new currency
-    setCustomBase('');
+    setCurrency(c); // tier/month selection preserved; prices recompute for the new currency
   };
 
-  const pickCoffee = (id) => { setSelectedCoffeeId(id); setCustomBase(''); };
+  const pickCoffee = (id) => setSelectedCoffeeId(id);
 
   const handleContinue = () => {
     if (!user) { navigate('/login'); return; }
@@ -207,7 +199,7 @@ export default function BuyMeACoffee() {
         amount: Math.round(effectiveAmount * 100),
         currency,
         name: 'ChessNexus',
-        description: `${isCustom ? 'Custom amount' : selectedCoffee?.name} — ${effectiveMonths} ${effectiveMonths === 1 ? 'month' : 'months'} supporter badge`,
+        description: `${selectedCoffee?.name} — ${effectiveMonths} ${effectiveMonths === 1 ? 'month' : 'months'} supporter badge`,
         order_id: orderId,
         prefill: { name: user?.displayName || '' },
         theme: { color: 'var(--color-warning)' },
@@ -254,7 +246,7 @@ export default function BuyMeACoffee() {
 
   // ─── CONFIRM STEP ────────────────────────────────────────────────────
   if (step === 'confirm') {
-    const coffeeObj = isCustom ? null : selectedCoffee;
+    const coffeeObj = selectedCoffee;
     const displayAmt = effectiveAmount;
     const symbol = currency === 'INR' ? '₹' : '$';
     const monthsLabel = effectiveMonths === 1 ? '1 month' : `${effectiveMonths} months`;
@@ -482,7 +474,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             })}
           </div>
           <div style={{ color: C.textFaint, fontSize: 12, marginTop: 8 }}>
-            One-time payment, no auto-renewal. Your coffee price × {effectiveMonths}{' '}
+            One-time payment, no auto-renewal. Tier price × {effectiveMonths}{' '}
             {effectiveMonths === 1 ? 'month' : 'months'}.
           </div>
         </div>
@@ -490,7 +482,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
         {/* Coffee tiers — price shown is base × selected months */}
         <div style={styles.tierGrid}>
           {coffees.map(coffee => {
-            const active = !isCustom && selectedCoffeeId === coffee.id;
+            const active = selectedCoffeeId === coffee.id;
             const price = coffee.base * months;
             const isElite = !!coffee.elite;
             return (
@@ -508,8 +500,34 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
                 }}
               >
                 {isElite && <span style={styles.tierEliteRibbon}>👑 ELITE</span>}
-                <div style={{ fontSize: 36, marginBottom: 6 }}>{coffee.emoji}</div>
+
+                {/* THE TITLE IS THE HEADLINE.
+                    The whole point of supporting is the title, so it is the
+                    largest thing on the card — bigger than the price. Showing
+                    only an emoji and a name meant nobody could tell they were
+                    buying a title at all. */}
+                {coffee.title ? (
+                  <div style={styles.tierTitleBig}>{coffee.title}</div>
+                ) : (
+                  <div style={styles.tierTitleBigIcon}>{coffee.emoji}</div>
+                )}
+
                 <div style={{ ...styles.tierName, ...(isElite ? { color: 'var(--color-warning)' } : null) }}>{coffee.name}</div>
+
+                {/* What the title actually expands to, spelled out. "NS" means
+                    nothing until you are told it is Nexus Supporter. */}
+                <div style={styles.tierTitleMeaning}>
+                  {coffee.title ? 'Your title, before your name' : 'A knight beside your name'}
+                </div>
+
+                {/* A worked example, so the value is concrete rather than
+                    abstract: this is literally how your name will look. */}
+                <div style={styles.tierNamePreview}>
+                  {coffee.title
+                    ? <><span className="nexus-title">{coffee.title}</span>{' '}{previewName}</>
+                    : <>{previewName} <span style={{ color: 'var(--color-accent)' }}>♞</span></>}
+                </div>
+
                 <div style={{ ...styles.tierAmount, ...(isElite ? { color: '#f5c451' } : null) }}>
                   {currency === 'INR' ? `₹${price}` : `$${price}`}
                 </div>
@@ -522,43 +540,29 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
               </button>
             );
           })}
+        </div>
 
-          {/* Manual amount card */}
-          <div style={{
-            ...styles.tierCard,
-            ...(isCustom ? styles.tierCardActive : null),
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8,
-            cursor: 'default'
-          }}>
-            <div style={{ fontSize: 36 }}>✏️</div>
-            <div style={styles.tierName}>Your Amount</div>
-            <div style={styles.customInputWrap}>
-              <span style={styles.currencyPrefix}>{currency === 'INR' ? '₹' : '$'}</span>
-              <input
-                type="number"
-                min={minBase}
-                placeholder={`e.g. ${currency === 'INR' ? '300' : '8'}`}
-                value={customBase}
-                onChange={(e) => { setCustomBase(e.target.value); }}
-                style={styles.customInput}
-              />
-              <span style={{ color: C.textFaint, fontSize: 12, marginLeft: 6 }}>/ mo</span>
-            </div>
-            {isCustom && !customBelowMin && (
-              <div style={{ color: C.amber, fontSize: 13, fontWeight: 700 }}>
-                {currency === 'INR' ? '₹' : '$'}{baseAmount * months} total
-              </div>
-            )}
-            {customBelowMin ? (
-              <div style={{ color: 'var(--color-danger)', fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
-                Minimum is {currency === 'INR' ? '₹' : '$'}{minBase}/mo.
-              </div>
-            ) : (
-              <div style={{ ...styles.tierBlurb, textAlign: 'center' }}>
-                Any amount — min {currency === 'INR' ? '₹' : '$'}{minBase}/mo.
-              </div>
-            )}
+        {/* What the titles mean — stated once, plainly, under the cards.
+            Without this the letters are just letters. */}
+        <div style={styles.titleKey}>
+          <div style={styles.titleKeyRow}>
+            <span className="nexus-title" style={{ fontSize: 15 }}>NS</span>
+            <span style={styles.titleKeyText}>
+              <strong>Nexus Supporter</strong> — shown before your name, like a chess title.
+            </span>
           </div>
+          <div style={styles.titleKeyRow}>
+            <span className="nexus-title" style={{ fontSize: 15 }}>NX</span>
+            <span style={styles.titleKeyText}>
+              <strong>Nexus Expert</strong> — the senior title, for our strongest supporters.
+            </span>
+          </div>
+          <p style={styles.titleKeyFoot}>
+            Your title appears everywhere your name does — chat, leaderboards, lobbies
+            and your profile — for as long as your support runs. It sits after a FIDE
+            title if you hold one: <span className="chess-title">GM</span>{' '}
+            <span className="nexus-title">NS</span> {previewName}.
+          </p>
         </div>
 
         {/* Continue */}
@@ -1030,33 +1034,75 @@ const styles = {
     color: '#f5c451',
   },
   tierName: { fontWeight: 700 },
-  tierAmount: { fontSize: 22, fontWeight: 800, color: C.amber, marginTop: 4 },
+  tierAmount: { fontSize: 22, fontWeight: 800, color: C.amber, marginTop: 10 },
   tierBlurb: { marginTop: 8, fontSize: 12, color: C.textDim, lineHeight: 1.4 },
-  customRow: {
-    marginTop: 16,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    flexWrap: 'wrap'
+
+  /* The title, as the card's headline. Deliberately larger than the price:
+     the title is what is being bought. */
+  tierTitleBig: {
+    fontSize: 40,
+    fontWeight: 800,
+    lineHeight: 1,
+    letterSpacing: '0.02em',
+    color: 'var(--color-accent)',
+    marginBottom: 6,
   },
-  customLabel: { color: C.textDim, fontSize: 13 },
-  customInputWrap: {
-    display: 'inline-flex',
-    alignItems: 'center',
+  /* The entry tier has no letters, so its knight takes the same slot at the
+     same visual weight — the three cards must line up. */
+  tierTitleBigIcon: {
+    fontSize: 40,
+    lineHeight: 1,
+    color: 'var(--color-accent)',
+    marginBottom: 6,
+  },
+  /* "NS = Nexus Supporter". The expansion, right under the letters. */
+  tierTitleMeaning: {
+    marginTop: 2,
+    fontSize: 11.5,
+    fontWeight: 600,
+    color: C.textDim,
+    letterSpacing: '0.01em',
+  },
+  /* A worked example of the user's own name with the title applied. */
+  tierNamePreview: {
+    marginTop: 8,
+    padding: '5px 10px',
+    borderRadius: 'var(--radius-pill)',
     background: 'var(--color-white-a04)',
     border: `1px solid ${C.panelBorder}`,
-    borderRadius: 'var(--radius-md)',
-    padding: '6px 10px'
-  },
-  currencyPrefix: { color: C.textDim, marginRight: 6, fontWeight: 600 },
-  customInput: {
-    background: 'transparent',
-    border: 'none',
-    outline: 'none',
+    fontSize: 13,
+    fontWeight: 700,
     color: C.text,
-    width: 120,
-    fontSize: 14,
-    fontFamily: 'Poppins, sans-serif'
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 4,
+    maxWidth: '100%',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+  },
+
+  /* The key under the cards: what NS and NX actually stand for. */
+  titleKey: {
+    marginTop: 22,
+    padding: '18px 20px',
+    background: 'var(--color-surface)',
+    border: `1px solid ${C.panelBorder}`,
+    borderRadius: 'var(--radius-lg)',
+  },
+  titleKeyRow: {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: 10,
+    marginBottom: 8,
+  },
+  titleKeyText: { color: C.textDim, fontSize: 13.5, lineHeight: 1.5 },
+  titleKeyFoot: {
+    margin: '10px 0 0',
+    paddingTop: 10,
+    borderTop: `1px solid ${C.panelBorder}`,
+    color: C.textFaint,
+    fontSize: 12.5,
+    lineHeight: 1.6,
   },
   totalNote: { color: C.textDim, fontSize: 13 },
   payHint: { color: C.textDim, fontSize: 13, marginTop: -4, marginBottom: 14 },
