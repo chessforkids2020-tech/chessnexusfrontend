@@ -1,7 +1,11 @@
 /* Play.css - Enhanced with 3 Themes */
 
 /* Base Variables */
-:root {
+/* Scoped to the page rather than :root — these --text-primary / --text-secondary
+   / --text-muted names collide with the global theme tokens, and Vite bundles
+   all CSS together, so a :root here would override the theme app-wide.
+   See EventForm.css for the full note. */
+.play-container {
   /* Dark Theme (Default) */
   --bg-primary: #0a0a0a;
   --bg-secondary: rgba(23, 23, 23, 0.8);

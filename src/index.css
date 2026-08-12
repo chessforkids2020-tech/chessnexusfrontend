@@ -14,8 +14,11 @@
      Previously "light dark", which made <option> lists show white on
      light-mode systems. */
   color-scheme: dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+
+  /* Themed. Was rgba(255,255,255,0.87) on #242424 — Vite starter-template
+     defaults that had nothing to do with any of the app's actual colours. */
+  color: var(--color-text);
+  background-color: var(--color-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -31,11 +34,14 @@ html {
 
 a {
   font-weight: 500;
-  color: #646cff;
+  /* Was #646cff / #535bf2 — the Vite starter's indigo, which appears nowhere
+     else in the app's design. Links now follow the theme accent. */
+  color: var(--color-accent);
   text-decoration: inherit;
+  transition: color var(--dur-fast);
 }
 a:hover {
-  color: #535bf2;
+  color: var(--color-accent-2);
 }
 
 body {
@@ -44,8 +50,11 @@ body {
   min-height: 100vh;
   width: 100%;
   display: block;
-  background: #ffffff;
-  color: #213547;
+  /* Was background:#ffffff; color:#213547 — a WHITE body with near-black text,
+     left over from the Vite starter template. Every page had to paint over it,
+     and any gap in that coverage flashed white on a dark app. */
+  background: var(--color-bg);
+  color: var(--color-text);
   box-sizing: border-box;
   overflow-x: hidden;
   /* Header padding removed since header is gone */
@@ -71,28 +80,41 @@ h1 {
   line-height: 1.1;
 }
 
+/* Bare <button> baseline — applies to EVERY button in the app.
+   ~180 buttons carry no class and no inline style, so they depend entirely on
+   this rule; it therefore has to remain a usable button, not a reset. What
+   changes is only the palette: the Vite starter's flat #1a1a1a fill and indigo
+   hover border become themed surface + accent. Buttons that style themselves
+   (the overwhelming majority) override all of this as before.
+   Sizing is unified separately in Phase 4 via the --btn-* tokens. */
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+  border-radius: var(--btn-radius);
+  border: var(--border-w) solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: var(--color-surface);
+  color: var(--color-text);
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: border-color var(--dur-med), background-color var(--dur-med);
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--color-accent-a40);
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+/* Keyboard focus ring. :focus-visible only, so it appears for keyboard users
+   without ringing every mouse click. */
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 /* Native dropdown (<select>) options — keep them dark on every OS/browser.
    color-scheme: dark handles most cases; this is the explicit safety net. */
 option {
-  background-color: #14141e;
-  color: #e2e8f0;
+  background-color: var(--color-surface);
+  color: var(--color-text);
 }

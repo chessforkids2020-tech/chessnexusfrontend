@@ -1,31 +1,26 @@
 /* ===== OBSIDIAN GLASS THEME SYSTEM ===== */
 /* Based on Race.jsx and ChooseTopic.jsx implementations */
 
-/* ===== CORE VARIABLES ===== */
-:root {
-  /* Colors */
-  --obsidian-bg: #0a0a0a;
-  --obsidian-glass: rgba(23, 23, 23, 0.7);
-  --obsidian-border: rgba(255, 255, 255, 0.05);
-  --obsidian-border-hover: rgba(255, 255, 255, 0.1);
-  --obsidian-text: #ffffff;
-  --obsidian-text-muted: #9ca3af;
-  --obsidian-text-dim: #6b7280;
-  
-  /* Gradients */
-  --obsidian-gradient-1: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
-  --obsidian-gradient-2: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(14, 165, 233, 0.15));
-  --obsidian-gradient-3: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(234, 179, 8, 0.15));
-  --obsidian-gradient-4: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(124, 58, 237, 0.15));
-  
-  /* Effects */
-  --obsidian-blur: blur(10px);
-  --obsidian-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --obsidian-shadow-hover: 0 12px 40px rgba(6, 182, 212, 0.3);
-  
-  /* Radial backgrounds for pages */
-  --obsidian-radial: radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
-}
+/* ===== CORE VARIABLES — MOVED =====
+ *
+ * The --obsidian-* variables that used to be declared here now live in
+ * styles/tokens/aliases.css, mapped onto the active theme's tokens.
+ *
+ * Two reasons for the move:
+ *
+ *   1. They were hardcoded to one palette (cyan #06b6d4 → emerald #10b981), so
+ *      any component using them stayed cyan no matter which theme was chosen.
+ *
+ *   2. This file is imported by exactly one page, but ~20 distinct --obsidian-*
+ *      names are referenced across the codebase. Every one of those references
+ *      outside this page was resolving to nothing and silently falling back to
+ *      the property's initial value. Declaring them globally in aliases.css
+ *      fixes those too.
+ *
+ * A :root block here would also have the same specificity as the theme block in
+ * tokens/themes.css and, loading later, would win — breaking theme switching
+ * app-wide. The utility CLASSES below are unchanged and still work.
+ */
 
 /* ===== LAYOUT CONTAINERS ===== */
 .obsidian-page {

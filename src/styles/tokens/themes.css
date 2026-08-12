@@ -1,0 +1,304 @@
+/* styles/tokens/themes.css
+ *
+ * THE SIX COLOUR THEMES. Colour only — no sizes, no spacing. Layout lives in
+ * layout.css and is shared by every theme.
+ *
+ * Selected by a `data-theme` attribute on <html>:
+ *
+ *     <html data-theme="midnightCyan">
+ *
+ * On <html> rather than <body> because the attribute can then be set by a tiny
+ * blocking script in <head>, before the first paint — which is what prevents a
+ * flash of the wrong theme on load. As an attribute rather than a class because
+ * the codebase already has eight competing class conventions and a `theme-*`
+ * class would eventually collide with one of them.
+ *
+ *
+ * ── WHY ACCENTS ARE STORED AS RGB TRIPLETS ──────────────────────────────────
+ *
+ * There are ~6,700 rgba() calls in the in-scope code, and most are translucent
+ * accents: rgba(6,182,212,0.15) borders, glows and hover washes. If a theme only
+ * declared opaque colours, every one of those would stay cyan in all six themes
+ * and the feature would visibly half-work.
+ *
+ * So each theme declares its accent as a space-separated RGB triplet, and the
+ * alpha steps are derived ONCE below in :root. `rgb(var(--accent-rgb) / 0.15)`
+ * is valid CSS Color 4 and is supported everywhere we target. The ladder of
+ * alpha values is not invented — it comes from the histogram of alphas actually
+ * used in the codebase.
+ *
+ *
+ * ── EVERY THEME DECLARES EVERY KEY ──────────────────────────────────────────
+ *
+ * obsidianGlass was supplied with six keys the others lacked (sidebarBg,
+ * borderSubtle, shadowSoft, hover, active, accentGlow). Rather than special-case
+ * it, all six themes declare the full key set — the extras get sensible derived
+ * defaults elsewhere. This means no consumer ever has to ask which theme is
+ * active, and a missing key can never silently render as an invalid value.
+ * A unit test asserts the six blocks stay in sync.
+ */
+
+/* ════════════════════════════════════════════════════════════════════════
+   FALLBACK PALETTE
+
+   Applies when data-theme is missing or unrecognised — a failed localStorage
+   read, a crawler, an old prerendered page. Keeps the app dark and legible
+   rather than unstyled. Values match obsidianGlass.
+
+   Selector is `html`, NOT `:root`, and this is load-bearing. `:root` and
+   `[data-theme="…"]` have IDENTICAL specificity (0,1,0), so whichever came
+   last in the file would win — and since these declarations have to be
+   readable before the theme blocks, a :root fallback here silently overrode
+   all six themes and made the switcher do nothing. `html` is a type selector
+   (0,0,1), so it loses to every [data-theme] block, which is exactly what a
+   fallback should do.
+   ════════════════════════════════════════════════════════════════════════ */
+html {
+  --accent-rgb: 25 198 211;
+  --accent-2-rgb: 18 168 181;
+  --success-rgb: 36 180 126;
+  --warning-rgb: 215 154 30;
+  --danger-rgb: 239 107 107;
+  --bg: #050505;
+  --surface: #151515;
+  --surface-2: #1e1e1e;
+  --sidebar-bg: #050505;
+  --text: #f2f2f2;
+  --text-muted: #9ca3af;
+  --board-dark: #1f1f1f;
+  --board-light: #737373;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   1. OBSIDIAN GLASS — the default. Pure obsidian dark, cyan accent.
+   ════════════════════════════════════════════════════════════════════════ */
+[data-theme="obsidianGlass"] {
+  --accent-rgb: 25 198 211;
+  --accent-2-rgb: 18 168 181;
+  --success-rgb: 36 180 126;
+  --warning-rgb: 215 154 30;
+  --danger-rgb: 239 107 107;
+
+  --bg: #050505;
+  --surface: #151515;
+  --surface-2: #1e1e1e;
+  --sidebar-bg: #050505;
+
+  --text: #f2f2f2;
+  --text-muted: #9ca3af;
+
+  --board-dark: #1f1f1f;
+  --board-light: #737373;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   2. MIDNIGHT CYAN — cool dark base with cyan glow.
+   ════════════════════════════════════════════════════════════════════════ */
+[data-theme="midnightCyan"] {
+  --accent-rgb: 34 211 238;
+  --accent-2-rgb: 14 165 233;
+  --success-rgb: 52 211 153;
+  --warning-rgb: 251 191 36;
+  --danger-rgb: 248 113 113;
+
+  --bg: #0B0C0C;
+  --surface: #151922;
+  --surface-2: #1c2130;
+  --sidebar-bg: #0e1116;
+
+  --text: #e5e7eb;
+  --text-muted: #9ca3af;
+
+  --board-dark: #1f2937;
+  --board-light: #6b9bd1;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   3. SLATE BLUE STEEL — neutral, professional.
+   ════════════════════════════════════════════════════════════════════════ */
+[data-theme="slateBlueSteel"] {
+  --accent-rgb: 96 165 250;
+  --accent-2-rgb: 59 130 246;
+  --success-rgb: 52 211 153;
+  --warning-rgb: 251 191 36;
+  --danger-rgb: 248 113 113;
+
+  --bg: #0B0C0C;
+  --surface: #151820;
+  --surface-2: #1d212c;
+  --sidebar-bg: #0e1014;
+
+  --text: #e5e7eb;
+  --text-muted: #9ca3af;
+
+  --board-dark: #1f2a3a;
+  --board-light: #6b8fbf;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   4. DEEP EMBER — warm, energetic.
+   ════════════════════════════════════════════════════════════════════════ */
+[data-theme="deepEmber"] {
+  --accent-rgb: 251 191 36;
+  --accent-2-rgb: 245 158 11;
+  --success-rgb: 52 211 153;
+  --warning-rgb: 251 191 36;
+  --danger-rgb: 248 113 113;
+
+  --bg: #0B0C0C;
+  --surface: #1a1612;
+  --surface-2: #241f18;
+  --sidebar-bg: #100e0b;
+
+  --text: #e5e7eb;
+  --text-muted: #9ca3af;
+
+  --board-dark: #2a241a;
+  --board-light: #c9a36b;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   5. PURPLE HAZE — premium, slightly gaming.
+   ════════════════════════════════════════════════════════════════════════ */
+[data-theme="purpleHaze"] {
+  --accent-rgb: 167 139 250;
+  --accent-2-rgb: 124 58 237;
+  --success-rgb: 52 211 153;
+  --warning-rgb: 251 191 36;
+  --danger-rgb: 248 113 113;
+
+  --bg: #0B0C0C;
+  --surface: #161320;
+  --surface-2: #1f1b2d;
+  --sidebar-bg: #0f0d16;
+
+  --text: #e5e7eb;
+  --text-muted: #9ca3af;
+
+  --board-dark: #252330;
+  --board-light: #7d62a8;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   6. OBSIDIAN ROSE — bold, playful.
+   ════════════════════════════════════════════════════════════════════════ */
+[data-theme="obsidianRose"] {
+  --accent-rgb: 244 114 182;
+  --accent-2-rgb: 236 72 153;
+  --success-rgb: 52 211 153;
+  --warning-rgb: 251 191 36;
+  --danger-rgb: 248 113 113;
+
+  --bg: #0B0C0C;
+  --surface: #1a1318;
+  --surface-2: #241a21;
+  --sidebar-bg: #100c0e;
+
+  --text: #e5e7eb;
+  --text-muted: #9ca3af;
+
+  --board-dark: #2a1f26;
+  --board-light: #b67294;
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   DERIVED TOKENS — written once, correct for every theme.
+
+   Everything below reads the triplets declared above. This is the layer the
+   application actually consumes: page code should use --color-* and never the
+   raw --accent-rgb / --bg / --surface values, so that the derivation stays in
+   one place.
+   ════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* NOTE: no palette values here. The fallback lives in the `html` block at the
+     top of this file, where its lower specificity lets every theme override it.
+     Declaring it in :root would tie with the [data-theme] blocks and, coming
+     later in the file, silently win — which disables theme switching entirely.
+
+     Everything below DERIVES from whichever palette won, so it belongs in
+     :root: these are the tokens the application consumes. */
+
+  /* ── Surfaces and text ── */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+
+  /* A third text level for captions and timestamps. Derived rather than
+     declared per theme because it is always "muted, but more so". */
+  --color-text-faint: rgb(148 163 184 / 0.75);
+
+  /* ── Accent ramp ──
+     The alpha ladder (.06 .08 .12 .15 .20 .30 .40) is taken from the alphas
+     actually present in the codebase, not chosen from scratch. Substituted
+     rgba() literals snap to the nearest rung. */
+  --color-accent: rgb(var(--accent-rgb));
+  --color-accent-a06: rgb(var(--accent-rgb) / 0.06);
+  --color-accent-a08: rgb(var(--accent-rgb) / 0.08);
+  --color-accent-a12: rgb(var(--accent-rgb) / 0.12);
+  --color-accent-a15: rgb(var(--accent-rgb) / 0.15);
+  --color-accent-a20: rgb(var(--accent-rgb) / 0.20);
+  --color-accent-a30: rgb(var(--accent-rgb) / 0.30);
+  --color-accent-a40: rgb(var(--accent-rgb) / 0.40);
+
+  --color-accent-2: rgb(var(--accent-2-rgb));
+  --color-accent-2-a15: rgb(var(--accent-2-rgb) / 0.15);
+  --color-accent-2-a30: rgb(var(--accent-2-rgb) / 0.30);
+
+  /* ── Semantic ramps ── */
+  --color-success: rgb(var(--success-rgb));
+  --color-success-a12: rgb(var(--success-rgb) / 0.12);
+  --color-success-a20: rgb(var(--success-rgb) / 0.20);
+  --color-success-a30: rgb(var(--success-rgb) / 0.30);
+
+  --color-warning: rgb(var(--warning-rgb));
+  --color-warning-a12: rgb(var(--warning-rgb) / 0.12);
+  --color-warning-a20: rgb(var(--warning-rgb) / 0.20);
+  --color-warning-a30: rgb(var(--warning-rgb) / 0.30);
+
+  --color-danger: rgb(var(--danger-rgb));
+  --color-danger-a12: rgb(var(--danger-rgb) / 0.12);
+  --color-danger-a20: rgb(var(--danger-rgb) / 0.20);
+  --color-danger-a30: rgb(var(--danger-rgb) / 0.30);
+
+  /* ── Neutral washes ──
+     White and black at low alpha are used constantly for hairline borders,
+     hover states and scrims. Theme-independent by design: a white hairline
+     reads correctly on every one of the six dark backgrounds. */
+  --color-white-a04: rgb(255 255 255 / 0.04);
+  --color-white-a07: rgb(255 255 255 / 0.07);
+  --color-white-a10: rgb(255 255 255 / 0.10);
+  --color-white-a13: rgb(255 255 255 / 0.13);
+  --color-white-a20: rgb(255 255 255 / 0.20);
+
+  --color-black-a20: rgb(0 0 0 / 0.20);
+  --color-black-a35: rgb(0 0 0 / 0.35);
+  --color-black-a50: rgb(0 0 0 / 0.50);
+  --color-black-a65: rgb(0 0 0 / 0.65);
+
+  /* ── Composite tokens ──
+     The six "extra" keys obsidianGlass shipped with, defined for all themes so
+     the key sets match. */
+  --color-border: var(--color-white-a07);
+  --color-border-strong: var(--color-white-a13);
+  --color-hover: var(--color-white-a04);
+  --color-active: var(--color-accent-a15);
+  --color-ring: var(--color-accent-a40);
+
+  --shadow-soft: 0 12px 30px rgb(0 0 0 / 0.35);
+  --shadow-lift: 0 8px 24px rgb(0 0 0 / 0.45);
+  --accent-glow: 0 0 20px var(--color-accent-a30);
+
+  /* Brand gradient. Appears throughout as a hardcoded
+     linear-gradient(135deg, #06b6d4, #10b981); now follows the theme. */
+  --gradient-accent: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+
+  /* Chessboard squares. Note these are the DEFAULT board colours only —
+     a user's own board choice comes from BoardThemeContext and must always
+     win over the UI theme. */
+  --color-board-dark: var(--board-dark);
+  --color-board-light: var(--board-light);
+}

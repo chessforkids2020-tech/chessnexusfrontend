@@ -54,7 +54,7 @@ function CountryFlag({ country, height = 14, style }) {
       src={`https://flagcdn.com/${code.toLowerCase()}.svg`}
       alt={code}
       height={height}
-      style={{ display: 'inline-block', verticalAlign: 'middle', borderRadius: '2px', boxShadow: '0 0 1px rgba(0,0,0,0.4)', ...style }}
+      style={{ display: 'inline-block', verticalAlign: 'middle', borderRadius: 'var(--radius-sm)', boxShadow: '0 0 1px var(--color-black-a35)', ...style }}
       onError={(e) => { e.currentTarget.style.display = 'none'; }}
     />
   );
@@ -629,28 +629,28 @@ export default function Sidebar({ user, onNavigate }) {
             top: '20px',
             left: '20px',
             zIndex: 1002,
-            background: 'rgba(10, 10, 10, 0.8)',
-            border: '1px solid rgba(6, 182, 212, 0.3)',
-            color: '#67e8f9',
+            background: 'var(--color-bg)',
+            border: '1px solid var(--color-accent-a30)',
+            color: 'var(--color-accent)',
             fontSize: '24px',
             width: '44px',
             height: '44px',
-            borderRadius: '12px',
+            borderRadius: 'var(--radius-lg)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
             backdropFilter: 'blur(10px)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            boxShadow: '0 4px 12px var(--color-black-a35)',
             transition: 'all 0.3s ease',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
+            e.currentTarget.style.background = 'var(--color-accent-a15)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.background = 'rgba(10, 10, 10, 0.8)';
+            e.currentTarget.style.background = 'var(--color-bg)';
           }}
         >
           ☰
@@ -676,12 +676,12 @@ export default function Sidebar({ user, onNavigate }) {
                 position: 'absolute',
                 top: '90px',
                 right: '10px',
-                background: 'rgba(6, 182, 212, 0.15)',
-                border: '1px solid rgba(6, 182, 212, 0.3)',
-                color: '#67e8f9',
+                background: 'var(--color-accent-a15)',
+                border: '1px solid var(--color-accent-a30)',
+                color: 'var(--color-accent)',
                 fontSize: '20px',
                 cursor: 'pointer',
-                borderRadius: '12px',
+                borderRadius: 'var(--radius-lg)',
                 width: '32px',
                 height: '32px',
                 display: 'flex',
@@ -692,15 +692,15 @@ export default function Sidebar({ user, onNavigate }) {
                 backdropFilter: 'blur(10px)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-                e.currentTarget.style.color = '#ef4444';
+                e.currentTarget.style.background = 'var(--color-danger-a20)';
+                e.currentTarget.style.borderColor = 'var(--color-danger-a30)';
+                e.currentTarget.style.color = 'var(--color-danger)';
                 e.currentTarget.style.transform = 'rotate(90deg) scale(1.1)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
-                e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.3)';
-                e.currentTarget.style.color = '#67e8f9';
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.borderColor = 'var(--color-accent-a30)';
+                e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'rotate(0deg) scale(1)';
               }}
               title="Collapse sidebar"
@@ -720,14 +720,14 @@ export default function Sidebar({ user, onNavigate }) {
                 }
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
-                e.currentTarget.style.color = '#06b6d4';
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'translateX(5px)';
-                e.currentTarget.style.borderLeft = '5px solid #10b981';
+                e.currentTarget.style.borderLeft = '5px solid var(--color-success)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isActive('/') ? 'rgba(6, 182, 212, 0.15)' : 'transparent';
-                e.currentTarget.style.color = isActive('/') ? '#06b6d4' : '#ffffff';
+                e.currentTarget.style.background = isActive('/') ? 'var(--color-accent-a15)' : 'transparent';
+                e.currentTarget.style.color = isActive('/') ? 'var(--color-accent)' : 'var(--color-text)';
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
@@ -739,10 +739,10 @@ export default function Sidebar({ user, onNavigate }) {
               <div 
                 style={{
                   ...styles.navItem,
-                  backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                  color: '#ef4444',
+                  backgroundColor: 'var(--color-danger-a12)',
+                  color: 'var(--color-danger)',
                   animation: 'pulse 2s infinite',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  border: '1px solid var(--color-danger-a30)',
                 }}
                 onClick={() => {
                   if ((isMobile || isLandscape) && !isExpanded) {
@@ -752,16 +752,16 @@ export default function Sidebar({ user, onNavigate }) {
                   }
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
-                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-                  e.currentTarget.style.color = '#ffffff';
+                  e.currentTarget.style.background = 'var(--color-danger-a20)';
+                  e.currentTarget.style.borderColor = 'var(--color-danger-a30)';
+                  e.currentTarget.style.color = 'var(--color-text)';
                   e.currentTarget.style.transform = 'translateX(5px)';
-                  e.currentTarget.style.borderLeft = '5px solid #ef4444';
+                  e.currentTarget.style.borderLeft = '5px solid var(--color-danger)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
-                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-                  e.currentTarget.style.color = '#ef4444';
+                  e.currentTarget.style.background = 'var(--color-danger-a12)';
+                  e.currentTarget.style.borderColor = 'var(--color-danger-a30)';
+                  e.currentTarget.style.color = 'var(--color-danger)';
                   e.currentTarget.style.transform = 'translateX(0)';
                   e.currentTarget.style.borderLeft = 'none';
                 }}
@@ -781,14 +781,14 @@ export default function Sidebar({ user, onNavigate }) {
                 }
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
-                e.currentTarget.style.color = '#06b6d4';
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'translateX(5px)';
-                e.currentTarget.style.borderLeft = '5px solid #10b981';
+                e.currentTarget.style.borderLeft = '5px solid var(--color-success)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isActive('/dashboard') ? 'rgba(6, 182, 212, 0.15)' : 'transparent';
-                e.currentTarget.style.color = isActive('/dashboard') ? '#06b6d4' : '#ffffff';
+                e.currentTarget.style.background = isActive('/dashboard') ? 'var(--color-accent-a15)' : 'transparent';
+                e.currentTarget.style.color = isActive('/dashboard') ? 'var(--color-accent)' : 'var(--color-text)';
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
@@ -807,14 +807,14 @@ export default function Sidebar({ user, onNavigate }) {
                 }
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
-                e.currentTarget.style.color = '#06b6d4';
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'translateX(5px)';
-                e.currentTarget.style.borderLeft = '5px solid #10b981';
+                e.currentTarget.style.borderLeft = '5px solid var(--color-success)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isActive('/puzzles-hub') ? 'rgba(6, 182, 212, 0.15)' : 'transparent';
-                e.currentTarget.style.color = isActive('/puzzles-hub') ? '#06b6d4' : '#ffffff';
+                e.currentTarget.style.background = isActive('/puzzles-hub') ? 'var(--color-accent-a15)' : 'transparent';
+                e.currentTarget.style.color = isActive('/puzzles-hub') ? 'var(--color-accent)' : 'var(--color-text)';
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
@@ -834,14 +834,14 @@ export default function Sidebar({ user, onNavigate }) {
                 }
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
-                e.currentTarget.style.color = '#06b6d4';
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'translateX(5px)';
-                e.currentTarget.style.borderLeft = '5px solid #10b981';
+                e.currentTarget.style.borderLeft = '5px solid var(--color-success)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isActive('/race') ? 'rgba(6, 182, 212, 0.15)' : 'transparent';
-                e.currentTarget.style.color = isActive('/race') ? '#06b6d4' : '#ffffff';
+                e.currentTarget.style.background = isActive('/race') ? 'var(--color-accent-a15)' : 'transparent';
+                e.currentTarget.style.color = isActive('/race') ? 'var(--color-accent)' : 'var(--color-text)';
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
@@ -861,14 +861,14 @@ export default function Sidebar({ user, onNavigate }) {
                 }
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
-                e.currentTarget.style.color = '#06b6d4';
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'translateX(5px)';
-                e.currentTarget.style.borderLeft = '5px solid #10b981';
+                e.currentTarget.style.borderLeft = '5px solid var(--color-success)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isActive('/study') ? 'rgba(6, 182, 212, 0.15)' : 'transparent';
-                e.currentTarget.style.color = isActive('/study') ? '#06b6d4' : '#ffffff';
+                e.currentTarget.style.background = isActive('/study') ? 'var(--color-accent-a15)' : 'transparent';
+                e.currentTarget.style.color = isActive('/study') ? 'var(--color-accent)' : 'var(--color-text)';
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
@@ -892,14 +892,14 @@ export default function Sidebar({ user, onNavigate }) {
                 }
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
-                e.currentTarget.style.color = '#06b6d4';
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'translateX(5px)';
-                e.currentTarget.style.borderLeft = '5px solid #10b981';
+                e.currentTarget.style.borderLeft = '5px solid var(--color-success)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isActive('/coach-hub') ? 'rgba(6, 182, 212, 0.15)' : 'transparent';
-                e.currentTarget.style.color = isActive('/coach-hub') ? '#06b6d4' : '#ffffff';
+                e.currentTarget.style.background = isActive('/coach-hub') ? 'var(--color-accent-a15)' : 'transparent';
+                e.currentTarget.style.color = isActive('/coach-hub') ? 'var(--color-accent)' : 'var(--color-text)';
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
@@ -919,14 +919,14 @@ export default function Sidebar({ user, onNavigate }) {
                 }
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
-                e.currentTarget.style.color = '#06b6d4';
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'translateX(5px)';
-                e.currentTarget.style.borderLeft = '5px solid #10b981';
+                e.currentTarget.style.borderLeft = '5px solid var(--color-success)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isActive('/games') ? 'rgba(6, 182, 212, 0.15)' : 'transparent';
-                e.currentTarget.style.color = isActive('/games') ? '#06b6d4' : '#ffffff';
+                e.currentTarget.style.background = isActive('/games') ? 'var(--color-accent-a15)' : 'transparent';
+                e.currentTarget.style.color = isActive('/games') ? 'var(--color-accent)' : 'var(--color-text)';
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
@@ -952,14 +952,14 @@ export default function Sidebar({ user, onNavigate }) {
                 }
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
-                e.currentTarget.style.color = '#06b6d4';
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'translateX(5px)';
-                e.currentTarget.style.borderLeft = '5px solid #10b981';
+                e.currentTarget.style.borderLeft = '5px solid var(--color-success)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = isActive('/game-analysis') ? 'rgba(6, 182, 212, 0.15)' : 'transparent';
-                e.currentTarget.style.color = isActive('/game-analysis') ? '#06b6d4' : '#ffffff';
+                e.currentTarget.style.background = isActive('/game-analysis') ? 'var(--color-accent-a15)' : 'transparent';
+                e.currentTarget.style.color = isActive('/game-analysis') ? 'var(--color-accent)' : 'var(--color-text)';
                 e.currentTarget.style.transform = 'translateX(0)';
                 e.currentTarget.style.borderLeft = 'none';
               }}
@@ -974,10 +974,10 @@ export default function Sidebar({ user, onNavigate }) {
               <div
                 style={{
                   ...styles.navItem,
-                  backgroundColor: 'rgba(6, 182, 212, 0.12)',
-                  color: '#06b6d4',
+                  backgroundColor: 'var(--color-accent-a12)',
+                  color: 'var(--color-accent)',
                   animation: 'pulse 2s infinite',
-                  border: '1px solid rgba(6, 182, 212, 0.3)',
+                  border: '1px solid var(--color-accent-a30)',
                   cursor: 'pointer',
                 }}
                 onClick={() => {
@@ -988,15 +988,15 @@ export default function Sidebar({ user, onNavigate }) {
                   }
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(6, 182, 212, 0.22)';
-                  e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.5)';
-                  e.currentTarget.style.color = '#ffffff';
+                  e.currentTarget.style.background = 'var(--color-accent-a20)';
+                  e.currentTarget.style.borderColor = 'var(--color-accent-a40)';
+                  e.currentTarget.style.color = 'var(--color-text)';
                   e.currentTarget.style.transform = 'translateX(5px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(6, 182, 212, 0.12)';
-                  e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.3)';
-                  e.currentTarget.style.color = '#06b6d4';
+                  e.currentTarget.style.background = 'var(--color-accent-a12)';
+                  e.currentTarget.style.borderColor = 'var(--color-accent-a30)';
+                  e.currentTarget.style.color = 'var(--color-accent)';
                   e.currentTarget.style.transform = 'translateX(0)';
                 }}
                 title={`Analysing ${analysingJob.username || 'games'}… tap to view progress`}
@@ -1015,14 +1015,14 @@ export default function Sidebar({ user, onNavigate }) {
                 else { handleNavigate('/social'); }
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(6,182,212,0.15)';
-                e.currentTarget.style.color = '#06b6d4';
+                e.currentTarget.style.background = 'var(--color-accent-a15)';
+                e.currentTarget.style.color = 'var(--color-accent)';
                 e.currentTarget.style.transform = 'translateX(5px)';
               }}
               onMouseLeave={(e) => {
                 const socialActive = isActive('/social') || isActive('/players') || isActive('/invite') || isActive('/friends') || isActive('/clubs');
-                e.currentTarget.style.background = socialActive ? 'rgba(6,182,212,0.15)' : 'transparent';
-                e.currentTarget.style.color = socialActive ? '#06b6d4' : '#ffffff';
+                e.currentTarget.style.background = socialActive ? 'var(--color-accent-a15)' : 'transparent';
+                e.currentTarget.style.color = socialActive ? 'var(--color-accent)' : 'var(--color-text)';
                 e.currentTarget.style.transform = 'translateX(0)';
               }}
               title="Social Hub"
@@ -1040,7 +1040,7 @@ export default function Sidebar({ user, onNavigate }) {
                 <div style={{ position: 'relative' }}>
                   <span style={{
                     position: 'absolute', left: '10px', top: '50%',
-                    transform: 'translateY(-50%)', pointerEvents: 'none', color: '#64748b',
+                    transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--color-text-faint)',
                     display: 'flex', alignItems: 'center',
                   }}>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1081,10 +1081,10 @@ export default function Sidebar({ user, onNavigate }) {
                     style={{
                       width: '100%',
                       padding: '8px 12px 8px 32px',
-                      background: 'rgba(255,255,255,0.06)',
-                      border: '1px solid rgba(6,182,212,0.4)',
-                      borderRadius: '10px',
-                      color: '#f1f5f9',
+                      background: 'var(--color-white-a07)',
+                      border: '1px solid var(--color-accent-a40)',
+                      borderRadius: 'var(--radius-md)',
+                      color: 'var(--color-text)',
                       fontSize: '12px',
                       fontFamily: "'Poppins', sans-serif",
                       outline: 'none',
@@ -1110,9 +1110,9 @@ export default function Sidebar({ user, onNavigate }) {
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '12px',
+                background: 'var(--color-white-a04)',
+                border: '1px solid var(--color-white-a10)',
+                borderRadius: 'var(--radius-lg)',
                 margin: '10px 0 20px 0',
                 overflow: 'hidden',
               }}>
@@ -1122,9 +1122,9 @@ export default function Sidebar({ user, onNavigate }) {
                   style={{
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: '11px 0', position: 'relative',
-                    background: showNotifications ? 'rgba(6,182,212,0.15)' : 'transparent',
+                    background: showNotifications ? 'var(--color-accent-a15)' : 'transparent',
                     border: 'none', cursor: 'pointer',
-                    color: showNotifications ? '#06b6d4' : '#94a3b8',
+                    color: showNotifications ? 'var(--color-accent)' : 'var(--color-text-muted)',
                     transition: 'background 0.2s, color 0.2s',
                   }}
                   onClick={() => {
@@ -1137,10 +1137,10 @@ export default function Sidebar({ user, onNavigate }) {
                     }
                   }}
                   title="Notifications"
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(6,182,212,0.15)'; e.currentTarget.style.color = '#06b6d4'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-a15)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = showNotifications ? 'rgba(6,182,212,0.15)' : 'transparent';
-                    e.currentTarget.style.color = showNotifications ? '#06b6d4' : '#94a3b8';
+                    e.currentTarget.style.background = showNotifications ? 'var(--color-accent-a15)' : 'transparent';
+                    e.currentTarget.style.color = showNotifications ? 'var(--color-accent)' : 'var(--color-text-muted)';
                   }}
                 >
                   {/* Bell icon */}
@@ -1152,25 +1152,25 @@ export default function Sidebar({ user, onNavigate }) {
                     <span style={{
                       position: 'absolute', top: '6px', right: '50%', transform: 'translateX(16px)',
                       minWidth: '16px', height: '16px', padding: '0 4px',
-                      background: '#ef4444', color: '#fff', borderRadius: '999px',
+                      background: 'var(--color-danger)', color: 'var(--color-text)', borderRadius: 'var(--radius-pill)',
                       fontSize: '10px', fontWeight: 800, lineHeight: '16px', textAlign: 'center',
-                      boxShadow: '0 0 0 2px rgba(10,10,10,0.95)',
+                      boxShadow: '0 0 0 2px var(--color-bg)',
                     }}>
                       {unreadNotifCount}
                     </span>
                   )}
                 </button>
 
-                <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.13)', flexShrink: 0 }} />
+                <div style={{ width: '1px', height: '20px', background: 'var(--color-white-a13)', flexShrink: 0 }} />
 
                 {/* Settings (Profile now lives inside Settings → Profile tab) */}
                 <button
                   style={{
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: '11px 0',
-                    background: location.pathname === '/settings' ? 'rgba(6,182,212,0.15)' : 'transparent',
+                    background: location.pathname === '/settings' ? 'var(--color-accent-a15)' : 'transparent',
                     border: 'none', cursor: 'pointer',
-                    color: location.pathname === '/settings' ? '#06b6d4' : '#94a3b8',
+                    color: location.pathname === '/settings' ? 'var(--color-accent)' : 'var(--color-text-muted)',
                     transition: 'background 0.2s, color 0.2s',
                   }}
                   onClick={() => {
@@ -1178,10 +1178,10 @@ export default function Sidebar({ user, onNavigate }) {
                     else { handleNavigate('/settings'); }
                   }}
                   title="Settings"
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(6,182,212,0.15)'; e.currentTarget.style.color = '#06b6d4'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-a15)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = location.pathname === '/settings' ? 'rgba(6,182,212,0.15)' : 'transparent';
-                    e.currentTarget.style.color = location.pathname === '/settings' ? '#06b6d4' : '#94a3b8';
+                    e.currentTarget.style.background = location.pathname === '/settings' ? 'var(--color-accent-a15)' : 'transparent';
+                    e.currentTarget.style.color = location.pathname === '/settings' ? 'var(--color-accent)' : 'var(--color-text-muted)';
                   }}
                 >
                   {/* Gear / cog icon */}
@@ -1191,7 +1191,7 @@ export default function Sidebar({ user, onNavigate }) {
                   </svg>
                 </button>
 
-                <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.13)', flexShrink: 0 }} />
+                <div style={{ width: '1px', height: '20px', background: 'var(--color-white-a13)', flexShrink: 0 }} />
 
                 {/* Friends online toggle (replaces player search for logged-in users) */}
                 <button
@@ -1199,9 +1199,9 @@ export default function Sidebar({ user, onNavigate }) {
                   style={{
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: '11px 0', position: 'relative',
-                    background: showFriends ? 'rgba(16,185,129,0.15)' : 'transparent',
+                    background: showFriends ? 'var(--color-success-a12)' : 'transparent',
                     border: 'none', cursor: 'pointer',
-                    color: showFriends ? '#34d399' : '#94a3b8',
+                    color: showFriends ? 'var(--color-success)' : 'var(--color-text-muted)',
                     transition: 'background 0.2s, color 0.2s',
                   }}
                   onClick={() => {
@@ -1211,8 +1211,8 @@ export default function Sidebar({ user, onNavigate }) {
                     if (next) fetchOnlineFriends(); // refresh on open
                   }}
                   title={onlineFriends.length > 0 ? `${onlineFriends.length} friend${onlineFriends.length === 1 ? '' : 's'} online` : 'Friends online'}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(16,185,129,0.15)'; e.currentTarget.style.color = '#34d399'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = showFriends ? 'rgba(16,185,129,0.15)' : 'transparent'; e.currentTarget.style.color = showFriends ? '#34d399' : '#94a3b8'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-success-a12)'; e.currentTarget.style.color = 'var(--color-success)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = showFriends ? 'var(--color-success-a12)' : 'transparent'; e.currentTarget.style.color = showFriends ? 'var(--color-success)' : 'var(--color-text-muted)'; }}
                 >
                   {/* People / friends icon */}
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1225,28 +1225,28 @@ export default function Sidebar({ user, onNavigate }) {
                     <span style={{
                       position: 'absolute', top: '6px', right: '50%', transform: 'translateX(16px)',
                       minWidth: '16px', height: '16px', padding: '0 4px',
-                      background: '#22c55e', color: '#062611', borderRadius: '999px',
+                      background: 'var(--color-success)', color: '#062611', borderRadius: 'var(--radius-pill)',
                       fontSize: '10px', fontWeight: 800, lineHeight: '16px', textAlign: 'center',
-                      boxShadow: '0 0 0 2px rgba(10,10,10,0.95)',
+                      boxShadow: '0 0 0 2px var(--color-bg)',
                     }}>
                       {onlineFriends.length}
                     </span>
                   )}
                 </button>
 
-                <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.13)', flexShrink: 0 }} />
+                <div style={{ width: '1px', height: '20px', background: 'var(--color-white-a13)', flexShrink: 0 }} />
 
                 {/* Logout */}
                 <button
                   style={{
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: '11px 0', background: 'transparent', border: 'none', cursor: 'pointer',
-                    color: '#94a3b8', transition: 'background 0.2s, color 0.2s',
+                    color: 'var(--color-text-muted)', transition: 'background 0.2s, color 0.2s',
                   }}
                   onClick={async () => { await logout(); navigate('/', { replace: true }); }}
                   title="Logout"
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.color = '#ef4444'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-danger-a12)'; e.currentTarget.style.color = 'var(--color-danger)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -1260,15 +1260,15 @@ export default function Sidebar({ user, onNavigate }) {
                 <div
                   style={{
                     ...styles.navItem,
-                    background: location.pathname.startsWith('/coach') ? 'rgba(6,182,212,0.15)' : 'rgba(6,182,212,0.07)',
-                    border: '1px solid rgba(6,182,212,0.28)',
-                    color: location.pathname.startsWith('/coach') ? '#06b6d4' : '#a5f3fc',
+                    background: location.pathname.startsWith('/coach') ? 'var(--color-accent-a15)' : 'var(--color-accent-a06)',
+                    border: '1px solid var(--color-accent-a30)',
+                    color: location.pathname.startsWith('/coach') ? 'var(--color-accent)' : 'var(--color-accent)',
                     marginTop: '4px',
-                    borderRadius: '10px',
+                    borderRadius: 'var(--radius-md)',
                   }}
                   onClick={() => handleNavigate('/coach/dashboard')}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(6,182,212,0.2)'; e.currentTarget.style.color = '#06b6d4'; e.currentTarget.style.transform = 'translateX(4px)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/coach') ? 'rgba(6,182,212,0.15)' : 'rgba(6,182,212,0.07)'; e.currentTarget.style.color = location.pathname.startsWith('/coach') ? '#06b6d4' : '#a5f3fc'; e.currentTarget.style.transform = 'translateX(0)'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-a20)'; e.currentTarget.style.color = 'var(--color-accent)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = location.pathname.startsWith('/coach') ? 'var(--color-accent-a15)' : 'var(--color-accent-a06)'; e.currentTarget.style.color = location.pathname.startsWith('/coach') ? 'var(--color-accent)' : 'var(--color-accent)'; e.currentTarget.style.transform = 'translateX(0)'; }}
                   title="Coach Dashboard"
                 >
                   <span style={styles.navIcon}>🎓</span>
@@ -1283,9 +1283,9 @@ export default function Sidebar({ user, onNavigate }) {
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '12px',
+                background: 'var(--color-white-a04)',
+                border: '1px solid var(--color-white-a10)',
+                borderRadius: 'var(--radius-lg)',
                 margin: '10px 0 20px 0',
                 overflow: 'hidden',
               }}>
@@ -1294,9 +1294,9 @@ export default function Sidebar({ user, onNavigate }) {
                   style={{
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: '11px 0',
-                    background: showQuickSearch ? 'rgba(6,182,212,0.15)' : 'transparent',
+                    background: showQuickSearch ? 'var(--color-accent-a15)' : 'transparent',
                     border: 'none', cursor: 'pointer',
-                    color: showQuickSearch ? '#06b6d4' : '#94a3b8',
+                    color: showQuickSearch ? 'var(--color-accent)' : 'var(--color-text-muted)',
                     transition: 'background 0.2s, color 0.2s',
                   }}
                   onClick={() => {
@@ -1305,27 +1305,27 @@ export default function Sidebar({ user, onNavigate }) {
                     if (!next) { setSearchQuery(''); setSearchResults([]); setSearchOpen(false); }
                   }}
                   title="Search Players"
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(6,182,212,0.15)'; e.currentTarget.style.color = '#06b6d4'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = showQuickSearch ? 'rgba(6,182,212,0.15)' : 'transparent'; e.currentTarget.style.color = showQuickSearch ? '#06b6d4' : '#94a3b8'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-a15)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = showQuickSearch ? 'var(--color-accent-a15)' : 'transparent'; e.currentTarget.style.color = showQuickSearch ? 'var(--color-accent)' : 'var(--color-text-muted)'; }}
                 >
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                   </svg>
                 </button>
 
-                <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.13)', flexShrink: 0 }} />
+                <div style={{ width: '1px', height: '20px', background: 'var(--color-white-a13)', flexShrink: 0 }} />
 
                 {/* Login */}
                 <button
                   style={{
                     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     padding: '11px 0', background: 'transparent', border: 'none', cursor: 'pointer',
-                    color: '#94a3b8', transition: 'background 0.2s, color 0.2s',
+                    color: 'var(--color-text-muted)', transition: 'background 0.2s, color 0.2s',
                   }}
                   onClick={() => navigate('/login')}
                   title="Login"
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(16,185,129,0.15)'; e.currentTarget.style.color = '#10b981'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-success-a12)'; e.currentTarget.style.color = 'var(--color-success)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
@@ -1336,17 +1336,17 @@ export default function Sidebar({ user, onNavigate }) {
                 {/* Guest: also show Leave button */}
                 {user?.role === 'guest' && (
                   <>
-                    <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.13)', flexShrink: 0 }} />
+                    <div style={{ width: '1px', height: '20px', background: 'var(--color-white-a13)', flexShrink: 0 }} />
                     <button
                       style={{
                         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
                         padding: '11px 0', background: 'transparent', border: 'none', cursor: 'pointer',
-                        color: '#94a3b8', transition: 'background 0.2s, color 0.2s',
+                        color: 'var(--color-text-muted)', transition: 'background 0.2s, color 0.2s',
                       }}
                       onClick={async () => { await logout(); navigate('/', { replace: true }); }}
                       title="Leave (end guest session)"
-                      onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.color = '#ef4444'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#94a3b8'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-danger-a12)'; e.currentTarget.style.color = 'var(--color-danger)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
                     >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
@@ -1377,10 +1377,10 @@ export default function Sidebar({ user, onNavigate }) {
                 minWidth: Math.max(rect.width, 280),
                 width: 'max-content',
                 maxWidth: '400px',
-                background: 'rgba(10,15,30,0.98)',
-                border: '1px solid rgba(6,182,212,0.3)',
-                borderRadius: '12px',
-                boxShadow: '0 -8px 32px rgba(0,0,0,0.65)',
+                background: 'var(--color-bg)',
+                border: '1px solid var(--color-accent-a30)',
+                borderRadius: 'var(--radius-lg)',
+                boxShadow: '0 -8px 32px var(--color-black-a65)',
                 zIndex: 100002,
                 backdropFilter: 'blur(16px)',
                 maxHeight: '320px',
@@ -1388,12 +1388,12 @@ export default function Sidebar({ user, onNavigate }) {
               }}
             >
               {searchLoading && (
-                <div style={{ padding: '12px 16px', color: '#64748b', fontSize: '13px', textAlign: 'center' }}>
+                <div style={{ padding: '12px 16px', color: 'var(--color-text-faint)', fontSize: '13px', textAlign: 'center' }}>
                   Searching...
                 </div>
               )}
               {!searchLoading && searchResults.length === 0 && searchQuery.trim().length >= 2 && (
-                <div style={{ padding: '12px 16px', color: '#64748b', fontSize: '13px', textAlign: 'center' }}>
+                <div style={{ padding: '12px 16px', color: 'var(--color-text-faint)', fontSize: '13px', textAlign: 'center' }}>
                   No players found
                 </div>
               )}
@@ -1414,22 +1414,22 @@ export default function Sidebar({ user, onNavigate }) {
                     gap: '10px',
                     padding: '10px 16px',
                     cursor: 'pointer',
-                    borderBottom: idx < searchResults.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                    borderBottom: idx < searchResults.length - 1 ? '1px solid var(--color-white-a04)' : 'none',
                     transition: 'background 0.15s',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(6,182,212,0.12)'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-accent-a12)'; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   <UserAvatar user={player} size={34} />
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: '13px', fontWeight: '600', color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '260px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '260px' }}>
                       {player.displayName}
                     </div>
-                    <div style={{ fontSize: '11px', color: '#64748b', marginTop: '1px' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginTop: '1px' }}>
                       {player.country ? `${player.country} · ` : ''}{player.liveRating} pts
                     </div>
                   </div>
-                  <span style={{ fontSize: '11px', color: '#475569', flexShrink: 0, marginLeft: '8px' }}>→</span>
+                  <span style={{ fontSize: '11px', color: 'var(--color-text-faint)', flexShrink: 0, marginLeft: '8px' }}>→</span>
                 </div>
               ))}
             </div>,
@@ -1465,10 +1465,10 @@ export default function Sidebar({ user, onNavigate }) {
                   width: 'max-content',
                   minWidth: '280px',
                   maxWidth: '360px',
-                  background: 'rgba(10,15,30,0.98)',
-                  border: '1px solid rgba(16,185,129,0.3)',
-                  borderRadius: '14px',
-                  boxShadow: '0 -8px 32px rgba(0,0,0,0.65)',
+                  background: 'var(--color-bg)',
+                  border: '1px solid var(--color-success-a30)',
+                  borderRadius: 'var(--radius-lg)',
+                  boxShadow: '0 -8px 32px var(--color-black-a65)',
                   zIndex: 100002,
                   backdropFilter: 'blur(16px)',
                   maxHeight: '60vh',
@@ -1478,26 +1478,26 @@ export default function Sidebar({ user, onNavigate }) {
               >
                 <div style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid var(--color-white-a07)',
                 }}>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#e2e8f0', display: 'flex', alignItems: 'center', gap: '7px' }}>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '999px', background: '#22c55e', boxShadow: '0 0 6px #22c55e', flexShrink: 0 }} />
+                  <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    <span style={{ width: '8px', height: '8px', borderRadius: 'var(--radius-pill)', background: 'var(--color-success)', boxShadow: '0 0 6px var(--color-success)', flexShrink: 0 }} />
                     Friends online
-                    <span style={{ color: '#34d399', fontWeight: 800 }}>{onlineFriends.length}</span>
+                    <span style={{ color: 'var(--color-success)', fontWeight: 800 }}>{onlineFriends.length}</span>
                   </span>
                   <button
                     onClick={() => setShowFriends(false)}
-                    style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '15px' }}
+                    style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '15px' }}
                     title="Close"
                   >✕</button>
                 </div>
 
                 {onlineFriends.length === 0 ? (
-                  <div style={{ color: '#64748b', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
+                  <div style={{ color: 'var(--color-text-faint)', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
                     None of your friends are online right now.
                     <div
                       onClick={() => { handleNavigate('/social/chat'); setShowFriends(false); }}
-                      style={{ fontSize: '11.5px', color: '#34d399', fontWeight: 600, marginTop: '10px', cursor: 'pointer' }}
+                      style={{ fontSize: '11.5px', color: 'var(--color-success)', fontWeight: 600, marginTop: '10px', cursor: 'pointer' }}
                     >
                       Go to Chat →
                     </div>
@@ -1514,35 +1514,35 @@ export default function Sidebar({ user, onNavigate }) {
                         }}
                         style={{
                           display: 'flex', alignItems: 'center', gap: '10px',
-                          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)',
-                          borderRadius: '10px', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
+                          background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)',
+                          borderRadius: 'var(--radius-md)', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
                           transition: 'border-color 0.2s, background 0.2s',
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'; e.currentTarget.style.background = 'rgba(16,185,129,0.08)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-success-a30)'; e.currentTarget.style.background = 'var(--color-success-a12)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-white-a07)'; e.currentTarget.style.background = 'var(--color-white-a04)'; }}
                       >
                         <div style={{ position: 'relative', flexShrink: 0 }}>
                           <UserAvatar user={f} size={34} />
                           <span style={{
                             position: 'absolute', bottom: '-1px', right: '-1px',
-                            width: '11px', height: '11px', borderRadius: '999px',
-                            background: '#22c55e', border: '2px solid rgba(10,15,30,0.98)',
+                            width: '11px', height: '11px', borderRadius: 'var(--radius-pill)',
+                            background: 'var(--color-success)', border: '2px solid var(--color-bg)',
                           }} />
                         </div>
                         <div style={{ minWidth: 0, flex: 1 }}>
-                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {f.displayName || f.username}
                           </div>
-                          <div style={{ fontSize: '11px', color: '#34d399', fontWeight: 600 }}>
+                          <div style={{ fontSize: '11px', color: 'var(--color-success)', fontWeight: 600 }}>
                             ● Online
                           </div>
                         </div>
-                        <span style={{ fontSize: '11px', color: '#475569', flexShrink: 0, marginLeft: '6px' }}>→</span>
+                        <span style={{ fontSize: '11px', color: 'var(--color-text-faint)', flexShrink: 0, marginLeft: '6px' }}>→</span>
                       </div>
                     ))}
                     <div
                       onClick={() => { handleNavigate('/social/chat'); setShowFriends(false); }}
-                      style={{ fontSize: '11.5px', color: '#34d399', fontWeight: 600, textAlign: 'right', cursor: 'pointer', marginTop: '2px' }}
+                      style={{ fontSize: '11.5px', color: 'var(--color-success)', fontWeight: 600, textAlign: 'right', cursor: 'pointer', marginTop: '2px' }}
                     >
                       Go to Chat →
                     </div>
@@ -1575,10 +1575,10 @@ export default function Sidebar({ user, onNavigate }) {
                   width: 'max-content',
                   minWidth: '300px',
                   maxWidth: '380px',
-                  background: 'rgba(10,15,30,0.98)',
-                  border: '1px solid rgba(6,182,212,0.3)',
-                  borderRadius: '14px',
-                  boxShadow: '0 -8px 32px rgba(0,0,0,0.65)',
+                  background: 'var(--color-bg)',
+                  border: '1px solid var(--color-accent-a30)',
+                  borderRadius: 'var(--radius-lg)',
+                  boxShadow: '0 -8px 32px var(--color-black-a65)',
                   zIndex: 100002,
                   backdropFilter: 'blur(16px)',
                   maxHeight: '60vh',
@@ -1588,12 +1588,12 @@ export default function Sidebar({ user, onNavigate }) {
               >
                 <div style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.08)',
+                  marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid var(--color-white-a07)',
                 }}>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#e2e8f0' }}>🔔 Notifications</span>
+                  <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text)' }}>🔔 Notifications</span>
                   <button
                     onClick={() => setShowNotifications(false)}
-                    style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '15px' }}
+                    style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '15px' }}
                     title="Close"
                   >✕</button>
                 </div>
@@ -1604,7 +1604,7 @@ export default function Sidebar({ user, onNavigate }) {
                     original bug — a bell reading "1" over an empty panel. */}
                 {(myNotifs.notifications || []).filter(n => !n.read).length > 0 && (
                   <>
-                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#c4b5fd', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
+                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent-2)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
                       🔔 For you
                     </div>
                     {(myNotifs.notifications || []).filter(n => !n.read).map(n => (
@@ -1617,23 +1617,23 @@ export default function Sidebar({ user, onNavigate }) {
                           setShowNotifications(false);
                         }}
                         style={{
-                          background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.3)',
-                          borderRadius: '10px', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
+                          background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)',
+                          borderRadius: 'var(--radius-md)', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
                           transition: 'border-color 0.2s, background 0.2s',
                         }}
                         onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.6)'; e.currentTarget.style.background = 'rgba(124,58,237,0.14)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(124,58,237,0.3)'; e.currentTarget.style.background = 'rgba(124,58,237,0.08)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-2-a30)'; e.currentTarget.style.background = 'var(--color-accent-2-a15)'; }}
                       >
-                        <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#c4b5fd', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-accent-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {n.type === 'academy_invite' ? '🏛️ ' : '🔔 '}{n.title}
                         </div>
                         {n.body && (
-                          <div style={{ fontSize: '11.5px', color: '#cbd5e1', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          <div style={{ fontSize: '11.5px', color: 'var(--color-text-muted)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                             {n.body}
                           </div>
                         )}
                         {n.link && (
-                          <div style={{ fontSize: '10.5px', color: '#94a3b8', marginTop: '3px' }}>
+                          <div style={{ fontSize: '10.5px', color: 'var(--color-text-muted)', marginTop: '3px' }}>
                             Tap to open →
                           </div>
                         )}
@@ -1645,7 +1645,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {/* Game invites — someone invited this user to play a friend game */}
                 {gameInvites.length > 0 && (
                   <>
-                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#34d399', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
+                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-success)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
                       ♟️ Game invites
                     </div>
                     {gameInvites.map(inv => {
@@ -1657,21 +1657,21 @@ export default function Sidebar({ user, onNavigate }) {
                         <div
                           key={inv._id}
                           style={{
-                            background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.25)',
-                            borderRadius: '10px', padding: '9px 11px', marginBottom: '8px',
+                            background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a20)',
+                            borderRadius: 'var(--radius-md)', padding: '9px 11px', marginBottom: '8px',
                           }}
                         >
-                          <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#6ee7b7' }}>
+                          <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-success)' }}>
                             ♟️ <strong>{fromName}</strong> wants to play {tc}{variant}
                           </div>
                           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                             <button
                               onClick={() => respondToGameInvite(inv._id, 'accept', inv.roomCode)}
-                              style={{ flex: 1, background: 'rgba(16,185,129,0.18)', color: '#34d399', border: '1px solid rgba(16,185,129,0.4)', borderRadius: '8px', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                              style={{ flex: 1, background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
                             >✓ Accept</button>
                             <button
                               onClick={() => respondToGameInvite(inv._id, 'decline', inv.roomCode)}
-                              style={{ flex: 1, background: 'rgba(239,68,68,0.12)', color: '#f87171', border: '1px solid rgba(239,68,68,0.35)', borderRadius: '8px', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                              style={{ flex: 1, background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
                             >✕ Decline</button>
                           </div>
                         </div>
@@ -1683,7 +1683,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {/* Coach requests — a coach wants to add this user as a student. Approve / Decline inline. */}
                 {coachRequests.length > 0 && (
                   <>
-                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#a78bfa', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
+                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent-2)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
                       🎓 Coach requests
                     </div>
                     {coachRequests.map(r => {
@@ -1694,20 +1694,20 @@ export default function Sidebar({ user, onNavigate }) {
                           key={r._id}
                           style={{
                             background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.25)',
-                            borderRadius: '10px', padding: '9px 11px', marginBottom: '8px',
+                            borderRadius: 'var(--radius-md)', padding: '9px 11px', marginBottom: '8px',
                           }}
                         >
-                          <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#c4b5fd' }}>
+                          <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-accent-2)' }}>
                             🎓 Coach <strong>{coachName}</strong> wants to add you as a student
                           </div>
                           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                             <button
                               onClick={() => respondToCoachRequest(r._id, 'approve')}
-                              style={{ flex: 1, background: 'rgba(16,185,129,0.18)', color: '#34d399', border: '1px solid rgba(16,185,129,0.4)', borderRadius: '8px', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                              style={{ flex: 1, background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
                             >✓ Approve</button>
                             <button
                               onClick={() => respondToCoachRequest(r._id, 'decline')}
-                              style={{ flex: 1, background: 'rgba(239,68,68,0.12)', color: '#f87171', border: '1px solid rgba(239,68,68,0.35)', borderRadius: '8px', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                              style={{ flex: 1, background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
                             >✕ Decline</button>
                           </div>
                         </div>
@@ -1715,7 +1715,7 @@ export default function Sidebar({ user, onNavigate }) {
                     })}
                     <div
                       onClick={() => { handleNavigate('/coach-requests'); setShowNotifications(false); }}
-                      style={{ fontSize: '11px', color: '#a78bfa', cursor: 'pointer', textAlign: 'right', marginBottom: '10px' }}
+                      style={{ fontSize: '11px', color: 'var(--color-accent-2)', cursor: 'pointer', textAlign: 'right', marginBottom: '10px' }}
                     >
                       See all requests →
                     </div>
@@ -1725,7 +1725,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {/* Report replies — admin answered a report. Click to read the full reply. */}
                 {reportReplies.length > 0 && (
                   <>
-                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
+                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-warning)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
                       🚩 Report replies
                     </div>
                     {reportReplies.map(r => (
@@ -1733,20 +1733,20 @@ export default function Sidebar({ user, onNavigate }) {
                         key={r._id}
                         onClick={() => { handleNavigate('/my-reports'); setShowNotifications(false); }}
                         style={{
-                          background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.25)',
-                          borderRadius: '10px', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
+                          background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a20)',
+                          borderRadius: 'var(--radius-md)', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
                           transition: 'border-color 0.2s, background 0.2s',
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(245,158,11,0.5)'; e.currentTarget.style.background = 'rgba(245,158,11,0.1)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(245,158,11,0.25)'; e.currentTarget.style.background = 'rgba(245,158,11,0.06)'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(245,158,11,0.5)'; e.currentTarget.style.background = 'var(--color-warning-a12)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-warning-a20)'; e.currentTarget.style.background = 'var(--color-warning-a12)'; }}
                       >
-                        <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#fcd34d', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-warning)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           ♟️ Team replied: {r.subject}
                         </div>
-                        <div style={{ fontSize: '11.5px', color: '#cbd5e1', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        <div style={{ fontSize: '11.5px', color: 'var(--color-text-muted)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {r.reply}
                         </div>
-                        <div style={{ fontSize: '10.5px', color: '#94a3b8', marginTop: '3px' }}>
+                        <div style={{ fontSize: '10.5px', color: 'var(--color-text-muted)', marginTop: '3px' }}>
                           Tap to read full reply →
                         </div>
                       </div>
@@ -1757,7 +1757,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {/* Friend messages — unread chats from friends */}
                 {friendMsgs.length > 0 && (
                   <>
-                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#67e8f9', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
+                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
                       💬 Messages
                     </div>
                     <div style={{ maxHeight: '210px', overflowY: 'auto', paddingRight: '2px' }}>
@@ -1767,26 +1767,26 @@ export default function Sidebar({ user, onNavigate }) {
                         onClick={() => { handleNavigate('/social/chat'); setShowNotifications(false); }}
                         style={{
                           display: 'flex', alignItems: 'center', gap: '10px',
-                          background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)',
-                          borderRadius: '10px', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
+                          background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)',
+                          borderRadius: 'var(--radius-md)', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
                           transition: 'border-color 0.2s, background 0.2s',
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(6,182,212,0.4)'; e.currentTarget.style.background = 'rgba(6,182,212,0.08)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-a40)'; e.currentTarget.style.background = 'var(--color-accent-a08)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-white-a07)'; e.currentTarget.style.background = 'var(--color-white-a04)'; }}
                       >
                         <UserAvatar user={m.friend} size={32} />
                         <div style={{ minWidth: 0, flex: 1 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <span style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               {m.friend?.displayName}
                             </span>
                             {m.unreadCount > 1 && (
-                              <span style={{ background: '#ef4444', color: '#fff', borderRadius: '999px', fontSize: '9px', fontWeight: 800, padding: '0 5px', lineHeight: '15px', height: '15px' }}>
+                              <span style={{ background: 'var(--color-danger)', color: 'var(--color-text)', borderRadius: 'var(--radius-pill)', fontSize: '9px', fontWeight: 800, padding: '0 5px', lineHeight: '15px', height: '15px' }}>
                                 {m.unreadCount}
                               </span>
                             )}
                           </div>
-                          <div style={{ fontSize: '11.5px', color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <div style={{ fontSize: '11.5px', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {m.latestMessage}
                           </div>
                         </div>
@@ -1794,7 +1794,7 @@ export default function Sidebar({ user, onNavigate }) {
                     ))}
                     </div>
                     {appNotifications.length > 0 && (
-                      <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#67e8f9', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '8px 0 6px' }}>
+                      <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '8px 0 6px' }}>
                         📢 Updates
                       </div>
                     )}
@@ -1805,7 +1805,7 @@ export default function Sidebar({ user, onNavigate }) {
                     from friend messages because they land on a different page. */}
                 {coachMsgs.length > 0 && (
                   <>
-                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#6ee7b7', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
+                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-success)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
                       🎓 Coach messages
                     </div>
                     <div style={{ maxHeight: '210px', overflowY: 'auto', paddingRight: '2px' }}>
@@ -1818,31 +1818,31 @@ export default function Sidebar({ user, onNavigate }) {
                         onClick={() => { handleNavigate(isCoach ? '/coach/dashboard' : '/my-coach'); setShowNotifications(false); }}
                         style={{
                           display: 'flex', alignItems: 'center', gap: '10px',
-                          background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.22)',
-                          borderRadius: '10px', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
+                          background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a20)',
+                          borderRadius: 'var(--radius-md)', padding: '9px 11px', marginBottom: '8px', cursor: 'pointer',
                           transition: 'border-color 0.2s, background 0.2s',
                         }}
-                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.5)'; e.currentTarget.style.background = 'rgba(16,185,129,0.12)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(16,185,129,0.22)'; e.currentTarget.style.background = 'rgba(16,185,129,0.06)'; }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-success-a30)'; e.currentTarget.style.background = 'var(--color-success-a12)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-success-a20)'; e.currentTarget.style.background = 'var(--color-success-a12)'; }}
                       >
                         <UserAvatar user={m.from} size={32} />
                         <div style={{ minWidth: 0, flex: 1 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            <span style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                               {m.from?.displayName}
                             </span>
                             {m.unreadCount > 1 && (
-                              <span style={{ background: '#ef4444', color: '#fff', borderRadius: '999px', fontSize: '9px', fontWeight: 800, padding: '0 5px', lineHeight: '15px', height: '15px' }}>
+                              <span style={{ background: 'var(--color-danger)', color: 'var(--color-text)', borderRadius: 'var(--radius-pill)', fontSize: '9px', fontWeight: 800, padding: '0 5px', lineHeight: '15px', height: '15px' }}>
                                 {m.unreadCount}
                               </span>
                             )}
                           </div>
                           {m.isGroup && (
-                            <div style={{ fontSize: '10px', color: '#6ee7b7', marginBottom: '1px' }}>
+                            <div style={{ fontSize: '10px', color: 'var(--color-success)', marginBottom: '1px' }}>
                               in {m.groupName}
                             </div>
                           )}
-                          <div style={{ fontSize: '11.5px', color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <div style={{ fontSize: '11.5px', color: 'var(--color-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {m.latestMessage}
                           </div>
                         </div>
@@ -1856,7 +1856,7 @@ export default function Sidebar({ user, onNavigate }) {
                     leaving it out made a lone academy invite show "1" on the bell
                     above an "all caught up" panel. */}
                 {appNotifications.length === 0 && friendMsgs.length === 0 && coachMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 && (myNotifs.notifications || []).filter(n => !n.read).length === 0 ? (
-                  <div style={{ color: '#64748b', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
+                  <div style={{ color: 'var(--color-text-faint)', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
                     You're all caught up — no notifications.
                   </div>
                 ) : (
@@ -1865,24 +1865,24 @@ export default function Sidebar({ user, onNavigate }) {
                       key={n.id}
                       onClick={() => { if (n.link) { handleNavigate(n.link); setShowNotifications(false); } }}
                       style={{
-                        background: 'rgba(255,255,255,0.04)',
-                        border: '1px solid rgba(255,255,255,0.07)',
-                        borderRadius: '10px',
+                        background: 'var(--color-white-a04)',
+                        border: '1px solid var(--color-white-a07)',
+                        borderRadius: 'var(--radius-md)',
                         padding: '11px 12px',
                         marginBottom: '8px',
                         cursor: n.link ? 'pointer' : 'default',
                         transition: 'border-color 0.2s, background 0.2s',
                       }}
-                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'rgba(6,182,212,0.4)'; e.currentTarget.style.background = 'rgba(6,182,212,0.08)'; }}
-                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; }}
+                      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-a40)'; e.currentTarget.style.background = 'var(--color-accent-a08)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-white-a07)'; e.currentTarget.style.background = 'var(--color-white-a04)'; }}
                     >
-                      {n.topic && <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#67e8f9', marginBottom: '3px' }}>{n.topic}</div>}
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9', marginBottom: '4px', display: 'flex', gap: '6px' }}>
+                      {n.topic && <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent)', marginBottom: '3px' }}>{n.topic}</div>}
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text)', marginBottom: '4px', display: 'flex', gap: '6px' }}>
                         {n.icon && <span>{n.icon}</span>}<span>{n.title}</span>
                       </div>
-                      {n.desc && <div style={{ fontSize: '12px', color: '#94a3b8', lineHeight: 1.55 }}>{n.desc}</div>}
-                      {n.date && <div style={{ fontSize: '10.5px', color: '#64748b', marginTop: '5px' }}>{n.date}</div>}
-                      {n.link && <div style={{ fontSize: '11.5px', color: '#06b6d4', fontWeight: 600, marginTop: '7px' }}>{n.linkLabel || 'View →'}</div>}
+                      {n.desc && <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', lineHeight: 1.55 }}>{n.desc}</div>}
+                      {n.date && <div style={{ fontSize: '10.5px', color: 'var(--color-text-faint)', marginTop: '5px' }}>{n.date}</div>}
+                      {n.link && <div style={{ fontSize: '11.5px', color: 'var(--color-accent)', fontWeight: 600, marginTop: '7px' }}>{n.linkLabel || 'View →'}</div>}
                     </div>
                   ))
                 )}
@@ -1899,17 +1899,17 @@ export default function Sidebar({ user, onNavigate }) {
 const styles = {
   sidebar: {
     width: "170px",
-    background: "rgba(10, 10, 10, 0.95)",
+    background: "var(--color-bg)",
     position: "fixed",
     top: 0,
     left: 0,
     height: "100vh",
-    boxShadow: "2px 0 20px rgba(0,0,0,0.5)",
+    boxShadow: "2px 0 20px var(--color-black-a50)",
     zIndex: 100,
     display: "flex",
     flexDirection: "column",
     fontFamily: "'Poppins', sans-serif",
-    borderRight: "1px solid rgba(255, 255, 255, 0.05)",
+    borderRight: "1px solid var(--color-white-a04)",
     backdropFilter: "blur(10px)",
   },
   sidebarContent: {
@@ -1929,7 +1929,7 @@ const styles = {
   },
   separator: {
     height: "1px",
-    background: "linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.3), transparent)",
+    background: "linear-gradient(90deg, transparent, var(--color-accent-a30), transparent)",
     margin: "5px 10px",
     borderRadius: "1px",
   },
@@ -1938,7 +1938,7 @@ const styles = {
     alignItems: "center",
     gap: "10px",
     padding: "3px 12px 3px 8px",
-    color: "#ffffff",
+    color: "var(--color-text)",
     cursor: "pointer",
     borderRadius: "12px",
     transition: "all 0.3s ease",
@@ -1956,16 +1956,16 @@ const styles = {
     alignItems: "center",
     gap: "10px",
     padding: "3px 12px 3px 8px",
-    color: "#06b6d4",
+    color: "var(--color-accent)",
     cursor: "pointer",
     borderRadius: "12px",
     transition: "all 0.3s ease",
     fontSize: "14px",
     fontWeight: "600",
     fontFamily: "'Poppins', sans-serif",
-    background: "rgba(6, 182, 212, 0.15)",
-    border: "1px solid rgba(6, 182, 212, 0.3)",
-    boxShadow: "0 4px 12px rgba(6, 182, 212, 0.2)",
+    background: "var(--color-accent-a15)",
+    border: "1px solid var(--color-accent-a30)",
+    boxShadow: "0 4px 12px var(--color-accent-a20)",
     justifyContent: "flex-start",
     whiteSpace: "nowrap",
     overflow: "hidden",
@@ -1974,7 +1974,7 @@ const styles = {
   navIcon: {
     fontSize: "18px",
     flexShrink: 0,
-    filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
+    filter: "drop-shadow(0 2px 4px var(--color-black-a35))",
   },
   navLabel: {
     flex: 1,
@@ -1983,9 +1983,9 @@ const styles = {
   profileButton: {
     margin: "20px",
     padding: "12px 16px",
-    background: "rgba(255, 255, 255, 0.1)",
-    color: "#ffffff",
-    border: "2px solid rgba(255, 255, 255, 0.2)",
+    background: "var(--color-white-a10)",
+    color: "var(--color-text)",
+    border: "2px solid var(--color-white-a20)",
     borderRadius: "12px",
     fontSize: "14px",
     fontWeight: "600",
@@ -2003,7 +2003,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: "rgba(0, 0, 0, 0.7)",
+    background: "var(--color-black-a65)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -2011,15 +2011,15 @@ const styles = {
     backdropFilter: "blur(10px)",
   },
   profileModal: {
-    background: "rgba(23, 23, 23, 0.95)",
+    background: "var(--color-surface)",
     borderRadius: "20px",
-    boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5)",
+    boxShadow: "0 20px 60px var(--color-black-a50)",
     maxWidth: "600px",
     width: "90%",
     maxHeight: "80vh",
     overflow: "auto",
     animation: "slideIn 0.4s ease-out",
-    border: "1px solid rgba(255, 255, 255, 0.05)",
+    border: "1px solid var(--color-white-a04)",
     backdropFilter: "blur(20px)",
   },
   profileModalHeader: {
@@ -2027,8 +2027,8 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     padding: "28px",
-    borderBottom: "2px solid rgba(6, 182, 212, 0.2)",
-    background: "linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)",
+    borderBottom: "2px solid var(--color-accent-a20)",
+    background: "linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-success-a12) 100%)",
     borderRadius: "20px 20px 0 0",
     position: "relative",
     overflow: "hidden",
@@ -2038,8 +2038,8 @@ const styles = {
     fontSize: "26px",
     fontWeight: "700",
     fontFamily: "'Poppins', sans-serif",
-    color: "#ffffff",
-    background: "linear-gradient(135deg, #06b6d4 0%, #10b981 100%)",
+    color: "var(--color-text)",
+    background: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
@@ -2048,7 +2048,7 @@ const styles = {
     background: "none",
     border: "none",
     fontSize: "24px",
-    color: "#9ca3af",
+    color: "var(--color-text-muted)",
     cursor: "pointer",
     padding: "0",
     width: "36px",
@@ -2066,15 +2066,15 @@ const styles = {
     gap: "20px",
   },
   infoCard: {
-    background: "rgba(23, 23, 23, 0.7)",
+    background: "var(--color-surface)",
     borderRadius: "16px",
-    border: "1px solid rgba(255, 255, 255, 0.05)",
-    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+    border: "1px solid var(--color-white-a04)",
+    boxShadow: "0 8px 32px var(--color-black-a50)",
     textAlign: "left",
     padding: "20px",
     transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
     cursor: "default",
-    color: "#ffffff",
+    color: "var(--color-text)",
     position: "relative",
     overflow: "hidden",
     backdropFilter: "blur(10px)",
@@ -2082,7 +2082,7 @@ const styles = {
   },
   infoCardH4: {
     margin: 0,
-    color: "#67e8f9",
+    color: "var(--color-accent)",
     fontWeight: "600",
     fontFamily: "'Poppins', sans-serif",
     marginBottom: "10px",
@@ -2092,7 +2092,7 @@ const styles = {
   },
   infoCardP: {
     margin: 0,
-    color: "#ffffff",
+    color: "var(--color-text)",
     fontWeight: "700",
     fontFamily: "'Poppins', sans-serif",
     fontSize: "20px",

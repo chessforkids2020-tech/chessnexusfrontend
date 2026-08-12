@@ -2,7 +2,10 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-:root {
+/* Scoped to the page rather than :root — these --bg / --text-* names collide
+   with the global theme tokens, and Vite bundles all CSS together, so a :root
+   here would override the theme app-wide. See EventForm.css for the full note. */
+.event-page-container {
   --bg:           #0a0a0a;
   --glass-bg:     rgba(23, 23, 23, 0.72);
   --glass-border: rgba(255, 255, 255, 0.06);

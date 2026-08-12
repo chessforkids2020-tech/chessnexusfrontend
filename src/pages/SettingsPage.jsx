@@ -2,6 +2,7 @@
 import { useSearchParams } from 'react-router-dom';
 import CustomBoardColors from '../components/CustomBoardColors';
 import { BOARD_THEMES, useBoardTheme } from '../contexts/BoardThemeContext';
+import { useUiTheme } from '../contexts/UiThemeContext';
 import { PIECE_THEMES, usePieceTheme } from '../contexts/PieceThemeContext';
 import AvatarStudio from '../components/AvatarStudio';
 import ProfilePanel from '../components/ProfilePanel';
@@ -79,25 +80,25 @@ function OptionCard({ isActive, onClick, defaultBadge, children }) {
         alignItems: 'center',
         gap: 10,
         padding: '14px 10px',
-        background: isActive ? 'rgba(6,182,212,0.15)' : 'rgba(255,255,255,0.04)',
-        border: isActive ? '2px solid #06b6d4' : '2px solid rgba(255,255,255,0.08)',
-        borderRadius: 12,
+        background: isActive ? 'var(--color-accent-a15)' : 'var(--color-white-a04)',
+        border: isActive ? '2px solid var(--color-accent)' : '2px solid var(--color-border)',
+        borderRadius: 'var(--radius-lg)',
         cursor: 'pointer',
-        transition: 'all 0.18s',
+        transition: 'all var(--dur-fast)',
         position: 'relative',
         outline: 'none',
         width: '100%',
       }}
       onMouseEnter={(e) => {
         if (!isActive) {
-          e.currentTarget.style.border = '2px solid rgba(6,182,212,0.45)';
-          e.currentTarget.style.background = 'rgba(6,182,212,0.07)';
+          e.currentTarget.style.border = '2px solid var(--color-accent-a40)';
+          e.currentTarget.style.background = 'var(--color-accent-a08)';
         }
       }}
       onMouseLeave={(e) => {
         if (!isActive) {
-          e.currentTarget.style.border = '2px solid rgba(255,255,255,0.08)';
-          e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+          e.currentTarget.style.border = '2px solid var(--color-border)';
+          e.currentTarget.style.background = 'var(--color-white-a04)';
         }
       }}
     >
@@ -115,11 +116,12 @@ function OptionCard({ isActive, onClick, defaultBadge, children }) {
         <span style={{
           position: 'absolute', bottom: 7, right: 7,
           width: 18, height: 18,
-          background: '#06b6d4', borderRadius: '50%',
+          background: 'var(--color-accent)', borderRadius: 'var(--radius-circle)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
+          {/* Tick drawn in the page background colour so it reads on any accent. */}
           <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
-            <path d="M2 6l3 3 5-5" stroke="#0f172a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M2 6l3 3 5-5" stroke="var(--color-bg)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </span>
       )}
@@ -130,6 +132,7 @@ function OptionCard({ isActive, onClick, defaultBadge, children }) {
 export default function SettingsPage() {
   const { theme: activeTheme, setThemeById } = useBoardTheme();
   const { pieceTheme: activePiece, setPieceThemeById } = usePieceTheme();
+  const { themeId: uiThemeId, themes: uiThemes, setThemeId: setUiThemeId } = useUiTheme();
   // ?tab=profile opens the Profile tab directly, so anything that needs a user
   // to fill in their Chess.com / Lichess usernames can link straight there
   // instead of dropping them on Board themes to go hunting.
@@ -140,31 +143,35 @@ export default function SettingsPage() {
 
   const TAB_STYLE = (id) => ({
     padding: '10px 24px',
-    borderRadius: 8,
+    borderRadius: 'var(--radius-md)',
     border: 'none',
     cursor: 'pointer',
     fontSize: 14,
     fontWeight: 600,
-    transition: 'all 0.15s',
-    background: activeTab === id ? 'rgba(6,182,212,0.18)' : 'transparent',
-    color: activeTab === id ? '#06b6d4' : '#64748b',
-    borderBottom: activeTab === id ? '2px solid #06b6d4' : '2px solid transparent',
+    transition: 'all var(--dur-fast)',
+    background: activeTab === id ? 'var(--color-accent-a20)' : 'transparent',
+    color: activeTab === id ? 'var(--color-accent)' : 'var(--color-text-muted)',
+    borderBottom: activeTab === id
+      ? '2px solid var(--color-accent)'
+      : '2px solid transparent',
   });
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0a0a0a',
-      color: '#f1f5f9',
+      // Themed: this is the page that demonstrates the themes, so it has to
+      // respond to them or picking one appears to do nothing.
+      background: 'var(--color-bg)',
+      color: 'var(--color-text)',
       fontFamily: "'Poppins', 'Segoe UI', sans-serif",
       padding: '40px 24px',
     }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         {/* Header */}
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: '#06b6d4', marginBottom: 6, letterSpacing: '-0.3px' }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--color-accent)', marginBottom: 6, letterSpacing: '-0.3px' }}>
           ⚙️ Settings
         </h1>
-        <p style={{ color: '#64748b', fontSize: 14, marginBottom: 28 }}>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: 14, marginBottom: 28 }}>
           Your preferences are saved per account and apply everywhere across the app.
         </p>
 
@@ -173,8 +180,13 @@ export default function SettingsPage() {
           display: 'flex',
           gap: 4,
           marginBottom: 28,
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          borderBottom: '1px solid var(--color-border)',
         }}>
+          {/* App theme first: it changes the whole interface, where the board and
+              piece settings each change one part of it. */}
+          <button style={TAB_STYLE('app')} onClick={() => setActiveTab('app')}>
+            ✨ App Theme
+          </button>
           <button style={TAB_STYLE('board')} onClick={() => setActiveTab('board')}>
             🎨 Board Theme
           </button>
@@ -207,18 +219,99 @@ export default function SettingsPage() {
           <ProfilePanel />
         )}
 
+        {/* ── App Theme Tab ── */}
+        {activeTab === 'app' && (
+          <section style={{
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-xl)',
+            padding: '28px 24px',
+          }}>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>
+              ✨ App Theme
+            </h2>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 24 }}>
+              Changes the colours of the whole app. Sizes and layout stay the same —
+              only the palette changes. Your choice is saved to this account.
+            </p>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+              gap: 16,
+            }}>
+              {uiThemes.map(t => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setUiThemeId(t.id)}
+                  aria-pressed={t.id === uiThemeId}
+                  style={{
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    padding: 0,
+                    overflow: 'hidden',
+                    borderRadius: 'var(--radius-lg)',
+                    background: 'var(--color-surface-2)',
+                    border: t.id === uiThemeId
+                      ? '2px solid var(--color-accent)'
+                      : '2px solid var(--color-border)',
+                    boxShadow: t.id === uiThemeId ? 'var(--accent-glow)' : 'none',
+                    transition: 'border-color var(--dur-fast), box-shadow var(--dur-fast)',
+                  }}
+                >
+                  {/* Swatch: a miniature of the theme drawn in its OWN colours,
+                      not the active ones, so all six previews are comparable at
+                      a glance without switching to each in turn. */}
+                  <div style={{
+                    background: t.swatch.bg,
+                    padding: '16px 14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                  }}>
+                    <span style={{
+                      width: 34, height: 34, flex: 'none',
+                      borderRadius: 'var(--radius-md)',
+                      background: t.swatch.surface,
+                      border: `1px solid ${t.swatch.accent}55`,
+                    }} />
+                    <span style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 1 }}>
+                      <span style={{ height: 7, width: '75%', borderRadius: 4, background: t.swatch.text, opacity: 0.85 }} />
+                      <span style={{ height: 7, width: '45%', borderRadius: 4, background: t.swatch.accent }} />
+                    </span>
+                  </div>
+
+                  <div style={{ padding: '10px 14px 13px' }}>
+                    <div style={{
+                      fontSize: 13.5, fontWeight: 700,
+                      color: t.id === uiThemeId ? 'var(--color-accent)' : 'var(--color-text)',
+                      marginBottom: 2,
+                    }}>
+                      {t.name}{t.id === uiThemeId ? ' ✓' : ''}
+                    </div>
+                    <div style={{ fontSize: 11.5, color: 'var(--color-text-muted)', lineHeight: 1.45 }}>
+                      {t.description}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* ── Board Theme Tab ── */}
         {activeTab === 'board' && (
           <section style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 16,
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-xl)',
             padding: '28px 24px',
           }}>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#e2e8f0', marginBottom: 4 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>
               🎨 Chessboard Theme
             </h2>
-            <p style={{ color: '#64748b', fontSize: 13, marginBottom: 24 }}>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 24 }}>
               Choose how your board looks. The theme applies to every game, puzzle, and study.
             </p>
 
@@ -280,15 +373,15 @@ export default function SettingsPage() {
         {/* ── Pieces Tab ── */}
         {activeTab === 'pieces' && (
           <section style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 16,
+            background: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-xl)',
             padding: '28px 24px',
           }}>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: '#e2e8f0', marginBottom: 4 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>
               ♞ Piece Style
             </h2>
-            <p style={{ color: '#64748b', fontSize: 13, marginBottom: 24 }}>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 24 }}>
               Choose your piece design. Applies to every board across the app — games, puzzles, and studies.
             </p>
 

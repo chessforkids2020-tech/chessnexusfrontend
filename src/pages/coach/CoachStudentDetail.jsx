@@ -57,6 +57,17 @@ const TC_COLOURS = {
 };
 const TC_ORDER = ['bullet', 'blitz', 'rapid', 'classical'];
 
+// Public profile URL for a handle on Lichess or Chess.com. encodeURIComponent
+// because a username is user-supplied: a stray space or slash would otherwise
+// build a broken (or wrong) link.
+function profileUrl(platform, username) {
+  const u = encodeURIComponent(String(username || '').trim());
+  if (!u) return null;
+  return /chess\.com/i.test(platform)
+    ? `https://www.chess.com/member/${u}`
+    : `https://lichess.org/@/${u}`;
+}
+
 function RatingChart({ title, accent, who, series }) {
   const keys = TC_ORDER.filter(k => series?.[k]?.length >= 3);
   if (!keys.length) return null;
@@ -90,7 +101,22 @@ function RatingChart({ title, accent, who, series }) {
     <div className="csd-rating-card">
       <div className="csd-rating-head">
         <span className="csd-rating-title" style={{ color: accent }}>{title}</span>
-        {who && <span className="csd-rating-who">@{who}</span>}
+        {/* The handle opens the student's profile on that site. A coach looking
+            at a rating dip usually wants the games behind it, and those live on
+            Lichess or Chess.com — retyping a username to get there is friction
+            for something we already know. rel=noreferrer because this is a
+            third-party site and it should not be handed our referrer. */}
+        {who && (
+          <a
+            className="csd-rating-who is-link"
+            href={profileUrl(title, who)}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={`Open @${who} on ${title}`}
+          >
+            @{who} <span aria-hidden="true">↗</span>
+          </a>
+        )}
       </div>
 
       {/* The axis labels live OUTSIDE the svg. The chart uses
@@ -388,6 +414,29 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           <p>
             {student?.username && <>@{student.username} · </>}
             {student?.country || 'Unknown country'}
+            {/* Also in the header, not only on the rating cards: those cards
+                need enough games to draw a chart, so a student who has just
+                linked an account would otherwise have no way through to it. */}
+            {student?.lichessUsername && (
+              <a
+                className="csd-ext-link"
+                href={profileUrl('Lichess', student.lichessUsername)}
+                target="_blank" rel="noopener noreferrer"
+                title={`Open @${student.lichessUsername} on Lichess`}
+              >
+                Lichess ↗
+              </a>
+            )}
+            {student?.chessComUsername && (
+              <a
+                className="csd-ext-link"
+                href={profileUrl('Chess.com', student.chessComUsername)}
+                target="_blank" rel="noopener noreferrer"
+                title={`Open @${student.chessComUsername} on Chess.com`}
+              >
+                Chess.com ↗
+              </a>
+            )}
             {!editingGroup && (
               <button
                 type="button"

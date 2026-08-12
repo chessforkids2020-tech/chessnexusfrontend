@@ -6,6 +6,16 @@ import App from "./App";
 import ScrollToTop from "./components/ScrollToTop";
 import ScheduleFloatingButton from "./components/ScheduleFloatingButton";
 import LiveNoteBanner from "./components/LiveNoteBanner";
+// Design tokens FIRST, in this order — everything below them may reference the
+// variables they declare.
+//   layout  : sizes, spacing, radii, type. Shared by all six themes.
+//   themes  : the six colour palettes, selected by <html data-theme="...">.
+//   aliases : old token names (--primary-color, --obsidian-*) re-pointed at the
+//             new ones, so existing call sites keep working.
+import "./styles/tokens/layout.css";
+import "./styles/tokens/themes.css";
+import "./styles/tokens/aliases.css";
+
 import "./index.css";
 import "./components/layout.css";
 import "./styles/breakpoints.css";

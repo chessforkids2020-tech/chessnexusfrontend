@@ -1,0 +1,98 @@
+/* styles/tokens/layout.css
+ *
+ * SIZE, SPACE, RADIUS, TYPE — never colour.
+ *
+ * These tokens are THEME-INVARIANT: all six themes share this one layout system.
+ * That split is the whole point. A theme changes what things look like; it must
+ * never change how big they are or where they sit. Keeping colour out of this
+ * file is what makes that guarantee mechanical rather than a matter of
+ * discipline — there is nothing here for a theme to override.
+ *
+ * The --space-*, --text-* and --radius-* scales are NOT new. They already exist
+ * in styles/breakpoints.css and are consumed by ~24 files. They are restated
+ * here (same names, same values, same rem units) so that every layout token
+ * lives in one place, and breakpoints.css can be reduced to what its name
+ * promises: breakpoints.
+ *
+ * Values are rem for space/type because that is what the existing scale used,
+ * and changing them to px would silently resize ~24 files' worth of layout.
+ */
+
+:root {
+  /* ── Spacing ─────────────────────────────────────────────────────────
+     Unchanged from breakpoints.css. */
+  --space-xs: 0.25rem;   /* 4px  */
+  --space-sm: 0.5rem;    /* 8px  */
+  --space-md: 1rem;      /* 16px */
+  --space-lg: 1.5rem;    /* 24px */
+  --space-xl: 2rem;      /* 32px */
+  --space-2xl: 3rem;     /* 48px */
+
+  /* ── Type scale ──────────────────────────────────────────────────────
+     Unchanged from breakpoints.css. */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 1.875rem;  /* 30px */
+  --text-4xl: 2.25rem;   /* 36px */
+
+  /* ── Radius ──────────────────────────────────────────────────────────
+     The app currently uses 20+ distinct radius values with no scale behind
+     them (2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 25px,
+     50%, 99px, 999px). These five cover every real need.
+     --radius-sm/md/lg/xl keep the names and values already in
+     breakpoints.css so existing consumers are unaffected; --radius-2xl and
+     --radius-pill are added for the larger cards and the pill-shaped chips
+     and badges that currently reach for 999px by hand. */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  /* ── Buttons ─────────────────────────────────────────────────────────
+     There are 8+ competing button conventions in the codebase (btn-primary,
+     btn-ghost, mkt-btn, sh-btn-*, cap-btn, atg-ctrl-btn, focus-btn,
+     obsidian-button) with padding in both px and em and no shared sizing.
+     Phase 4 points all of them at these tokens, so they converge visually
+     without touching the ~177 files that use those class names. */
+  --btn-pad-sm: 6px 12px;
+  --btn-pad-md: 10px 18px;
+  --btn-pad-lg: 14px 28px;
+
+  --btn-h-sm: 32px;
+  --btn-h-md: 40px;
+  --btn-h-lg: 48px;
+
+  --btn-radius: var(--radius-md);
+  --btn-font-sm: var(--text-sm);
+  --btn-font-md: var(--text-base);
+  --btn-weight: 600;
+
+  /* ── Chrome ──────────────────────────────────────────────────────────
+     Structural dimensions of the app shell. */
+  --sidebar-w: 170px;
+  --sidebar-w-narrow: 60px;
+  --border-w: 1px;
+
+  /* ── Motion ──────────────────────────────────────────────────────────
+     One duration scale so hovers and panels feel like one app. */
+  --dur-fast: 0.15s;
+  --dur-med: 0.25s;
+  --dur-slow: 0.4s;
+}
+
+/* Respect the OS "reduce motion" setting globally. Cheap to add here, and it
+   means individual components do not each have to remember. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0s;
+    --dur-med: 0s;
+    --dur-slow: 0s;
+  }
+}

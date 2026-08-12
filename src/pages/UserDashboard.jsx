@@ -134,12 +134,12 @@ function CoachBadge() {
         alignItems: 'center',
         gap: '5px',
         padding: '3px 11px',
-        borderRadius: '8px',
+        borderRadius: 'var(--radius-md)',
         fontSize: '11px',
         fontWeight: 700,
-        color: '#e5e7eb',
-        background: 'rgba(255,255,255,0.06)',
-        border: '1px solid rgba(255,255,255,0.18)',
+        color: 'var(--color-text)',
+        background: 'var(--color-white-a07)',
+        border: '1px solid var(--color-white-a13)',
         backdropFilter: 'blur(6px)',
         WebkitBackdropFilter: 'blur(6px)',
         letterSpacing: '0.04em',
@@ -157,9 +157,11 @@ function CoachBadge() {
           justifyContent: 'center',
           width: '13px',
           height: '13px',
-          borderRadius: '50%',
-          background: 'rgba(16,185,129,0.9)',
-          color: '#04110d',
+          borderRadius: 'var(--radius-circle)',
+          // Near-opaque success fill; the glyph on top uses the page background
+          // so it stays legible whichever theme is active.
+          background: 'var(--color-success)',
+          color: 'var(--color-bg)',
           fontSize: '9px',
           fontWeight: 900,
           lineHeight: 1,
@@ -409,9 +411,9 @@ function XpWallet({ wallet }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 18,
-      padding: '24px 24px', borderRadius: 16,
-      background: 'rgba(6,182,212,0.06)',
-      border: '1px solid rgba(6,182,212,0.22)',
+      padding: '24px 24px', borderRadius: 'var(--radius-xl)',
+      background: 'var(--color-accent-a06)',
+      border: '1px solid var(--color-accent-a20)',
     }}>
       <span style={{ fontSize: 42, lineHeight: 1, flexShrink: 0 }}>👛</span>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -426,10 +428,10 @@ function XpWallet({ wallet }) {
             style={{
               width: 20, height: 20, flexShrink: 0,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: '50%', cursor: 'pointer',
+              borderRadius: 'var(--radius-circle)', cursor: 'pointer',
               background: showHelp ? 'var(--obsidian-accent, #06b6d4)' : 'rgba(6,182,212,0.12)',
-              border: '1px solid rgba(6,182,212,0.3)',
-              color: showHelp ? '#06121a' : '#67e8f9',
+              border: '1px solid var(--color-accent-a30)',
+              color: showHelp ? '#06121a' : 'var(--color-accent)',
               fontSize: 12, fontWeight: 800, padding: 0,
             }}
           >?</button>
@@ -438,7 +440,7 @@ function XpWallet({ wallet }) {
           <span style={{ fontSize: 40, fontWeight: 800, lineHeight: 1, color: 'var(--obsidian-text, #f8fafc)' }}>
             {total.toLocaleString()}
           </span>
-          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))' }}>XP</span>
+          <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--obsidian-text-muted, var(--color-text-muted))' }}>XP</span>
         </div>
       </div>
 
@@ -446,33 +448,33 @@ function XpWallet({ wallet }) {
       {showHelp && ReactDOM.createPortal(
         <div
           onClick={() => setShowHelp(false)}
-          style={{ position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', padding: 16 }}
+          style={{ position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-black-a50)', padding: 16 }}
         >
           <div
             role="dialog"
             onClick={e => e.stopPropagation()}
             style={{
               width: 'min(380px, calc(100vw - 32px))',
-              background: 'var(--obsidian-surface, rgba(23,23,23,0.95))',
+              background: 'var(--obsidian-surface, var(--color-surface))',
               WebkitBackdropFilter: 'blur(24px)', backdropFilter: 'blur(24px)',
-              border: '1px solid rgba(6,182,212,0.3)', borderRadius: 14,
-              boxShadow: '0 8px 32px rgba(0,0,0,0.6)', padding: '16px 18px',
+              border: '1px solid var(--color-accent-a30)', borderRadius: 'var(--radius-lg)',
+              boxShadow: '0 8px 32px var(--color-black-a50)', padding: '16px 18px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--obsidian-accent, #06b6d4)' }}>How you earn XP</span>
-              <button type="button" onClick={() => setShowHelp(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 18, lineHeight: 1, padding: 2 }}>×</button>
+              <button type="button" onClick={() => setShowHelp(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: 18, lineHeight: 1, padding: 2 }}>×</button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
               {helpRows.map((r, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ fontSize: 16, width: 22, textAlign: 'center', flexShrink: 0 }}>{r.icon}</span>
-                  <span style={{ flex: 1, fontSize: 12.5, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', lineHeight: 1.4 }}>{r.text}</span>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: '#67e8f9', flexShrink: 0 }}>{r.xp}</span>
+                  <span style={{ flex: 1, fontSize: 12.5, color: 'var(--obsidian-text-muted, var(--color-text-muted))', lineHeight: 1.4 }}>{r.text}</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--color-accent)', flexShrink: 0 }}>{r.xp}</span>
                 </div>
               ))}
             </div>
-            <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid rgba(148,163,184,0.16)', fontSize: 11, color: '#64748b', lineHeight: 1.5 }}>
+            <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--color-border)', fontSize: 11, color: 'var(--color-text-faint)', lineHeight: 1.5 }}>
               XP is separate from Monthly Focus XP — it tracks how active you are across the app.
             </div>
           </div>
@@ -498,26 +500,26 @@ function StatsBar({ ratings }) {
   }, []);
 
   const ratingCats = [
-    { key: 'bullet',    label: 'Bullet',    icon: '⚡', color: '#f59e0b' },
-    { key: 'blitz',     label: 'Blitz',     icon: '🔥', color: '#ef4444' },
-    { key: 'rapid',     label: 'Rapid',     icon: '🐇', color: '#22c55e' },
-    { key: 'classical', label: 'Classical', icon: '🐢', color: '#818cf8' },
+    { key: 'bullet',    label: 'Bullet',    icon: '⚡', color: 'var(--color-warning)' },
+    { key: 'blitz',     label: 'Blitz',     icon: '🔥', color: 'var(--color-danger)' },
+    { key: 'rapid',     label: 'Rapid',     icon: '🐇', color: 'var(--color-success)' },
+    { key: 'classical', label: 'Classical', icon: '🐢', color: 'var(--color-accent-2)' },
   ];
 
   const divider = (
-    <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--obsidian-border, rgba(148,163,184,0.16))', flexShrink: 0 }} />
+    <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--obsidian-border, var(--color-border))', flexShrink: 0 }} />
   );
 
   return (
     <div style={{
       position: 'relative',
       margin: '14px 0 6px',
-      background: 'var(--obsidian-surface, rgba(23,23,23,0.7))',
+      background: 'var(--obsidian-surface, var(--color-surface))',
       WebkitBackdropFilter: 'blur(20px)',
       backdropFilter: 'blur(20px)',
-      border: '1px solid var(--obsidian-border, rgba(148,163,184,0.16))',
-      borderRadius: 18,
-      boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0,0,0,0.5))',
+      border: '1px solid var(--obsidian-border, var(--color-border))',
+      borderRadius: 'var(--radius-xl)',
+      boxShadow: 'var(--obsidian-shadow, 0 8px 32px var(--color-black-a50))',
       display: 'flex',
       alignItems: 'stretch',
       overflow: 'hidden',
@@ -539,16 +541,16 @@ function StatsBar({ ratings }) {
                 gap: 3,
                 transition: 'background 0.15s',
               }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--color-white-a04)'}
                 onMouseLeave={e => e.currentTarget.style.background = ''}
               >
                 <span style={{ fontSize: 20 }}>{c.icon}</span>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                  <span style={{ fontSize: 22, fontWeight: 800, lineHeight: 1, color: '#f1f5f9' }}>
+                  <span style={{ fontSize: 22, fontWeight: 800, lineHeight: 1, color: 'var(--color-text)' }}>
                     {ratings?.[c.key] ?? 1200}
                   </span>
                   {hasDelta && (
-                    <span style={{ fontSize: 11, fontWeight: 800, color: isUp ? '#22c55e' : '#ef4444', lineHeight: 1 }}>
+                    <span style={{ fontSize: 11, fontWeight: 800, color: isUp ? 'var(--color-success)' : 'var(--color-danger)', lineHeight: 1 }}>
                       {isUp ? '+' : ''}{delta}
                     </span>
                   )}
@@ -796,7 +798,7 @@ function TodayStrip() {
   chips.push(
     jobRunning ? (
       <span key="report" className="today-chip today-chip--todo">
-        <span className="today-chip-emoji">&#128202;</span>
+        <span className="today-chip-emoji">&var(--color-success);</span>
         <span className="today-chip-text">Weekly report — being prepared…</span>
       </span>
     ) : reportDue ? (
@@ -817,7 +819,7 @@ function TodayStrip() {
       </button>
     ) : report ? (
       <Link key="report" to={`/streak-report/${report.id}`} className="today-chip today-chip--done">
-        <span className="today-chip-emoji">&#128202;</span>
+        <span className="today-chip-emoji">&var(--color-success);</span>
         <span className="today-chip-text">Weekly report</span>
         <span className="today-chip-go">&rarr;</span>
       </Link>
@@ -829,7 +831,7 @@ function TodayStrip() {
         onClick={() => setShowHow(v => !v)}
         aria-expanded={showHow}
       >
-        <span className="today-chip-emoji">&#128202;</span>
+        <span className="today-chip-emoji">&var(--color-success);</span>
         <span className="today-chip-text">Weekly report</span>
         <span className="today-chip-go">?</span>
       </button>
@@ -853,7 +855,7 @@ function TodayStrip() {
   if (hasAdminCoach) {
     chips.push(
       <Link key="myclasses" to="/attendance" className="today-chip today-chip--todo">
-        <span className="today-chip-emoji">&#127891;</span>
+        <span className="today-chip-emoji">&var(--color-accent-2);</span>
         <span className="today-chip-text">My Classes</span>
         <span className="today-chip-go">&rarr;</span>
       </Link>
@@ -862,7 +864,7 @@ function TodayStrip() {
   if (hasPrivateCoach) {
     chips.push(
       <Link key="mycoach" to="/my-coach" className="today-chip today-chip--todo">
-        <span className="today-chip-emoji">&#127891;</span>
+        <span className="today-chip-emoji">&var(--color-accent-2);</span>
         <span className="today-chip-text">My Coach</span>
         <span className="today-chip-go">&rarr;</span>
       </Link>
@@ -1045,7 +1047,7 @@ function CountryFlag({ country, height = 14, style }) {
       src={`https://flagcdn.com/${code.toLowerCase()}.svg`}
       alt={code}
       height={height}
-      style={{ display: 'inline-block', verticalAlign: 'middle', borderRadius: '2px', boxShadow: '0 0 1px rgba(0,0,0,0.4)', ...style }}
+      style={{ display: 'inline-block', verticalAlign: 'middle', borderRadius: 'var(--radius-sm)', boxShadow: '0 0 1px var(--color-black-a35)', ...style }}
       onError={(e) => { e.currentTarget.style.display = 'none'; }}
     />
   );
@@ -1144,7 +1146,7 @@ function MonthlyFocusPanel({ publicData = null }) {
         </div>
         <Link to="/monthly-focus" className="mfp-view-all">View All →</Link>
       </div>
-      {!hasAnything && <p style={{ color: 'rgba(203,213,225,0.4)', fontSize: 13, margin: '8px 0 0' }}>No Monthly Focus challenge active this month.</p>}
+      {!hasAnything && <p style={{ color: 'var(--color-text-faint)', fontSize: 13, margin: '8px 0 0' }}>No Monthly Focus challenge active this month.</p>}
 
       {/* Official challenge horizontal stat cards */}
       {officialWithStats.map(focus => {
@@ -1155,10 +1157,10 @@ function MonthlyFocusPanel({ publicData = null }) {
             <div className="mfp-official-badge-label">🏛️ ChessNexus Official</div>
             <div className="mfp-official-focus-name">{focus.title}</div>
             <div className="mfp-stat-cards">
-              <MFStatCard icon="🏅" label="Rank"         value={s.rank ? `#${s.rank}` : '—'}       accent="#f59e0b" />
-              <MFStatCard icon="⚡" label="XP Earned"    value={s.focusXp ?? 0}                      accent="#06b6d4" />
-              <MFStatCard icon="🧠" label="Skill Score"  value={s.skillScore ?? 0}                   accent="#818cf8" />
-              <MFStatCard icon="🎖️" label="Badge"        value={badge ? `${badge.emoji} ${badge.name}` : '—'} accent="#10b981" />
+              <MFStatCard icon="🏅" label="Rank"         value={s.rank ? `#${s.rank}` : '—'}       accent="var(--color-warning)" />
+              <MFStatCard icon="⚡" label="XP Earned"    value={s.focusXp ?? 0}                      accent="var(--color-accent)" />
+              <MFStatCard icon="🧠" label="Skill Score"  value={s.skillScore ?? 0}                   accent="var(--color-accent-2)" />
+              <MFStatCard icon="🎖️" label="Badge"        value={badge ? `${badge.emoji} ${badge.name}` : '—'} accent="var(--color-success)" />
               <MFStatCard icon="✨" label="Perfect Days" value={s.perfectDays ?? 0}                  accent="#e879f9" />
             </div>
           </div>
@@ -1520,7 +1522,7 @@ export default function UserDashboard() {
           onClick={() => setShowEditProfile(false)}
           style={{
             position: 'fixed', inset: 0, zIndex: 9000,
-            background: 'rgba(0,0,0,0.65)', display: 'flex',
+            background: 'var(--color-black-a65)', display: 'flex',
             alignItems: 'center', justifyContent: 'center', padding: '16px',
           }}
         >
@@ -1528,8 +1530,8 @@ export default function UserDashboard() {
             onClick={e => e.stopPropagation()}
             style={{
               background: 'var(--obsidian-card, #1a1f2e)',
-              border: '1px solid var(--obsidian-border, rgba(255,255,255,0.1))',
-              borderRadius: '16px', padding: '28px 32px', width: '100%', maxWidth: '420px',
+              border: '1px solid var(--obsidian-border, var(--color-white-a10))',
+              borderRadius: 'var(--radius-xl)', padding: '28px 32px', width: '100%', maxWidth: '420px',
               animation: 'slideIn 0.18s ease',
             }}
           >
@@ -1539,16 +1541,16 @@ export default function UserDashboard() {
 
             {/* Country */}
             <form onSubmit={saveCountry} style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '13px', marginBottom: '6px' }}>
+              <label style={{ display: 'block', color: 'var(--color-text-muted)', fontSize: '13px', marginBottom: '6px' }}>
                 Country
               </label>
               <select
                 value={editCountry}
                 onChange={e => setEditCountry(e.target.value)}
                 style={{
-                  width: '100%', padding: '9px 12px', borderRadius: '8px',
-                  background: 'rgba(255,255,255,0.07)', color: '#e2e8f0',
-                  border: '1px solid rgba(255,255,255,0.15)', fontSize: '14px', marginBottom: '10px',
+                  width: '100%', padding: '9px 12px', borderRadius: 'var(--radius-md)',
+                  background: 'var(--color-white-a07)', color: 'var(--color-text)',
+                  border: '1px solid var(--color-white-a13)', fontSize: '14px', marginBottom: '10px',
                 }}
               >
                 <option value="">— Select country —</option>
@@ -1560,7 +1562,7 @@ export default function UserDashboard() {
                 type="submit"
                 disabled={editSaving}
                 style={{
-                  padding: '8px 20px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
+                  padding: '8px 20px', borderRadius: 'var(--radius-md)', fontSize: '13px', fontWeight: '600',
                   background: 'var(--obsidian-accent, #7dd3fc)', color: '#0f172a',
                   border: 'none', cursor: editSaving ? 'not-allowed' : 'pointer', opacity: editSaving ? 0.6 : 1,
                 }}
@@ -1569,11 +1571,11 @@ export default function UserDashboard() {
               </button>
             </form>
 
-            <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '0 0 20px' }} />
+            <hr style={{ border: 'none', borderTop: '1px solid var(--color-white-a10)', margin: '0 0 20px' }} />
 
             {/* Change Password */}
             <form onSubmit={savePassword}>
-              <label style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '13px', marginBottom: '10px', fontWeight: '600' }}>
+              <label style={{ display: 'block', color: 'var(--color-text-muted)', fontSize: '13px', marginBottom: '10px', fontWeight: '600' }}>
                 Change Password
               </label>
               {[
@@ -1589,9 +1591,9 @@ export default function UserDashboard() {
                     onChange={e => set(e.target.value)}
                     autoComplete="off"
                     style={{
-                      width: '100%', padding: '9px 12px', borderRadius: '8px', boxSizing: 'border-box',
-                      background: 'rgba(255,255,255,0.07)', color: '#e2e8f0',
-                      border: '1px solid rgba(255,255,255,0.15)', fontSize: '14px',
+                      width: '100%', padding: '9px 12px', borderRadius: 'var(--radius-md)', boxSizing: 'border-box',
+                      background: 'var(--color-white-a07)', color: 'var(--color-text)',
+                      border: '1px solid var(--color-white-a13)', fontSize: '14px',
                     }}
                   />
                 </div>
@@ -1600,8 +1602,8 @@ export default function UserDashboard() {
                 type="submit"
                 disabled={editSaving}
                 style={{
-                  marginTop: '4px', padding: '8px 20px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
-                  background: '#7c3aed', color: '#fff',
+                  marginTop: '4px', padding: '8px 20px', borderRadius: 'var(--radius-md)', fontSize: '13px', fontWeight: '600',
+                  background: 'var(--color-accent-2)', color: 'var(--color-text)',
                   border: 'none', cursor: editSaving ? 'not-allowed' : 'pointer', opacity: editSaving ? 0.6 : 1,
                 }}
               >
@@ -1611,10 +1613,10 @@ export default function UserDashboard() {
 
             {editMsg && (
               <p style={{
-                marginTop: '14px', padding: '8px 12px', borderRadius: '8px', fontSize: '13px',
-                background: editMsg.type === 'ok' ? 'rgba(20,184,166,0.15)' : 'rgba(239,68,68,0.15)',
-                color: editMsg.type === 'ok' ? '#2dd4bf' : '#f87171',
-                border: `1px solid ${editMsg.type === 'ok' ? 'rgba(45,212,191,0.3)' : 'rgba(248,113,113,0.3)'}`,
+                marginTop: '14px', padding: '8px 12px', borderRadius: 'var(--radius-md)', fontSize: '13px',
+                background: editMsg.type === 'ok' ? 'rgba(20,184,166,0.15)' : 'var(--color-danger-a12)',
+                color: editMsg.type === 'ok' ? '#2dd4bf' : 'var(--color-danger)',
+                border: `1px solid ${editMsg.type === 'ok' ? 'rgba(45,212,191,0.3)' : 'var(--color-danger-a30)'}`,
               }}>
                 {editMsg.type === 'ok' ? '✓ ' : '⚠ '}{editMsg.text}
               </p>
@@ -1623,9 +1625,9 @@ export default function UserDashboard() {
             <button
               onClick={() => setShowEditProfile(false)}
               style={{
-                marginTop: '18px', width: '100%', padding: '8px', borderRadius: '8px',
+                marginTop: '18px', width: '100%', padding: '8px', borderRadius: 'var(--radius-md)',
                 background: 'transparent', color: 'rgba(255,255,255,0.4)',
-                border: '1px solid rgba(255,255,255,0.1)', fontSize: '13px', cursor: 'pointer',
+                border: '1px solid var(--color-white-a10)', fontSize: '13px', cursor: 'pointer',
               }}
             >
               Close
@@ -1659,7 +1661,7 @@ export default function UserDashboard() {
                 }}
                 style={{
                   background: profileLinkCopied ? '#0f766e' : 'var(--obsidian-pill)',
-                  color: profileLinkCopied ? '#ecfeff' : 'var(--obsidian-accent)',
+                  color: profileLinkCopied ? 'var(--color-accent)' : 'var(--obsidian-accent)',
                   border: profileLinkCopied ? '1px solid rgba(45, 212, 191, 0.35)' : '1px solid var(--obsidian-border)',
                 }}
               >
@@ -1680,16 +1682,16 @@ export default function UserDashboard() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     marginLeft: '10px',
-                    background: 'linear-gradient(135deg, rgba(251,191,36,0.25), rgba(245,158,11,0.15))',
+                    background: 'linear-gradient(135deg, var(--color-warning-a20), var(--color-warning-a12))',
                     border: '1px solid rgba(251,191,36,0.55)',
-                    color: '#fbbf24',
+                    color: 'var(--color-warning)',
                     fontSize: '13px',
                     fontWeight: 700,
                     padding: '3px 10px',
-                    borderRadius: '10px',
+                    borderRadius: 'var(--radius-md)',
                     verticalAlign: 'middle',
-                    textShadow: '0 0 8px rgba(251,191,36,0.4)',
-                    boxShadow: '0 0 12px rgba(251,191,36,0.15)',
+                    textShadow: '0 0 8px var(--color-warning-a30)',
+                    boxShadow: '0 0 12px var(--color-warning-a12)',
                   }}>
                     💎 Elite
                   </span>
@@ -1725,10 +1727,10 @@ export default function UserDashboard() {
                   margin: '12px 0 0',
                   maxWidth: '620px',
                   padding: '12px 16px',
-                  background: 'var(--obsidian-pill, rgba(255,255,255,0.04))',
-                  border: '1px solid var(--obsidian-border, rgba(255,255,255,0.08))',
+                  background: 'var(--obsidian-pill, var(--color-white-a04))',
+                  border: '1px solid var(--obsidian-border, var(--color-white-a07))',
                   borderLeft: '3px solid var(--obsidian-accent, #06b6d4)',
-                  borderRadius: '12px',
+                  borderRadius: 'var(--radius-lg)',
                 }}>
                   <p style={{
                     margin: 0,
@@ -1780,7 +1782,7 @@ export default function UserDashboard() {
                 {hasMarathon && (
                   <>
                     {user.isFocusChampion && (
-                      <div style={{ width: '1px', height: '54px', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+                      <div style={{ width: '1px', height: '54px', background: 'var(--color-white-a10)', flexShrink: 0 }} />
                     )}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0 3px' }}>
                       {[
@@ -1801,9 +1803,9 @@ export default function UserDashboard() {
                           {m.count > 1 && (
                             <span style={{
                               position: 'absolute', bottom: '2px', right: '-2px',
-                              minWidth: '18px', height: '18px', padding: '0 4px', borderRadius: '999px',
-                              background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(255,255,255,0.18)',
-                              color: '#fbbf24', fontSize: '11px', fontWeight: 800,
+                              minWidth: '18px', height: '18px', padding: '0 4px', borderRadius: 'var(--radius-pill)',
+                              background: 'var(--color-black-a65)', border: '1px solid var(--color-white-a13)',
+                              color: 'var(--color-warning)', fontSize: '11px', fontWeight: 800,
                               display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1,
                             }}>
                               ×{m.count}
@@ -1817,7 +1819,7 @@ export default function UserDashboard() {
                 {hasTeamBattle && (
                   <>
                     {(user.isFocusChampion || hasMarathon) && (
-                      <div style={{ width: '1px', height: '54px', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+                      <div style={{ width: '1px', height: '54px', background: 'var(--color-white-a10)', flexShrink: 0 }} />
                     )}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '0 3px' }}>
                       <span
@@ -1832,9 +1834,9 @@ export default function UserDashboard() {
                         {teamBattleTrophies > 1 && (
                           <span style={{
                             position: 'absolute', bottom: '2px', right: '-2px',
-                            minWidth: '18px', height: '18px', padding: '0 4px', borderRadius: '999px',
-                            background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(255,255,255,0.18)',
-                            color: '#818cf8', fontSize: '11px', fontWeight: 800,
+                            minWidth: '18px', height: '18px', padding: '0 4px', borderRadius: 'var(--radius-pill)',
+                            background: 'var(--color-black-a65)', border: '1px solid var(--color-white-a13)',
+                            color: 'var(--color-accent-2)', fontSize: '11px', fontWeight: 800,
                             display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1,
                           }}>
                             ×{teamBattleTrophies}
@@ -1849,16 +1851,16 @@ export default function UserDashboard() {
                   if (!tier || tier === 'none') return null;
                   const cs = {
                     bronze:   { color: '#c08457', label: 'Bronze Crown' },
-                    silver:   { color: '#e5e7eb', label: 'Silver Crown' },
-                    gold:     { color: '#fbbf24', label: 'Gold Crown' },
-                    platinum: { color: '#f8fafc', label: 'Platinum Crown' },
+                    silver:   { color: 'var(--color-text)', label: 'Silver Crown' },
+                    gold:     { color: 'var(--color-warning)', label: 'Gold Crown' },
+                    platinum: { color: 'var(--color-text)', label: 'Platinum Crown' },
                     gem:      { color: '#60a5fa', label: 'Gem Crown' },
                   }[tier];
                   if (!cs) return null;
                   return (
                     <>
                       {(user.isFocusChampion || hasMarathon || hasTeamBattle) && (
-                        <div style={{ width: '1px', height: '54px', background: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+                        <div style={{ width: '1px', height: '54px', background: 'var(--color-white-a10)', flexShrink: 0 }} />
                       )}
                       <div className="arena-crown-widget" style={{ padding: '0 3px' }}>
                         <span className={`arena-crown-trophy tier-${tier}`}>👑</span>
@@ -1895,11 +1897,11 @@ export default function UserDashboard() {
                 <ActivityTracker publicData={publicView?.activity || null} />
               </div>
               <div style={{
-                background: 'var(--obsidian-surface-elevated, rgba(23,23,23,0.7))',
-                border: '1px solid var(--obsidian-border, rgba(148,163,184,0.16))',
-                borderRadius: 24,
+                background: 'var(--obsidian-surface-elevated, var(--color-surface))',
+                border: '1px solid var(--obsidian-border, var(--color-border))',
+                borderRadius: 'var(--radius-2xl)',
                 padding: '20px 18px',
-                boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0,0,0,0.5))',
+                boxShadow: 'var(--obsidian-shadow, 0 8px 32px var(--color-black-a50))',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 12,
@@ -1920,15 +1922,15 @@ export default function UserDashboard() {
                     onClick={() => openRaceModal(r.type)}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 14,
-                      padding: '14px 16px', borderRadius: 14, cursor: 'pointer',
-                      background: 'var(--obsidian-panel, linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02)))',
-                      border: '1px solid var(--obsidian-border, rgba(148,163,184,0.16))',
+                      padding: '14px 16px', borderRadius: 'var(--radius-lg)', cursor: 'pointer',
+                      background: 'var(--obsidian-panel, linear-gradient(180deg,var(--color-white-a04),var(--color-white-a04)))',
+                      border: '1px solid var(--obsidian-border, var(--color-border))',
                       transition: 'transform 0.18s, border-color 0.18s, box-shadow 0.18s',
                     }}
                     onMouseEnter={e => {
                       e.currentTarget.style.transform = 'translateY(-3px)';
-                      e.currentTarget.style.borderColor = 'rgba(6,182,212,0.35)';
-                      e.currentTarget.style.boxShadow = '0 8px 24px rgba(6,182,212,0.2)';
+                      e.currentTarget.style.borderColor = 'var(--color-accent-a30)';
+                      e.currentTarget.style.boxShadow = '0 8px 24px var(--color-accent-a20)';
                     }}
                     onMouseLeave={e => {
                       e.currentTarget.style.transform = '';
@@ -1938,14 +1940,14 @@ export default function UserDashboard() {
                   >
                     <span style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }}>{r.icon}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--obsidian-text-muted, var(--color-text-muted))', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>
                         {r.label}
                       </div>
-                      <div style={{ fontSize: 26, fontWeight: 800, lineHeight: 1, color: '#f1f5f9' }}>
+                      <div style={{ fontSize: 26, fontWeight: 800, lineHeight: 1, color: 'var(--color-text)' }}>
                         {r.value.toLocaleString()}
                       </div>
                     </div>
-                    <span style={{ fontSize: 12, color: 'var(--obsidian-text-muted, rgba(203,213,225,0.5))' }}>→</span>
+                    <span style={{ fontSize: 12, color: 'var(--obsidian-text-muted, var(--color-text-faint))' }}>→</span>
                   </div>
                 ))}
               </div>
@@ -1956,10 +1958,10 @@ export default function UserDashboard() {
                 stack it: three side-by-side panels in 390px gave each ~120px,
                 which is what overlapped the headings on top of each other. */}
             <div className="dash-triple" style={{
-              background: 'var(--obsidian-surface-elevated, rgba(23,23,23,0.7))',
-              border: '1px solid var(--obsidian-border, rgba(148,163,184,0.16))',
-              borderRadius: 24,
-              boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0,0,0,0.5))',
+              background: 'var(--obsidian-surface-elevated, var(--color-surface))',
+              border: '1px solid var(--obsidian-border, var(--color-border))',
+              borderRadius: 'var(--radius-2xl)',
+              boxShadow: 'var(--obsidian-shadow, 0 8px 32px var(--color-black-a50))',
               margin: '0 0 18px 0',
               overflow: 'hidden',
               position: 'relative',
@@ -1995,9 +1997,9 @@ export default function UserDashboard() {
                 };
 
                 const arenaStats = [
-                  { icon: '🏆', label: 'Tournaments', value: arena?.totalTournaments ?? '—', accent: '#f59e0b', glow: 'rgba(255,255,255,0.03)' },
-                  { icon: '⚔️',  label: 'Games',       value: arena?.totalGamesPlayed ?? '—',  accent: '#06b6d4', glow: 'rgba(255,255,255,0.03)' },
-                  { icon: '⚡',  label: 'Carry Pts',   value: arena?.arenaCarryPoints > 0 ? `+${arena.arenaCarryPoints}` : (arena ? '0' : '—'), accent: '#a855f7', glow: 'rgba(255,255,255,0.03)' },
+                  { icon: '🏆', label: 'Tournaments', value: arena?.totalTournaments ?? '—', accent: 'var(--color-warning)', glow: 'var(--color-white-a04)' },
+                  { icon: '⚔️',  label: 'Games',       value: arena?.totalGamesPlayed ?? '—',  accent: 'var(--color-accent)', glow: 'var(--color-white-a04)' },
+                  { icon: '⚡',  label: 'Carry Pts',   value: arena?.arenaCarryPoints > 0 ? `+${arena.arenaCarryPoints}` : (arena ? '0' : '—'), accent: 'var(--color-accent-2)', glow: 'var(--color-white-a04)' },
                 ];
 
                 return (
@@ -2007,39 +2009,39 @@ export default function UserDashboard() {
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span style={{ fontSize: 15 }}>🧩</span>
-                          <span style={{ fontSize: 11, fontWeight: 800, color: 'rgba(203,213,225,0.45)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Puzzle Stats</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Puzzle Stats</span>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                          <div style={{ display: 'flex', background: 'rgba(0,0,0,0.3)', borderRadius: 7, padding: 2, gap: 2 }}>
+                          <div style={{ display: 'flex', background: 'var(--color-black-a35)', borderRadius: 'var(--radius-md)', padding: 2, gap: 2 }}>
                             {['24h','7d'].map(r => (
-                              <button key={r} onClick={() => setPuzzleCardRange(r)} style={{ border: 'none', cursor: 'pointer', padding: '2px 8px', borderRadius: 5, fontSize: 10, fontWeight: 700, background: puzzleCardRange === r ? 'linear-gradient(135deg,#06b6d4,#10b981)' : 'transparent', color: puzzleCardRange === r ? '#04201f' : 'rgba(203,213,225,0.4)', transition: 'all 0.15s' }}>{r}</button>
+                              <button key={r} onClick={() => setPuzzleCardRange(r)} style={{ border: 'none', cursor: 'pointer', padding: '2px 8px', borderRadius: 'var(--radius-sm)', fontSize: 10, fontWeight: 700, background: puzzleCardRange === r ? 'linear-gradient(135deg,var(--color-accent),var(--color-success))' : 'transparent', color: puzzleCardRange === r ? '#04201f' : 'var(--color-text-faint)', transition: 'all 0.15s' }}>{r}</button>
                             ))}
                           </div>
-                          <Link to={viewedDN ? `/player/${encodeURIComponent(viewedDN)}/puzzle-dashboard` : '/puzzle-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 5, background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
+                          <Link to={viewedDN ? `/player/${encodeURIComponent(viewedDN)}/puzzle-dashboard` : '/puzzle-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: 'linear-gradient(135deg,var(--color-accent),var(--color-success))', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
                         </div>
                       </div>
                       <div className="dash-ring-row" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                         {/* Circle */}
                         <div style={{ position: 'relative', width: 170, height: 170, flexShrink: 0 }}>
                           <svg viewBox="0 0 170 170" width="170" height="170" style={{ transform: 'rotate(-90deg)' }}>
-                            <circle cx="85" cy="85" r={R} fill="none" stroke="rgba(148,163,184,0.12)" strokeWidth="11" />
-                            <circle cx="85" cy="85" r={R} fill="none" stroke="#10b981" strokeWidth="11" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.6s ease' }} />
+                            <circle cx="85" cy="85" r={R} fill="none" stroke="var(--color-border)" strokeWidth="11" />
+                            <circle cx="85" cy="85" r={R} fill="none" stroke="var(--color-success)" strokeWidth="11" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={offset} style={{ transition: 'stroke-dashoffset 0.6s ease' }} />
                           </svg>
                           <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-                            <span style={{ fontSize: 36, fontWeight: 900, color: '#f1f5f9', lineHeight: 1 }}>{solved}</span>
-                            <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(203,213,225,0.5)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>solved</span>
-                            <span style={{ fontSize: 12, fontWeight: 700, color: '#10b981' }}>{pct}%</span>
+                            <span style={{ fontSize: 36, fontWeight: 900, color: 'var(--color-text)', lineHeight: 1 }}>{solved}</span>
+                            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>solved</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-success)' }}>{pct}%</span>
                           </div>
                         </div>
                         {/* Stats rows */}
                         <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
                           {[
-                            { label: 'Puzzle Rating', value: rating, extra: trend > 0 ? `+${trend}` : trend < 0 ? `${trend}` : '—', extraColor: trend > 0 ? '#22c55e' : trend < 0 ? '#ef4444' : 'rgba(203,213,225,0.3)', valueColor: '#f1f5f9', spark: mkSpark(ps?.series?.rating, '#f1f5f9') },
-                            { label: 'Accuracy',      value: accuracy != null ? `${accuracy}%` : '—', extra: null, valueColor: '#a78bfa', spark: mkSpark(ps?.series?.accuracy, '#a78bfa') },
-                            { label: 'Best Streak',   value: streak, extra: null, valueColor: '#f59e0b', spark: mkSpark(ps?.series?.solved, '#f59e0b') },
+                            { label: 'Puzzle Rating', value: rating, extra: trend > 0 ? `+${trend}` : trend < 0 ? `${trend}` : '—', extraColor: trend > 0 ? 'var(--color-success)' : trend < 0 ? 'var(--color-danger)' : 'rgba(203,213,225,0.3)', valueColor: 'var(--color-text)', spark: mkSpark(ps?.series?.rating, 'var(--color-text)') },
+                            { label: 'Accuracy',      value: accuracy != null ? `${accuracy}%` : '—', extra: null, valueColor: 'var(--color-accent-2)', spark: mkSpark(ps?.series?.accuracy, 'var(--color-accent-2)') },
+                            { label: 'Best Streak',   value: streak, extra: null, valueColor: 'var(--color-warning)', spark: mkSpark(ps?.series?.solved, 'var(--color-warning)') },
                           ].map((row, i) => (
                             <div key={i} className="dash-stat-row" style={{ display: 'grid', alignItems: 'center', gap: '0 8px' }}>
-                              <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(203,213,225,0.45)', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{row.label}</span>
+                              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{row.label}</span>
                               <div style={{ display: 'flex', alignItems: 'baseline', gap: 3 }}>
                                 <span style={{ fontSize: 17, fontWeight: 900, color: row.valueColor }}>{row.value}</span>
                                 {row.extra && <span style={{ fontSize: 10, fontWeight: 700, color: row.extraColor }}>{row.extra}</span>}
@@ -2052,22 +2054,22 @@ export default function UserDashboard() {
                     </div>
 
                     {/* Divider */}
-                    <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(148,163,184,0.1)', flexShrink: 0, zIndex: 1 }} />
+                    <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--color-border)', flexShrink: 0, zIndex: 1 }} />
 
                     {/* ── Section 2: Tournament Stats ── */}
                     <div style={{ flex: '32 1 0', minWidth: 0, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12, position: 'relative', zIndex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span style={{ fontSize: 15 }}>🏟️</span>
-                          <span style={{ fontSize: 11, fontWeight: 800, color: 'rgba(203,213,225,0.45)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Tournament</span>
+                          <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Tournament</span>
                         </div>
-                        <Link to={isPublicView ? `/arena-tournament-dashboard/${encodeURIComponent(routeDisplayName)}` : '/arena-tournament-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 5, background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
+                        <Link to={isPublicView ? `/arena-tournament-dashboard/${encodeURIComponent(routeDisplayName)}` : '/arena-tournament-dashboard'} style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 'var(--radius-sm)', background: 'linear-gradient(135deg,var(--color-accent),var(--color-success))', color: '#04201f', fontWeight: 700, fontSize: 10, textDecoration: 'none' }}>Dashboard →</Link>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {arenaStats.map((s, i) => (
-                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 12, background: s.glow, border: '1px solid rgba(148,163,184,0.08)' }}>
+                          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 'var(--radius-lg)', background: s.glow, border: '1px solid rgba(148,163,184,0.08)' }}>
                             <span style={{ fontSize: 18 }}>{s.icon}</span>
-                            <span style={{ flex: 1, fontSize: 11, fontWeight: 700, color: 'rgba(203,213,225,0.5)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{s.label}</span>
+                            <span style={{ flex: 1, fontSize: 11, fontWeight: 700, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{s.label}</span>
                             <span style={{ fontSize: 20, fontWeight: 900, color: s.accent }}>{s.value}</span>
                           </div>
                         ))}
@@ -2075,7 +2077,7 @@ export default function UserDashboard() {
                     </div>
 
                     {/* Divider */}
-                    <div style={{ width: 1, alignSelf: 'stretch', background: 'rgba(148,163,184,0.1)', flexShrink: 0, zIndex: 1 }} />
+                    <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--color-border)', flexShrink: 0, zIndex: 1 }} />
 
                     {/* ── Section 3: Today's Daily Puzzles ── */}
                     <div style={{ flex: '30 1 0', minWidth: 0, position: 'relative', zIndex: 1 }}>

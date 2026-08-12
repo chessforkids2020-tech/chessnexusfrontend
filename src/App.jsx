@@ -214,6 +214,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SupporterProvider } from './context/SupporterContext';
 import { BoardThemeProvider } from './contexts/BoardThemeContext';
 import { PieceThemeProvider } from './contexts/PieceThemeContext';
+import { UiThemeProvider } from './contexts/UiThemeContext';
 import SettingsPage from './pages/SettingsPage';
 // Study Sparring + Position Creator
 import StudyDuelCreate from './pages/study-sparring/StudyDuelCreate';
@@ -396,16 +397,32 @@ function ChatRedirect() {
   return <Navigate to={`/social/chat${location.search || ''}`} replace />;
 }
 
-// Inner wrapper so BoardThemeProvider and PieceThemeProvider can access the authenticated user id
+// Inner wrapper so the theme providers can access the authenticated user id.
+// All three are per-user: coaches sign into many student accounts from one
+// browser, so a global key would leak one student's choices onto the next.
 function AppWithTheme({ children }) {
   const { user } = useAuth();
   const userId = user?.id || user?._id || null;
+
+  // Remember who was last signed in, purely so the blocking script in
+  // index.html can find the right uiTheme_<id> key before React boots and
+  // paint the correct theme on the first frame. Written here rather than in
+  // AuthContext because this is the component that already derives userId.
+  useEffect(() => {
+    try {
+      if (userId) localStorage.setItem('lastUserId', String(userId));
+      else localStorage.removeItem('lastUserId');
+    } catch { /* private mode — worst case is one frame of the default theme */ }
+  }, [userId]);
+
   return (
-    <BoardThemeProvider userId={userId}>
-      <PieceThemeProvider userId={userId}>
-        {children}
-      </PieceThemeProvider>
-    </BoardThemeProvider>
+    <UiThemeProvider userId={userId}>
+      <BoardThemeProvider userId={userId}>
+        <PieceThemeProvider userId={userId}>
+          {children}
+        </PieceThemeProvider>
+      </BoardThemeProvider>
+    </UiThemeProvider>
   );
 }
 

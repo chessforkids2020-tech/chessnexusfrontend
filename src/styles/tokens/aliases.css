@@ -1,0 +1,77 @@
+/* styles/tokens/aliases.css
+ *
+ * COMPATIBILITY SHIMS. Old token names, re-pointed at the new theme tokens.
+ *
+ * Two half-built token systems already existed before this one:
+ *
+ *   1. styles/breakpoints.css declared a LIGHT palette (--primary-color
+ *      #2563eb, --background-color #f8fafc, --card-bg #ffffff, --text-primary
+ *      #1e293b) in an app that is entirely dark. Anything that actually used
+ *      --background-color for a page background would have rendered near-white.
+ *
+ *   2. styles/obsidian-glass.css declared ~15 --obsidian-* tokens. It is
+ *      imported by exactly one file today, but 20 distinct --obsidian-* names
+ *      are referenced across the codebase — so most of those references are
+ *      currently resolving to nothing and silently falling back to the
+ *      property's initial value.
+ *
+ * Rather than rename every call site (churn across many files for no visible
+ * gain), both vocabularies are kept alive here and mapped onto the real tokens.
+ * The old names now follow the active theme, which also quietly fixes the
+ * references that were resolving to nothing.
+ *
+ * This file is a bridge, not a destination. New code should use the --color-*
+ * tokens from themes.css directly. As call sites are migrated in later phases
+ * these entries can be deleted; nothing new should be added here.
+ *
+ * Loaded AFTER themes.css so the vars it references are defined.
+ */
+
+:root {
+  /* ── From breakpoints.css (was a light palette) ──────────────────────
+     --primary-color and --secondary-color were blue/violet brand colours;
+     they map onto the theme accent so they now change with the theme.
+     The three light neutrals map onto their dark equivalents — this is the
+     part that was actively wrong before, not merely unthemed. */
+  --primary-color: var(--color-accent);
+  --secondary-color: var(--color-accent-2);
+  --background-color: var(--color-bg);
+  --card-bg: var(--color-surface);
+  --text-primary: var(--color-text);
+  --text-secondary: var(--color-text-muted);
+
+  /* ── From obsidian-glass.css ─────────────────────────────────────────
+     The full set of --obsidian-* names referenced anywhere in the codebase.
+     Several of these had no definition in scope on most pages; they resolve
+     correctly now. */
+  --obsidian-bg: var(--color-bg);
+  --obsidian-glass: var(--color-surface);
+  --obsidian-panel: var(--color-surface);
+  --obsidian-surface-elevated: var(--color-surface-2);
+  --obsidian-pill: var(--color-white-a07);
+
+  --obsidian-text: var(--color-text);
+  --obsidian-text-soft: var(--color-text);
+  --obsidian-text-dim: var(--color-text-muted);
+  --obsidian-text-muted: var(--color-text-muted);
+
+  --obsidian-accent: var(--color-accent);
+  --obsidian-border: var(--color-border);
+  --obsidian-border-hover: var(--color-accent-a30);
+  --obsidian-border-strong: var(--color-border-strong);
+
+  --obsidian-button: var(--gradient-accent);
+  --obsidian-gradient-1: var(--gradient-accent);
+  --obsidian-glow: var(--accent-glow);
+  --obsidian-shadow: var(--shadow-soft);
+  --obsidian-shadow-hover: var(--shadow-lift);
+  --obsidian-radial: radial-gradient(circle at 20% 20%, var(--color-accent-a12) 0%, transparent 55%);
+
+  /* A filter FUNCTION, not a length — call sites use it as
+     `backdrop-filter: var(--obsidian-blur)`, so it must carry the blur() wrapper.
+     Matches the original definition in obsidian-glass.css. */
+  --obsidian-blur: blur(10px);
+  --obsidian-gradient-2: linear-gradient(135deg, var(--color-accent-a15), var(--color-accent-2-a15));
+  --obsidian-gradient-3: linear-gradient(135deg, var(--color-warning-a12), var(--color-warning-a20));
+  --obsidian-gradient-4: linear-gradient(135deg, var(--color-accent-2-a15), var(--color-accent-a15));
+}
