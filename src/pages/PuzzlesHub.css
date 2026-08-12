@@ -280,21 +280,17 @@
   transition: opacity 0.3s ease;
 }
 
-.hub-mini--ttt::before {
-  background: linear-gradient(135deg, rgba(244,63,94,0.14), rgba(251,113,133,0.08));
-}
-
-.hub-mini--bingo::before {
-  background: linear-gradient(135deg, var(--color-accent-a15), var(--color-accent-2-a15));
-}
-
-.hub-mini--puzzles::before {
-  background: linear-gradient(135deg, var(--color-accent-2-a12), rgba(52,211,153,0.08));
-}
-
+/* Each mini card washes its own game hue, matching the big cards above. */
+.hub-mini--ttt::before,
+.hub-mini--bingo::before,
+.hub-mini--puzzles::before,
 .hub-mini--blunder::before {
-  background: linear-gradient(135deg, var(--color-warning-a12), rgba(251,191,36,0.08));
+  background: linear-gradient(135deg, rgb(var(--game-hue) / 0.14), rgb(var(--game-hue) / 0.08));
 }
+.hub-mini--ttt      { --game-hue: 251 113 133; }  /* rose  */
+.hub-mini--bingo    { --game-hue:  56 189 248; }  /* sky   */
+.hub-mini--puzzles  { --game-hue:  52 211 153; }  /* green */
+.hub-mini--blunder  { --game-hue: 251 191  36; }  /* amber */
 
 .hub-mini-card:hover::before { opacity: 1; }
 
@@ -346,10 +342,10 @@
   margin-bottom: 3px;
 }
 
-.hub-mini--ttt .hub-mini-tag { color: #fb7185; }
-.hub-mini--blunder .hub-mini-tag { color: var(--color-warning); }
-.hub-mini--bingo .hub-mini-tag { color: #38bdf8; }
-.hub-mini--puzzles .hub-mini-tag { color: var(--color-success); }
+.hub-mini--ttt .hub-mini-tag,
+.hub-mini--blunder .hub-mini-tag,
+.hub-mini--bingo .hub-mini-tag,
+.hub-mini--puzzles .hub-mini-tag { color: rgb(var(--game-hue)); }
 
 .hub-mini-title {
   font-size: 18px;
@@ -374,10 +370,10 @@
   flex-shrink: 0;
 }
 
-.hub-mini--ttt:hover .hub-mini-arrow     { color: #fb7185; transform: translateX(4px); }
-.hub-mini--blunder:hover .hub-mini-arrow { color: var(--color-warning); transform: translateX(4px); }
-.hub-mini--bingo:hover .hub-mini-arrow   { color: #38bdf8; transform: translateX(4px); }
-.hub-mini--puzzles:hover .hub-mini-arrow { color: var(--color-success); transform: translateX(4px); }
+.hub-mini--ttt:hover .hub-mini-arrow,
+.hub-mini--blunder:hover .hub-mini-arrow,
+.hub-mini--bingo:hover .hub-mini-arrow,
+.hub-mini--puzzles:hover .hub-mini-arrow { color: rgb(var(--game-hue)); transform: translateX(4px); }
 
 .hub-mini-coming-soon {
   font-size: 10px;
@@ -2174,10 +2170,14 @@
 
 .hub-card:hover::before { opacity: 1; }
 
-.hub-card--ttt::before  { background: linear-gradient(90deg, #f43f5e, #fb7185); }
-.hub-card--bingo::before { background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2)); }
-.hub-card--daily::before { background: linear-gradient(90deg, var(--color-accent-2), var(--color-accent)); }
-.hub-card--contest::before { background: linear-gradient(90deg, var(--color-warning), var(--color-danger)); }
+/* The identity stripe across the top of each card: its own hue, fading out.
+   Same --game-hue as the tag below, so a card can never show two colours. */
+.hub-card--ttt::before,
+.hub-card--bingo::before,
+.hub-card--daily::before,
+.hub-card--contest::before {
+  background: linear-gradient(90deg, rgb(var(--game-hue)), rgb(var(--game-hue) / 0.55));
+}
 
 .hub-card:hover {
   transform: translateY(-7px);
@@ -2208,10 +2208,31 @@
   width: fit-content;
 }
 
-.hub-card--ttt .hub-card-tag    { color: #fb7185; border-color: rgba(244,63,94,0.4);  background: rgba(244,63,94,0.1); }
-.hub-card--bingo .hub-card-tag  { color: #38bdf8; border-color: var(--color-accent-a40);  background: var(--color-accent-a12); }
-.hub-card--daily .hub-card-tag  { color: var(--color-success); border-color: var(--color-success-a30); background: var(--color-success-a12); }
-.hub-card--contest .hub-card-tag { color: var(--color-warning); border-color: var(--color-warning-a30); background: var(--color-warning-a12); }
+/* ── PER-GAME IDENTITY COLOURS ────────────────────────────────────────────
+   Each game keeps its OWN hue in every theme — Tic-Tac-Toe rose, Bingo sky,
+   Daily green, Contest amber. These are game brands, not chrome: a player
+   recognises the tile by its colour, the same way chess.com's mode tiles work,
+   so they deliberately do NOT follow the theme accent.
+
+   The token sweep half-converted this block (bingo/daily/contest picked up
+   theme tokens while ttt kept its rose, because rose was not in the map), which
+   left Bingo with sky text inside an accent-coloured border. Restored here, and
+   written as one --game-hue per rule so the three properties can never drift
+   apart again. */
+.hub-card--ttt .hub-card-tag,
+.hub-card--bingo .hub-card-tag,
+.hub-card--daily .hub-card-tag,
+.hub-card--contest .hub-card-tag {
+  color: rgb(var(--game-hue));
+  border-color: rgb(var(--game-hue) / 0.4);
+  background: rgb(var(--game-hue) / 0.1);
+}
+/* RGB triplets, not hex — the same trick the theme tokens use, so one hue can
+   drive the solid colour and both translucent variants without repeating it. */
+.hub-card--ttt     { --game-hue: 251 113 133; }  /* rose  */
+.hub-card--bingo   { --game-hue:  56 189 248; }  /* sky   */
+.hub-card--daily   { --game-hue:  52 211 153; }  /* green */
+.hub-card--contest { --game-hue: 251 191  36; }  /* amber */
 
 .hub-card-title {
   font-size: 20px;
@@ -2246,8 +2267,8 @@
 
 .hub-card--ttt .hub-card-play    { color: #fb7185; }
 .hub-card--bingo .hub-card-play  { color: #38bdf8; }
-.hub-card--daily .hub-card-play  { color: var(--color-success); }
-.hub-card--contest .hub-card-play { color: var(--color-warning); }
+.hub-card--daily .hub-card-play  { color: rgb(var(--game-hue)); }
+.hub-card--contest .hub-card-play { color: rgb(var(--game-hue)); }
 
 .hub-card-arrow {
   font-size: 17px;
@@ -2257,8 +2278,8 @@
 
 .hub-card--ttt .hub-card-arrow    { color: #fb7185; }
 .hub-card--bingo .hub-card-arrow  { color: #38bdf8; }
-.hub-card--daily .hub-card-arrow  { color: var(--color-success); }
-.hub-card--contest .hub-card-arrow { color: var(--color-warning); }
+.hub-card--daily .hub-card-arrow  { color: rgb(var(--game-hue)); }
+.hub-card--contest .hub-card-arrow { color: rgb(var(--game-hue)); }
 
 .hub-card:hover .hub-card-arrow { transform: translateX(6px); }
 
