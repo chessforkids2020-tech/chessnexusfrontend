@@ -596,3 +596,115 @@
   box-sizing: border-box;
   overflow: visible;
 }
+
+/* ── Full practice report (coach modal) ───────────────────────────────────
+   The summary section is triage; this is the whole report the STUDENT sees.
+   A coach preparing a lesson needs the collapses, the endgames reached, the
+   openings and the trend — all of which the payload already carried. */
+.csd-good { color: #34d399; }
+.csd-bad  { color: #f87171; }
+
+.csd-full-btn {
+  margin-left: auto;
+  padding: 7px 13px; border-radius: 9px; cursor: pointer;
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  background: rgba(6, 182, 212, 0.1);
+  color: #67e8f9; font-size: 12.5px; font-weight: 700;
+  transition: background .15s, border-color .15s;
+}
+.csd-full-btn:hover { background: rgba(6, 182, 212, 0.18); border-color: rgba(6, 182, 212, 0.6); }
+
+.csd-modal-back {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(2, 6, 23, 0.76);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 28px 16px; overflow-y: auto;
+}
+.csd-modal {
+  background: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  width: 100%; max-width: 920px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+.csd-modal-head {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  position: sticky; top: 0; background: #0f172a; border-radius: 16px 16px 0 0;
+}
+.csd-modal-head h2 { margin: 0 0 3px; font-size: 18px; color: #f1f5f9; }
+.csd-modal-x {
+  margin-left: auto; flex: none;
+  width: 30px; height: 30px; border-radius: 8px; cursor: pointer;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: transparent; color: #94a3b8; font-size: 14px;
+}
+.csd-modal-x:hover { color: #e2e8f0; border-color: rgba(148, 163, 184, 0.45); }
+.csd-modal-body { padding: 18px 22px 26px; }
+.csd-modal-h3 {
+  margin: 22px 0 10px; font-size: 13px; font-weight: 800;
+  letter-spacing: 0.08em; text-transform: uppercase; color: #67e8f9;
+}
+.csd-modal-h3:first-of-type { margin-top: 6px; }
+
+.csd-fr-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 700px) { .csd-fr-phases { grid-template-columns: 1fr; } }
+.csd-fr-phase {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 12px; padding: 14px 16px;
+}
+.csd-fr-phase.is-weak { border-color: rgba(248, 113, 113, 0.4); }
+.csd-fr-phase-name {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #94a3b8; font-weight: 700;
+}
+.csd-fr-phase-acc { font-size: 32px; font-weight: 800; line-height: 1.1; margin: 4px 0 0; }
+.csd-fr-phase-moves { font-size: 11.5px; color: #64748b; margin-bottom: 8px; }
+.csd-fr-err {
+  display: flex; justify-content: space-between; font-size: 12px;
+  padding: 4px 0; border-top: 1px solid rgba(148, 163, 184, 0.12); color: #cbd5e1;
+}
+.csd-fr-err b { color: #f1f5f9; }
+.csd-fr-weak {
+  margin-top: 8px; font-size: 10.5px; font-weight: 800;
+  letter-spacing: 0.07em; text-transform: uppercase; color: #fca5a5;
+}
+
+.csd-fr-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;
+}
+.csd-fr-stat {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 10px; padding: 12px 14px;
+}
+.csd-fr-stat-v { font-size: 22px; font-weight: 800; color: #f8fafc; line-height: 1.15; }
+.csd-fr-stat-l { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+.csd-fr-scroll {
+  overflow-x: auto; border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 12px; background: rgba(255, 255, 255, 0.025);
+}
+.csd-fr-table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 13px; }
+.csd-fr-table th, .csd-fr-table td {
+  padding: 9px 13px; text-align: right;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  font-variant-numeric: tabular-nums; color: #cbd5e1;
+}
+.csd-fr-table thead th {
+  font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: #94a3b8; font-weight: 700; background: rgba(0, 0, 0, 0.2); white-space: nowrap;
+}
+.csd-fr-table th[scope="row"] { text-align: left; color: #f1f5f9; font-weight: 600; }
+.csd-fr-table tbody tr:last-child th, .csd-fr-table tbody tr:last-child td { border-bottom: none; }
+
+.csd-fr-motifs { display: flex; flex-wrap: wrap; gap: 8px; }
+.csd-fr-motif {
+  padding: 6px 11px; border-radius: 999px; font-size: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  color: #cbd5e1; text-transform: capitalize;
+}
+.csd-fr-motif b { color: #67e8f9; margin-left: 3px; }

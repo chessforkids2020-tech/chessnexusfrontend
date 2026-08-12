@@ -209,6 +209,9 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
   // Coach-scoped: the API resolves it through THIS coach's student link, so
   // another coach cannot reach it.
   const [streakReport, setStreakReport] = useState(null);
+  // The full report, opened from the summary's "View full report" button. The
+  // whole payload is already fetched above; this only decides whether to show it.
+  const [showFullReport, setShowFullReport] = useState(false);
   // Lichess / Chess.com rating curves, one series per time control.
   const [ratings, setRatings] = useState(null);
   const [analyzing, setAnalyzing] = useState(false);   // job running / polling
@@ -552,6 +555,19 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               {' '}{streakReport.milestoneDay}-day streak ·
               {' '}{streakReport.gamesAnalysed} games
             </span>
+            {/* The summary below is a triage view — enough to see who needs
+                attention before a lesson. The full report is the same payload
+                the STUDENT sees, and a coach preparing for that lesson needs
+                all of it: collapsed positions, endgames reached, openings,
+                the clock, the missed motifs. It was already being fetched and
+                then thrown away. */}
+            <button
+              type="button"
+              className="csd-full-btn"
+              onClick={() => setShowFullReport(true)}
+            >
+              View full report →
+            </button>
           </div>
 
           {streakReport.payload.verdict?.text && (
@@ -585,6 +601,12 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                 {' '}of <b>{streakReport.payload.defence.opportunities}</b> bad positions
                 {streakReport.payload.defence.defensiveScore != null
                   && ` (${streakReport.payload.defence.defensiveScore}%)`}
+                {/* Collapses are the actionable half of defence: "held 19 of 24"
+                    is a pass mark, "collapsed 5" is the lesson. Showing only the
+                    held figure hid what the coach should teach. */}
+                {streakReport.payload.defence.collapsed > 0 && (
+                  <em className="csd-bad"> · collapsed {streakReport.payload.defence.collapsed}</em>
+                )}
               </span>
             )}
             {streakReport.payload.conversion?.hadWinningPosition > 0 && (
@@ -1000,6 +1022,239 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           onClose={() => setArenaGamePopup(null)}
         />
       )}
+
+      {showFullReport && streakReport?.payload && (
+        <FullReportModal
+          report={streakReport}
+          studentName={link?.studentName || student?.displayName || student?.username || 'this student'}
+          onClose={() => setShowFullReport(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+/**
+ * The student's whole practice report, for the coach.
+ *
+ * The section above is a triage summary — enough to spot who needs attention.
+ * This is everything the STUDENT sees, which is what a coach actually needs when
+ * preparing a lesson: which endgames were reached and lost, the openings, the
+ * clock, the motifs behind the mistakes, and the report-over-report table.
+ * All of it was already in the payload and simply never rendered here.
+ */
+function FullReportModal({ report, studentName, onClose }) {
+  const p = report.payload || {};
+  const phases = p.phases || {};
+  const games = p.games || {};
+  const cols = p.comparison?.columns || [];
+
+  // Escape to close — a coach flicking through students should not have to aim.
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
+
+  const pct = (v) => (v == null ? '—' : `${v}%`);
+
+  return (
+    <div className="csd-modal-back" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="csd-modal" onClick={e => e.stopPropagation()}>
+        <div className="csd-modal-head">
+          <div>
+            <h2>Practice report — {studentName}</h2>
+            <span className="csd-muted">
+              {fmtDate(report.periodStart)} – {fmtDate(report.periodEnd)} ·
+              {' '}{report.gamesAnalysed} of {report.gamesFound} games analysed
+            </span>
+          </div>
+          <button type="button" className="csd-modal-x" onClick={onClose} aria-label="Close">✕</button>
+        </div>
+
+        <div className="csd-modal-body">
+          {p.verdict?.text && <p className="csd-verdict">🎯 {p.verdict.text}</p>}
+
+          {/* Phases, in full: accuracy AND the error counts behind it. */}
+          <h3 className="csd-modal-h3">Accuracy by phase</h3>
+          <div className="csd-fr-phases">
+            {['opening', 'middlegame', 'endgame'].map(k => {
+              const ph = phases[k] || {};
+              const weak = weakestPhaseOf(phases) === k;
+              return (
+                <div key={k} className={`csd-fr-phase${weak ? ' is-weak' : ''}`}>
+                  <div className="csd-fr-phase-name">{k}</div>
+                  <div className="csd-fr-phase-acc" style={{ color: accColor(ph.accuracy) }}>
+                    {pct(ph.accuracy)}
+                  </div>
+                  <div className="csd-fr-phase-moves">{ph.moves || 0} moves</div>
+                  <div className="csd-fr-err"><span>Blunders</span><b>{ph.blunders || 0}</b></div>
+                  <div className="csd-fr-err"><span>Mistakes</span><b>{ph.mistakes || 0}</b></div>
+                  <div className="csd-fr-err"><span>Inaccuracies</span><b>{ph.inaccuracies || 0}</b></div>
+                  {weak && <div className="csd-fr-weak">Weakest phase</div>}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Defence — including the collapses, which the summary omitted. */}
+          {p.defence?.opportunities > 0 && (
+            <>
+              <h3 className="csd-modal-h3">How they defend</h3>
+              <div className="csd-fr-stats">
+                <Stat2 label="Difficult positions" v={p.defence.opportunities} />
+                <Stat2 label="Saved or held" good
+                  v={(p.defence.recovered || 0) + (p.defence.turnedAround || 0) + (p.defence.held || 0)} />
+                <Stat2 label="Collapsed" bad v={p.defence.collapsed || 0} />
+                <Stat2 label="Defensive score" v={pct(p.defence.defensiveScore)} />
+                <Stat2 label="Avg. resistance"
+                  v={p.defence.avgResistanceMoves != null ? `${p.defence.avgResistanceMoves} moves` : '—'} />
+              </div>
+            </>
+          )}
+
+          {(p.endgames || []).length > 0 && (
+            <>
+              <h3 className="csd-modal-h3">Endgames reached</h3>
+              <div className="csd-fr-scroll">
+                <table className="csd-fr-table">
+                  <thead><tr><th>Endgame</th><th>Reached</th><th>W</th><th>D</th><th>L</th><th>Score</th></tr></thead>
+                  <tbody>
+                    {p.endgames.map((e, i) => (
+                      <tr key={i}>
+                        <th scope="row">{e.type}</th>
+                        <td>{e.reached}</td><td>{e.wins}</td><td>{e.draws}</td><td>{e.losses}</td>
+                        <td className={e.score < 40 ? 'csd-bad' : e.score > 60 ? 'csd-good' : ''}>{pct(e.score)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          {(p.openings || []).length > 0 && (
+            <>
+              <h3 className="csd-modal-h3">Openings played</h3>
+              <div className="csd-fr-scroll">
+                <table className="csd-fr-table">
+                  <thead><tr><th>Opening</th><th>Side</th><th>Games</th><th>W</th><th>D</th><th>L</th><th>Score</th></tr></thead>
+                  <tbody>
+                    {p.openings.map((o, i) => (
+                      <tr key={i}>
+                        <th scope="row">{o.opening}</th>
+                        <td>{o.side === 'white' ? 'White' : o.side === 'black' ? 'Black' : '—'}</td>
+                        <td>{o.games}</td><td>{o.wins}</td><td>{o.draws}</td><td>{o.losses}</td>
+                        <td className={o.score < 40 ? 'csd-bad' : o.score > 60 ? 'csd-good' : ''}>{pct(o.score)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          {(p.momentThemes || []).length > 0 && (
+            <>
+              <h3 className="csd-modal-h3">Patterns they missed</h3>
+              <div className="csd-fr-motifs">
+                {p.momentThemes.slice(0, 10).map(t => (
+                  <span key={t.theme} className="csd-fr-motif">
+                    {String(t.theme).replace(/_/g, ' ')} <b>{t.count}</b>
+                  </span>
+                ))}
+              </div>
+            </>
+          )}
+
+          {p.timePressure?.hasClockData && (
+            <>
+              <h3 className="csd-modal-h3">The clock</h3>
+              <div className="csd-fr-stats">
+                <Stat2 label="Moves with time" v={p.timePressure.normalMoves} />
+                <Stat2 label="Moves under a minute" v={p.timePressure.pressuredMoves} />
+              </div>
+              {p.timePressure.avgDropPressured > p.timePressure.avgDropNormal * 1.5 && (
+                <p className="csd-muted" style={{ fontSize: 12.5, marginTop: 8 }}>
+                  Their play falls off sharply when the clock runs low — a time-management
+                  problem rather than a chess one.
+                </p>
+              )}
+            </>
+          )}
+
+          {/* Report-over-report, so a coach can see the trend rather than one week. */}
+          {cols.length > 1 && (
+            <>
+              <h3 className="csd-modal-h3">Report over report</h3>
+              <div className="csd-fr-scroll">
+                <table className="csd-fr-table">
+                  <thead>
+                    <tr>
+                      <th>Measure</th>
+                      {cols.map((c, i) => (
+                        <th key={i}>{i === cols.length - 1 ? 'This report' : `Report ${i + 1}`}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ['Games analysed', 'gamesAnalysed', ''],
+                      ['Opening', 'opening', '%'],
+                      ['Middlegame', 'middlegame', '%'],
+                      ['Endgame', 'endgame', '%'],
+                      ['Blunders per game', 'blundersPerGame', ''],
+                      ['Win rate', 'winRate', '%'],
+                      ['Defensive score', 'defensiveScore', '%'],
+                      ['Puzzles solved', 'puzzles', ''],
+                      ['Puzzle accuracy', 'puzzleAccuracy', '%'],
+                    ].filter(([, f]) => cols.some(c => c[f] != null)).map(([label, f, sfx]) => (
+                      <tr key={f}>
+                        <th scope="row">{label}</th>
+                        {cols.map((c, i) => (
+                          <td key={i}>{c[f] == null ? '—' : `${c[f]}${sfx}`}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+
+          {(p.suggestions || []).length > 0 && (
+            <>
+              <h3 className="csd-modal-h3">Study plan given to this student</h3>
+              <div className="csd-plan">
+                {p.suggestions.map(sg => (
+                  <div key={sg.key} className="csd-plan-row">
+                    <span className="csd-plan-ic">{sg.icon}</span>
+                    <span><b>{sg.title}</b><em>{sg.detail}</em></span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          <p className="csd-muted" style={{ fontSize: 12, marginTop: 18 }}>
+            This is the same report the student sees.
+            {games.sampled && ` Analysed ${games.analysed} of ${games.found} games this period.`}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Stat2({ label, v, good, bad }) {
+  return (
+    <div className="csd-fr-stat">
+      <div className={`csd-fr-stat-v${good ? ' csd-good' : ''}${bad ? ' csd-bad' : ''}`}>{v}</div>
+      <div className="csd-fr-stat-l">{label}</div>
     </div>
   );
 }
