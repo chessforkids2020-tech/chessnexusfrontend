@@ -22,7 +22,7 @@
   border: 1px solid rgba(52, 211, 153, 0.22);
   border-radius: 20px;
   padding: 28px 28px 30px;
-  box-shadow: 0 30px 90px -30px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 30px 90px -30px var(--color-black-a65);
   animation: bdm-rise 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 @keyframes bdm-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
@@ -34,15 +34,15 @@
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-white-a10);
+  background: var(--color-white-a04);
   color: #b3bfce;
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
-.bdm-close:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.bdm-close:hover { background: var(--color-white-a10); color: var(--color-text); }
 
 .bdm-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; padding-right: 30px; }
 .bdm-title { font-size: 22px; font-weight: 800; color: #f0f4ff; letter-spacing: -0.01em; margin: 0; }
@@ -51,22 +51,22 @@
 /* Slot picker */
 .bdm-slots { margin: 6px 0 20px; }
 .bdm-slots-label { font-size: 13px; color: #b3bfce; margin-bottom: 10px; }
-.bdm-slots-label b { color: #34d399; font-weight: 700; }
+.bdm-slots-label b { color: var(--color-success); font-weight: 700; }
 .bdm-slots-label span { color: #6b7686; font-size: 12px; }
 .bdm-slot-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .bdm-slot-n {
   width: 26px; height: 26px; flex: none;
   display: grid; place-items: center; border-radius: 50%;
   font-size: 12px; font-weight: 700; color: #04211d;
-  background: linear-gradient(150deg, #34d399, #10b981);
+  background: linear-gradient(150deg, var(--color-success), var(--color-success));
 }
 .bdm-select {
   flex: 1 1 0;
   min-width: 0;
   padding: 11px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-white-a13);
+  background: var(--color-white-a04);
   color: #f0f4ff;
   font-size: 14px;
   cursor: pointer;

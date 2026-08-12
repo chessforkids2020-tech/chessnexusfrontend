@@ -83,21 +83,21 @@ export default function ImmortalGames() {
 
 const C = {
   ink: '#0a0c10', glass: 'rgba(22, 26, 34, 0.66)', glassSolid: '#12151c',
-  border: 'rgba(255,255,255,0.08)', borderStrong: 'rgba(255,255,255,0.14)',
+  border: 'var(--color-white-a07)', borderStrong: 'var(--color-white-a13)',
   text: '#e7eaf0', textMut: '#8b93a7', textFaint: '#5d6577', accent: '#f5c451'
 };
 
 const st = {
   wrap: { minHeight: '100vh', padding: '24px 16px 64px', fontFamily: 'Poppins, sans-serif', color: C.text, background: `radial-gradient(1200px 600px at 50% -10%, #1a1f2b 0%, ${C.ink} 60%)` },
   inner: { maxWidth: 1000, margin: '0 auto' },
-  back: { background: 'transparent', border: 'none', color: '#a78bfa', cursor: 'pointer', fontSize: 14, padding: 0, marginBottom: 12 },
-  h1: { fontSize: 28, fontWeight: 800, margin: '0 0 4px', color: '#fff' },
+  back: { background: 'transparent', border: 'none', color: 'var(--color-accent-2)', cursor: 'pointer', fontSize: 14, padding: 0, marginBottom: 12 },
+  h1: { fontSize: 28, fontWeight: 800, margin: '0 0 4px', color: 'var(--color-text)' },
   sub: { color: C.textMut, margin: '0 0 20px', fontSize: 14 },
 
   filters: { display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14, alignItems: 'center' },
   input: { padding: '9px 12px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, minWidth: 170, background: C.glass, color: C.text, outline: 'none' },
   select: { padding: '9px 12px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, background: C.glass, color: C.text, maxWidth: 240, outline: 'none' },
-  clearBtn: { padding: '9px 14px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: 'rgba(239,68,68,0.18)', color: '#fca5a5', cursor: 'pointer', fontSize: 14 },
+  clearBtn: { padding: '9px 14px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: 'var(--color-danger-a20)', color: 'var(--color-danger)', cursor: 'pointer', fontSize: 14 },
 
   listMeta: { color: C.textMut, fontSize: 13, marginBottom: 10 },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 14 },

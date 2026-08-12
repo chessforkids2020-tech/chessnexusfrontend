@@ -63,8 +63,8 @@ export default function RoomCodeBadge({ code, label = 'Room code', style, showLi
         }}
         style={{
           fontFamily: 'monospace', fontSize: 18, fontWeight: 800, letterSpacing: 2,
-          color: '#67e8f9', background: 'rgba(6,182,212,0.12)',
-          border: '1px solid rgba(6,182,212,0.35)', borderRadius: 8,
+          color: 'var(--color-accent)', background: 'var(--color-accent-a12)',
+          border: '1px solid var(--color-accent-a30)', borderRadius: 8,
           padding: '5px 12px', cursor: 'text', userSelect: 'all',
         }}
       >
@@ -76,9 +76,9 @@ export default function RoomCodeBadge({ code, label = 'Room code', style, showLi
         style={{
           padding: '6px 14px', borderRadius: 8, fontSize: 12.5, fontWeight: 600,
           cursor: 'pointer', whiteSpace: 'nowrap',
-          background: copied ? 'rgba(16,185,129,0.2)' : 'rgba(6,182,212,0.15)',
-          border: `1px solid ${copied ? 'rgba(16,185,129,0.5)' : 'rgba(6,182,212,0.35)'}`,
-          color: copied ? '#6ee7b7' : '#67e8f9',
+          background: copied ? 'var(--color-success-a20)' : 'var(--color-accent-a15)',
+          border: `1px solid ${copied ? 'var(--color-success-a30)' : 'var(--color-accent-a30)'}`,
+          color: copied ? 'var(--color-success)' : 'var(--color-accent)',
         }}
       >
         {btnLabel}
@@ -90,9 +90,9 @@ export default function RoomCodeBadge({ code, label = 'Room code', style, showLi
           style={{
             padding: '6px 14px', borderRadius: 8, fontSize: 12.5, fontWeight: 600,
             cursor: 'pointer', whiteSpace: 'nowrap',
-            background: linkState === 'copied' ? 'rgba(16,185,129,0.2)' : 'rgba(139,92,246,0.15)',
-            border: `1px solid ${linkState === 'copied' ? 'rgba(16,185,129,0.5)' : 'rgba(167,139,250,0.4)'}`,
-            color: linkState === 'copied' ? '#6ee7b7' : '#c4b5fd',
+            background: linkState === 'copied' ? 'var(--color-success-a20)' : 'var(--color-accent-2-a15)',
+            border: `1px solid ${linkState === 'copied' ? 'var(--color-success-a30)' : 'rgba(167,139,250,0.4)'}`,
+            color: linkState === 'copied' ? 'var(--color-success)' : 'var(--color-accent-2)',
           }}
         >
           {linkState === 'copied' ? '✓ Link copied' : linkState === 'failed' ? 'Copy failed' : '🔗 Copy join link'}

@@ -57,8 +57,8 @@ export default function FoundingSupporterCard({ compact = false, style = {} }) {
         <div style={styles.title}>Become a Founding Supporter</div>
         <div style={styles.sub}>
           ChessNexus is brand new. Our first {FOUNDING_LIMIT} supporters get a{' '}
-          <strong style={{ color: '#fde68a' }}>permanent 👑 badge</strong> that never expires —{' '}
-          <strong style={{ color: '#fde68a' }}>{spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left</strong>.
+          <strong style={{ color: 'var(--color-warning)' }}>permanent 👑 badge</strong> that never expires —{' '}
+          <strong style={{ color: 'var(--color-warning)' }}>{spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left</strong>.
         </div>
       </div>
       <button type="button" onClick={() => navigate('/buy-coffee')} style={styles.btn}>
@@ -74,12 +74,12 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: 14,
-    background: 'linear-gradient(135deg, rgba(245,158,11,0.12), rgba(139,92,246,0.08))',
-    border: '1px solid rgba(245,158,11,0.38)',
+    background: 'linear-gradient(135deg, var(--color-warning-a12), rgba(139,92,246,0.08))',
+    border: '1px solid var(--color-warning-a30)',
     borderRadius: 16,
     padding: '16px 18px',
     fontFamily: 'Poppins, sans-serif',
-    boxShadow: '0 10px 30px -18px rgba(245,158,11,0.4)'
+    boxShadow: '0 10px 30px -18px var(--color-warning-a30)'
   },
   compact: { padding: '12px 14px', borderRadius: 14, gap: 11 },
   x: {
@@ -87,11 +87,11 @@ const styles = {
     color: 'rgba(253,230,138,0.6)', cursor: 'pointer', fontSize: 13, lineHeight: 1, padding: 2
   },
   icon: { fontSize: 30, flex: 'none', filter: 'drop-shadow(0 0 8px rgba(245,158,11,0.5))' },
-  title: { fontWeight: 800, color: '#fef3c7', fontSize: 15.5, marginBottom: 3 },
+  title: { fontWeight: 800, color: 'var(--color-warning)', fontSize: 15.5, marginBottom: 3 },
   sub: { color: 'rgba(229,231,235,0.82)', fontSize: 12.8, lineHeight: 1.5 },
   btn: {
     flex: 'none', cursor: 'pointer', border: 'none',
-    background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: '#1f2937',
+    background: 'linear-gradient(135deg, var(--color-warning), #d97706)', color: '#1f2937',
     fontWeight: 800, fontSize: 13.5, padding: '10px 16px', borderRadius: 11,
     fontFamily: 'Poppins, sans-serif', whiteSpace: 'nowrap'
   }

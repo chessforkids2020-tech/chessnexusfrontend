@@ -224,31 +224,31 @@ function displayName(name) {
 
 const C = {
   ink: '#0a0c10', glass: 'rgba(22, 26, 34, 0.66)', glassSolid: '#12151c',
-  border: 'rgba(255,255,255,0.08)', borderStrong: 'rgba(255,255,255,0.14)',
+  border: 'var(--color-white-a07)', borderStrong: 'var(--color-white-a13)',
   text: '#e7eaf0', textMut: '#8b93a7', textFaint: '#5d6577',
-  accent: '#a78bfa', rowHover: 'rgba(167,139,250,0.10)'
+  accent: 'var(--color-accent-2)', rowHover: 'var(--color-accent-2-a15)'
 };
 
 const st = {
   wrap: { minHeight: '100vh', padding: '24px 16px 64px', fontFamily: 'Poppins, sans-serif', color: C.text, background: `radial-gradient(1200px 600px at 50% -10%, #1a1f2b 0%, ${C.ink} 60%)` },
   inner: { maxWidth: 1000, margin: '0 auto' },
   back: { background: 'transparent', border: 'none', color: C.accent, cursor: 'pointer', fontSize: 14, padding: 0, marginBottom: 12 },
-  h1: { fontSize: 26, fontWeight: 700, margin: '0 0 16px', color: '#fff' },
+  h1: { fontSize: 26, fontWeight: 700, margin: '0 0 16px', color: 'var(--color-text)' },
 
   filters: { display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16, alignItems: 'center' },
   input: { padding: '9px 12px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, minWidth: 170, background: C.glass, color: C.text, outline: 'none' },
   select: { padding: '9px 12px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, background: C.glass, color: C.text, maxWidth: 220, outline: 'none' },
-  clearBtn: { padding: '9px 14px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: 'rgba(239,68,68,0.18)', color: '#fca5a5', cursor: 'pointer', fontSize: 14 },
-  suggestBox: { position: 'absolute', top: '100%', left: 0, right: 0, background: C.glassSolid, border: `1px solid ${C.borderStrong}`, borderRadius: 10, marginTop: 4, zIndex: 20, maxHeight: 240, overflowY: 'auto', boxShadow: '0 12px 30px rgba(0,0,0,0.55)', minWidth: 200 },
+  clearBtn: { padding: '9px 14px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: 'var(--color-danger-a20)', color: 'var(--color-danger)', cursor: 'pointer', fontSize: 14 },
+  suggestBox: { position: 'absolute', top: '100%', left: 0, right: 0, background: C.glassSolid, border: `1px solid ${C.borderStrong}`, borderRadius: 10, marginTop: 4, zIndex: 20, maxHeight: 240, overflowY: 'auto', boxShadow: '0 12px 30px var(--color-black-a50)', minWidth: 200 },
   suggestItem: { padding: '9px 12px', cursor: 'pointer', fontSize: 14, color: C.text },
 
   listMeta: { color: C.textMut, fontSize: 13, marginBottom: 8 },
-  table: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 30px rgba(0,0,0,0.45)' },
+  table: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 30px var(--color-black-a35)' },
   row: { display: 'flex', alignItems: 'center', padding: '12px 16px', borderBottom: `1px solid ${C.border}`, cursor: 'pointer', fontSize: 14, gap: 8, color: C.text, transition: 'background 120ms ease' },
-  headRow: { background: 'rgba(255,255,255,0.03)', fontWeight: 700, cursor: 'default', color: C.textMut, fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.4 },
+  headRow: { background: 'var(--color-white-a04)', fontWeight: 700, cursor: 'default', color: C.textMut, fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.4 },
   cPlayers: { flex: '2 1 0', minWidth: 0 },
   blackName: { color: C.textMut },
-  cResult: { flex: '0 0 64px', textAlign: 'center', fontWeight: 600, color: '#fff' },
+  cResult: { flex: '0 0 64px', textAlign: 'center', fontWeight: 600, color: 'var(--color-text)' },
   cOpening: { flex: '2 1 0', minWidth: 0, color: C.textMut, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   cEvent: { flex: '1.5 1 0', minWidth: 0, color: C.textFaint, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   cYear: { flex: '0 0 56px', textAlign: 'right', color: C.textFaint },

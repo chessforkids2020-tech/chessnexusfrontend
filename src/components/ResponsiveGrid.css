@@ -52,13 +52,13 @@
   background: var(--card-bg);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px var(--color-black-a20);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .responsive-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 12px var(--color-black-a20);
 }
 
 /* Mobile card adjustments */

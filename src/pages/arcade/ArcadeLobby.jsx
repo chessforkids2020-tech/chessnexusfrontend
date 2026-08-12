@@ -15,7 +15,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const GAME_META = {
   ttt:   { icon: "⚔️", label: "Tic-Tac-Toe",  route: "/arcade/ttt", color: "#f43f5e" },
-  bingo: { icon: "🎯", label: "Chess Bingo",   route: "/arcade/bingo", color: "#06b6d4" },
+  bingo: { icon: "🎯", label: "Chess Bingo",   route: "/arcade/bingo", color: "var(--color-accent)" },
 };
 
 export default function ArcadeLobby() {
@@ -203,7 +203,7 @@ export default function ArcadeLobby() {
         left: 0,
         right: 0,
         bottom: 0,
-        background: "radial-gradient(circle at 30% 40%, rgba(255,255,255,0.03) 0%, transparent 60%)",
+        background: "radial-gradient(circle at 30% 40%, var(--color-white-a04) 0%, transparent 60%)",
         pointerEvents: "none"
       }} />
 
@@ -218,7 +218,7 @@ export default function ArcadeLobby() {
           <div style={{
             background: "rgba(20, 25, 35, 0.6)",
             backdropFilter: "blur(20px)",
-            border: "1px solid rgba(255,255,255,0.05)",
+            border: "1px solid var(--color-white-a04)",
             borderRadius: 40,
             padding: "32px 28px",
             marginBottom: 28,
@@ -233,14 +233,14 @@ export default function ArcadeLobby() {
               left: 0,
               right: 0,
               height: "1px",
-              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)"
+              background: "linear-gradient(90deg, transparent, var(--color-white-a20), transparent)"
             }} />
 
             <h1 style={{
               fontSize: "clamp(24px, 5vw, 32px)",
               fontWeight: 800,
               margin: "0 0 8px",
-              background: `linear-gradient(135deg, #fff 0%, ${meta.color} 100%)`,
+              background: `linear-gradient(135deg, var(--color-text) 0%, ${meta.color} 100%)`,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               letterSpacing: "-0.02em"
@@ -249,7 +249,7 @@ export default function ArcadeLobby() {
             </h1>
 
             <p style={{
-              color: "rgba(255,255,255,0.5)",
+              color: "var(--color-text-muted)",
               fontSize: 15,
               margin: 0,
               maxWidth: 400,
@@ -281,7 +281,7 @@ export default function ArcadeLobby() {
                   backdropFilter: "blur(20px)",
                   border: hoveredOption === "quick" 
                     ? `1px solid ${meta.color}40`
-                    : "1px solid rgba(255,255,255,0.05)",
+                    : "1px solid var(--color-white-a04)",
                   borderRadius: 32,
                   position: "relative",
                   overflow: "hidden",
@@ -314,7 +314,7 @@ export default function ArcadeLobby() {
                   {/* Content */}
                   <div style={{ flex: 1 }}>
                     <h3 style={{
-                      color: "#fff",
+                      color: "var(--color-text)",
                       fontSize: 20,
                       fontWeight: 700,
                       margin: "0 0 6px"
@@ -322,7 +322,7 @@ export default function ArcadeLobby() {
                       Quick Match
                     </h3>
                     <p style={{
-                      color: "rgba(255,255,255,0.5)",
+                      color: "var(--color-text-muted)",
                       fontSize: 14,
                       margin: 0,
                       lineHeight: 1.5
@@ -336,18 +336,18 @@ export default function ArcadeLobby() {
                     onClick={(e) => goToSizePicker("matchmaking", e)}
                     style={{
                       background: `linear-gradient(135deg, ${meta.color} 0%, ${
-                        gameType === "ttt" ? "#fb7185" : "#3b82f6"
+                        gameType === "ttt" ? "#fb7185" : "var(--color-accent-2)"
                       } 100%)`,
                       border: "none",
                       borderRadius: 40,
                       padding: "14px 28px",
                       fontSize: 15,
                       fontWeight: 600,
-                      color: "#fff",
+                      color: "var(--color-text)",
                       cursor: "pointer",
                       boxShadow: hoveredOption === "quick" 
-                        ? `0 10px 20px -5px ${meta.color}80, 0 0 0 1px rgba(255,255,255,0.2) inset`
-                        : `0 5px 15px -5px ${meta.color}40, 0 0 0 1px rgba(255,255,255,0.1) inset`,
+                        ? `0 10px 20px -5px ${meta.color}80, 0 0 0 1px var(--color-white-a20) inset`
+                        : `0 5px 15px -5px ${meta.color}40, 0 0 0 1px var(--color-white-a10) inset`,
                       transition: "all 0.2s ease",
                       display: "flex",
                       alignItems: "center",
@@ -382,7 +382,7 @@ export default function ArcadeLobby() {
                   backdropFilter: "blur(20px)",
                   border: hoveredOption === "create" 
                     ? `1px solid ${meta.color}40`
-                    : "1px solid rgba(255,255,255,0.05)",
+                    : "1px solid var(--color-white-a04)",
                   borderRadius: 32,
                   padding: "28px 32px",
                   display: "flex",
@@ -419,7 +419,7 @@ export default function ArcadeLobby() {
                   {/* Content */}
                   <div style={{ flex: 1 }}>
                     <h3 style={{
-                      color: "#fff",
+                      color: "var(--color-text)",
                       fontSize: 20,
                       fontWeight: 700,
                       margin: "0 0 6px"
@@ -427,7 +427,7 @@ export default function ArcadeLobby() {
                       Play with Friend
                     </h3>
                     <p className="arc-lobby-desc" style={{
-                      color: "rgba(255,255,255,0.5)",
+                      color: "var(--color-text-muted)",
                       fontSize: 14,
                       margin: 0,
                       lineHeight: 1.5
@@ -440,15 +440,15 @@ export default function ArcadeLobby() {
                   <button
                     onClick={(e) => goToSizePicker("create", e)}
                     style={{
-                      background: "rgba(255,255,255,0.03)",
+                      background: "var(--color-white-a04)",
                       border: hoveredOption === "create" 
                         ? `1px solid ${meta.color}60`
-                        : "1px solid rgba(255,255,255,0.1)",
+                        : "1px solid var(--color-white-a10)",
                       borderRadius: 40,
                       padding: "14px 28px",
                       fontSize: 15,
                       fontWeight: 600,
-                      color: hoveredOption === "create" ? meta.color : "rgba(255,255,255,0.7)",
+                      color: hoveredOption === "create" ? meta.color : "var(--color-text-muted)",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
                       display: "flex",
@@ -458,11 +458,11 @@ export default function ArcadeLobby() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "scale(1.05)";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                      e.currentTarget.style.background = "var(--color-white-a07)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "scale(1)";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+                      e.currentTarget.style.background = "var(--color-white-a04)";
                     }}
                   >
                     <span>Create</span>
@@ -486,7 +486,7 @@ export default function ArcadeLobby() {
                   backdropFilter: "blur(20px)",
                   border: hoveredOption === "join" 
                     ? `1px solid ${meta.color}40`
-                    : "1px solid rgba(255,255,255,0.05)",
+                    : "1px solid var(--color-white-a04)",
                   borderRadius: 32,
                   position: "relative",
                   overflow: "hidden",
@@ -519,7 +519,7 @@ export default function ArcadeLobby() {
                   {/* Content */}
                   <div style={{ flex: 1 }}>
                     <h3 style={{
-                      color: "#fff",
+                      color: "var(--color-text)",
                       fontSize: 20,
                       fontWeight: 700,
                       margin: "0 0 6px"
@@ -527,7 +527,7 @@ export default function ArcadeLobby() {
                       Join Friend's Room
                     </h3>
                     <p className="arc-lobby-desc" style={{
-                      color: "rgba(255,255,255,0.5)",
+                      color: "var(--color-text-muted)",
                       fontSize: 14,
                       margin: 0,
                       lineHeight: 1.5
@@ -540,15 +540,15 @@ export default function ArcadeLobby() {
                   <button
                     onClick={() => setScreen("join")}
                     style={{
-                      background: "rgba(255,255,255,0.03)",
+                      background: "var(--color-white-a04)",
                       border: hoveredOption === "join" 
                         ? `1px solid ${meta.color}60`
-                        : "1px solid rgba(255,255,255,0.1)",
+                        : "1px solid var(--color-white-a10)",
                       borderRadius: 40,
                       padding: "14px 28px",
                       fontSize: 15,
                       fontWeight: 600,
-                      color: hoveredOption === "join" ? meta.color : "rgba(255,255,255,0.7)",
+                      color: hoveredOption === "join" ? meta.color : "var(--color-text-muted)",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
                       display: "flex",
@@ -558,11 +558,11 @@ export default function ArcadeLobby() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "scale(1.05)";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                      e.currentTarget.style.background = "var(--color-white-a07)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "scale(1)";
-                      e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+                      e.currentTarget.style.background = "var(--color-white-a04)";
                     }}
                   >
                     <span>Join</span>
@@ -577,7 +577,7 @@ export default function ArcadeLobby() {
                 style={{
                   background: "transparent",
                   border: "none",
-                  color: "rgba(255,255,255,0.4)",
+                  color: "var(--color-text-faint)",
                   fontSize: 14,
                   cursor: "pointer",
                   padding: "16px",
@@ -589,10 +589,10 @@ export default function ArcadeLobby() {
                   gap: 6
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color = "rgba(255,255,255,0.7)";
+                  e.currentTarget.style.color = "var(--color-text-muted)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = "rgba(255,255,255,0.4)";
+                  e.currentTarget.style.color = "var(--color-text-faint)";
                 }}
               >
                 <span>←</span>
@@ -606,7 +606,7 @@ export default function ArcadeLobby() {
             <div style={{
               background: "rgba(20, 25, 35, 0.6)",
               backdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.05)",
+              border: "1px solid var(--color-white-a04)",
               borderRadius: 40,
               padding: 40,
               textAlign: "center"
@@ -617,14 +617,14 @@ export default function ArcadeLobby() {
                 fontSize: 24,
                 fontWeight: 700,
                 margin: "0 0 8px",
-                background: `linear-gradient(135deg, #fff 0%, ${meta.color} 100%)`,
+                background: `linear-gradient(135deg, var(--color-text) 0%, ${meta.color} 100%)`,
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent"
               }}>
                 Enter Room Code
               </h2>
               
-              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 14, marginBottom: 28 }}>
+              <p style={{ color: "var(--color-text-muted)", fontSize: 14, marginBottom: 28 }}>
                 Your friend's 6-character code
               </p>
 
@@ -640,10 +640,10 @@ export default function ArcadeLobby() {
                   padding: "20px 24px",
                   marginBottom: 24,
                   boxSizing: "border-box",
-                  background: "rgba(0,0,0,0.3)",
-                  border: `1px solid ${joinCode.length === 6 ? meta.color : "rgba(255,255,255,0.1)"}`,
+                  background: "var(--color-black-a35)",
+                  border: `1px solid ${joinCode.length === 6 ? meta.color : "var(--color-white-a10)"}`,
                   borderRadius: 24,
-                  color: "#fff",
+                  color: "var(--color-text)",
                   fontSize: 32,
                   fontWeight: 700,
                   textAlign: "center",
@@ -658,23 +658,23 @@ export default function ArcadeLobby() {
                 <button
                   onClick={() => setScreen("home")}
                   style={{
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "var(--color-white-a04)",
+                    border: "1px solid var(--color-white-a10)",
                     borderRadius: 40,
                     padding: "16px 24px",
                     fontSize: 15,
                     fontWeight: 600,
-                    color: "rgba(255,255,255,0.7)",
+                    color: "var(--color-text-muted)",
                     cursor: "pointer",
                     transition: "all 0.2s ease"
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";
+                    e.currentTarget.style.background = "var(--color-white-a07)";
+                    e.currentTarget.style.borderColor = "var(--color-white-a20)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
+                    e.currentTarget.style.background = "var(--color-white-a04)";
+                    e.currentTarget.style.borderColor = "var(--color-white-a10)";
                   }}
                 >
                   ← Back
@@ -686,15 +686,15 @@ export default function ArcadeLobby() {
                   style={{
                     background: joinCode.length === 6 
                       ? `linear-gradient(135deg, ${meta.color} 0%, ${
-                          gameType === "ttt" ? "#fb7185" : "#3b82f6"
+                          gameType === "ttt" ? "#fb7185" : "var(--color-accent-2)"
                         } 100%)`
-                      : "rgba(255,255,255,0.05)",
+                      : "var(--color-white-a04)",
                     border: "none",
                     borderRadius: 40,
                     padding: "16px 24px",
                     fontSize: 15,
                     fontWeight: 600,
-                    color: joinCode.length === 6 ? "#fff" : "rgba(255,255,255,0.3)",
+                    color: joinCode.length === 6 ? "var(--color-text)" : "var(--color-text-faint)",
                     cursor: joinCode.length === 6 ? "pointer" : "not-allowed",
                     transition: "all 0.2s ease",
                     boxShadow: joinCode.length === 6 ? `0 10px 20px -10px ${meta.color}` : "none"
@@ -721,7 +721,7 @@ export default function ArcadeLobby() {
             <div style={{
               background: "rgba(20, 25, 35, 0.6)",
               backdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.05)",
+              border: "1px solid var(--color-white-a04)",
               borderRadius: 40,
               padding: 40,
               position: "relative",
@@ -734,7 +734,7 @@ export default function ArcadeLobby() {
                 left: 0,
                 right: 0,
                 height: "1px",
-                background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)"
+                background: "linear-gradient(90deg, transparent, var(--color-white-a20), transparent)"
               }} />
 
               {/* Room header */}
@@ -744,13 +744,13 @@ export default function ArcadeLobby() {
                   fontSize: 28,
                   fontWeight: 700,
                   margin: "0 0 8px",
-                  background: `linear-gradient(135deg, #fff 0%, ${meta.color} 100%)`,
+                  background: `linear-gradient(135deg, var(--color-text) 0%, ${meta.color} 100%)`,
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent"
                 }}>
                   Room {roomInfo.roomCode}
                 </h2>
-                <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 15 }}>
+                <p style={{ color: "var(--color-text-muted)", fontSize: 15 }}>
                   {meta.label} • {roomInfo.boardSize}×{roomInfo.boardSize}
                 </p>
               </div>
@@ -766,7 +766,7 @@ export default function ArcadeLobby() {
                   textAlign: "center"
                 }}>
                   <p style={{
-                    color: "rgba(255,255,255,0.6)",
+                    color: "var(--color-text-muted)",
                     fontSize: 12,
                     margin: "0 0 12px",
                     textTransform: "uppercase",
@@ -787,11 +787,11 @@ export default function ArcadeLobby() {
                   <button
                     onClick={handleCopyCode}
                     style={{
-                      background: copied ? "rgba(16,185,129,0.15)" : `${meta.color}15`,
-                      border: copied ? "1px solid rgba(16,185,129,0.3)" : `1px solid ${meta.color}30`,
+                      background: copied ? "var(--color-success-a12)" : `${meta.color}15`,
+                      border: copied ? "1px solid var(--color-success-a30)" : `1px solid ${meta.color}30`,
                       borderRadius: 40,
                       padding: "12px 24px",
-                      color: copied ? "#10b981" : meta.color,
+                      color: copied ? "var(--color-success)" : meta.color,
                       fontSize: 14,
                       fontWeight: 600,
                       cursor: "pointer",
@@ -845,13 +845,13 @@ export default function ArcadeLobby() {
                       key={num}
                       style={{
                         background: player
-                          ? "linear-gradient(145deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02))"
-                          : "rgba(255,255,255,0.02)",
+                          ? "linear-gradient(145deg, var(--color-success-a12), rgba(16,185,129,0.02))"
+                          : "var(--color-white-a04)",
                         border: player
                           ? isReady
-                            ? "1px solid rgba(16,185,129,0.3)"
-                            : "1px solid rgba(16,185,129,0.15)"
-                          : "1px solid rgba(255,255,255,0.05)",
+                            ? "1px solid var(--color-success-a30)"
+                            : "1px solid var(--color-success-a12)"
+                          : "1px solid var(--color-white-a04)",
                         borderRadius: 24,
                         padding: "24px 16px",
                         textAlign: "center",
@@ -863,7 +863,7 @@ export default function ArcadeLobby() {
                       <div style={{
                         fontSize: 40,
                         marginBottom: 12,
-                        filter: player ? "drop-shadow(0 0 10px rgba(16,185,129,0.5))" : "none",
+                        filter: player ? "drop-shadow(0 0 10px var(--color-success-a30))" : "none",
                         opacity: player ? 1 : 0.3
                       }}>
                         {gameType === "ttt" ? (num === 1 ? "✕" : "○") : (num === 1 ? "🎯" : "⭐")}
@@ -871,7 +871,7 @@ export default function ArcadeLobby() {
 
                       {/* Player name */}
                       <div style={{
-                        color: player ? "#fff" : "rgba(255,255,255,0.3)",
+                        color: player ? "var(--color-text)" : "var(--color-text-faint)",
                         fontWeight: 600,
                         fontSize: 16,
                         marginBottom: 4
@@ -881,7 +881,7 @@ export default function ArcadeLobby() {
 
                       {/* Player tag */}
                       <div style={{
-                        color: isMe ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.3)",
+                        color: isMe ? "var(--color-text-muted)" : "var(--color-text-faint)",
                         fontSize: 12,
                         marginBottom: 8
                       }}>
@@ -894,12 +894,12 @@ export default function ArcadeLobby() {
                           position: "absolute",
                           top: 12,
                           right: 12,
-                          background: "#10b981",
+                          background: "var(--color-success)",
                           borderRadius: 20,
                           padding: "4px 8px",
                           fontSize: 10,
                           fontWeight: 600,
-                          color: "#fff"
+                          color: "var(--color-text)"
                         }}>
                           ✓ READY
                         </div>
@@ -911,7 +911,7 @@ export default function ArcadeLobby() {
                           width: 30,
                           height: 30,
                           margin: "10px auto 0",
-                          border: "2px solid rgba(255,255,255,0.1)",
+                          border: "2px solid var(--color-white-a10)",
                           borderTopColor: meta.color,
                           borderRadius: "50%",
                           animation: "spin 1s linear infinite"
@@ -929,15 +929,15 @@ export default function ArcadeLobby() {
                     <button
                       onClick={handleReady}
                       style={{
-                        background: "linear-gradient(135deg, #10b981 0%, #34d399 100%)",
+                        background: "linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)",
                         border: "none",
                         borderRadius: 40,
                         padding: "18px 32px",
                         fontSize: 16,
                         fontWeight: 600,
-                        color: "#fff",
+                        color: "var(--color-text)",
                         cursor: "pointer",
-                        boxShadow: "0 10px 25px -5px rgba(16,185,129,0.5), 0 0 0 1px rgba(255,255,255,0.1) inset",
+                        boxShadow: "0 10px 25px -5px var(--color-success-a30), 0 0 0 1px var(--color-white-a10) inset",
                         transition: "all 0.2s ease",
                         width: "100%",
                         maxWidth: 300,
@@ -949,11 +949,11 @@ export default function ArcadeLobby() {
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = "scale(1.02)";
-                        e.currentTarget.style.boxShadow = "0 15px 30px -5px rgba(16,185,129,0.7), 0 0 0 1px rgba(255,255,255,0.2) inset";
+                        e.currentTarget.style.boxShadow = "0 15px 30px -5px rgba(16,185,129,0.7), 0 0 0 1px var(--color-white-a20) inset";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = "scale(1)";
-                        e.currentTarget.style.boxShadow = "0 10px 25px -5px rgba(16,185,129,0.5), 0 0 0 1px rgba(255,255,255,0.1) inset";
+                        e.currentTarget.style.boxShadow = "0 10px 25px -5px var(--color-success-a30), 0 0 0 1px var(--color-white-a10) inset";
                       }}
                     >
                       <span>✅</span>
@@ -962,7 +962,7 @@ export default function ArcadeLobby() {
                   ) : (
                     <div style={{ marginBottom: 12 }}>
                       <div style={{
-                        color: "#10b981",
+                        color: "var(--color-success)",
                         fontWeight: 600,
                         fontSize: 16,
                         marginBottom: 8
@@ -972,26 +972,26 @@ export default function ArcadeLobby() {
                       <div style={{
                         width: "100%",
                         height: 4,
-                        background: "rgba(255,255,255,0.05)",
+                        background: "var(--color-white-a04)",
                         borderRadius: 2,
                         overflow: "hidden"
                       }}>
                         <div style={{
                           width: `${(readyCount / 2) * 100}%`,
                           height: "100%",
-                          background: "linear-gradient(90deg, #10b981, #34d399)",
+                          background: "linear-gradient(90deg, var(--color-success), var(--color-success))",
                           borderRadius: 2,
                           transition: "width 0.3s ease"
                         }} />
                       </div>
                     </div>
                   )}
-                  <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>
+                  <p style={{ color: "var(--color-text-faint)", fontSize: 13 }}>
                     {readyCount}/2 players ready
                   </p>
                 </div>
               ) : (
-                <div style={{ textAlign: "center", color: "rgba(255,255,255,0.5)", fontSize: 15 }}>
+                <div style={{ textAlign: "center", color: "var(--color-text-muted)", fontSize: 15 }}>
                   <div style={{ marginBottom: 16 }}>⏳ Waiting for opponent to join...</div>
                   <div style={{
                     width: 40,
@@ -1012,17 +1012,17 @@ export default function ArcadeLobby() {
                   style={{
                     background: "transparent",
                     border: "none",
-                    color: "rgba(255,255,255,0.3)",
+                    color: "var(--color-text-faint)",
                     fontSize: 14,
                     cursor: "pointer",
                     padding: "8px 16px",
                     transition: "color 0.2s ease"
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = "rgba(255,255,255,0.6)";
+                    e.currentTarget.style.color = "var(--color-text-muted)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = "rgba(255,255,255,0.3)";
+                    e.currentTarget.style.color = "var(--color-text-faint)";
                   }}
                 >
                   ← Leave Room

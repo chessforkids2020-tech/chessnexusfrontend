@@ -18,11 +18,11 @@ const CARD = {
   margin: '16px 0',
   backdropFilter: 'blur(10px)',
 };
-const LABEL = { display: 'block', color: 'rgba(255,255,255,0.6)', fontSize: '12px', marginBottom: '5px', fontWeight: 600 };
+const LABEL = { display: 'block', color: 'var(--color-text-muted)', fontSize: '12px', marginBottom: '5px', fontWeight: 600 };
 const INPUT = {
   width: '100%', padding: '9px 11px', borderRadius: '8px',
-  border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.25)',
-  color: '#fff', fontSize: '14px', outline: 'none',
+  border: '1px solid var(--color-white-a13)', background: 'var(--color-black-a20)',
+  color: 'var(--color-text)', fontSize: '14px', outline: 'none',
 };
 
 export default function FideTitleCard() {
@@ -49,11 +49,11 @@ export default function FideTitleCard() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ fontSize: '28px' }}>🏅</div>
           <div>
-            <div style={{ color: '#fbbf24', fontWeight: 700, fontSize: '15px' }}>
+            <div style={{ color: 'var(--color-warning)', fontWeight: 700, fontSize: '15px' }}>
               {state.chessTitle} — title verified
             </div>
-            <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '13px', marginTop: '2px' }}>
-              You appear as <strong style={{ color: '#fbbf24' }}>{formatPlayerName({ ...user, chessTitle: state.chessTitle })}</strong> everywhere in ChessNexus.
+            <div style={{ color: 'var(--color-text-muted)', fontSize: '13px', marginTop: '2px' }}>
+              You appear as <strong style={{ color: 'var(--color-warning)' }}>{formatPlayerName({ ...user, chessTitle: state.chessTitle })}</strong> everywhere in ChessNexus.
             </div>
           </div>
         </div>
@@ -68,10 +68,10 @@ export default function FideTitleCard() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ fontSize: '28px' }}>⏳</div>
           <div>
-            <div style={{ color: '#fbbf24', fontWeight: 600, fontSize: '15px' }}>
+            <div style={{ color: 'var(--color-warning)', fontWeight: 600, fontSize: '15px' }}>
               Your title proof is uploaded
             </div>
-            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', marginTop: '3px' }}>
+            <div style={{ color: 'var(--color-text-muted)', fontSize: '13px', marginTop: '3px' }}>
               Waiting for the ChessNexus team to verify and approve your{' '}
               <strong>{state.claim.claimedTitle}</strong> title. We'll approve shortly.
             </div>
@@ -111,8 +111,8 @@ export default function FideTitleCard() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
         <div style={{ fontSize: '28px' }}>🏅</div>
         <div>
-          <div style={{ color: '#fbbf24', fontWeight: 600, fontSize: '15px' }}>Are you a titled player?</div>
-          <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '13px', marginTop: '2px' }}>
+          <div style={{ color: 'var(--color-warning)', fontWeight: 600, fontSize: '15px' }}>Are you a titled player?</div>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: '13px', marginTop: '2px' }}>
             Carry your FIDE title with you — it will appear before your name everywhere.
           </div>
         </div>
@@ -120,9 +120,9 @@ export default function FideTitleCard() {
 
       {rejected && (
         <div style={{
-          background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.35)',
+          background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)',
           borderRadius: '8px', padding: '9px 12px', marginBottom: '12px',
-          color: '#fca5a5', fontSize: '13px',
+          color: 'var(--color-danger)', fontSize: '13px',
         }}>
           Your previous claim wasn't approved{state.claim.reviewNote ? `: ${state.claim.reviewNote}` : '.'} You can submit again.
         </div>
@@ -165,20 +165,20 @@ export default function FideTitleCard() {
             onChange={e => setFile(e.target.files?.[0] || null)}
             style={{ ...INPUT, padding: '7px 10px' }}
           />
-          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11.5px', marginTop: '5px' }}>
+          <div style={{ color: 'var(--color-text-faint)', fontSize: '11.5px', marginTop: '5px' }}>
             Only used to verify your title. Deleted as soon as your claim is reviewed.
           </div>
         </div>
 
-        {error && <div style={{ color: '#fca5a5', fontSize: '13px', marginTop: '10px' }}>{error}</div>}
-        {done && <div style={{ color: '#6ee7b7', fontSize: '13px', marginTop: '10px' }}>{done}</div>}
+        {error && <div style={{ color: 'var(--color-danger)', fontSize: '13px', marginTop: '10px' }}>{error}</div>}
+        {done && <div style={{ color: 'var(--color-success)', fontSize: '13px', marginTop: '10px' }}>{done}</div>}
 
         <button
           type="submit" disabled={busy}
           style={{
             marginTop: '14px', padding: '9px 20px', borderRadius: '9px', border: 'none',
-            background: busy ? 'rgba(234,179,8,0.35)' : 'linear-gradient(135deg,#f59e0b,#d97706)',
-            color: '#1a1a1a', fontWeight: 700, fontSize: '14px',
+            background: busy ? 'rgba(234,179,8,0.35)' : 'linear-gradient(135deg,var(--color-warning),#d97706)',
+            color: 'var(--color-surface)', fontWeight: 700, fontSize: '14px',
             cursor: busy ? 'default' : 'pointer',
           }}
         >

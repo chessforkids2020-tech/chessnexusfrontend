@@ -21,7 +21,7 @@ export default function AcademyPayments() {
 
   return (
     <div className="acad-wrap">
-      <h1 style={{ color: '#fff', marginBottom: 6 }}>🧾 Payment requests</h1>
+      <h1 style={{ color: 'var(--color-text)', marginBottom: 6 }}>🧾 Payment requests</h1>
       <p className="acad-muted" style={{ marginBottom: 18 }}>
         Fee requests your coaches have raised to their students. View-only oversight.
       </p>

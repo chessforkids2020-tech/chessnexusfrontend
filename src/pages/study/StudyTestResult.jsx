@@ -50,12 +50,12 @@ const StudyTestResult = () => {
     // 35 - 49 => C
     // 20 - 34 => D
     // < 20 => F
-    if (percentage >= 80) return { grade: 'A+', color: '#10b981' };
-    if (percentage >= 65) return { grade: 'A', color: '#10b981' };
-    if (percentage >= 50) return { grade: 'B', color: '#06b6d4' };
-    if (percentage >= 35) return { grade: 'C', color: '#fbbf24' };
-    if (percentage >= 20) return { grade: 'D', color: '#f59e0b' };
-    return { grade: 'F', color: '#ef4444' };
+    if (percentage >= 80) return { grade: 'A+', color: 'var(--color-success)' };
+    if (percentage >= 65) return { grade: 'A', color: 'var(--color-success)' };
+    if (percentage >= 50) return { grade: 'B', color: 'var(--color-accent)' };
+    if (percentage >= 35) return { grade: 'C', color: 'var(--color-warning)' };
+    if (percentage >= 20) return { grade: 'D', color: 'var(--color-warning)' };
+    return { grade: 'F', color: 'var(--color-danger)' };
   };
 
   const handleViewPuzzle = (puzzle) => {
@@ -124,7 +124,7 @@ const StudyTestResult = () => {
   const styles = {
     page: {
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       padding: '20px',
       fontFamily: 'Inter, Arial, sans-serif',
       position: 'relative',
@@ -132,14 +132,14 @@ const StudyTestResult = () => {
     container: {
       maxWidth: '1000px',
       margin: '0 auto',
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
       borderRadius: '20px',
       padding: '30px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      color: '#ffffff',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
+      border: '1px solid var(--color-white-a04)',
+      color: 'var(--color-text)',
     },
     header: {
       textAlign: 'center',
@@ -149,25 +149,25 @@ const StudyTestResult = () => {
       fontSize: '28px',
       fontWeight: '700',
       marginBottom: '10px',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
     },
     subtitle: {
       fontSize: '16px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontStyle: 'italic',
     },
     gradeSection: {
       textAlign: 'center',
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       borderRadius: '16px',
       padding: '30px',
       marginBottom: '25px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      border: '1px solid var(--color-white-a04)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     gradeCircle: {
       width: '140px',
@@ -179,13 +179,13 @@ const StudyTestResult = () => {
       justifyContent: 'center',
       fontSize: '50px',
       fontWeight: '700',
-      color: '#ffffff',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+      color: 'var(--color-text)',
+      boxShadow: '0 10px 30px var(--color-black-a50)',
     },
     percentageText: {
       fontSize: '24px',
       fontWeight: '700',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '8px',
     },
     statsGrid: {
@@ -195,25 +195,25 @@ const StudyTestResult = () => {
       marginBottom: '25px',
     },
     statCard: {
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       borderRadius: '16px',
       padding: '20px',
       textAlign: 'center',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      border: '1px solid var(--color-white-a04)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     statLabel: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginBottom: '8px',
       fontWeight: '600',
     },
     statValue: {
       fontSize: '24px',
       fontWeight: '700',
-      color: '#06b6d4',
-      textShadow: '0 2px 10px rgba(6, 182, 212, 0.3)',
+      color: 'var(--color-accent)',
+      textShadow: '0 2px 10px var(--color-accent-a30)',
     },
     detailsSection: {
       marginTop: '25px',
@@ -221,7 +221,7 @@ const StudyTestResult = () => {
     sectionTitle: {
       fontSize: '20px',
       fontWeight: '600',
-      color: '#67e8f9',
+      color: 'var(--color-accent)',
       marginBottom: '15px',
     },
     attemptsList: {
@@ -229,14 +229,14 @@ const StudyTestResult = () => {
       overflowY: 'auto',
     },
     attemptCard: {
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       borderRadius: '12px',
       padding: '15px',
       marginBottom: '12px',
       borderLeft: '4px solid',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+      border: '1px solid var(--color-white-a04)',
+      boxShadow: '0 4px 16px var(--color-black-a35)',
     },
     attemptHeader: {
       display: 'flex',
@@ -248,7 +248,7 @@ const StudyTestResult = () => {
     attemptMoves: {
       fontFamily: 'monospace',
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginTop: '6px',
     },
     buttonGroup: {
@@ -265,22 +265,22 @@ const StudyTestResult = () => {
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+      boxShadow: '0 4px 12px var(--color-black-a35)',
     },
     primaryButton: {
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#ffffff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
     },
     secondaryButton: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      color: '#ffffff',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-surface)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a10)',
     },
     loading: {
       textAlign: 'center',
       padding: '50px',
       fontSize: '16px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     modal: {
       position: 'fixed',
@@ -288,7 +288,7 @@ const StudyTestResult = () => {
       left: 0,
       width: '100%',
       height: '100%',
-      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      backgroundColor: 'var(--color-black-a65)',
       backdropFilter: 'blur(5px)',
       display: 'flex',
       alignItems: 'center',
@@ -296,7 +296,7 @@ const StudyTestResult = () => {
       zIndex: 1000,
     },
     modalContent: {
-      background: 'rgba(23, 23, 23, 0.95)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(20px)',
       borderRadius: '20px',
       padding: '30px',
@@ -304,8 +304,8 @@ const StudyTestResult = () => {
       width: '90%',
       maxHeight: '90vh',
       overflowY: 'auto',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+      border: '1px solid var(--color-white-a10)',
+      boxShadow: '0 20px 60px var(--color-black-a65)',
     },
     modalHeader: {
       display: 'flex',
@@ -316,12 +316,12 @@ const StudyTestResult = () => {
     modalTitle: {
       fontSize: '20px',
       fontWeight: '700',
-      color: '#67e8f9',
+      color: 'var(--color-accent)',
     },
     closeButton: {
       background: 'none',
       border: 'none',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '24px',
       cursor: 'pointer',
       padding: '5px 10px',
@@ -338,28 +338,28 @@ const StudyTestResult = () => {
     },
     moveButton: {
       padding: '10px 20px',
-      background: 'rgba(6, 182, 212, 0.2)',
-      border: '1px solid rgba(6, 182, 212, 0.5)',
+      background: 'var(--color-accent-a20)',
+      border: '1px solid var(--color-accent-a40)',
       borderRadius: '8px',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       fontSize: '14px',
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
     },
     moveInfo: {
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       borderRadius: '12px',
       padding: '15px',
       fontSize: '13px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     viewButton: {
       padding: '8px 16px',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       border: 'none',
       borderRadius: '8px',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       fontSize: '12px',
       fontWeight: '600',
       cursor: 'pointer',
@@ -410,7 +410,7 @@ const StudyTestResult = () => {
             {gradeInfo.grade}
           </div>
           <div style={styles.percentageText}>{accuracy}% Accuracy</div>
-          <p style={{ color: '#9ca3af', margin: 0 }}>
+          <p style={{ color: 'var(--color-text-muted)', margin: 0 }}>
             You solved {puzzlesSolved} out of {puzzlesAttempted} attempted
           </p>
         </div>
@@ -442,19 +442,19 @@ const StudyTestResult = () => {
           {/* Correct Puzzles Section */}
           {result.correctPuzzles && result.correctPuzzles.length > 0 && (
             <div style={{marginBottom: '25px'}}>
-              <h3 style={{...styles.sectionTitle, fontSize: '18px', color: '#10b981'}}>✓ Correct Puzzles ({result.correctPuzzles.length})</h3>
+              <h3 style={{...styles.sectionTitle, fontSize: '18px', color: 'var(--color-success)'}}>✓ Correct Puzzles ({result.correctPuzzles.length})</h3>
               <div style={styles.attemptsList}>
                 {result.correctPuzzles.map((puzzle, index) => (
                   <div
                     key={index}
                     style={{
                       ...styles.attemptCard,
-                      borderLeftColor: '#10b981',
+                      borderLeftColor: 'var(--color-success)',
                     }}
                   >
                     <div style={styles.attemptHeader}>
                       <span>Puzzle #{puzzle.puzzleNumber}</span>
-                      <span style={{ color: '#10b981' }}>
+                      <span style={{ color: 'var(--color-success)' }}>
                         ✓ Correct
                       </span>
                     </div>
@@ -463,11 +463,11 @@ const StudyTestResult = () => {
                       onClick={() => handleViewPuzzle(puzzle)}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(6, 182, 212, 0.5)';
+                        e.currentTarget.style.boxShadow = '0 6px 20px var(--color-accent-a40)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
                       }}
                     >
                       🎯 Click to View Position & Solution
@@ -481,46 +481,46 @@ const StudyTestResult = () => {
           {/* Wrong Puzzles Section */}
           {(!result.wrongPuzzles || result.wrongPuzzles.length === 0) ? (
             result.correctPuzzles && result.correctPuzzles.length > 0 ? null : (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#10b981' }}>
+              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-success)' }}>
                 <div style={{ fontSize: '48px', marginBottom: '10px' }}>🎉</div>
                 <div style={{ fontSize: '18px', fontWeight: '600' }}>Perfect Score!</div>
-                <div style={{ fontSize: '14px', color: '#9ca3af', marginTop: '8px' }}>
+                <div style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginTop: '8px' }}>
                   You didn't make any mistakes. Excellent work!
                 </div>
               </div>
             )
           ) : (
             <div>
-              <h3 style={{...styles.sectionTitle, fontSize: '18px', color: '#ef4444'}}>✗ Wrong Puzzles ({result.wrongPuzzles.length})</h3>
+              <h3 style={{...styles.sectionTitle, fontSize: '18px', color: 'var(--color-danger)'}}>✗ Wrong Puzzles ({result.wrongPuzzles.length})</h3>
               <div style={styles.attemptsList}>
                 {result.wrongPuzzles.map((puzzle, index) => (
                   <div
                     key={index}
                     style={{
                       ...styles.attemptCard,
-                      borderLeftColor: '#ef4444',
+                      borderLeftColor: 'var(--color-danger)',
                     }}
                   >
                     <div style={styles.attemptHeader}>
                       <span>Puzzle #{puzzle.puzzleNumber}</span>
-                      <span style={{ color: '#ef4444' }}>
+                      <span style={{ color: 'var(--color-danger)' }}>
                         ✗ Incorrect
                       </span>
                     </div>
                     <div style={styles.attemptMoves}>
-                      <div><strong style={{color: '#ef4444'}}>Your move:</strong> {puzzle.wrongMove}</div>
-                      <div><strong style={{color: '#10b981'}}>Expected move:</strong> {puzzle.expectedMove}</div>
+                      <div><strong style={{color: 'var(--color-danger)'}}>Your move:</strong> {puzzle.wrongMove}</div>
+                      <div><strong style={{color: 'var(--color-success)'}}>Expected move:</strong> {puzzle.expectedMove}</div>
                     </div>
                     <button
                       style={styles.viewButton}
                       onClick={() => handleViewPuzzle(puzzle)}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 6px 20px rgba(6, 182, 212, 0.5)';
+                        e.currentTarget.style.boxShadow = '0 6px 20px var(--color-accent-a40)';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
                       }}
                     >
                       🎯 Click to View Position & Solution
@@ -538,11 +538,11 @@ const StudyTestResult = () => {
             onClick={() => navigate('/study')}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(6, 182, 212, 0.4)';
+              e.currentTarget.style.boxShadow = '0 6px 20px var(--color-accent-a40)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+              e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
             }}
           >
             Back to Studies
@@ -552,13 +552,13 @@ const StudyTestResult = () => {
             onClick={() => navigate('/')}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(6, 182, 212, 0.3)';
-              e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.2)';
+              e.currentTarget.style.boxShadow = '0 6px 20px var(--color-accent-a30)';
+              e.currentTarget.style.borderColor = 'var(--color-accent-a20)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
+              e.currentTarget.style.borderColor = 'var(--color-white-a10)';
             }}
           >
             Home
@@ -575,8 +575,8 @@ const StudyTestResult = () => {
               <button
                 style={styles.closeButton}
                 onClick={handleCloseModal}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#ef4444'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#9ca3af'}
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-danger)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-muted)'}
               >
                 ✕
               </button>
@@ -589,7 +589,7 @@ const StudyTestResult = () => {
                 draggable={false}
                 boardStyle={{
                   borderRadius: '8px',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
+                  boxShadow: '0 8px 24px var(--color-black-a50)',
                 }}
                 boardWidth={boardSize}
               />
@@ -600,11 +600,11 @@ const StudyTestResult = () => {
                 style={styles.moveButton}
                 onClick={handleResetPosition}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(6, 182, 212, 0.3)';
+                  e.currentTarget.style.background = 'var(--color-accent-a30)';
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(6, 182, 212, 0.2)';
+                  e.currentTarget.style.background = 'var(--color-accent-a20)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
@@ -616,12 +616,12 @@ const StudyTestResult = () => {
                 disabled={moveIndex === 0}
                 onMouseEnter={(e) => {
                   if (moveIndex > 0) {
-                    e.currentTarget.style.background = 'rgba(6, 182, 212, 0.3)';
+                    e.currentTarget.style.background = 'var(--color-accent-a30)';
                     e.currentTarget.style.transform = 'translateY(-2px)';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(6, 182, 212, 0.2)';
+                  e.currentTarget.style.background = 'var(--color-accent-a20)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
@@ -633,12 +633,12 @@ const StudyTestResult = () => {
                 disabled={moveIndex >= expandedPuzzle.solutionUCI.trim().split(' ').length}
                 onMouseEnter={(e) => {
                   if (moveIndex < expandedPuzzle.solutionUCI.trim().split(' ').length) {
-                    e.currentTarget.style.background = 'rgba(6, 182, 212, 0.3)';
+                    e.currentTarget.style.background = 'var(--color-accent-a30)';
                     e.currentTarget.style.transform = 'translateY(-2px)';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(6, 182, 212, 0.2)';
+                  e.currentTarget.style.background = 'var(--color-accent-a20)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
@@ -647,17 +647,17 @@ const StudyTestResult = () => {
             </div>
 
             <div style={styles.moveInfo}>
-              <div style={{ marginBottom: '10px', fontSize: '14px', fontWeight: '600', color: '#ffffff' }}>
+              <div style={{ marginBottom: '10px', fontSize: '14px', fontWeight: '600', color: 'var(--color-text)' }}>
                 Move {moveIndex} / {expandedPuzzle.solutionUCI.trim().split(' ').length}
               </div>
               <div style={{ marginBottom: '8px' }}>
-                <strong style={{color: '#ef4444'}}>Your move:</strong> {expandedPuzzle.wrongMove}
+                <strong style={{color: 'var(--color-danger)'}}>Your move:</strong> {expandedPuzzle.wrongMove}
               </div>
               <div style={{ marginBottom: '8px' }}>
-                <strong style={{color: '#10b981'}}>Expected move:</strong> {expandedPuzzle.expectedMove}
+                <strong style={{color: 'var(--color-success)'}}>Expected move:</strong> {expandedPuzzle.expectedMove}
               </div>
               <div>
-                <strong style={{color: '#ffffff'}}>Full solution:</strong> {expandedPuzzle.solutionUCI}
+                <strong style={{color: 'var(--color-text)'}}>Full solution:</strong> {expandedPuzzle.solutionUCI}
               </div>
             </div>
           </div>

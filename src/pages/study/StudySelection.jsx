@@ -23,14 +23,14 @@ const StudySelection = () => {
 
   const studyTypeColors = {
     basic: {
-      color: '#10b981',
-      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      accentColor: 'rgba(16, 185, 129, 0.15)'
+      color: 'var(--color-success)',
+      gradient: 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
+      accentColor: 'var(--color-success-a12)'
     },
     positional: {
-      color: '#06b6d4',
-      gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
-      accentColor: 'rgba(6, 182, 212, 0.15)'
+      color: 'var(--color-accent)',
+      gradient: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
+      accentColor: 'var(--color-accent-a15)'
     }
   };
 
@@ -55,7 +55,7 @@ const StudySelection = () => {
   const styles = {
     page: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '20px',
       position: 'relative',
@@ -68,9 +68,9 @@ const StudySelection = () => {
       right: 0,
       bottom: 0,
       background: `
-        radial-gradient(circle at 30% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 70% 60%, rgba(239, 68, 68, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)
+        radial-gradient(circle at 30% 20%, var(--color-accent-a15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 60%, var(--color-danger-a12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, var(--color-success-a12) 0%, transparent 50%)
       `,
       pointerEvents: 'none',
       zIndex: 0,
@@ -82,8 +82,8 @@ const StudySelection = () => {
       right: 0,
       bottom: 0,
       backgroundImage: `
-        linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px)
+        linear-gradient(var(--color-accent-a06) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-accent-a06) 1px, transparent 1px)
       `,
       backgroundSize: '50px 50px',
       pointerEvents: 'none',
@@ -107,11 +107,11 @@ const StudySelection = () => {
       top: '50%',
       transform: 'translateY(-50%)',
       padding: '12px 24px',
-      background: 'rgba(15, 15, 15, 0.6)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      color: '#ffffff',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '16px',
       cursor: 'pointer',
       fontSize: '14px',
@@ -152,7 +152,7 @@ const StudySelection = () => {
     },
     subtitle: {
       fontSize: '16px',
-      color: '#94a3b8',
+      color: 'var(--color-text-muted)',
       fontWeight: '400',
       maxWidth: '600px',
       margin: '0 auto',
@@ -166,13 +166,13 @@ const StudySelection = () => {
     },
     studyCard: {
       position: 'relative',
-      background: 'rgba(15, 15, 15, 0.6)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '20px',
       backdropFilter: 'blur(20px)',
       overflow: 'hidden',
       transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     cardBorderGlow: {
       position: 'absolute',
@@ -183,7 +183,7 @@ const StudySelection = () => {
       borderRadius: '20px',
       padding: '1px',
       background: `linear-gradient(135deg, transparent, ${currentColor.color}, transparent)`,
-      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+      WebkitMask: 'linear-gradient(var(--color-text) 0 0) content-box, linear-gradient(var(--color-text) 0 0)',
       WebkitMaskComposite: 'xor',
       maskComposite: 'exclude',
       opacity: 0,
@@ -212,12 +212,12 @@ const StudySelection = () => {
     },
     cardIcon: {
       fontSize: '28px',
-      filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5))',
+      filter: 'drop-shadow(0 4px 12px var(--color-black-a50))',
       opacity: 0.8,
     },
     cardDescription: {
       fontSize: '14px',
-      color: '#94a3b8',
+      color: 'var(--color-text-muted)',
       lineHeight: '1.6',
       marginBottom: '24px',
       minHeight: '60px',
@@ -230,13 +230,13 @@ const StudySelection = () => {
       gap: '10px',
       width: '100%',
       padding: '16px 24px',
-      background: 'rgba(0, 0, 0, 0.4)',
+      background: 'var(--color-black-a35)',
       border: `1px solid ${currentColor.color}40`,
       borderRadius: '14px',
       fontSize: '15px',
       fontWeight: '600',
       cursor: 'pointer',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       textDecoration: 'none',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       overflow: 'hidden',
@@ -247,7 +247,7 @@ const StudySelection = () => {
       left: '-50%',
       width: '200%',
       height: '200%',
-      background: 'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%)',
+      background: 'linear-gradient(45deg, transparent 30%, var(--color-white-a10) 50%, transparent 70%)',
       transform: 'translateX(-100%)',
       transition: 'transform 0.6s ease',
     },
@@ -270,14 +270,14 @@ const StudySelection = () => {
     },
     loading: {
       textAlign: 'center',
-      color: '#94a3b8',
+      color: 'var(--color-text-muted)',
       fontSize: '18px',
       padding: '60px',
       fontStyle: 'italic',
     },
     error: {
       textAlign: 'center',
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       fontSize: '18px',
       padding: '60px',
       fontWeight: '500',
@@ -413,7 +413,7 @@ const StudySelection = () => {
                   onMouseLeave={(e) => {
                     const shimmer = e.currentTarget.querySelector('.button-shimmer');
                     if (shimmer) shimmer.style.transform = 'translateX(-100%)';
-                    e.currentTarget.style.background = 'rgba(0, 0, 0, 0.4)';
+                    e.currentTarget.style.background = 'var(--color-black-a35)';
                     e.currentTarget.style.borderColor = `${currentColor.color}40`;
                     e.currentTarget.style.transform = 'translateY(0)';
                     e.currentTarget.style.boxShadow = 'none';

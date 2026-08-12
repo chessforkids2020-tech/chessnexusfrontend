@@ -649,9 +649,9 @@ function TeamRacePuzzle() {
 
   const getTimerColor = () => {
     const percentage = (timeLeft / duration) * 100;
-    if (percentage > 50) return '#28a745';
-    if (percentage > 20) return '#ffc107';
-    return '#dc3545';
+    if (percentage > 50) return 'var(--color-success)';
+    if (percentage > 20) return 'var(--color-warning)';
+    return 'var(--color-danger)';
   };
 
   if (loading) {
@@ -684,9 +684,9 @@ function TeamRacePuzzle() {
       <div style={{ 
         padding: '40px', 
         textAlign: 'center', 
-        background: '#0a0a0a', 
+        background: 'var(--color-bg)', 
         minHeight: '100vh', 
-        color: '#fff',
+        color: 'var(--color-text)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -704,9 +704,9 @@ function TeamRacePuzzle() {
       <div style={{ 
         padding: '40px', 
         textAlign: 'center', 
-        background: '#0a0a0a', 
+        background: 'var(--color-bg)', 
         minHeight: '100vh', 
-        color: '#fff',
+        color: 'var(--color-text)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -866,10 +866,10 @@ function TeamRacePuzzle() {
                 className="skip-button"
                 style={{
                   padding: '10px 20px',
-                  background: 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)',
+                  background: 'linear-gradient(135deg, var(--color-danger) 0%, #c82333 100%)',
                   border: 'none',
                   borderRadius: '8px',
-                  color: '#fff',
+                  color: 'var(--color-text)',
                   fontWeight: '600',
                   cursor: 'pointer',
                   width: '100%',

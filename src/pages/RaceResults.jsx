@@ -10,7 +10,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineEleme
 const styles = {
   container: {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    background: '#0a0a0a',
+    background: 'var(--color-bg)',
     minHeight: '100vh',
     padding: '20px',
     position: 'relative',
@@ -22,7 +22,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+    background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
     pointerEvents: 'none',
     zIndex: 0,
   },
@@ -33,14 +33,14 @@ const styles = {
     margin: '0 auto',
   },
   hero: {
-    background: 'rgba(23, 23, 23, 0.7)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-white-a04)',
     borderRadius: '20px',
     backdropFilter: 'blur(10px)',
     padding: '15px 20px',
     marginBottom: '20px',
     textAlign: 'center',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
     position: 'relative',
     overflow: 'hidden',
   },
@@ -57,13 +57,13 @@ const styles = {
   },
   trophyIcon: {
     fontSize: '55px',
-    filter: 'drop-shadow(0 4px 12px rgba(16, 185, 129, 0.3))',
+    filter: 'drop-shadow(0 4px 12px var(--color-success-a30))',
   },
   heroTitle: {
     fontSize: '36px',
     fontWeight: '800',
     margin: '0',
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
@@ -71,7 +71,7 @@ const styles = {
   heroSubtitle: {
     fontSize: '16px',
     margin: '0',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
   },
   mainGrid: {
     display: 'grid',
@@ -80,18 +80,18 @@ const styles = {
     marginBottom: '30px',
   },
   glassCard: {
-    background: 'rgba(23, 23, 23, 0.7)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-white-a04)',
     borderRadius: '20px',
     backdropFilter: 'blur(10px)',
     padding: '30px',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   },
   cardTitle: {
     fontSize: '24px',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text)',
     margin: '0 0 25px 0',
     textAlign: 'center',
   },
@@ -102,16 +102,16 @@ const styles = {
   scoreNumber: {
     fontSize: '72px',
     fontWeight: '900',
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
     marginBottom: '5px',
-    textShadow: '0 0 20px rgba(6, 182, 212, 0.4)',
+    textShadow: '0 0 20px var(--color-accent-a40)',
   },
   scoreLabel: {
     fontSize: '18px',
-    color: '#6b7280',
+    color: 'var(--color-text-faint)',
     fontWeight: '600',
     letterSpacing: '1.5px',
     textTransform: 'uppercase',
@@ -123,8 +123,8 @@ const styles = {
     marginBottom: '30px',
   },
   statItem: {
-    background: 'rgba(0, 0, 0, 0.4)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--color-black-a35)',
+    border: '1px solid var(--color-white-a04)',
     borderRadius: '12px',
     padding: '20px 15px',
     textAlign: 'center',
@@ -137,13 +137,13 @@ const styles = {
   statValue: {
     fontSize: '28px',
     fontWeight: '800',
-    color: '#10b981',
+    color: 'var(--color-success)',
     marginBottom: '5px',
-    textShadow: '0 0 10px rgba(16, 185, 129, 0.3)',
+    textShadow: '0 0 10px var(--color-success-a30)',
   },
   statLabelSmall: {
     fontSize: '12px',
-    color: '#6b7280',
+    color: 'var(--color-text-faint)',
     textTransform: 'uppercase',
     letterSpacing: '1px',
     fontWeight: '600',
@@ -153,23 +153,23 @@ const styles = {
   },
   accuracyLabel: {
     fontSize: '16px',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     marginBottom: '10px',
     fontWeight: '600',
     textAlign: 'center',
   },
   progressBar: {
     height: '16px',
-    background: 'rgba(0, 0, 0, 0.4)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--color-black-a35)',
+    border: '1px solid var(--color-white-a04)',
     borderRadius: '8px',
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    background: 'linear-gradient(90deg, #10b981, #06b6d4)',
+    background: 'linear-gradient(90deg, var(--color-success), var(--color-accent))',
     transition: 'width 0.3s ease',
-    boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)',
+    boxShadow: '0 0 10px var(--color-success-a30)',
   },
   buttonGroup: {
     display: 'flex',
@@ -177,8 +177,8 @@ const styles = {
     justifyContent: 'center',
   },
   primaryButton: {
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-    color: '#ffffff',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '14px 32px',
     borderRadius: '12px',
@@ -188,7 +188,7 @@ const styles = {
     textDecoration: 'none',
     display: 'inline-block',
     transition: 'all 0.3s ease',
-    boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
+    boxShadow: '0 4px 16px var(--color-accent-a40)',
   },
   chartRow: {
     display: 'grid',
@@ -197,8 +197,8 @@ const styles = {
     marginBottom: '15px',
   },
   chartContainer: {
-    background: 'rgba(0, 0, 0, 0.3)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--color-black-a35)',
+    border: '1px solid var(--color-white-a04)',
     borderRadius: '12px',
     padding: '8px',
     overflow: 'hidden',
@@ -208,13 +208,13 @@ const styles = {
   chartTitle: {
     fontSize: '16px',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text)',
     margin: '0 0 8px 0',
     textAlign: 'center',
   },
   timeChart: {
-    background: 'rgba(0, 0, 0, 0.3)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--color-black-a35)',
+    border: '1px solid var(--color-white-a04)',
     borderRadius: '12px',
     padding: '8px',
     overflow: 'hidden',
@@ -223,7 +223,7 @@ const styles = {
   },
   noData: {
     textAlign: 'center',
-    color: '#6b7280',
+    color: 'var(--color-text-faint)',
     padding: '40px',
     fontSize: '16px',
   },
@@ -323,25 +323,25 @@ export default function RaceResults() {
     plugins: {
       legend: {
         labels: {
-          color: '#9ca3af'
+          color: 'var(--color-text-muted)'
         }
       }
     },
     scales: {
       x: {
         grid: {
-          color: 'rgba(255, 255, 255, 0.05)'
+          color: 'var(--color-white-a04)'
         },
         ticks: {
-          color: '#9ca3af'
+          color: 'var(--color-text-muted)'
         }
       },
       y: {
         grid: {
-          color: 'rgba(255, 255, 255, 0.05)'
+          color: 'var(--color-white-a04)'
         },
         ticks: {
-          color: '#9ca3af'
+          color: 'var(--color-text-muted)'
         }
       }
     }
@@ -371,8 +371,8 @@ export default function RaceResults() {
         {/* Guest notice */}
         {!localStorage.getItem('authToken') && (
           <div style={{
-            background: 'rgba(245,158,11,0.12)',
-            border: '1px solid rgba(245,158,11,0.35)',
+            background: 'var(--color-warning-a12)',
+            border: '1px solid var(--color-warning-a30)',
             borderRadius: 14,
             padding: '14px 20px',
             marginBottom: 20,
@@ -382,13 +382,13 @@ export default function RaceResults() {
             flexWrap: 'wrap',
             gap: 12,
           }}>
-            <div style={{ color: '#fbbf24', fontSize: 14, fontWeight: 600 }}>
+            <div style={{ color: 'var(--color-warning)', fontSize: 14, fontWeight: 600 }}>
               👤 You're playing as a guest — results won't be saved.{' '}
-              <span style={{ color: '#d1d5db', fontWeight: 400 }}>Create a free account to track your progress!</span>
+              <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}>Create a free account to track your progress!</span>
             </div>
             <Link to="/signup-request" style={{
-              background: 'linear-gradient(135deg,#f59e0b,#d97706)',
-              color: '#fff', border: 'none', borderRadius: 10,
+              background: 'linear-gradient(135deg,var(--color-warning),#d97706)',
+              color: 'var(--color-text)', border: 'none', borderRadius: 10,
               padding: '8px 18px', fontWeight: 700, fontSize: 13,
               textDecoration: 'none', whiteSpace: 'nowrap',
             }}>Request Account</Link>
@@ -455,13 +455,13 @@ export default function RaceResults() {
                         datasets: [{
                           label: 'Correct/Incorrect',
                           data: attempts.map(a => a.correct ? 1 : -1),
-                          borderColor: '#10b981',
-                          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                          borderColor: 'var(--color-success)',
+                          backgroundColor: 'var(--color-success-a12)',
                           tension: 0.3,
                           fill: true,
                           pointRadius: 4,
-                          pointBackgroundColor: '#10b981',
-                          pointBorderColor: '#10b981',
+                          pointBackgroundColor: 'var(--color-success)',
+                          pointBorderColor: 'var(--color-success)',
                         }]
                       }}
                       options={{
@@ -480,7 +480,7 @@ export default function RaceResults() {
                           },
                           x: { 
                             ...chartOptions.scales.x,
-                            title: { display: true, text: 'Puzzle #', color: '#9ca3af' } 
+                            title: { display: true, text: 'Puzzle #', color: 'var(--color-text-muted)' } 
                           }
                         },
                         plugins: { legend: { display: false } },
@@ -499,13 +499,13 @@ export default function RaceResults() {
                             let sum = 0;
                             return attempts.map(a => { sum += (a.correct ? 10 : 0); return sum; });
                           })(),
-                          borderColor: '#06b6d4',
-                          backgroundColor: 'rgba(6, 182, 212, 0.12)',
+                          borderColor: 'var(--color-accent)',
+                          backgroundColor: 'var(--color-accent-a12)',
                           tension: 0.3,
                           fill: true,
                           pointRadius: 4,
-                          pointBackgroundColor: '#06b6d4',
-                          pointBorderColor: '#06b6d4',
+                          pointBackgroundColor: 'var(--color-accent)',
+                          pointBorderColor: 'var(--color-accent)',
                         }]
                       }}
                       options={{
@@ -515,7 +515,7 @@ export default function RaceResults() {
                           y: { 
                             ...chartOptions.scales.y,
                             beginAtZero: true, 
-                            title: { display: true, text: 'Points', color: '#9ca3af' } 
+                            title: { display: true, text: 'Points', color: 'var(--color-text-muted)' } 
                           } 
                         },
                         plugins: { legend: { display: false } },
@@ -543,7 +543,7 @@ export default function RaceResults() {
                         y: { 
                           ...chartOptions.scales.y,
                           beginAtZero: true, 
-                          title: { display: true, text: 'Seconds', color: '#9ca3af' } 
+                          title: { display: true, text: 'Seconds', color: 'var(--color-text-muted)' } 
                         } 
                       }
                     }}

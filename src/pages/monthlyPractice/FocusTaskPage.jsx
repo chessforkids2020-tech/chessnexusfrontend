@@ -854,7 +854,7 @@ export default function FocusTaskPage() {
                           <strong>Correct answer:</strong> {item.correctAnswer}
                         </div>
                         {item.explanation && (
-                          <div style={{ marginTop: '8px', fontSize: '13px', color: '#6b7280', fontStyle: 'italic' }}>
+                          <div style={{ marginTop: '8px', fontSize: '13px', color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
                             💡 {item.explanation}
                           </div>
                         )}
@@ -864,9 +864,9 @@ export default function FocusTaskPage() {
                 ))}
 
                 {task.taskType === 'find_mistakes' && result.correctAnswers && result.correctAnswers.length > 0 && (
-                  <div style={{ background: 'rgba(23, 23, 23, 0.7)', border: '1px solid rgba(255, 255, 255, 0.05)', color: '#e5e7eb', padding: '15px', borderRadius: '12px', marginTop: '15px', backdropFilter: 'blur(10px)' }}>
+                  <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-white-a04)', color: 'var(--color-text)', padding: '15px', borderRadius: '12px', marginTop: '15px', backdropFilter: 'blur(10px)' }}>
                     <div style={{ marginBottom: '15px' }}>
-                      <strong style={{ color: '#06b6d4' }}>Game PGN:</strong>
+                      <strong style={{ color: 'var(--color-accent)' }}>Game PGN:</strong>
                       <div 
                         style={{ cursor: 'pointer', marginTop: '10px', display: 'inline-block' }}
                         onClick={() => openChessboardPopup(task.content.pgn, task.content.side || 'white', 'pgn')}
@@ -879,14 +879,14 @@ export default function FocusTaskPage() {
                       </div>
                     </div>
                     {result.correctAnswers.map((ans, idx) => (
-                      <div key={idx} style={{ marginTop: '15px', padding: '12px', background: ans.type === 'best_move' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)', border: ans.type === 'best_move' ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '10px' }}>
-                        <div style={{ fontWeight: 'bold', marginBottom: '5px', color: ans.type === 'best_move' ? '#10b981' : '#ef4444' }}>
+                      <div key={idx} style={{ marginTop: '15px', padding: '12px', background: ans.type === 'best_move' ? 'var(--color-success-a12)' : 'var(--color-danger-a12)', border: ans.type === 'best_move' ? '1px solid var(--color-success-a30)' : '1px solid var(--color-danger-a30)', borderRadius: '10px' }}>
+                        <div style={{ fontWeight: 'bold', marginBottom: '5px', color: ans.type === 'best_move' ? 'var(--color-success)' : 'var(--color-danger)' }}>
                           {ans.type === 'best_move' ? '🎯 Best Move' : '💥 Blunder'} - Move {ans.moveNumber}
                         </div>
-                        <div style={{ color: '#d1d5db' }}><strong>Move:</strong> {ans.move}</div>
-                        {ans.betterMove && <div style={{ color: '#d1d5db' }}><strong>Better:</strong> {ans.betterMove}</div>}
+                        <div style={{ color: 'var(--color-text-muted)' }}><strong>Move:</strong> {ans.move}</div>
+                        {ans.betterMove && <div style={{ color: 'var(--color-text-muted)' }}><strong>Better:</strong> {ans.betterMove}</div>}
                         {ans.explanation && (
-                          <div style={{ marginTop: '5px', fontSize: '13px', color: '#9ca3af', fontStyle: 'italic' }}>
+                          <div style={{ marginTop: '5px', fontSize: '13px', color: 'var(--color-text-muted)', fontStyle: 'italic' }}>
                             💡 {ans.explanation}
                           </div>
                         )}
@@ -1093,9 +1093,9 @@ export default function FocusTaskPage() {
             {task.content.engineJudged && (
               <div style={{
                 marginBottom: '20px', padding: '12px 16px', borderRadius: '10px',
-                background: engineError ? 'rgba(239,68,68,0.12)' : engineReady ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)',
-                border: `1px solid ${engineError ? 'rgba(239,68,68,0.4)' : engineReady ? 'rgba(16,185,129,0.4)' : 'rgba(245,158,11,0.4)'}`,
-                color: engineError ? '#ef4444' : engineReady ? '#10b981' : '#f59e0b',
+                background: engineError ? 'var(--color-danger-a12)' : engineReady ? 'var(--color-success-a12)' : 'var(--color-warning-a12)',
+                border: `1px solid ${engineError ? 'var(--color-danger-a30)' : engineReady ? 'var(--color-success-a30)' : 'var(--color-warning-a30)'}`,
+                color: engineError ? 'var(--color-danger)' : engineReady ? 'var(--color-success)' : 'var(--color-warning)',
                 fontSize: '13.5px', fontWeight: 600, textAlign: 'center'
               }}>
                 {engineError
@@ -1129,15 +1129,15 @@ export default function FocusTaskPage() {
                     {isDone && (
                       engineMode ? (
                         <span style={{
-                          background: verdict === 'pass' ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)',
-                          color: verdict === 'pass' ? '#10b981' : '#ef4444',
-                          border: `1px solid ${verdict === 'pass' ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.5)'}`,
+                          background: verdict === 'pass' ? 'var(--color-success-a20)' : 'var(--color-danger-a20)',
+                          color: verdict === 'pass' ? 'var(--color-success)' : 'var(--color-danger)',
+                          border: `1px solid ${verdict === 'pass' ? 'var(--color-success-a30)' : 'rgba(239,68,68,0.5)'}`,
                           padding: '4px 14px', borderRadius: '20px', fontWeight: 700, fontSize: '13px'
                         }}>
                           {verdict === 'pass' ? '✓ Solved!' : '✗ Not quite'}
                         </span>
                       ) : (
-                        <span style={{ background: 'rgba(16,185,129,0.2)', color: '#10b981', border: '1px solid rgba(16,185,129,0.5)', padding: '4px 14px', borderRadius: '20px', fontWeight: 700, fontSize: '13px' }}>
+                        <span style={{ background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', padding: '4px 14px', borderRadius: '20px', fontWeight: 700, fontSize: '13px' }}>
                           ✓ Solution submitted!
                         </span>
                       )
@@ -1168,14 +1168,14 @@ export default function FocusTaskPage() {
                     {/* Moves made chips */}
                     {movesMade.length > 0 && (
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: '13px', color: '#9ca3af', marginRight: '4px' }}>Moves:</span>
+                        <span style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginRight: '4px' }}>Moves:</span>
                         {movesMade.map((m, i) => (
                           <span
                             key={i}
                             style={{
-                              background: 'rgba(6,182,212,0.15)',
-                              color: '#06b6d4',
-                              border: '1px solid rgba(6,182,212,0.4)',
+                              background: 'var(--color-accent-a15)',
+                              color: 'var(--color-accent)',
+                              border: '1px solid var(--color-accent-a40)',
                               padding: '3px 10px',
                               borderRadius: '12px',
                               fontSize: '13px',
@@ -1193,11 +1193,11 @@ export default function FocusTaskPage() {
                     {!isDone ? (
                       <div style={{ textAlign: 'center' }}>
                         {thinking ? (
-                          <p style={{ color: '#f59e0b', fontSize: '13px', margin: '0 0 8px 0', fontWeight: 600 }}>
+                          <p style={{ color: 'var(--color-warning)', fontSize: '13px', margin: '0 0 8px 0', fontWeight: 600 }}>
                             🤖 Stockfish checking your move…
                           </p>
                         ) : (
-                          <p style={{ color: '#9ca3af', fontSize: '13px', margin: '0 0 8px 0' }}>
+                          <p style={{ color: 'var(--color-text-muted)', fontSize: '13px', margin: '0 0 8px 0' }}>
                             {movesNeeded} move{movesNeeded !== 1 ? 's' : ''} remaining — drag or click a piece to play
                           </p>
                         )}
@@ -1213,12 +1213,12 @@ export default function FocusTaskPage() {
                         )}
                       </div>
                     ) : (
-                      <div style={{ textAlign: 'center', color: verdict === 'fail' ? '#ef4444' : '#10b981', fontWeight: 600, fontSize: '14px' }}>
+                      <div style={{ textAlign: 'center', color: verdict === 'fail' ? 'var(--color-danger)' : 'var(--color-success)', fontWeight: 600, fontSize: '14px' }}>
                         {engineMode
                           ? (verdict === 'pass' ? '✓ Accepted by Stockfish!' : '✗ That line gave up the advantage — auto-submitting when all puzzles complete')
                           : '✓ All moves made — auto-submitting when all puzzles complete'}
                         {engineMode && verdict === 'fail' && engineBestMoves[index] && (
-                          <div style={{ marginTop: '6px', color: '#fbbf24', fontWeight: 700, fontSize: '13.5px' }}>
+                          <div style={{ marginTop: '6px', color: 'var(--color-warning)', fontWeight: 700, fontSize: '13.5px' }}>
                             💡 Stockfish preferred: <strong>{engineBestMoves[index]}</strong>
                           </div>
                         )}
@@ -1386,11 +1386,11 @@ export default function FocusTaskPage() {
                         marginBottom: '15px',
                         background: 'rgba(30, 41, 59, 0.85)',
                         backdropFilter: 'blur(10px)',
-                        color: '#ffffff',
+                        color: 'var(--color-text)',
                         padding: '15px 20px',
                         borderRadius: '12px',
-                        border: '1px solid rgba(148, 163, 184, 0.3)',
-                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                        border: '1px solid var(--color-border-strong)',
+                        boxShadow: '0 4px 6px var(--color-black-a20)'
                       }}
                     >
                       {item.question}
@@ -1411,21 +1411,21 @@ export default function FocusTaskPage() {
                             padding: '12px 15px',
                             margin: '8px 0',
                             border: answers?.answers?.[index] === option 
-                              ? '2px solid #10b981' 
-                              : '2px solid rgba(148, 163, 184, 0.3)',
+                              ? '2px solid var(--color-success)' 
+                              : '2px solid var(--color-border-strong)',
                             borderRadius: '8px',
                             background: answers?.answers?.[index] === option 
                               ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9))' 
                               : 'rgba(30, 41, 59, 0.75)',
                             backdropFilter: 'blur(10px)',
-                            color: '#ffffff',
+                            color: 'var(--color-text)',
                             cursor: 'pointer',
                             transition: 'all 0.2s',
                             fontSize: '14px',
                             fontWeight: answers?.answers?.[index] === option ? 'bold' : 'normal',
                             boxShadow: answers?.answers?.[index] === option 
-                              ? '0 4px 8px rgba(16, 185, 129, 0.3)' 
-                              : '0 2px 4px rgba(0, 0, 0, 0.1)'
+                              ? '0 4px 8px var(--color-success-a30)' 
+                              : '0 2px 4px var(--color-black-a20)'
                           }}
                         >
                           {option}
@@ -1434,7 +1434,7 @@ export default function FocusTaskPage() {
                     </div>
                     
                     <details style={{ marginTop: '15px' }}>
-                      <summary style={{ cursor: 'pointer', color: '#6b7280', fontSize: '13px' }}>
+                      <summary style={{ cursor: 'pointer', color: 'var(--color-text-faint)', fontSize: '13px' }}>
                         💭 Add explanation (optional)
                       </summary>
                       <textarea 
@@ -1451,7 +1451,7 @@ export default function FocusTaskPage() {
                           minHeight: '60px',
                           padding: '10px',
                           marginTop: '10px',
-                          border: '1px solid #e5e7eb',
+                          border: '1px solid var(--color-text)',
                           borderRadius: '6px',
                           fontSize: '13px',
                           fontFamily: 'inherit'
@@ -1493,7 +1493,7 @@ export default function FocusTaskPage() {
                     width: '100%',
                     minHeight: '150px',
                     padding: '12px',
-                    border: '2px solid #d1d5db',
+                    border: '2px solid var(--color-text-muted)',
                     borderRadius: '8px',
                     fontFamily: 'monospace',
                     fontSize: '12px',
@@ -1512,7 +1512,7 @@ export default function FocusTaskPage() {
                   style={{
                     width: '200px',
                     padding: '10px',
-                    border: '2px solid #d1d5db',
+                    border: '2px solid var(--color-text-muted)',
                     borderRadius: '8px',
                     fontSize: '14px'
                   }}
@@ -1537,7 +1537,7 @@ export default function FocusTaskPage() {
               )}
 
               {analyzingPgn && (
-                <div style={{ marginTop: '15px', padding: '15px', background: '#fef3c7', borderRadius: '8px', border: '1px solid #fbbf24' }}>
+                <div style={{ marginTop: '15px', padding: '15px', background: 'var(--color-warning)', borderRadius: '8px', border: '1px solid var(--color-warning)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <div style={{ fontSize: '20px', animation: 'spin 1s linear infinite' }}>⚙️</div>
                     <div>
@@ -1559,7 +1559,7 @@ export default function FocusTaskPage() {
                 return (
                 <div style={{ marginTop: '20px' }}>
                   {/* Side Toggle Tabs */}
-                  <div style={{ display: 'flex', gap: '0', marginBottom: '20px', borderRadius: '8px', overflow: 'hidden', border: '2px solid #d1d5db' }}>
+                  <div style={{ display: 'flex', gap: '0', marginBottom: '20px', borderRadius: '8px', overflow: 'hidden', border: '2px solid var(--color-text-muted)' }}>
                     {['white', 'black'].map(s => {
                       const sd = pgnAnalysisResult[s] || { totalBlunders: 0, totalMistakes: 0, totalInaccuracies: 0 };
                       const isActive = viewSide === s;
@@ -1582,18 +1582,18 @@ export default function FocusTaskPage() {
                             cursor: 'pointer',
                             fontSize: '14px',
                             fontWeight: 'bold',
-                            background: isActive ? (s === 'white' ? '#f3f4f6' : '#1f2937') : '#fff',
-                            color: isActive ? (s === 'white' ? '#1f2937' : '#f9fafb') : '#6b7280',
+                            background: isActive ? (s === 'white' ? 'var(--color-text)' : '#1f2937') : 'var(--color-text)',
+                            color: isActive ? (s === 'white' ? '#1f2937' : 'var(--color-text)') : 'var(--color-text-faint)',
                             transition: 'all 0.2s'
                           }}
                         >
                           {s === 'white' ? '⚪' : '⚫'} {s.charAt(0).toUpperCase() + s.slice(1)}
                           {isUser && ' (You)'}
                           <div style={{ fontSize: '11px', fontWeight: 'normal', marginTop: '4px' }}>
-                            {sd.totalBlunders > 0 && <span style={{ color: '#dc2626' }}>💥{sd.totalBlunders} </span>}
+                            {sd.totalBlunders > 0 && <span style={{ color: 'var(--color-danger)' }}>💥{sd.totalBlunders} </span>}
                             {sd.totalMistakes > 0 && <span style={{ color: '#ea580c' }}>⚠️{sd.totalMistakes} </span>}
-                            {sd.totalInaccuracies > 0 && <span style={{ color: '#2563eb' }}>❓{sd.totalInaccuracies}</span>}
-                            {sd.totalBlunders === 0 && sd.totalMistakes === 0 && sd.totalInaccuracies === 0 && <span style={{ color: '#10b981' }}>✅ Clean</span>}
+                            {sd.totalInaccuracies > 0 && <span style={{ color: 'var(--color-accent-2)' }}>❓{sd.totalInaccuracies}</span>}
+                            {sd.totalBlunders === 0 && sd.totalMistakes === 0 && sd.totalInaccuracies === 0 && <span style={{ color: 'var(--color-success)' }}>✅ Clean</span>}
                           </div>
                         </button>
                       );
@@ -1608,15 +1608,15 @@ export default function FocusTaskPage() {
                       borderRadius: '12px',
                       textAlign: 'center',
                       marginBottom: '20px',
-                      border: `2px solid ${passed ? '#10b981' : '#ef4444'}`
+                      border: `2px solid ${passed ? 'var(--color-success)' : 'var(--color-danger)'}`
                     }}>
                       <h3 style={{ margin: '0 0 10px 0', fontSize: '24px' }}>
                         {passed ? '✅ PASSED!' : '❌ FAILED'}
                       </h3>
-                      <div style={{ fontSize: '18px', fontWeight: 'bold', color: passed ? '#166534' : '#dc2626' }}>
+                      <div style={{ fontSize: '18px', fontWeight: 'bold', color: passed ? '#166534' : 'var(--color-danger)' }}>
                         {sideData.totalBlunders} blunder{sideData.totalBlunders !== 1 ? 's' : ''} found on your side
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '8px', fontSize: '13px', color: '#6b7280' }}>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '8px', fontSize: '13px', color: 'var(--color-text-faint)' }}>
                         {sideData.totalMistakes > 0 && (
                           <span>⚠️ {sideData.totalMistakes} mistake{sideData.totalMistakes !== 1 ? 's' : ''}</span>
                         )}
@@ -1624,7 +1624,7 @@ export default function FocusTaskPage() {
                           <span>❓ {sideData.totalInaccuracies} inaccurac{sideData.totalInaccuracies !== 1 ? 'ies' : 'y'}</span>
                         )}
                       </div>
-                      <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '5px' }}>
+                      <div style={{ fontSize: '13px', color: 'var(--color-text-faint)', marginTop: '5px' }}>
                         Limit: {task.content.blunderLimit} blunders · Lichess Win% model · Depth: {pgnAnalysisResult.depth || 18}
                       </div>
                     </div>
@@ -1633,17 +1633,17 @@ export default function FocusTaskPage() {
                   {/* Opponent side info banner */}
                   {!isUserSide && (
                     <div style={{ 
-                      background: '#f3f4f6',
+                      background: 'var(--color-text)',
                       padding: '15px',
                       borderRadius: '12px',
                       textAlign: 'center',
                       marginBottom: '20px',
-                      border: '2px solid #d1d5db'
+                      border: '2px solid var(--color-text-muted)'
                     }}>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#374151' }}>
+                      <div style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--color-text-faint)' }}>
                         Opponent's ({viewSide}) analysis
                       </div>
-                      <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '5px' }}>
+                      <div style={{ fontSize: '13px', color: 'var(--color-text-faint)', marginTop: '5px' }}>
                         {sideData.totalBlunders} blunder{sideData.totalBlunders !== 1 ? 's' : ''}, {sideData.totalMistakes} mistake{sideData.totalMistakes !== 1 ? 's' : ''}, {sideData.totalInaccuracies} inaccurac{sideData.totalInaccuracies !== 1 ? 'ies' : 'y'}
                       </div>
                     </div>
@@ -1657,9 +1657,9 @@ export default function FocusTaskPage() {
                       </h5>
                       {sideData.allIssues.map((issue, idx) => {
                         const colors = {
-                          blunder: { bg: '#fff', border: '#fca5a5', badge: '#dc2626', badgeBg: '#fee2e2', icon: '💥' },
-                          mistake: { bg: '#fff', border: '#fdba74', badge: '#ea580c', badgeBg: '#ffedd5', icon: '⚠️' },
-                          inaccuracy: { bg: '#fff', border: '#93c5fd', badge: '#2563eb', badgeBg: '#dbeafe', icon: '❓' }
+                          blunder: { bg: 'var(--color-text)', border: 'var(--color-danger)', badge: 'var(--color-danger)', badgeBg: '#fee2e2', icon: '💥' },
+                          mistake: { bg: 'var(--color-text)', border: '#fdba74', badge: '#ea580c', badgeBg: '#ffedd5', icon: '⚠️' },
+                          inaccuracy: { bg: 'var(--color-text)', border: '#93c5fd', badge: 'var(--color-accent-2)', badgeBg: '#dbeafe', icon: '❓' }
                         };
                         const c = colors[issue.classification] || colors.inaccuracy;
                         return (
@@ -1684,16 +1684,16 @@ export default function FocusTaskPage() {
                                 Move {issue.moveNumber}: <span style={{ color: c.badge }}>{issue.move}</span>
                               </span>
                             </div>
-                            <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '3px' }}>
+                            <div style={{ fontSize: '13px', color: 'var(--color-text-faint)', marginBottom: '3px' }}>
                               Win chance: {issue.winChanceBefore}% → {issue.winChanceAfter}%
                               <span style={{ color: c.badge, fontWeight: 'bold' }}> (−{issue.winChanceDrop}%)</span>
                             </div>
                             {issue.evalWhiteBefore !== undefined && issue.evalWhiteAfter !== undefined && (
-                              <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '3px' }}>
+                              <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '3px' }}>
                                 Eval: {issue.evalWhiteBefore > 0 ? '+' : ''}{(issue.evalWhiteBefore / 100).toFixed(2)} → {issue.evalWhiteAfter > 0 ? '+' : ''}{(issue.evalWhiteAfter / 100).toFixed(2)}
                               </div>
                             )}
-                            <div style={{ fontSize: '13px', color: '#10b981' }}>
+                            <div style={{ fontSize: '13px', color: 'var(--color-success)' }}>
                               <strong>Better move:</strong> {issue.bestMove}
                             </div>
                           </div>
@@ -1709,7 +1709,7 @@ export default function FocusTaskPage() {
                       borderRadius: '8px',
                       textAlign: 'center',
                       color: '#166534',
-                      border: '2px solid #10b981'
+                      border: '2px solid var(--color-success)'
                     }}>
                       🎉 Excellent! No blunders, mistakes, or inaccuracies detected for {viewSide}.
                     </div>

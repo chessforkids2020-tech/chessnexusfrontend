@@ -63,41 +63,41 @@ export default function StudyDuelWaiting() {
 
   const cardStyle = {
     background: 'rgba(15,15,15,0.7)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--color-white-a07)',
     borderRadius: 16,
     backdropFilter: 'blur(20px)',
     padding: 24,
   };
 
   return (
-    <div style={{ background: '#0a0a0a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Segoe UI', sans-serif", color: '#fff' }}>
-      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 50% 30%, rgba(251,191,36,0.1) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
+    <div style={{ background: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Segoe UI', sans-serif", color: 'var(--color-text)' }}>
+      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 50% 30%, var(--color-warning-a12) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
       <div style={{ maxWidth: 480, width: '100%', padding: 24, position: 'relative', zIndex: 1 }}>
-        <button onClick={() => navigate(-1)} style={{ padding: '10px 20px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 600, marginBottom: 32 }}>
+        <button onClick={() => navigate(-1)} style={{ padding: '10px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 10, color: 'var(--color-text)', cursor: 'pointer', fontSize: 14, fontWeight: 600, marginBottom: 32 }}>
           ← Back
         </button>
 
         <div style={{ ...cardStyle, textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 12 }}>⚔</div>
-          <h2 style={{ fontSize: 24, fontWeight: 900, color: '#fbbf24', marginBottom: 8 }}>Waiting for Opponent</h2>
+          <h2 style={{ fontSize: 24, fontWeight: 900, color: 'var(--color-warning)', marginBottom: 8 }}>Waiting for Opponent</h2>
 
           {/* Room code */}
-          <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.3)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-            <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 6 }}>ROOM CODE</div>
-            <div style={{ fontSize: 36, fontWeight: 900, fontFamily: 'monospace', color: '#fbbf24', letterSpacing: 8 }}>{roomCode}</div>
+          <div style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid var(--color-warning-a30)', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+            <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 6 }}>ROOM CODE</div>
+            <div style={{ fontSize: 36, fontWeight: 900, fontFamily: 'monospace', color: 'var(--color-warning)', letterSpacing: 8 }}>{roomCode}</div>
           </div>
 
           {/* Share button */}
           <button
             onClick={handleCopy}
-            style={{ width: '100%', padding: '12px 0', background: copied ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)', border: `1px solid ${copied ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.1)'}`, borderRadius: 10, color: copied ? '#34d399' : '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 600, marginBottom: 20 }}
+            style={{ width: '100%', padding: '12px 0', background: copied ? 'var(--color-success-a12)' : 'var(--color-white-a04)', border: `1px solid ${copied ? 'var(--color-success-a30)' : 'var(--color-white-a10)'}`, borderRadius: 10, color: copied ? 'var(--color-success)' : 'var(--color-text)', cursor: 'pointer', fontSize: 14, fontWeight: 600, marginBottom: 20 }}
           >
             {copied ? '✅ Link Copied!' : '📋 Copy Invite Link'}
           </button>
 
           {/* Players */}
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 13, color: '#6b7280', marginBottom: 12 }}>Players ({players.length}/2)</div>
+            <div style={{ fontSize: 13, color: 'var(--color-text-faint)', marginBottom: 12 }}>Players ({players.length}/2)</div>
             {[0, 1].map(i => {
               const p = players[i];
               return (
@@ -110,26 +110,26 @@ export default function StudyDuelWaiting() {
                     alignItems: 'center',
                     gap: 12,
                     padding: '12px 16px',
-                    background: p ? 'rgba(251,191,36,0.08)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${p ? 'rgba(251,191,36,0.3)' : 'rgba(255,255,255,0.06)'}`,
+                    background: p ? 'rgba(251,191,36,0.08)' : 'var(--color-white-a04)',
+                    border: `1px solid ${p ? 'var(--color-warning-a30)' : 'var(--color-white-a07)'}`,
                     borderRadius: 10,
                     marginBottom: 8,
                   }}
                 >
                   <div style={{ fontSize: 20 }}>{p ? (p.color === 'white' ? '♔' : '♚') : '⏳'}</div>
                   <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontWeight: 700, color: p ? '#fff' : '#4b5563', fontSize: 14 }}>
+                    <div style={{ fontWeight: 700, color: p ? 'var(--color-text)' : 'var(--color-text-faint)', fontSize: 14 }}>
                       {p ? p.username : 'Waiting...'}
                     </div>
-                    {p && <div style={{ fontSize: 12, color: '#9ca3af' }}>{p.color === 'white' ? 'White (moves first)' : 'Black'}</div>}
+                    {p && <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{p.color === 'white' ? 'White (moves first)' : 'Black'}</div>}
                   </div>
-                  {p?.ready && <span style={{ marginLeft: 'auto', color: '#34d399', fontSize: 12, fontWeight: 700 }}>✓ Ready</span>}
+                  {p?.ready && <span style={{ marginLeft: 'auto', color: 'var(--color-success)', fontSize: 12, fontWeight: 700 }}>✓ Ready</span>}
                 </motion.div>
               );
             })}
           </div>
 
-          {error && <div style={{ color: '#f87171', fontSize: 13, marginBottom: 16 }}>⚠ {error}</div>}
+          {error && <div style={{ color: 'var(--color-danger)', fontSize: 13, marginBottom: 16 }}>⚠ {error}</div>}
 
           <button
             onClick={handleReady}
@@ -137,10 +137,10 @@ export default function StudyDuelWaiting() {
             style={{
               width: '100%',
               padding: '14px 0',
-              background: players.length >= 2 ? 'rgba(251,191,36,0.15)' : 'rgba(255,255,255,0.04)',
-              border: `2px solid ${players.length >= 2 ? '#fbbf24' : 'rgba(255,255,255,0.08)'}`,
+              background: players.length >= 2 ? 'var(--color-warning-a12)' : 'var(--color-white-a04)',
+              border: `2px solid ${players.length >= 2 ? 'var(--color-warning)' : 'var(--color-white-a07)'}`,
               borderRadius: 12,
-              color: players.length >= 2 ? '#fbbf24' : '#4b5563',
+              color: players.length >= 2 ? 'var(--color-warning)' : 'var(--color-text-faint)',
               cursor: players.length >= 2 ? 'pointer' : 'not-allowed',
               fontSize: 15,
               fontWeight: 800,

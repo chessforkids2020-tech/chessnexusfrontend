@@ -151,7 +151,7 @@ export default function AcademyCoachDetail() {
           ? <img src={coach.photo} alt="" className="acad-coach-photo" />
           : <div className="acad-coach-photo acad-coach-photo--none">{(coach.name || '?')[0].toUpperCase()}</div>}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <h1 style={{ margin: 0, color: '#fff' }}>
+          <h1 style={{ margin: 0, color: 'var(--color-text)' }}>
             {coach.title ? <span className="acad-coach-title">{coach.title}</span> : null}
             {coach.name}
             {coach.verified && <span className="acad-coach-verified" title="Verified">✓</span>}
@@ -173,7 +173,7 @@ export default function AcademyCoachDetail() {
       {/* ── Month picker ── */}
       <div className="acad-month-bar">
         <button className="btn-ghost" onClick={() => setMonth(m => shiftMonth(m, -1))}>← Prev</button>
-        <strong style={{ color: '#fff' }}>{MONTHS[mm - 1]} {yy}</strong>
+        <strong style={{ color: 'var(--color-text)' }}>{MONTHS[mm - 1]} {yy}</strong>
         <button
           className="btn-ghost"
           onClick={() => setMonth(m => shiftMonth(m, 1))}
@@ -190,10 +190,10 @@ export default function AcademyCoachDetail() {
       <div className="acad-stat-grid">
         {[
           { label: 'Students', value: totals.students, sub: totals.onBreak ? `${totals.onBreak} on break` : 'all active', color: '#38bdf8' },
-          { label: 'Classes this month', value: totals.classes, sub: `${totals.classHours}h taught`, color: '#a78bfa' },
-          { label: 'Attendance', value: totals.attendanceRate == null ? '—' : `${totals.attendanceRate}%`, sub: `${totals.present} present · ${totals.absent} absent`, color: '#34d399' },
-          { label: 'Assignments set', value: totals.assignments, sub: 'this month', color: '#fbbf24' },
-          { label: 'Fees received', value: fmtMoney(totals.approvedByCurrency), sub: `${totals.feeApproved} approved`, color: '#34d399' },
+          { label: 'Classes this month', value: totals.classes, sub: `${totals.classHours}h taught`, color: 'var(--color-accent-2)' },
+          { label: 'Attendance', value: totals.attendanceRate == null ? '—' : `${totals.attendanceRate}%`, sub: `${totals.present} present · ${totals.absent} absent`, color: 'var(--color-success)' },
+          { label: 'Assignments set', value: totals.assignments, sub: 'this month', color: 'var(--color-warning)' },
+          { label: 'Fees received', value: fmtMoney(totals.approvedByCurrency), sub: `${totals.feeApproved} approved`, color: 'var(--color-success)' },
         ].map(s => (
           <div key={s.label} className="acad-stat">
             <div className="acad-stat-label">{s.label}</div>
@@ -210,9 +210,9 @@ export default function AcademyCoachDetail() {
           <div className="acad-muted">No attendance marked this month.</div>
         ) : (
           <>
-            <Bar label="Present"  value={totals.present} max={totals.present + totals.absent + totals.catchup} color="#34d399" />
-            <Bar label="Absent"   value={totals.absent}  max={totals.present + totals.absent + totals.catchup} color="#f87171" />
-            <Bar label="Catch-up" value={totals.catchup} max={totals.present + totals.absent + totals.catchup} color="#fbbf24" />
+            <Bar label="Present"  value={totals.present} max={totals.present + totals.absent + totals.catchup} color="var(--color-success)" />
+            <Bar label="Absent"   value={totals.absent}  max={totals.present + totals.absent + totals.catchup} color="var(--color-danger)" />
+            <Bar label="Catch-up" value={totals.catchup} max={totals.present + totals.absent + totals.catchup} color="var(--color-warning)" />
           </>
         )}
       </div>
@@ -226,8 +226,8 @@ export default function AcademyCoachDetail() {
             const c = calendars.attendanceByDay?.[k];
             if (!c) return null;
             // Colour by what dominates the day, so one glance shows problem days.
-            const color = c.absent > c.present ? 'rgba(248,113,113,0.35)'
-              : c.catchup > 0 && c.present === 0 ? 'rgba(251,191,36,0.35)'
+            const color = c.absent > c.present ? 'var(--color-danger-a30)'
+              : c.catchup > 0 && c.present === 0 ? 'var(--color-warning-a30)'
               : 'rgba(52,211,153,0.32)';
             return { label: `${c.present}/${c.present + c.absent + c.catchup}`, color,
               title: `${k}: ${c.present} present, ${c.absent} absent, ${c.catchup} catch-up` };
@@ -258,7 +258,7 @@ export default function AcademyCoachDetail() {
           render={(k) => {
             const n = calendars.activityByDay?.[k];
             if (!n) return null;
-            return { label: n, color: 'rgba(251,191,36,0.3)', title: `${k}: ${n} assignment${n === 1 ? '' : 's'}` };
+            return { label: n, color: 'var(--color-warning-a30)', title: `${k}: ${n} assignment${n === 1 ? '' : 's'}` };
           }}
         />
       </div>

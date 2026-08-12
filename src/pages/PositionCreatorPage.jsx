@@ -27,31 +27,31 @@ export default function PositionCreatorPage() {
   }, [shareCode]);
 
   if (shareCode && !initialFen && !loadError) {
-    return <div style={{ color: '#9ca3af', textAlign: 'center', padding: 60, fontFamily: 'sans-serif' }}>Loading position...</div>;
+    return <div style={{ color: 'var(--color-text-muted)', textAlign: 'center', padding: 60, fontFamily: 'sans-serif' }}>Loading position...</div>;
   }
 
   if (loadError) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0a0a0a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 16 }}>🔒</div>
-          <div style={{ color: '#f87171', fontSize: 16, marginBottom: 12 }}>{loadError}</div>
-          <button onClick={() => navigate(-1)} style={{ padding: '8px 20px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', cursor: 'pointer' }}>← Back</button>
+          <div style={{ color: 'var(--color-danger)', fontSize: 16, marginBottom: 12 }}>{loadError}</div>
+          <button onClick={() => navigate(-1)} style={{ padding: '8px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 8, color: 'var(--color-text)', cursor: 'pointer' }}>← Back</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', padding: '16px 20px' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)', padding: '16px 20px' }}>
       <button
         onClick={() => navigate(-1)}
-        style={{ marginBottom: 14, padding: '7px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
+        style={{ marginBottom: 14, padding: '7px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 8, color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
       >
         ← Back
       </button>
       {puzzleTitle && (
-        <div style={{ color: '#a5b4fc', fontWeight: 700, fontSize: 15, marginBottom: 12 }}>
+        <div style={{ color: 'var(--color-accent-2)', fontWeight: 700, fontSize: 15, marginBottom: 12 }}>
           📌 {puzzleTitle}
         </div>
       )}

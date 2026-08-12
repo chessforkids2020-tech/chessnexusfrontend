@@ -8,13 +8,13 @@ import React, { useEffect, useState } from 'react';
 import api from '../api';
 import UpgradeCard from './UpgradeCard';
 
-const cyan = '#06b6d4';
-const green = '#10b981';
-const amber = '#f59e0b';
+const cyan = 'var(--color-accent)';
+const green = 'var(--color-success)';
+const amber = 'var(--color-warning)';
 
 const cardStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.08)',
+  background: 'var(--color-white-a04)',
+  border: '1px solid var(--color-white-a07)',
   borderRadius: 14,
   padding: 24,
   marginBottom: 22,
@@ -62,7 +62,7 @@ export default function MemberPanel() {
         onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(0)}
         onClick={() => setRating(i)}
         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, lineHeight: 1,
-                 fontSize: 30, color: filled ? amber : 'rgba(255,255,255,0.18)',
+                 fontSize: 30, color: filled ? amber : 'var(--color-white-a13)',
                  transition: 'transform .1s ease', transform: filled ? 'scale(1.05)' : 'none' }}>
         ★
       </button>
@@ -76,23 +76,23 @@ export default function MemberPanel() {
 
       {/* ── Testimonial ─────────────────────────────── */}
       <section style={cardStyle}>
-        <h2 style={{ margin: 0, fontSize: 18, color: '#f1f5f9', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <h2 style={{ margin: 0, fontSize: 18, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
           💬 Share your experience
         </h2>
-        <p style={{ color: '#64748b', fontSize: 14, margin: '6px 0 18px' }}>
+        <p style={{ color: 'var(--color-text-faint)', fontSize: 14, margin: '6px 0 18px' }}>
           Enjoying Chess Nexus? Leave a rating and a few words — it helps us and other players.
         </p>
 
         {loaded && existing && !justSent && (
-          <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.3)',
-                        borderRadius: 10, padding: '12px 14px', marginBottom: 16, fontSize: 13.5, color: '#6ee7b7' }}>
+          <div style={{ background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)',
+                        borderRadius: 10, padding: '12px 14px', marginBottom: 16, fontSize: 13.5, color: 'var(--color-success)' }}>
             You already shared a {existing.rating}★ testimonial — thank you! You can send an updated one below anytime.
           </div>
         )}
 
         {justSent && (
-          <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.35)',
-                        borderRadius: 10, padding: '14px 16px', marginBottom: 16, color: '#6ee7b7', fontSize: 14 }}>
+          <div style={{ background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)',
+                        borderRadius: 10, padding: '14px 16px', marginBottom: 16, color: 'var(--color-success)', fontSize: 14 }}>
             ✅ Thank you! Your testimonial was submitted.
           </div>
         )}
@@ -100,7 +100,7 @@ export default function MemberPanel() {
         {/* stars */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 12 }}>
           {[1, 2, 3, 4, 5].map(i => <Star key={i} i={i} />)}
-          <span style={{ marginLeft: 8, color: '#94a3b8', fontSize: 13 }}>
+          <span style={{ marginLeft: 8, color: 'var(--color-text-muted)', fontSize: 13 }}>
             {rating ? `${rating} / 5` : 'Tap to rate'}
           </span>
         </div>
@@ -112,17 +112,17 @@ export default function MemberPanel() {
           rows={4}
           placeholder="What do you like about Chess Nexus? What's helped you improve?"
           style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 10,
-                   border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(0,0,0,0.28)',
-                   color: '#e2e8f0', fontSize: 14, fontFamily: 'inherit', outline: 'none', resize: 'vertical' }}
+                   border: '1px solid var(--color-white-a13)', background: 'var(--color-black-a35)',
+                   color: 'var(--color-text)', fontSize: 14, fontFamily: 'inherit', outline: 'none', resize: 'vertical' }}
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6 }}>
-          <span style={{ color: '#475569', fontSize: 12 }}>{text.length}/600</span>
+          <span style={{ color: 'var(--color-text-faint)', fontSize: 12 }}>{text.length}/600</span>
         </div>
 
-        {error && <div style={{ color: '#fca5a5', fontSize: 13, marginTop: 8 }}>⚠️ {error}</div>}
+        {error && <div style={{ color: 'var(--color-danger)', fontSize: 13, marginTop: 8 }}>⚠️ {error}</div>}
 
         <button onClick={submit} disabled={submitting} style={{
-          marginTop: 14, background: submitting ? 'rgba(6,182,212,0.4)' : `linear-gradient(135deg,${cyan},${green})`,
+          marginTop: 14, background: submitting ? 'var(--color-accent-a40)' : `linear-gradient(135deg,${cyan},${green})`,
           color: '#04211d', border: 'none', borderRadius: 10, padding: '11px 22px',
           fontSize: 14, fontWeight: 700, cursor: submitting ? 'default' : 'pointer',
         }}>

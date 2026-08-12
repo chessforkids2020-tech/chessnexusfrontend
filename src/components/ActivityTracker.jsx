@@ -152,7 +152,7 @@ function LineChart({ points, yMax, labels, compact = false }) {
             y1={yOf(tick)}
             x2={padLeft + chartWidth}
             y2={yOf(tick)}
-            stroke="rgba(255,255,255,0.08)"
+            stroke="var(--color-white-a07)"
             strokeWidth="1"
           />
           <text
@@ -160,7 +160,7 @@ function LineChart({ points, yMax, labels, compact = false }) {
             y={yOf(tick)}
             textAnchor="end"
             dominantBaseline="middle"
-            fill="rgba(203,213,225,0.72)"
+            fill="var(--color-text-muted)"
             fontSize="11"
           >
             {tick}
@@ -180,8 +180,8 @@ function LineChart({ points, yMax, labels, compact = false }) {
 
       {points.map((value, index) => (
         <g key={labels[index]}>
-          <circle cx={xOf(index)} cy={yOf(value)} r="8" fill="rgba(6,182,212,0.16)" />
-          <circle cx={xOf(index)} cy={yOf(value)} r="4" fill="#f8fafc" stroke="#06b6d4" strokeWidth="2.5" />
+          <circle cx={xOf(index)} cy={yOf(value)} r="8" fill="var(--color-accent-a15)" />
+          <circle cx={xOf(index)} cy={yOf(value)} r="4" fill="var(--color-text)" stroke="var(--color-accent)" strokeWidth="2.5" />
           <text
             x={xOf(index)}
             y={padTop + chartHeight + 24}

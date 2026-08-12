@@ -18,7 +18,7 @@ function AdminTocNode({ node, depth, selectedId, onSelect, onAddChild, onRename,
           onClick={() => onSelect(node)}
           style={{
             cursor: 'pointer', fontWeight: selectedId === node._id ? 800 : 500,
-            color: selectedId === node._id ? '#1a5f1a' : '#333',
+            color: selectedId === node._id ? 'var(--color-success)' : 'var(--color-text)',
             flex: 1,
           }}
         >
@@ -226,13 +226,13 @@ const AdminBookManagement = () => {
       <div style={styles.container}>
         <button style={styles.backButton} onClick={() => { setOpenBook(null); setSelectedNode(null); setPageDraft(null); }}>← All books</button>
         <h1 style={styles.title}>📖 {openBook.title}</h1>
-        <div style={{ color: '#666', marginBottom: 16 }}>by {openBook.author || '—'}</div>
+        <div style={{ color: 'var(--color-text-faint)', marginBottom: 16 }}>by {openBook.author || '—'}</div>
 
         <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', alignItems: 'flex-start' }}>
           {/* Tree */}
           <div style={{ ...styles.card, minWidth: 300, flex: '1 1 300px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <h3 style={{ margin: 0, color: '#1a5f1a' }}>Contents</h3>
+              <h3 style={{ margin: 0, color: 'var(--color-success)' }}>Contents</h3>
               <button style={styles.primaryButtonSm} onClick={() => addNode(null)}>＋ Chapter</button>
             </div>
             {(openBook.chapters || []).length === 0 && <div style={{ color: '#888' }}>No chapters yet.</div>}
@@ -249,7 +249,7 @@ const AdminBookManagement = () => {
               <div style={{ color: '#888' }}>Select a section on the left to edit its pages.</div>
             ) : pageDraft ? (
               <div>
-                <h3 style={{ marginTop: 0, color: '#1a5f1a' }}>{pageDraft._id ? 'Edit page' : 'New page'} — {selectedNode.title}</h3>
+                <h3 style={{ marginTop: 0, color: 'var(--color-success)' }}>{pageDraft._id ? 'Edit page' : 'New page'} — {selectedNode.title}</h3>
                 <p style={{ color: '#888', fontSize: 13, marginTop: 0 }}>
                   Build the page top-to-bottom by stacking blocks — a heading/paragraph (Text), then a Board, then more text, another board… just like a book page.
                 </p>
@@ -257,7 +257,7 @@ const AdminBookManagement = () => {
                 {pageDraft.blocks.map((block, idx) => (
                   <div key={idx} style={styles.blockCard}>
                     <div style={styles.blockHeader}>
-                      <span style={{ fontWeight: 700, color: '#1a5f1a' }}>
+                      <span style={{ fontWeight: 700, color: 'var(--color-success)' }}>
                         {block.type === 'board' ? '♟ Board' : '✍ Text'} #{idx + 1}
                       </span>
                       <div style={{ display: 'flex', gap: 4 }}>
@@ -270,7 +270,7 @@ const AdminBookManagement = () => {
                     {block.type === 'text' ? (
                       <ReactQuill theme="snow" value={block.contentHtml}
                         onChange={(html) => updateBlock(idx, { contentHtml: html })}
-                        style={{ background: '#fff' }} />
+                        style={{ background: 'var(--color-text)' }} />
                     ) : (
                       <div>
                         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
@@ -314,7 +314,7 @@ const AdminBookManagement = () => {
             ) : (
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <h3 style={{ margin: 0, color: '#1a5f1a' }}>Pages — {selectedNode.title}</h3>
+                  <h3 style={{ margin: 0, color: 'var(--color-success)' }}>Pages — {selectedNode.title}</h3>
                   <button style={styles.primaryButtonSm} onClick={newPage}>＋ Page</button>
                 </div>
                 {(selectedNode.pages || []).length === 0 && <div style={{ color: '#888' }}>No pages yet. This is a section header.</div>}
@@ -332,7 +332,7 @@ const AdminBookManagement = () => {
                       </span>
                     </span>
                     <button style={{ ...styles.button, ...styles.editButton }} onClick={() => editPage(p)}>Edit</button>
-                    <button style={{ ...styles.button, background: '#6f42c1', color: '#fff' }} onClick={() => copyPage(p._id)}>Copy</button>
+                    <button style={{ ...styles.button, background: '#6f42c1', color: 'var(--color-text)' }} onClick={() => copyPage(p._id)}>Copy</button>
                     <button style={{ ...styles.button, ...styles.deleteButton }} onClick={() => deletePage(p._id)}>Del</button>
                   </div>
                   );
@@ -350,12 +350,12 @@ const AdminBookManagement = () => {
     <div style={styles.container}>
       <button style={styles.backButton} onClick={() => navigate('/admin')}>← Back to Admin</button>
       <h1 style={styles.title}>📖 Manage Books</h1>
-      <p style={{ color: '#666' }}>Author study books (chapters → topics → pages with text + boards). Chapter 1 is free; later chapters need supporter/coach/elite.</p>
+      <p style={{ color: 'var(--color-text-faint)' }}>Author study books (chapters → topics → pages with text + boards). Chapter 1 is free; later chapters need supporter/coach/elite.</p>
 
       {error && <div style={styles.error}>{error}</div>}
 
       <form style={styles.form} onSubmit={handleBookSubmit}>
-        <h3 style={{ marginTop: 0, color: '#1a5f1a' }}>{editingBookId ? 'Edit book' : 'New book'}</h3>
+        <h3 style={{ marginTop: 0, color: 'var(--color-success)' }}>{editingBookId ? 'Edit book' : 'New book'}</h3>
         <div style={styles.formGroup}><label style={styles.label}>Title *</label>
           <input style={styles.input} value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} /></div>
         <div style={styles.formGroup}><label style={styles.label}>Written by (author)</label>
@@ -410,7 +410,7 @@ const AdminBookManagement = () => {
                 : <div style={styles.coverPlaceholder}>📖</div>}
               <div style={{ flex: 1 }}>
                 <h3 style={styles.cardTitle}>{book.title}</h3>
-                <div style={{ color: '#666', fontSize: 14 }}>by {book.author || '—'}</div>
+                <div style={{ color: 'var(--color-text-faint)', fontSize: 14 }}>by {book.author || '—'}</div>
                 <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>{book.topLevelCount} chapters</div>
                 <div style={{ marginTop: 6, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{ ...styles.badge, background: book.published ? '#e6f4ea' : '#fff4e5', color: book.published ? '#1a7f37' : '#b26a00' }}>
@@ -418,7 +418,7 @@ const AdminBookManagement = () => {
                   </span>
                   {book.category && <span style={{ ...styles.badge, background: '#eef2ff', color: '#4338ca' }}>{book.category}</span>}
                   {!book.freeForAll && (book.xpPrice > 0
-                    ? <span style={{ ...styles.badge, background: '#f5f3ff', color: '#7c3aed' }}>👛 {book.xpPrice} XP</span>
+                    ? <span style={{ ...styles.badge, background: '#f5f3ff', color: 'var(--color-accent-2)' }}>👛 {book.xpPrice} XP</span>
                     : <span style={{ ...styles.badge, background: '#ecfdf5', color: '#047857' }}>Free (no XP)</span>)}
                 </div>
               </div>
@@ -433,7 +433,7 @@ const AdminBookManagement = () => {
               <input type="number" min={0} value={book.freeChapters}
                 disabled={book.freeForAll}
                 title={book.freeForAll ? 'Whole book is free — this is ignored' : ''}
-                style={{ width: 56, padding: 4, border: '1px solid #ccc', borderRadius: 4, background: book.freeForAll ? '#f0f0f0' : '#fff' }}
+                style={{ width: 56, padding: 4, border: '1px solid #ccc', borderRadius: 4, background: book.freeForAll ? '#f0f0f0' : 'var(--color-text)' }}
                 onChange={(e) => updateFreeChapters(book, Math.max(0, +e.target.value))} />
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6, fontSize: 13, color: book.freeForAll ? '#aaa' : '#555' }}>
@@ -442,14 +442,14 @@ const AdminBookManagement = () => {
                 key={`xp-${book._id}-${book.xpPrice}`}
                 disabled={book.freeForAll}
                 title={book.freeForAll ? 'Whole book is free — this is ignored. 0 = free for everyone.' : '0 = free for everyone'}
-                style={{ width: 72, padding: 4, border: '1px solid #ccc', borderRadius: 4, background: book.freeForAll ? '#f0f0f0' : '#fff' }}
+                style={{ width: 72, padding: 4, border: '1px solid #ccc', borderRadius: 4, background: book.freeForAll ? '#f0f0f0' : 'var(--color-text)' }}
                 onBlur={(e) => { const n = Math.max(0, +e.target.value || 0); if (n !== (book.xpPrice || 0)) updateXpPrice(book, n); }} />
             </div>
             <div style={{ ...styles.buttonGroup, marginTop: 10 }}>
               <button style={{ ...styles.button, ...styles.manageButton }} onClick={() => { reloadOpenBook(book._id); setSelectedNode(null); }}>Edit contents</button>
               <button style={{ ...styles.button, ...styles.editButton }} onClick={() => { setEditingBookId(book._id); setForm({ title: book.title, author: book.author, description: book.description || '', category: book.category || '', xpPrice: book.xpPrice || 0 }); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Meta</button>
-              <button style={{ ...styles.button, background: '#0d6efd', color: '#fff' }} onClick={() => { coverRef.current.dataset.bookId = book._id; coverRef.current.click(); }}>Cover</button>
-              <button style={{ ...styles.button, background: book.published ? '#fd7e14' : '#198754', color: '#fff' }} onClick={() => togglePublish(book)}>{book.published ? 'Unpublish' : 'Publish'}</button>
+              <button style={{ ...styles.button, background: '#0d6efd', color: 'var(--color-text)' }} onClick={() => { coverRef.current.dataset.bookId = book._id; coverRef.current.click(); }}>Cover</button>
+              <button style={{ ...styles.button, background: book.published ? '#fd7e14' : '#198754', color: 'var(--color-text)' }} onClick={() => togglePublish(book)}>{book.published ? 'Unpublish' : 'Publish'}</button>
               <button style={{ ...styles.button, ...styles.deleteButton }} onClick={() => deleteBook(book._id)}>Delete</button>
             </div>
           </div>
@@ -483,31 +483,31 @@ function stripHtml(html) { return String(html || '').replace(/<[^>]*>/g, ' ').re
 const miniBtn = { background: 'none', border: '1px solid #ddd', borderRadius: 4, cursor: 'pointer', fontSize: 12, padding: '1px 6px' };
 const styles = {
   container: { maxWidth: 1200, margin: '0 auto', padding: 24 },
-  backButton: { background: 'none', border: 'none', color: '#1a5f1a', cursor: 'pointer', fontSize: 15, padding: 0, marginBottom: 8 },
-  title: { fontSize: 28, color: '#1a5f1a', margin: '4px 0' },
+  backButton: { background: 'none', border: 'none', color: 'var(--color-success)', cursor: 'pointer', fontSize: 15, padding: 0, marginBottom: 8 },
+  title: { fontSize: 28, color: 'var(--color-success)', margin: '4px 0' },
   error: { background: '#fdecea', color: '#c62828', padding: '10px 14px', borderRadius: 6, marginBottom: 16 },
-  form: { background: '#f8f9fa', padding: 20, borderRadius: 8, marginBottom: 24 },
+  form: { background: 'var(--color-surface)', padding: 20, borderRadius: 8, marginBottom: 24 },
   formGroup: { marginBottom: 12 },
-  label: { display: 'block', fontWeight: 600, marginBottom: 6, color: '#333' },
+  label: { display: 'block', fontWeight: 600, marginBottom: 6, color: 'var(--color-text)' },
   input: { width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: 6, fontSize: 15, boxSizing: 'border-box' },
   buttonGroup: { display: 'flex', gap: 8, flexWrap: 'wrap' },
-  primaryButton: { background: '#1a5f1a', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 15 },
-  primaryButtonSm: { background: '#1a5f1a', color: '#fff', border: 'none', padding: '5px 12px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
-  cancelButton: { background: '#6c757d', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 15 },
+  primaryButton: { background: 'var(--color-success)', color: 'var(--color-text)', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 15 },
+  primaryButtonSm: { background: 'var(--color-success)', color: 'var(--color-text)', border: 'none', padding: '5px 12px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
+  cancelButton: { background: 'var(--color-text-faint)', color: 'var(--color-text)', border: 'none', padding: '10px 18px', borderRadius: 6, cursor: 'pointer', fontSize: 15 },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 18 },
-  card: { background: '#fff', borderRadius: 12, padding: 18, boxShadow: '0 4px 12px rgba(0,0,0,0.08)', border: '1px solid #e9ecef' },
-  cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#1a5f1a', margin: '0 0 2px' },
+  card: { background: 'var(--color-text)', borderRadius: 12, padding: 18, boxShadow: '0 4px 12px var(--color-black-a20)', border: '1px solid var(--color-surface-2)' },
+  cardTitle: { fontSize: 18, fontWeight: 'bold', color: 'var(--color-success)', margin: '0 0 2px' },
   coverThumb: { width: 70, height: 95, objectFit: 'cover', borderRadius: 6, border: '1px solid #ddd' },
   coverPlaceholder: { width: 70, height: 95, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, background: '#eef7ee', borderRadius: 6 },
   button: { padding: '6px 12px', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 13 },
-  editButton: { background: '#007bff', color: '#fff' },
-  deleteButton: { background: '#dc3545', color: '#fff' },
-  manageButton: { background: '#28a745', color: '#fff' },
+  editButton: { background: 'var(--color-accent-2)', color: 'var(--color-text)' },
+  deleteButton: { background: 'var(--color-danger)', color: 'var(--color-text)' },
+  manageButton: { background: 'var(--color-success)', color: 'var(--color-text)' },
   badge: { fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 999 },
   pageRow: { display: 'flex', alignItems: 'center', gap: 6, padding: '6px 0', borderBottom: '1px solid #f0f0f0' },
   blockCard: { border: '1px solid #e3ebe3', borderRadius: 8, padding: 12, marginBottom: 12, background: '#fbfdfb' },
   blockHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  addBlockBtn: { background: '#eef7ee', color: '#1a5f1a', border: '1px dashed #1a5f1a', padding: '8px 14px', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 600 },
+  addBlockBtn: { background: '#eef7ee', color: 'var(--color-success)', border: '1px dashed var(--color-success)', padding: '8px 14px', borderRadius: 8, cursor: 'pointer', fontSize: 14, fontWeight: 600 },
 };
 
 export default AdminBookManagement;

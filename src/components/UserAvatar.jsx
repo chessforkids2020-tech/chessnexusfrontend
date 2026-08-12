@@ -54,7 +54,7 @@ export default function UserAvatar({
     alignItems: 'center',
     justifyContent: 'center',
     flexShrink: 0,
-    background: 'rgba(0,0,0,0.25)',
+    background: 'var(--color-black-a20)',
     ...style,
   };
 
@@ -114,7 +114,7 @@ export default function UserAvatar({
 
   // 4: initials
   return (
-    <div className={className} style={{ ...box, fontSize: size * 0.42, color: '#fff', fontWeight: 700 }}>
+    <div className={className} style={{ ...box, fontSize: size * 0.42, color: 'var(--color-text)', fontWeight: 700 }}>
       <span>{initialOf(name)}</span>
     </div>
   );

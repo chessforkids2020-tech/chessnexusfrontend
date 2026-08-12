@@ -82,7 +82,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "#0a0a0a",
+    background: "var(--color-bg)",
     padding: 20,
     position: "relative",
     overflow: "hidden"
@@ -101,15 +101,15 @@ const styles = {
     width: "100%",
     background: "rgba(23,23,23,0.85)",
     backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.07)",
+    border: "1px solid var(--color-white-a07)",
     borderRadius: 20,
     padding: "48px 40px",
     textAlign: "center",
-    boxShadow: "0 8px 40px rgba(0,0,0,0.5)"
+    boxShadow: "0 8px 40px var(--color-black-a50)"
   },
   logo: { fontSize: 48, marginBottom: 4 },
   title: {
-    background: "linear-gradient(135deg,#8b5cf6,#6d28d9)",
+    background: "linear-gradient(135deg,var(--color-accent-2),#6d28d9)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
@@ -117,23 +117,23 @@ const styles = {
     fontWeight: 700,
     margin: "0 0 32px"
   },
-  heading: { fontSize: 20, fontWeight: 700, color: "#e2e8f0", margin: "0 0 12px" },
-  sub: { color: "#94a3b8", fontSize: 14, lineHeight: 1.7, margin: 0 },
+  heading: { fontSize: 20, fontWeight: 700, color: "var(--color-text)", margin: "0 0 12px" },
+  sub: { color: "var(--color-text-muted)", fontSize: 14, lineHeight: 1.7, margin: 0 },
   form: { display: "flex", flexDirection: "column", gap: 14, margin: "24px 0 0" },
   input: {
     padding: "12px 16px",
     fontSize: 14,
     borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.1)",
-    background: "rgba(0,0,0,0.3)",
-    color: "#fff",
+    border: "1px solid var(--color-white-a10)",
+    background: "var(--color-black-a35)",
+    color: "var(--color-text)",
     outline: "none",
     boxSizing: "border-box"
   },
   btn: {
     display: "inline-block",
-    background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-    color: "#fff",
+    background: "linear-gradient(135deg,var(--color-accent-2),#6d28d9)",
+    color: "var(--color-text)",
     textDecoration: "none",
     padding: "12px 28px",
     borderRadius: 10,
@@ -145,11 +145,11 @@ const styles = {
   },
   error: {
     padding: 12,
-    background: "rgba(239,68,68,0.1)",
-    color: "#ef4444",
+    background: "var(--color-danger-a12)",
+    color: "var(--color-danger)",
     borderRadius: 8,
-    border: "1px solid rgba(239,68,68,0.2)",
+    border: "1px solid var(--color-danger-a20)",
     fontSize: 13
   },
-  link: { color: "#8b5cf6", fontWeight: 600, textDecoration: "none" }
+  link: { color: "var(--color-accent-2)", fontWeight: 600, textDecoration: "none" }
 };

@@ -496,7 +496,7 @@ export default function FriendGame() {
               {' • '}
               <span style={{
                 fontWeight: 700,
-                color: room?.isRated ? '#6ee7b7' : '#94a3b8',
+                color: room?.isRated ? 'var(--color-success)' : 'var(--color-text-muted)',
               }}>
                 {room?.isRated ? 'Rated' : 'Casual'}
               </span>
@@ -532,10 +532,10 @@ export default function FriendGame() {
               <div className="fg-code-generating">
                 {connectError ? (
                   <>
-                    <p className="fg-invite-label" style={{ color: '#f87171' }}>
+                    <p className="fg-invite-label" style={{ color: 'var(--color-danger)' }}>
                       Connection failed — retrying…
                     </p>
-                    <p style={{ fontSize: '11px', color: '#9ca3af', margin: '4px 0 0' }}>
+                    <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', margin: '4px 0 0' }}>
                       The server may be starting up. Please wait a moment.
                     </p>
                   </>
@@ -630,9 +630,9 @@ export default function FriendGame() {
                   const up = mine.change >= 0;
                   return (
                     <p style={{ margin: '2px 0 8px', fontSize: '14px' }}>
-                      <span style={{ color: '#94a3b8' }}>Your {result.ratingChanges.category} rating: </span>
-                      <strong style={{ color: '#e2e8f0' }}>{mine.new} </strong>
-                      <strong style={{ color: up ? '#6ee7b7' : '#fca5a5' }}>
+                      <span style={{ color: 'var(--color-text-muted)' }}>Your {result.ratingChanges.category} rating: </span>
+                      <strong style={{ color: 'var(--color-text)' }}>{mine.new} </strong>
+                      <strong style={{ color: up ? 'var(--color-success)' : 'var(--color-danger)' }}>
                         ({up ? '+' : ''}{mine.change})
                       </strong>
                     </p>

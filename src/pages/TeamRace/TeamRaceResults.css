@@ -1,18 +1,18 @@
 ﻿/* ── CSS Variables (Obsidian Glass — matches ArenaTournamentLeaderboard) ── */
 .tournament-leaderboard-container {
   --obs-bg:        #07090f;
-  --obs-surface:   rgba(255, 255, 255, 0.04);
-  --obs-glass:     rgba(255, 255, 255, 0.06);
-  --obs-border:    rgba(255, 255, 255, 0.08);
-  --obs-border-hi: rgba(6, 182, 212, 0.35);
-  --obs-cyan:      #06b6d4;
-  --obs-teal:      #10b981;
-  --obs-blue:      #3b82f6;
-  --obs-violet:    #8b5cf6;
-  --obs-amber:     #f59e0b;
-  --obs-red:       #ef4444;
-  --obs-text:      #e2e8f0;
-  --obs-muted:     #64748b;
+  --obs-surface:   var(--color-white-a04);
+  --obs-glass:     var(--color-white-a07);
+  --obs-border:    var(--color-white-a07);
+  --obs-border-hi: var(--color-accent-a30);
+  --obs-cyan:      var(--color-accent);
+  --obs-teal:      var(--color-success);
+  --obs-blue:      var(--color-accent-2);
+  --obs-violet:    var(--color-accent-2);
+  --obs-amber:     var(--color-warning);
+  --obs-red:       var(--color-danger);
+  --obs-text:      var(--color-text);
+  --obs-muted:     var(--color-text-faint);
 
   min-height: 100vh;
   background: var(--obs-bg);
@@ -62,7 +62,7 @@
   transition: background 0.2s, border-color 0.2s, transform 0.2s;
 }
 .back-to-tournaments:hover {
-  background: rgba(6, 182, 212, 0.12);
+  background: var(--color-accent-a12);
   border-color: var(--obs-border-hi);
   transform: translateX(-3px);
 }
@@ -79,7 +79,7 @@
   font-weight: 800;
   margin: 0 0 28px;
   letter-spacing: -0.4px;
-  background: linear-gradient(135deg, #ffffff 0%, var(--obs-cyan) 100%);
+  background: linear-gradient(135deg, var(--color-text) 0%, var(--obs-cyan) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -105,9 +105,9 @@
   border: 1px solid var(--obs-border);
   border-radius: 18px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%),
-    rgba(255, 255, 255, 0.02);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 16px 28px rgba(0, 0, 0, 0.38);
+    linear-gradient(180deg, var(--color-white-a07) 0%, var(--color-white-a04) 100%),
+    var(--color-white-a04);
+  box-shadow: inset 0 1px 0 var(--color-white-a13), 0 16px 28px var(--color-black-a35);
   overflow: hidden;
 }
 
@@ -120,7 +120,7 @@
   top: -58px;
   left: 50%;
   transform: translateX(-50%);
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.22) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--color-accent-a20) 0%, transparent 70%);
   opacity: 0.55;
   pointer-events: none;
 }
@@ -133,17 +133,17 @@
   width: 112px;
   height: 112px;
   border-radius: 999px;
-  background: radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.02) 62%);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 6px 24px rgba(6, 182, 212, 0.22);
-  filter: drop-shadow(0 4px 16px rgba(6, 182, 212, 0.22));
+  background: radial-gradient(circle at 30% 28%, var(--color-text-faint) 0%, var(--color-white-a04) 62%);
+  border: 1px solid var(--color-white-a20);
+  box-shadow: 0 6px 24px var(--color-accent-a20);
+  filter: drop-shadow(0 4px 16px var(--color-accent-a20));
 }
 
 .elegant-podium .trophy-username {
   text-align: center;
   font-size: 14px;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-text);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -164,7 +164,7 @@
   border: 1px solid;
   border-radius: 999px;
   padding: 5px 11px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--color-white-a04);
   font-weight: 700;
 }
 
@@ -182,7 +182,7 @@
 
 .elegant-podium .trophy-team-meta {
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .elegant-podium .trophy-score {
@@ -200,12 +200,12 @@
   margin-top: 4px;
   position: relative;
   border-radius: 12px 12px 0 0;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid var(--color-white-a20);
   border-bottom: none;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(10, 13, 21, 0.92) 100%),
-    rgba(0, 0, 0, 0.25);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    linear-gradient(180deg, var(--color-white-a13) 0%, rgba(10, 13, 21, 0.92) 100%),
+    var(--color-black-a20);
+  box-shadow: inset 0 1px 0 var(--color-white-a13);
   overflow: hidden;
 }
 
@@ -216,7 +216,7 @@
   right: 10%;
   top: 6px;
   height: 1px;
-  background: rgba(255, 255, 255, 0.35);
+  background: var(--color-text-faint);
 }
 
 .elegant-podium .podium-base::after {
@@ -225,8 +225,8 @@
   inset: 0;
   background: repeating-linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.08) 0,
-    rgba(255, 255, 255, 0.08) 6px,
+    var(--color-white-a07) 0,
+    var(--color-white-a07) 6px,
     transparent 6px,
     transparent 14px
   );
@@ -257,7 +257,7 @@
   overflow: hidden;
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 8px 32px var(--color-black-a35);
   margin: 0 auto 24px;
   width: min(100%, 920px);
 }
@@ -277,8 +277,8 @@
 }
 
 .leaderboard-table thead tr {
-  background: rgba(6, 182, 212, 0.06);
-  border-bottom: 1px solid rgba(6, 182, 212, 0.18);
+  background: var(--color-accent-a06);
+  border-bottom: 1px solid var(--color-accent-a20);
 }
 
 .leaderboard-table th {
@@ -303,11 +303,11 @@
 }
 
 .leaderboard-table tbody tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--color-white-a04);
   transition: background 0.15s;
 }
 .leaderboard-table tbody tr:last-child { border-bottom: none; }
-.leaderboard-table tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+.leaderboard-table tbody tr:hover { background: var(--color-white-a04); }
 
 .leaderboard-table td {
   padding: 12px 14px;

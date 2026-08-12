@@ -24,10 +24,10 @@ const TIER_META = {
 };
 
 const AVATAR_META = {
-  none:   { label: 'No unlock yet',   color: 'rgba(255,255,255,0.4)' },
-  basic:  { label: '🖼️ Basic Avatars', color: '#06b6d4' },
-  custom: { label: '📷 Custom Photo',  color: '#10b981' },
-  '3d':   { label: '🎭 3D Models',     color: '#a855f7' },
+  none:   { label: 'No unlock yet',   color: 'var(--color-text-faint)' },
+  basic:  { label: '🖼️ Basic Avatars', color: 'var(--color-accent)' },
+  custom: { label: '📷 Custom Photo',  color: 'var(--color-success)' },
+  '3d':   { label: '🎭 3D Models',     color: 'var(--color-accent-2)' },
 };
 
 function timeAgo(dateStr) {
@@ -92,7 +92,7 @@ function LiveEventCard({ event }) {
         {!isLive && !isLobby && startIn !== null && (
           <span className="sh-soon-badge">⏰ {startIn < 1 ? 'Starting…' : `in ${startIn}m`}</span>
         )}
-        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}> · {event.participantCount} players</span>
+        <span style={{ color: 'var(--color-text-faint)', fontSize: 12 }}> · {event.participantCount} players</span>
       </div>
       <button
         className="sh-btn-join"
@@ -141,7 +141,7 @@ function FeedTab({ user }) {
         <div className="sh-card sh-online-bar">
           <div className="sh-section-title" style={{ marginBottom: 14 }}>
             🟢 Online Now
-            <span style={{ marginLeft: 10, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.35)' }}>
+            <span style={{ marginLeft: 10, fontSize: 12, fontWeight: 400, color: 'var(--color-text-faint)' }}>
               {onlineFriends.length} {onlineFriends.length === 1 ? 'friend' : 'friends'}
             </span>
           </div>
@@ -172,7 +172,7 @@ function FeedTab({ user }) {
             <div className="sh-section-title" style={{ marginBottom: 16 }}>
               📰 Activity Stream
               {networkSize === 0 && (
-                <span style={{ marginLeft: 10, fontSize: 12, fontWeight: 400, color: 'rgba(255,255,255,0.3)', textTransform: 'none' }}>
+                <span style={{ marginLeft: 10, fontSize: 12, fontWeight: 400, color: 'var(--color-text-faint)', textTransform: 'none' }}>
                   (platform-wide · add friends to see their activity first)
                 </span>
               )}
@@ -231,7 +231,7 @@ function FeedTab({ user }) {
             <div className="sh-section-title" style={{ marginBottom: 14 }}>⚡ Live Events</div>
             {liveEvents.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '10px 0' }}>
-                <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 13, margin: '0 0 12px' }}>No live events right now.</p>
+                <p style={{ color: 'var(--color-white-a20)', fontSize: 13, margin: '0 0 12px' }}>No live events right now.</p>
                 <button className="sh-btn-secondary" style={{ fontSize: 13 }} onClick={() => navigate('/arenatournament')}>
                   Browse Tournaments
                 </button>
@@ -264,8 +264,8 @@ function FeedTab({ user }) {
           {networkSize === 0 && (
             <div className="sh-card" style={{ textAlign: 'center', padding: '24px 20px' }}>
               <div style={{ fontSize: 36, marginBottom: 8 }}>🤝</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#ffffff', marginBottom: 6 }}>Add friends</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 16, lineHeight: 1.5 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6 }}>Add friends</div>
+              <div style={{ fontSize: 13, color: 'var(--color-text-faint)', marginBottom: 16, lineHeight: 1.5 }}>
                 See their races, challenge them, and compete on the weekly leaderboard.
               </div>
               <button className="sh-btn-primary" style={{ fontSize: 13 }} onClick={() => navigate('/friends')}>
@@ -756,7 +756,7 @@ function InviteTab({ user }) {
             );
           })}
           {leaderboard.length === 0 && (
-            <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12, textAlign: 'center', margin: 0 }}>
+            <p style={{ color: 'var(--color-white-a20)', fontSize: 12, textAlign: 'center', margin: 0 }}>
               No entries yet
             </p>
           )}
@@ -775,7 +775,7 @@ function InviteTab({ user }) {
               {copied ? '✓ Copied!' : '📋 Copy'}
             </button>
           </div>
-          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', margin: 0 }}>
+          <p style={{ fontSize: 12, color: 'var(--color-text-faint)', margin: 0 }}>
             Share this link — when someone signs up through it and becomes active, you earn rewards.
           </p>
         </div>
@@ -787,11 +787,11 @@ function InviteTab({ user }) {
             <div className="sh-stat-label">Total Invited</div>
           </div>
           <div className="sh-stat-card">
-            <div className="sh-stat-value" style={{ color: '#10b981' }}>{active}</div>
+            <div className="sh-stat-value" style={{ color: 'var(--color-success)' }}>{active}</div>
             <div className="sh-stat-label">Active</div>
           </div>
           <div className="sh-stat-card">
-            <div className="sh-stat-value" style={{ color: '#a855f7' }}>{quality}</div>
+            <div className="sh-stat-value" style={{ color: 'var(--color-accent-2)' }}>{quality}</div>
             <div className="sh-stat-label">Quality Score</div>
           </div>
         </div>
@@ -802,7 +802,7 @@ function InviteTab({ user }) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
             <span className={`sh-tier-badge ${tierMeta.cls}`}>{tierMeta.label}</span>
             {nextMentorAt && (
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
+              <span style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>
                 {active} / {nextMentorAt} active
               </span>
             )}
@@ -812,9 +812,9 @@ function InviteTab({ user }) {
               <div className="sh-progress-fill" style={{ width: `${mentorPct}%` }} />
             </div>
           ) : (
-            <p style={{ fontSize: 13, color: '#10b981', margin: 0 }}>Maximum tier reached! 🌟</p>
+            <p style={{ fontSize: 13, color: 'var(--color-success)', margin: 0 }}>Maximum tier reached! 🌟</p>
           )}
-          <div style={{ marginTop: 14, display: 'flex', gap: 20, fontSize: 12, color: 'rgba(255,255,255,0.3)', flexWrap: 'wrap' }}>
+          <div style={{ marginTop: 14, display: 'flex', gap: 20, fontSize: 12, color: 'var(--color-text-faint)', flexWrap: 'wrap' }}>
             <span>⭐ Mentor → 5 active invites</span>
             <span>🌟 Ambassador → 25 active invites</span>
           </div>
@@ -828,25 +828,25 @@ function InviteTab({ user }) {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
               <span style={{ fontSize: 14, fontWeight: 700, color: avatarMeta.color }}>{avatarMeta.label}</span>
               {nextAvatarAt && (
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
+                <span style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>
                   {total} / {nextAvatarAt} invited
                 </span>
               )}
             </div>
             {nextAvatarAt ? (
               <div className="sh-progress-track">
-                <div className="sh-progress-fill" style={{ width: `${avatarPct}%`, background: 'linear-gradient(90deg,#a855f7,#06b6d4)' }} />
+                <div className="sh-progress-fill" style={{ width: `${avatarPct}%`, background: 'linear-gradient(90deg,var(--color-accent-2),var(--color-accent))' }} />
               </div>
             ) : (
-              <p style={{ fontSize: 13, color: '#a855f7', margin: 0 }}>All avatar tiers unlocked! 🎭</p>
+              <p style={{ fontSize: 13, color: 'var(--color-accent-2)', margin: 0 }}>All avatar tiers unlocked! 🎭</p>
             )}
           </div>
           {/* Tier list */}
           {[
-            { need: 0,  icon: '🔒', label: 'No unlock yet',   color: 'rgba(255,255,255,0.3)',  tier: 'none'   },
-            { need: 5,  icon: '🖼️', label: 'Basic',           color: '#06b6d4',                tier: 'basic'  },
-            { need: 15, icon: '📷', label: 'Custom Photo',    color: '#10b981',                tier: 'custom' },
-            { need: 45, icon: '🎭', label: '3D Model',        color: '#a855f7',                tier: '3d'     },
+            { need: 0,  icon: '🔒', label: 'No unlock yet',   color: 'var(--color-text-faint)',  tier: 'none'   },
+            { need: 5,  icon: '🖼️', label: 'Basic',           color: 'var(--color-accent)',                tier: 'basic'  },
+            { need: 15, icon: '📷', label: 'Custom Photo',    color: 'var(--color-success)',                tier: 'custom' },
+            { need: 45, icon: '🎭', label: '3D Model',        color: 'var(--color-accent-2)',                tier: '3d'     },
           ].map(({ need, icon, label, color, tier }) => {
             const unlocked = tier === 'none' ? avatarTier === 'none' : total >= need;
             const isCurrent = avatarTier === tier;
@@ -860,11 +860,11 @@ function InviteTab({ user }) {
               }}>
                 <span style={{ fontSize: 20, width: 28, textAlign: 'center', flexShrink: 0 }}>{icon}</span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: unlocked ? color : 'rgba(255,255,255,0.35)' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: unlocked ? color : 'var(--color-text-faint)' }}>
                     {label}
                   </div>
                   {need > 0 && (
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: 1 }}>
+                    <div style={{ fontSize: 11, color: 'var(--color-white-a20)', marginTop: 1 }}>
                       {need} invited {unlocked && tier !== 'none' ? '✓' : ''}
                     </div>
                   )}
@@ -888,8 +888,8 @@ function InviteTab({ user }) {
               <div key={inv.id || i} className="sh-invite-item">
                 <div className="sh-avatar sh-avatar-sm">{initials(inv.user?.displayName || inv.user?.username || 'User')}</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}>{inv.user ? <PlayerName displayName={inv.user.displayName} username={inv.user.username} userId={inv.user._id} /> : 'Deleted User'}</div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>@{inv.user?.username || 'unknown'}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)' }}>{inv.user ? <PlayerName displayName={inv.user.displayName} username={inv.user.username} userId={inv.user._id} /> : 'Deleted User'}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>@{inv.user?.username || 'unknown'}</div>
                 </div>
                 <span className={inv.status === 'active' ? 'sh-chip-active' : (inv.status === 'request_pending' ? 'sh-chip-request' : 'sh-chip-pending')}>
                   {inv.status === 'active' ? '✓ Active' : (inv.status === 'request_pending' ? '📜 Requested' : '⏳ Pending')}
@@ -1021,11 +1021,11 @@ function FriendsTab() {
                   {isOnline && <span className="sh-online-dot" />}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
                     <PlayerName displayName={f.user?.displayName} username={f.user?.username} userId={f.user?._id} />
-                    {isOnline && <span style={{ fontSize: 11, color: '#10b981', fontWeight: 500 }}>● online</span>}
+                    {isOnline && <span style={{ fontSize: 11, color: 'var(--color-success)', fontWeight: 500 }}>● online</span>}
                   </div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>@{f.user?.username}</div>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>@{f.user?.username}</div>
                 </div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <button
@@ -1061,8 +1061,8 @@ function FriendsTab() {
                 <UserAvatar user={r.user} size={42} />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}><PlayerName displayName={r.user?.displayName} username={r.user?.username} userId={r.user?._id} /></div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>@{r.user?.username}</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)' }}><PlayerName displayName={r.user?.displayName} username={r.user?.username} userId={r.user?._id} /></div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>@{r.user?.username}</div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button className="sh-btn-accept"  onClick={() => acceptRequest(r.friendshipId)}>Accept</button>
@@ -1086,7 +1086,7 @@ function FriendsTab() {
             autoFocus
           />
           {search.trim().length > 0 && search.trim().length < 2 && (
-            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, marginTop: 0 }}>Type at least 2 characters…</p>
+            <p style={{ color: 'var(--color-text-faint)', fontSize: 13, marginTop: 0 }}>Type at least 2 characters…</p>
           )}
           {results.map(u => {
             const st = statusMap[u._id];
@@ -1096,8 +1096,8 @@ function FriendsTab() {
                   <UserAvatar user={u} size={42} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff' }}><PlayerName displayName={u.displayName} username={u.username} userId={u._id} /></div>
-                  <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>{u.friendCount || 0} friends</div>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)' }}><PlayerName displayName={u.displayName} username={u.username} userId={u._id} /></div>
+                  <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>{u.friendCount || 0} friends</div>
                 </div>
                 {!st || st.status === 'none' ? (
                   <button className="sh-btn-primary" style={{ padding: '7px 14px', fontSize: 13 }} onClick={() => sendRequest(u._id)}>+ Add</button>
@@ -1228,7 +1228,7 @@ function ClubsTab() {
       {/* Browse */}
       <div className="sh-section-title" style={{ marginBottom: 14 }}>
         Browse Clubs&nbsp;
-        {total > 0 && <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>({total})</span>}
+        {total > 0 && <span style={{ color: 'var(--color-text-faint)', fontSize: 12, fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>({total})</span>}
       </div>
 
       {loading ? (
@@ -1292,35 +1292,35 @@ function ClubsTab() {
               />
               {/* Visibility */}
               <div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Visibility</div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-faint)', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Visibility</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                   <button
                     type="button"
                     onClick={() => setCreateForm(f => ({ ...f, isPrivate: false }))}
                     style={{
                       padding: '12px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
-                      background: !createForm.isPrivate ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.04)',
-                      border: !createForm.isPrivate ? '2px solid rgba(34,197,94,0.45)' : '2px solid rgba(255,255,255,0.08)',
-                      color: '#e2e8f0', transition: 'all 0.15s'
+                      background: !createForm.isPrivate ? 'rgba(34,197,94,0.15)' : 'var(--color-white-a04)',
+                      border: !createForm.isPrivate ? '2px solid rgba(34,197,94,0.45)' : '2px solid var(--color-white-a07)',
+                      color: 'var(--color-text)', transition: 'all 0.15s'
                     }}
                   >
                     <div style={{ fontSize: 20, marginBottom: 4 }}>🌍</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: !createForm.isPrivate ? '#4ade80' : '#94a3b8' }}>Public</div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2, lineHeight: 1.4 }}>Anyone can find &amp; join</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: !createForm.isPrivate ? '#4ade80' : 'var(--color-text-muted)' }}>Public</div>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>Anyone can find &amp; join</div>
                   </button>
                   <button
                     type="button"
                     onClick={() => setCreateForm(f => ({ ...f, isPrivate: true }))}
                     style={{
                       padding: '12px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
-                      background: createForm.isPrivate ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.04)',
-                      border: createForm.isPrivate ? '2px solid rgba(139,92,246,0.45)' : '2px solid rgba(255,255,255,0.08)',
-                      color: '#e2e8f0', transition: 'all 0.15s'
+                      background: createForm.isPrivate ? 'var(--color-accent-2-a15)' : 'var(--color-white-a04)',
+                      border: createForm.isPrivate ? '2px solid rgba(139,92,246,0.45)' : '2px solid var(--color-white-a07)',
+                      color: 'var(--color-text)', transition: 'all 0.15s'
                     }}
                   >
                     <div style={{ fontSize: 20, marginBottom: 4 }}>🔒</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: createForm.isPrivate ? '#a78bfa' : '#94a3b8' }}>Private</div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 2, lineHeight: 1.4 }}>Invite link only</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: createForm.isPrivate ? 'var(--color-accent-2)' : 'var(--color-text-muted)' }}>Private</div>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>Invite link only</div>
                   </button>
                 </div>
               </div>

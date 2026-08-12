@@ -5,7 +5,7 @@ import SEO from '../components/SEO';
 const styles = {
   pageWrapper: {
     minHeight: '100vh',
-    background: '#0a0a0a',
+    background: 'var(--color-bg)',
     position: 'relative',
     overflow: 'hidden',
     padding: '20px',
@@ -19,18 +19,18 @@ const styles = {
     background: `
       radial-gradient(circle at 10% 20%, rgba(244, 63, 94, 0.08) 0%, transparent 50%),
       radial-gradient(circle at 90% 60%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 50% 90%, rgba(6, 182, 212, 0.08) 0%, transparent 50%)
+      radial-gradient(circle at 50% 90%, var(--color-accent-a08) 0%, transparent 50%)
     `,
     pointerEvents: 'none',
     zIndex: 0,
   },
   container: {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    background: 'rgba(23, 23, 23, 0.7)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-white-a04)',
     borderRadius: '24px',
     backdropFilter: 'blur(10px)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
     padding: '32px',
     marginTop: '20px',
     position: 'relative',
@@ -41,7 +41,7 @@ const styles = {
   },
   header: {
     padding: '40px 0 24px',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+    borderBottom: '1px solid var(--color-white-a07)',
     textAlign: 'center',
     marginBottom: '32px',
     position: 'relative',
@@ -52,7 +52,7 @@ const styles = {
     left: 0,
     right: 0,
     height: '150px',
-    background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)',
+    background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.1) 0%, var(--color-accent-2-a15) 100%)',
     filter: 'blur(40px)',
     opacity: 0.3,
     zIndex: -1,
@@ -61,7 +61,7 @@ const styles = {
     fontSize: '36px',
     fontWeight: '800',
     margin: '0 0 8px 0',
-    background: 'linear-gradient(135deg, #f43f5e 0%, #8b5cf6 100%)',
+    background: 'linear-gradient(135deg, #f43f5e 0%, var(--color-accent-2) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
@@ -70,7 +70,7 @@ const styles = {
   subtitle: {
     marginTop: '12px',
     fontSize: '16px',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontWeight: '400',
     opacity: '0.9',
   },
@@ -82,13 +82,13 @@ const styles = {
     padding: '28px',
     background: 'rgba(30, 30, 30, 0.5)',
     borderRadius: '16px',
-    border: '1px solid rgba(255, 255, 255, 0.03)',
+    border: '1px solid var(--color-white-a04)',
     transition: 'all 0.3s ease',
   },
   sectionTitle: {
     fontSize: '22px',
     fontWeight: '700',
-    color: '#f8fafc',
+    color: 'var(--color-text)',
     marginBottom: '20px',
     display: 'flex',
     alignItems: 'center',
@@ -97,7 +97,7 @@ const styles = {
   sectionContent: {
     fontSize: '16px',
     lineHeight: '1.7',
-    color: '#e2e8f0',
+    color: 'var(--color-text)',
   },
   ruleList: {
     paddingLeft: '22px',
@@ -105,7 +105,7 @@ const styles = {
   },
   ruleItem: {
     marginBottom: '12px',
-    color: '#cbd5e1',
+    color: 'var(--color-text-muted)',
     position: 'relative',
   },
   highlightBox: {
@@ -128,33 +128,33 @@ const styles = {
     gap: '8px',
   },
   highlightText: {
-    color: '#e2e8f0',
+    color: 'var(--color-text)',
     fontSize: '15px',
     lineHeight: '1.6',
   },
   announcement: {
     fontSize: '18px',
     fontWeight: '600',
-    color: '#f1f5f9',
+    color: 'var(--color-text)',
     marginBottom: '20px',
     lineHeight: '1.6',
     padding: '20px',
-    background: 'rgba(6, 182, 212, 0.05)',
+    background: 'var(--color-accent-a06)',
     borderRadius: '12px',
-    border: '1px solid rgba(6, 182, 212, 0.1)',
+    border: '1px solid var(--color-accent-a12)',
   },
   backButton: {
     display: 'inline-block',
     marginTop: '30px',
     padding: '14px 32px',
     borderRadius: '12px',
-    background: 'linear-gradient(135deg, #f43f5e 0%, #8b5cf6 100%)',
-    color: '#ffffff',
+    background: 'linear-gradient(135deg, #f43f5e 0%, var(--color-accent-2) 100%)',
+    color: 'var(--color-text)',
     fontWeight: '700',
     textDecoration: 'none',
     boxShadow: '0 8px 24px rgba(244, 63, 94, 0.3)',
     transition: 'all 0.3s ease',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    border: '1px solid var(--color-white-a10)',
     position: 'relative',
     overflow: 'hidden',
   },
@@ -162,14 +162,14 @@ const styles = {
     overflowX: 'auto',
     margin: '24px 0',
     borderRadius: '12px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    background: 'rgba(0, 0, 0, 0.2)',
+    border: '1px solid var(--color-white-a04)',
+    background: 'var(--color-black-a20)',
   },
   table: {
     width: '100%',
     borderCollapse: 'separate',
     borderSpacing: '0',
-    background: 'rgba(15, 15, 15, 0.6)',
+    background: 'var(--color-surface)',
     borderRadius: '12px',
     overflow: 'hidden',
     minWidth: '300px',
@@ -178,14 +178,14 @@ const styles = {
   tableHeader: {
     background: 'linear-gradient(135deg, rgba(244, 63, 94, 0.8) 0%, rgba(139, 92, 246, 0.8) 100%)',
     color: 'white',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+    boxShadow: '0 4px 12px var(--color-black-a35)'
   },
   tableHeaderCell: {
     padding: '18px 24px',
     textAlign: 'left',
     fontSize: '16px',
     fontWeight: '700',
-    borderBottom: '2px solid rgba(255,255,255,0.2)',
+    borderBottom: '2px solid var(--color-white-a20)',
     backdropFilter: 'blur(10px)',
   },
   tableRow: {
@@ -197,20 +197,20 @@ const styles = {
     padding: '16px 24px',
     fontWeight: '600',
     fontSize: '15px',
-    color: '#f8fafc',
-    borderBottom: '1px solid rgba(148, 163, 184, 0.1)',
+    color: 'var(--color-text)',
+    borderBottom: '1px solid var(--color-border)',
   },
   roundCell: {
-    borderRight: '1px solid rgba(148, 163, 184, 0.1)',
+    borderRight: '1px solid var(--color-border)',
   },
   footer: {
     textAlign: 'center',
     marginTop: '40px',
     paddingTop: '32px',
-    borderTop: '1px solid rgba(148, 163, 184, 0.1)',
+    borderTop: '1px solid var(--color-border)',
   },
   footerText: {
-    color: '#94a3b8',
+    color: 'var(--color-text-muted)',
     marginTop: '20px',
     fontSize: '14px',
   },
@@ -218,11 +218,11 @@ const styles = {
 
 export default function ContestRules() {
   const roundsData = [
-    { number: 1, color: 'rgba(254, 243, 199, 0.1)', bg: 'rgba(254, 243, 199, 0.1)', text: 'Participants scoring less than', points: '4 points', pointsColor: '#f87171' },
-    { number: 2, color: 'rgba(209, 250, 229, 0.1)', bg: 'rgba(209, 250, 229, 0.1)', text: 'Participants scoring less than', points: '5 points', pointsColor: '#f87171' },
-    { number: 3, color: 'rgba(254, 243, 199, 0.1)', bg: 'rgba(254, 243, 199, 0.1)', text: 'Participants scoring less than', points: '6 points', pointsColor: '#f87171' },
+    { number: 1, color: 'rgba(254, 243, 199, 0.1)', bg: 'rgba(254, 243, 199, 0.1)', text: 'Participants scoring less than', points: '4 points', pointsColor: 'var(--color-danger)' },
+    { number: 2, color: 'rgba(209, 250, 229, 0.1)', bg: 'rgba(209, 250, 229, 0.1)', text: 'Participants scoring less than', points: '5 points', pointsColor: 'var(--color-danger)' },
+    { number: 3, color: 'rgba(254, 243, 199, 0.1)', bg: 'rgba(254, 243, 199, 0.1)', text: 'Participants scoring less than', points: '6 points', pointsColor: 'var(--color-danger)' },
     { number: 4, color: 'rgba(207, 250, 254, 0.1)', bg: 'rgba(207, 250, 254, 0.1)', text: 'Top', points: '6 participants', pointsColor: '#4ade80' },
-    { number: 5, color: 'rgba(254, 243, 199, 0.2)', bg: 'rgba(254, 243, 199, 0.2)', text: 'Top', points: '3 participants', pointsColor: '#fbbf24' },
+    { number: 5, color: 'rgba(254, 243, 199, 0.2)', bg: 'rgba(254, 243, 199, 0.2)', text: 'Top', points: '3 participants', pointsColor: 'var(--color-warning)' },
   ];
 
   return (
@@ -294,7 +294,7 @@ export default function ContestRules() {
                 </p>
               </div>
 
-              <h4 style={{color: '#cbd5e1', margin: '20px 0 8px 0'}}>🎂 Age Requirements:</h4>
+              <h4 style={{color: 'var(--color-text-muted)', margin: '20px 0 8px 0'}}>🎂 Age Requirements:</h4>
               <p>Children between 5 and 16 years old can participate.</p>
             </div>
           </div>

@@ -273,18 +273,18 @@ const C = {
   ink: '#0a0c10',
   glass: 'rgba(22, 26, 34, 0.66)',
   glassSolid: '#12151c',
-  border: 'rgba(255,255,255,0.08)',
-  borderStrong: 'rgba(255,255,255,0.14)',
+  border: 'var(--color-white-a07)',
+  borderStrong: 'var(--color-white-a13)',
   text: '#e7eaf0',
   textMut: '#8b93a7',
   textFaint: '#5d6577',
-  accent: '#a78bfa'
+  accent: 'var(--color-accent-2)'
 };
 
 const st = {
   wrap: { minHeight: '100vh', padding: '32px 16px 64px', fontFamily: 'Poppins, sans-serif', color: C.text, background: `radial-gradient(1200px 600px at 50% -10%, #1a1f2b 0%, ${C.ink} 60%)` },
   inner: { maxWidth: 1000, margin: '0 auto' },
-  h1: { fontSize: 30, fontWeight: 700, margin: '0 0 4px', color: '#fff', letterSpacing: 0.2 },
+  h1: { fontSize: 30, fontWeight: 700, margin: '0 0 4px', color: 'var(--color-text)', letterSpacing: 0.2 },
   sub: { color: C.textMut, margin: '0 0 24px', fontSize: 14 },
   sectionHead: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '0 0 12px' },
   sectionTitle: { fontSize: 15, fontWeight: 700, color: C.textMut, textTransform: 'uppercase', letterSpacing: 0.6, margin: 0 },
@@ -297,26 +297,26 @@ const st = {
   immortalGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 14 },
 
   playerRow: { display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 28 },
-  playerCard: { flex: '1 1 180px', maxWidth: 240, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: '18px 16px', cursor: 'pointer', textAlign: 'center', color: C.text, transition: 'transform 150ms ease, border-color 150ms ease', boxShadow: '0 8px 30px rgba(0,0,0,0.45)' },
-  playerPhoto: { width: 150, height: 150, borderRadius: 14, overflow: 'hidden', background: 'rgba(255,255,255,0.06)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' },
+  playerCard: { flex: '1 1 180px', maxWidth: 240, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: '18px 16px', cursor: 'pointer', textAlign: 'center', color: C.text, transition: 'transform 150ms ease, border-color 150ms ease', boxShadow: '0 8px 30px var(--color-black-a35)' },
+  playerPhoto: { width: 150, height: 150, borderRadius: 14, overflow: 'hidden', background: 'var(--color-white-a07)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' },
   playerPhotoImg: { width: '100%', height: '100%', objectFit: 'cover' },
   playerPhotoPlaceholder: { fontSize: 60, fontWeight: 700, color: C.textFaint },
-  playerCardName: { fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.25 },
+  playerCardName: { fontSize: 15, fontWeight: 700, color: 'var(--color-text)', lineHeight: 1.25 },
   title: { color: C.accent, fontWeight: 700 },
   playerCardCount: { fontSize: 12, color: C.textMut, marginTop: 3 },
 
-  exploreBar: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: 16, marginBottom: 24, boxShadow: '0 8px 30px rgba(0,0,0,0.45)' },
-  exploreTitle: { fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 12 },
+  exploreBar: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: 16, marginBottom: 24, boxShadow: '0 8px 30px var(--color-black-a35)' },
+  exploreTitle: { fontSize: 16, fontWeight: 700, color: 'var(--color-text)', marginBottom: 12 },
   exploreFilters: { display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' },
   input: { padding: '9px 12px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, minWidth: 160, background: C.glassSolid, color: C.text, outline: 'none' },
   select: { padding: '9px 12px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, background: C.glassSolid, color: C.text, maxWidth: 200, outline: 'none' },
-  searchBtn: { padding: '9px 18px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: 'rgba(167,139,250,0.18)', color: C.accent, fontWeight: 700, cursor: 'pointer', fontSize: 14 },
-  suggestBox: { position: 'absolute', top: '100%', left: 0, right: 0, background: C.glassSolid, border: `1px solid ${C.borderStrong}`, borderRadius: 10, marginTop: 4, zIndex: 20, maxHeight: 240, overflowY: 'auto', boxShadow: '0 12px 30px rgba(0,0,0,0.55)', minWidth: 200 },
+  searchBtn: { padding: '9px 18px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: 'var(--color-accent-2-a15)', color: C.accent, fontWeight: 700, cursor: 'pointer', fontSize: 14 },
+  suggestBox: { position: 'absolute', top: '100%', left: 0, right: 0, background: C.glassSolid, border: `1px solid ${C.borderStrong}`, borderRadius: 10, marginTop: 4, zIndex: 20, maxHeight: 240, overflowY: 'auto', boxShadow: '0 12px 30px var(--color-black-a50)', minWidth: 200 },
   suggestItem: { padding: '9px 12px', cursor: 'pointer', fontSize: 14, color: C.text },
 
   statsStrip: { display: 'flex', gap: 12, flexWrap: 'wrap' },
-  stat: { flex: '1 1 140px', background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 14, padding: '16px 18px', textAlign: 'center', boxShadow: '0 8px 30px rgba(0,0,0,0.45)' },
-  statValue: { fontSize: 26, fontWeight: 800, color: '#fff' },
+  stat: { flex: '1 1 140px', background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 14, padding: '16px 18px', textAlign: 'center', boxShadow: '0 8px 30px var(--color-black-a35)' },
+  statValue: { fontSize: 26, fontWeight: 800, color: 'var(--color-text)' },
   statLabel: { fontSize: 12, color: C.textMut, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 4 },
   statSub: { fontSize: 11, color: C.textFaint, marginTop: 2 }
 };

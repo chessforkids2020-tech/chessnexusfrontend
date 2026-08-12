@@ -105,7 +105,7 @@
   max-width: 80vw;
   background: white;
   z-index: 100000;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 10px var(--color-black-a20);
   animation: slideInLeft 0.3s ease;
   overflow-y: auto;
   overflow-x: hidden;

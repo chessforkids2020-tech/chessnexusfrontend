@@ -120,34 +120,34 @@ function MoveList({ tree, activeId, onGo }) {
 }
 
 const mt = {
-  wrap: { background: 'rgba(0,0,0,0.18)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, overflow: 'hidden', fontSize: 15 },
+  wrap: { background: 'var(--color-black-a20)', border: '1px solid var(--color-white-a07)', borderRadius: 10, overflow: 'hidden', fontSize: 15 },
   row: { display: 'grid', gridTemplateColumns: '44px 1fr 1fr', alignItems: 'stretch' },
-  num: { display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8b93a7', background: 'rgba(255,255,255,0.03)', fontVariantNumeric: 'tabular-nums', padding: '6px 0', fontSize: 13 },
-  col: { padding: '6px 12px', borderLeft: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center' },
+  num: { display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8b93a7', background: 'var(--color-white-a04)', fontVariantNumeric: 'tabular-nums', padding: '6px 0', fontSize: 13 },
+  col: { padding: '6px 12px', borderLeft: '1px solid var(--color-white-a04)', display: 'flex', alignItems: 'center' },
   move: { cursor: 'pointer', padding: '2px 8px', borderRadius: 6, color: '#e7eaf0', fontWeight: 700 },
-  moveActive: { background: '#2563eb', color: '#fff' },
+  moveActive: { background: 'var(--color-accent-2)', color: 'var(--color-text)' },
   moveNoted: { borderBottom: '2px solid #f5c451' },
-  commentRow: { padding: '8px 14px', color: '#cbd5e1', fontSize: 13.5, background: 'rgba(255,255,255,0.015)', borderTop: '1px solid rgba(255,255,255,0.05)', lineHeight: 1.6 },
+  commentRow: { padding: '8px 14px', color: 'var(--color-text-muted)', fontSize: 13.5, background: 'var(--color-white-a04)', borderTop: '1px solid var(--color-white-a04)', lineHeight: 1.6 },
   varBlock: { color: '#8b93a7' },
   vnum: { color: '#5d6577', marginRight: 2 },
   vmove: { cursor: 'pointer', color: '#a9b2c6', fontWeight: 600 },
-  vcomment: { fontStyle: 'italic', color: '#cbd5e1' },
+  vcomment: { fontStyle: 'italic', color: 'var(--color-text-muted)' },
 };
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 const C = {
   glass: 'rgba(22, 26, 34, 0.66)', glassSolid: '#12151c',
-  border: 'rgba(255,255,255,0.08)', borderStrong: 'rgba(255,255,255,0.14)',
+  border: 'var(--color-white-a07)', borderStrong: 'var(--color-white-a13)',
   text: '#e7eaf0', textMut: '#8b93a7', textFaint: '#5d6577',
-  accent: '#a78bfa', active: '#22d3ee', gold: '#f5c451',
-  good: '#34d399', bad: '#f87171',
+  accent: 'var(--color-accent-2)', active: 'var(--color-accent)', gold: '#f5c451',
+  good: 'var(--color-success)', bad: 'var(--color-danger)',
 };
 
 const st = {
   modeBar: { display: 'flex', gap: 6, marginBottom: 14 },
   mode: { padding: '7px 14px', borderRadius: 9, border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 700, fontSize: 13 },
-  modeOn: { background: 'rgba(34,211,238,0.14)', color: C.active, borderColor: C.active },
+  modeOn: { background: 'var(--color-accent-a15)', color: C.active, borderColor: C.active },
   cards: { display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'flex-start' },
   boardCard: { flex: '0 0 auto', background: C.glass, border: `1px solid ${C.border}`, borderRadius: 16, padding: 10, alignSelf: 'flex-start', display: 'inline-flex', flexDirection: 'column' },
   // Chessboard reserves gutter space only on the sides that draw labels (bottom+left),
@@ -157,30 +157,30 @@ const st = {
   rightCard: { flex: '1 1 320px', minWidth: 280, background: C.glass, border: `1px solid ${C.border}`, borderRadius: 16, padding: 14, minHeight: '78vh', maxHeight: '92vh', display: 'flex', flexDirection: 'column' },
   rightScroll: { overflowY: 'auto', flex: '1 1 auto', minHeight: 220 },
   rightPinned: { flexShrink: 0, paddingTop: 12, marginTop: 4, borderTop: `1px solid ${C.border}` },
-  h: { fontSize: 15, fontWeight: 800, color: '#fff', margin: '0 0 8px' },
+  h: { fontSize: 15, fontWeight: 800, color: 'var(--color-text)', margin: '0 0 8px' },
   sub: { color: C.textMut, fontSize: 12.5, margin: '0 0 12px' },
   row: { display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 },
-  input: { padding: '7px 10px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.04)', color: C.text, fontSize: 13 },
+  input: { padding: '7px 10px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--color-white-a04)', color: C.text, fontSize: 13 },
   btn: { padding: '8px 14px', borderRadius: 9, border: 'none', background: `linear-gradient(135deg, ${C.accent}, #7c5cf0)`, color: '#0a0713', cursor: 'pointer', fontWeight: 800, fontSize: 13 },
   ghost: { padding: '7px 12px', borderRadius: 9, border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontSize: 13 },
   ghostSm: { padding: '4px 10px', borderRadius: 8, border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontSize: 12 },
   engineBtn: { padding: '8px 14px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 600, fontSize: 13 },
   engineBtnSm: { padding: '4px 10px', borderRadius: 8, border: `1px solid ${C.borderStrong}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 600, fontSize: 12 },
-  engineBtnOn: { background: 'rgba(167,139,250,0.18)', color: C.accent, borderColor: C.accent },
-  lineRow: { display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', marginBottom: 6, borderRadius: 10, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.02)' },
+  engineBtnOn: { background: 'var(--color-accent-2-a15)', color: C.accent, borderColor: C.accent },
+  lineRow: { display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', marginBottom: 6, borderRadius: 10, border: `1px solid ${C.border}`, background: 'var(--color-white-a04)' },
   sanChips: { display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 },
-  chip: { padding: '2px 7px', borderRadius: 6, background: 'rgba(255,255,255,0.06)', color: C.text, fontSize: 12.5, fontWeight: 600 },
-  exRow: { display: 'grid', gridTemplateColumns: '48px 1fr 70px', gap: 8, alignItems: 'center', padding: '5px 6px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.02)', cursor: 'pointer', color: C.text, fontSize: 13, marginBottom: 3 },
-  fb: (ok) => ({ marginTop: 10, padding: '8px 12px', borderRadius: 9, fontWeight: 700, fontSize: 13, background: ok ? 'rgba(52,211,153,0.15)' : 'rgba(248,113,113,0.15)', color: ok ? C.good : C.bad }),
+  chip: { padding: '2px 7px', borderRadius: 6, background: 'var(--color-white-a07)', color: C.text, fontSize: 12.5, fontWeight: 600 },
+  exRow: { display: 'grid', gridTemplateColumns: '48px 1fr 70px', gap: 8, alignItems: 'center', padding: '5px 6px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--color-white-a04)', cursor: 'pointer', color: C.text, fontSize: 13, marginBottom: 3 },
+  fb: (ok) => ({ marginTop: 10, padding: '8px 12px', borderRadius: 9, fontWeight: 700, fontSize: 13, background: ok ? 'rgba(52,211,153,0.15)' : 'var(--color-danger-a12)', color: ok ? C.good : C.bad }),
   locked: { padding: 24, textAlign: 'center', border: `1px solid ${C.gold}55`, borderRadius: 16, background: 'linear-gradient(135deg, rgba(245,196,81,0.10), rgba(245,196,81,0.03))' },
   goldBtn: { padding: '10px 20px', borderRadius: 10, border: 'none', background: `linear-gradient(135deg, ${C.gold}, #e0a92e)`, color: '#1a1206', cursor: 'pointer', fontWeight: 800, marginTop: 12 },
 
   // Full-width "Your Repertoire" section below the board.
   repSection: { marginTop: 18, background: C.glass, border: `1px solid ${C.border}`, borderRadius: 16, padding: 16 },
   repGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 },
-  repCard: { border: `1px solid ${C.border}`, borderRadius: 12, padding: 12, background: 'rgba(255,255,255,0.02)' },
+  repCard: { border: `1px solid ${C.border}`, borderRadius: 12, padding: 12, background: 'var(--color-white-a04)' },
   sanChipsSmall: { display: 'flex', flexWrap: 'wrap', gap: 3 },
-  chipSmall: { padding: '1px 6px', borderRadius: 5, background: 'rgba(255,255,255,0.06)', color: C.text, fontSize: 11.5, fontWeight: 600 },
+  chipSmall: { padding: '1px 6px', borderRadius: 5, background: 'var(--color-white-a07)', color: C.text, fontSize: 11.5, fontWeight: 600 },
 };
 
 
@@ -414,7 +414,7 @@ function BuildMode({ access, onWalletChange }) {
   const del = async (id) => { try { await api.delete(`/api/opening-repertoire/lines/${id}`); loadLines(); } catch { /* */ } };
 
   return (
-   <div ref={wrapRef} style={isFull ? { background: '#0a0a0a', minHeight: '100vh', padding: 18, overflowY: 'auto' } : undefined}>
+   <div ref={wrapRef} style={isFull ? { background: 'var(--color-bg)', minHeight: '100vh', padding: 18, overflowY: 'auto' } : undefined}>
     {/* Stockfish on/off + Fullscreen — ABOVE the cards, aligned right. */}
     <div style={{ marginBottom: 12 }}>
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 8 }}>
@@ -502,7 +502,7 @@ function BuildMode({ access, onWalletChange }) {
                     <div style={{ ...st.sub, marginBottom: 6 }}>Masters play here ({explorer.total} games):</div>
                     {explorer.moves.slice(0, 6).map(m => (
                       <div key={m.san} style={st.exRow} onClick={() => onDrop(...uciFromSan(fen, m.san))}>
-                        <span style={{ fontWeight: 700, color: '#fff' }}>{m.san}</span>
+                        <span style={{ fontWeight: 700, color: 'var(--color-text)' }}>{m.san}</span>
                         <span style={{ color: C.textMut, fontSize: 12 }}>{m.games} games</span>
                         <span style={{ color: C.textFaint, fontSize: 11 }}>{pct(m.white, m.games)}% / {pct(m.draw, m.games)}% / {pct(m.black, m.games)}%</span>
                       </div>
@@ -520,8 +520,8 @@ function BuildMode({ access, onWalletChange }) {
 
     {/* Comment box for the current move — full width, above Your Repertoire. */}
     {currentNode && currentNode.san && (
-      <div style={{ marginTop: 14, padding: 12, borderRadius: 12, border: `1px solid ${C.border}`, background: 'rgba(0,0,0,0.2)' }}>
-        <div style={{ ...st.sub, marginBottom: 6 }}>💬 Comment on <strong style={{ color: '#fff' }}>{currentNode.san}</strong>:</div>
+      <div style={{ marginTop: 14, padding: 12, borderRadius: 12, border: `1px solid ${C.border}`, background: 'var(--color-black-a20)' }}>
+        <div style={{ ...st.sub, marginBottom: 6 }}>💬 Comment on <strong style={{ color: 'var(--color-text)' }}>{currentNode.san}</strong>:</div>
         <textarea
           style={{ ...st.input, width: '100%', minHeight: 60, resize: 'vertical', boxSizing: 'border-box' }}
           placeholder="e.g. Spanish Exchange starts here…"
@@ -544,7 +544,7 @@ function BuildMode({ access, onWalletChange }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <span style={{ fontSize: 16 }}>{l.side === 'white' ? '♔' : '♚'}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: '#fff', fontWeight: 700, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.name || l.openingName || 'Line'}</div>
+                  <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.name || l.openingName || 'Line'}</div>
                   <div style={{ color: C.textFaint, fontSize: 11.5 }}>{l.ecoCode ? `${l.ecoCode} · ` : ''}{l.sans.length} moves{l.tree && hasVariations(l.tree) ? ' · ⑂' : ''}{(l.comments || []).some(Boolean) ? ' · 💬' : ''}{l.dueAt && new Date(l.dueAt) <= new Date() ? ' · due' : ''}</div>
                 </div>
               </div>
@@ -665,7 +665,7 @@ function DrillLine({ line, remaining, onGraded }) {
       </div>
       <div style={st.rightCard}>
         <h3 style={st.h}>{line.name || line.openingName || 'Line'} <span style={{ color: C.textFaint, fontWeight: 600, fontSize: 12 }}>({remaining} due)</span></h3>
-        <div style={st.sub}>You are <strong style={{ color: '#fff' }}>{side}</strong>. Play your repertoire moves from memory.</div>
+        <div style={st.sub}>You are <strong style={{ color: 'var(--color-text)' }}>{side}</strong>. Play your repertoire moves from memory.</div>
         {!done && myMoveNow() && <div style={{ color: C.active, fontWeight: 700, fontSize: 13 }}>Your move ({Math.floor(ply / 2) + 1}).</div>}
         {wrong && <div style={st.fb(false)}>Not your line — try again (or use the hint).</div>}
         {lastNote && (
@@ -730,7 +730,7 @@ function CheckMode() {
           {result.deviations.map((d, i) => (
             <div key={i} style={st.lineRow}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ color: '#fff', fontSize: 13, fontWeight: 700 }}>
+                <div style={{ color: 'var(--color-text)', fontSize: 13, fontWeight: 700 }}>
                   {d.lineName || d.opening || 'Your line'} · vs {d.opponent}
                 </div>
                 <div style={{ color: C.textMut, fontSize: 12 }}>

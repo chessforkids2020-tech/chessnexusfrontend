@@ -206,7 +206,7 @@ export default function StockfishTest() {
         <h2>🧪 Stockfish Test Laboratory</h2>
         <p>Loading Stockfish... {statusMessage}</p>
         <div style={{ marginTop: '20px' }}>
-          <button onClick={() => navigate('/')} style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+          <button onClick={() => navigate('/')} style={{ padding: '10px 20px', backgroundColor: 'var(--color-accent-2)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
             ← Back to Dashboard
           </button>
         </div>
@@ -299,7 +299,7 @@ export default function StockfishTest() {
                     boardWidth={boardSize}
                     boardStyle={{
                       borderRadius: "8px",
-                      boxShadow: "0 6px 12px rgba(0,0,0,0.15)",
+                      boxShadow: "0 6px 12px var(--color-black-a20)",
                       border: "2px solid #8B4513"
                     }}
                     orientation="white"
@@ -436,12 +436,12 @@ const styles = {
     backgroundColor: "white",
     borderRadius: "8px",
     padding: "16px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    border: "1px solid #e5e7eb"
+    boxShadow: "0 2px 4px var(--color-black-a20)",
+    border: "1px solid var(--color-text)"
   },
   statusBox: {
     padding: "12px",
-    backgroundColor: "#f9fafb",
+    backgroundColor: "var(--color-text)",
     borderRadius: "6px",
     marginBottom: "16px"
   },
@@ -451,18 +451,18 @@ const styles = {
     marginBottom: "8px"
   },
   statusReady: {
-    color: "#059669",
+    color: "var(--color-success)",
     fontWeight: "600",
     marginBottom: "4px"
   },
   statusError: {
-    color: "#dc2626",
+    color: "var(--color-danger)",
     fontWeight: "600",
     marginBottom: "4px"
   },
   statusMessage: {
     fontSize: "12px",
-    color: "#6b7280"
+    color: "var(--color-text-faint)"
   },
   buttonGroup: {
     display: "flex",
@@ -472,7 +472,7 @@ const styles = {
   },
   btn: {
     padding: "8px 12px",
-    backgroundColor: "#3b82f6",
+    backgroundColor: "var(--color-accent-2)",
     color: "white",
     border: "none",
     borderRadius: "6px",
@@ -481,7 +481,7 @@ const styles = {
   },
   testBtn: {
     padding: "8px 12px",
-    backgroundColor: "#f59e0b",
+    backgroundColor: "var(--color-warning)",
     color: "white",
     border: "none",
     borderRadius: "6px",
@@ -490,8 +490,8 @@ const styles = {
   },
   modeInfo: {
     fontSize: "12px",
-    color: "#4b5563",
-    backgroundColor: "#f3f4f6",
+    color: "var(--color-text-faint)",
+    backgroundColor: "var(--color-text)",
     padding: "8px",
     borderRadius: "4px"
   },
@@ -514,18 +514,18 @@ const styles = {
   },
   sizeLabel: {
     fontSize: "12px",
-    color: "#6b7280"
+    color: "var(--color-text-faint)"
   },
   historyBox: {
     maxHeight: "200px",
     overflowY: "auto",
-    border: "1px solid #e5e7eb",
+    border: "1px solid var(--color-text)",
     borderRadius: "4px",
     padding: "8px"
   },
   noMoves: {
     textAlign: "center",
-    color: "#9ca3af",
+    color: "var(--color-text-muted)",
     fontStyle: "italic",
     padding: "20px"
   },
@@ -537,7 +537,7 @@ const styles = {
   },
   moveNumber: {
     minWidth: "30px",
-    color: "#6b7280"
+    color: "var(--color-text-faint)"
   },
   moveText: {
     fontFamily: "monospace",
@@ -549,7 +549,7 @@ const styles = {
   },
   currentTest: {
     padding: "8px",
-    backgroundColor: "#fef3c7",
+    backgroundColor: "var(--color-warning)",
     borderRadius: "4px",
     fontSize: "12px",
     marginBottom: "8px",
@@ -562,7 +562,7 @@ const styles = {
   },
   testItem: {
     padding: "8px",
-    border: "1px solid #e5e7eb",
+    border: "1px solid var(--color-text)",
     borderRadius: "4px",
     fontSize: "11px"
   },
@@ -573,29 +573,29 @@ const styles = {
     marginBottom: "4px"
   },
   testSuccess: {
-    color: "#059669",
+    color: "var(--color-success)",
     fontWeight: "600"
   },
   testError: {
-    color: "#dc2626",
+    color: "var(--color-danger)",
     fontWeight: "600"
   },
   testInfo: {
-    color: "#3b82f6",
+    color: "var(--color-accent-2)",
     fontWeight: "600"
   },
   testTime: {
-    color: "#9ca3af",
+    color: "var(--color-text-muted)",
     fontSize: "10px"
   },
   testDetails: {
-    color: "#4b5563",
+    color: "var(--color-text-faint)",
     fontSize: "10px",
     wordBreak: "break-word"
   },
   analysisInfo: {
     fontSize: "13px",
-    color: "#374151",
+    color: "var(--color-text-faint)",
     lineHeight: "1.5"
   }
 };

@@ -26,7 +26,7 @@ const GAMES = [
     title: "Chess Bingo",
     tag: "Knowledge",
     tagColor: T.p2,
-    gradient: "linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)",
+    gradient: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)",
     desc: "Identify puzzle themes to mark your bingo card. First to complete a line wins!",
     bullets: ["Solve puzzle → name the tactic theme", "Correct → mark it on your card", "First full line = BINGO!"],
     stats: { players: "1.8k", difficulty: "Easy" }
@@ -58,7 +58,7 @@ export default function ArcadeHome() {
         left: 0,
         right: 0,
         bottom: 0,
-        background: "radial-gradient(circle at 30% 40%, rgba(255,255,255,0.03) 0%, transparent 60%)",
+        background: "radial-gradient(circle at 30% 40%, var(--color-white-a04) 0%, transparent 60%)",
         pointerEvents: "none"
       }} />
       
@@ -83,7 +83,7 @@ export default function ArcadeHome() {
                 fontSize: "clamp(32px, 5vw, 48px)",
                 fontWeight: 800,
                 margin: 0,
-                color: "#fff",
+                color: "var(--color-text)",
                 letterSpacing: "-0.02em"
               }}>
                 Welcome back, {username}
@@ -108,15 +108,15 @@ export default function ArcadeHome() {
                 <div style={{
                   background: "rgba(20, 25, 35, 0.6)",
                   backdropFilter: "blur(20px)",
-                  border: "1px solid rgba(255,255,255,0.05)",
+                  border: "1px solid var(--color-white-a04)",
                   borderRadius: 32,
                   padding: 32,
                   display: "flex",
                   flexDirection: "column",
                   height: "100%",
                   boxShadow: hoveredCard === id 
-                    ? "0 30px 50px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.1), inset 0 0 30px rgba(6,182,212,0.1)"
-                    : "0 20px 30px -15px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03)",
+                    ? "0 30px 50px -20px var(--color-black-a65), 0 0 0 1px var(--color-white-a10), inset 0 0 30px var(--color-accent-a12)"
+                    : "0 20px 30px -15px var(--color-black-a65), 0 0 0 1px var(--color-white-a04)",
                   transition: "all 0.3s ease",
                   position: "relative",
                   overflow: "hidden"
@@ -128,7 +128,7 @@ export default function ArcadeHome() {
                     left: "-100%",
                     width: "100%",
                     height: "100%",
-                    background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent)",
+                    background: "linear-gradient(90deg, transparent, var(--color-white-a04), transparent)",
                     transition: "left 0.7s ease",
                     ...(hoveredCard === id && { left: "100%" })
                   }} />
@@ -137,13 +137,13 @@ export default function ArcadeHome() {
                   <div style={{ 
                     fontSize: 64, 
                     marginBottom: 20,
-                    filter: "drop-shadow(0 0 20px rgba(6,182,212,0.3))",
+                    filter: "drop-shadow(0 0 20px var(--color-accent-a30))",
                     transform: hoveredCard === id ? "scale(1.1)" : "scale(1)",
                     transition: "transform 0.3s ease",
                     display: "inline-block",
                     width: "fit-content"
                   }}>
-                    <span style={{ color: "#fff" }}>{icon}</span>
+                    <span style={{ color: "var(--color-text)" }}>{icon}</span>
                   </div>
 
                   {/* Title and tag row */}
@@ -155,7 +155,7 @@ export default function ArcadeHome() {
                     flexWrap: "wrap"
                   }}>
                     <h2 style={{ 
-                      color: "#fff", 
+                      color: "var(--color-text)", 
                       fontSize: 24, 
                       fontWeight: 700,
                       margin: 0,
@@ -181,7 +181,7 @@ export default function ArcadeHome() {
 
                   {/* Description */}
                   <p style={{ 
-                    color: "rgba(255,255,255,0.6)", 
+                    color: "var(--color-text-muted)", 
                     fontSize: 14, 
                     lineHeight: 1.6, 
                     margin: "0 0 20px",
@@ -202,7 +202,7 @@ export default function ArcadeHome() {
                       <div key={i} style={{ 
                         display: "flex", 
                         gap: 10, 
-                        color: "rgba(255,255,255,0.5)", 
+                        color: "var(--color-text-muted)", 
                         fontSize: 13,
                         alignItems: "flex-start"
                       }}>
@@ -228,9 +228,9 @@ export default function ArcadeHome() {
                       padding: "16px 24px",
                       fontSize: 16,
                       fontWeight: 600,
-                      color: "#fff",
+                      color: "var(--color-text)",
                       cursor: "pointer",
-                      boxShadow: `0 8px 20px -5px ${tagColor}80, 0 0 0 1px rgba(255,255,255,0.1) inset`,
+                      boxShadow: `0 8px 20px -5px ${tagColor}80, 0 0 0 1px var(--color-white-a10) inset`,
                       transition: "all 0.2s ease",
                       width: "100%",
                       textAlign: "center",
@@ -244,11 +244,11 @@ export default function ArcadeHome() {
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "scale(1.02)";
-                      e.currentTarget.style.boxShadow = `0 12px 30px -5px ${tagColor}, 0 0 0 1px rgba(255,255,255,0.2) inset`;
+                      e.currentTarget.style.boxShadow = `0 12px 30px -5px ${tagColor}, 0 0 0 1px var(--color-white-a20) inset`;
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "scale(1)";
-                      e.currentTarget.style.boxShadow = `0 8px 20px -5px ${tagColor}80, 0 0 0 1px rgba(255,255,255,0.1) inset`;
+                      e.currentTarget.style.boxShadow = `0 8px 20px -5px ${tagColor}80, 0 0 0 1px var(--color-white-a10) inset`;
                     }}
                   >
                     <span>Play {title}</span>

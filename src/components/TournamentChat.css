@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--color-black-a20);
   min-height: 0;
   min-width: 0;
   width: 100%;
@@ -19,12 +19,12 @@
 }
 
 .tournament-chat-messages::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--color-black-a35);
   border-radius: 4px;
 }
 
 .tournament-chat-messages::-webkit-scrollbar-thumb {
-  background: rgba(6, 182, 212, 0.5);
+  background: var(--color-accent-a40);
   border-radius: 4px;
 }
 

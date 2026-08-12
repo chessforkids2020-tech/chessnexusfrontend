@@ -164,10 +164,10 @@ function AdminTeamRace() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      created: { color: '#6c757d', label: 'Created' },
-      waiting: { color: '#ffc107', label: 'Waiting' },
-      running: { color: '#28a745', label: 'Running' },
-      finished: { color: '#dc3545', label: 'Finished' }
+      created: { color: 'var(--color-text-faint)', label: 'Created' },
+      waiting: { color: 'var(--color-warning)', label: 'Waiting' },
+      running: { color: 'var(--color-success)', label: 'Running' },
+      finished: { color: 'var(--color-danger)', label: 'Finished' }
     };
     const badge = badges[status] || badges.created;
     return (
@@ -216,9 +216,9 @@ function AdminTeamRace() {
               }}
               className="btn-delete-all"
               style={{
-                backgroundColor: '#dc3545',
+                backgroundColor: 'var(--color-danger)',
                 color: 'white',
-                border: '1px solid #dc3545',
+                border: '1px solid var(--color-danger)',
                 padding: '8px 16px',
                 borderRadius: '4px',
                 cursor: 'pointer',
@@ -264,7 +264,7 @@ function AdminTeamRace() {
               </div>
 
               <div className="form-group">
-                <label>Topic * {topics.length === 0 && <span style={{ color: '#dc3545' }}>({loading ? 'Loading...' : 'No topics available'})</span>}</label>
+                <label>Topic * {topics.length === 0 && <span style={{ color: 'var(--color-danger)' }}>({loading ? 'Loading...' : 'No topics available'})</span>}</label>
                 <select
                   value={newRace.topic}
                   onChange={e => setNewRace({ ...newRace, topic: e.target.value })}
@@ -279,7 +279,7 @@ function AdminTeamRace() {
                   ))}
                 </select>
                 {topics.length === 0 && (
-                  <small style={{ color: '#dc3545' }}>
+                  <small style={{ color: 'var(--color-danger)' }}>
                     {loading ? 'Loading topics...' : 'No topics are available. Please contact admin.'}
                   </small>
                 )}
@@ -366,7 +366,7 @@ function AdminTeamRace() {
                     }}
                     className="btn-live-leaderboard"
                     style={{
-                      backgroundColor: '#28a745',
+                      backgroundColor: 'var(--color-success)',
                       color: 'white',
                       border: 'none',
                       padding: '4px 8px',
@@ -447,7 +447,7 @@ function AdminTeamRace() {
                   border: 'none',
                   fontSize: '24px',
                   cursor: 'pointer',
-                  color: '#666'
+                  color: 'var(--color-text-faint)'
                 }}
               >
                 Ã—
@@ -476,7 +476,7 @@ function AdminTeamRace() {
                         <div className="players">{team.activePlayers}/{team.totalPlayers}</div>
                         <div className="status">
                           <span style={{
-                            color: team.status === 'finished' ? '#28a745' : team.status === 'running' ? '#ffc107' : '#6c757d',
+                            color: team.status === 'finished' ? 'var(--color-success)' : team.status === 'running' ? 'var(--color-warning)' : 'var(--color-text-faint)',
                             fontWeight: 'bold'
                           }}>
                             {team.status}

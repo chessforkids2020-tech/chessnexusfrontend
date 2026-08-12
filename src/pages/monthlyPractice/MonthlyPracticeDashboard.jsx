@@ -149,7 +149,7 @@ export default function MonthlyFocusDashboard() {
     return (
       <div className="focus-dashboard loading">
         <div className="spinner"></div>
-        <p style={{ color: '#9ca3af', fontSize: '1.1em', marginTop: '20px' }}>Loading Monthly Practice...</p>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '1.1em', marginTop: '20px' }}>Loading Monthly Practice...</p>
       </div>
     );
   }
@@ -322,15 +322,15 @@ export default function MonthlyFocusDashboard() {
                 {/* Not Started Badge */}
                 {!day.isStarted && (
                   <div style={{
-                    background: 'rgba(245, 158, 11, 0.15)',
-                    color: '#f59e0b',
+                    background: 'var(--color-warning-a12)',
+                    color: 'var(--color-warning)',
                     padding: '10px',
                     borderRadius: '8px',
                     textAlign: 'center',
                     marginBottom: '12px',
                     fontSize: '13px',
                     fontWeight: '600',
-                    border: '1px solid rgba(245, 158, 11, 0.3)'
+                    border: '1px solid var(--color-warning-a30)'
                   }}>
                     ⏳ Waiting for Admin to Start
                   </div>
@@ -339,15 +339,15 @@ export default function MonthlyFocusDashboard() {
                 {/* Ended Badge - can still do for 5 XP */}
                 {day.isStarted && !running && status !== 'completed' && (
                   <div style={{
-                    background: 'rgba(245, 158, 11, 0.15)',
-                    color: '#f59e0b',
+                    background: 'var(--color-warning-a12)',
+                    color: 'var(--color-warning)',
                     padding: '10px',
                     borderRadius: '8px',
                     textAlign: 'center',
                     marginBottom: '12px',
                     fontSize: '13px',
                     fontWeight: '600',
-                    border: '1px solid rgba(245, 158, 11, 0.3)'
+                    border: '1px solid var(--color-warning-a30)'
                   }}>
                     ⏱️ Time's Up - Complete for 5 XP
                   </div>
@@ -360,12 +360,12 @@ export default function MonthlyFocusDashboard() {
                   borderRadius: '20px',
                   fontSize: '12px',
                   marginBottom: '12px',
-                  background: day.taskType === 'puzzles' ? 'rgba(6, 182, 212, 0.15)' : 
-                             day.taskType === 'find_mistakes' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                  color: day.taskType === 'puzzles' ? '#06b6d4' : 
-                         day.taskType === 'find_mistakes' ? '#f59e0b' : '#10b981',
-                  border: `1px solid ${day.taskType === 'puzzles' ? 'rgba(6, 182, 212, 0.3)' : 
-                         day.taskType === 'find_mistakes' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
+                  background: day.taskType === 'puzzles' ? 'var(--color-accent-a15)' : 
+                             day.taskType === 'find_mistakes' ? 'var(--color-warning-a12)' : 'var(--color-success-a12)',
+                  color: day.taskType === 'puzzles' ? 'var(--color-accent)' : 
+                         day.taskType === 'find_mistakes' ? 'var(--color-warning)' : 'var(--color-success)',
+                  border: `1px solid ${day.taskType === 'puzzles' ? 'var(--color-accent-a30)' : 
+                         day.taskType === 'find_mistakes' ? 'var(--color-warning-a30)' : 'var(--color-success-a30)'}`,
                   fontWeight: '600'
                 }}>
                   {day.taskType === 'puzzles' && '🧩 Puzzles'}
@@ -410,10 +410,10 @@ export default function MonthlyFocusDashboard() {
               gridColumn: '1/-1', 
               textAlign: 'center', 
               padding: '60px 20px', 
-              color: '#9ca3af',
+              color: 'var(--color-text-muted)',
               background: 'rgba(23, 23, 23, 0.5)',
               borderRadius: '16px',
-              border: '1px solid rgba(255, 255, 255, 0.05)'
+              border: '1px solid var(--color-white-a04)'
             }}>
               <p style={{ fontSize: '1.1em', margin: 0 }}>No days created yet. Check back soon!</p>
             </div>

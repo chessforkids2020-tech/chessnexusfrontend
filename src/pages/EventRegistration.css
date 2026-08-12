@@ -1,9 +1,9 @@
 .event-registration-container {
   min-height: 100vh;
-  background: #0a0a0a;
+  background: var(--color-bg);
   background-image:
-    radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%);
   padding: 40px 20px;
   display: flex;
   justify-content: center;
@@ -13,19 +13,19 @@
 .event-registration-card {
   max-width: 700px;
   width: 100%;
-  background: rgba(23, 23, 23, 0.9);
+  background: var(--color-surface);
   border-radius: 24px;
   padding: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--color-white-a10);
+  box-shadow: 0 20px 60px var(--color-black-a50);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
 .back-button {
-  background: rgba(6, 182, 212, 0.15);
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  color: #06b6d4;
+  background: var(--color-accent-a15);
+  border: 1px solid var(--color-accent-a30);
+  color: var(--color-accent);
   padding: 10px 20px;
   border-radius: 12px;
   font-size: 14px;
@@ -36,7 +36,7 @@
 }
 
 .back-button:hover {
-  background: rgba(6, 182, 212, 0.25);
+  background: var(--color-accent-a20);
   transform: translateX(-4px);
 }
 
@@ -48,13 +48,13 @@
 .event-icon {
   font-size: 64px;
   margin-bottom: 16px;
-  filter: drop-shadow(0 4px 12px rgba(6, 182, 212, 0.3));
+  filter: drop-shadow(0 4px 12px var(--color-accent-a30));
 }
 
 .event-title {
   font-size: 36px;
   font-weight: 700;
-  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -63,7 +63,7 @@
 
 .event-date {
   font-size: 18px;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
@@ -72,22 +72,22 @@
 }
 
 .event-description p {
-  color: #d1d5db;
+  color: var(--color-text-muted);
   font-size: 16px;
   line-height: 1.7;
   text-align: center;
 }
 
 .event-features {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--color-black-a35);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 32px;
-  border: 1px solid rgba(6, 182, 212, 0.2);
+  border: 1px solid var(--color-accent-a20);
 }
 
 .event-features h3 {
-  color: #ffffff;
+  color: var(--color-text);
   font-size: 18px;
   margin-bottom: 16px;
   font-weight: 600;
@@ -100,10 +100,10 @@
 }
 
 .event-features li {
-  color: #d1d5db;
+  color: var(--color-text-muted);
   font-size: 15px;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--color-white-a04);
 }
 
 .event-features li:last-child {
@@ -111,14 +111,14 @@
 }
 
 .registration-form {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--color-black-a35);
   border-radius: 16px;
   padding: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-white-a10);
 }
 
 .form-title {
-  color: #ffffff;
+  color: var(--color-text);
   font-size: 24px;
   font-weight: 600;
   margin-bottom: 24px;
@@ -126,12 +126,12 @@
 }
 
 .error-message {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background: var(--color-danger-a20);
+  color: var(--color-danger);
   padding: 12px 16px;
   border-radius: 12px;
   margin-bottom: 20px;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid var(--color-danger-a30);
   font-size: 14px;
   text-align: center;
 }
@@ -142,7 +142,7 @@
 
 .form-group label {
   display: block;
-  color: #67e8f9;
+  color: var(--color-accent);
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 8px;
@@ -151,10 +151,10 @@
 .form-group input {
   width: 100%;
   padding: 14px 16px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-black-a35);
+  border: 1px solid var(--color-white-a10);
   border-radius: 12px;
-  color: #ffffff;
+  color: var(--color-text);
   font-size: 15px;
   transition: all 0.3s ease;
   box-sizing: border-box;
@@ -162,8 +162,8 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #06b6d4;
-  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent-a20);
 }
 
 .form-group input:disabled {
@@ -174,20 +174,20 @@
 .submit-button {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
   border: none;
   border-radius: 12px;
-  color: #ffffff;
+  color: var(--color-text);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+  box-shadow: 0 4px 16px var(--color-accent-a40);
 }
 
 .submit-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(6, 182, 212, 0.5);
+  box-shadow: 0 6px 24px var(--color-accent-a40);
 }
 
 .submit-button:disabled {
@@ -198,14 +198,14 @@
 
 .event-not-found {
   text-align: center;
-  color: #ffffff;
+  color: var(--color-text);
   padding: 40px;
 }
 
 .event-not-found h2 {
   font-size: 28px;
   margin-bottom: 24px;
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 @media (max-width: 768px) {

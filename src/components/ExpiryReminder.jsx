@@ -21,16 +21,16 @@ export default function ExpiryReminder({ daysRemaining, what = 'plan', to, ctaLa
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
       padding: '10px 16px', marginBottom: 16, borderRadius: 12,
-      background: urgent ? 'rgba(239,68,68,0.12)' : 'rgba(245,158,11,0.12)',
-      border: `1px solid ${urgent ? 'rgba(239,68,68,0.4)' : 'rgba(245,158,11,0.4)'}`,
+      background: urgent ? 'var(--color-danger-a12)' : 'var(--color-warning-a12)',
+      border: `1px solid ${urgent ? 'var(--color-danger-a30)' : 'var(--color-warning-a30)'}`,
     }}>
-      <span style={{ fontSize: 13.5, fontWeight: 600, color: urgent ? '#fca5a5' : '#fcd34d' }}>
+      <span style={{ fontSize: 13.5, fontWeight: 600, color: urgent ? 'var(--color-danger)' : 'var(--color-warning)' }}>
         {urgent ? '⏰' : '🔔'} Your {what} expires {dayText}. Renew to keep your access without interruption.
       </span>
       {to && (
         <Link to={to} style={{
           fontSize: 12.5, fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap',
-          color: '#04211d', background: urgent ? '#f87171' : '#fbbf24',
+          color: '#04211d', background: urgent ? 'var(--color-danger)' : 'var(--color-warning)',
           borderRadius: 8, padding: '6px 14px',
         }}>{ctaLabel}</Link>
       )}

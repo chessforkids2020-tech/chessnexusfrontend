@@ -165,7 +165,7 @@ export default function FriendsPage() {
             autoFocus
           />
           {search.trim().length > 0 && search.trim().length < 2 && (
-            <p style={{ color: '#64748b', fontSize: 13, marginTop: 8 }}>Type at least 2 characters…</p>
+            <p style={{ color: 'var(--color-text-faint)', fontSize: 13, marginTop: 8 }}>Type at least 2 characters…</p>
           )}
           <div style={s.list}>
             {searchResults.map(u => {
@@ -188,7 +188,7 @@ export default function FriendsPage() {
               );
             })}
             {search.trim().length >= 2 && searchResults.length === 0 && (
-              <p style={{ color: '#64748b', fontSize: 14, textAlign: 'center', marginTop: 24 }}>No users found.</p>
+              <p style={{ color: 'var(--color-text-faint)', fontSize: 14, textAlign: 'center', marginTop: 24 }}>No users found.</p>
             )}
           </div>
         </div>
@@ -202,16 +202,16 @@ const s = {
     maxWidth: 700,
     margin: '0 auto',
     padding: '24px 16px',
-    color: '#e2e8f0'
+    color: 'var(--color-text)'
   },
   title: { fontSize: 26, fontWeight: 800, margin: '0 0 24px' },
-  tabs: { display: 'flex', gap: 8, marginBottom: 24, borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: 0 },
+  tabs: { display: 'flex', gap: 8, marginBottom: 24, borderBottom: '1px solid var(--color-white-a07)', paddingBottom: 0 },
   tab: {
     padding: '8px 20px',
     background: 'none',
     border: 'none',
     borderBottom: '2px solid transparent',
-    color: '#64748b',
+    color: 'var(--color-text-faint)',
     fontSize: 15,
     fontWeight: 600,
     cursor: 'pointer',
@@ -221,10 +221,10 @@ const s = {
     gap: 8,
     transition: 'color 0.2s'
   },
-  tabActive: { color: '#8b5cf6', borderBottom: '2px solid #8b5cf6' },
+  tabActive: { color: 'var(--color-accent-2)', borderBottom: '2px solid var(--color-accent-2)' },
   badge: {
     background: 'rgba(239,68,68,0.8)',
-    color: '#fff',
+    color: 'var(--color-text)',
     fontSize: 11,
     fontWeight: 700,
     borderRadius: 10,
@@ -235,7 +235,7 @@ const s = {
   empty: {
     textAlign: 'center',
     padding: '60px 20px',
-    color: '#64748b',
+    color: 'var(--color-text-faint)',
     fontSize: 15
   },
   list: { display: 'flex', flexDirection: 'column', gap: 10 },
@@ -245,29 +245,29 @@ const s = {
     gap: 14,
     padding: '14px 18px',
     background: 'rgba(15,23,42,0.7)',
-    border: '1px solid rgba(255,255,255,0.07)',
+    border: '1px solid var(--color-white-a07)',
     borderRadius: 14
   },
   avatar: {
     width: 44,
     height: 44,
     borderRadius: '50%',
-    background: 'linear-gradient(135deg,#7c3aed,#6d28d9)',
+    background: 'linear-gradient(135deg,var(--color-accent-2),#6d28d9)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: 18,
     fontWeight: 700,
-    color: '#fff',
+    color: 'var(--color-text)',
     flexShrink: 0
   },
   cardInfo: { flex: 1 },
-  cardName: { fontSize: 15, fontWeight: 600, color: '#e2e8f0' },
-  cardSub: { fontSize: 12, color: '#64748b', marginTop: 2 },
+  cardName: { fontSize: 15, fontWeight: 600, color: 'var(--color-text)' },
+  cardSub: { fontSize: 12, color: 'var(--color-text-faint)', marginTop: 2 },
   btnAdd: {
     padding: '7px 16px',
-    background: 'linear-gradient(135deg,#7c3aed,#6d28d9)',
-    color: '#fff',
+    background: 'linear-gradient(135deg,var(--color-accent-2),#6d28d9)',
+    color: 'var(--color-text)',
     border: 'none',
     borderRadius: 8,
     fontWeight: 600,
@@ -286,9 +286,9 @@ const s = {
   },
   btnDecline: {
     padding: '7px 14px',
-    background: 'rgba(239,68,68,0.1)',
-    color: '#f87171',
-    border: '1px solid rgba(239,68,68,0.2)',
+    background: 'var(--color-danger-a12)',
+    color: 'var(--color-danger)',
+    border: '1px solid var(--color-danger-a20)',
     borderRadius: 8,
     fontWeight: 600,
     fontSize: 13,
@@ -296,9 +296,9 @@ const s = {
   },
   btnDanger: {
     padding: '7px 14px',
-    background: 'rgba(239,68,68,0.1)',
-    color: '#f87171',
-    border: '1px solid rgba(239,68,68,0.2)',
+    background: 'var(--color-danger-a12)',
+    color: 'var(--color-danger)',
+    border: '1px solid var(--color-danger-a20)',
     borderRadius: 8,
     fontWeight: 600,
     fontSize: 13,
@@ -314,8 +314,8 @@ const s = {
   },
   chipPending: {
     padding: '5px 12px',
-    background: 'rgba(251,191,36,0.15)',
-    color: '#fbbf24',
+    background: 'var(--color-warning-a12)',
+    color: 'var(--color-warning)',
     borderRadius: 20,
     fontSize: 12,
     fontWeight: 600
@@ -323,10 +323,10 @@ const s = {
   searchInput: {
     width: '100%',
     padding: '12px 16px',
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--color-black-a35)',
+    border: '1px solid var(--color-white-a10)',
     borderRadius: 12,
-    color: '#e2e8f0',
+    color: 'var(--color-text)',
     fontSize: 15,
     outline: 'none',
     boxSizing: 'border-box',

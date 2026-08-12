@@ -88,13 +88,13 @@ const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit, displayN
             style={styles.closeButton} 
             onClick={onClose}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-              e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+              e.currentTarget.style.background = 'var(--color-danger-a20)';
+              e.currentTarget.style.borderColor = 'var(--color-danger-a30)';
               e.currentTarget.style.transform = 'rotate(90deg) scale(1.1)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.background = 'var(--color-white-a04)';
+              e.currentTarget.style.borderColor = 'var(--color-white-a10)';
               e.currentTarget.style.transform = 'rotate(0deg) scale(1)';
             }}
           >✕</button>
@@ -123,14 +123,14 @@ const DetailedRaceStatsModal = ({ isOpen, onClose, raceType, timeLimit, displayN
                       key={index} 
                       style={{
                         ...styles.tableRow,
-                        backgroundColor: index % 2 === 0 ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.1)',
+                        backgroundColor: index % 2 === 0 ? 'var(--color-black-a20)' : 'var(--color-black-a20)',
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(6, 182, 212, 0.1)';
-                        e.currentTarget.style.borderLeft = '4px solid #06b6d4';
+                        e.currentTarget.style.backgroundColor = 'var(--color-accent-a12)';
+                        e.currentTarget.style.borderLeft = '4px solid var(--color-accent)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.1)';
+                        e.currentTarget.style.backgroundColor = index % 2 === 0 ? 'var(--color-black-a20)' : 'var(--color-black-a20)';
                         e.currentTarget.style.borderLeft = 'none';
                       }}
                     >
@@ -183,7 +183,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: 'var(--color-black-a65)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -191,40 +191,40 @@ const styles = {
     backdropFilter: 'blur(12px)',
   },
   modalContent: {
-    background: 'rgba(23, 23, 23, 0.95)',
+    background: 'var(--color-surface)',
     borderRadius: '24px',
-    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+    boxShadow: '0 20px 60px var(--color-black-a65)',
     maxWidth: '700px',
     width: '90%',
     maxHeight: '85vh',
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    border: '1px solid var(--color-white-a10)',
     backdropFilter: 'blur(20px)',
   },
   modalHeader: {
-    background: 'rgba(0, 0, 0, 0.4)',
-    color: '#ffffff',
+    background: 'var(--color-black-a35)',
+    color: 'var(--color-text)',
     padding: '24px 28px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottom: '1px solid rgba(6, 182, 212, 0.2)',
+    borderBottom: '1px solid var(--color-accent-a20)',
   },
   modalTitle: {
     fontSize: '24px',
     fontWeight: '700',
     margin: 0,
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
   },
   closeButton: {
-    background: 'rgba(255, 255, 255, 0.05)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#9ca3af',
+    background: 'var(--color-white-a04)',
+    border: '1px solid var(--color-white-a10)',
+    color: 'var(--color-text-muted)',
     fontSize: '20px',
     cursor: 'pointer',
     width: '40px',
@@ -240,7 +240,7 @@ const styles = {
     flex: 1,
     padding: '28px',
     overflowY: 'auto',
-    background: 'rgba(0, 0, 0, 0.2)',
+    background: 'var(--color-black-a20)',
   },
   statsGrid: {
     display: 'grid',
@@ -248,10 +248,10 @@ const styles = {
     gap: '20px',
   },
   tableContainer: {
-    background: 'rgba(0, 0, 0, 0.2)',
+    background: 'var(--color-black-a20)',
     borderRadius: '16px',
     overflow: 'hidden',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    border: '1px solid var(--color-white-a04)',
     '-webkit-backdrop-filter': 'blur(5px)',
     backdropFilter: 'blur(5px)',
   },
@@ -261,26 +261,26 @@ const styles = {
     fontSize: '14px',
   },
   tableHeaderRow: {
-    background: 'rgba(6, 182, 212, 0.1)',
-    borderBottom: '2px solid rgba(6, 182, 212, 0.3)',
+    background: 'var(--color-accent-a12)',
+    borderBottom: '2px solid var(--color-accent-a30)',
   },
   tableHeader: {
     padding: '16px 12px',
     textAlign: 'left',
     fontSize: '13px',
     fontWeight: '700',
-    color: '#06b6d4',
+    color: 'var(--color-accent)',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
-    borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+    borderRight: '1px solid var(--color-white-a04)',
   },
   tableRow: {
     transition: 'all 0.3s ease',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
+    borderBottom: '1px solid var(--color-white-a04)',
   },
   tableCell: {
     padding: '16px 12px',
-    borderRight: '1px solid rgba(255, 255, 255, 0.03)',
+    borderRight: '1px solid var(--color-white-a04)',
     verticalAlign: 'middle',
   },
   topicCell: {
@@ -295,21 +295,21 @@ const styles = {
   topicName: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#ffffff',
+    color: 'var(--color-text)',
   },
   pointsValue: {
     fontSize: '16px',
     fontWeight: '700',
-    color: '#10b981',
+    color: 'var(--color-success)',
   },
   attemptsValue: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#f59e0b',
+    color: 'var(--color-warning)',
   },
   dateValue: {
     fontSize: '13px',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontWeight: '500',
   },
   noData: {
@@ -322,10 +322,10 @@ const styles = {
   },
   noDataIcon: {
     fontSize: '56px',
-    filter: 'drop-shadow(0 4px 12px rgba(6, 182, 212, 0.3))',
+    filter: 'drop-shadow(0 4px 12px var(--color-accent-a30))',
   },
   noDataText: {
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontSize: '16px',
     maxWidth: '500px',
     lineHeight: '1.6',
@@ -333,7 +333,7 @@ const styles = {
   loading: {
     textAlign: 'center',
     padding: '60px 20px',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontSize: '16px',
     display: 'flex',
     flexDirection: 'column',
@@ -342,7 +342,7 @@ const styles = {
   },
   loadingIcon: {
     fontSize: '56px',
-    filter: 'drop-shadow(0 4px 12px rgba(6, 182, 212, 0.3))',
+    filter: 'drop-shadow(0 4px 12px var(--color-accent-a30))',
     animation: 'pulse 2s ease-in-out infinite',
   },
 };

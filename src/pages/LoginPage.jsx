@@ -114,7 +114,7 @@ export default function LoginPage() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      background: "#0a0a0a",
+      background: "var(--color-bg)",
       padding: "20px",
       boxSizing: "border-box",
       overflow: "hidden",
@@ -128,7 +128,7 @@ export default function LoginPage() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: "radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)",
+      background: "radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)",
       pointerEvents: "none",
       zIndex: 0
     },
@@ -137,12 +137,12 @@ export default function LoginPage() {
       width: "100%",
       maxHeight: "90vh",
       padding: "40px",
-      background: "rgba(23, 23, 23, 0.7)",
+      background: "var(--color-surface)",
       borderRadius: "20px",
-      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+      boxShadow: "0 8px 32px var(--color-black-a50)",
       backdropFilter: "blur(10px)",
       WebkitBackdropFilter: "blur(10px)",
-      border: "1px solid rgba(255, 255, 255, 0.05)",
+      border: "1px solid var(--color-white-a04)",
       overflow: "auto",
       position: "relative",
       zIndex: 1,
@@ -150,7 +150,7 @@ export default function LoginPage() {
     },
     title: {
       textAlign: "center",
-      background: "linear-gradient(135deg, #06b6d4 0%, #10b981 100%)",
+      background: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)",
       WebkitBackgroundClip: "text",
       WebkitTextFillColor: "transparent",
       backgroundClip: "text",
@@ -161,7 +161,7 @@ export default function LoginPage() {
     },
     subtitle: {
       textAlign: "center",
-      color: "#9ca3af",
+      color: "var(--color-text-muted)",
       fontSize: "14px",
       marginBottom: "32px",
       fontStyle: "italic"
@@ -177,7 +177,7 @@ export default function LoginPage() {
       gap: "8px"
     },
     label: {
-      color: "#ffffff",
+      color: "var(--color-text)",
       fontSize: "14px",
       fontWeight: "600"
     },
@@ -185,9 +185,9 @@ export default function LoginPage() {
       padding: "12px 16px",
       fontSize: "14px",
       borderRadius: "12px",
-      border: "1px solid rgba(255, 255, 255, 0.1)",
-      backgroundColor: "rgba(0, 0, 0, 0.3)",
-      color: "#ffffff",
+      border: "1px solid var(--color-white-a10)",
+      backgroundColor: "var(--color-black-a35)",
+      color: "var(--color-text)",
       transition: "all 0.3s ease",
       outline: "none",
       boxSizing: "border-box"
@@ -197,12 +197,12 @@ export default function LoginPage() {
       fontSize: "16px",
       borderRadius: "12px",
       border: "none",
-      background: "linear-gradient(135deg, #06b6d4 0%, #10b981 100%)",
-      color: "#ffffff",
+      background: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)",
+      color: "var(--color-text)",
       cursor: "pointer",
       fontWeight: "600",
       transition: "all 0.3s ease",
-      boxShadow: "0 4px 16px rgba(6, 182, 212, 0.4)",
+      boxShadow: "0 4px 16px var(--color-accent-a40)",
       marginTop: "8px"
     },
     buttonDisabled: {
@@ -211,10 +211,10 @@ export default function LoginPage() {
     },
     error: {
       padding: "14px",
-      backgroundColor: "rgba(239, 68, 68, 0.1)",
-      color: "#ef4444",
+      backgroundColor: "var(--color-danger-a12)",
+      color: "var(--color-danger)",
       borderRadius: "12px",
-      border: "1px solid rgba(239, 68, 68, 0.2)",
+      border: "1px solid var(--color-danger-a20)",
       textAlign: "center",
       fontWeight: "500",
       fontSize: "14px"
@@ -222,16 +222,16 @@ export default function LoginPage() {
     signupLink: {
       marginTop: "24px",
       textAlign: "center",
-      borderTop: "1px solid rgba(255, 255, 255, 0.05)",
+      borderTop: "1px solid var(--color-white-a04)",
       paddingTop: "20px"
     },
     signupText: {
-      color: "#9ca3af",
+      color: "var(--color-text-muted)",
       fontSize: "14px",
       margin: 0
     },
     link: {
-      color: "#06b6d4",
+      color: "var(--color-accent)",
       textDecoration: "none",
       fontWeight: "600",
       cursor: "pointer",
@@ -243,7 +243,7 @@ export default function LoginPage() {
   // This prevents the "flash of login page" for already-authenticated users.
   if (authLoading || redirecting) {
     return (
-      <div style={{ height: "100vh", width: "100vw", display: "flex", alignItems: "center", justifyContent: "center", background: "#0a0a0a", color: "#a78bfa", fontSize: "1.1rem", fontFamily: "sans-serif" }}>
+      <div style={{ height: "100vh", width: "100vw", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--color-bg)", color: "var(--color-accent-2)", fontSize: "1.1rem", fontFamily: "sans-serif" }}>
         Redirecting…
       </div>
     );
@@ -272,21 +272,21 @@ export default function LoginPage() {
           }
 
           input::placeholder {
-            color: #6b7280;
+            color: var(--color-text-faint);
           }
 
           input:focus {
-            border-color: #06b6d4 !important;
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2) !important;
-            background: rgba(0, 0, 0, 0.4) !important;
+            border-color: var(--color-accent) !important;
+            box-shadow: 0 0 0 3px var(--color-accent-a20) !important;
+            background: var(--color-black-a35) !important;
           }
 
           input:hover:not(:focus) {
-            border-color: rgba(6, 182, 212, 0.3) !important;
+            border-color: var(--color-accent-a30) !important;
           }
 
           a:hover {
-            color: #67e8f9 !important;
+            color: var(--color-accent) !important;
           }
 
           @media (max-width: 768px) {
@@ -352,13 +352,13 @@ export default function LoginPage() {
               onMouseEnter={(e) => {
                 if (!loading) {
                   e.target.style.transform = "translateY(-2px)";
-                  e.target.style.boxShadow = "0 6px 24px rgba(6, 182, 212, 0.5)";
+                  e.target.style.boxShadow = "0 6px 24px var(--color-accent-a40)";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!loading) {
                   e.target.style.transform = "translateY(0)";
-                  e.target.style.boxShadow = "0 4px 16px rgba(6, 182, 212, 0.4)";
+                  e.target.style.boxShadow = "0 4px 16px var(--color-accent-a40)";
                 }
               }}
             >

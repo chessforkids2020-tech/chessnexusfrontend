@@ -3,7 +3,7 @@
 .pp-page {
   min-height: 100vh;
   background: #0d1117;
-  color: #ffffff;
+  color: var(--color-text);
   font-family: 'Poppins', sans-serif;
   padding: 40px 32px 60px;
   max-width: 1100px;
@@ -16,12 +16,12 @@
 .pp-back {
   display: inline-block;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--color-text-muted);
   text-decoration: none;
   margin-bottom: 14px;
   transition: color 0.15s ease;
 }
-.pp-back:hover { color: #60a5fa; }
+.pp-back:hover { color: var(--color-accent-2); }
 
 .pp-title {
   font-size: 26px;
@@ -32,33 +32,33 @@
 
 .pp-subtitle {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--color-text-muted);
   margin: 0;
   max-width: 600px;
   line-height: 1.5;
 }
-.pp-subtitle strong { color: rgba(255, 255, 255, 0.85); font-weight: 600; }
+.pp-subtitle strong { color: var(--color-text); font-weight: 600; }
 
 /* ── States ── */
 .pp-state {
   padding: 48px 0;
   text-align: center;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-text-muted);
 }
-.pp-error { color: #f87171; }
+.pp-error { color: var(--color-danger); }
 
 /* ── Group section ── (accent per range) */
 .pp-group {
   margin-bottom: 28px;
-  --accent: #60a5fa;
-  --accent-soft: rgba(96, 165, 250, 0.14);
-  --accent-line: rgba(96, 165, 250, 0.30);
+  --accent: var(--color-accent-2);
+  --accent-soft: var(--color-accent-2-a15);
+  --accent-line: var(--color-accent-2-a30);
 }
-.pp-g-few  { --accent: #34d399; --accent-soft: rgba(52, 211, 153, 0.14); --accent-line: rgba(52, 211, 153, 0.30); } /* green */
-.pp-g-mid  { --accent: #60a5fa; --accent-soft: rgba(96, 165, 250, 0.14); --accent-line: rgba(96, 165, 250, 0.30); } /* blue */
-.pp-g-many { --accent: #fbbf24; --accent-soft: rgba(251, 191, 36, 0.14);  --accent-line: rgba(251, 191, 36, 0.30); } /* amber */
-.pp-g-full { --accent: #f87171; --accent-soft: rgba(248, 113, 113, 0.14); --accent-line: rgba(248, 113, 113, 0.30); } /* red */
+.pp-g-few  { --accent: var(--color-success); --accent-soft: rgba(52, 211, 153, 0.14); --accent-line: rgba(52, 211, 153, 0.30); } /* green */
+.pp-g-mid  { --accent: var(--color-accent-2); --accent-soft: var(--color-accent-2-a15); --accent-line: var(--color-accent-2-a30); } /* blue */
+.pp-g-many { --accent: var(--color-warning); --accent-soft: var(--color-warning-a12);  --accent-line: var(--color-warning-a30); } /* amber */
+.pp-g-full { --accent: var(--color-danger); --accent-soft: var(--color-danger-a12); --accent-line: var(--color-danger-a30); } /* red */
 
 .pp-group-head {
   display: flex;
@@ -76,7 +76,7 @@
 }
 .pp-group-hint {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--color-text-faint);
 }
 
 /* ── Grid: three per row, responsive ── */
@@ -94,7 +94,7 @@
   width: 100%;
   text-align: left;
   background: #161b22;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-white-a07);
   border-radius: 12px;
   padding: 12px 14px;
   cursor: pointer;
@@ -135,18 +135,18 @@
 .pp-card-label {
   font-size: 14px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--color-text);
   white-space: nowrap;
 }
 .pp-card-count {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--color-text-faint);
 }
 
 .pp-card-arrow {
   flex-shrink: 0;
   font-size: 20px;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--color-text-faint);
   transition: color 0.15s ease, transform 0.15s ease;
 }
 .pp-card:hover .pp-card-arrow {

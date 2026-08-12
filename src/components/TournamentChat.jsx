@@ -80,20 +80,20 @@ export default function TournamentChat({ tournamentId }) {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      background: 'rgba(0, 0, 0, 0.2)',
+      background: 'var(--color-black-a20)',
       borderRadius: '12px',
       overflow: 'hidden',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
       backdropFilter: 'blur(5px)',
       WebkitBackdropFilter: 'blur(5px)'
     }}>
       <div style={{
         padding: '16px',
-        background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(16, 185, 129, 0.15))',
-        color: '#67e8f9',
+        background: 'linear-gradient(135deg, var(--color-accent-a15), var(--color-success-a12))',
+        color: 'var(--color-accent)',
         fontWeight: '700',
         fontSize: '16px',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+        borderBottom: '1px solid var(--color-white-a04)',
         display: 'flex',
         alignItems: 'center',
         gap: '10px'
@@ -109,7 +109,7 @@ export default function TournamentChat({ tournamentId }) {
         {messages.length === 0 ? (
           <div style={{
             textAlign: 'center',
-            color: '#9ca3af',
+            color: 'var(--color-text-muted)',
             padding: '40px 20px',
             fontSize: '14px',
             fontStyle: 'italic'
@@ -123,7 +123,7 @@ export default function TournamentChat({ tournamentId }) {
               style={{
                 padding: '8px 12px',
                 fontSize: '14px',
-                color: '#d1d5db',
+                color: 'var(--color-text-muted)',
                 lineHeight: '1.5',
                 wordBreak: 'break-word',
                 overflowWrap: 'anywhere',
@@ -134,7 +134,7 @@ export default function TournamentChat({ tournamentId }) {
             >
               <span style={{
                 fontWeight: '600',
-                color: msg.userId === currentUserId ? '#67e8f9' : '#06b6d4',
+                color: msg.userId === currentUserId ? 'var(--color-accent)' : 'var(--color-accent)',
                 marginRight: '6px'
               }}>
                 {/* PlayerName adds the supporter ☕ / founder 👑 badge. It renders
@@ -148,7 +148,7 @@ export default function TournamentChat({ tournamentId }) {
                     />
                   : 'Anonymous'}:
               </span>
-              <span style={{ color: '#ffffff' }}>
+              <span style={{ color: 'var(--color-text)' }}>
                 {msg.message}
               </span>
             </div>
@@ -159,8 +159,8 @@ export default function TournamentChat({ tournamentId }) {
 
       <form onSubmit={handleSendMessage} style={{
         padding: '16px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-        background: 'rgba(0, 0, 0, 0.2)',
+        borderTop: '1px solid var(--color-white-a04)',
+        background: 'var(--color-black-a20)',
         backdropFilter: 'blur(5px)',
         WebkitBackdropFilter: 'blur(5px)',
         flexShrink: 0,
@@ -174,7 +174,7 @@ export default function TournamentChat({ tournamentId }) {
             background: 'rgba(168, 85, 247, 0.08)',
             border: '1px solid rgba(168, 85, 247, 0.25)',
             borderRadius: '12px',
-            color: '#c4b5fd',
+            color: 'var(--color-accent-2)',
             fontSize: '13px',
           }}>
             🔒 <strong>Log in</strong> to send messages
@@ -191,21 +191,21 @@ export default function TournamentChat({ tournamentId }) {
                 style={{
                   flex: 1,
                   padding: '12px 16px',
-                  background: 'rgba(0, 0, 0, 0.3)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'var(--color-black-a35)',
+                  border: '1px solid var(--color-white-a10)',
                   borderRadius: '12px',
                   fontSize: '14px',
                   fontFamily: 'inherit',
-                  color: '#ffffff',
+                  color: 'var(--color-text)',
                   outline: 'none',
                   transition: 'all 0.3s ease'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = '#06b6d4';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(6, 182, 212, 0.1)';
+                  e.target.style.borderColor = 'var(--color-accent)';
+                  e.target.style.boxShadow = '0 0 0 3px var(--color-accent-a12)';
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                  e.target.style.borderColor = 'var(--color-white-a10)';
                   e.target.style.boxShadow = 'none';
                 }}
               />
@@ -215,11 +215,11 @@ export default function TournamentChat({ tournamentId }) {
                 style={{
                   padding: '12px 24px',
                   background: inputMessage.trim()
-                    ? 'rgba(6, 182, 212, 0.15)'
+                    ? 'var(--color-accent-a15)'
                     : 'rgba(107, 114, 128, 0.3)',
-                  color: inputMessage.trim() ? '#06b6d4' : '#9ca3af',
+                  color: inputMessage.trim() ? 'var(--color-accent)' : 'var(--color-text-muted)',
                   border: inputMessage.trim()
-                    ? '1px solid rgba(6, 182, 212, 0.3)'
+                    ? '1px solid var(--color-accent-a30)'
                     : '1px solid rgba(107, 114, 128, 0.2)',
                   borderRadius: '12px',
                   fontSize: '14px',
@@ -231,14 +231,14 @@ export default function TournamentChat({ tournamentId }) {
                 }}
                 onMouseEnter={(e) => {
                   if (inputMessage.trim()) {
-                    e.target.style.background = 'rgba(6, 182, 212, 0.25)';
-                    e.target.style.boxShadow = '0 8px 24px rgba(6, 182, 212, 0.3)';
+                    e.target.style.background = 'var(--color-accent-a20)';
+                    e.target.style.boxShadow = '0 8px 24px var(--color-accent-a30)';
                     e.target.style.transform = 'translateY(-2px)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (inputMessage.trim()) {
-                    e.target.style.background = 'rgba(6, 182, 212, 0.15)';
+                    e.target.style.background = 'var(--color-accent-a15)';
                     e.target.style.boxShadow = 'none';
                     e.target.style.transform = 'translateY(0)';
                   }
@@ -249,7 +249,7 @@ export default function TournamentChat({ tournamentId }) {
             </div>
             <div style={{
               fontSize: '11px',
-              color: '#6b7280',
+              color: 'var(--color-text-faint)',
               marginTop: '8px',
               textAlign: 'right',
               fontStyle: 'italic'

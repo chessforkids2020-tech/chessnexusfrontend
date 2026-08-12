@@ -37,7 +37,7 @@ export default function AcademySettings() {
 
   return (
     <div className="acad-wrap" style={{ maxWidth: 640 }}>
-      <h1 style={{ color: '#fff', marginBottom: 18 }}>⚙️ Academy settings</h1>
+      <h1 style={{ color: 'var(--color-text)', marginBottom: 18 }}>⚙️ Academy settings</h1>
       {msg && <div className="acad-msg">{msg}</div>}
       {err && <div className="acad-error">⚠️ {err}</div>}
 

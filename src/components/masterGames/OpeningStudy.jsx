@@ -285,8 +285,8 @@ function Explorer({ data, source, onPlay, onOpenGame }) {
                 </span>
                 <span style={st.wdl}>
                   <span style={{ ...st.wdlSeg, background: '#e8e8e8', color: '#111', width: `${wPct}%` }}>{wPct > 12 ? `${wPct}%` : ''}</span>
-                  <span style={{ ...st.wdlSeg, background: '#8b93a7', color: '#fff', width: `${dPct}%` }}>{dPct > 12 ? `${dPct}%` : ''}</span>
-                  <span style={{ ...st.wdlSeg, background: '#3a3f4b', color: '#fff', width: `${bPct}%` }}>{bPct > 12 ? `${bPct}%` : ''}</span>
+                  <span style={{ ...st.wdlSeg, background: '#8b93a7', color: 'var(--color-text)', width: `${dPct}%` }}>{dPct > 12 ? `${dPct}%` : ''}</span>
+                  <span style={{ ...st.wdlSeg, background: '#3a3f4b', color: 'var(--color-text)', width: `${bPct}%` }}>{bPct > 12 ? `${bPct}%` : ''}</span>
                 </span>
               </button>
             );
@@ -382,26 +382,26 @@ function displayName(name) {
 const C = {
   glass: 'rgba(22, 26, 34, 0.66)',
   glassSolid: '#12151c',
-  border: 'rgba(255,255,255,0.08)',
-  borderStrong: 'rgba(255,255,255,0.14)',
+  border: 'var(--color-white-a07)',
+  borderStrong: 'var(--color-white-a13)',
   text: '#e7eaf0',
   textMut: '#8b93a7',
   textFaint: '#5d6577',
-  accent: '#a78bfa',
-  active: '#22d3ee'
+  accent: 'var(--color-accent-2)',
+  active: 'var(--color-accent)'
 };
 
 const st = {
   wrap: { marginBottom: 28 },
   head: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 12 },
-  title: { fontSize: 18, fontWeight: 700, color: '#fff', margin: 0 },
+  title: { fontSize: 18, fontWeight: 700, color: 'var(--color-text)', margin: 0 },
   sub: { color: C.textMut, fontSize: 13, margin: '4px 0 0', maxWidth: 560 },
   headBtns: { display: 'flex', gap: 8, flexShrink: 0 },
   ghostBtn: { padding: '7px 12px', borderRadius: 10, border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontSize: 13 },
 
   cards: { display: 'flex', gap: 14, flexWrap: 'wrap', alignItems: 'stretch' },
 
-  boardCard: { flex: '1 1 380px', minWidth: 300, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 30px rgba(0,0,0,0.45)' },
+  boardCard: { flex: '1 1 380px', minWidth: 300, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 30px var(--color-black-a35)' },
   // The Chessboard reserves a 32px coordinate margin on ALL FOUR sides but only
   // DRAWS labels on bottom + left. We only trim the empty TOP margin (safe — no
   // labels there); the left/right/bottom margins are LEFT INTACT so the a–h files
@@ -412,18 +412,18 @@ const st = {
   boardWrap: { display: 'flex', justifyContent: 'center', overflow: 'visible' },
   // Drag-to-resize grip, tucked into the board's bottom-right coordinate margin.
 
-  rightCard: { position: 'relative', flex: '1 1 380px', minWidth: 300, maxWidth: 480, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: 14, display: 'flex', flexDirection: 'column', boxShadow: '0 8px 30px rgba(0,0,0,0.45)' },
+  rightCard: { position: 'relative', flex: '1 1 380px', minWidth: 300, maxWidth: 480, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: 14, display: 'flex', flexDirection: 'column', boxShadow: '0 8px 30px var(--color-black-a35)' },
 
   // Toolbar: Stockfish button (left) + Masters DB toggle (right), on one row.
   toolbar: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 },
   engineBtn: { padding: '8px 14px', borderRadius: 10, border: `1px solid ${C.borderStrong}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap' },
-  engineBtnOn: { background: 'rgba(167,139,250,0.18)', color: C.accent, borderColor: C.accent },
+  engineBtnOn: { background: 'var(--color-accent-2-a15)', color: C.accent, borderColor: C.accent },
   depthTag: { fontSize: 12, color: C.textFaint },
 
   // EnginePanel is self-styled (.gr-engine); this wrapper just adds bottom spacing.
   pvBox: { marginBottom: 10 },
 
-  notation: { flex: '1 1 auto', minHeight: 260, maxHeight: 380, overflowY: 'auto', lineHeight: 2.2, fontSize: 17, color: C.text, background: 'rgba(0,0,0,0.18)', border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px 16px' },
+  notation: { flex: '1 1 auto', minHeight: 260, maxHeight: 380, overflowY: 'auto', lineHeight: 2.2, fontSize: 17, color: C.text, background: 'var(--color-black-a20)', border: `1px solid ${C.border}`, borderRadius: 12, padding: '14px 16px' },
   empty: { color: C.textFaint, fontSize: 15, padding: 6 },
   moveTokenWrap: { display: 'inline-flex', alignItems: 'center', marginRight: 8 },
   moveNo: { color: C.textFaint, marginRight: 5, fontVariantNumeric: 'tabular-nums' },
@@ -436,27 +436,27 @@ const st = {
 
   // Narrow, fixed-width Masters DB toggle (sits at the right end of the toolbar).
   dbBtn: { flex: '0 0 auto', padding: '8px 12px', borderRadius: 10, border: `1px solid ${C.border}`, background: C.glassSolid, color: C.textMut, cursor: 'pointer', fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap' },
-  dbBtnOn: { background: 'rgba(34,211,238,0.14)', color: C.active, borderColor: C.active },
+  dbBtnOn: { background: 'var(--color-accent-a15)', color: C.active, borderColor: C.active },
 
   // Floating overlay that layers OVER the engine/notation cards (z-index), rather
   // than pushing them down. Anchored just under the Masters DB toggle button.
-  explorerOverlay: { position: 'absolute', top: 56, left: 14, right: 14, bottom: 14, zIndex: 20, background: C.glassSolid, border: `1px solid ${C.borderStrong}`, borderRadius: 12, padding: '12px 14px 14px', overflowY: 'auto', boxShadow: '0 18px 50px rgba(0,0,0,0.6)' },
+  explorerOverlay: { position: 'absolute', top: 56, left: 14, right: 14, bottom: 14, zIndex: 20, background: C.glassSolid, border: `1px solid ${C.borderStrong}`, borderRadius: 12, padding: '12px 14px 14px', overflowY: 'auto', boxShadow: '0 18px 50px var(--color-black-a65)' },
   explorerClose: { position: 'absolute', top: 6, right: 8, width: 26, height: 26, border: 'none', background: 'transparent', color: C.textMut, fontSize: 22, lineHeight: 1, cursor: 'pointer', zIndex: 2 },
   exMuted: { color: C.textFaint, fontSize: 13, padding: 6 },
   exHeader: { fontSize: 12, color: C.textMut, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.4 },
 
   moveTable: { display: 'flex', flexDirection: 'column', gap: 3, marginBottom: 10 },
-  moveTableRow: { display: 'grid', gridTemplateColumns: '52px 1fr 90px', alignItems: 'center', gap: 8, padding: '5px 6px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.02)', color: C.text, cursor: 'pointer', fontSize: 13, textAlign: 'left' },
-  mtSan: { fontWeight: 700, color: '#fff' },
+  moveTableRow: { display: 'grid', gridTemplateColumns: '52px 1fr 90px', alignItems: 'center', gap: 8, padding: '5px 6px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--color-white-a04)', color: C.text, cursor: 'pointer', fontSize: 13, textAlign: 'left' },
+  mtSan: { fontWeight: 700, color: 'var(--color-text)' },
   mtCount: { display: 'flex', alignItems: 'center', gap: 8, color: C.textMut, fontSize: 12 },
-  mtBar: { flex: 1, height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 999, overflow: 'hidden' },
+  mtBar: { flex: 1, height: 6, background: 'var(--color-white-a07)', borderRadius: 999, overflow: 'hidden' },
   mtBarFill: { display: 'block', height: '100%', background: C.accent },
   wdl: { display: 'flex', height: 16, borderRadius: 4, overflow: 'hidden', border: `1px solid ${C.border}` },
   wdlSeg: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, overflow: 'hidden' },
 
   gamesList: { display: 'flex', flexDirection: 'column', gap: 6 },
-  gameRow: { padding: '8px 10px', borderRadius: 10, border: `1px solid ${C.border}`, background: 'rgba(255,255,255,0.02)' },
-  gamePlayers: { display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#fff', flexWrap: 'wrap' },
+  gameRow: { padding: '8px 10px', borderRadius: 10, border: `1px solid ${C.border}`, background: 'var(--color-white-a04)' },
+  gamePlayers: { display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--color-text)', flexWrap: 'wrap' },
   gameRes: { color: C.accent, fontWeight: 700 },
   gameMeta: { fontSize: 11.5, color: C.textFaint, marginTop: 3, display: 'flex', justifyContent: 'space-between' },
   openArrow: { color: C.accent, fontWeight: 700 }

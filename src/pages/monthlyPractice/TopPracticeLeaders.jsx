@@ -42,10 +42,10 @@ const TopFocusLeaders = () => {
   };
 
   const getCompletionBadge = (completedDays, perfectDays) => {
-    if (perfectDays > 0) return { icon: '👑', text: 'Perfect', color: '#f59e0b' };
-    if (completedDays >= 5) return { icon: '🏆', text: 'Champion', color: '#10b981' };
-    if (completedDays >= 3) return { icon: '⭐', text: 'Active', color: '#06b6d4' };
-    return { icon: '🌱', text: 'Beginner', color: '#94a3b8' };
+    if (perfectDays > 0) return { icon: '👑', text: 'Perfect', color: 'var(--color-warning)' };
+    if (completedDays >= 5) return { icon: '🏆', text: 'Champion', color: 'var(--color-success)' };
+    if (completedDays >= 3) return { icon: '⭐', text: 'Active', color: 'var(--color-accent)' };
+    return { icon: '🌱', text: 'Beginner', color: 'var(--color-text-muted)' };
   };
 
   return (
@@ -98,13 +98,13 @@ const TopFocusLeaders = () => {
 
 const styles = {
   container: {
-    background: 'rgba(23, 23, 23, 0.7)',
+    background: 'var(--color-surface)',
     padding: '20px', /* reduced padding to shorten card */
     borderRadius: '20px',
     marginTop: '16px', /* reduce vertical gap on homepage */
     marginBottom: '12px',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
+    border: '1px solid var(--color-white-a04)',
     position: 'relative',
     overflow: 'hidden',
     backdropFilter: 'blur(10px)',
@@ -121,11 +121,11 @@ const styles = {
     margin: 0,
     fontSize: '24px',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text)',
   },
   subtitle: {
     fontSize: '14px',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontWeight: '500',
   },
   tableWrapper: {
@@ -138,19 +138,19 @@ const styles = {
   },
   tableHeaderRow: {
     background: 'rgba(23, 23, 23, 0.8)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+    borderBottom: '1px solid var(--color-white-a10)',
   },
   th: {
     padding: '10px 8px', /* reduced padding */
     fontSize: '0.8em',
     fontWeight: '700',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
     textAlign: 'center',
   },
   tableRow: {
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--color-white-a04)',
     transition: 'background 0.3s ease',
   },
   tdRank: {
@@ -162,7 +162,7 @@ const styles = {
     padding: '10px 8px',
     fontSize: '0.95em',
     fontWeight: '600',
-    color: '#ffffff',
+    color: 'var(--color-text)',
     textAlign: 'left',
   },
   tdXp: {
@@ -170,7 +170,7 @@ const styles = {
     fontSize: '0.95em',
     fontWeight: '700',
     textAlign: 'center',
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
@@ -179,14 +179,14 @@ const styles = {
     padding: '10px 8px',
     fontSize: '0.9em',
     fontWeight: '600',
-    color: '#f59e0b',
+    color: 'var(--color-warning)',
     textAlign: 'center',
   },
   tdProgress: {
     padding: '10px 8px',
     fontSize: '0.9em',
     fontWeight: '600',
-    color: '#d1d5db',
+    color: 'var(--color-text-muted)',
     textAlign: 'center',
   },
   tdStatus: {
@@ -199,7 +199,7 @@ const styles = {
     padding: '4px 10px',
     borderRadius: '12px',
     border: '1px solid',
-    background: 'rgba(255,255,255,0.05)',
+    background: 'var(--color-white-a04)',
     display: 'inline-block',
     whiteSpace: 'nowrap',
   },
@@ -207,7 +207,7 @@ const styles = {
     display: 'block',
     textAlign: 'center',
     marginTop: '12px', /* tighter gap */
-    color: '#06b6d4',
+    color: 'var(--color-accent)',
     textDecoration: 'none',
     fontWeight: '600',
     fontSize: '0.95em',
@@ -219,7 +219,7 @@ const styles = {
 const styleSheet = document.createElement('style');
 styleSheet.textContent = `
   .top-focus-leaders-container table tbody tr:hover {
-    background: rgba(6, 182, 212, 0.08) !important;
+    background: var(--color-accent-a08) !important;
   }
   
   @media (max-width: 640px) {

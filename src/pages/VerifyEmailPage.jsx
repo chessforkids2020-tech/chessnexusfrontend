@@ -56,7 +56,7 @@ export default function VerifyEmailPage() {
         {status === STATUS.EXPIRED && (
           <>
             <div style={{ fontSize: 56, marginBottom: 12 }}>⏰</div>
-            <h2 style={{ ...s.heading, color: "#fbbf24" }}>Link Expired</h2>
+            <h2 style={{ ...s.heading, color: "var(--color-warning)" }}>Link Expired</h2>
             <p style={s.body}>
               This verification link has expired. Verification links are valid for 24 hours.
             </p>
@@ -67,7 +67,7 @@ export default function VerifyEmailPage() {
         {status === STATUS.ERROR && (
           <>
             <div style={{ fontSize: 56, marginBottom: 12 }}>❌</div>
-            <h2 style={{ ...s.heading, color: "#f87171" }}>Verification Failed</h2>
+            <h2 style={{ ...s.heading, color: "var(--color-danger)" }}>Verification Failed</h2>
             <p style={s.body}>{message}</p>
             <Link to="/resend-verification" style={s.btn}>Request a New Link →</Link>
           </>
@@ -83,7 +83,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "#0a0a0a",
+    background: "var(--color-bg)",
     padding: 20,
     position: "relative",
     overflow: "hidden"
@@ -102,15 +102,15 @@ const styles = {
     width: "100%",
     background: "rgba(23,23,23,0.85)",
     backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.07)",
+    border: "1px solid var(--color-white-a07)",
     borderRadius: 20,
     padding: "48px 40px",
     textAlign: "center",
-    boxShadow: "0 8px 40px rgba(0,0,0,0.5)"
+    boxShadow: "0 8px 40px var(--color-black-a50)"
   },
   logo: { marginBottom: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' },
   title: {
-    background: "linear-gradient(135deg,#8b5cf6,#6d28d9)",
+    background: "linear-gradient(135deg,var(--color-accent-2),#6d28d9)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
@@ -121,19 +121,19 @@ const styles = {
   spinner: {
     width: 48,
     height: 48,
-    border: "4px solid rgba(139,92,246,0.2)",
-    borderTopColor: "#8b5cf6",
+    border: "4px solid var(--color-accent-2-a15)",
+    borderTopColor: "var(--color-accent-2)",
     borderRadius: "50%",
     animation: "spin 0.8s linear infinite",
     margin: "0 auto 20px"
   },
-  sub: { color: "#94a3b8", fontSize: 15 },
+  sub: { color: "var(--color-text-muted)", fontSize: 15 },
   heading: { fontSize: 22, fontWeight: 700, margin: "0 0 12px" },
-  body: { color: "#94a3b8", fontSize: 15, lineHeight: 1.7, margin: "0 0 28px" },
+  body: { color: "var(--color-text-muted)", fontSize: 15, lineHeight: 1.7, margin: "0 0 28px" },
   btn: {
     display: "inline-block",
-    background: "linear-gradient(135deg,#7c3aed,#6d28d9)",
-    color: "#fff",
+    background: "linear-gradient(135deg,var(--color-accent-2),#6d28d9)",
+    color: "var(--color-text)",
     textDecoration: "none",
     padding: "12px 28px",
     borderRadius: 10,

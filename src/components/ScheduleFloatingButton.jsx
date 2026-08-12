@@ -105,28 +105,28 @@ export default function ScheduleFloatingButton() {
             borderRadius: 12,
             padding: '12px 16px',
             width: 220,
-            boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+            boxShadow: '0 8px 24px var(--color-black-a50)',
             animation: 'none',
           }}>
             {isLive ? (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'sfbLiveDot 1.4s infinite' }} />
-                  <span style={{ color: '#22c55e', fontWeight: 700, fontSize: 12 }}>LIVE NOW</span>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'sfbLiveDot 1.4s infinite' }} />
+                  <span style={{ color: 'var(--color-success)', fontWeight: 700, fontSize: 12 }}>LIVE NOW</span>
                 </div>
-                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: 14 }}>{preview.title}</div>
-                <div style={{ color: '#94a3b8', fontSize: 12, marginTop: 2 }}>Happening now — tap to join!</div>
+                <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 14 }}>{preview.title}</div>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: 12, marginTop: 2 }}>Happening now — tap to join!</div>
               </>
             ) : (
               <>
-                <div style={{ color: '#94a3b8', fontSize: 11, marginBottom: 4 }}>NEXT ACTIVITY</div>
-                <div style={{ color: '#ffffff', fontWeight: 700, fontSize: 14 }}>{preview.title}</div>
-                <div style={{ color: '#f59e0b', fontWeight: 600, fontSize: 12, marginTop: 2 }}>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: 11, marginBottom: 4 }}>NEXT ACTIVITY</div>
+                <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 14 }}>{preview.title}</div>
+                <div style={{ color: 'var(--color-warning)', fontWeight: 600, fontSize: 12, marginTop: 2 }}>
                   in {formatCountdown(msUntilNext(preview))}
                 </div>
               </>
             )}
-            <div style={{ color: '#06b6d4', fontSize: 12, marginTop: 8, fontWeight: 600 }}>View full schedule →</div>
+            <div style={{ color: 'var(--color-accent)', fontSize: 12, marginTop: 8, fontWeight: 600 }}>View full schedule →</div>
           </div>
         )}
 
@@ -140,15 +140,15 @@ export default function ScheduleFloatingButton() {
             alignItems: 'center',
             gap: 8,
             background: isLive ? '#052e16' : '#1a1a2e',
-            border: `2px solid ${isLive ? '#22c55e' : '#06b6d4'}`,
+            border: `2px solid ${isLive ? 'var(--color-success)' : 'var(--color-accent)'}`,
             borderRadius: 28,
             padding: '10px 18px',
             cursor: 'pointer',
-            color: isLive ? '#22c55e' : '#06b6d4',
+            color: isLive ? 'var(--color-success)' : 'var(--color-accent)',
             fontWeight: 700,
             fontSize: 14,
             fontFamily: 'Poppins, sans-serif',
-            boxShadow: isLive ? '0 0 0 0 rgba(34,197,94,0.5)' : '0 4px 14px rgba(0,0,0,0.4)',
+            boxShadow: isLive ? '0 0 0 0 rgba(34,197,94,0.5)' : '0 4px 14px var(--color-black-a35)',
             animation: isLive ? 'sfbPulse 2s infinite' : 'none',
             transition: 'transform 0.15s, background 0.2s',
           }}
@@ -156,7 +156,7 @@ export default function ScheduleFloatingButton() {
           onMouseUp={e => { e.currentTarget.style.transform = 'scale(1)'; }}
         >
           {isLive && (
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'sfbLiveDot 1.4s infinite' }} />
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'sfbLiveDot 1.4s infinite' }} />
           )}
           <span style={{ fontSize: 16 }}>📅</span>
           <span>Schedule</span>

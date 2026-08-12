@@ -4,7 +4,7 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 32px 20px 60px;
-  color: #e5e7eb;
+  color: var(--color-text);
 }
 
 /* ── The founding-coach offer ─────────────────────────────────────────── */
@@ -15,10 +15,10 @@
   border-radius: 20px;
   text-align: center;
   background:
-    radial-gradient(120% 140% at 50% 0%, rgba(245, 158, 11, 0.16) 0%, transparent 60%),
+    radial-gradient(120% 140% at 50% 0%, var(--color-warning-a12) 0%, transparent 60%),
     linear-gradient(160deg, rgba(28, 24, 16, 0.96), rgba(15, 18, 26, 0.96));
-  border: 1px solid rgba(245, 158, 11, 0.38);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--color-warning-a30);
+  box-shadow: 0 18px 48px var(--color-black-a35);
 }
 /* Gold top edge — this is the one thing on the page that should feel scarce. */
 .chub-hero::before {
@@ -26,7 +26,7 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 3px;
-  background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
+  background: linear-gradient(90deg, var(--color-warning), var(--color-warning), var(--color-warning));
 }
 
 .chub-badge {
@@ -37,9 +37,9 @@
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.04em;
-  color: #fcd34d;
-  background: rgba(245, 158, 11, 0.14);
-  border: 1px solid rgba(245, 158, 11, 0.42);
+  color: var(--color-warning);
+  background: var(--color-warning-a12);
+  border: 1px solid var(--color-warning-a30);
 }
 
 .chub-title {
@@ -47,10 +47,10 @@
   font-size: 34px;
   line-height: 1.15;
   font-weight: 800;
-  color: #f8fafc;
+  color: var(--color-text);
   letter-spacing: -0.02em;
 }
-.chub-title em { font-style: normal; color: #fbbf24; }
+.chub-title em { font-style: normal; color: var(--color-warning); }
 
 .chub-lead {
   max-width: 620px;
@@ -59,7 +59,7 @@
   line-height: 1.7;
   color: #b9c2cf;
 }
-.chub-lead strong { color: #fcd34d; }
+.chub-lead strong { color: var(--color-warning); }
 
 .chub-gets {
   max-width: 520px;
@@ -76,22 +76,22 @@
   gap: 11px;
   font-size: 14px;
   line-height: 1.5;
-  color: #cbd5e1;
+  color: var(--color-text-muted);
 }
 .chub-gets li span { flex: none; font-size: 16px; line-height: 1.4; }
-.chub-gets strong { color: #f1f5f9; }
+.chub-gets strong { color: var(--color-text); }
 
 /* Offer closed — drop the gold, keep the layout. */
 .chub-hero-plain {
   background: linear-gradient(160deg, rgba(23, 26, 34, 0.96), rgba(15, 18, 26, 0.96));
-  border-color: rgba(255, 255, 255, 0.10);
+  border-color: var(--color-white-a10);
 }
-.chub-hero-plain::before { background: linear-gradient(90deg, #06b6d4, #10b981); }
-.chub-hero-plain .chub-title em { color: #67e8f9; }
+.chub-hero-plain::before { background: linear-gradient(90deg, var(--color-accent), var(--color-success)); }
+.chub-hero-plain .chub-title em { color: var(--color-accent); }
 .chub-hero-plain .chub-cta {
-  background: linear-gradient(135deg, #06b6d4, #10b981);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
   color: #04211d;
-  box-shadow: 0 10px 26px rgba(6, 182, 212, 0.26);
+  box-shadow: 0 10px 26px var(--color-accent-a30);
 }
 
 /* ── Spots left ───────────────────────────────────────────────────────── */
@@ -100,12 +100,12 @@
 .chub-spots-n {
   margin-bottom: 8px;
   font-size: 14px;
-  color: #cbd5e1;
+  color: var(--color-text-muted);
 }
 .chub-spots-n strong {
   font-size: 22px;
   font-weight: 800;
-  color: #fbbf24;
+  color: var(--color-warning);
   vertical-align: -1px;
 }
 
@@ -113,14 +113,14 @@
   height: 8px;
   border-radius: 999px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-white-a07);
+  border: 1px solid var(--color-white-a07);
 }
 .chub-spots-bar span {
   display: block;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  background: linear-gradient(90deg, var(--color-warning), var(--color-warning));
   transition: width 0.4s ease;
 }
 
@@ -128,7 +128,7 @@
   margin-top: 8px;
   font-size: 12.5px;
   font-weight: 700;
-  color: #fca5a5;
+  color: var(--color-danger);
 }
 
 .chub-worth {
@@ -137,25 +137,25 @@
   padding: 7px 16px;
   border-radius: 10px;
   font-size: 13.5px;
-  color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: var(--color-text-muted);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
 }
-.chub-worth strong { color: #fbbf24; font-weight: 800; }
+.chub-worth strong { color: var(--color-warning); font-weight: 800; }
 
 .chub-cta {
   display: inline-block;
   padding: 14px 30px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  background: linear-gradient(135deg, var(--color-warning), var(--color-warning));
   color: #241a05;
   font-size: 15.5px;
   font-weight: 800;
   font-family: inherit;
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 10px 26px rgba(245, 158, 11, 0.28);
+  box-shadow: 0 10px 26px var(--color-warning-a30);
   transition: filter 0.15s ease, transform 0.1s ease;
 }
 .chub-cta:hover { filter: brightness(1.07); }
@@ -168,12 +168,12 @@
 .chub-details a {
   font-size: 13px;
   font-weight: 600;
-  color: #fcd34d;
+  color: var(--color-warning);
   text-decoration: none;
   border-bottom: 1px solid rgba(252, 211, 77, 0.35);
   padding-bottom: 1px;
 }
-.chub-details a:hover { border-bottom-color: #fcd34d; }
+.chub-details a:hover { border-bottom-color: var(--color-warning); }
 
 .chub-fineprint {
   margin: 14px auto 0;
@@ -202,7 +202,7 @@
   flex: none;
   font-size: 13px;
   font-weight: 700;
-  color: #67e8f9;
+  color: var(--color-accent);
   text-decoration: none;
 }
 .chub-browse:hover { text-decoration: underline; }
@@ -214,7 +214,7 @@
   margin: 0 0 16px;
   font-size: 19px;
   font-weight: 700;
-  color: #e2e8f0;
+  color: var(--color-text);
   text-align: center;
 }
 
@@ -242,16 +242,16 @@
   font-size: 13.5px;
   font-weight: 600;
   white-space: nowrap;
-  color: #cbd5e1;
+  color: var(--color-text-muted);
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 .chub-link:hover {
-  color: #67e8f9;
-  border-color: rgba(6, 182, 212, 0.45);
-  background: rgba(6, 182, 212, 0.09);
+  color: var(--color-accent);
+  border-color: var(--color-accent-a40);
+  background: var(--color-accent-a08);
 }
 .chub-link span { font-size: 16px; line-height: 1; }
 

@@ -15,7 +15,7 @@ function TocNode({ node, depth, bookId, locked, navigate }) {
         style={{
           padding: '6px 0',
           cursor: clickable ? 'pointer' : 'default',
-          color: locked ? '#6b7280' : (depth === 0 ? '#e5e7eb' : '#cbd5e1'),
+          color: locked ? 'var(--color-text-faint)' : (depth === 0 ? 'var(--color-text)' : 'var(--color-text-muted)'),
           fontWeight: depth === 0 ? 800 : (isReadable ? 500 : 700),
           fontSize: depth === 0 ? 18 : 15,
           display: 'flex', alignItems: 'center', gap: 8,
@@ -23,7 +23,7 @@ function TocNode({ node, depth, bookId, locked, navigate }) {
       >
         <span>{node.title}</span>
         {locked && <span title="Supporters & coaches only">🔒</span>}
-        {clickable && <span style={{ color: '#34d399', fontSize: 13 }}>›</span>}
+        {clickable && <span style={{ color: 'var(--color-success)', fontSize: 13 }}>›</span>}
       </div>
       {(node.children || []).map(child => (
         <TocNode key={child._id} node={child} depth={depth + 1} bookId={bookId} locked={locked} navigate={navigate} />
@@ -100,12 +100,12 @@ const BookContents = () => {
             <>
               <div style={{ flex: '1 1 240px' }}>
                 🔒 Unlock all chapters of this book.
-                <div style={{ marginTop: 6, fontSize: 13, color: '#9ca3af' }}>
-                  Spend <strong style={{ color: '#c4b5fd' }}>{xpPrice} XP</strong> from your wallet
-                  {' '}(you have <strong style={{ color: canAfford ? '#34d399' : '#f87171' }}>{walletXp} XP</strong>)
+                <div style={{ marginTop: 6, fontSize: 13, color: 'var(--color-text-muted)' }}>
+                  Spend <strong style={{ color: 'var(--color-accent-2)' }}>{xpPrice} XP</strong> from your wallet
+                  {' '}(you have <strong style={{ color: canAfford ? 'var(--color-success)' : 'var(--color-danger)' }}>{walletXp} XP</strong>)
                   {' '}— or get it free as a supporter, coach, or elite member.
                 </div>
-                {unlockErr && <div style={{ marginTop: 6, fontSize: 13, color: '#f87171' }}>{unlockErr}</div>}
+                {unlockErr && <div style={{ marginTop: 6, fontSize: 13, color: 'var(--color-danger)' }}>{unlockErr}</div>}
               </div>
               <button
                 style={{ ...styles.xpBtn, ...(canAfford ? {} : styles.xpBtnDisabled) }}
@@ -130,18 +130,18 @@ const BookContents = () => {
 
 const styles = {
   container: { maxWidth: 820, margin: '0 auto', padding: 24 },
-  backButton: { background: 'none', border: 'none', color: '#34d399', cursor: 'pointer', fontSize: 15, padding: 0, marginBottom: 8 },
-  title: { fontSize: 30, color: '#e5e7eb', margin: '4px 0', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
-  freeBadge: { background: '#10b981', color: '#fff', fontSize: 13, fontWeight: 800, letterSpacing: 0.5, padding: '3px 10px', borderRadius: 6, verticalAlign: 'middle' },
-  author: { color: '#9ca3af', fontSize: 16, marginBottom: 20, fontStyle: 'italic' },
-  toc: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '20px 26px' },
-  tocHeading: { color: '#34d399', fontSize: 16, textTransform: 'uppercase', letterSpacing: 1, marginTop: 0 },
+  backButton: { background: 'none', border: 'none', color: 'var(--color-success)', cursor: 'pointer', fontSize: 15, padding: 0, marginBottom: 8 },
+  title: { fontSize: 30, color: 'var(--color-text)', margin: '4px 0', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' },
+  freeBadge: { background: 'var(--color-success)', color: 'var(--color-text)', fontSize: 13, fontWeight: 800, letterSpacing: 0.5, padding: '3px 10px', borderRadius: 6, verticalAlign: 'middle' },
+  author: { color: 'var(--color-text-muted)', fontSize: 16, marginBottom: 20, fontStyle: 'italic' },
+  toc: { background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: 12, padding: '20px 26px' },
+  tocHeading: { color: 'var(--color-success)', fontSize: 16, textTransform: 'uppercase', letterSpacing: 1, marginTop: 0 },
   error: { background: '#fdecea', color: '#c62828', padding: '10px 14px', borderRadius: 6 },
-  upsell: { marginTop: 20, padding: 16, background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 12, color: '#cbd5e1', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' },
-  supportBtn: { background: '#34d399', color: '#06281d', border: 'none', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontWeight: 700 },
-  xpBtn: { background: 'linear-gradient(135deg, #7c3aed, #06b6d4)', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' },
-  xpBtnDisabled: { background: 'rgba(148,163,184,0.25)', color: '#94a3b8', cursor: 'not-allowed' },
-  unlockedBadge: { background: 'rgba(124,58,237,0.18)', color: '#c4b5fd', border: '1px solid rgba(124,58,237,0.4)', fontSize: 13, fontWeight: 800, padding: '3px 10px', borderRadius: 6, verticalAlign: 'middle' },
+  upsell: { marginTop: 20, padding: 16, background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 12, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' },
+  supportBtn: { background: 'var(--color-success)', color: '#06281d', border: 'none', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontWeight: 700 },
+  xpBtn: { background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent))', color: 'var(--color-text)', border: 'none', padding: '8px 16px', borderRadius: 8, cursor: 'pointer', fontWeight: 800, whiteSpace: 'nowrap' },
+  xpBtnDisabled: { background: 'var(--color-border-strong)', color: 'var(--color-text-muted)', cursor: 'not-allowed' },
+  unlockedBadge: { background: 'rgba(124,58,237,0.18)', color: 'var(--color-accent-2)', border: '1px solid rgba(124,58,237,0.4)', fontSize: 13, fontWeight: 800, padding: '3px 10px', borderRadius: 6, verticalAlign: 'middle' },
 };
 
 export default BookContents;

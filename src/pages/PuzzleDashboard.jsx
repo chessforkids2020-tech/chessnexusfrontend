@@ -13,16 +13,16 @@ function Donut({ solved, failed, size = 64 }) {
   const solvedLen = c * solvedFrac;
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#ef4444" strokeWidth="6" />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--color-danger)" strokeWidth="6" />
       <circle
-        cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#22c55e" strokeWidth="6"
+        cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--color-success)" strokeWidth="6"
         strokeDasharray={`${solvedLen} ${c - solvedLen}`}
         strokeDashoffset={c / 4}
         transform={`rotate(-90 ${size / 2} ${size / 2})`}
         strokeLinecap="round"
       />
       <text x="50%" y="50%" textAnchor="middle" dominantBaseline="central"
-            fontSize={size * 0.26} fontWeight="800" fill="#fff">
+            fontSize={size * 0.26} fontWeight="800" fill="var(--color-text)">
         {total ? Math.round(solvedFrac * 100) : 0}%
       </text>
     </svg>
@@ -101,11 +101,11 @@ export default function PuzzleDashboard() {
 
   const s = data?.summary || {};
   const SUMMARY = [
-    { icon: '🏆', label: 'Puzzle Rating',  value: s.rating ?? '—',                 color: '#f59e0b' },
-    { icon: '🧩', label: 'Solved',         value: s.solved ?? 0,                    color: '#22c55e' },
-    { icon: '❌', label: 'Failed',         value: s.failed ?? 0,                    color: '#ef4444' },
-    { icon: '🎯', label: 'Accuracy',       value: `${s.accuracy ?? 0}%`,            color: '#06b6d4' },
-    { icon: '🔥', label: 'Current Streak', value: s.streak ?? 0,                    color: '#a855f7' },
+    { icon: '🏆', label: 'Puzzle Rating',  value: s.rating ?? '—',                 color: 'var(--color-warning)' },
+    { icon: '🧩', label: 'Solved',         value: s.solved ?? 0,                    color: 'var(--color-success)' },
+    { icon: '❌', label: 'Failed',         value: s.failed ?? 0,                    color: 'var(--color-danger)' },
+    { icon: '🎯', label: 'Accuracy',       value: `${s.accuracy ?? 0}%`,            color: 'var(--color-accent)' },
+    { icon: '🔥', label: 'Current Streak', value: s.streak ?? 0,                    color: 'var(--color-accent-2)' },
   ];
 
   const redoAll = () => {
@@ -169,9 +169,9 @@ export default function PuzzleDashboard() {
                 <div>
                   <div className="pd-weak-title">{isSpectator ? <><b>{t.label}</b> needs improvement</> : <>Your <b>{t.label}</b> needs improvement</>}</div>
                   <div className="pd-weak-sub">
-                    <span style={{ color: '#22c55e' }}>✓ {t.solved} solved</span>
+                    <span style={{ color: 'var(--color-success)' }}>✓ {t.solved} solved</span>
                     {'  ·  '}
-                    <span style={{ color: '#ef4444' }}>✗ {t.failed} failed</span>
+                    <span style={{ color: 'var(--color-danger)' }}>✗ {t.failed} failed</span>
                     {'  ·  '}{t.attempts} total
                   </div>
                 </div>

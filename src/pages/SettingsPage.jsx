@@ -19,7 +19,7 @@ function BoardSwatch({ light, dark, size = 44 }) {
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
       gridTemplateRows: '1fr 1fr',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.45)',
+      boxShadow: '0 2px 8px var(--color-black-a35)',
       flexShrink: 0,
     }}>
       <div style={{ background: light, width: half, height: half }} />
@@ -39,7 +39,7 @@ function PieceSwatch({ pathFn, light, dark, size = 56 }) {
       borderRadius: 6,
       overflow: 'hidden',
       position: 'relative',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.45)',
+      boxShadow: '0 2px 8px var(--color-black-a35)',
       flexShrink: 0,
       display: 'grid',
       gridTemplateColumns: '1fr 1fr',
@@ -105,7 +105,7 @@ function OptionCard({ isActive, onClick, defaultBadge, children }) {
       {defaultBadge && (
         <span style={{
           position: 'absolute', top: 6, right: 6,
-          background: '#1e293b', color: '#94a3b8',
+          background: 'var(--color-surface-2)', color: 'var(--color-text-muted)',
           fontSize: 9, fontWeight: 600,
           padding: '1px 5px', borderRadius: 4,
           letterSpacing: '0.5px', textTransform: 'uppercase',
@@ -336,7 +336,7 @@ export default function SettingsPage() {
                   <span style={{
                     fontSize: 12,
                     fontWeight: t.id === activeTheme.id ? 600 : 400,
-                    color: t.id === activeTheme.id ? '#06b6d4' : '#cbd5e1',
+                    color: t.id === activeTheme.id ? 'var(--color-accent)' : 'var(--color-text-muted)',
                     textAlign: 'center',
                     lineHeight: 1.3,
                   }}>
@@ -353,15 +353,15 @@ export default function SettingsPage() {
               alignItems: 'center',
               gap: 16,
               padding: '14px 18px',
-              background: 'rgba(0,0,0,0.25)',
+              background: 'var(--color-black-a20)',
               borderRadius: 10,
-              border: '1px solid rgba(255,255,255,0.06)',
+              border: '1px solid var(--color-white-a07)',
             }}>
-              <span style={{ color: '#94a3b8', fontSize: 13 }}>Active theme:</span>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>Active theme:</span>
               <BoardSwatch light={activeTheme.light} dark={activeTheme.dark} size={48} />
               <div>
-                <div style={{ fontWeight: 600, color: '#e2e8f0', fontSize: 14 }}>{activeTheme.name}</div>
-                <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+                <div style={{ fontWeight: 600, color: 'var(--color-text)', fontSize: 14 }}>{activeTheme.name}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2 }}>
                   Light {activeTheme.light} · Dark {activeTheme.dark}
                 </div>
               </div>
@@ -406,7 +406,7 @@ export default function SettingsPage() {
                   <span style={{
                     fontSize: 12,
                     fontWeight: pt.id === activePiece.id ? 600 : 400,
-                    color: pt.id === activePiece.id ? '#06b6d4' : '#cbd5e1',
+                    color: pt.id === activePiece.id ? 'var(--color-accent)' : 'var(--color-text-muted)',
                     textAlign: 'center',
                     lineHeight: 1.3,
                   }}>
@@ -423,11 +423,11 @@ export default function SettingsPage() {
               alignItems: 'center',
               gap: 16,
               padding: '14px 18px',
-              background: 'rgba(0,0,0,0.25)',
+              background: 'var(--color-black-a20)',
               borderRadius: 10,
-              border: '1px solid rgba(255,255,255,0.06)',
+              border: '1px solid var(--color-white-a07)',
             }}>
-              <span style={{ color: '#94a3b8', fontSize: 13 }}>Active pieces:</span>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>Active pieces:</span>
               <PieceSwatch
                 pathFn={activePiece.pathFn}
                 light={activeTheme.light}
@@ -435,8 +435,8 @@ export default function SettingsPage() {
                 size={52}
               />
               <div>
-                <div style={{ fontWeight: 600, color: '#e2e8f0', fontSize: 14 }}>{activePiece.name}</div>
-                <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+                <div style={{ fontWeight: 600, color: 'var(--color-text)', fontSize: 14 }}>{activePiece.name}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2 }}>
                   {activePiece.isDefault ? 'Default MPChess pieces' : `Piece set: ${activePiece.id}`}
                 </div>
               </div>

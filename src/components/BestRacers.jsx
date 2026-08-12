@@ -113,7 +113,7 @@ const BestRacers = ({ compact = false }) => {
 
   const compactLeaderboard = compact ? {
     ...styles.leaderboard,
-    background: 'rgba(255,255,255,0.025)',
+    background: 'var(--color-white-a04)',
     padding: '14px',
     borderRadius: '12px',
     minWidth: 0,
@@ -156,7 +156,7 @@ const BestRacers = ({ compact = false }) => {
                 </div>
               ))
             ) : (
-              <div style={{ ...styles.racerItem, color: '#9ca3af' }}>No team racers yet</div>
+              <div style={{ ...styles.racerItem, color: 'var(--color-text-muted)' }}>No team racers yet</div>
             )}
           </div>
           <div style={{display: 'flex', justifyContent: 'center', marginTop: 12}}>
@@ -190,7 +190,7 @@ const BestRacers = ({ compact = false }) => {
                 </div>
               ))
             ) : (
-              <div style={{ ...styles.racerItem, color: '#9ca3af' }}>No races yet</div>
+              <div style={{ ...styles.racerItem, color: 'var(--color-text-muted)' }}>No races yet</div>
             )}
           </div>
           <div style={{display: 'flex', justifyContent: 'center', marginTop: 12}}>
@@ -224,7 +224,7 @@ const BestRacers = ({ compact = false }) => {
                 </div>
               ))
             ) : (
-              <div style={{ ...styles.racerItem, color: '#9ca3af' }}>No races yet</div>
+              <div style={{ ...styles.racerItem, color: 'var(--color-text-muted)' }}>No races yet</div>
             )}
           </div>
           <div style={{display: 'flex', justifyContent: 'center', marginTop: 12}}>
@@ -248,17 +248,17 @@ const BestRacers = ({ compact = false }) => {
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24}}>
               <div style={{display: 'flex', gap: 12, alignItems: 'center'}}>
                 <span style={{fontSize: 28}}>🏆</span>
-                <h3 style={{margin: 0, color: '#ffffff', fontSize: '24px'}}>{modalTitle}</h3>
+                <h3 style={{margin: 0, color: 'var(--color-text)', fontSize: '24px'}}>{modalTitle}</h3>
               </div>
-              <button onClick={() => setShowAllModal(false)} style={{border: '1px solid rgba(255, 255, 255, 0.2)', background: 'rgba(255, 255, 255, 0.1)', color: '#ffffff', padding: '10px 20px', borderRadius: 12, cursor: 'pointer', transition: 'all 0.3s ease', fontWeight: '700'}}>Close</button>
+              <button onClick={() => setShowAllModal(false)} style={{border: '1px solid var(--color-white-a20)', background: 'var(--color-white-a10)', color: 'var(--color-text)', padding: '10px 20px', borderRadius: 12, cursor: 'pointer', transition: 'all 0.3s ease', fontWeight: '700'}}>Close</button>
             </div>
 
             {modalLoading ? (
-              <div style={{textAlign: 'center', padding: 40, color: '#9ca3af'}}>Loading racers...</div>
+              <div style={{textAlign: 'center', padding: 40, color: 'var(--color-text-muted)'}}>Loading racers...</div>
             ) : modalError ? (
-              <div style={{textAlign: 'center', padding: 40, color: '#ef4444'}}>{modalError}</div>
+              <div style={{textAlign: 'center', padding: 40, color: 'var(--color-danger)'}}>{modalError}</div>
             ) : topicsRacers.length === 0 ? (
-              <div style={{textAlign: 'center', padding: 40, color: '#9ca3af'}}>No racers found.</div>
+              <div style={{textAlign: 'center', padding: 40, color: 'var(--color-text-muted)'}}>No racers found.</div>
             ) : (
               <div style={{...styles.modalGrid, gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)'}}>
                 {topicsRacers.map((topicObj) => (
@@ -281,7 +281,7 @@ const BestRacers = ({ compact = false }) => {
                               {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx+1}.`}
                             </td>
                             <td style={styles.td}>
-                              <div style={{fontWeight: '600', color: '#ffffff'}}><PlayerName displayName={u.displayName} username={u.username} userId={u.userId} /></div>
+                              <div style={{fontWeight: '600', color: 'var(--color-text)'}}><PlayerName displayName={u.displayName} username={u.username} userId={u.userId} /></div>
                             </td>
                             <td style={{...styles.td, ...styles.pointsCell}}>{u.score}</td>
                           </tr>
@@ -303,13 +303,13 @@ const BestRacers = ({ compact = false }) => {
 // BestRacers Component - Obsidian Glass Theme
 const styles = {
   container: {
-    background: 'rgba(23, 23, 23, 0.7)',
+    background: 'var(--color-surface)',
     padding: '32px 28px',
     borderRadius: '20px',
     marginTop: '40px',
     marginBottom: '40px',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
+    border: '1px solid var(--color-white-a04)',
     position: 'relative',
     overflow: 'hidden',
     backdropFilter: 'blur(10px)',
@@ -318,7 +318,7 @@ const styles = {
     margin: '0 0 24px 0',
     fontSize: '28px',
     fontWeight: '700',
-    color: '#ffffff',
+    color: 'var(--color-text)',
     textAlign: 'center',
   },
   grid: {
@@ -327,11 +327,11 @@ const styles = {
     gap: '24px',
   },
   leaderboard: {
-    background: 'rgba(0, 0, 0, 0.3)',
+    background: 'var(--color-black-a35)',
     padding: '20px',
     borderRadius: '16px',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    boxShadow: '0 4px 16px var(--color-black-a35)',
+    border: '1px solid var(--color-white-a04)',
     backdropFilter: 'blur(5px)',
     minWidth: '280px',
     transition: 'all 0.3s ease',
@@ -340,7 +340,7 @@ const styles = {
     margin: '0 0 16px 0',
     fontSize: '18px',
     fontWeight: '600',
-    color: '#06b6d4',
+    color: 'var(--color-accent)',
   },
   racerList: {
     display: 'flex',
@@ -352,23 +352,23 @@ const styles = {
     alignItems: 'center',
     gap: '12px',
     padding: '12px',
-    background: 'rgba(255, 255, 255, 0.03)',
+    background: 'var(--color-white-a04)',
     borderRadius: '12px',
     transition: 'all 0.3s ease',
-    borderLeft: '3px solid rgba(6, 182, 212, 0.3)',
+    borderLeft: '3px solid var(--color-accent-a30)',
     cursor: 'pointer',
   },
   racerItemHover: {
-    background: 'rgba(6, 182, 212, 0.1)',
+    background: 'var(--color-accent-a12)',
     transform: 'translateX(4px)',
-    borderLeftColor: '#10b981',
+    borderLeftColor: 'var(--color-success)',
   },
   racerRank: {
     fontSize: '20px',
     fontWeight: '700',
     minWidth: '30px',
     textAlign: 'center',
-    color: '#06b6d4',
+    color: 'var(--color-accent)',
   },
   racerInfo: {
     flex: 1,
@@ -377,14 +377,14 @@ const styles = {
   racerName: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#ffffff',
+    color: 'var(--color-text)',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
   racerUsername: {
     fontSize: '12px',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
@@ -392,7 +392,7 @@ const styles = {
   racerScore: {
     fontSize: '16px',
     fontWeight: '700',
-    color: '#10b981',
+    color: 'var(--color-success)',
     minWidth: '50px',
     textAlign: 'right',
   },
@@ -402,24 +402,24 @@ const styles = {
 styles.seeAllButton = {
   padding: '10px 18px',
   borderRadius: 12,
-  border: '1px solid rgba(6, 182, 212, 0.3)',
-  background: 'rgba(6, 182, 212, 0.15)',
-  color: '#06b6d4',
+  border: '1px solid var(--color-accent-a30)',
+  background: 'var(--color-accent-a15)',
+  color: 'var(--color-accent)',
   fontWeight: 600,
   cursor: 'pointer',
-  boxShadow: '0 4px 16px rgba(6, 182, 212, 0.2)',
+  boxShadow: '0 4px 16px var(--color-accent-a20)',
   transition: 'all 0.3s ease',
 };
 
 styles.seeAllInlineButton = {
   padding: '8px 16px',
   borderRadius: 12,
-  border: '1px solid rgba(6, 182, 212, 0.3)',
-  background: 'rgba(6, 182, 212, 0.15)',
-  color: '#06b6d4',
+  border: '1px solid var(--color-accent-a30)',
+  background: 'var(--color-accent-a15)',
+  color: 'var(--color-accent)',
   fontWeight: 600,
   cursor: 'pointer',
-  boxShadow: '0 4px 16px rgba(6, 182, 212, 0.2)',
+  boxShadow: '0 4px 16px var(--color-accent-a20)',
   transition: 'all 0.3s ease',
 };
 
@@ -429,7 +429,7 @@ styles.modalOverlay = {
   left: 0,
   right: 0,
   bottom: 0,
-  background: 'rgba(0, 0, 0, 0.85)',
+  background: 'var(--color-black-a65)',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -442,12 +442,12 @@ styles.modal = {
   maxWidth: 1400,
   maxHeight: '92vh',
   overflow: 'auto',
-  background: 'rgba(23, 23, 23, 0.95)',
+  background: 'var(--color-surface)',
   borderRadius: 24,
   padding: 32,
-  border: '1px solid rgba(255, 255, 255, 0.1)',
+  border: '1px solid var(--color-white-a10)',
   backdropFilter: 'blur(20px)',
-  boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+  boxShadow: '0 20px 60px var(--color-black-a65)',
 };
 
 styles.modalGrid = {
@@ -457,10 +457,10 @@ styles.modalGrid = {
 };
 
 styles.tableWrapper = {
-  background: 'rgba(0, 0, 0, 0.3)',
+  background: 'var(--color-black-a35)',
   borderRadius: '12px',
-  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
-  border: '1px solid rgba(255, 255, 255, 0.05)',
+  boxShadow: '0 4px 16px var(--color-black-a35)',
+  border: '1px solid var(--color-white-a04)',
   overflow: 'hidden',
   backdropFilter: 'blur(5px)',
 };
@@ -473,25 +473,25 @@ styles.table = {
 };
 
 styles.topicHeader = {
-  background: 'rgba(6, 182, 212, 0.15)',
+  background: 'var(--color-accent-a15)',
   padding: '12px 16px',
   fontSize: '16px',
   fontWeight: '700',
-  color: '#06b6d4',
+  color: 'var(--color-accent)',
   textAlign: 'left',
-  borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+  borderBottom: '1px solid var(--color-white-a04)'
 };
 
 styles.tableHeaderRow = {
-  background: 'rgba(0, 0, 0, 0.2)',
-  borderBottom: '1px solid rgba(255, 255, 255, 0.05)'
+  background: 'var(--color-black-a20)',
+  borderBottom: '1px solid var(--color-white-a04)'
 };
 
 styles.th = {
   padding: '10px 16px',
   textAlign: 'left',
   fontWeight: '600',
-  color: '#9ca3af',
+  color: 'var(--color-text-muted)',
   fontSize: '12px',
   textTransform: 'uppercase',
   letterSpacing: '0.5px'
@@ -499,8 +499,8 @@ styles.th = {
 
 styles.td = {
   padding: '12px 16px',
-  borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
-  color: '#ffffff',
+  borderBottom: '1px solid var(--color-white-a04)',
+  color: 'var(--color-text)',
   fontSize: '14px',
   verticalAlign: 'middle'
 };
@@ -510,12 +510,12 @@ styles.rankCell = {
   fontSize: '18px',
   width: '60px',
   textAlign: 'center',
-  color: '#06b6d4'
+  color: 'var(--color-accent)'
 };
 
 styles.pointsCell = {
   fontWeight: '700',
-  color: '#10b981',
+  color: 'var(--color-success)',
   textAlign: 'right',
   fontSize: '16px'
 };

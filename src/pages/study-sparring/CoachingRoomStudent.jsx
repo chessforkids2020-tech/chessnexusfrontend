@@ -123,7 +123,7 @@ export default function CoachingRoomStudent() {
 
   const cardStyle = {
     background: 'rgba(15,15,15,0.7)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--color-white-a07)',
     borderRadius: 16,
     backdropFilter: 'blur(20px)',
     padding: 20,
@@ -133,33 +133,33 @@ export default function CoachingRoomStudent() {
 
   if (sessionEnded) {
     return (
-      <div style={{ background: '#0a0a0a', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Segoe UI', sans-serif", color: '#fff' }}>
+      <div style={{ background: 'var(--color-bg)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Segoe UI', sans-serif", color: 'var(--color-text)' }}>
         <div style={{ ...cardStyle, textAlign: 'center', maxWidth: 400 }}>
           <div style={{ fontSize: 48 }}>🎓</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: '#34d399', marginTop: 12 }}>Session Ended</div>
-          <div style={{ color: '#6b7280', marginTop: 8, marginBottom: 20 }}>Your teacher has ended the coaching session.</div>
-          <div style={{ fontSize: 28, fontWeight: 900, color: '#a5b4fc', marginBottom: 20 }}>{accuracy}% accuracy</div>
-          <button onClick={() => navigate(-1)} style={{ padding: '12px 32px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#fff', cursor: 'pointer', fontSize: 15, fontWeight: 700 }}>Back</button>
+          <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-success)', marginTop: 12 }}>Session Ended</div>
+          <div style={{ color: 'var(--color-text-faint)', marginTop: 8, marginBottom: 20 }}>Your teacher has ended the coaching session.</div>
+          <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--color-accent-2)', marginBottom: 20 }}>{accuracy}% accuracy</div>
+          <button onClick={() => navigate(-1)} style={{ padding: '12px 32px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 10, color: 'var(--color-text)', cursor: 'pointer', fontSize: 15, fontWeight: 700 }}>Back</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ background: '#0a0a0a', minHeight: '100vh', padding: 20, fontFamily: "'Segoe UI', sans-serif", color: '#fff' }}>
+    <div style={{ background: 'var(--color-bg)', minHeight: '100vh', padding: 20, fontFamily: "'Segoe UI', sans-serif", color: 'var(--color-text)' }}>
       <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 30% 50%, rgba(34,197,94,0.07) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
       <div style={{ maxWidth: 960, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
-          <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>← Leave</button>
+          <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 8, color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>← Leave</button>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#34d399' }}>🎓 Coaching Room: {roomCode}</div>
-            <div style={{ fontSize: 12, color: '#6b7280' }}>{joined ? 'Connected' : 'Joining...'}</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-success)' }}>🎓 Coaching Room: {roomCode}</div>
+            <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>{joined ? 'Connected' : 'Joining...'}</div>
           </div>
           {teacherWatching && (
             <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px', background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: 8 }}>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399', animation: 'pulse 2s infinite' }} />
-              <span style={{ color: '#34d399', fontSize: 12, fontWeight: 600 }}>Teacher is watching</span>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', animation: 'pulse 2s infinite' }} />
+              <span style={{ color: 'var(--color-success)', fontSize: 12, fontWeight: 600 }}>Teacher is watching</span>
             </div>
           )}
         </div>
@@ -176,9 +176,9 @@ export default function CoachingRoomStudent() {
               />
             </div>
             {/* Accuracy bar */}
-            <div style={{ marginTop: 10, padding: '10px 16px', background: 'rgba(0,0,0,0.4)', borderRadius: '0 0 12px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: '#9ca3af', fontSize: 12, fontWeight: 600 }}>Accuracy</span>
-              <span style={{ color: '#a5b4fc', fontWeight: 800, fontSize: 16 }}>{accuracy}%</span>
+            <div style={{ marginTop: 10, padding: '10px 16px', background: 'var(--color-black-a35)', borderRadius: '0 0 12px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600 }}>Accuracy</span>
+              <span style={{ color: 'var(--color-accent-2)', fontWeight: 800, fontSize: 16 }}>{accuracy}%</span>
             </div>
           </div>
 
@@ -187,8 +187,8 @@ export default function CoachingRoomStudent() {
             {/* Teacher annotations badge */}
             {teacherArrows.length > 0 && (
               <div style={{ ...cardStyle, borderColor: 'rgba(52,211,153,0.3)', background: 'rgba(52,211,153,0.06)' }}>
-                <div style={{ color: '#34d399', fontWeight: 700, fontSize: 13 }}>📋 Teacher annotation pushed</div>
-                <div style={{ color: '#6b7280', fontSize: 12, marginTop: 4 }}>{teacherArrows.length} arrow{teacherArrows.length !== 1 ? 's' : ''} on board</div>
+                <div style={{ color: 'var(--color-success)', fontWeight: 700, fontSize: 13 }}>📋 Teacher annotation pushed</div>
+                <div style={{ color: 'var(--color-text-faint)', fontSize: 12, marginTop: 4 }}>{teacherArrows.length} arrow{teacherArrows.length !== 1 ? 's' : ''} on board</div>
               </div>
             )}
 
@@ -208,7 +208,7 @@ export default function CoachingRoomStudent() {
             {/* Move list */}
             {userMoves.length > 0 && (
               <div style={cardStyle}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: '#9ca3af', marginBottom: 8, textTransform: 'uppercase' }}>Moves</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 8, textTransform: 'uppercase' }}>Moves</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {userMoves.map((m, i) => (
                     <span key={i} style={{ padding: '3px 8px', borderRadius: 4, fontSize: 12, fontFamily: 'monospace', background: QUALITY_COLORS[qualities[i]] + '20', color: QUALITY_COLORS[qualities[i]], border: `1px solid ${QUALITY_COLORS[qualities[i]]}40` }}>

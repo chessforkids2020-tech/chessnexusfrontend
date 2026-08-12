@@ -124,7 +124,7 @@ function SignupRequestForm() {
           <h1>Account Created Successfully!</h1>
           <p>
             Welcome to <strong>Chess Nexus</strong>,{' '}
-            <strong style={{ color: '#818cf8' }}>{formData.username}</strong>!
+            <strong style={{ color: 'var(--color-accent-2)' }}>{formData.username}</strong>!
             Your account is ready — you can log in now.
           </p>
           <button className="btn-primary" style={{ marginTop: 24 }} onClick={() => nav("/login")}>

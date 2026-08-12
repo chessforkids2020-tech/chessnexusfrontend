@@ -33,9 +33,9 @@ export default function StudyPuzzleSidebar() {
             top: '20px',
             right: '20px',
             zIndex: 1002,
-            background: 'rgba(10, 10, 10, 0.8)',
-            border: '1px solid rgba(6, 182, 212, 0.3)',
-            color: '#67e8f9',
+            background: 'var(--color-bg)',
+            border: '1px solid var(--color-accent-a30)',
+            color: 'var(--color-accent)',
             fontSize: '24px',
             width: '44px',
             height: '44px',
@@ -45,16 +45,16 @@ export default function StudyPuzzleSidebar() {
             justifyContent: 'center',
             cursor: 'pointer',
             backdropFilter: 'blur(10px)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            boxShadow: '0 4px 12px var(--color-black-a35)',
             transition: 'all 0.3s ease',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
+            e.currentTarget.style.background = 'var(--color-accent-a15)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.background = 'rgba(10, 10, 10, 0.8)';
+            e.currentTarget.style.background = 'var(--color-bg)';
           }}
         >
           ☰
@@ -70,14 +70,14 @@ export default function StudyPuzzleSidebar() {
       top: 0,
       width: isMobile ? '280px' : '60px',
       height: '100vh',
-      background: 'rgba(10, 10, 10, 0.95)',
+      background: 'var(--color-bg)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       paddingTop: '20px',
       zIndex: 1001,
-      boxShadow: '2px 0 20px rgba(0,0,0,0.5)',
-      borderRight: '1px solid rgba(255, 255, 255, 0.05)',
+      boxShadow: '2px 0 20px var(--color-black-a50)',
+      borderRight: '1px solid var(--color-white-a04)',
       backdropFilter: 'blur(10px)',
       fontFamily: "'Poppins', sans-serif",
       transition: 'left 0.3s ease',
@@ -88,7 +88,7 @@ export default function StudyPuzzleSidebar() {
       left: 0,
       width: '100vw',
       height: '100vh',
-      background: 'rgba(0, 0, 0, 0.5)',
+      background: 'var(--color-black-a50)',
       zIndex: 1000,
       display: isMobile && isExpanded ? 'block' : 'none',
     },
@@ -96,9 +96,9 @@ export default function StudyPuzzleSidebar() {
       position: 'absolute',
       top: '20px',
       right: '20px',
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-white-a10)',
       border: 'none',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       fontSize: '24px',
       width: '40px',
       height: '40px',
@@ -119,34 +119,34 @@ export default function StudyPuzzleSidebar() {
       borderRadius: '12px',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       fontSize: '22px',
-      background: 'rgba(255, 255, 255, 0.05)',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-white-a04)',
+      border: '1px solid var(--color-white-a10)',
       position: 'relative',
       overflow: 'hidden',
     },
     sidebarIconHover: {
-      background: 'rgba(6, 182, 212, 0.15)',
-      borderColor: 'rgba(6, 182, 212, 0.3)',
-      color: '#06b6d4',
+      background: 'var(--color-accent-a15)',
+      borderColor: 'var(--color-accent-a30)',
+      color: 'var(--color-accent)',
       transform: 'scale(1.1)',
-      boxShadow: '0 4px 12px rgba(6, 182, 212, 0.2)',
-      borderLeft: '3px solid #10b981',
+      boxShadow: '0 4px 12px var(--color-accent-a20)',
+      borderLeft: '3px solid var(--color-success)',
     },
     activeIcon: {
-      background: 'rgba(6, 182, 212, 0.2)',
-      borderColor: 'rgba(6, 182, 212, 0.4)',
-      color: '#06b6d4',
-      boxShadow: '0 4px 12px rgba(6, 182, 212, 0.3)',
+      background: 'var(--color-accent-a20)',
+      borderColor: 'var(--color-accent-a40)',
+      color: 'var(--color-accent)',
+      boxShadow: '0 4px 12px var(--color-accent-a30)',
     },
     tooltip: {
       position: 'absolute',
       left: '100%',
       top: '50%',
       transform: 'translateY(-50%)',
-      background: 'rgba(23, 23, 23, 0.95)',
-      color: '#ffffff',
+      background: 'var(--color-surface)',
+      color: 'var(--color-text)',
       padding: '8px 12px',
       borderRadius: '8px',
       fontSize: '12px',
@@ -156,8 +156,8 @@ export default function StudyPuzzleSidebar() {
       opacity: 0,
       transition: 'opacity 0.2s ease',
       marginLeft: '10px',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+      border: '1px solid var(--color-accent-a20)',
+      boxShadow: '0 4px 12px var(--color-black-a35)',
       backdropFilter: 'blur(10px)',
       zIndex: 1002,
     },
@@ -203,10 +203,10 @@ export default function StudyPuzzleSidebar() {
             style={styles.closeButton}
             onClick={() => setIsExpanded(false)}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+              e.currentTarget.style.background = 'var(--color-white-a20)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.background = 'var(--color-white-a10)';
             }}
           >
             ✕

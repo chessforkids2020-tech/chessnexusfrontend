@@ -12,10 +12,10 @@
   padding: 22px 22px 20px;
   border-radius: 16px;
   background:
-    radial-gradient(120% 140% at 0% 0%, rgba(6, 182, 212, 0.14) 0%, transparent 55%),
+    radial-gradient(120% 140% at 0% 0%, var(--color-accent-a15) 0%, transparent 55%),
     linear-gradient(160deg, rgba(23, 30, 40, 0.95), rgba(15, 18, 26, 0.95));
-  border: 1px solid rgba(6, 182, 212, 0.28);
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--color-accent-a30);
+  box-shadow: 0 12px 34px var(--color-black-a35);
 }
 
 /* Thin accent bar so the card reads as actionable, not informational. */
@@ -24,7 +24,7 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 3px;
-  background: linear-gradient(90deg, #06b6d4, #10b981);
+  background: linear-gradient(90deg, var(--color-accent), var(--color-success));
 }
 
 /* ── Header: icon beside the text, not stacked above it ─────────────── */
@@ -39,8 +39,8 @@
   font-size: 24px;
   line-height: 1;
   border-radius: 13px;
-  background: rgba(6, 182, 212, 0.14);
-  border: 1px solid rgba(6, 182, 212, 0.32);
+  background: var(--color-accent-a15);
+  border: 1px solid var(--color-accent-a30);
 }
 
 .acp-head-txt { min-width: 0; }
@@ -49,7 +49,7 @@
   margin: 0 0 4px;
   font-size: 16.5px;
   font-weight: 800;
-  color: #f1f5f9;
+  color: var(--color-text);
   letter-spacing: -0.01em;
 }
 
@@ -57,9 +57,9 @@
   margin: 0;
   font-size: 13px;
   line-height: 1.55;
-  color: #94a3b8;
+  color: var(--color-text-muted);
 }
-.acp-sub strong { color: #e2e8f0; font-weight: 700; }
+.acp-sub strong { color: var(--color-text); font-weight: 700; }
 
 /* ── Field ──────────────────────────────────────────────────────────── */
 .acp-label {
@@ -69,7 +69,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--color-text-faint);
 }
 
 .acp-row { display: flex; gap: 9px; flex-wrap: wrap; }
@@ -79,9 +79,9 @@
   min-width: 0;
   padding: 11px 13px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(0, 0, 0, 0.32);
-  color: #f1f5f9;
+  border: 1px solid var(--color-white-a13);
+  background: var(--color-black-a35);
+  color: var(--color-text);
   font-size: 14px;
   font-family: inherit;
   outline: none;
@@ -90,7 +90,7 @@
 .acp-input::placeholder { color: #52627a; }
 .acp-input:focus {
   border-color: rgba(6, 182, 212, 0.65);
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.13);
+  box-shadow: 0 0 0 3px var(--color-accent-a12);
 }
 
 .acp-btn {
@@ -98,7 +98,7 @@
   padding: 11px 20px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, #06b6d4, #10b981);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
   color: #04211d;
   font-size: 14px;
   font-weight: 800;
@@ -117,10 +117,10 @@
   gap: 8px;
   margin-top: 13px;
   padding-top: 13px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--color-white-a07);
   font-size: 11.5px;
   line-height: 1.5;
-  color: #64748b;
+  color: var(--color-text-faint);
 }
 
 /* ── Feedback ───────────────────────────────────────────────────────── */
@@ -133,21 +133,21 @@
   line-height: 1.5;
 }
 .acp-ok {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  color: #6ee7b7;
+  background: var(--color-success-a12);
+  border: 1px solid var(--color-success-a30);
+  color: var(--color-success);
 }
 .acp-err {
-  background: rgba(248, 113, 113, 0.12);
-  border: 1px solid rgba(248, 113, 113, 0.35);
-  color: #fca5a5;
+  background: var(--color-danger-a12);
+  border: 1px solid var(--color-danger-a30);
+  color: var(--color-danger);
 }
 
 /* ── Outgoing requests ──────────────────────────────────────────────── */
 .acp-pending {
   margin-top: 15px;
   padding-top: 13px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--color-white-a07);
 }
 .acp-pending-h {
   margin-bottom: 8px;
@@ -155,7 +155,7 @@
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--color-text-faint);
 }
 .acp-pending-row {
   display: flex;
@@ -164,7 +164,7 @@
   gap: 10px;
   padding: 7px 0;
   font-size: 13.5px;
-  color: #cbd5e1;
+  color: var(--color-text-muted);
 }
 .acp-chip {
   flex: none;
@@ -172,9 +172,9 @@
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
-  background: rgba(245, 158, 11, 0.14);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  color: #fcd34d;
+  background: var(--color-warning-a12);
+  border: 1px solid var(--color-warning-a30);
+  color: var(--color-warning);
 }
 
 @media (max-width: 480px) {

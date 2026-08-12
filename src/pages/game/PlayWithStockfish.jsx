@@ -143,12 +143,12 @@ export default function PlayWithStockfish() {
     },
     title: {
       fontSize: '2rem',
-      color: '#333',
+      color: 'var(--color-text)',
       marginBottom: '10px',
     },
     status: {
       fontSize: '1.2rem',
-      color: winner === 'human' ? '#4CAF50' : winner === 'stockfish' ? '#f44336' : '#666',
+      color: winner === 'human' ? 'var(--color-success)' : winner === 'stockfish' ? '#f44336' : 'var(--color-text-faint)',
       fontWeight: 'bold',
     },
     gameContainer: {
@@ -166,10 +166,10 @@ export default function PlayWithStockfish() {
       background: '#f5f5f5',
       padding: '20px',
       borderRadius: '10px',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+      boxShadow: '0 2px 10px var(--color-black-a20)',
     },
     button: {
-      background: '#4CAF50',
+      background: 'var(--color-success)',
       color: 'white',
       border: 'none',
       padding: '10px 20px',

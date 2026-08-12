@@ -80,23 +80,23 @@ export default function AllPlayers() {
 
 const C = {
   ink: '#0a0c10', glass: 'rgba(22, 26, 34, 0.66)',
-  border: 'rgba(255,255,255,0.08)', text: '#e7eaf0',
-  textMut: '#8b93a7', textFaint: '#5d6577', accent: '#a78bfa'
+  border: 'var(--color-white-a07)', text: '#e7eaf0',
+  textMut: '#8b93a7', textFaint: '#5d6577', accent: 'var(--color-accent-2)'
 };
 
 const st = {
   wrap: { minHeight: '100vh', padding: '24px 16px 64px', fontFamily: 'Poppins, sans-serif', color: C.text, background: `radial-gradient(1200px 600px at 50% -10%, #1a1f2b 0%, ${C.ink} 60%)` },
   inner: { maxWidth: 1000, margin: '0 auto' },
   back: { background: 'transparent', border: 'none', color: C.accent, cursor: 'pointer', fontSize: 14, padding: 0, marginBottom: 12 },
-  h1: { fontSize: 28, fontWeight: 700, margin: '0 0 4px', color: '#fff' },
+  h1: { fontSize: 28, fontWeight: 700, margin: '0 0 4px', color: 'var(--color-text)' },
   sub: { color: C.textMut, margin: '0 0 20px', fontSize: 14 },
 
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 16 },
-  playerCard: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: '18px 16px', cursor: 'pointer', textAlign: 'center', color: C.text, transition: 'transform 150ms ease, border-color 150ms ease', boxShadow: '0 8px 30px rgba(0,0,0,0.45)' },
-  playerPhoto: { width: 130, height: 130, borderRadius: 14, overflow: 'hidden', background: 'rgba(255,255,255,0.06)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' },
+  playerCard: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, padding: '18px 16px', cursor: 'pointer', textAlign: 'center', color: C.text, transition: 'transform 150ms ease, border-color 150ms ease', boxShadow: '0 8px 30px var(--color-black-a35)' },
+  playerPhoto: { width: 130, height: 130, borderRadius: 14, overflow: 'hidden', background: 'var(--color-white-a07)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' },
   playerPhotoImg: { width: '100%', height: '100%', objectFit: 'cover' },
   playerPhotoPlaceholder: { fontSize: 52, fontWeight: 700, color: C.textFaint },
-  playerCardName: { fontSize: 15, fontWeight: 700, color: '#fff', lineHeight: 1.25 },
+  playerCardName: { fontSize: 15, fontWeight: 700, color: 'var(--color-text)', lineHeight: 1.25 },
   title: { color: C.accent, fontWeight: 700 },
   playerCardCount: { fontSize: 12, color: C.textMut, marginTop: 3 },
   empty: { padding: 32, textAlign: 'center', color: C.textFaint }

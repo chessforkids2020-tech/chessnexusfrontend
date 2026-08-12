@@ -63,9 +63,9 @@ const StudyOverview = () => {
       title: 'STUDY',
       description: 'Master chess concepts — tactics, opening principles, endgame patterns, strategic ideas, piece activity, weak squares, pawn structures, and more.',
       icon: '♟️',
-      color: '#10b981',
-      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      accentColor: 'rgba(16, 185, 129, 0.15)',
+      color: 'var(--color-success)',
+      gradient: 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
+      accentColor: 'var(--color-success-a12)',
       stats: combinedStats
     }
   ];
@@ -73,7 +73,7 @@ const StudyOverview = () => {
   const styles = {
     page: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '20px',
       position: 'relative',
@@ -86,9 +86,9 @@ const StudyOverview = () => {
       right: 0,
       bottom: 0,
       background: `
-        radial-gradient(circle at 30% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 70% 60%, rgba(239, 68, 68, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)
+        radial-gradient(circle at 30% 20%, var(--color-accent-a15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 60%, var(--color-danger-a12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, var(--color-success-a12) 0%, transparent 50%)
       `,
       pointerEvents: 'none',
       zIndex: 0,
@@ -100,8 +100,8 @@ const StudyOverview = () => {
       right: 0,
       bottom: 0,
       backgroundImage: `
-        linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px)
+        linear-gradient(var(--color-accent-a06) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-accent-a06) 1px, transparent 1px)
       `,
       backgroundSize: '50px 50px',
       pointerEvents: 'none',
@@ -144,7 +144,7 @@ const StudyOverview = () => {
     },
     subtitle: {
       fontSize: '18px',
-      color: '#94a3b8',
+      color: 'var(--color-text-muted)',
       fontWeight: '400',
       maxWidth: '600px',
       margin: '0 auto 40px',
@@ -165,14 +165,14 @@ const StudyOverview = () => {
     statValue: {
       fontSize: '32px',
       fontWeight: '700',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
     },
     statLabel: {
       fontSize: '13px',
-      color: '#64748b',
+      color: 'var(--color-text-faint)',
       textTransform: 'uppercase',
       letterSpacing: '1px',
       fontWeight: '600',
@@ -185,8 +185,8 @@ const StudyOverview = () => {
     },
     studyCard: {
       position: 'relative',
-      background: 'rgba(15, 15, 15, 0.6)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '24px',
       backdropFilter: 'blur(20px)',
       overflow: 'hidden',
@@ -201,7 +201,7 @@ const StudyOverview = () => {
       borderRadius: '24px',
       padding: '1px',
       background: 'linear-gradient(135deg, transparent, currentColor, transparent)',
-      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+      WebkitMask: 'linear-gradient(var(--color-text) 0 0) content-box, linear-gradient(var(--color-text) 0 0)',
       WebkitMaskComposite: 'xor',
       maskComposite: 'exclude',
       opacity: 0,
@@ -219,7 +219,7 @@ const StudyOverview = () => {
       justifyContent: 'space-between',
       marginBottom: '28px',
       paddingBottom: '20px',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+      borderBottom: '1px solid var(--color-white-a04)',
     },
     cardIconSection: {
       display: 'flex',
@@ -238,16 +238,16 @@ const StudyOverview = () => {
       position: 'absolute',
       width: '100%',
       height: '100%',
-      background: 'rgba(0, 0, 0, 0.4)',
+      background: 'var(--color-black-a35)',
       clipPath: 'polygon(30% 0%, 70% 0%, 100% 50%, 70% 100%, 30% 100%, 0% 50%)',
-      border: '2px solid rgba(255, 255, 255, 0.1)',
+      border: '2px solid var(--color-white-a10)',
       transition: 'all 0.4s ease',
     },
     cardIcon: {
       fontSize: '36px',
       position: 'relative',
       zIndex: 1,
-      filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5))',
+      filter: 'drop-shadow(0 4px 12px var(--color-black-a50))',
     },
     cardTitleGroup: {
       flex: 1,
@@ -255,7 +255,7 @@ const StudyOverview = () => {
     cardTitle: {
       fontSize: '24px',
       fontWeight: '700',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       margin: '0 0 4px 0',
       letterSpacing: '-0.5px',
     },
@@ -267,12 +267,12 @@ const StudyOverview = () => {
       fontWeight: '700',
       textTransform: 'uppercase',
       letterSpacing: '0.5px',
-      background: 'rgba(255, 255, 255, 0.05)',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-white-a04)',
+      border: '1px solid var(--color-white-a10)',
     },
     cardDescription: {
       fontSize: '15px',
-      color: '#94a3b8',
+      color: 'var(--color-text-muted)',
       lineHeight: '1.7',
       marginBottom: '28px',
     },
@@ -283,8 +283,8 @@ const StudyOverview = () => {
       marginBottom: '28px',
     },
     statBox: {
-      background: 'rgba(0, 0, 0, 0.4)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '12px',
       padding: '16px 12px',
       textAlign: 'center',
@@ -293,12 +293,12 @@ const StudyOverview = () => {
     statBoxValue: {
       fontSize: '24px',
       fontWeight: '700',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '4px',
     },
     statBoxLabel: {
       fontSize: '11px',
-      color: '#64748b',
+      color: 'var(--color-text-faint)',
       textTransform: 'uppercase',
       letterSpacing: '0.5px',
       fontWeight: '600',
@@ -315,28 +315,28 @@ const StudyOverview = () => {
       alignItems: 'center',
       gap: '8px',
       padding: '20px 16px',
-      background: 'rgba(0, 0, 0, 0.4)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '16px',
       textDecoration: 'none',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       overflow: 'hidden',
     },
     actionIconWrapper: {
       fontSize: '32px',
-      filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
+      filter: 'drop-shadow(0 4px 8px var(--color-black-a35))',
       transition: 'transform 0.3s ease',
     },
     actionLabel: {
       fontSize: '15px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       textAlign: 'center',
     },
     actionSubtext: {
       fontSize: '11px',
-      color: '#64748b',
+      color: 'var(--color-text-faint)',
       textAlign: 'center',
       lineHeight: '1.4',
     },
@@ -346,7 +346,7 @@ const StudyOverview = () => {
       left: '-50%',
       width: '200%',
       height: '200%',
-      background: 'linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%)',
+      background: 'linear-gradient(45deg, transparent 30%, var(--color-white-a10) 50%, transparent 70%)',
       transform: 'translateX(-100%)',
       transition: 'transform 0.6s ease',
     },
@@ -390,35 +390,35 @@ const StudyOverview = () => {
           </motion.div>
 
           <motion.div
-            style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
-            whileHover={{ scale: 1.03, background: 'rgba(251,191,36,0.1)', boxShadow: '0 12px 40px rgba(251,191,36,0.12)' }}
+            style={{ background: 'rgba(251,191,36,0.06)', border: '1px solid var(--color-warning-a20)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            whileHover={{ scale: 1.03, background: 'var(--color-warning-a12)', boxShadow: '0 12px 40px var(--color-warning-a12)' }}
             onClick={() => navigate('/public-studies')}
           >
             <div style={{ fontSize: 32, marginBottom: 10 }}>📚</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: '#fbbf24', marginBottom: 6 }}>Public Studies</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-warning)', marginBottom: 6 }}>Public Studies</div>
             <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Browse community-created studies with chapters and positions. Create your own and share your knowledge.</div>
           </motion.div>
 
           {/* Books card — only shown when the admin has published at least one book. */}
           {hasBooks && (
             <motion.div
-              style={{ background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
-              whileHover={{ scale: 1.03, background: 'rgba(16,185,129,0.1)', boxShadow: '0 12px 40px rgba(16,185,129,0.12)' }}
+              style={{ background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a20)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+              whileHover={{ scale: 1.03, background: 'var(--color-success-a12)', boxShadow: '0 12px 40px var(--color-success-a12)' }}
               onClick={() => navigate('/study/books')}
             >
               <div style={{ fontSize: 32, marginBottom: 10 }}>📖</div>
-              <div style={{ fontSize: 17, fontWeight: 800, color: '#10b981', marginBottom: 6 }}>Books</div>
+              <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-success)', marginBottom: 6 }}>Books</div>
               <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Read chess books chapter by chapter. Chapter 1 is free for everyone; unlock the rest with your XP.</div>
             </motion.div>
           )}
 
           <motion.div
-            style={{ background: 'rgba(34,211,238,0.06)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
-            whileHover={{ scale: 1.03, background: 'rgba(34,211,238,0.1)', boxShadow: '0 12px 40px rgba(34,211,238,0.12)' }}
+            style={{ background: 'rgba(34,211,238,0.06)', border: '1px solid var(--color-accent-a15)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            whileHover={{ scale: 1.03, background: 'var(--color-accent-a15)', boxShadow: '0 12px 40px var(--color-accent-a15)' }}
             onClick={() => navigate('/study/endgames')}
           >
             <div style={{ fontSize: 32, marginBottom: 10 }}>🏁</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: '#22d3ee', marginBottom: 6 }}>Endgames</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-accent)', marginBottom: 6 }}>Endgames</div>
             <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Master endgames from real grandmaster games — rook, pawn, queen, minor-piece and more. Pick a type and play through how champions converted them.</div>
           </motion.div>
         </div>
@@ -457,8 +457,8 @@ const StudyOverview = () => {
                 if (glow) glow.style.opacity = '0';
                 corners.forEach(corner => corner.style.opacity = '0.3');
                 if (hex) {
-                  hex.style.background = 'rgba(0, 0, 0, 0.4)';
-                  hex.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                  hex.style.background = 'var(--color-black-a35)';
+                  hex.style.borderColor = 'var(--color-white-a10)';
                   hex.style.transform = 'scale(1) rotate(0deg)';
                 }
               }}
@@ -598,7 +598,7 @@ const StudyOverview = () => {
             whileHover={{
               y: -8,
               scale: 1.02,
-              boxShadow: '0 20px 60px rgba(245, 158, 11, 0.15), 0 0 0 1px rgba(245, 158, 11, 0.25)',
+              boxShadow: '0 20px 60px var(--color-warning-a12), 0 0 0 1px var(--color-warning-a20)',
             }}
             onMouseEnter={(e) => {
               const glow = e.currentTarget.querySelector('.border-glow');
@@ -607,8 +607,8 @@ const StudyOverview = () => {
               if (glow) glow.style.opacity = '0.6';
               corners.forEach(corner => corner.style.opacity = '0.5');
               if (hex) {
-                hex.style.background = 'rgba(245, 158, 11, 0.15)';
-                hex.style.borderColor = '#f59e0b';
+                hex.style.background = 'var(--color-warning-a12)';
+                hex.style.borderColor = 'var(--color-warning)';
                 hex.style.transform = 'scale(1.1) rotate(180deg)';
               }
             }}
@@ -619,23 +619,23 @@ const StudyOverview = () => {
               if (glow) glow.style.opacity = '0';
               corners.forEach(corner => corner.style.opacity = '0.3');
               if (hex) {
-                hex.style.background = 'rgba(0, 0, 0, 0.4)';
-                hex.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                hex.style.background = 'var(--color-black-a35)';
+                hex.style.borderColor = 'var(--color-white-a10)';
                 hex.style.transform = 'scale(1) rotate(0deg)';
               }
             }}
           >
             <div
               className="border-glow"
-              style={{ ...styles.cardBorderGlow, color: '#f59e0b' }}
+              style={{ ...styles.cardBorderGlow, color: 'var(--color-warning)' }}
             />
             <div
               className="corner-accent"
-              style={{ ...styles.cornerAccent, ...styles.cornerTopRight, color: '#f59e0b' }}
+              style={{ ...styles.cornerAccent, ...styles.cornerTopRight, color: 'var(--color-warning)' }}
             />
             <div
               className="corner-accent"
-              style={{ ...styles.cornerAccent, ...styles.cornerBottomLeft, color: '#f59e0b' }}
+              style={{ ...styles.cornerAccent, ...styles.cornerBottomLeft, color: 'var(--color-warning)' }}
             />
 
             <div style={styles.cardContent}>
@@ -649,8 +649,8 @@ const StudyOverview = () => {
                     <h2 style={styles.cardTitle}>MASTERS GAMES</h2>
                     <span style={{
                       ...styles.difficultyBadge,
-                      color: '#f59e0b',
-                      borderColor: 'rgba(245, 158, 11, 0.25)',
+                      color: 'var(--color-warning)',
+                      borderColor: 'var(--color-warning-a20)',
                     }}>
                       Grandmasters
                     </span>
@@ -667,27 +667,27 @@ const StudyOverview = () => {
                 <Link to="/master-games/browse" style={{ textDecoration: 'none' }}>
                   <motion.div
                     style={styles.statBox}
-                    whileHover={{ y: -4, background: 'rgba(245, 158, 11, 0.15)', borderColor: 'rgba(245, 158, 11, 0.25)' }}
+                    whileHover={{ y: -4, background: 'var(--color-warning-a12)', borderColor: 'var(--color-warning-a20)' }}
                   >
-                    <div style={{ ...styles.statBoxValue, color: '#f59e0b' }}>♟</div>
+                    <div style={{ ...styles.statBoxValue, color: 'var(--color-warning)' }}>♟</div>
                     <div style={styles.statBoxLabel}>Browse</div>
                   </motion.div>
                 </Link>
                 <Link to="/master-games/immortal" style={{ textDecoration: 'none' }}>
                   <motion.div
                     style={styles.statBox}
-                    whileHover={{ y: -4, background: 'rgba(245, 158, 11, 0.15)', borderColor: 'rgba(245, 158, 11, 0.25)' }}
+                    whileHover={{ y: -4, background: 'var(--color-warning-a12)', borderColor: 'var(--color-warning-a20)' }}
                   >
-                    <div style={{ ...styles.statBoxValue, color: '#f59e0b' }}>♛</div>
+                    <div style={{ ...styles.statBoxValue, color: 'var(--color-warning)' }}>♛</div>
                     <div style={styles.statBoxLabel}>Immortal</div>
                   </motion.div>
                 </Link>
                 <Link to="/master-games/players" style={{ textDecoration: 'none' }}>
                   <motion.div
                     style={styles.statBox}
-                    whileHover={{ y: -4, background: 'rgba(245, 158, 11, 0.15)', borderColor: 'rgba(245, 158, 11, 0.25)' }}
+                    whileHover={{ y: -4, background: 'var(--color-warning-a12)', borderColor: 'var(--color-warning-a20)' }}
                   >
-                    <div style={{ ...styles.statBoxValue, color: '#f59e0b' }}>♚</div>
+                    <div style={{ ...styles.statBoxValue, color: 'var(--color-warning)' }}>♚</div>
                     <div style={styles.statBoxLabel}>Players</div>
                   </motion.div>
                 </Link>
@@ -701,9 +701,9 @@ const StudyOverview = () => {
                   <motion.div
                     whileHover={{
                       y: -6,
-                      background: 'rgba(245, 158, 11, 0.15)',
-                      borderColor: 'rgba(245, 158, 11, 0.3)',
-                      boxShadow: '0 12px 32px rgba(245, 158, 11, 0.15)',
+                      background: 'var(--color-warning-a12)',
+                      borderColor: 'var(--color-warning-a30)',
+                      boxShadow: '0 12px 32px var(--color-warning-a12)',
                     }}
                     style={{
                       ...styles.actionButton,
@@ -725,7 +725,7 @@ const StudyOverview = () => {
                   >
                     <div className="shimmer" style={styles.shimmer}></div>
                     <div className="action-icon" style={styles.actionIconWrapper}>♚</div>
-                    <div style={{ ...styles.actionLabel, color: '#f59e0b' }}>
+                    <div style={{ ...styles.actionLabel, color: 'var(--color-warning)' }}>
                       Show Masters Games
                     </div>
                     <div style={styles.actionSubtext}>
@@ -746,27 +746,27 @@ const StudyOverview = () => {
             onClick={() => navigate('/my-studies')}
           >
             <div style={{ fontSize: 32, marginBottom: 10 }}>📚</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: '#34d399', marginBottom: 6 }}>My Studies</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-success)', marginBottom: 6 }}>My Studies</div>
             <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>View and manage your studies — organised by chapters. Play through your saved positions.</div>
           </motion.div>
 
           <motion.div
-            style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
-            whileHover={{ scale: 1.03, background: 'rgba(239,68,68,0.1)', boxShadow: '0 12px 40px rgba(239,68,68,0.12)' }}
+            style={{ background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a20)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            whileHover={{ scale: 1.03, background: 'var(--color-danger-a12)', boxShadow: '0 12px 40px var(--color-danger-a12)' }}
             onClick={() => navigate('/study/sparring/duel/create')}
           >
             <div style={{ fontSize: 32, marginBottom: 10 }}>⚔</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: '#f87171', marginBottom: 6 }}>Study Duel</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-danger)', marginBottom: 6 }}>Study Duel</div>
             <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Challenge a classmate 1v1 in real time. Create a room and share the code. Best accuracy wins.</div>
           </motion.div>
 
           <motion.div
-            style={{ background: 'rgba(239,68,68,0.04)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
-            whileHover={{ scale: 1.03, background: 'rgba(239,68,68,0.08)', boxShadow: '0 12px 40px rgba(239,68,68,0.1)' }}
+            style={{ background: 'rgba(239,68,68,0.04)', border: '1px solid var(--color-danger-a12)', borderRadius: 18, padding: '24px 22px', cursor: 'pointer' }}
+            whileHover={{ scale: 1.03, background: 'var(--color-danger-a12)', boxShadow: '0 12px 40px var(--color-danger-a12)' }}
             onClick={() => navigate('/study/sparring/join')}
           >
             <div style={{ fontSize: 32, marginBottom: 10 }}>🔗</div>
-            <div style={{ fontSize: 17, fontWeight: 800, color: '#fca5a5', marginBottom: 6 }}>Join Duel / Coaching</div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--color-danger)', marginBottom: 6 }}>Join Duel / Coaching</div>
             <div style={{ fontSize: 13, color: '#a3a3a3', lineHeight: 1.6 }}>Got a room code? Enter it here to join a duel or coaching session your partner shared with you.</div>
           </motion.div>
         </div>

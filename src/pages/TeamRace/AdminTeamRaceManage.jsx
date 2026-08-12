@@ -319,11 +319,11 @@ function AdminTeamRaceManage() {
   }, [serverOffsetMs]);
 
   const getTimerColor = () => {
-    if (!race) return '#28a745';
+    if (!race) return 'var(--color-success)';
     const percentage = (timeLeft / race.duration) * 100;
-    if (percentage > 50) return '#28a745';
-    if (percentage > 20) return '#ffc107';
-    return '#dc3545';
+    if (percentage > 50) return 'var(--color-success)';
+    if (percentage > 20) return 'var(--color-warning)';
+    return 'var(--color-danger)';
   };
 
   if (loading) {

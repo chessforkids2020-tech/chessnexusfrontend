@@ -212,13 +212,13 @@ const AdminStudyManagement = () => {
     title: {
       fontSize: '28px',
       fontWeight: 'bold',
-      color: '#1a5f1a',
+      color: 'var(--color-success)',
       marginTop: '10px',
     },
     backToDashboardButton: {
       padding: '8px 16px',
-      background: '#6c757d',
-      color: '#fff',
+      background: 'var(--color-text-faint)',
+      color: 'var(--color-text)',
       border: 'none',
       borderRadius: '4px',
       cursor: 'pointer',
@@ -227,8 +227,8 @@ const AdminStudyManagement = () => {
     },
     addButton: {
       padding: '10px 20px',
-      background: '#1a5f1a',
-      color: '#fff',
+      background: 'var(--color-success)',
+      color: 'var(--color-text)',
       border: 'none',
       borderRadius: '6px',
       cursor: 'pointer',
@@ -251,12 +251,12 @@ const AdminStudyManagement = () => {
       fontWeight: '700',
     },
     activeTab: {
-      background: '#1a5f1a',
-      color: '#fff',
-      boxShadow: '0 4px 6px rgba(0,0,0,0.08)'
+      background: 'var(--color-success)',
+      color: 'var(--color-text)',
+      boxShadow: '0 4px 6px var(--color-black-a20)'
     },
     inactiveTab: {
-      background: '#fff',
+      background: 'var(--color-text)',
       color: '#495057',
       border: '1px solid #e9efe9'
     },
@@ -267,20 +267,20 @@ const AdminStudyManagement = () => {
       marginBottom: '40px',
     },
     card: {
-      background: '#fff',
+      background: 'var(--color-text)',
       borderRadius: '12px',
       padding: '20px',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-      border: '1px solid #e9ecef',
+      boxShadow: '0 4px 12px var(--color-black-a20)',
+      border: '1px solid var(--color-surface-2)',
     },
     cardTitle: {
       fontSize: '20px',
       fontWeight: 'bold',
-      color: '#1a5f1a',
+      color: 'var(--color-success)',
       marginBottom: '10px',
     },
     cardDescription: {
-      color: '#666',
+      color: 'var(--color-text-faint)',
       marginBottom: '15px',
     },
     buttonGroup: {
@@ -296,19 +296,19 @@ const AdminStudyManagement = () => {
       fontSize: '14px',
     },
     editButton: {
-      background: '#007bff',
-      color: '#fff',
+      background: 'var(--color-accent-2)',
+      color: 'var(--color-text)',
     },
     deleteButton: {
-      background: '#dc3545',
-      color: '#fff',
+      background: 'var(--color-danger)',
+      color: 'var(--color-text)',
     },
     manageButton: {
-      background: '#28a745',
-      color: '#fff',
+      background: 'var(--color-success)',
+      color: 'var(--color-text)',
     },
     form: {
-      background: '#f8f9fa',
+      background: 'var(--color-surface)',
       padding: '20px',
       borderRadius: '8px',
       marginBottom: '20px',
@@ -341,25 +341,25 @@ const AdminStudyManagement = () => {
       gap: '10px',
     },
     cancelButton: {
-      background: '#6c757d',
-      color: '#fff',
+      background: 'var(--color-text-faint)',
+      color: 'var(--color-text)',
     },
     backButton: {
-      background: '#6c757d',
-      color: '#fff',
+      background: 'var(--color-text-faint)',
+      color: 'var(--color-text)',
       marginBottom: '20px',
     },
     table: {
       width: '100%',
       borderCollapse: 'collapse',
-      background: '#fff',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+      background: 'var(--color-text)',
+      boxShadow: '0 4px 12px var(--color-black-a20)',
       borderRadius: '8px',
       overflow: 'hidden',
     },
     tableHeader: {
-      background: '#1a5f1a',
-      color: '#fff',
+      background: 'var(--color-success)',
+      color: 'var(--color-text)',
       textAlign: 'left',
     },
     th: {
@@ -368,11 +368,11 @@ const AdminStudyManagement = () => {
     },
     td: {
       padding: '12px',
-      borderBottom: '1px solid #e9ecef',
+      borderBottom: '1px solid var(--color-surface-2)',
     },
     tableRow: {
       '&:hover': {
-        background: '#f8f9fa',
+        background: 'var(--color-surface)',
       }
     },
     modal: {
@@ -381,14 +381,14 @@ const AdminStudyManagement = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0,0,0,0.5)',
+      background: 'var(--color-black-a50)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       zIndex: 1000,
     },
     modalContent: {
-      background: '#fff',
+      background: 'var(--color-text)',
       borderRadius: '12px',
       padding: '30px',
       maxWidth: '800px',
@@ -400,8 +400,8 @@ const AdminStudyManagement = () => {
       position: 'absolute',
       top: '15px',
       right: '15px',
-      background: '#dc3545',
-      color: '#fff',
+      background: 'var(--color-danger)',
+      color: 'var(--color-text)',
       border: 'none',
       borderRadius: '50%',
       width: '30px',
@@ -410,8 +410,8 @@ const AdminStudyManagement = () => {
       fontSize: '18px',
     },
     viewButton: {
-      background: '#17a2b8',
-      color: '#fff',
+      background: 'var(--color-accent)',
+      color: 'var(--color-text)',
     },
   };
 
@@ -562,7 +562,7 @@ const AdminStudyManagement = () => {
               <div key={study._id} style={styles.card}>
                 <h3 style={styles.cardTitle}>{study.title}</h3>
                 <p style={styles.cardDescription}>{study.description}</p>
-                <p style={{ fontSize: '13px', color: '#666', marginBottom: '8px' }}>
+                <p style={{ fontSize: '13px', color: 'var(--color-text-faint)', marginBottom: '8px' }}>
                   Type: {study.studyType === 'positional' ? 'Positional' : 'Basic'}
                 </p>
                 <p>Chapters: {study.chapters?.length || 0}</p>
@@ -719,9 +719,9 @@ const AdminStudyManagement = () => {
               padding: '20px', 
               borderRadius: '8px', 
               marginBottom: '20px',
-              border: '2px solid #1a5f1a'
+              border: '2px solid var(--color-success)'
             }}>
-              <h3 style={{ margin: '0 0 10px 0', color: '#1a5f1a' }}>
+              <h3 style={{ margin: '0 0 10px 0', color: 'var(--color-success)' }}>
                 📚 {chapterInfo.study?.title || 'Unknown Study'}
               </h3>
               <p style={{ margin: '0 0 5px 0', fontSize: '14px' }}>
@@ -844,7 +844,7 @@ const AdminStudyManagement = () => {
             </form>
           )}
 
-          <div style={{ background: '#fff', borderRadius: '8px', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--color-text)', borderRadius: '8px', overflow: 'hidden' }}>
             <table style={styles.table}>
               <thead>
                 <tr style={styles.tableHeader}>
@@ -862,13 +862,13 @@ const AdminStudyManagement = () => {
                     <td style={styles.td}>
                       <strong>{puzzle.name || 'Untitled Puzzle'}</strong>
                       {puzzle.puzzleDescription && (
-                        <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', marginTop: '5px' }}>
                           {puzzle.puzzleDescription.substring(0, 60)}...
                         </div>
                       )}
                     </td>
                     <td style={styles.td}>
-                      <code style={{ fontSize: '11px', color: '#666' }}>
+                      <code style={{ fontSize: '11px', color: 'var(--color-text-faint)' }}>
                         {puzzle.puzzleFen.substring(0, 30)}...
                       </code>
                     </td>
@@ -909,7 +909,7 @@ const AdminStudyManagement = () => {
               </tbody>
             </table>
             {puzzles.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-faint)' }}>
                 No puzzles yet. Click "Add Puzzle" to create one.
               </div>
             )}
@@ -926,9 +926,9 @@ const AdminStudyManagement = () => {
               <h2 style={styles.cardTitle}>{viewingPuzzle.name || 'Untitled Puzzle'}</h2>
               
               <div style={{ marginBottom: '20px' }}>
-                <strong style={{ color: '#1a5f1a' }}>FEN Position:</strong>
+                <strong style={{ color: 'var(--color-success)' }}>FEN Position:</strong>
                 <div style={{ 
-                  background: '#f8f9fa', 
+                  background: 'var(--color-surface)', 
                   padding: '10px', 
                   borderRadius: '4px', 
                   marginTop: '8px',
@@ -942,7 +942,7 @@ const AdminStudyManagement = () => {
 
               {viewingPuzzle.puzzleDescription && (
                 <div style={{ marginBottom: '20px' }}>
-                  <strong style={{ color: '#1a5f1a' }}>Description:</strong>
+                  <strong style={{ color: 'var(--color-success)' }}>Description:</strong>
                   <div style={{ 
                     background: '#f0f7f0', 
                     padding: '15px', 
@@ -956,14 +956,14 @@ const AdminStudyManagement = () => {
               )}
 
               <div style={{ marginBottom: '20px' }}>
-                <strong style={{ color: '#1a5f1a' }}>Solutions ({viewingPuzzle.puzzleSolutions?.length || 0}):</strong>
+                <strong style={{ color: 'var(--color-success)' }}>Solutions ({viewingPuzzle.puzzleSolutions?.length || 0}):</strong>
                 <div style={{ marginTop: '10px' }}>
                   {viewingPuzzle.puzzleSolutions?.map((sol, idx) => (
                     <div 
                       key={idx} 
                       style={{ 
-                        background: '#fff', 
-                        border: '1px solid #e9ecef',
+                        background: 'var(--color-text)', 
+                        border: '1px solid var(--color-surface-2)',
                         borderRadius: '8px',
                         padding: '15px',
                         marginBottom: '15px'
@@ -974,11 +974,11 @@ const AdminStudyManagement = () => {
                         alignItems: 'center', 
                         marginBottom: '10px',
                         paddingBottom: '10px',
-                        borderBottom: '2px solid #1a5f1a'
+                        borderBottom: '2px solid var(--color-success)'
                       }}>
                         <span style={{ 
-                          background: '#1a5f1a', 
-                          color: '#fff', 
+                          background: 'var(--color-success)', 
+                          color: 'var(--color-text)', 
                           padding: '4px 12px', 
                           borderRadius: '4px',
                           fontWeight: 'bold',
@@ -988,9 +988,9 @@ const AdminStudyManagement = () => {
                         </span>
                       </div>
                       <div style={{ marginBottom: '10px' }}>
-                        <strong style={{ fontSize: '14px', color: '#666' }}>PGN:</strong>
+                        <strong style={{ fontSize: '14px', color: 'var(--color-text-faint)' }}>PGN:</strong>
                         <div style={{ 
-                          background: '#f8f9fa', 
+                          background: 'var(--color-surface)', 
                           padding: '10px', 
                           borderRadius: '4px', 
                           marginTop: '5px',
@@ -1002,12 +1002,12 @@ const AdminStudyManagement = () => {
                       </div>
                       {sol.description && (
                         <div>
-                          <strong style={{ fontSize: '14px', color: '#666' }}>Description:</strong>
+                          <strong style={{ fontSize: '14px', color: 'var(--color-text-faint)' }}>Description:</strong>
                           <div style={{ 
                             marginTop: '5px',
                             fontSize: '14px',
                             lineHeight: '1.6',
-                            color: '#333'
+                            color: 'var(--color-text)'
                           }}>
                             {sol.description}
                           </div>

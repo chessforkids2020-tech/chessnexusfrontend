@@ -56,20 +56,20 @@ function getNextOccurrence(item) {
 
 // ── Config ───────────────────────────────────────────────────
 const CONTEST_CONFIG = {
-  arena_race:            { icon: '🧩', name: 'Arena Race',            desc: 'Fast-paced puzzle race',        color: '#8b5cf6' },
-  team_race:             { icon: '👥', name: 'Team Race',             desc: 'Race together with your team',  color: '#06b6d4' },
-  monthly_focus:         { icon: '🎯', name: 'Monthly Focus',         desc: 'Daily focus tasks all month',   color: '#f59e0b' },
+  arena_race:            { icon: '🧩', name: 'Arena Race',            desc: 'Fast-paced puzzle race',        color: 'var(--color-accent-2)' },
+  team_race:             { icon: '👥', name: 'Team Race',             desc: 'Race together with your team',  color: 'var(--color-accent)' },
+  monthly_focus:         { icon: '🎯', name: 'Monthly Focus',         desc: 'Daily focus tasks all month',   color: 'var(--color-warning)' },
   arena_tournament:      { icon: '🏆', name: 'Arena Tournament',      desc: 'Full competitive tournament',   color: '#ec4899' },
-  '3d_arena_tournament': { icon: '🎮', name: '3D Arena Tournament',   desc: 'Live chess in 3D — feel real!', color: '#a855f7', link: 'http://localhost:5174' },
+  '3d_arena_tournament': { icon: '🎮', name: '3D Arena Tournament',   desc: 'Live chess in 3D — feel real!', color: 'var(--color-accent-2)', link: 'http://localhost:5174' },
 };
 
 // Arena Tournament formats — each shown as its own row under the tournament card.
 // activityType (DB) → display config. Order defines render order.
 const TOURNAMENT_FORMATS = [
   { type: 'arena_tournament',      icon: '🏆', name: 'Standard',    desc: 'Classic competitive tournament', color: '#ec4899' },
-  { type: 'team_tournament',       icon: '🥇', name: 'Team Battle', desc: 'Teams clash for the crown',      color: '#f59e0b' },
-  { type: 'chess960',              icon: '🔀', name: 'Chess960',    desc: 'Randomized starting position',   color: '#06b6d4' },
-  { type: 'bullet_blitz_marathon', icon: '⚡', name: 'Marathon',    desc: 'Endurance bullet & blitz',       color: '#a855f7' },
+  { type: 'team_tournament',       icon: '🥇', name: 'Team Battle', desc: 'Teams clash for the crown',      color: 'var(--color-warning)' },
+  { type: 'chess960',              icon: '🔀', name: 'Chess960',    desc: 'Randomized starting position',   color: 'var(--color-accent)' },
+  { type: 'bullet_blitz_marathon', icon: '⚡', name: 'Marathon',    desc: 'Endurance bullet & blitz',       color: 'var(--color-accent-2)' },
 ];
 
 const CONTEST_WANTED = ['arena_race', 'team_race', 'monthly_focus', 'arena_tournament', '3d_arena_tournament'];
@@ -259,7 +259,7 @@ function RatingTrend({ delta }) {
   const isUp   = delta > 0;
   const isDown = delta < 0;
   const abs    = Math.abs(delta);
-  const color  = isUp ? '#10b981' : isDown ? '#ef4444' : '#6b7280';
+  const color  = isUp ? 'var(--color-success)' : isDown ? 'var(--color-danger)' : 'var(--color-text-faint)';
   const barH   = Math.min(Math.round(abs / 2), 14);
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -370,7 +370,7 @@ function HeroSlider({ user, onStartCoach, onBookDemo }) {
         <div className="hp-slide">
           <div className="hp-hero-grid">
             <div className="hp-hero-copy">
-              <span className="hp-hero-kicker"><span className="hp-hero-dot" style={{ background: '#ef4444', boxShadow: '0 0 10px 1px rgba(239,68,68,0.85)' }} />Live Classroom · built in</span>
+              <span className="hp-hero-kicker"><span className="hp-hero-dot" style={{ background: 'var(--color-danger)', boxShadow: '0 0 10px 1px rgba(239,68,68,0.85)' }} />Live Classroom · built in</span>
               <h1 className="hp-hero-title">Teach live, <span className="hp-hero-accent">right inside</span> <span className="hp-hero-brandsm">Chess&nbsp;Nexus.</span></h1>
               <p className="hp-hero-sub">
                 Teach with <b>HD video, screen-share and one shared board</b> — give a student control, and every attendance mark is written for you as they join. <b className="hp-hero-lt">No Zoom, no extra apps.</b>
@@ -389,7 +389,7 @@ function HeroSlider({ user, onStartCoach, onBookDemo }) {
               <div className="hp-hero-frame">
                 <img src="/features/homepageslide.png" alt="ChessNexus live classroom — coach teaching students with video and a shared board" loading="lazy" />
               </div>
-              <div className="hp-hero-badge"><i style={{ background: '#ef4444', boxShadow: '0 0 8px 1px rgba(239,68,68,0.7)' }} />Live class in session</div>
+              <div className="hp-hero-badge"><i style={{ background: 'var(--color-danger)', boxShadow: '0 0 8px 1px rgba(239,68,68,0.7)' }} />Live class in session</div>
             </div>
           </div>
           <div className="hp-hero-pilllabel">Everything in one live room</div>

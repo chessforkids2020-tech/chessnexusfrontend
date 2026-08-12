@@ -29,7 +29,7 @@ export default function ChooseTopicDemo() {
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '20px',
       position: 'relative',
@@ -41,7 +41,7 @@ export default function ChooseTopicDemo() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -55,17 +55,17 @@ export default function ChooseTopicDemo() {
       textAlign: 'center',
       marginBottom: '40px',
       padding: '32px 28px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     title: {
       fontSize: '42px',
       fontWeight: '700',
       margin: '0 0 12px 0',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -73,7 +73,7 @@ export default function ChooseTopicDemo() {
     subtitle: {
       fontSize: '16px',
       margin: '0',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '400',
     },
     topicsGrid: {
@@ -83,13 +83,13 @@ export default function ChooseTopicDemo() {
       padding: '10px',
     },
     topicCard: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '28px',
       textAlign: 'center',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       cursor: 'pointer',
       position: 'relative',
@@ -98,18 +98,18 @@ export default function ChooseTopicDemo() {
     topicIcon: {
       fontSize: '52px',
       marginBottom: '16px',
-      filter: 'drop-shadow(0 4px 12px rgba(6, 182, 212, 0.3))',
+      filter: 'drop-shadow(0 4px 12px var(--color-accent-a30))',
       transition: 'transform 0.3s ease',
     },
     topicTitle: {
       fontSize: '22px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       margin: '0 0 12px 0',
     },
     topicDescription: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       lineHeight: '1.6',
       margin: '0 0 20px 0',
     },
@@ -119,7 +119,7 @@ export default function ChooseTopicDemo() {
       alignItems: 'center',
       marginTop: '16px',
       paddingTop: '16px',
-      borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+      borderTop: '1px solid var(--color-white-a04)',
     },
     difficultyBadge: {
       padding: '6px 14px',
@@ -130,33 +130,33 @@ export default function ChooseTopicDemo() {
       letterSpacing: '0.5px',
     },
     beginnerBadge: {
-      background: 'rgba(16, 185, 129, 0.15)',
-      color: '#10b981',
-      border: '1px solid rgba(16, 185, 129, 0.2)',
+      background: 'var(--color-success-a12)',
+      color: 'var(--color-success)',
+      border: '1px solid var(--color-success-a20)',
     },
     intermediateBadge: {
-      background: 'rgba(245, 158, 11, 0.15)',
-      color: '#f59e0b',
-      border: '1px solid rgba(245, 158, 11, 0.2)',
+      background: 'var(--color-warning-a12)',
+      color: 'var(--color-warning)',
+      border: '1px solid var(--color-warning-a20)',
     },
     advancedBadge: {
-      background: 'rgba(239, 68, 68, 0.15)',
-      color: '#ef4444',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      background: 'var(--color-danger-a12)',
+      color: 'var(--color-danger)',
+      border: '1px solid var(--color-danger-a20)',
     },
     allLevelsBadge: {
-      background: 'rgba(6, 182, 212, 0.15)',
-      color: '#06b6d4',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      background: 'var(--color-accent-a15)',
+      color: 'var(--color-accent)',
+      border: '1px solid var(--color-accent-a20)',
     },
     puzzleCount: {
       fontSize: '13px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '500',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       padding: '6px 12px',
       borderRadius: '8px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     modalOverlay: {
       position: 'fixed',
@@ -164,7 +164,7 @@ export default function ChooseTopicDemo() {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      backgroundColor: 'var(--color-black-a65)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -172,25 +172,25 @@ export default function ChooseTopicDemo() {
       backdropFilter: 'blur(12px)',
     },
     modal: {
-      background: 'rgba(23, 23, 23, 0.95)',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a10)',
       borderRadius: '24px',
       padding: '36px',
       maxWidth: '520px',
       width: '90%',
-      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.8)',
+      boxShadow: '0 20px 60px var(--color-black-a65)',
       textAlign: 'center',
       backdropFilter: 'blur(20px)',
     },
     modalTitle: {
       fontSize: '28px',
       fontWeight: '700',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       margin: '0 0 8px 0',
     },
     modalSubtitle: {
       fontSize: '15px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       margin: '0 0 28px 0',
     },
     timeOptions: {
@@ -201,17 +201,17 @@ export default function ChooseTopicDemo() {
     },
     timeOption: {
       padding: '18px 12px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '12px',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
     },
     timeOptionSelected: {
-      border: '1px solid rgba(6, 182, 212, 0.4)',
-      background: 'rgba(6, 182, 212, 0.15)',
+      border: '1px solid var(--color-accent-a40)',
+      background: 'var(--color-accent-a15)',
       transform: 'scale(1.05)',
-      boxShadow: '0 4px 16px rgba(6, 182, 212, 0.3)',
+      boxShadow: '0 4px 16px var(--color-accent-a30)',
     },
     timeValue: {
       fontSize: '26px',
@@ -219,20 +219,20 @@ export default function ChooseTopicDemo() {
       marginBottom: '4px',
     },
     timeValueSelected: {
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
     },
     timeValueUnselected: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     timeLabel: {
       fontSize: '12px',
       fontWeight: '500',
     },
     timeLabelSelected: {
-      color: '#67e8f9',
+      color: 'var(--color-accent)',
     },
     timeLabelUnselected: {
-      color: '#6b7280',
+      color: 'var(--color-text-faint)',
     },
     modalButtons: {
       display: 'flex',
@@ -240,8 +240,8 @@ export default function ChooseTopicDemo() {
       justifyContent: 'center',
     },
     startButton: {
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '14px 32px',
       borderRadius: '12px',
@@ -249,12 +249,12 @@ export default function ChooseTopicDemo() {
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
+      boxShadow: '0 4px 16px var(--color-accent-a40)',
     },
     cancelButton: {
-      background: 'rgba(0, 0, 0, 0.4)',
-      color: '#9ca3af',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-black-a35)',
+      color: 'var(--color-text-muted)',
+      border: '1px solid var(--color-white-a10)',
       padding: '14px 32px',
       borderRadius: '12px',
       fontSize: '15px',
@@ -265,24 +265,24 @@ export default function ChooseTopicDemo() {
     loadingContainer: {
       textAlign: 'center',
       padding: '60px 20px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     loadingIcon: {
       fontSize: '56px',
       marginBottom: '20px',
     },
     loadingTitle: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '12px',
       fontSize: '24px',
       fontWeight: '600',
     },
     loadingText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '15px',
     },
   };
@@ -367,8 +367,8 @@ export default function ChooseTopicDemo() {
                 whileHover={{ 
                   y: -8,
                   scale: 1.02,
-                  boxShadow: '0 12px 40px rgba(6, 182, 212, 0.3)',
-                  border: '1px solid rgba(6, 182, 212, 0.2)'
+                  boxShadow: '0 12px 40px var(--color-accent-a30)',
+                  border: '1px solid var(--color-accent-a20)'
                 }}
                 transition={{ duration: 0.3 }}
               >
@@ -424,7 +424,7 @@ export default function ChooseTopicDemo() {
                       ...(isSelected ? styles.timeOptionSelected : {})
                     }}
                     whileHover={!isSelected ? { 
-                      borderColor: 'rgba(6, 182, 212, 0.3)',
+                      borderColor: 'var(--color-accent-a30)',
                       scale: 1.05 
                     } : {}}
                     transition={{ duration: 0.2 }}
@@ -451,7 +451,7 @@ export default function ChooseTopicDemo() {
                 style={styles.cancelButton} 
                 onClick={handleCloseModal}
                 whileHover={{ 
-                  borderColor: 'rgba(255, 255, 255, 0.2)',
+                  borderColor: 'var(--color-white-a20)',
                   y: -2 
                 }}
                 transition={{ duration: 0.2 }}
@@ -463,7 +463,7 @@ export default function ChooseTopicDemo() {
                 onClick={handleStartRace}
                 whileHover={{ 
                   y: -2,
-                  boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+                  boxShadow: '0 6px 24px var(--color-accent-a40)'
                 }}
                 transition={{ duration: 0.2 }}
               >

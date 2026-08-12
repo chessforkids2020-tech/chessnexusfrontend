@@ -18,10 +18,10 @@ import SolutionText from '../components/SolutionText';
 const metaInputStyle = {
   width: '100%',
   boxSizing: 'border-box',
-  background: 'rgba(0,0,0,0.35)',
-  border: '1px solid rgba(255,255,255,0.15)',
+  background: 'var(--color-black-a35)',
+  border: '1px solid var(--color-white-a13)',
   borderRadius: 8,
-  color: '#e2e8f0',
+  color: 'var(--color-text)',
   padding: '10px 12px',
   fontSize: 13,
   lineHeight: 1.6,
@@ -37,9 +37,9 @@ const metaBtnStyle = (primary, busy) => ({
   fontWeight: 600,
   cursor: busy ? 'default' : 'pointer',
   opacity: busy ? 0.6 : 1,
-  border: primary ? 'none' : '1px solid rgba(255,255,255,0.18)',
-  background: primary ? 'linear-gradient(135deg,#059669,#047857)' : 'rgba(255,255,255,0.06)',
-  color: primary ? '#fff' : '#cbd5e1',
+  border: primary ? 'none' : '1px solid var(--color-white-a13)',
+  background: primary ? 'linear-gradient(135deg,var(--color-success),#047857)' : 'var(--color-white-a07)',
+  color: primary ? 'var(--color-text)' : 'var(--color-text-muted)',
 });
 
 const UserStudyPuzzleView = () => {
@@ -124,8 +124,8 @@ const UserStudyPuzzleView = () => {
   const anFenRef = useRef('');   // FEN the current search is running on (for SAN + POV)
 
   const typeColors = {
-    basics:     { color: '#10b981', gradient: 'linear-gradient(135deg,#10b981,#06b6d4)', accentColor: 'rgba(16,185,129,0.15)', bgColor: 'rgba(16,185,129,0.2)' },
-    positional: { color: '#6366f1', gradient: 'linear-gradient(135deg,#6366f1,#8b5cf6)', accentColor: 'rgba(99,102,241,0.15)',  bgColor: 'rgba(99,102,241,0.2)'  },
+    basics:     { color: 'var(--color-success)', gradient: 'linear-gradient(135deg,var(--color-success),var(--color-accent))', accentColor: 'var(--color-success-a12)', bgColor: 'var(--color-success-a20)' },
+    positional: { color: '#6366f1', gradient: 'linear-gradient(135deg,#6366f1,var(--color-accent-2))', accentColor: 'rgba(99,102,241,0.15)',  bgColor: 'rgba(99,102,241,0.2)'  },
   };
 
   const currentColor = typeColors[studyType] || typeColors.basics;
@@ -528,42 +528,42 @@ const UserStudyPuzzleView = () => {
 
   /* ── styles (identical structure to StudyPuzzleView) ── */
   const st = {
-    page: { fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", background: '#0a0a0a', minHeight: '100vh', padding: '8px 20px 20px 20px', position: 'relative', overflow: 'hidden' },
+    page: { fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", background: 'var(--color-bg)', minHeight: '100vh', padding: '8px 20px 20px 20px', position: 'relative', overflow: 'hidden' },
     bg: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: `radial-gradient(circle at 30% 20%, ${currentColor.bgColor} 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(99,102,241,0.08) 0%, transparent 50%)`, pointerEvents: 'none', zIndex: 0 },
     grid: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: `linear-gradient(${currentColor.accentColor} 1px, transparent 1px), linear-gradient(90deg, ${currentColor.accentColor} 1px, transparent 1px)`, backgroundSize: '50px 50px', pointerEvents: 'none', zIndex: 0, opacity: 0.5 },
     container: { maxWidth: '1600px', margin: '0 auto', position: 'relative', zIndex: 1 },
     header: { textAlign: 'center', marginBottom: 10, position: 'relative' },
-    backButton: { position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'rgba(15,15,15,0.6)', backdropFilter: 'blur(20px)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, cursor: 'pointer', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, zIndex: 2 },
-    toggleButton: { position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'rgba(15,15,15,0.6)', backdropFilter: 'blur(20px)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, cursor: 'pointer', fontSize: 14, fontWeight: 600, display: isMobile ? 'flex' : 'none', alignItems: 'center', gap: 8, zIndex: 2 },
+    backButton: { position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 16, cursor: 'pointer', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, zIndex: 2 },
+    toggleButton: { position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 16, cursor: 'pointer', fontSize: 14, fontWeight: 600, display: isMobile ? 'flex' : 'none', alignItems: 'center', gap: 8, zIndex: 2 },
     mainContent: { display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 0, minHeight: 600 },
-    leftPanel: { flex: isMobile ? 'none' : '0 0 300px', display: isMobile && !showPuzzleList ? 'none' : 'flex', flexDirection: 'column', background: 'rgba(15,15,15,0.6)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, backdropFilter: 'blur(20px)', padding: 16, overflowY: 'auto', maxHeight: isMobile ? 400 : 700, position: isMobile ? 'absolute' : 'static', top: isMobile ? 100 : 'auto', left: isMobile ? 20 : 'auto', right: isMobile ? 20 : 'auto', zIndex: isMobile ? 1000 : 'auto', boxShadow: isMobile ? '0 20px 60px rgba(0,0,0,0.5)' : 'none' },
+    leftPanel: { flex: isMobile ? 'none' : '0 0 300px', display: isMobile && !showPuzzleList ? 'none' : 'flex', flexDirection: 'column', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 20, backdropFilter: 'blur(20px)', padding: 16, overflowY: 'auto', maxHeight: isMobile ? 400 : 700, position: isMobile ? 'absolute' : 'static', top: isMobile ? 100 : 'auto', left: isMobile ? 20 : 'auto', right: isMobile ? 20 : 'auto', zIndex: isMobile ? 1000 : 'auto', boxShadow: isMobile ? '0 20px 60px var(--color-black-a50)' : 'none' },
     tableHeaderRow: { borderBottom: `2px solid ${currentColor.color}40` },
     tableHeader: { padding: '5px 8px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: currentColor.color, letterSpacing: '0.5px', textTransform: 'uppercase' },
-    tableRow: { borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer', transition: 'all 0.3s' },
+    tableRow: { borderBottom: '1px solid var(--color-white-a04)', cursor: 'pointer', transition: 'all 0.3s' },
     tableRowActive: { background: currentColor.accentColor, boxShadow: `0 4px 12px ${currentColor.accentColor}` },
-    tableCell: { padding: '5px 8px', textAlign: 'center', fontSize: 13, fontWeight: 600, color: '#9ca3af' },
-    tableCellName: { padding: '5px 8px', textAlign: 'left', fontSize: 13, fontWeight: 600, color: '#fff' },
+    tableCell: { padding: '5px 8px', textAlign: 'center', fontSize: 13, fontWeight: 600, color: 'var(--color-text-muted)' },
+    tableCellName: { padding: '5px 8px', textAlign: 'left', fontSize: 13, fontWeight: 600, color: 'var(--color-text)' },
     centerPanel: { flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: isMobile ? 0 : '0 0 0 8px', order: isMobile ? -1 : 0 },
-    chessboardContainer: { marginBottom: 24, background: 'rgba(15,15,15,0.6)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, backdropFilter: 'blur(20px)', padding: '0px 10px 10px 10px' },
+    chessboardContainer: { marginBottom: 24, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 20, backdropFilter: 'blur(20px)', padding: '0px 10px 10px 10px' },
     controlButtons: { display: 'flex', gap: 8, marginTop: 20, flexWrap: 'wrap', justifyContent: 'center' },
-    btn: { padding: '12px 24px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, cursor: 'pointer', fontSize: 15, fontWeight: 600, transition: 'all 0.3s', background: 'rgba(15,15,15,0.6)', backdropFilter: 'blur(10px)', color: '#fff', display: 'flex', alignItems: 'center', gap: 8 },
+    btn: { padding: '12px 24px', border: '1px solid var(--color-white-a07)', borderRadius: 14, cursor: 'pointer', fontSize: 15, fontWeight: 600, transition: 'all 0.3s', background: 'var(--color-surface)', backdropFilter: 'blur(10px)', color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 },
     navBtn: { borderColor: currentColor.color + '40', color: currentColor.color },
-    navBtnDisabled: { background: 'rgba(23,23,23,0.8)', borderColor: 'rgba(255,255,255,0.05)', color: '#64748b', cursor: 'not-allowed' },
-    resetBtn: { borderColor: '#9ca3af', color: '#9ca3af' },
-    solBtn: { background: currentColor.accentColor, borderColor: currentColor.color + '60', color: '#fff' },
-    rightPanel: { flex: isMobile ? 'none' : '0 0 350px', width: isMobile ? '100%' : 'auto', background: 'rgba(15,15,15,0.6)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, backdropFilter: 'blur(20px)', padding: 24, overflowY: 'auto', maxHeight: isMobile ? 'none' : 700, order: isMobile ? 1 : 0 },
-    turnIndicator: { display: 'flex', alignItems: 'center', gap: 12, padding: 16, background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, marginBottom: 20 },
-    movesContainer: { background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 20, minHeight: 180 },
+    navBtnDisabled: { background: 'rgba(23,23,23,0.8)', borderColor: 'var(--color-white-a04)', color: 'var(--color-text-faint)', cursor: 'not-allowed' },
+    resetBtn: { borderColor: 'var(--color-text-muted)', color: 'var(--color-text-muted)' },
+    solBtn: { background: currentColor.accentColor, borderColor: currentColor.color + '60', color: 'var(--color-text)' },
+    rightPanel: { flex: isMobile ? 'none' : '0 0 350px', width: isMobile ? '100%' : 'auto', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 20, backdropFilter: 'blur(20px)', padding: 24, overflowY: 'auto', maxHeight: isMobile ? 'none' : 700, order: isMobile ? 1 : 0 },
+    turnIndicator: { display: 'flex', alignItems: 'center', gap: 12, padding: 16, background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 14, marginBottom: 20 },
+    movesContainer: { background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 14, padding: 20, marginBottom: 20, minHeight: 180 },
     sectionTitle: { fontSize: 16, fontWeight: 700, color: currentColor.color, marginBottom: 16, letterSpacing: '-0.5px' },
-    movesList: { fontFamily: 'monospace', fontSize: 15, lineHeight: '1.8', color: '#fff' },
+    movesList: { fontFamily: 'monospace', fontSize: 15, lineHeight: '1.8', color: 'var(--color-text)' },
     moveRow: { marginBottom: 8, display: 'flex', gap: 12, alignItems: 'center' },
-    solutionContainer: { background: 'rgba(0,0,0,0.4)', border: `1px solid ${currentColor.color}40`, borderRadius: 14, padding: 20, marginBottom: 20 },
+    solutionContainer: { background: 'var(--color-black-a35)', border: `1px solid ${currentColor.color}40`, borderRadius: 14, padding: 20, marginBottom: 20 },
     solutionText: { fontFamily: 'monospace', fontSize: 15, lineHeight: '1.8', color: currentColor.color, fontWeight: 600, whiteSpace: 'pre-wrap', wordBreak: 'break-word' },
-    descContainer: { background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: 20 },
-    descText: { fontSize: 15, lineHeight: 1.6, color: '#94a3b8' },
-    mobileOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', zIndex: 999, display: isMobile && showPuzzleList ? 'block' : 'none' },
-    loading: { textAlign: 'center', color: '#94a3b8', fontSize: 18, padding: 60, fontStyle: 'italic', background: 'rgba(15,15,15,0.6)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, backdropFilter: 'blur(20px)' },
-    error: { textAlign: 'center', color: '#ef4444', fontSize: 18, padding: 60, fontWeight: 500, background: 'rgba(15,15,15,0.6)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 20, backdropFilter: 'blur(20px)' },
+    descContainer: { background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 14, padding: 20 },
+    descText: { fontSize: 15, lineHeight: 1.6, color: 'var(--color-text-muted)' },
+    mobileOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--color-black-a65)', zIndex: 999, display: isMobile && showPuzzleList ? 'block' : 'none' },
+    loading: { textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 18, padding: 60, fontStyle: 'italic', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 20, backdropFilter: 'blur(20px)' },
+    error: { textAlign: 'center', color: 'var(--color-danger)', fontSize: 18, padding: 60, fontWeight: 500, background: 'var(--color-surface)', border: '1px solid var(--color-danger-a20)', borderRadius: 20, backdropFilter: 'blur(20px)' },
   };
 
   if (loading) return (
@@ -579,12 +579,12 @@ const UserStudyPuzzleView = () => {
   const editorValidErr = validateEditorPosition(editorChess);
 
   const createModal = showCreateModal ? (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.87)', zIndex: 5000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: isMobile ? 8 : 24, overflowY: 'auto' }} onClick={e => { if (e.target === e.currentTarget) setShowCreateModal(false); }}>
-      <div style={{ background: '#111827', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 20, width: '100%', maxWidth: 980, margin: 'auto', boxShadow: '0 24px 64px rgba(0,0,0,0.85)' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'var(--color-black-a65)', zIndex: 5000, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: isMobile ? 8 : 24, overflowY: 'auto' }} onClick={e => { if (e.target === e.currentTarget) setShowCreateModal(false); }}>
+      <div style={{ background: '#111827', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 20, width: '100%', maxWidth: 980, margin: 'auto', boxShadow: '0 24px 64px var(--color-black-a65)' }}>
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-          <div style={{ fontSize: 18, fontWeight: 700, color: '#a5b4fc' }}>♟️ Create New Position</div>
-          <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: 22, cursor: 'pointer', lineHeight: 1, padding: '2px 10px', borderRadius: 8, transition: 'color 0.15s' }}>✕</button>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderBottom: '1px solid var(--color-white-a07)' }}>
+          <div style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-accent-2)' }}>♟️ Create New Position</div>
+          <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: 22, cursor: 'pointer', lineHeight: 1, padding: '2px 10px', borderRadius: 8, transition: 'color 0.15s' }}>✕</button>
         </div>
         {/* Body */}
         <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 24, padding: 24 }}>
@@ -599,9 +599,9 @@ const UserStudyPuzzleView = () => {
             />
             <FenBar fen={editorChess.fen()} onFenChange={handleEditorFenChange} />
             <div style={{ display: 'flex', gap: 6 }}>
-              <button onClick={() => handleEditorFenChange('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#9ca3af', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Start</button>
-              <button onClick={() => handleEditorFenChange('8/8/8/8/8/8/8/8 w - - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#9ca3af', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Empty</button>
-              <button onClick={() => setEditorOrientation(o => o === 'white' ? 'black' : 'white')} style={{ flex: 1, padding: '7px 0', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 8, color: '#a5b4fc', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>⇅ Flip</button>
+              <button onClick={() => handleEditorFenChange('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 8, color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Start</button>
+              <button onClick={() => handleEditorFenChange('8/8/8/8/8/8/8/8 w - - 0 1')} style={{ flex: 1, padding: '7px 0', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 8, color: 'var(--color-text-muted)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>Empty</button>
+              <button onClick={() => setEditorOrientation(o => o === 'white' ? 'black' : 'white')} style={{ flex: 1, padding: '7px 0', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: 8, color: 'var(--color-accent-2)', fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>⇅ Flip</button>
             </div>
           </div>
           {/* Right: Piece selector + Setup controls + Form */}
@@ -609,41 +609,41 @@ const UserStudyPuzzleView = () => {
             <PieceSelector selectedPiece={editorSelectedPiece} onSelectPiece={setEditorSelectedPiece} />
             <SetupControls chess={editorChess} onFenChange={handleEditorFenChange} orientation={editorOrientation} onFlipOrientation={() => setEditorOrientation(o => o === 'white' ? 'black' : 'white')} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <div style={{ fontSize: 12, color: '#9ca3af', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, paddingBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>Position Info</div>
+              <div style={{ fontSize: 12, color: 'var(--color-text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, paddingBottom: 8, borderBottom: '1px solid var(--color-white-a07)' }}>Position Info</div>
               <input
                 placeholder="Title (optional)"
                 value={posTitle}
                 onChange={e => setPosTitle(e.target.value)}
-                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, color: '#fff', padding: '10px 14px', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 10, color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }}
               />
               <textarea
                 placeholder="Description (optional)"
                 value={posDesc}
                 onChange={e => setPosDesc(e.target.value)}
                 rows={3}
-                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, color: '#fff', padding: '10px 14px', fontSize: 14, resize: 'vertical', fontFamily: 'inherit', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 10, color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, resize: 'vertical', fontFamily: 'inherit', outline: 'none', width: '100%', boxSizing: 'border-box' }}
               />
               <input
                 placeholder="Solution moves (e.g. Nh5 Nc3 Nf4)"
                 value={posSolution}
                 onChange={e => setPosSolution(e.target.value)}
-                style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, color: '#fff', padding: '10px 14px', fontSize: 14, fontFamily: 'monospace', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 10, color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, fontFamily: 'monospace', outline: 'none', width: '100%', boxSizing: 'border-box' }}
               />
             </div>
           </div>
         </div>
         {/* Footer */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ padding: '16px 24px', borderTop: '1px solid var(--color-white-a07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
           <div>
-            {editorValidErr && <div style={{ color: '#ef4444', fontSize: 13, fontWeight: 600 }}>⚠️ {editorValidErr}</div>}
-            {posError && <div style={{ color: '#ef4444', fontSize: 13, fontWeight: 600, marginTop: 4 }}>❌ {posError}</div>}
+            {editorValidErr && <div style={{ color: 'var(--color-danger)', fontSize: 13, fontWeight: 600 }}>⚠️ {editorValidErr}</div>}
+            {posError && <div style={{ color: 'var(--color-danger)', fontSize: 13, fontWeight: 600, marginTop: 4 }}>❌ {posError}</div>}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => setShowCreateModal(false)} style={{ padding: '10px 20px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, color: '#9ca3af', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+            <button onClick={() => setShowCreateModal(false)} style={{ padding: '10px 20px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 12, color: 'var(--color-text-muted)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
             <button
               onClick={handleCreatePosition}
               disabled={!!editorValidErr || posCreating}
-              style={{ padding: '10px 28px', background: editorValidErr ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.85)', border: '1px solid rgba(99,102,241,0.5)', borderRadius: 12, color: '#fff', fontSize: 14, fontWeight: 700, cursor: editorValidErr || posCreating ? 'not-allowed' : 'pointer', opacity: editorValidErr ? 0.6 : 1, transition: 'all 0.2s' }}
+              style={{ padding: '10px 28px', background: editorValidErr ? 'rgba(99,102,241,0.2)' : 'rgba(99,102,241,0.85)', border: '1px solid rgba(99,102,241,0.5)', borderRadius: 12, color: 'var(--color-text)', fontSize: 14, fontWeight: 700, cursor: editorValidErr || posCreating ? 'not-allowed' : 'pointer', opacity: editorValidErr ? 0.6 : 1, transition: 'all 0.2s' }}
             >{posCreating ? '⏳ Creating...' : '✓ Create this position'}</button>
           </div>
         </div>
@@ -677,12 +677,12 @@ const UserStudyPuzzleView = () => {
           onClick={() => navigate(`/public-studies/${id}`)}
           whileHover={{ x: -4, background: currentColor.accentColor }}
         >← Back to Chapters</motion.button>
-        <div style={{ ...st.error, color: '#a5b4fc', borderColor: 'rgba(99,102,241,0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+        <div style={{ ...st.error, color: 'var(--color-accent-2)', borderColor: 'rgba(99,102,241,0.2)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
           <div style={{ fontSize: 52 }}>♟️</div>
           <div>This chapter has no positions yet.</div>
           <motion.button
             onClick={openCreateModal}
-            style={{ padding: '14px 36px', background: 'rgba(99,102,241,0.8)', border: '1px solid rgba(99,102,241,0.5)', borderRadius: 14, color: '#fff', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}
+            style={{ padding: '14px 36px', background: 'rgba(99,102,241,0.8)', border: '1px solid rgba(99,102,241,0.5)', borderRadius: 14, color: 'var(--color-text)', fontSize: 16, fontWeight: 700, cursor: 'pointer' }}
             whileHover={{ scale: 1.05, background: '#6366f1' }}
           >➕ Create First Position</motion.button>
         </div>
@@ -762,17 +762,17 @@ const UserStudyPuzzleView = () => {
                               title="Delete position"
                               aria-label="Delete position"
                               style={{
-                                background: 'rgba(239,68,68,0.12)',
-                                border: '1px solid rgba(239,68,68,0.35)',
+                                background: 'var(--color-danger-a12)',
+                                border: '1px solid var(--color-danger-a30)',
                                 borderRadius: 6,
-                                color: '#f87171',
+                                color: 'var(--color-danger)',
                                 cursor: 'pointer',
                                 fontSize: 12,
                                 lineHeight: 1,
                                 padding: '4px 6px',
                               }}
-                              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.25)'; }}
-                              onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; }}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-danger-a20)'; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--color-danger-a12)'; }}
                             >
                               🗑
                             </button>
@@ -787,7 +787,7 @@ const UserStudyPuzzleView = () => {
                 <div style={{ marginTop: 14, flexShrink: 0 }}>
                   <motion.button
                     onClick={openCreateModal}
-                    style={{ width: '100%', padding: '11px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 12, color: '#a5b4fc', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}
+                    style={{ width: '100%', padding: '11px', background: 'rgba(99,102,241,0.12)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 12, color: 'var(--color-accent-2)', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7 }}
                     whileHover={{ background: 'rgba(99,102,241,0.25)', scale: 1.02 }}
                   >
                     ➕ Create Position
@@ -836,12 +836,12 @@ const UserStudyPuzzleView = () => {
           <motion.div style={st.rightPanel} initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
             {/* ── Analyze with Stockfish (evaluates the position; plays nothing) ── */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: anMode ? 8 : 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: anMode ? '#38bdf8' : '#4b5563', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: anMode ? '#38bdf8' : 'var(--color-text-faint)', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
                 🔍 {anMode ? (anDepth ? `Analysing · depth ${anDepth}` : 'Starting…') : 'Analysis'}
               </div>
               <button
                 onClick={toggleAnalysis}
-                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'rgba(239,68,68,0.12)' : 'rgba(56,189,248,0.12)', color: anMode ? '#ef4444' : '#38bdf8', border: `1px solid ${anMode ? 'rgba(239,68,68,0.35)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'var(--color-danger-a12)' : 'rgba(56,189,248,0.12)', color: anMode ? 'var(--color-danger)' : '#38bdf8', border: `1px solid ${anMode ? 'var(--color-danger-a30)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
               >{anMode ? '■ Stop' : '🔍 Analyse'}</button>
             </div>
             {anMode && (
@@ -853,7 +853,7 @@ const UserStudyPuzzleView = () => {
                         ? `M${Math.abs(anEval.mate)}${anEval.mate < 0 ? ' ♚' : ''}`
                         : `${anEval.cp > 0 ? '+' : ''}${(anEval.cp / 100).toFixed(2)}`}
                   </span>
-                  <span style={{ fontSize: 11, color: '#7dd3fc' }}>
+                  <span style={{ fontSize: 11, color: 'var(--color-accent-2)' }}>
                     {anEval == null ? '' : anEval.mate != null
                       ? (anEval.mate > 0 ? 'White mates' : 'Black mates')
                       : anEval.cp > 30 ? 'White is better' : anEval.cp < -30 ? 'Black is better' : 'Equal'}
@@ -871,9 +871,9 @@ const UserStudyPuzzleView = () => {
                     <div key={i} style={{ display: 'flex', gap: 8, marginTop: 6, fontSize: 11.5, lineHeight: 1.5 }}>
                       <span style={{
                         flex: '0 0 auto', minWidth: 46, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
-                        color: i === 1 ? '#7dd3fc' : '#64748b',
+                        color: i === 1 ? 'var(--color-accent-2)' : 'var(--color-text-faint)',
                       }}>{ev}</span>
-                      <span style={{ color: i === 1 ? '#cbd5e1' : '#94a3b8', wordBreak: 'break-word' }}>{ln.san}</span>
+                      <span style={{ color: i === 1 ? 'var(--color-text-muted)' : 'var(--color-text-muted)', wordBreak: 'break-word' }}>{ln.san}</span>
                     </div>
                   );
                 })}
@@ -882,24 +882,24 @@ const UserStudyPuzzleView = () => {
 
             {/* ── Stockfish Toggle ── */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: sfMode ? '#22c55e' : '#4b5563', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: sfMode ? 'var(--color-success)' : 'var(--color-text-faint)', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
                 🤖 {sfMode ? (sfThinking ? 'Thinking…' : sfReady ? 'Stockfish ON' : 'Loading…') : 'vs Computer'}
               </div>
               <button
                 onClick={toggleSfMode}
-                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: sfMode ? 'rgba(239,68,68,0.12)' : 'rgba(34,197,94,0.12)', color: sfMode ? '#ef4444' : '#22c55e', border: `1px solid ${sfMode ? 'rgba(239,68,68,0.35)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
               >{sfMode ? '■ Stop' : '▶ Play vs Stockfish'}</button>
             </div>
             {sfMode && (
               <>
                 <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
                   {['easy', 'medium', 'hard'].map(lvl => (
-                    <button key={lvl} onClick={() => setSfLevel(lvl)} style={{ flex: 1, padding: '4px 0', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontWeight: 700, textTransform: 'capitalize', background: sfLevel === lvl ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.04)', color: sfLevel === lvl ? '#22c55e' : '#6b7280', border: `1px solid ${sfLevel === lvl ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.07)'}` }}>{lvl.charAt(0).toUpperCase() + lvl.slice(1)}</button>
+                    <button key={lvl} onClick={() => setSfLevel(lvl)} style={{ flex: 1, padding: '4px 0', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontWeight: 700, textTransform: 'capitalize', background: sfLevel === lvl ? 'rgba(34,197,94,0.18)' : 'var(--color-white-a04)', color: sfLevel === lvl ? 'var(--color-success)' : 'var(--color-text-faint)', border: `1px solid ${sfLevel === lvl ? 'rgba(34,197,94,0.4)' : 'var(--color-white-a07)'}` }}>{lvl.charAt(0).toUpperCase() + lvl.slice(1)}</button>
                   ))}
                 </div>
-                <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14, textAlign: 'center' }}>
-                  You play <span style={{ color: '#a5b4fc' }}>{humanColor}</span> · Stockfish plays <span style={{ color: '#fca5a5' }}>{humanColor === 'white' ? 'black' : 'white'}</span>
-                  {sfThinking && <span style={{ marginLeft: 8, color: '#fbbf24' }}>● thinking</span>}
+                <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginBottom: 14, textAlign: 'center' }}>
+                  You play <span style={{ color: 'var(--color-accent-2)' }}>{humanColor}</span> · Stockfish plays <span style={{ color: 'var(--color-danger)' }}>{humanColor === 'white' ? 'black' : 'white'}</span>
+                  {sfThinking && <span style={{ marginLeft: 8, color: 'var(--color-warning)' }}>● thinking</span>}
                 </div>
               </>
             )}
@@ -907,7 +907,7 @@ const UserStudyPuzzleView = () => {
 
 
             {/* Tabs: Solution (default) · Your Moves (analysis tree) */}
-            <div style={{ display: 'flex', gap: 4, marginBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+            <div style={{ display: 'flex', gap: 4, marginBottom: 12, borderBottom: '1px solid var(--color-white-a07)' }}>
               {[
                 { id: 'solution', label: 'Solution' },
                 { id: 'moves', label: 'Your Moves' },
@@ -922,7 +922,7 @@ const UserStudyPuzzleView = () => {
                     cursor: 'pointer',
                     fontSize: 13,
                     fontWeight: 700,
-                    color: activeTab === t.id ? currentColor.color : '#64748b',
+                    color: activeTab === t.id ? currentColor.color : 'var(--color-text-faint)',
                     borderBottom: activeTab === t.id ? `2px solid ${currentColor.color}` : '2px solid transparent',
                   }}
                 >
@@ -943,7 +943,7 @@ const UserStudyPuzzleView = () => {
                   />
                 ) : (
                   <>
-                    <div style={{ fontSize: 14, color: '#cbd5e1', lineHeight: 1.9, letterSpacing: 0.2 }}>
+                    <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.9, letterSpacing: 0.2 }}>
                       {puzzles[currentPuzzleIndex]?.solution ? (
                         <SolutionText
                           text={puzzles[currentPuzzleIndex].solution}
@@ -952,13 +952,13 @@ const UserStudyPuzzleView = () => {
                           onPlayLine={(seq) => { analysis.playLine(seq); setActiveTab('moves'); }}
                         />
                       ) : (
-                        <span style={{ color: '#64748b', fontStyle: 'italic' }}>
+                        <span style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
                           {isCreator ? 'No solution yet — click Annotate to add one.' : 'No solution provided by creator'}
                         </span>
                       )}
                     </div>
                     {puzzles[currentPuzzleIndex]?.solution && (
-                      <div style={{ fontSize: 10.5, color: '#475569', marginTop: 10 }}>
+                      <div style={{ fontSize: 10.5, color: 'var(--color-text-faint)', marginTop: 10 }}>
                         💡 Click any highlighted move to play that line on the board.
                       </div>
                     )}
@@ -970,7 +970,7 @@ const UserStudyPuzzleView = () => {
             {activeTab === 'moves' && (
               <div style={st.movesContainer}>
                 {!analysis.hasMoves ? (
-                  <div style={{ color: '#64748b', fontStyle: 'italic' }}>No moves yet. Make a move on the board!</div>
+                  <div style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>No moves yet. Make a move on the board!</div>
                 ) : (
                   <AnalysisMoveTree
                     tree={analysis.tree}
@@ -979,7 +979,7 @@ const UserStudyPuzzleView = () => {
                     onSelect={(id) => analysis.goTo(id)}
                   />
                 )}
-                <div style={{ fontSize: 10.5, color: '#475569', marginTop: 10 }}>
+                <div style={{ fontSize: 10.5, color: 'var(--color-text-faint)', marginTop: 10 }}>
                   Play different moves to branch into variations. Use ← → to step, ↑ to jump to start. Lines reset when you leave the page.
                 </div>
               </div>
@@ -999,7 +999,7 @@ const UserStudyPuzzleView = () => {
               ) : (
                 <div style={st.descText}>
                   {currentPuzzle?.description || (
-                    <span style={{ color: '#64748b', fontStyle: 'italic' }}>
+                    <span style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
                       {isCreator ? 'No description yet — click Annotate to add one.' : 'No description available. Try to find the best move!'}
                     </span>
                   )}
@@ -1011,7 +1011,7 @@ const UserStudyPuzzleView = () => {
             {isCreator && currentPuzzle?._id && (
               <div style={{ marginTop: 12 }}>
                 {metaError && (
-                  <div style={{ color: '#fca5a5', fontSize: 12.5, marginBottom: 8 }}>{metaError}</div>
+                  <div style={{ color: 'var(--color-danger)', fontSize: 12.5, marginBottom: 8 }}>{metaError}</div>
                 )}
                 {editingMeta ? (
                   <div style={{ display: 'flex', gap: 8 }}>

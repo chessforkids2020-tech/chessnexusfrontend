@@ -132,9 +132,9 @@ function displayName(name) {
 
 const C = {
   ink: '#0a0c10', glass: 'rgba(22, 26, 34, 0.66)',
-  border: 'rgba(255,255,255,0.08)', borderStrong: 'rgba(255,255,255,0.14)',
+  border: 'var(--color-white-a07)', borderStrong: 'var(--color-white-a13)',
   text: '#e7eaf0', textMut: '#8b93a7', textFaint: '#5d6577',
-  accent: '#a78bfa', rowHover: 'rgba(167,139,250,0.10)'
+  accent: 'var(--color-accent-2)', rowHover: 'var(--color-accent-2-a15)'
 };
 
 const st = {
@@ -142,24 +142,24 @@ const st = {
   inner: { maxWidth: 1000, margin: '0 auto' },
   back: { background: 'transparent', border: 'none', color: C.accent, cursor: 'pointer', fontSize: 14, padding: 0, marginBottom: 16 },
 
-  header: { display: 'flex', gap: 20, alignItems: 'center', padding: 20, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, boxShadow: '0 8px 30px rgba(0,0,0,0.45)', marginBottom: 20 },
-  avatar: { width: 110, height: 110, borderRadius: '50%', overflow: 'hidden', background: 'rgba(255,255,255,0.06)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  header: { display: 'flex', gap: 20, alignItems: 'center', padding: 20, background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, boxShadow: '0 8px 30px var(--color-black-a35)', marginBottom: 20 },
+  avatar: { width: 110, height: 110, borderRadius: '50%', overflow: 'hidden', background: 'var(--color-white-a07)', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   avatarImg: { width: '100%', height: '100%', objectFit: 'cover' },
   avatarPlaceholder: { fontSize: 44, fontWeight: 700, color: C.textFaint },
   headerInfo: { flex: 1, minWidth: 0 },
-  playerName: { fontSize: 26, fontWeight: 800, color: '#fff' },
+  playerName: { fontSize: 26, fontWeight: 800, color: 'var(--color-text)' },
   title: { color: C.accent, fontWeight: 700 },
   playerMeta: { display: 'flex', gap: 16, color: C.textMut, fontSize: 13, marginTop: 4 },
   playerBio: { color: C.text, fontSize: 14, marginTop: 10, opacity: 0.9, lineHeight: 1.5 },
   playerBioEmpty: { color: C.textFaint, fontSize: 13, marginTop: 10, fontStyle: 'italic' },
 
   listMeta: { color: C.textMut, fontSize: 13, marginBottom: 8 },
-  table: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 30px rgba(0,0,0,0.45)' },
+  table: { background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden', boxShadow: '0 8px 30px var(--color-black-a35)' },
   row: { display: 'flex', alignItems: 'center', padding: '12px 16px', borderBottom: `1px solid ${C.border}`, cursor: 'pointer', fontSize: 14, gap: 8, color: C.text, transition: 'background 120ms ease' },
-  headRow: { background: 'rgba(255,255,255,0.03)', fontWeight: 700, cursor: 'default', color: C.textMut, fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.4 },
+  headRow: { background: 'var(--color-white-a04)', fontWeight: 700, cursor: 'default', color: C.textMut, fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.4 },
   cPlayers: { flex: '2 1 0', minWidth: 0 },
   blackName: { color: C.textMut },
-  cResult: { flex: '0 0 64px', textAlign: 'center', fontWeight: 600, color: '#fff' },
+  cResult: { flex: '0 0 64px', textAlign: 'center', fontWeight: 600, color: 'var(--color-text)' },
   cOpening: { flex: '2 1 0', minWidth: 0, color: C.textMut, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   cEvent: { flex: '1.5 1 0', minWidth: 0, color: C.textFaint, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   cYear: { flex: '0 0 56px', textAlign: 'right', color: C.textFaint },

@@ -269,7 +269,7 @@ const IndividualResults = () => {
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '20px',
       position: 'relative',
@@ -281,7 +281,7 @@ const IndividualResults = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -295,17 +295,17 @@ const IndividualResults = () => {
       textAlign: 'center',
       marginBottom: '40px',
       padding: '32px 28px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     title: {
       fontSize: '42px',
       fontWeight: '700',
       margin: '0 0 12px 0',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -313,7 +313,7 @@ const IndividualResults = () => {
     batchInfo: {
       fontSize: '16px',
       margin: '0 0 20px 0',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '400',
       display: 'flex',
       gap: '20px',
@@ -321,10 +321,10 @@ const IndividualResults = () => {
       flexWrap: 'wrap',
     },
     batchInfoItem: {
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       padding: '8px 16px',
       borderRadius: '8px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     timerDisplay: {
       display: 'flex',
@@ -333,9 +333,9 @@ const IndividualResults = () => {
       gap: '12px',
       marginTop: '20px',
       padding: '20px',
-      background: 'rgba(6, 182, 212, 0.1)',
+      background: 'var(--color-accent-a12)',
       borderRadius: '16px',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      border: '1px solid var(--color-accent-a20)',
       backdropFilter: 'blur(10px)',
     },
     timerExpired: {
@@ -345,18 +345,18 @@ const IndividualResults = () => {
       gap: '12px',
       marginTop: '20px',
       padding: '20px',
-      background: 'rgba(239, 68, 68, 0.1)',
+      background: 'var(--color-danger-a12)',
       borderRadius: '16px',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      border: '1px solid var(--color-danger-a20)',
       backdropFilter: 'blur(10px)',
     },
     timerIcon: {
       fontSize: '32px',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
     },
     timerExpiredIcon: {
       fontSize: '32px',
-      color: '#ef4444',
+      color: 'var(--color-danger)',
     },
     timerText: {
       textAlign: 'center',
@@ -365,19 +365,19 @@ const IndividualResults = () => {
       fontSize: '32px',
       fontWeight: 'bold',
       fontFamily: 'monospace',
-      color: '#ffffff',
-      textShadow: '0 0 10px rgba(6, 182, 212, 0.5)',
+      color: 'var(--color-text)',
+      textShadow: '0 0 10px var(--color-accent-a40)',
     },
     timerExpiredValue: {
       fontSize: '32px',
       fontWeight: 'bold',
       fontFamily: 'monospace',
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       textShadow: '0 0 10px rgba(239, 68, 68, 0.5)',
     },
     timerLabel: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginTop: '4px',
     },
     summarySection: {
@@ -388,12 +388,12 @@ const IndividualResults = () => {
       flexWrap: 'wrap',
     },
     statCard: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '28px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
       textAlign: 'center',
       minWidth: '180px',
       transition: 'all 0.3s ease',
@@ -401,34 +401,34 @@ const IndividualResults = () => {
     statValue: {
       fontSize: '40px',
       fontWeight: 'bold',
-      color: '#10b981',
+      color: 'var(--color-success)',
       margin: '0',
-      textShadow: '0 0 10px rgba(16, 185, 129, 0.3)',
+      textShadow: '0 0 10px var(--color-success-a30)',
     },
     statLabel: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '14px',
       marginTop: '8px',
       textTransform: 'uppercase',
       letterSpacing: '1px',
     },
     tableSection: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '32px',
       marginBottom: '40px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
       maxWidth: '1200px',
       margin: '0 auto 40px auto',
     },
     sectionTitle: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       margin: '0 0 32px 0',
       fontSize: '32px',
       fontWeight: '600',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -436,8 +436,8 @@ const IndividualResults = () => {
     tableContainer: {
       overflowX: 'auto',
       borderRadius: '16px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      background: 'rgba(0, 0, 0, 0.3)',
+      border: '1px solid var(--color-white-a04)',
+      background: 'var(--color-black-a35)',
     },
     table: {
       width: '100%',
@@ -445,14 +445,14 @@ const IndividualResults = () => {
       minWidth: '900px',
     },
     headerRow: {
-      background: 'rgba(0, 0, 0, 0.5)',
+      background: 'var(--color-black-a50)',
     },
     th: {
       padding: '20px 8px',
       textAlign: 'left',
       fontWeight: '600',
-      color: '#ffffff',
-      borderBottom: '2px solid rgba(255, 255, 255, 0.05)',
+      color: 'var(--color-text)',
+      borderBottom: '2px solid var(--color-white-a04)',
       fontSize: '14px',
       textTransform: 'uppercase',
       letterSpacing: '1px',
@@ -463,8 +463,8 @@ const IndividualResults = () => {
       padding: '20px 8px 20px 4px',
       textAlign: 'left',
       fontWeight: '600',
-      color: '#ffffff',
-      borderBottom: '2px solid rgba(255, 255, 255, 0.05)',
+      color: 'var(--color-text)',
+      borderBottom: '2px solid var(--color-white-a04)',
       fontSize: '14px',
       textTransform: 'uppercase',
       letterSpacing: '1px',
@@ -472,20 +472,20 @@ const IndividualResults = () => {
       minWidth: '200px',
     },
     row: {
-      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+      borderBottom: '1px solid var(--color-white-a04)',
       transition: 'all 0.3s ease',
     },
     td: {
       padding: '20px 8px',
       verticalAlign: 'top',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       width: '20%',
       minWidth: '150px',
     },
     tdPosition: {
       padding: '20px 8px 20px 4px',
       verticalAlign: 'top',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       width: '25%',
       minWidth: '200px',
     },
@@ -494,28 +494,28 @@ const IndividualResults = () => {
     },
     difficulty: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginTop: '4px',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       padding: '4px 8px',
       borderRadius: '4px',
       display: 'inline-block',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     fenCell: {
       cursor: 'pointer',
       fontFamily: 'monospace',
       fontSize: '12px',
       padding: '12px',
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '12px',
       minWidth: '200px',
       transition: 'all 0.3s ease',
     },
     studyHint: {
       fontSize: '11px',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       marginTop: '6px',
       fontStyle: 'italic',
     },
@@ -528,43 +528,43 @@ const IndividualResults = () => {
       marginTop: '8px',
       fontFamily: 'monospace',
       fontSize: '12px',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     expectedMoves: {
       fontFamily: 'monospace',
       fontSize: '13px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     solutionMoves: {
       marginTop: '6px',
       fontFamily: 'monospace',
       fontSize: '12px',
-      color: '#10b981',
+      color: 'var(--color-success)',
       fontWeight: '600',
       padding: '8px',
-      background: 'rgba(16, 185, 129, 0.1)',
+      background: 'var(--color-success-a12)',
       borderRadius: '8px',
-      border: '1px solid rgba(16, 185, 129, 0.2)',
+      border: '1px solid var(--color-success-a20)',
     },
     analysisHint: {
       fontSize: '11px',
-      color: '#8b5cf6',
+      color: 'var(--color-accent-2)',
       marginTop: '8px',
       fontStyle: 'italic',
     },
     mistakeAnalysis: {
       marginTop: '12px',
       padding: '12px',
-      background: 'rgba(245, 158, 11, 0.1)',
+      background: 'var(--color-warning-a12)',
       borderRadius: '12px',
-      border: '1px solid rgba(245, 158, 11, 0.2)',
+      border: '1px solid var(--color-warning-a20)',
     },
     timeoutAnalysis: {
       marginTop: '12px',
       padding: '12px',
-      background: 'rgba(139, 92, 246, 0.1)',
+      background: 'var(--color-accent-2-a15)',
       borderRadius: '12px',
-      border: '1px solid rgba(139, 92, 246, 0.2)',
+      border: '1px solid var(--color-accent-2-a15)',
     },
     moveComparison: {
       marginTop: '8px',
@@ -572,7 +572,7 @@ const IndividualResults = () => {
     comparisonLabel: {
       fontSize: '12px',
       fontWeight: 'bold',
-      color: '#f59e0b',
+      color: 'var(--color-warning)',
       marginBottom: '6px',
     },
     moveComparisonRow: {
@@ -585,31 +585,31 @@ const IndividualResults = () => {
     },
     moveNumber: {
       fontWeight: 'bold',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       minWidth: '70px',
     },
     moveComparisonItem: {
       padding: '4px 6px',
       borderRadius: '4px',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       minWidth: '90px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     noMovesAnalysis: {
       marginTop: '12px',
       padding: '10px',
-      background: 'rgba(239, 68, 68, 0.1)',
+      background: 'var(--color-danger-a12)',
       borderRadius: '12px',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      border: '1px solid var(--color-danger-a20)',
     },
     resultBadge: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       padding: '12px 16px',
       borderRadius: '12px',
       textAlign: 'center',
       fontWeight: 'bold',
       fontSize: '14px',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+      boxShadow: '0 4px 12px var(--color-black-a20)',
       minWidth: '120px',
     },
     points: {
@@ -625,40 +625,40 @@ const IndividualResults = () => {
       fontWeight: 'normal',
     },
     unattemptedText: {
-      color: '#f59e0b',
+      color: 'var(--color-warning)',
       fontStyle: 'italic',
       fontWeight: 'bold',
-      background: 'rgba(245, 158, 11, 0.1)',
+      background: 'var(--color-warning-a12)',
       padding: '6px 10px',
       borderRadius: '6px',
-      border: '1px solid rgba(245, 158, 11, 0.2)',
+      border: '1px solid var(--color-warning-a20)',
     },
     userMovesActual: {
       marginTop: '8px',
       fontFamily: 'monospace',
       fontSize: '12px',
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       fontWeight: 'bold',
       padding: '8px 12px',
-      background: 'rgba(239, 68, 68, 0.1)',
+      background: 'var(--color-danger-a12)',
       borderRadius: '8px',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      border: '1px solid var(--color-danger-a20)',
     },
     completeMoves: {
       marginTop: '10px',
       fontFamily: 'monospace',
       fontSize: '11px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       padding: '8px 12px',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       borderRadius: '8px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     onlyBotMoves: {
       marginTop: '8px',
     },
     noUserMoves: {
-      color: '#f59e0b',
+      color: 'var(--color-warning)',
       fontStyle: 'italic',
       fontWeight: 'bold',
       display: 'block',
@@ -666,13 +666,13 @@ const IndividualResults = () => {
     },
     botHelp: {
       fontSize: '11px',
-      color: '#10b981',
+      color: 'var(--color-success)',
       marginTop: '4px',
       fontStyle: 'italic',
     },
     missedHint: {
       fontSize: '11px',
-      color: '#f59e0b',
+      color: 'var(--color-warning)',
       marginTop: '8px',
       fontStyle: 'italic',
     },
@@ -681,30 +681,30 @@ const IndividualResults = () => {
       fontFamily: 'monospace',
       fontWeight: 'bold',
       fontSize: '16px',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
     },
     statusSection: {
       textAlign: 'center',
       marginBottom: '40px',
     },
     statusMessage: {
-      background: 'rgba(6, 182, 212, 0.1)',
-      color: '#ffffff',
+      background: 'var(--color-accent-a12)',
+      color: 'var(--color-text)',
       padding: '24px',
       borderRadius: '20px',
       fontSize: '18px',
       lineHeight: '1.6',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      border: '1px solid var(--color-accent-a20)',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+      boxShadow: '0 8px 32px var(--color-black-a35)',
     },
     actionSection: {
       textAlign: 'center',
       marginBottom: '40px',
     },
     dashboardButton: {
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '16px 32px',
       borderRadius: '12px',
@@ -712,57 +712,57 @@ const IndividualResults = () => {
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 20px rgba(6, 182, 212, 0.4)',
+      boxShadow: '0 4px 20px var(--color-accent-a40)',
     },
     loadingContainer: {
       textAlign: 'center',
       padding: '60px 20px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     loadingIcon: {
       fontSize: '56px',
       marginBottom: '20px',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
     },
     loadingTitle: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '12px',
       fontSize: '24px',
       fontWeight: '600',
     },
     loadingText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '15px',
     },
     errorContainer: {
       textAlign: 'center',
       padding: '60px 40px',
-      background: 'rgba(239, 68, 68, 0.15)',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      background: 'var(--color-danger-a12)',
+      border: '1px solid var(--color-danger-a20)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     errorTitle: {
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       marginBottom: '12px',
       fontSize: '24px',
       fontWeight: '600',
     },
     errorText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '15px',
       marginBottom: '24px',
     },
     tournamentIncompleteMessage: {
       textAlign: 'center',
       padding: '60px 40px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '2px dashed rgba(251, 191, 36, 0.3)',
+      background: 'var(--color-surface)',
+      border: '2px dashed var(--color-warning-a30)',
       borderRadius: '16px',
       backdropFilter: 'blur(10px)',
       margin: '20px 0',
@@ -774,12 +774,12 @@ const IndividualResults = () => {
     tournamentIncompleteTitle: {
       fontSize: '24px',
       fontWeight: '600',
-      color: '#f59e0b',
+      color: 'var(--color-warning)',
       marginBottom: '16px',
     },
     tournamentIncompleteText: {
       fontSize: '16px',
-      color: '#d1d5db',
+      color: 'var(--color-text-muted)',
       lineHeight: '1.6',
       marginBottom: '12px',
       maxWidth: '500px',
@@ -787,7 +787,7 @@ const IndividualResults = () => {
     },
     tournamentIncompleteSubtext: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       margin: '8px 0',
     },
     moveSequence: {
@@ -800,39 +800,39 @@ const IndividualResults = () => {
       alignItems: 'center',
       marginBottom: '2px',
       padding: '4px 8px',
-      background: 'rgba(0, 0, 0, 0.2)',
+      background: 'var(--color-black-a20)',
       borderRadius: '4px',
     },
     moveSequenceNumber: {
       fontWeight: 'bold',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       minWidth: '30px',
       marginRight: '8px',
     },
     moveText: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     moveSequenceDisplay: {
       marginTop: '8px',
       fontFamily: 'monospace',
       fontSize: '12px',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     userMoveItem: {
       display: 'flex',
       alignItems: 'center',
       marginBottom: '4px',
       padding: '4px 8px',
-      background: 'rgba(6, 182, 212, 0.1)',
+      background: 'var(--color-accent-a12)',
       borderRadius: '6px',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      border: '1px solid var(--color-accent-a20)',
     },
     completeSequence: {
       marginTop: '12px',
       padding: '12px',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       borderRadius: '8px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     fullMoveSequence: {
       display: 'flex',
@@ -843,18 +843,18 @@ const IndividualResults = () => {
     },
     userMoveInSequence: {
       padding: '4px 6px',
-      background: 'rgba(6, 182, 212, 0.2)',
+      background: 'var(--color-accent-a20)',
       borderRadius: '4px',
-      border: '1px solid rgba(6, 182, 212, 0.3)',
-      color: '#06b6d4',
+      border: '1px solid var(--color-accent-a30)',
+      color: 'var(--color-accent)',
       fontWeight: 'bold',
     },
     botMoveInSequence: {
       padding: '4px 6px',
-      background: 'rgba(16, 185, 129, 0.2)',
+      background: 'var(--color-success-a20)',
       borderRadius: '4px',
-      border: '1px solid rgba(16, 185, 129, 0.3)',
-      color: '#10b981',
+      border: '1px solid var(--color-success-a30)',
+      color: 'var(--color-success)',
       fontWeight: 'bold',
     },
   };
@@ -927,17 +927,17 @@ const IndividualResults = () => {
         overflow-x: auto !important;
         -webkit-overflow-scrolling: touch !important;
         scrollbar-width: thin !important;
-        scrollbar-color: rgba(6, 182, 212, 0.3) rgba(255, 255, 255, 0.1) !important;
+        scrollbar-color: var(--color-accent-a30) var(--color-white-a10) !important;
       }
       .individual-results-table-container::-webkit-scrollbar {
         height: 6px !important;
       }
       .individual-results-table-container::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.1) !important;
+        background: var(--color-white-a10) !important;
         border-radius: 3px !important;
       }
       .individual-results-table-container::-webkit-scrollbar-thumb {
-        background: rgba(6, 182, 212, 0.5) !important;
+        background: var(--color-accent-a40) !important;
         border-radius: 3px !important;
       }
       .individual-results-table-container::-webkit-scrollbar-thumb:hover {
@@ -1052,7 +1052,7 @@ const IndividualResults = () => {
               style={styles.dashboardButton}
               whileHover={{ 
                 y: -2,
-                boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+                boxShadow: '0 6px 24px var(--color-accent-a40)'
               }}
               transition={{ duration: 0.2 }}
             >
@@ -1084,10 +1084,10 @@ const IndividualResults = () => {
             <h1 style={styles.title}>Your Performance Results</h1>
             <div style={styles.batchInfo}>
               <span style={styles.batchInfoItem}>
-                <strong style={{color: '#ffffff'}}>Batch:</strong> {batchInfo?.name || 'Unknown'}
+                <strong style={{color: 'var(--color-text)'}}>Batch:</strong> {batchInfo?.name || 'Unknown'}
               </span>
               <span style={styles.batchInfoItem}>
-                <strong style={{color: '#ffffff'}}>Round:</strong> {batchInfo?.round?.number || 'N/A'}
+                <strong style={{color: 'var(--color-text)'}}>Round:</strong> {batchInfo?.round?.number || 'N/A'}
               </span>
             </div>
           </motion.div>
@@ -1150,10 +1150,10 @@ const IndividualResults = () => {
           <h1 style={styles.title} className="individual-results-title">Your Performance Results</h1>
           <div style={styles.batchInfo} className="individual-results-batch-info">
             <span style={styles.batchInfoItem}>
-              <strong style={{color: '#ffffff'}}>Batch:</strong> {batchInfo?.name || 'Unknown'}
+              <strong style={{color: 'var(--color-text)'}}>Batch:</strong> {batchInfo?.name || 'Unknown'}
             </span>
             <span style={styles.batchInfoItem}>
-              <strong style={{color: '#ffffff'}}>Round:</strong> {batchInfo?.round?.number || 'N/A'}
+              <strong style={{color: 'var(--color-text)'}}>Round:</strong> {batchInfo?.round?.number || 'N/A'}
             </span>
           </div>
           
@@ -1208,8 +1208,8 @@ const IndividualResults = () => {
               className="individual-results-stat-card"
               whileHover={{ 
                 y: -8,
-                borderColor: 'rgba(6, 182, 212, 0.2)',
-                boxShadow: '0 12px 40px rgba(6, 182, 212, 0.2)'
+                borderColor: 'var(--color-accent-a20)',
+                boxShadow: '0 12px 40px var(--color-accent-a20)'
               }}
               transition={{ duration: 0.3 }}
             >
@@ -1278,7 +1278,7 @@ const IndividualResults = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
                     whileHover={{ 
-                      background: 'rgba(255, 255, 255, 0.05)'
+                      background: 'var(--color-white-a04)'
                     }}
                   >
                     <td style={styles.tdPosition} className="individual-results-td-position">
@@ -1287,8 +1287,8 @@ const IndividualResults = () => {
                         onClick={() => openStudyMode(result)}
                         title="Click to analyze position"
                         whileHover={{ 
-                          borderColor: 'rgba(6, 182, 212, 0.3)',
-                          background: 'rgba(6, 182, 212, 0.1)'
+                          borderColor: 'var(--color-accent-a30)',
+                          background: 'var(--color-accent-a12)'
                         }}
                         transition={{ duration: 0.2 }}
                       >
@@ -1368,13 +1368,13 @@ const IndividualResults = () => {
                                       <span style={styles.moveNumber}>Move {index + 1}:</span>
                                       <span style={{
                                         ...styles.moveComparisonItem,
-                                        color: userMove ? '#ef4444' : '#9ca3af'
+                                        color: userMove ? 'var(--color-danger)' : 'var(--color-text-muted)'
                                       }}>
                                         You: {userMove || 'N/A'}
                                       </span>
                                       <span style={{
                                         ...styles.moveComparisonItem,
-                                        color: '#10b981'
+                                        color: 'var(--color-success)'
                                       }}>
                                         Correct: {expectedMove || 'N/A'}
                                       </span>
@@ -1402,13 +1402,13 @@ const IndividualResults = () => {
                                       <span style={styles.moveNumber}>Move {index + 1}:</span>
                                       <span style={{
                                         ...styles.moveComparisonItem,
-                                        color: userMove ? '#8b5cf6' : '#9ca3af'
+                                        color: userMove ? 'var(--color-accent-2)' : 'var(--color-text-muted)'
                                       }}>
                                         You: {userMove || 'N/A'}
                                       </span>
                                       <span style={{
                                         ...styles.moveComparisonItem,
-                                        color: '#10b981'
+                                        color: 'var(--color-success)'
                                       }}>
                                         Correct: {expectedMove || 'N/A'}
                                       </span>
@@ -1436,12 +1436,12 @@ const IndividualResults = () => {
                     <td style={styles.td} className="individual-results-td">
                       <div style={{
                         ...styles.resultBadge,
-                        backgroundColor: result.isUnattempted ? 'rgba(245, 158, 11, 0.2)' : 
-                                      (result.timeout ? 'rgba(139, 92, 246, 0.2)' : 
-                                      (result.correct ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)')),
-                        border: result.isUnattempted ? '1px solid rgba(245, 158, 11, 0.3)' :
-                               (result.timeout ? '1px solid rgba(139, 92, 246, 0.3)' :
-                               (result.correct ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)'))
+                        backgroundColor: result.isUnattempted ? 'var(--color-warning-a20)' : 
+                                      (result.timeout ? 'var(--color-accent-2-a15)' : 
+                                      (result.correct ? 'var(--color-success-a20)' : 'var(--color-danger-a20)')),
+                        border: result.isUnattempted ? '1px solid var(--color-warning-a30)' :
+                               (result.timeout ? '1px solid var(--color-accent-2-a30)' :
+                               (result.correct ? '1px solid var(--color-success-a30)' : '1px solid var(--color-danger-a30)'))
                       }}>
                         {result.isUnattempted ? '⏭️ Skipped' : (result.timeout ? '⏰ Timeout' : (result.correct ? '✅ Correct' : '❌ Incorrect'))}
                         <div style={styles.points}>
@@ -1524,7 +1524,7 @@ const IndividualResults = () => {
             onClick={handleGoToDashboard}
             whileHover={{ 
               y: -2,
-              boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+              boxShadow: '0 6px 24px var(--color-accent-a40)'
             }}
             transition={{ duration: 0.2 }}
           >

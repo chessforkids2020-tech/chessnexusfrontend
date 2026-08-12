@@ -3,8 +3,8 @@
    ====================================== */
 .mfl-page {
   min-height: 100vh;
-  background: #0a0a0a;
-  color: #fff;
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family: 'Poppins', sans-serif;
   padding: 48px 20px 80px;
   position: relative;
@@ -15,7 +15,7 @@
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.07) 0%, transparent 55%),
+    radial-gradient(circle at 20% 30%, var(--color-accent-a06) 0%, transparent 55%),
     radial-gradient(circle at 80% 70%, rgba(129, 140, 248, 0.07) 0%, transparent 55%);
   pointer-events: none;
   z-index: 0;
@@ -33,7 +33,7 @@
 .mfl-title {
   font-size: clamp(1.8rem, 4vw, 2.8rem);
   font-weight: 800;
-  background: linear-gradient(135deg, #06b6d4, #818cf8, #10b981);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2), var(--color-success));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -41,7 +41,7 @@
 }
 
 .mfl-subtitle {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 1rem;
   margin: 0 0 20px;
 }
@@ -51,25 +51,25 @@
   align-items: center;
   gap: 8px;
   padding: 7px 18px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--color-success-a12);
+  border: 1px solid var(--color-success-a30);
   border-radius: 24px;
   font-size: 13px;
   font-weight: 600;
-  color: #34d399;
+  color: var(--color-success);
 }
 
 .mfl-count-badge.mfl-count-none {
   background: rgba(107, 114, 128, 0.12);
   border-color: rgba(107, 114, 128, 0.3);
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .mfl-count-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #10b981;
+  background: var(--color-success);
   animation: mfl-pulse 1.8s infinite;
   flex-shrink: 0;
 }
@@ -92,8 +92,8 @@
 
 /* ── Card ── */
 .mfl-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
   border-radius: 18px;
   overflow: hidden;
   display: flex;
@@ -109,7 +109,7 @@
 
 .mfl-card-accent {
   height: 3px;
-  background: linear-gradient(90deg, #06b6d4, #818cf8, #10b981);
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-2), var(--color-success));
 }
 
 .mfl-card-body {
@@ -131,7 +131,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #10b981;
+  background: var(--color-success);
   animation: mfl-pulse 1.8s infinite;
   flex-shrink: 0;
 }
@@ -141,14 +141,14 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #10b981;
+  color: var(--color-success);
 }
 
 .mfl-days-left {
   margin-left: auto;
   font-size: 11px;
-  color: #9ca3af;
-  background: rgba(255,255,255,0.05);
+  color: var(--color-text-muted);
+  background: var(--color-white-a04);
   padding: 2px 8px;
   border-radius: 10px;
 }
@@ -157,14 +157,14 @@
 .mfl-card-title {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #e5e7eb;
+  color: var(--color-text);
   margin: 0;
   line-height: 1.3;
 }
 
 .mfl-card-theme {
   font-size: 0.82rem;
-  color: #818cf8;
+  color: var(--color-accent-2);
   margin: 0;
   font-style: italic;
 }
@@ -183,20 +183,20 @@
   font-size: 12px;
 }
 
-.mfl-prog-label { color: #6b7280; }
-.mfl-prog-running { color: #10b981; font-weight: 600; }
+.mfl-prog-label { color: var(--color-text-faint); }
+.mfl-prog-running { color: var(--color-success); font-weight: 600; }
 
 .mfl-prog-bar-bg {
   height: 5px;
   border-radius: 4px;
-  background: rgba(255,255,255,0.07);
+  background: var(--color-white-a07);
   overflow: hidden;
 }
 
 .mfl-prog-bar-fill {
   height: 100%;
   border-radius: 4px;
-  background: linear-gradient(90deg, #06b6d4, #10b981);
+  background: linear-gradient(90deg, var(--color-accent), var(--color-success));
   transition: width 0.5s ease;
   min-width: 4px;
 }
@@ -216,23 +216,23 @@
   border: 1px solid;
 }
 
-.mfl-type-puzzles            { background: rgba(6,182,212,0.1);  border-color: rgba(6,182,212,0.3);   color: #06b6d4; }
-.mfl-type-find_mistakes      { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3);  color: #f59e0b; }
-.mfl-type-tactics_identification { background: rgba(129,140,248,0.1); border-color: rgba(129,140,248,0.3); color: #818cf8; }
-.mfl-type-multiple_choice    { background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3);  color: #34d399; }
-.mfl-type-blunder_analysis   { background: rgba(239,68,68,0.1);  border-color: rgba(239,68,68,0.3);   color: #f87171; }
+.mfl-type-puzzles            { background: var(--color-accent-a12);  border-color: var(--color-accent-a30);   color: var(--color-accent); }
+.mfl-type-find_mistakes      { background: var(--color-warning-a12); border-color: var(--color-warning-a30);  color: var(--color-warning); }
+.mfl-type-tactics_identification { background: rgba(129,140,248,0.1); border-color: rgba(129,140,248,0.3); color: var(--color-accent-2); }
+.mfl-type-multiple_choice    { background: rgba(52,211,153,0.1); border-color: rgba(52,211,153,0.3);  color: var(--color-success); }
+.mfl-type-blunder_analysis   { background: var(--color-danger-a12);  border-color: var(--color-danger-a30);   color: var(--color-danger); }
 
 /* XP info */
 .mfl-card-xp {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--color-text-faint);
   display: flex;
   gap: 8px;
   align-items: center;
   margin-top: auto;
 }
 
-.mfl-xp-sep { color: #374151; }
+.mfl-xp-sep { color: var(--color-text-faint); }
 
 /* Footer / CTA */
 .mfl-card-footer {
@@ -243,7 +243,7 @@
   display: block;
   text-align: center;
   padding: 12px;
-  background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(129,140,248,0.2));
+  background: linear-gradient(135deg, var(--color-accent-a20), rgba(129,140,248,0.2));
   border: 1px solid rgba(129,140,248,0.35);
   border-radius: 12px;
   color: #c7d2fe;
@@ -255,7 +255,7 @@
 }
 
 .mfl-enter-btn:hover {
-  background: linear-gradient(135deg, rgba(6,182,212,0.35), rgba(129,140,248,0.35));
+  background: linear-gradient(135deg, var(--color-accent-a30), rgba(129,140,248,0.35));
   border-color: rgba(129,140,248,0.6);
   transform: translateY(-1px);
   color: #e0e7ff;
@@ -278,12 +278,12 @@
 
 .mfl-empty h2 {
   font-size: 1.4rem;
-  color: #e5e7eb;
+  color: var(--color-text);
   margin: 0 0 8px;
 }
 
 .mfl-empty p {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   margin: 0 0 28px;
 }
 
@@ -293,7 +293,7 @@
   background: rgba(129,140,248,0.15);
   border: 1px solid rgba(129,140,248,0.3);
   border-radius: 10px;
-  color: #a5b4fc;
+  color: var(--color-accent-2);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -314,14 +314,14 @@
   justify-content: center;
   min-height: 40vh;
   gap: 16px;
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .mfl-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(255,255,255,0.08);
-  border-top-color: #06b6d4;
+  border: 3px solid var(--color-white-a07);
+  border-top-color: var(--color-accent);
   border-radius: 50%;
   animation: mfl-spin 0.8s linear infinite;
 }
@@ -332,7 +332,7 @@
 
 .mfl-error {
   text-align: center;
-  color: #f87171;
+  color: var(--color-danger);
   padding: 60px 20px;
   font-size: 1rem;
 }
@@ -356,8 +356,8 @@
 
 .mfl-elite-btn {
   padding: 11px 28px;
-  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-  color: #fff;
+  background: linear-gradient(135deg, var(--color-accent-2) 0%, var(--color-accent-2) 100%);
+  color: var(--color-text);
   border: none;
   border-radius: 24px;
   font-size: 14px;
@@ -377,53 +377,53 @@
   background: rgba(107, 114, 128, 0.25);
   box-shadow: none;
   cursor: not-allowed;
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .mfl-elite-note {
   font-size: 12px;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   margin: 0;
 }
 
 /* ── Official (ChessNexus/Admin) Card ── */
 .mfl-card--official {
-  border-color: rgba(245, 158, 11, 0.35);
-  background: rgba(245, 158, 11, 0.05);
-  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.2), 0 6px 30px rgba(245, 158, 11, 0.08);
+  border-color: var(--color-warning-a30);
+  background: var(--color-warning-a12);
+  box-shadow: 0 0 0 1px var(--color-warning-a20), 0 6px 30px var(--color-warning-a12);
 }
 
 .mfl-card--official:hover {
   border-color: rgba(245, 158, 11, 0.6);
-  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.4), 0 10px 40px rgba(245, 158, 11, 0.15);
+  box-shadow: 0 0 0 1px var(--color-warning-a30), 0 10px 40px var(--color-warning-a12);
 }
 
 .mfl-card--official .mfl-card-accent {
-  background: linear-gradient(90deg, #f59e0b, #fbbf24, #d97706);
+  background: linear-gradient(90deg, var(--color-warning), var(--color-warning), #d97706);
 }
 
 .mfl-card--official .mfl-card-title {
-  color: #fef3c7;
+  color: var(--color-warning);
 }
 
 .mfl-card--official .mfl-card-theme {
-  color: #fbbf24;
+  color: var(--color-warning);
 }
 
 .mfl-card--official .mfl-prog-bar-fill {
-  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  background: linear-gradient(90deg, var(--color-warning), var(--color-warning));
 }
 
 .mfl-card--official .mfl-enter-btn {
-  background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(251,191,36,0.2));
-  border-color: rgba(245,158,11,0.45);
-  color: #fde68a;
+  background: linear-gradient(135deg, var(--color-warning-a20), var(--color-warning-a20));
+  border-color: var(--color-warning-a30);
+  color: var(--color-warning);
 }
 
 .mfl-card--official .mfl-enter-btn:hover {
-  background: linear-gradient(135deg, rgba(245,158,11,0.35), rgba(251,191,36,0.35));
+  background: linear-gradient(135deg, var(--color-warning-a30), var(--color-warning-a30));
   border-color: rgba(245,158,11,0.7);
-  color: #fef3c7;
+  color: var(--color-warning);
 }
 
 .mfl-official-badge {
@@ -432,12 +432,12 @@
   align-items: center;
   gap: 6px;
   padding: 4px 12px;
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: var(--color-warning-a12);
+  border: 1px solid var(--color-warning-a30);
   border-radius: 20px;
   font-size: 11px;
   font-weight: 700;
-  color: #fbbf24;
+  color: var(--color-warning);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   width: fit-content;

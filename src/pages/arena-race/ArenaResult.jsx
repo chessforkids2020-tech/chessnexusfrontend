@@ -12,7 +12,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 const styles = {
   page: {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    background: '#0a0a0a',
+    background: 'var(--color-bg)',
     minHeight: '100vh',
     padding: '20px',
     position: 'relative',
@@ -24,7 +24,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+    background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
     pointerEvents: 'none',
     zIndex: 0,
   },
@@ -37,12 +37,12 @@ const styles = {
   header: {
     textAlign: 'center',
     marginBottom: '40px',
-    background: 'rgba(23, 23, 23, 0.7)',
+    background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
     borderRadius: '20px',
     padding: '30px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    border: '1px solid var(--color-white-a04)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
   },
   title: {
     fontSize: '42px',
@@ -60,11 +60,11 @@ const styles = {
     letterSpacing: '1.5px',
   },
   roomId: {
-    color: '#06b6d4',
+    color: 'var(--color-accent)',
     fontWeight: '700',
   },
   ongoingWarning: {
-    color: '#ef4444',
+    color: 'var(--color-danger)',
     marginTop: '15px',
     fontSize: '14px',
     fontWeight: '600',
@@ -80,14 +80,14 @@ const styles = {
   },
   trophy: {
     borderRadius: '50%',
-    background: 'rgba(23, 23, 23, 0.9)',
+    background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
-    border: '2px solid rgba(255, 255, 255, 0.1)',
+    border: '2px solid var(--color-white-a10)',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
   },
   trophy2: {
     width: '170px',
@@ -96,7 +96,7 @@ const styles = {
   trophy1: {
     width: '200px',
     height: '200px',
-    boxShadow: '0 0 20px gold, 0 0 45px rgba(255,215,0,.6), 0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 0 20px gold, 0 0 45px rgba(255,215,0,.6), 0 8px 32px var(--color-black-a50)',
     zIndex: 953,
     position: 'relative',
   },
@@ -113,12 +113,12 @@ const styles = {
     zIndex: 952,
   },
   tableContainer: {
-    background: 'rgba(23, 23, 23, 0.7)',
+    background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
     borderRadius: '20px',
     padding: '25px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    border: '1px solid var(--color-white-a04)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
     marginBottom: '30px',
     overflow: 'hidden',
   },
@@ -131,27 +131,27 @@ const styles = {
     textAlign: 'center',
     fontWeight: '700',
     fontSize: '12px',
-    color: '#e2e8f0',
-    backgroundColor: 'rgba(6, 182, 212, 0.15)',
-    borderBottom: '2px solid rgba(6, 182, 212, 0.3)',
+    color: 'var(--color-text)',
+    backgroundColor: 'var(--color-accent-a15)',
+    borderBottom: '2px solid var(--color-accent-a30)',
     textTransform: 'uppercase',
     letterSpacing: '1px',
   },
   td: {
     padding: '18px 12px',
     textAlign: 'center',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-    color: '#cbd5e1',
+    borderBottom: '1px solid var(--color-white-a04)',
+    color: 'var(--color-text-muted)',
     fontSize: '15px',
   },
   userHighlight: {
-    background: 'rgba(6, 182, 212, 0.1)',
+    background: 'var(--color-accent-a12)',
     borderRadius: '8px',
-    border: '1px solid rgba(6, 182, 212, 0.2)',
+    border: '1px solid var(--color-accent-a20)',
   },
   rank: {
     fontWeight: 'bold',
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text',
@@ -163,7 +163,7 @@ const styles = {
   },
   username: {
     fontWeight: '600',
-    color: '#f1f5f9',
+    color: 'var(--color-text)',
   },
   score: {
     fontWeight: 'bold',
@@ -175,7 +175,7 @@ const styles = {
   },
   performance: {
     fontWeight: '500',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
   },
   buttonContainer: {
     textAlign: 'center',
@@ -184,33 +184,33 @@ const styles = {
   backButton: {
     background: 'rgba(23, 23, 23, 0.8)',
     backdropFilter: 'blur(10px)',
-    color: '#06b6d4',
-    border: '1px solid rgba(6, 182, 212, 0.3)',
+    color: 'var(--color-accent)',
+    border: '1px solid var(--color-accent-a30)',
     padding: '16px 40px',
     borderRadius: '16px',
     fontSize: '16px',
     fontWeight: '700',
     cursor: 'pointer',
-    boxShadow: '0 8px 24px rgba(6, 182, 212, 0.2)',
+    boxShadow: '0 8px 24px var(--color-accent-a20)',
     transition: 'all 0.3s ease',
     textTransform: 'uppercase',
     letterSpacing: '1px',
   },
   backButtonHover: {
     transform: 'translateY(-2px)',
-    boxShadow: '0 12px 32px rgba(6, 182, 212, 0.3)',
-    borderColor: 'rgba(6, 182, 212, 0.5)',
-    background: 'rgba(6, 182, 212, 0.1)',
+    boxShadow: '0 12px 32px var(--color-accent-a30)',
+    borderColor: 'var(--color-accent-a40)',
+    background: 'var(--color-accent-a12)',
   },
   loading: {
     textAlign: 'center',
     padding: '60px 40px',
-    color: '#ffffff',
-    background: 'rgba(23, 23, 23, 0.7)',
+    color: 'var(--color-text)',
+    background: 'var(--color-surface)',
     borderRadius: '20px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    border: '1px solid var(--color-white-a04)',
     backdropFilter: 'blur(10px)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
   },
   loadingIcon: {
     fontSize: '48px',
@@ -221,16 +221,16 @@ const styles = {
     color: 'rgba(156, 163, 175, 0.9)',
   },
   error: {
-    color: '#ef4444',
+    color: 'var(--color-danger)',
     textAlign: 'center',
     padding: '30px',
-    background: 'rgba(239, 68, 68, 0.1)',
+    background: 'var(--color-danger-a12)',
     borderRadius: '16px',
-    border: '1px solid rgba(239, 68, 68, 0.3)',
+    border: '1px solid var(--color-danger-a30)',
     backdropFilter: 'blur(10px)',
     fontSize: '16px',
     fontWeight: '600',
-    boxShadow: '0 8px 32px rgba(239, 68, 68, 0.2)',
+    boxShadow: '0 8px 32px var(--color-danger-a20)',
   },
   ribbonRain: {
     position: 'fixed',
@@ -259,17 +259,17 @@ const styles = {
 const adminStyles = {
   page: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent-2) 0%, #764ba2 100%)',
     padding: '20px',
     fontFamily: 'Inter, Arial, sans-serif',
   },
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
-    background: '#fff',
+    background: 'var(--color-text)',
     borderRadius: '20px',
     padding: '30px',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+    boxShadow: '0 20px 40px var(--color-black-a20)',
     position: 'relative',
     zIndex: 1,
   },
@@ -280,9 +280,9 @@ const adminStyles = {
   title: {
     fontSize: '32px',
     fontWeight: '800',
-    color: '#1a1a1a',
+    color: 'var(--color-surface)',
     marginBottom: '10px',
-    background: 'linear-gradient(135deg, #667eea, #764ba2)',
+    background: 'linear-gradient(135deg, var(--color-accent-2), #764ba2)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
   },
@@ -290,8 +290,8 @@ const adminStyles = {
     position: 'absolute',
     top: '20px',
     left: '20px',
-    background: '#6c757d',
-    color: '#fff',
+    background: 'var(--color-text-faint)',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '8px',
@@ -309,7 +309,7 @@ const adminStyles = {
     textAlign: 'left',
     padding: '15px',
     borderBottom: '2px solid #eee',
-    color: '#666',
+    color: 'var(--color-text-faint)',
     fontWeight: '600',
     textTransform: 'uppercase',
     fontSize: '12px',
@@ -318,23 +318,23 @@ const adminStyles = {
   td: {
     padding: '15px',
     borderBottom: '1px solid #eee',
-    color: '#1a1a1a',
+    color: 'var(--color-surface)',
   },
   rank: {
     fontWeight: '800',
-    color: '#667eea',
+    color: 'var(--color-accent-2)',
     fontSize: '18px',
   },
   score: {
     fontWeight: '700',
-    color: '#667eea',
+    color: 'var(--color-accent-2)',
   },
   correct: {
-    color: '#28a745',
+    color: 'var(--color-success)',
     fontWeight: '600',
   },
   wrong: {
-    color: '#dc3545',
+    color: 'var(--color-danger)',
     fontWeight: '600',
   }
 };
@@ -407,7 +407,7 @@ export default function ArenaResult({ isAdminView = false }) {
 
     const confettiPieces = [];
     const confettiCount = 150;
-    const colors = ['#FFD700', '#FFA500', '#FF6347', '#FFFF00', '#FFB6C1', '#87CEEB'];
+    const colors = ['var(--color-warning)', '#FFA500', '#FF6347', '#FFFF00', '#FFB6C1', '#87CEEB'];
 
     class ConfettiPiece {
       constructor() {
@@ -507,15 +507,15 @@ export default function ArenaResult({ isAdminView = false }) {
         <div style={adminStyles.container}>
           <div style={adminStyles.header}>
             <div style={adminStyles.title}>🏆 Final Race Results</div>
-            <div style={{ fontSize: '20px', color: '#667eea', fontWeight: '700' }}>Room: {roomId}</div>
+            <div style={{ fontSize: '20px', color: 'var(--color-accent-2)', fontWeight: '700' }}>Room: {roomId}</div>
             {raceOngoing && (
-              <div style={{ color: '#dc3545', fontWeight: '700', marginTop: '10px' }}>
+              <div style={{ color: 'var(--color-danger)', fontWeight: '700', marginTop: '10px' }}>
                 ⚠️ RACE STILL IN PROGRESS (Live View)
               </div>
             )}
           </div>
 
-          <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #eee', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--color-text)', borderRadius: '16px', border: '1px solid #eee', overflow: 'hidden' }}>
             <table style={adminStyles.table}>
               <thead>
                 <tr>
@@ -567,8 +567,8 @@ export default function ArenaResult({ isAdminView = false }) {
               onClick={fetchResults}
               style={{
                 padding: '12px 24px',
-                background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                color: '#fff',
+                background: 'linear-gradient(135deg, var(--color-accent-2), #764ba2)',
+                color: 'var(--color-text)',
                 border: 'none',
                 borderRadius: '12px',
                 fontWeight: '700',
@@ -607,8 +607,8 @@ export default function ArenaResult({ isAdminView = false }) {
             {results[1] && (
               <div style={{...styles.trophy, ...styles.trophy2}}>
                 <img src="/trophies/silver-trophy.png" alt="2nd" style={{ width: '75px' }} />
-                <span style={{ fontSize: 14, fontWeight: 'bold', marginTop: 6, color: '#fff' }}>Rank 2</span>
-                <p style={{ fontSize: 14, marginTop: 3, color: '#cbd5e1' }}><PlayerName displayName={results[1].displayName} username={results[1].username} /></p>
+                <span style={{ fontSize: 14, fontWeight: 'bold', marginTop: 6, color: 'var(--color-text)' }}>Rank 2</span>
+                <p style={{ fontSize: 14, marginTop: 3, color: 'var(--color-text-muted)' }}><PlayerName displayName={results[1].displayName} username={results[1].username} /></p>
               </div>
             )}
 
@@ -617,8 +617,8 @@ export default function ArenaResult({ isAdminView = false }) {
                 <img src="/trophies/crown.png" alt="crown" style={styles.crown} />
                 <div style={{...styles.trophy, ...styles.trophy1}}>
                   <img src="/trophies/gold-trophy.png" alt="1st" style={{ width: '100px' }} />
-                  <span style={{ fontSize: 15, fontWeight: 'bold', marginTop: 6, color: '#fff' }}>Rank 1</span>
-                  <p style={{ fontSize: 15, marginTop: 3, color: '#cbd5e1' }}><PlayerName displayName={results[0].displayName} username={results[0].username} /></p>
+                  <span style={{ fontSize: 15, fontWeight: 'bold', marginTop: 6, color: 'var(--color-text)' }}>Rank 1</span>
+                  <p style={{ fontSize: 15, marginTop: 3, color: 'var(--color-text-muted)' }}><PlayerName displayName={results[0].displayName} username={results[0].username} /></p>
                 </div>
               </div>
             )}
@@ -626,8 +626,8 @@ export default function ArenaResult({ isAdminView = false }) {
             {results[2] && (
               <div style={{...styles.trophy, ...styles.trophy3}}>
                 <img src="/trophies/bronze-trophy.png" alt="3rd" style={{ width: '75px' }} />
-                <span style={{ fontSize: 14, fontWeight: 'bold', marginTop: 6, color: '#fff' }}>Rank 3</span>
-                <p style={{ fontSize: 14, marginTop: 3, color: '#cbd5e1' }}><PlayerName displayName={results[2].displayName} username={results[2].username} /></p>
+                <span style={{ fontSize: 14, fontWeight: 'bold', marginTop: 6, color: 'var(--color-text)' }}>Rank 3</span>
+                <p style={{ fontSize: 14, marginTop: 3, color: 'var(--color-text-muted)' }}><PlayerName displayName={results[2].displayName} username={results[2].username} /></p>
               </div>
             )}
           </div>

@@ -38,7 +38,7 @@ function tryMove(game, san) {
   }
 }
 
-export default function SolutionText({ text, startFen, accentColor = '#a5b4fc', onPlayLine }) {
+export default function SolutionText({ text, startFen, accentColor = 'var(--color-accent-2)', onPlayLine }) {
   // Parse once per (text, startFen).
   const parts = useMemo(() => {
     if (!text) return [];

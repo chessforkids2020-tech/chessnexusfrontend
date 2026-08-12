@@ -293,7 +293,7 @@ export default function LiveGame() {
       const blackMove = moves[i + 1];
       notationRows.push(
         <div key={moveNumber} style={{ display: 'flex', padding: '4px 8px', borderBottom: '1px solid #eee' }}>
-          <span style={{ width: '30px', fontWeight: 'bold', color: '#666' }}>{moveNumber}.</span>
+          <span style={{ width: '30px', fontWeight: 'bold', color: 'var(--color-text-faint)' }}>{moveNumber}.</span>
           <span style={{ width: '60px', fontFamily: 'monospace', fontSize: '14px', padding: '2px' }}>{whiteMove || ''}</span>
           <span style={{ width: '60px', fontFamily: 'monospace', fontSize: '14px', padding: '2px' }}>{blackMove || ''}</span>
         </div>
@@ -312,12 +312,12 @@ export default function LiveGame() {
           {/* Opponent Block */}
           <div style={{ 
             padding: '15px', 
-            backgroundColor: game.turn() !== orientation[0] ? '#f8f9fa' : '#fff',
+            backgroundColor: game.turn() !== orientation[0] ? 'var(--color-surface)' : 'var(--color-text)',
             borderRadius: '10px',
             border: `2px solid ${game.turn() !== orientation[0] ? '#3498db' : '#eee'}`,
             width: '200px'
           }}>
-            <div style={{ fontSize: '14px', color: '#666' }}>Opponent</div>
+            <div style={{ fontSize: '14px', color: 'var(--color-text-faint)' }}>Opponent</div>
             <div style={{ fontWeight: 'bold', fontSize: '18px' }}>
               {orientation === 'white' ? (gameData.players.black.displayName || gameData.players.black.username) : (gameData.players.white.displayName || gameData.players.white.username)}
             </div>
@@ -331,12 +331,12 @@ export default function LiveGame() {
           {/* User Block */}
           <div style={{ 
             padding: '15px', 
-            backgroundColor: game.turn() === orientation[0] ? '#f8f9fa' : '#fff',
+            backgroundColor: game.turn() === orientation[0] ? 'var(--color-surface)' : 'var(--color-text)',
             borderRadius: '10px',
             border: `2px solid ${game.turn() === orientation[0] ? '#3498db' : '#eee'}`,
             width: '200px'
           }}>
-            <div style={{ fontSize: '14px', color: '#666' }}>You</div>
+            <div style={{ fontSize: '14px', color: 'var(--color-text-faint)' }}>You</div>
             <div style={{ fontWeight: 'bold', fontSize: '18px' }}>
               {user.displayName}
             </div>
@@ -372,7 +372,7 @@ export default function LiveGame() {
         {analysisMode ? (
           // Analysis Mode
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <h3 style={{ marginBottom: '15px', color: '#333' }}>Game Analysis</h3>
+            <h3 style={{ marginBottom: '15px', color: 'var(--color-text)' }}>Game Analysis</h3>
             
             {/* Analysis Controls */}
             <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -408,7 +408,7 @@ export default function LiveGame() {
               </button>
               <span style={{ 
                 padding: '8px 12px', 
-                backgroundColor: '#f8f9fa', 
+                backgroundColor: 'var(--color-surface)', 
                 borderRadius: '5px',
                 fontSize: '14px',
                 fontWeight: 'bold',
@@ -479,21 +479,21 @@ export default function LiveGame() {
 
         {/* Notation Panel */}
         <div style={{
-          backgroundColor: '#fff',
+          backgroundColor: 'var(--color-text)',
           borderRadius: '10px',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+          boxShadow: '0 2px 10px var(--color-black-a20)',
           padding: '15px',
           minWidth: '200px',
           maxWidth: '250px',
           maxHeight: window.innerWidth < 600 ? '350px' : '500px',
           overflowY: 'auto'
         }}>
-          <h3 style={{ margin: '0 0 15px 0', textAlign: 'center', color: '#333' }}>
+          <h3 style={{ margin: '0 0 15px 0', textAlign: 'center', color: 'var(--color-text)' }}>
             {analysisMode ? 'Analysis Notation' : 'Game Notation'}
           </h3>
           
           {/* Header */}
-          <div style={{ display: 'flex', padding: '8px', borderBottom: '2px solid #333', backgroundColor: '#f8f9fa', fontWeight: 'bold' }}>
+          <div style={{ display: 'flex', padding: '8px', borderBottom: '2px solid var(--color-text)', backgroundColor: 'var(--color-surface)', fontWeight: 'bold' }}>
             <span style={{ width: '30px' }}>#</span>
             <span style={{ width: '60px' }}>White</span>
             <span style={{ width: '60px' }}>Black</span>

@@ -6,14 +6,14 @@
    with the global theme tokens, and Vite bundles all CSS together, so a :root
    here would override the theme app-wide. See EventForm.css for the full note. */
 .event-page-container {
-  --bg:           #0a0a0a;
-  --glass-bg:     rgba(23, 23, 23, 0.72);
-  --glass-border: rgba(255, 255, 255, 0.06);
-  --glow-cyan:    #06b6d4;
-  --glow-emerald: #10b981;
+  --bg:           var(--color-bg);
+  --glass-bg:     var(--color-surface);
+  --glass-border: var(--color-white-a07);
+  --glow-cyan:    var(--color-accent);
+  --glow-emerald: var(--color-success);
   --text-primary: #f0f0f0;
-  --text-muted:   #9ca3af;
-  --text-dim:     #6b7280;
+  --text-muted:   var(--color-text-muted);
+  --text-dim:     var(--color-text-faint);
 }
 
 /* ── Page shell ────────────────────────────────── */
@@ -42,12 +42,12 @@
 .event-page-container::before {
   width: 700px; height: 700px;
   top: -150px; left: -200px;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.09) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--color-success-a12) 0%, transparent 70%);
 }
 .event-page-container::after {
   width: 600px; height: 600px;
   bottom: -120px; right: -160px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.09) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--color-accent-2-a15) 0%, transparent 70%);
 }
 
 /* ── Card ──────────────────────────────────────── */
@@ -63,8 +63,8 @@
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   box-shadow:
-    0 8px 32px rgba(0,0,0,0.55),
-    inset 0 1px 0 rgba(255,255,255,0.05);
+    0 8px 32px var(--color-black-a50),
+    inset 0 1px 0 var(--color-white-a04);
   text-align: center;
   animation: cardReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -90,8 +90,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(6, 182, 212, 0.12);
-  border: 1px solid rgba(6, 182, 212, 0.22);
+  background: var(--color-accent-a12);
+  border: 1px solid var(--color-accent-a20);
   color: var(--glow-cyan);
   font-size: 12px;
   font-weight: 600;
@@ -142,7 +142,7 @@
 .btn-primary {
   display: inline-block;
   background: linear-gradient(135deg, var(--glow-cyan) 0%, var(--glow-emerald) 100%);
-  color: #fff;
+  color: var(--color-text);
   padding: 14px 36px;
   border: none;
   border-radius: 12px;
@@ -151,12 +151,12 @@
   font-weight: 600;
   cursor: pointer;
   letter-spacing: 0.3px;
-  box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35);
+  box-shadow: 0 4px 18px var(--color-accent-a30);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(6, 182, 212, 0.52);
+  box-shadow: 0 6px 28px var(--color-accent-a40);
 }
 .btn-primary:active {
   transform: translateY(0);

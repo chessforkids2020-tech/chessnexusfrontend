@@ -64,7 +64,7 @@ export default function RoundScoreboard() {
   const styles = {
     pageWrapper: {
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       position: 'relative',
       overflow: 'hidden',
       padding: '20px',
@@ -75,17 +75,17 @@ export default function RoundScoreboard() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
       padding: '28px',
       marginTop: '20px',
       position: 'relative',
@@ -101,9 +101,9 @@ export default function RoundScoreboard() {
     },
     backButton: {
       padding: '10px 20px',
-      background: 'rgba(0, 0, 0, 0.4)',
-      color: '#9ca3af',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-black-a35)',
+      color: 'var(--color-text-muted)',
+      border: '1px solid var(--color-white-a10)',
       borderRadius: '10px',
       cursor: 'pointer',
       fontSize: '14px',
@@ -117,76 +117,76 @@ export default function RoundScoreboard() {
       margin: 0,
       fontSize: '28px',
       fontWeight: '700',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
     },
     subtitle: {
       margin: '8px 0 0 0',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '14px',
     },
     loadingContainer: {
       textAlign: 'center',
       padding: '60px 20px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     tableWrapper: {
       overflowX: 'auto',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       borderRadius: '12px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     table: {
       width: '100%',
       borderCollapse: 'collapse',
     },
     thead: {
-      backgroundColor: 'rgba(6, 182, 212, 0.1)',
-      borderBottom: '1px solid rgba(6, 182, 212, 0.2)',
+      backgroundColor: 'var(--color-accent-a12)',
+      borderBottom: '1px solid var(--color-accent-a20)',
     },
     th: {
       padding: '16px',
       fontWeight: '600',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       textAlign: 'left',
       fontSize: '13px',
       textTransform: 'uppercase',
       letterSpacing: '0.5px',
     },
     tr: {
-      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+      borderBottom: '1px solid var(--color-white-a04)',
       transition: 'background 0.2s ease',
     },
     td: {
       padding: '16px',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     playerName: {
       fontWeight: '500',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       fontSize: '15px',
     },
     username: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginTop: '4px',
     },
     pointsDisplay: {
       fontWeight: '700',
-      color: '#10b981',
+      color: 'var(--color-success)',
       fontSize: '16px',
     },
     pointsInput: {
       width: '80px',
       padding: '8px 12px',
-      border: '2px solid #06b6d4',
+      border: '2px solid var(--color-accent)',
       borderRadius: '8px',
       fontSize: '14px',
       textAlign: 'center',
-      background: 'rgba(0, 0, 0, 0.5)',
-      color: '#ffffff',
+      background: 'var(--color-black-a50)',
+      color: 'var(--color-text)',
       fontWeight: '600',
     },
     buttonGroup: {
@@ -195,21 +195,21 @@ export default function RoundScoreboard() {
     },
     saveButton: {
       padding: '8px 14px',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       borderRadius: '8px',
       cursor: 'pointer',
       fontSize: '13px',
       fontWeight: '600',
       transition: 'all 0.3s ease',
-      boxShadow: '0 2px 8px rgba(6, 182, 212, 0.3)',
+      boxShadow: '0 2px 8px var(--color-accent-a30)',
     },
     cancelButton: {
       padding: '8px 14px',
-      background: 'rgba(0, 0, 0, 0.4)',
-      color: '#9ca3af',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-black-a35)',
+      color: 'var(--color-text-muted)',
+      border: '1px solid var(--color-white-a10)',
       borderRadius: '8px',
       cursor: 'pointer',
       fontSize: '13px',
@@ -218,9 +218,9 @@ export default function RoundScoreboard() {
     },
     editButton: {
       padding: '8px 14px',
-      background: 'rgba(6, 182, 212, 0.15)',
-      color: '#06b6d4',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      background: 'var(--color-accent-a15)',
+      color: 'var(--color-accent)',
+      border: '1px solid var(--color-accent-a20)',
       borderRadius: '8px',
       cursor: 'pointer',
       fontSize: '13px',
@@ -230,27 +230,27 @@ export default function RoundScoreboard() {
     infoBox: {
       marginTop: '28px',
       padding: '20px',
-      backgroundColor: 'rgba(6, 182, 212, 0.05)',
+      backgroundColor: 'var(--color-accent-a06)',
       borderRadius: '12px',
-      border: '1px solid rgba(6, 182, 212, 0.1)',
+      border: '1px solid var(--color-accent-a12)',
     },
     infoTitle: {
       margin: '0 0 12px 0',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       fontSize: '16px',
       fontWeight: '600',
     },
     infoList: {
       margin: '8px 0',
       paddingLeft: '20px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '14px',
       lineHeight: '1.8',
     },
     emptyState: {
       padding: '40px 20px',
       textAlign: 'center',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '15px',
     },
     rankBadge: {
@@ -260,11 +260,11 @@ export default function RoundScoreboard() {
       width: '32px',
       height: '32px',
       borderRadius: '8px',
-      background: 'rgba(6, 182, 212, 0.15)',
-      color: '#06b6d4',
+      background: 'var(--color-accent-a15)',
+      color: 'var(--color-accent)',
       fontWeight: '700',
       fontSize: '14px',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      border: '1px solid var(--color-accent-a20)',
     },
   };
 
@@ -290,11 +290,11 @@ export default function RoundScoreboard() {
           onClick={() => navigate('/scoreboard')}
           style={styles.backButton}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            e.currentTarget.style.borderColor = 'var(--color-white-a20)';
             e.currentTarget.style.transform = 'translateY(-2px)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.borderColor = 'var(--color-white-a10)';
             e.currentTarget.style.transform = 'translateY(0)';
           }}
         >
@@ -333,7 +333,7 @@ export default function RoundScoreboard() {
                   key={user._id} 
                   style={styles.tr}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(6, 182, 212, 0.05)';
+                    e.currentTarget.style.background = 'var(--color-accent-a06)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = 'transparent';
@@ -373,10 +373,10 @@ export default function RoundScoreboard() {
                             onClick={savePoints} 
                             style={styles.saveButton}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.boxShadow = '0 4px 12px rgba(6, 182, 212, 0.5)';
+                              e.currentTarget.style.boxShadow = '0 4px 12px var(--color-accent-a40)';
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.boxShadow = '0 2px 8px rgba(6, 182, 212, 0.3)';
+                              e.currentTarget.style.boxShadow = '0 2px 8px var(--color-accent-a30)';
                             }}
                           >
                             Save
@@ -385,10 +385,10 @@ export default function RoundScoreboard() {
                             onClick={cancelEditing} 
                             style={styles.cancelButton}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                              e.currentTarget.style.borderColor = 'var(--color-white-a20)';
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                              e.currentTarget.style.borderColor = 'var(--color-white-a10)';
                             }}
                           >
                             Cancel
@@ -399,10 +399,10 @@ export default function RoundScoreboard() {
                           onClick={() => startEditing(user)} 
                           style={styles.editButton}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'rgba(6, 182, 212, 0.25)';
+                            e.currentTarget.style.background = 'var(--color-accent-a20)';
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
+                            e.currentTarget.style.background = 'var(--color-accent-a15)';
                           }}
                         >
                           Edit

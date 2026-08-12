@@ -9,17 +9,17 @@ const API = import.meta.env.VITE_API_URL || window.location.origin;
 const styles = {
   page: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent-2) 0%, #764ba2 100%)',
     padding: '20px',
     fontFamily: 'Inter, Arial, sans-serif',
   },
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
-    background: '#fff',
+    background: 'var(--color-text)',
     borderRadius: '20px',
     padding: '30px',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+    boxShadow: '0 20px 40px var(--color-black-a20)',
   },
   header: {
     textAlign: 'center',
@@ -28,23 +28,23 @@ const styles = {
   title: {
     fontSize: '32px',
     fontWeight: '800',
-    color: '#1a1a1a',
+    color: 'var(--color-surface)',
     marginBottom: '10px',
-    background: 'linear-gradient(135deg, #667eea, #764ba2)',
+    background: 'linear-gradient(135deg, var(--color-accent-2), #764ba2)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
   },
   subtitle: {
     fontSize: '16px',
-    color: '#666',
+    color: 'var(--color-text-faint)',
     marginBottom: '20px',
   },
   backButton: {
     position: 'absolute',
     top: '20px',
     left: '20px',
-    background: '#6c757d',
-    color: '#fff',
+    background: 'var(--color-text-faint)',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '8px',
@@ -53,16 +53,16 @@ const styles = {
     fontSize: '14px',
   },
   createSection: {
-    background: '#f8f9fa',
+    background: 'var(--color-surface)',
     padding: '30px',
     borderRadius: '16px',
     marginBottom: '40px',
-    border: '1px solid #e9ecef',
+    border: '1px solid var(--color-surface-2)',
   },
   sectionTitle: {
     fontSize: '24px',
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: 'var(--color-surface)',
     marginBottom: '20px',
     display: 'flex',
     alignItems: 'center',
@@ -81,26 +81,26 @@ const styles = {
   label: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#374151',
+    color: 'var(--color-text-faint)',
     marginBottom: '8px',
   },
   input: {
     padding: '12px 16px',
     borderRadius: '8px',
-    border: '1px solid #d1d5db',
+    border: '1px solid var(--color-text-muted)',
     fontSize: '16px',
     transition: 'border-color 0.2s, box-shadow 0.2s',
   },
   select: {
     padding: '12px 16px',
     borderRadius: '8px',
-    border: '1px solid #d1d5db',
+    border: '1px solid var(--color-text-muted)',
     fontSize: '16px',
-    background: '#fff',
+    background: 'var(--color-text)',
   },
   createButton: {
-    background: 'linear-gradient(135deg, #28a745, #20c997)',
-    color: '#fff',
+    background: 'linear-gradient(135deg, var(--color-success), #20c997)',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '15px 30px',
     borderRadius: '12px',
@@ -118,22 +118,22 @@ const styles = {
     overflowY: 'hidden',
     padding: '10px 0',
     scrollbarWidth: 'thin',
-    scrollbarColor: '#667eea #f1f1f1',
+    scrollbarColor: 'var(--color-accent-2) #f1f1f1',
     width: '100%',
     boxSizing: 'border-box',
   },
   raceCard: {
-    background: '#fff',
+    background: 'var(--color-text)',
     borderRadius: '8px',
     padding: '12px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-    border: '1px solid #e9ecef',
+    boxShadow: '0 4px 12px var(--color-black-a20)',
+    border: '1px solid var(--color-surface-2)',
     transition: 'transform 0.2s, box-shadow 0.2s',
     cursor: 'pointer',
   },
   raceCardHover: {
     transform: 'translateY(-4px)',
-    boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+    boxShadow: '0 8px 25px var(--color-black-a20)',
   },
   raceHeader: {
     display: 'flex',
@@ -144,7 +144,7 @@ const styles = {
   raceTitle: {
     fontSize: '20px',
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: 'var(--color-surface)',
   },
   statusBadge: {
     padding: '6px 12px',
@@ -162,12 +162,12 @@ const styles = {
   infoItem: {
     textAlign: 'center',
     padding: '12px',
-    background: '#f8f9fa',
+    background: 'var(--color-surface)',
     borderRadius: '8px',
   },
   infoLabel: {
     fontSize: '12px',
-    color: '#666',
+    color: 'var(--color-text-faint)',
     textTransform: 'uppercase',
     fontWeight: '600',
     marginBottom: '4px',
@@ -175,7 +175,7 @@ const styles = {
   infoValue: {
     fontSize: '16px',
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: 'var(--color-surface)',
   },
   raceActions: {
     display: 'flex',
@@ -192,55 +192,55 @@ const styles = {
     transition: 'all 0.2s',
   },
   primaryAction: {
-    background: 'linear-gradient(135deg, #007bff, #0056b3)',
-    color: '#fff',
+    background: 'linear-gradient(135deg, var(--color-accent-2), #0056b3)',
+    color: 'var(--color-text)',
   },
   secondaryAction: {
-    background: '#6c757d',
-    color: '#fff',
+    background: 'var(--color-text-faint)',
+    color: 'var(--color-text)',
   },
   successAction: {
-    background: 'linear-gradient(135deg, #28a745, #20c997)',
-    color: '#fff',
+    background: 'linear-gradient(135deg, var(--color-success), #20c997)',
+    color: 'var(--color-text)',
   },
   dangerAction: {
-    background: 'linear-gradient(135deg, #dc3545, #c82333)',
-    color: '#fff',
+    background: 'linear-gradient(135deg, var(--color-danger), #c82333)',
+    color: 'var(--color-text)',
   },
   warningAction: {
-    background: 'linear-gradient(135deg, #ffc107, #e0a800)',
+    background: 'linear-gradient(135deg, var(--color-warning), #e0a800)',
     color: '#212529',
   },
   disabledAction: {
-    background: '#6c757d',
-    color: '#fff',
+    background: 'var(--color-text-faint)',
+    color: 'var(--color-text)',
     cursor: 'not-allowed',
     opacity: 0.6,
   },
   linkDisplay: {
-    background: '#f8f9fa',
+    background: 'var(--color-surface)',
     padding: '8px',
     borderRadius: '8px',
     marginTop: '8px',
-    border: '1px solid #e9ecef',
+    border: '1px solid var(--color-surface-2)',
   },
   linkText: {
     fontSize: '14px',
-    color: '#007bff',
+    color: 'var(--color-accent-2)',
     wordBreak: 'break-all',
     fontFamily: 'monospace',
   },
   roomIdText: {
     fontSize: '16px',
-    color: '#1a1a1a',
+    color: 'var(--color-surface)',
     textAlign: 'center',
     fontFamily: 'monospace',
     letterSpacing: '1px',
     marginBottom: '8px',
   },
   copyButton: {
-    background: '#007bff',
-    color: '#fff',
+    background: 'var(--color-accent-2)',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '6px 12px',
     borderRadius: '6px',
@@ -251,7 +251,7 @@ const styles = {
   loading: {
     textAlign: 'center',
     padding: '60px',
-    color: '#666',
+    color: 'var(--color-text-faint)',
     fontSize: '18px',
   },
   error: {
@@ -271,7 +271,7 @@ const styles = {
   empty: {
     textAlign: 'center',
     padding: '60px',
-    color: '#666',
+    color: 'var(--color-text-faint)',
   },
   emptyTitle: {
     fontSize: '24px',
@@ -284,23 +284,23 @@ const styles = {
   table: {
     width: '100%',
     borderCollapse: 'collapse',
-    background: '#fff',
+    background: 'var(--color-text)',
     borderRadius: '8px',
     overflow: 'hidden',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-    border: '1px solid #e9ecef',
+    boxShadow: '0 4px 12px var(--color-black-a20)',
+    border: '1px solid var(--color-surface-2)',
   },
   tableHeader: {
-    background: '#f8f9fa',
-    borderBottom: '2px solid #e9ecef',
+    background: 'var(--color-surface)',
+    borderBottom: '2px solid var(--color-surface-2)',
   },
   th: {
     padding: '12px 16px',
     textAlign: 'left',
     fontSize: '14px',
     fontWeight: '600',
-    color: '#374151',
-    borderRight: '1px solid #e9ecef',
+    color: 'var(--color-text-faint)',
+    borderRight: '1px solid var(--color-surface-2)',
   },
   thLast: {
     borderRight: 'none',
@@ -309,7 +309,7 @@ const styles = {
     padding: '12px 16px',
     borderBottom: '1px solid #f1f1f1',
     fontSize: '14px',
-    color: '#1a1a1a',
+    color: 'var(--color-surface)',
   },
   tdCenter: {
     textAlign: 'center',
@@ -525,7 +525,7 @@ export default function ArenaAdmin() {
       case 'completed':
         return { background: '#d4edda', color: '#155724' };
       default:
-        return { background: '#f8f9fa', color: '#6c757d' };
+        return { background: 'var(--color-surface)', color: 'var(--color-text-faint)' };
     }
   };
 
@@ -649,7 +649,7 @@ export default function ArenaAdmin() {
                   style={styles.input}
                   required
                 />
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Base points awarded for each correct puzzle (1-100)</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Base points awarded for each correct puzzle (1-100)</small>
               </div>
 
               <div style={styles.formGroup}>
@@ -663,7 +663,7 @@ export default function ArenaAdmin() {
                   style={styles.input}
                   required
                 />
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Bonus points for solving quickly (0-50)</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Bonus points for solving quickly (0-50)</small>
               </div>
 
               <div style={styles.formGroup}>
@@ -677,7 +677,7 @@ export default function ArenaAdmin() {
                   style={styles.input}
                   required
                 />
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Time limit to earn bonus points (5-300 seconds)</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Time limit to earn bonus points (5-300 seconds)</small>
               </div>
 
               <div style={styles.formGroup}>
@@ -690,7 +690,7 @@ export default function ArenaAdmin() {
                   <option value="manual">Manual Start</option>
                   <option value="auto">Automatic Start</option>
                 </select>
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Auto start begins the race at the scheduled time</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Auto start begins the race at the scheduled time</small>
               </div>
 
               {formData.startMode === 'auto' && (
@@ -703,7 +703,7 @@ export default function ArenaAdmin() {
                     style={styles.input}
                     required={formData.startMode === 'auto'}
                   />
-                  <small style={{ color: '#6c757d', fontSize: '12px' }}>Enter time in Indian Standard Time (IST). Race starts automatically at this time.</small>
+                  <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Enter time in Indian Standard Time (IST). Race starts automatically at this time.</small>
                 </div>
               )}
 
@@ -717,7 +717,7 @@ export default function ArenaAdmin() {
                   onChange={(e) => setFormData({ ...formData, botCount: Math.min(10, Math.max(0, parseInt(e.target.value) || 0)) })}
                   style={styles.input}
                 />
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Filler players automatically solve puzzles during the race. Only add if the race needs padding (0 = none).</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Filler players automatically solve puzzles during the race. Only add if the race needs padding (0 = none).</small>
               </div>
             </div>
 
@@ -768,12 +768,12 @@ export default function ArenaAdmin() {
                 }}
                 style={{
                   ...styles.refreshButton,
-                  backgroundColor: '#dc3545',
+                  backgroundColor: 'var(--color-danger)',
                   color: 'white',
-                  border: '1px solid #dc3545'
+                  border: '1px solid var(--color-danger)'
                 }}
                 onMouseEnter={(e) => e.target.style.backgroundColor = '#c82333'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#dc3545'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-danger)'}
               >
                 🗑️ Delete All Races
               </button>
@@ -805,22 +805,22 @@ export default function ArenaAdmin() {
               {races.map((race) => (
                 <tr key={race.roomId}>
                   <td style={styles.td}>
-                    <div style={{ fontWeight: '600', color: '#1a1a1a' }}>
+                    <div style={{ fontWeight: '600', color: 'var(--color-surface)' }}>
                       {race.name || 'Unnamed Race'}
                     </div>
-                    <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+                    <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', marginTop: '2px' }}>
                       {race.topic}
                     </div>
                   </td>
                   <td style={styles.td}>
-                    <div style={{ fontWeight: '600', color: '#1a1a1a' }}>
+                    <div style={{ fontWeight: '600', color: 'var(--color-surface)' }}>
                       {race.timeLimit} min
                     </div>
                   </td>
                   <td style={styles.td}>
                     <div style={{ 
                       fontWeight: '600', 
-                      color: race.startMode === 'auto' ? '#764ba2' : '#6c757d',
+                      color: race.startMode === 'auto' ? '#764ba2' : 'var(--color-text-faint)',
                       fontSize: '12px',
                       textTransform: 'uppercase'
                     }}>
@@ -828,12 +828,12 @@ export default function ArenaAdmin() {
                     </div>
                   </td>
                   <td style={styles.td}>
-                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#1a1a1a' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--color-surface)' }}>
                       {race.plannedStartTime ? formatDate(race.plannedStartTime) : '—'}
                     </div>
                   </td>
                   <td style={styles.td}>
-                    <div style={{ fontWeight: '600', color: '#1a1a1a' }}>
+                    <div style={{ fontWeight: '600', color: 'var(--color-surface)' }}>
                       {race.players?.length || 0}
                     </div>
                     <div style={{ 
@@ -848,7 +848,7 @@ export default function ArenaAdmin() {
                     </div>
                   </td>
                   <td style={styles.td}>
-                    <div style={{ fontFamily: 'monospace', fontWeight: '600', color: '#1a1a1a' }}>
+                    <div style={{ fontFamily: 'monospace', fontWeight: '600', color: 'var(--color-surface)' }}>
                       {race.roomId}
                     </div>
                   </td>
@@ -926,14 +926,14 @@ export default function ArenaAdmin() {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
               onClick={fetchCleanupStats}
-              style={{ background: '#fff', border: '1px solid #f0c080', color: '#7c4a00', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}
+              style={{ background: 'var(--color-text)', border: '1px solid #f0c080', color: '#7c4a00', padding: '8px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '13px' }}
             >
               🔍 Check Stats
             </button>
             <button
               onClick={runCleanup}
               disabled={cleanupRunning}
-              style={{ background: cleanupRunning ? '#ccc' : '#e65c00', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: cleanupRunning ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '13px' }}
+              style={{ background: cleanupRunning ? '#ccc' : '#e65c00', color: 'var(--color-text)', border: 'none', padding: '8px 16px', borderRadius: '8px', cursor: cleanupRunning ? 'not-allowed' : 'pointer', fontWeight: '600', fontSize: '13px' }}
             >
               {cleanupRunning ? 'Cleaning...' : '🗑️ Run Cleanup Now'}
             </button>
@@ -943,15 +943,15 @@ export default function ArenaAdmin() {
         {cleanupStats && (
           <div style={{ marginTop: '16px' }}>
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '12px' }}>
-              <div style={{ background: '#fff', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
+              <div style={{ background: 'var(--color-text)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
                 <div style={{ fontSize: '24px', fontWeight: '800', color: '#2d7a2d' }}>{cleanupStats.keptCount}</div>
                 <div style={{ fontSize: '12px', color: '#555' }}>Races Kept</div>
               </div>
-              <div style={{ background: '#fff', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
+              <div style={{ background: 'var(--color-text)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '120px' }}>
                 <div style={{ fontSize: '24px', fontWeight: '800', color: cleanupStats.eligibleForDeletion > 0 ? '#c0392b' : '#555' }}>{cleanupStats.eligibleForDeletion}</div>
                 <div style={{ fontSize: '12px', color: '#555' }}>Ready to Delete</div>
               </div>
-              <div style={{ background: '#fff', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '160px' }}>
+              <div style={{ background: 'var(--color-text)', border: '1px solid #e0c090', borderRadius: '8px', padding: '12px 20px', textAlign: 'center', minWidth: '160px' }}>
                 <div style={{ fontSize: '14px', fontWeight: '600', color: '#7c4a00' }}>{new Date(cleanupStats.cutoffDate).toDateString()}</div>
                 <div style={{ fontSize: '12px', color: '#555' }}>Cutoff Date</div>
               </div>

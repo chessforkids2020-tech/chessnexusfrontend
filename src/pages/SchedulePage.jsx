@@ -131,10 +131,10 @@ function ActivityCard({ item, compact }) {
       style={{
         background: 'rgba(23,23,23,0.8)',
         borderRadius: 12,
-        borderTop: '1px solid rgba(255,255,255,0.05)',
-        borderRight: '1px solid rgba(255,255,255,0.05)',
-        borderBottom: '1px solid rgba(255,255,255,0.05)',
-        borderLeft: `4px solid ${item.color || '#06b6d4'}`,
+        borderTop: '1px solid var(--color-white-a04)',
+        borderRight: '1px solid var(--color-white-a04)',
+        borderBottom: '1px solid var(--color-white-a04)',
+        borderLeft: `4px solid ${item.color || 'var(--color-accent)'}`,
         padding: compact ? '10px 12px' : '14px 16px',
         marginBottom: 10,
         position: 'relative',
@@ -142,32 +142,32 @@ function ActivityCard({ item, compact }) {
         transition: 'transform 0.15s, box-shadow 0.15s',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
-        boxShadow: live ? `0 0 16px ${item.color || '#06b6d4'}44` : '0 4px 16px rgba(0,0,0,0.4)',
+        boxShadow: live ? `0 0 16px ${item.color || 'var(--color-accent)'}44` : '0 4px 16px var(--color-black-a35)',
       }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 24px rgba(0,0,0,0.6)`; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = live ? `0 0 16px ${item.color || '#06b6d4'}44` : '0 4px 16px rgba(0,0,0,0.4)'; }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 24px var(--color-black-a65)`; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = live ? `0 0 16px ${item.color || 'var(--color-accent)'}44` : '0 4px 16px var(--color-black-a35)'; }}
       onClick={() => item.link && navigate(item.link)}
     >
       {live && (
         <div style={{ position: 'absolute', top: 8, right: 10, display: 'flex', alignItems: 'center', gap: 4 }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
-          <span style={{ color: '#22c55e', fontSize: 11, fontWeight: 700 }}>LIVE</span>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
+          <span style={{ color: 'var(--color-success)', fontSize: 11, fontWeight: 700 }}>LIVE</span>
         </div>
       )}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
         <span style={{ fontSize: compact ? 16 : 20 }}>{ACTIVITY_ICONS[item.activityType] || '📌'}</span>
-        <span style={{ color: '#ffffff', fontWeight: 700, fontSize: compact ? 13 : 15 }}>{item.title}</span>
+        <span style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: compact ? 13 : 15 }}>{item.title}</span>
       </div>
-      <div style={{ color: '#9ca3af', fontSize: 12, marginBottom: 4 }}>
+      <div style={{ color: 'var(--color-text-muted)', fontSize: 12, marginBottom: 4 }}>
         {formatLocalTimeFromIst(item)} · {item.durationMinutes} min
       </div>
       {!compact && item.description && (
-        <div style={{ color: '#cbd5e1', fontSize: 12, marginBottom: 6 }}>{item.description}</div>
+        <div style={{ color: 'var(--color-text-muted)', fontSize: 12, marginBottom: 6 }}>{item.description}</div>
       )}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{
-          background: `${item.color || '#06b6d4'}22`,
-          color: item.color || '#06b6d4',
+          background: `${item.color || 'var(--color-accent)'}22`,
+          color: item.color || 'var(--color-accent)',
           borderRadius: 20,
           padding: '2px 8px',
           fontSize: 11,
@@ -176,10 +176,10 @@ function ActivityCard({ item, compact }) {
           {ACTIVITY_LABELS[item.activityType] || 'Activity'}
         </span>
         {!live && (
-          <span style={{ color: '#6b7280', fontSize: 11 }}>in {formatCountdown(ms)}</span>
+          <span style={{ color: 'var(--color-text-faint)', fontSize: 11 }}>in {formatCountdown(ms)}</span>
         )}
         {item.link && (
-          <span style={{ color: item.color || '#06b6d4', fontSize: 12, fontWeight: 600 }}>Join →</span>
+          <span style={{ color: item.color || 'var(--color-accent)', fontSize: 12, fontWeight: 600 }}>Join →</span>
         )}
       </div>
     </div>
@@ -216,8 +216,8 @@ function MonthCalendar({ byDateMap }) {
   };
 
   const navBtnSt = {
-    background: 'rgba(23,23,23,0.7)', border: '1px solid rgba(255,255,255,0.08)',
-    color: '#9ca3af', borderRadius: 8, width: 36, height: 36, cursor: 'pointer',
+    background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)',
+    color: 'var(--color-text-muted)', borderRadius: 8, width: 36, height: 36, cursor: 'pointer',
     fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
     fontFamily: 'Poppins,sans-serif',
   };
@@ -228,14 +228,14 @@ function MonthCalendar({ byDateMap }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={prevMonth} style={navBtnSt}>&#8249;</button>
-          <span style={{ fontSize: 20, fontWeight: 700, color: '#fff', minWidth: 200, textAlign: 'center' }}>
+          <span style={{ fontSize: 20, fontWeight: 700, color: 'var(--color-text)', minWidth: 200, textAlign: 'center' }}>
             {MONTH_NAMES[calMonth]} {calYear}
           </span>
           <button onClick={nextMonth} style={navBtnSt}>&#8250;</button>
         </div>
         <button
           onClick={goToday}
-          style={{ background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.3)', color: '#06b6d4', borderRadius: 20, padding: '6px 16px', cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'Poppins,sans-serif' }}
+          style={{ background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a30)', color: 'var(--color-accent)', borderRadius: 20, padding: '6px 16px', cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'Poppins,sans-serif' }}
         >Today</button>
       </div>
 
@@ -246,7 +246,7 @@ function MonthCalendar({ byDateMap }) {
       {/* Day-of-week headers */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4, marginBottom: 6 }}>
         {DAY_SHORT.map((d, i) => (
-          <div key={i} style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#6b7280', padding: '6px 0', letterSpacing: 1 }}>{d}</div>
+          <div key={i} style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: 'var(--color-text-faint)', padding: '6px 0', letterSpacing: 1 }}>{d}</div>
         ))}
       </div>
 
@@ -272,11 +272,11 @@ function MonthCalendar({ byDateMap }) {
               style={{
                 minHeight: 90,
                 borderRadius: 10,
-                background: !day ? 'transparent' : isSelected ? 'rgba(6,182,212,0.12)' : 'rgba(23,23,23,0.6)',
-                border: !day ? 'none' : isToday ? '1px solid rgba(6,182,212,0.6)' : isSelected ? '1px solid rgba(6,182,212,0.35)' : '1px solid rgba(255,255,255,0.05)',
+                background: !day ? 'transparent' : isSelected ? 'var(--color-accent-a12)' : 'rgba(23,23,23,0.6)',
+                border: !day ? 'none' : isToday ? '1px solid rgba(6,182,212,0.6)' : isSelected ? '1px solid var(--color-accent-a30)' : '1px solid var(--color-white-a04)',
                 padding: day ? '6px 8px' : 0,
                 cursor: day ? 'pointer' : 'default',
-                boxShadow: isToday ? '0 0 14px rgba(6,182,212,0.12)' : 'none',
+                boxShadow: isToday ? '0 0 14px var(--color-accent-a12)' : 'none',
                 transition: 'background 0.15s, border-color 0.15s',
                 backdropFilter: day ? 'blur(8px)' : 'none',
                 WebkitBackdropFilter: day ? 'blur(8px)' : 'none',
@@ -286,10 +286,10 @@ function MonthCalendar({ byDateMap }) {
                 <>
                   <div style={{ marginBottom: 5 }}>
                     <span style={isToday ? {
-                      background: '#06b6d4', color: '#000', borderRadius: '50%',
+                      background: 'var(--color-accent)', color: 'var(--color-bg)', borderRadius: '50%',
                       width: 22, height: 22, display: 'inline-flex', alignItems: 'center',
                       justifyContent: 'center', fontSize: 12, fontWeight: 800,
-                    } : { fontSize: 13, fontWeight: 700, color: '#9ca3af' }}>{day}</span>
+                    } : { fontSize: 13, fontWeight: 700, color: 'var(--color-text-muted)' }}>{day}</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                     {dayActivities.slice(0, 3).map(item => (
@@ -297,9 +297,9 @@ function MonthCalendar({ byDateMap }) {
                         key={item._id}
                         title={`${item.title} · ${formatLocalTimeFromIst(item)} · ${item.durationMinutes}min`}
                         style={{
-                          background: `${item.color || '#06b6d4'}20`,
-                          borderLeft: `3px solid ${item.color || '#06b6d4'}`,
-                          color: item.color || '#06b6d4',
+                          background: `${item.color || 'var(--color-accent)'}20`,
+                          borderLeft: `3px solid ${item.color || 'var(--color-accent)'}`,
+                          color: item.color || 'var(--color-accent)',
                           fontSize: 10, fontWeight: 600,
                           padding: '2px 5px',
                           borderRadius: '0 4px 4px 0',
@@ -310,7 +310,7 @@ function MonthCalendar({ byDateMap }) {
                       </div>
                     ))}
                     {dayActivities.length > 3 && (
-                      <div style={{ fontSize: 9, color: '#6b7280', paddingLeft: 4, fontWeight: 600 }}>+{dayActivities.length - 3} more</div>
+                      <div style={{ fontSize: 9, color: 'var(--color-text-faint)', paddingLeft: 4, fontWeight: 600 }}>+{dayActivities.length - 3} more</div>
                     )}
                   </div>
                 </>
@@ -330,7 +330,7 @@ function MonthCalendar({ byDateMap }) {
           onClick={() => { setSelectedDay(null); setSelectedDow(null); setSelectedDateStr(null); }}
           style={{
             position: 'fixed', inset: 0, zIndex: 9999,
-            background: 'rgba(0,0,0,0.7)',
+            background: 'var(--color-black-a65)',
             backdropFilter: 'blur(4px)',
             WebkitBackdropFilter: 'blur(4px)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -347,37 +347,37 @@ function MonthCalendar({ byDateMap }) {
               maxWidth: 560,
               maxHeight: '80vh',
               overflowY: 'auto',
-              border: '1px solid rgba(6,182,212,0.25)',
+              border: '1px solid var(--color-accent-a20)',
               backdropFilter: 'blur(16px)',
               WebkitBackdropFilter: 'blur(16px)',
-              boxShadow: '0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(6,182,212,0.08)',
+              boxShadow: '0 24px 64px var(--color-black-a65), 0 0 0 1px var(--color-accent-a08)',
               position: 'relative',
             }}
           >
             {/* Modal header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <div>
-                <div style={{ fontSize: 18, fontWeight: 800, color: '#06b6d4' }}>
+                <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-accent)' }}>
                   {DAYS[selectedDow]}
                 </div>
-                <div style={{ fontSize: 13, color: '#9ca3af', marginTop: 2 }}>
+                <div style={{ fontSize: 13, color: 'var(--color-text-muted)', marginTop: 2 }}>
                   {MONTH_NAMES[calMonth]} {selectedDay}, {calYear}
                 </div>
               </div>
               <button
                 onClick={() => { setSelectedDay(null); setSelectedDow(null); setSelectedDateStr(null); }}
                 style={{
-                  background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#9ca3af', cursor: 'pointer', borderRadius: 8,
+                  background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a10)',
+                  color: 'var(--color-text-muted)', cursor: 'pointer', borderRadius: 8,
                   width: 34, height: 34, fontSize: 18, lineHeight: 1,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
               >✕</button>
             </div>
             {/* Top shimmer line */}
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, #06b6d4, #10b981, #06b6d4)', backgroundSize: '200% 100%' }} />
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, borderRadius: '20px 20px 0 0', background: 'linear-gradient(90deg, var(--color-accent), var(--color-success), var(--color-accent))', backgroundSize: '200% 100%' }} />
             {byDateMap[selectedDateStr]?.length === 0 || !byDateMap[selectedDateStr] ? (
-              <div style={{ color: '#6b7280', fontSize: 14, textAlign: 'center', padding: '30px 0' }}>No activities scheduled on this day.</div>
+              <div style={{ color: 'var(--color-text-faint)', fontSize: 14, textAlign: 'center', padding: '30px 0' }}>No activities scheduled on this day.</div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {(byDateMap[selectedDateStr] || []).map(item => <ActivityCard key={item._id} item={item} />)}
@@ -438,11 +438,11 @@ function TodayTimetable({ byDateMap, items, tick }) {
       {/* TODAY header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
         <div>
-          <span style={{ fontSize: 22, fontWeight: 800, color: '#fff' }}>
+          <span style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-text)' }}>
             {DAYS[now.getDay()]},&nbsp;
-            <span style={{ color: '#06b6d4' }}>{MONTH_NAMES[now.getMonth()]} {now.getDate()}</span>
+            <span style={{ color: 'var(--color-accent)' }}>{MONTH_NAMES[now.getMonth()]} {now.getDate()}</span>
           </span>
-          <span style={{ marginLeft: 12, background: 'rgba(6,182,212,0.15)', color: '#06b6d4', borderRadius: 20, padding: '3px 12px', fontSize: 13, fontWeight: 700 }}>
+          <span style={{ marginLeft: 12, background: 'var(--color-accent-a15)', color: 'var(--color-accent)', borderRadius: 20, padding: '3px 12px', fontSize: 13, fontWeight: 700 }}>
             {todayItems.length} activit{todayItems.length === 1 ? 'y' : 'ies'} today
           </span>
         </div>
@@ -451,27 +451,27 @@ function TodayTimetable({ byDateMap, items, tick }) {
       {/* NEXT UP highlight */}
       {nextUpItem && (
         <div style={{
-          background: `linear-gradient(135deg, ${nextUpItem.color || '#06b6d4'}18 0%, rgba(23,23,23,0.9) 100%)`,
-          border: `1px solid ${nextUpItem.color || '#06b6d4'}55`,
+          background: `linear-gradient(135deg, ${nextUpItem.color || 'var(--color-accent)'}18 0%, var(--color-surface) 100%)`,
+          border: `1px solid ${nextUpItem.color || 'var(--color-accent)'}55`,
           borderRadius: 16, padding: '16px 20px', marginBottom: 24,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12,
-          boxShadow: `0 0 24px ${nextUpItem.color || '#06b6d4'}22`,
+          boxShadow: `0 0 24px ${nextUpItem.color || 'var(--color-accent)'}22`,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: `${nextUpItem.color || '#06b6d4'}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, border: `2px solid ${nextUpItem.color || '#06b6d4'}55` }}>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: `${nextUpItem.color || 'var(--color-accent)'}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, border: `2px solid ${nextUpItem.color || 'var(--color-accent)'}55` }}>
               {ACTIVITY_ICONS[nextUpItem.activityType] || '📌'}
             </div>
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, color: nextUpItem.color || '#06b6d4', letterSpacing: 1, marginBottom: 2 }}>NEXT UP</div>
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#fff' }}>{nextUpItem.title}</div>
-              <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>{fmtIstTime(nextUpItem)} · {nextUpItem.durationMinutes} min</div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: nextUpItem.color || 'var(--color-accent)', letterSpacing: 1, marginBottom: 2 }}>NEXT UP</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--color-text)' }}>{nextUpItem.title}</div>
+              <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 2 }}>{fmtIstTime(nextUpItem)} · {nextUpItem.durationMinutes} min</div>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 28, fontWeight: 900, color: nextUpItem.color || '#06b6d4', lineHeight: 1 }}>{formatCountdown(nextUpMs)}</div>
-            <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>until start</div>
+            <div style={{ fontSize: 28, fontWeight: 900, color: nextUpItem.color || 'var(--color-accent)', lineHeight: 1 }}>{formatCountdown(nextUpMs)}</div>
+            <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2 }}>until start</div>
             {nextUpItem.link && (
-              <button onClick={() => navigate(nextUpItem.link)} style={{ marginTop: 8, background: nextUpItem.color || '#06b6d4', color: '#000', border: 'none', borderRadius: 20, padding: '6px 16px', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'Poppins,sans-serif' }}>Join →</button>
+              <button onClick={() => navigate(nextUpItem.link)} style={{ marginTop: 8, background: nextUpItem.color || 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 20, padding: '6px 16px', fontWeight: 700, fontSize: 12, cursor: 'pointer', fontFamily: 'Poppins,sans-serif' }}>Join →</button>
             )}
           </div>
         </div>
@@ -479,18 +479,18 @@ function TodayTimetable({ byDateMap, items, tick }) {
 
       {/* Timetable rows */}
       {todayItems.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '48px 0', color: '#6b7280' }}>No activities scheduled for today.</div>
+        <div style={{ textAlign: 'center', padding: '48px 0', color: 'var(--color-text-faint)' }}>No activities scheduled for today.</div>
       ) : (
         <div style={{ position: 'relative' }}>
           {/* vertical timeline line */}
-          <div style={{ position: 'absolute', left: 44, top: 0, bottom: 0, width: 2, background: 'rgba(255,255,255,0.06)', borderRadius: 2, zIndex: 0 }} />
+          <div style={{ position: 'absolute', left: 44, top: 0, bottom: 0, width: 2, background: 'var(--color-white-a07)', borderRadius: 2, zIndex: 0 }} />
 
           {todayItems.map((item, idx) => {
             const status = getStatus(item);
             const isLive = status.type === 'live';
             const isEnded = status.type === 'ended';
             const isNext = nextUpItem && item._id === nextUpItem._id && item.occurrenceDate === nextUpItem.occurrenceDate;
-            const col = item.color || '#06b6d4';
+            const col = item.color || 'var(--color-accent)';
             return (
               <div
                 key={`${item._id}-${idx}`}
@@ -507,8 +507,8 @@ function TodayTimetable({ byDateMap, items, tick }) {
                 <div style={{ flexShrink: 0, width: 44, display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 4 }}>
                   <div style={{
                     width: 14, height: 14, borderRadius: '50%',
-                    background: isEnded ? '#374151' : col,
-                    border: `2px solid ${isEnded ? '#374151' : col}`,
+                    background: isEnded ? 'var(--color-text-faint)' : col,
+                    border: `2px solid ${isEnded ? 'var(--color-text-faint)' : col}`,
                     boxShadow: isLive ? `0 0 10px ${col}` : 'none',
                     animation: isLive ? 'schedPulse 1.4s infinite' : 'none',
                     flexShrink: 0,
@@ -522,26 +522,26 @@ function TodayTimetable({ byDateMap, items, tick }) {
                     ? `linear-gradient(135deg, ${col}18, rgba(23,23,23,0.85))`
                     : isNext
                     ? 'rgba(30,30,40,0.9)'
-                    : 'rgba(23,23,23,0.7)',
+                    : 'var(--color-surface)',
                   border: isLive
                     ? `1px solid ${col}66`
                     : isNext
                     ? `1px solid ${col}44`
-                    : '1px solid rgba(255,255,255,0.06)',
-                  borderLeft: `4px solid ${isEnded ? '#374151' : col}`,
+                    : '1px solid var(--color-white-a07)',
+                  borderLeft: `4px solid ${isEnded ? 'var(--color-text-faint)' : col}`,
                   borderRadius: '0 12px 12px 0',
                   padding: '12px 16px',
-                  boxShadow: isLive ? `0 0 18px ${col}33` : '0 2px 12px rgba(0,0,0,0.3)',
+                  boxShadow: isLive ? `0 0 18px ${col}33` : '0 2px 12px var(--color-black-a35)',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ fontSize: 18 }}>{ACTIVITY_ICONS[item.activityType] || '📌'}</span>
-                      <span style={{ fontWeight: 700, fontSize: 15, color: isEnded ? '#6b7280' : '#fff' }}>{item.title}</span>
+                      <span style={{ fontWeight: 700, fontSize: 15, color: isEnded ? 'var(--color-text-faint)' : 'var(--color-text)' }}>{item.title}</span>
                     </div>
                     {/* Status badge */}
                     {isLive && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#052e16', border: '1px solid #22c55e', borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap' }}>
-                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 20, padding: '2px 10px', fontSize: 11, fontWeight: 700, color: 'var(--color-success)', whiteSpace: 'nowrap' }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
                         LIVE
                       </span>
                     )}
@@ -551,19 +551,19 @@ function TodayTimetable({ byDateMap, items, tick }) {
                       </span>
                     )}
                     {isEnded && (
-                      <span style={{ color: '#374151', fontSize: 11, fontWeight: 600 }}>Ended</span>
+                      <span style={{ color: 'var(--color-text-faint)', fontSize: 11, fontWeight: 600 }}>Ended</span>
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 6, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 12, color: '#9ca3af' }}>{fmtIstTime(item)}</span>
-                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#4b5563', display: 'inline-block' }} />
-                    <span style={{ fontSize: 12, color: '#9ca3af' }}>{item.durationMinutes} min</span>
+                    <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{fmtIstTime(item)}</span>
+                    <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'var(--color-text-faint)', display: 'inline-block' }} />
+                    <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{item.durationMinutes} min</span>
                     <span style={{ background: `${col}22`, color: col, borderRadius: 20, padding: '1px 8px', fontSize: 11, fontWeight: 600 }}>
                       {ACTIVITY_LABELS[item.activityType] || 'Activity'}
                     </span>
                   </div>
                   {item.description && (
-                    <div style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>{item.description}</div>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 4 }}>{item.description}</div>
                   )}
                 </div>
               </div>
@@ -648,7 +648,7 @@ export default function SchedulePage() {
   const liveItems = items.filter(isLiveNow);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#ffffff', fontFamily: 'Poppins, sans-serif', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--color-bg)', color: 'var(--color-text)', fontFamily: 'Poppins, sans-serif', position: 'relative', overflow: 'hidden' }}>
       <SEO
         title="Chess Event Schedule — Upcoming Races & Tournaments"
         description="View the upcoming chess arena races, puzzle tournaments, team races, and monthly focus events on Chess Nexus. Never miss a live chess competition."
@@ -656,7 +656,7 @@ export default function SchedulePage() {
         canonical="/schedule"
       />
       {/* Radial gradient overlay — same as dashboard */}
-      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 20% 50%, rgba(16,185,129,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59,130,246,0.08) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
+      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
       <style>{`
         @keyframes schedPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
         @keyframes schedShimmer { 0%{background-position:200% center} 100%{background-position:-200% center} }
@@ -671,9 +671,9 @@ export default function SchedulePage() {
       {/* Top navbar */}
       <div style={{
         position: 'sticky', top: 0, zIndex: 100,
-        background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: '0 2px 16px rgba(0,0,0,0.5)',
+        background: 'var(--color-bg)', backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid var(--color-white-a07)',
+        boxShadow: '0 2px 16px var(--color-black-a50)',
         WebkitBackdropFilter: 'blur(12px)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '12px 20px',
@@ -682,7 +682,7 @@ export default function SchedulePage() {
         <button
           className="sched-nav-btn"
           onClick={() => navigate('/')}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'transparent', border: 'none', cursor: 'pointer', color: '#ffffff', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--color-text)', fontSize: 15, fontWeight: 700, fontFamily: 'Poppins, sans-serif' }}
         >
           <img src="/logo.png" alt="Chess Nexus" style={{ height: 36, width: 'auto', objectFit: 'contain' }} />
         </button>
@@ -694,7 +694,7 @@ export default function SchedulePage() {
             <button
               className="sched-nav-btn"
               onClick={() => navigate('/dashboard')}
-              style={{ background: '#06b6d4', color: '#000', border: 'none', borderRadius: 20, padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
+              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 20, padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
             >
               Dashboard →
             </button>
@@ -702,7 +702,7 @@ export default function SchedulePage() {
             <button
               className="sched-nav-btn"
               onClick={() => navigate('/login')}
-              style={{ background: '#06b6d4', color: '#000', border: 'none', borderRadius: 20, padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
+              style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 20, padding: '7px 18px', fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: 'Poppins, sans-serif' }}
             >
               Login
             </button>
@@ -711,18 +711,18 @@ export default function SchedulePage() {
       </div>
 
       {/* Header */}
-      <div style={{ position: 'relative', zIndex: 1, padding: '40px 20px 30px', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ position: 'relative', zIndex: 1, padding: '40px 20px 30px', textAlign: 'center', borderBottom: '1px solid var(--color-white-a07)' }}>
         <div style={{ fontSize: 40, marginBottom: 8 }}>📅</div>
-        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Activity Schedule</h1>
-        <p style={{ color: '#9ca3af', marginTop: 8, fontSize: 14 }}>
+        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Activity Schedule</h1>
+        <p style={{ color: 'var(--color-text-muted)', marginTop: 8, fontSize: 14 }}>
           All times shown in your local timezone ({Intl.DateTimeFormat().resolvedOptions().timeZone})
         </p>
 
         {/* Live now banner */}
         {liveItems.length > 0 && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#052e16', border: '1px solid #22c55e', borderRadius: 24, padding: '6px 16px', marginTop: 16 }}>
-            <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e', animation: 'schedPulse 1.4s infinite', display: 'inline-block' }} />
-            <span style={{ color: '#22c55e', fontWeight: 700, fontSize: 13 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 24, padding: '6px 16px', marginTop: 16 }}>
+            <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--color-success)', animation: 'schedPulse 1.4s infinite', display: 'inline-block' }} />
+            <span style={{ color: 'var(--color-success)', fontWeight: 700, fontSize: 13 }}>
               {liveItems.map(i => i.title).join(', ')} — happening now!
             </span>
           </div>
@@ -730,32 +730,32 @@ export default function SchedulePage() {
 
         {/* Next up */}
         {upcoming && !isLiveNow(upcoming) && (
-          <div style={{ color: '#9ca3af', fontSize: 13, marginTop: 12 }}>
-            Next: <strong style={{ color: '#06b6d4' }}>{upcoming.title}</strong> in{' '}
-            <strong style={{ color: '#f59e0b' }}>{formatCountdown(msUntilNext(upcoming))}</strong>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: 13, marginTop: 12 }}>
+            Next: <strong style={{ color: 'var(--color-accent)' }}>{upcoming.title}</strong> in{' '}
+            <strong style={{ color: 'var(--color-warning)' }}>{formatCountdown(msUntilNext(upcoming))}</strong>
           </div>
         )}
       </div>
 
       <div style={{ maxWidth: viewMode === 'monthly' ? '100%' : 1100, margin: '0 auto', padding: viewMode === 'monthly' ? '24px 20px' : '24px 16px', position: 'relative', zIndex: 1 }}>
-        {loading && <div style={{ textAlign: 'center', color: '#9ca3af', padding: 40 }}>Loading schedule…</div>}
-        {error && <div style={{ textAlign: 'center', color: '#ef4444', padding: 40 }}>{error}</div>}
+        {loading && <div style={{ textAlign: 'center', color: 'var(--color-text-muted)', padding: 40 }}>Loading schedule…</div>}
+        {error && <div style={{ textAlign: 'center', color: 'var(--color-danger)', padding: 40 }}>{error}</div>}
 
         {!loading && !error && items.length === 0 && (
           <div style={{ textAlign: 'center', padding: 60 }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>�</div>
-            <div style={{ color: '#9ca3af', fontSize: 16 }}>Loading schedule activities…</div>
-            <div style={{ color: '#6b7280', fontSize: 13, marginTop: 8 }}>Check back soon!</div>
+            <div style={{ color: 'var(--color-text-muted)', fontSize: 16 }}>Loading schedule activities…</div>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: 13, marginTop: 8 }}>Check back soon!</div>
           </div>
         )}
 
         {!loading && items.length > 0 && (
           <>
             {/* View Toggle */}
-            <div style={{ display: 'flex', gap: 4, marginBottom: 24, background: 'rgba(23,23,23,0.5)', padding: 4, borderRadius: 24, width: 'fit-content', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <button className="sched-day-btn" style={{ background: viewMode === 'today' ? '#06b6d4' : 'transparent', color: viewMode === 'today' ? '#000' : '#9ca3af', padding: '6px 18px' }} onClick={() => setViewMode('today')}>&#9200; Today</button>
-              <button className="sched-day-btn" style={{ background: viewMode === 'weekly' ? '#06b6d4' : 'transparent', color: viewMode === 'weekly' ? '#000' : '#9ca3af', padding: '6px 18px' }} onClick={() => setViewMode('weekly')}>&#128203; Weekly</button>
-              <button className="sched-day-btn" style={{ background: viewMode === 'monthly' ? '#06b6d4' : 'transparent', color: viewMode === 'monthly' ? '#000' : '#9ca3af', padding: '6px 18px' }} onClick={() => setViewMode('monthly')}>&#128198; Monthly</button>
+            <div style={{ display: 'flex', gap: 4, marginBottom: 24, background: 'rgba(23,23,23,0.5)', padding: 4, borderRadius: 24, width: 'fit-content', border: '1px solid var(--color-white-a07)' }}>
+              <button className="sched-day-btn" style={{ background: viewMode === 'today' ? 'var(--color-accent)' : 'transparent', color: viewMode === 'today' ? 'var(--color-bg)' : 'var(--color-text-muted)', padding: '6px 18px' }} onClick={() => setViewMode('today')}>&#9200; Today</button>
+              <button className="sched-day-btn" style={{ background: viewMode === 'weekly' ? 'var(--color-accent)' : 'transparent', color: viewMode === 'weekly' ? 'var(--color-bg)' : 'var(--color-text-muted)', padding: '6px 18px' }} onClick={() => setViewMode('weekly')}>&#128203; Weekly</button>
+              <button className="sched-day-btn" style={{ background: viewMode === 'monthly' ? 'var(--color-accent)' : 'transparent', color: viewMode === 'monthly' ? 'var(--color-bg)' : 'var(--color-text-muted)', padding: '6px 18px' }} onClick={() => setViewMode('monthly')}>&#128198; Monthly</button>
             </div>
 
             {viewMode === 'today' && <TodayTimetable byDateMap={byDateMap} items={items} tick={tick} />}
@@ -775,9 +775,9 @@ export default function SchedulePage() {
                     key={idx}
                     className="sched-day-btn"
                     style={{
-                      background: active ? '#06b6d4' : 'rgba(23,23,23,0.7)',
-                      color: active ? '#000000' : isToday ? '#06b6d4' : '#9ca3af',
-                      border: isToday && !active ? '1px solid #06b6d4' : '1px solid rgba(255,255,255,0.06)',
+                      background: active ? 'var(--color-accent)' : 'var(--color-surface)',
+                      color: active ? 'var(--color-bg)' : isToday ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                      border: isToday && !active ? '1px solid var(--color-accent)' : '1px solid var(--color-white-a07)',
                       backdropFilter: 'blur(10px)',
                       whiteSpace: 'nowrap',
                       opacity: count === 0 ? 0.4 : 1,
@@ -792,7 +792,7 @@ export default function SchedulePage() {
                 );
               })}
               {activeDay !== null && (
-                <button className="sched-day-btn" style={{ background: 'transparent', color: '#6b7280', border: '1px solid rgba(255,255,255,0.1)' }} onClick={() => setActiveDay(null)}>All</button>
+                <button className="sched-day-btn" style={{ background: 'transparent', color: 'var(--color-text-faint)', border: '1px solid var(--color-white-a10)' }} onClick={() => setActiveDay(null)}>All</button>
               )}
             </div>
 
@@ -808,23 +808,23 @@ export default function SchedulePage() {
                     key={idx}
                     style={{
                       display: hidden ? 'none' : 'block',
-                      background: 'rgba(23,23,23,0.7)',
+                      background: 'var(--color-surface)',
                       borderRadius: 16,
-                      border: isToday ? '1px solid rgba(6,182,212,0.5)' : '1px solid rgba(255,255,255,0.05)',
+                      border: isToday ? '1px solid var(--color-accent-a40)' : '1px solid var(--color-white-a04)',
                       padding: 12,
                       minHeight: 100,
                       backdropFilter: 'blur(10px)',
                       WebkitBackdropFilter: 'blur(10px)',
-                      boxShadow: isToday ? '0 0 20px rgba(6,182,212,0.1)' : '0 8px 32px rgba(0,0,0,0.4)',
+                      boxShadow: isToday ? '0 0 20px var(--color-accent-a12)' : '0 8px 32px var(--color-black-a35)',
                     }}
                   >
                     <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontWeight: 700, fontSize: 13, color: isToday ? '#06b6d4' : '#ffffff' }}>{DAY_SHORT[date.getDay()]}</span>
-                      <span style={{ fontSize: 11, color: '#6b7280' }}>{date.getMonth()+1}/{date.getDate()}</span>
-                      {isToday && <span style={{ fontSize: 10, background: '#06b6d422', color: '#06b6d4', borderRadius: 8, padding: '1px 6px', fontWeight: 700 }}>TODAY</span>}
+                      <span style={{ fontWeight: 700, fontSize: 13, color: isToday ? 'var(--color-accent)' : 'var(--color-text)' }}>{DAY_SHORT[date.getDay()]}</span>
+                      <span style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>{date.getMonth()+1}/{date.getDate()}</span>
+                      {isToday && <span style={{ fontSize: 10, background: '#06b6d422', color: 'var(--color-accent)', borderRadius: 8, padding: '1px 6px', fontWeight: 700 }}>TODAY</span>}
                     </div>
                     {dayItems.length === 0 ? (
-                      <div style={{ color: '#374151', fontSize: 12, textAlign: 'center', paddingTop: 16 }}>—</div>
+                      <div style={{ color: 'var(--color-text-faint)', fontSize: 12, textAlign: 'center', paddingTop: 16 }}>—</div>
                     ) : (
                       dayItems.map(item => <ActivityCard key={item._id} item={item} compact />)
                     )}
@@ -836,14 +836,14 @@ export default function SchedulePage() {
 
             {/* Guest CTA — only shown to logged-out users */}
             {!user && (
-            <div style={{ marginTop: 32, textAlign: 'center', background: 'rgba(23,23,23,0.7)', borderRadius: 16, padding: '24px 16px', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
+            <div style={{ marginTop: 32, textAlign: 'center', background: 'var(--color-surface)', borderRadius: 16, padding: '24px 16px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', boxShadow: '0 8px 32px var(--color-black-a50)' }}>
               <div style={{ marginBottom: 12 }}><img src="/logo.png" alt="Chess Nexus" style={{ height: 48, width: 'auto', objectFit: 'contain' }} /></div>
-              <div style={{ color: '#ffffff', fontWeight: 700, fontSize: 16 }}>Ready to participate?</div>
-              <div style={{ color: '#9ca3af', fontSize: 13, marginTop: 4, marginBottom: 16 }}>
+              <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 16 }}>Ready to participate?</div>
+              <div style={{ color: 'var(--color-text-muted)', fontSize: 13, marginTop: 4, marginBottom: 16 }}>
                 Login to join activities, track your progress, and compete with others.
               </div>
               <button
-                style={{ background: '#06b6d4', color: '#000000', border: 'none', borderRadius: 20, padding: '10px 28px', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
+                style={{ background: 'var(--color-accent)', color: 'var(--color-bg)', border: 'none', borderRadius: 20, padding: '10px 28px', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
                 onClick={() => window.location.href = '/login'}
               >
                 Login to Join

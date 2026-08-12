@@ -101,18 +101,18 @@ const UserTestResult = () => {
     // 35 - 49 => C
     // 20 - 34 => D
     // < 20 => F
-    if (percentage >= 80) return { grade: 'A+', color: '#22c55e', emoji: '🏆' };
-    if (percentage >= 65) return { grade: 'A', color: '#22c55e', emoji: '🌟' };
+    if (percentage >= 80) return { grade: 'A+', color: 'var(--color-success)', emoji: '🏆' };
+    if (percentage >= 65) return { grade: 'A', color: 'var(--color-success)', emoji: '🌟' };
     if (percentage >= 50) return { grade: 'B', color: '#84cc16', emoji: '👍' };
-    if (percentage >= 35) return { grade: 'C', color: '#eab308', emoji: '📈' };
+    if (percentage >= 35) return { grade: 'C', color: 'var(--color-warning)', emoji: '📈' };
     if (percentage >= 20) return { grade: 'D', color: '#f97316', emoji: '💪' };
-    return { grade: 'F', color: '#ef4444', emoji: '📚' };
+    return { grade: 'F', color: 'var(--color-danger)', emoji: '📚' };
   };
 
   const styles = {
     page: {
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)',
+      background: 'linear-gradient(135deg, var(--color-bg) 0%, #1a1a2e 100%)',
       padding: '40px 20px',
       fontFamily: 'Inter, Arial, sans-serif',
     },
@@ -127,18 +127,18 @@ const UserTestResult = () => {
     title: {
       fontSize: '36px',
       fontWeight: '700',
-      color: '#fff',
+      color: 'var(--color-text)',
       marginBottom: '10px',
     },
     subtitle: {
       fontSize: '16px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     gradeCard: {
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '24px',
       padding: '40px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
       textAlign: 'center',
       marginBottom: '30px',
     },
@@ -153,7 +153,7 @@ const UserTestResult = () => {
     },
     percentage: {
       fontSize: '24px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     statsGrid: {
       display: 'grid',
@@ -162,33 +162,33 @@ const UserTestResult = () => {
       marginBottom: '30px',
     },
     statCard: {
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '16px',
       padding: '25px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
       textAlign: 'center',
     },
     statValue: {
       fontSize: '32px',
       fontWeight: '700',
-      color: '#fff',
+      color: 'var(--color-text)',
       marginBottom: '5px',
     },
     statLabel: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     puzzlesCard: {
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '20px',
       padding: '25px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
       marginBottom: '30px',
     },
     cardTitle: {
       fontSize: '20px',
       fontWeight: '600',
-      color: '#fff',
+      color: 'var(--color-text)',
       marginBottom: '20px',
     },
     puzzlesList: {
@@ -209,13 +209,13 @@ const UserTestResult = () => {
       border: '2px solid rgba(34, 197, 94, 0.4)',
     },
     puzzleUnsolved: {
-      background: 'rgba(239, 68, 68, 0.2)',
-      border: '2px solid rgba(239, 68, 68, 0.4)',
+      background: 'var(--color-danger-a20)',
+      border: '2px solid var(--color-danger-a30)',
     },
     puzzleNumber: {
       fontSize: '16px',
       fontWeight: '600',
-      color: '#fff',
+      color: 'var(--color-text)',
     },
     puzzlePoints: {
       fontSize: '13px',
@@ -227,24 +227,24 @@ const UserTestResult = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.85)',
+      background: 'var(--color-black-a65)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 1000,
     },
     modalContent: {
-      background: '#171717',
+      background: 'var(--color-surface-2)',
       borderRadius: '20px',
       padding: '30px',
       maxWidth: '700px',
       width: '90%',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
     },
     modalTitle: {
       fontSize: '22px',
       fontWeight: '600',
-      color: '#fff',
+      color: 'var(--color-text)',
       marginBottom: '20px',
       display: 'flex',
       justifyContent: 'space-between',
@@ -253,7 +253,7 @@ const UserTestResult = () => {
     closeBtn: {
       background: 'none',
       border: 'none',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '24px',
       cursor: 'pointer',
     },
@@ -262,15 +262,15 @@ const UserTestResult = () => {
     },
     moveLabel: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginBottom: '8px',
     },
     moveCode: {
       fontFamily: 'monospace',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       padding: '12px',
       borderRadius: '8px',
-      color: '#f59e0b',
+      color: 'var(--color-warning)',
       fontSize: '14px',
       wordBreak: 'break-all',
     },
@@ -289,17 +289,17 @@ const UserTestResult = () => {
       transition: 'all 0.2s',
     },
     primaryBtn: {
-      background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-warning) 0%, var(--color-danger) 100%)',
+      color: 'var(--color-text)',
     },
     secondaryBtn: {
       background: 'rgba(38, 38, 38, 0.8)',
-      color: '#fff',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a20)',
     },
     loading: {
       textAlign: 'center',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       padding: '100px',
       fontSize: '18px',
     },
@@ -316,7 +316,7 @@ const UserTestResult = () => {
   if (error || !result) {
     return (
       <div style={styles.page}>
-        <div style={{ ...styles.loading, color: '#ef4444' }}>
+        <div style={{ ...styles.loading, color: 'var(--color-danger)' }}>
           {error || 'Result not found'}
         </div>
       </div>
@@ -344,7 +344,7 @@ const UserTestResult = () => {
           <div style={styles.percentage}>
             {result.percentage}% Accuracy
           </div>
-          <div style={{ color: '#9ca3af', fontSize: '14px', marginTop: '8px' }}>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: '14px', marginTop: '8px' }}>
             {result.puzzlesSolved} correct out of {result.puzzlesAttempted || result.puzzlesSolved} attempted
           </div>
         </div>
@@ -352,7 +352,7 @@ const UserTestResult = () => {
         {/* Stats Grid */}
         <div style={styles.statsGrid}>
           <div style={styles.statCard}>
-            <div style={{ ...styles.statValue, color: '#22c55e' }}>
+            <div style={{ ...styles.statValue, color: 'var(--color-success)' }}>
               {result.totalPoints}/{result.maxPoints}
             </div>
             <div style={styles.statLabel}>Score</div>
@@ -402,7 +402,7 @@ const UserTestResult = () => {
                 <div style={styles.puzzleNumber}>#{attempt.puzzleNumber}</div>
                 <div style={{
                   ...styles.puzzlePoints,
-                  color: attempt.solved ? '#86efac' : '#fca5a5'
+                  color: attempt.solved ? '#86efac' : 'var(--color-danger)'
                 }}>
                   {attempt.solved ? '+2 pts' : '0 pts'}
                 </div>
@@ -483,10 +483,10 @@ const UserTestResult = () => {
                       width: '100%',
                       marginTop: '8px',
                       padding: '10px',
-                      background: 'rgba(139, 92, 246, 0.2)',
+                      background: 'var(--color-accent-2-a15)',
                       border: '1px solid rgba(139, 92, 246, 0.4)',
                       borderRadius: '8px',
-                      color: '#a78bfa',
+                      color: 'var(--color-accent-2)',
                       cursor: 'pointer',
                       fontSize: '14px',
                       fontWeight: '600',
@@ -494,11 +494,11 @@ const UserTestResult = () => {
                     }}
                     onClick={() => setBoardOrientation(o => o === 'white' ? 'black' : 'white')}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(139, 92, 246, 0.3)';
+                      e.currentTarget.style.background = 'var(--color-accent-2-a30)';
                       e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.6)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(139, 92, 246, 0.2)';
+                      e.currentTarget.style.background = 'var(--color-accent-2-a15)';
                       e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.4)';
                     }}
                   >
@@ -509,10 +509,10 @@ const UserTestResult = () => {
                       width: '100%',
                       marginTop: '10px',
                       padding: '10px',
-                      background: 'rgba(6, 182, 212, 0.2)',
-                      border: '1px solid rgba(6, 182, 212, 0.4)',
+                      background: 'var(--color-accent-a20)',
+                      border: '1px solid var(--color-accent-a40)',
                       borderRadius: '8px',
-                      color: '#06b6d4',
+                      color: 'var(--color-accent)',
                       cursor: 'pointer',
                       fontSize: '14px',
                       fontWeight: '600',
@@ -520,12 +520,12 @@ const UserTestResult = () => {
                     }}
                     onClick={resetReviewPosition}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(6, 182, 212, 0.3)';
+                      e.currentTarget.style.background = 'var(--color-accent-a30)';
                       e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.6)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(6, 182, 212, 0.2)';
-                      e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.4)';
+                      e.currentTarget.style.background = 'var(--color-accent-a20)';
+                      e.currentTarget.style.borderColor = 'var(--color-accent-a40)';
                     }}
                   >
                     🔄 Reset Position
@@ -541,10 +541,10 @@ const UserTestResult = () => {
                       <>
                         <div style={styles.moveSection}>
                           <div style={{ ...styles.moveLabel, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ background: 'rgba(239,68,68,0.2)', color: '#f87171', borderRadius: '4px', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>OPENING</span>
+                            <span style={{ background: 'var(--color-danger-a20)', color: 'var(--color-danger)', borderRadius: '4px', padding: '1px 6px', fontSize: '11px', fontWeight: '700', letterSpacing: '0.05em' }}>OPENING</span>
                             Opening Move:
                           </div>
-                          <div style={{ ...styles.moveCode, color: '#f87171' }}>{botMove}</div>
+                          <div style={{ ...styles.moveCode, color: 'var(--color-danger)' }}>{botMove}</div>
                         </div>
                         <div style={styles.moveSection}>
                           <div style={{ ...styles.moveLabel, display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -564,14 +564,14 @@ const UserTestResult = () => {
                   })()}
                   <div style={styles.moveSection}>
                     <div style={styles.moveLabel}>Time Spent:</div>
-                    <div style={{ color: '#fff', fontSize: '18px' }}>
+                    <div style={{ color: 'var(--color-text)', fontSize: '18px' }}>
                       {formatTime(selectedPuzzle.timeSpent)}
                     </div>
                   </div>
                   <div style={styles.moveSection}>
                     <div style={styles.moveLabel}>Points:</div>
                     <div style={{ 
-                      color: selectedPuzzle.solved ? '#22c55e' : '#ef4444', 
+                      color: selectedPuzzle.solved ? 'var(--color-success)' : 'var(--color-danger)', 
                       fontSize: '24px',
                       fontWeight: '700'
                     }}>

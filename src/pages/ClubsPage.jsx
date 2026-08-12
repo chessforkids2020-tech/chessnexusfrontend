@@ -113,7 +113,7 @@ export default function ClubsPage() {
 
       {/* Browse */}
       <div style={s.section}>
-        <h2 style={s.sectionTitle}>Browse Clubs {total > 0 && <span style={{ color: '#64748b', fontWeight: 400, fontSize: 14 }}>({total} total)</span>}</h2>
+        <h2 style={s.sectionTitle}>Browse Clubs {total > 0 && <span style={{ color: 'var(--color-text-faint)', fontWeight: 400, fontSize: 14 }}>({total} total)</span>}</h2>
         <input
           type="text"
           placeholder="Search clubs…"
@@ -123,9 +123,9 @@ export default function ClubsPage() {
         />
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Loading…</div>
+          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-faint)' }}>Loading…</div>
         ) : clubs.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-faint)' }}>
             No clubs found. <button style={s.linkBtn} onClick={() => setShowCreate(true)}>Create the first one!</button>
           </div>
         ) : (
@@ -180,35 +180,35 @@ export default function ClubsPage() {
               />
               {/* Privacy selector */}
               <div>
-                <div style={{ fontSize: 12, color: '#64748b', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Visibility</div>
+                <div style={{ fontSize: 12, color: 'var(--color-text-faint)', marginBottom: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Visibility</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                   <button
                     type="button"
                     onClick={() => setCreateForm(f => ({ ...f, isPrivate: false }))}
                     style={{
                       padding: '12px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
-                      background: !createForm.isPrivate ? 'rgba(34,197,94,0.15)' : 'rgba(255,255,255,0.04)',
-                      border: !createForm.isPrivate ? '2px solid rgba(34,197,94,0.5)' : '2px solid rgba(255,255,255,0.08)',
-                      color: '#e2e8f0', transition: 'all 0.15s'
+                      background: !createForm.isPrivate ? 'rgba(34,197,94,0.15)' : 'var(--color-white-a04)',
+                      border: !createForm.isPrivate ? '2px solid rgba(34,197,94,0.5)' : '2px solid var(--color-white-a07)',
+                      color: 'var(--color-text)', transition: 'all 0.15s'
                     }}
                   >
                     <div style={{ fontSize: 18, marginBottom: 4 }}>🌍</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: !createForm.isPrivate ? '#4ade80' : '#94a3b8' }}>Public</div>
-                    <div style={{ fontSize: 11, color: '#64748b', marginTop: 2, lineHeight: 1.4 }}>Anyone can find &amp; join</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: !createForm.isPrivate ? '#4ade80' : 'var(--color-text-muted)' }}>Public</div>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>Anyone can find &amp; join</div>
                   </button>
                   <button
                     type="button"
                     onClick={() => setCreateForm(f => ({ ...f, isPrivate: true }))}
                     style={{
                       padding: '12px 10px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
-                      background: createForm.isPrivate ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.04)',
-                      border: createForm.isPrivate ? '2px solid rgba(139,92,246,0.5)' : '2px solid rgba(255,255,255,0.08)',
-                      color: '#e2e8f0', transition: 'all 0.15s'
+                      background: createForm.isPrivate ? 'var(--color-accent-2-a15)' : 'var(--color-white-a04)',
+                      border: createForm.isPrivate ? '2px solid rgba(139,92,246,0.5)' : '2px solid var(--color-white-a07)',
+                      color: 'var(--color-text)', transition: 'all 0.15s'
                     }}
                   >
                     <div style={{ fontSize: 18, marginBottom: 4 }}>🔒</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: createForm.isPrivate ? '#a78bfa' : '#94a3b8' }}>Private</div>
-                    <div style={{ fontSize: 11, color: '#64748b', marginTop: 2, lineHeight: 1.4 }}>Invite link only</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: createForm.isPrivate ? 'var(--color-accent-2)' : 'var(--color-text-muted)' }}>Private</div>
+                    <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginTop: 2, lineHeight: 1.4 }}>Invite link only</div>
                   </button>
                 </div>
               </div>
@@ -251,19 +251,19 @@ export default function ClubsPage() {
 }
 
 const s = {
-  page: { maxWidth: 1000, margin: '0 auto', padding: '24px 16px', color: '#e2e8f0' },
+  page: { maxWidth: 1000, margin: '0 auto', padding: '24px 16px', color: 'var(--color-text)' },
   header: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 16 },
   title: { fontSize: 26, fontWeight: 800, margin: '0 0 4px' },
-  sub: { color: '#64748b', fontSize: 14, margin: 0 },
+  sub: { color: 'var(--color-text-faint)', fontSize: 14, margin: 0 },
   section: { marginBottom: 32 },
-  sectionTitle: { fontSize: 18, fontWeight: 700, margin: '0 0 16px', color: '#f1f5f9' },
+  sectionTitle: { fontSize: 18, fontWeight: 700, margin: '0 0 16px', color: 'var(--color-text)' },
   searchInput: {
     width: '100%',
     padding: '11px 16px',
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--color-black-a35)',
+    border: '1px solid var(--color-white-a10)',
     borderRadius: 12,
-    color: '#e2e8f0',
+    color: 'var(--color-text)',
     fontSize: 14,
     outline: 'none',
     boxSizing: 'border-box',
@@ -275,24 +275,24 @@ const s = {
     gap: 14
   },
   clubCard: {
-    background: 'rgba(15,23,42,0.8)',
-    border: '1px solid rgba(255,255,255,0.07)',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-white-a07)',
     borderRadius: 14,
     padding: '16px 18px',
     cursor: 'pointer',
     transition: 'border-color 0.2s, transform 0.15s',
     '&:hover': { borderColor: 'rgba(139,92,246,0.4)' }
   },
-  clubName: { fontSize: 15, fontWeight: 700, color: '#f1f5f9', marginBottom: 4 },
-  clubDesc: { fontSize: 12, color: '#64748b', lineHeight: 1.5, marginBottom: 10, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' },
-  clubMeta: { fontSize: 12, color: '#475569' },
-  memberChip: { fontSize: 11, padding: '2px 8px', background: 'rgba(139,92,246,0.2)', color: '#a78bfa', borderRadius: 10, fontWeight: 600 },
+  clubName: { fontSize: 15, fontWeight: 700, color: 'var(--color-text)', marginBottom: 4 },
+  clubDesc: { fontSize: 12, color: 'var(--color-text-faint)', lineHeight: 1.5, marginBottom: 10, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' },
+  clubMeta: { fontSize: 12, color: 'var(--color-text-faint)' },
+  memberChip: { fontSize: 11, padding: '2px 8px', background: 'var(--color-accent-2-a15)', color: 'var(--color-accent-2)', borderRadius: 10, fontWeight: 600 },
   publicBadge: { fontSize: 11, padding: '2px 8px', background: 'rgba(34,197,94,0.15)', color: '#4ade80', borderRadius: 10, fontWeight: 600 },
-  privateBadge: { fontSize: 11, padding: '2px 8px', background: 'rgba(239,68,68,0.15)', color: '#f87171', borderRadius: 10, fontWeight: 600 },
+  privateBadge: { fontSize: 11, padding: '2px 8px', background: 'var(--color-danger-a12)', color: 'var(--color-danger)', borderRadius: 10, fontWeight: 600 },
   btnPrimary: {
     padding: '9px 18px',
-    background: 'linear-gradient(135deg,#7c3aed,#6d28d9)',
-    color: '#fff',
+    background: 'linear-gradient(135deg,var(--color-accent-2),#6d28d9)',
+    color: 'var(--color-text)',
     border: 'none',
     borderRadius: 10,
     fontWeight: 600,
@@ -301,20 +301,20 @@ const s = {
   },
   btnSecondary: {
     padding: '9px 18px',
-    background: 'rgba(255,255,255,0.05)',
-    color: '#94a3b8',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--color-white-a04)',
+    color: 'var(--color-text-muted)',
+    border: '1px solid var(--color-white-a10)',
     borderRadius: 10,
     fontWeight: 600,
     fontSize: 14,
     cursor: 'pointer'
   },
-  linkBtn: { background: 'none', border: 'none', color: '#8b5cf6', cursor: 'pointer', fontSize: 14, fontWeight: 600 },
-  pagBtn: { padding: '6px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', borderRadius: 8, cursor: 'pointer', fontSize: 13 },
-  pagBtnActive: { background: 'rgba(139,92,246,0.3)', color: '#a78bfa', borderColor: 'rgba(139,92,246,0.5)' },
+  linkBtn: { background: 'none', border: 'none', color: 'var(--color-accent-2)', cursor: 'pointer', fontSize: 14, fontWeight: 600 },
+  pagBtn: { padding: '6px 12px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', color: 'var(--color-text-muted)', borderRadius: 8, cursor: 'pointer', fontSize: 13 },
+  pagBtnActive: { background: 'var(--color-accent-2-a30)', color: 'var(--color-accent-2)', borderColor: 'rgba(139,92,246,0.5)' },
   overlay: {
     position: 'fixed', inset: 0,
-    background: 'rgba(0,0,0,0.7)',
+    background: 'var(--color-black-a65)',
     backdropFilter: 'blur(4px)',
     display: 'flex',
     alignItems: 'center',
@@ -323,8 +323,8 @@ const s = {
     padding: 16
   },
   modal: {
-    background: '#0f172a',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-white-a10)',
     borderRadius: 18,
     padding: '28px 32px',
     width: '100%',
@@ -332,14 +332,14 @@ const s = {
     maxHeight: '90vh',
     overflowY: 'auto'
   },
-  modalTitle: { fontSize: 20, fontWeight: 700, margin: '0 0 20px', color: '#f1f5f9' },
+  modalTitle: { fontSize: 20, fontWeight: 700, margin: '0 0 20px', color: 'var(--color-text)' },
   inputField: {
     width: '100%',
     padding: '11px 14px',
-    background: 'rgba(0,0,0,0.3)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--color-black-a35)',
+    border: '1px solid var(--color-white-a10)',
     borderRadius: 10,
-    color: '#e2e8f0',
+    color: 'var(--color-text)',
     fontSize: 14,
     outline: 'none',
     boxSizing: 'border-box'

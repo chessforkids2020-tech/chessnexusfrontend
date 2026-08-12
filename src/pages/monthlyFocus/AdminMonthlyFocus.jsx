@@ -601,35 +601,35 @@ const AdminMonthlyFocus = () => {
 
   const styles = {
     page: { padding: '20px', maxWidth: '1400px', margin: '0 auto', fontFamily: 'Inter, sans-serif' },
-    smallTag: { fontSize: '12px', color: '#6b7280' },
-    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #e5e7eb', paddingBottom: '15px' },
+    smallTag: { fontSize: '12px', color: 'var(--color-text-faint)' },
+    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid var(--color-text)', paddingBottom: '15px' },
     title: { fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: 0 },
     grid: { display: 'grid', gridTemplateColumns: '300px 1fr', gap: '20px' },
-    sidebar: { background: '#f9fafb', padding: '15px', borderRadius: '12px', height: 'fit-content' },
-    main: { background: '#fff', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' },
-    focusItem: { padding: '12px', borderRadius: '8px', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.2s', background: '#fff', border: '1px solid #e5e7eb' },
-    focusItemActive: { background: '#667eea', color: '#fff', border: '1px solid #667eea' },
-    focusItemSelected: { background: '#e0e7ff', border: '2px solid #667eea' },
+    sidebar: { background: 'var(--color-text)', padding: '15px', borderRadius: '12px', height: 'fit-content' },
+    main: { background: 'var(--color-text)', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 8px var(--color-black-a20)' },
+    focusItem: { padding: '12px', borderRadius: '8px', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.2s', background: 'var(--color-text)', border: '1px solid var(--color-text)' },
+    focusItemActive: { background: 'var(--color-accent-2)', color: 'var(--color-text)', border: '1px solid var(--color-accent-2)' },
+    focusItemSelected: { background: '#e0e7ff', border: '2px solid var(--color-accent-2)' },
     btn: { padding: '10px 20px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500', fontSize: '14px' },
-    btnPrimary: { background: '#667eea', color: '#fff' },
-    btnSecondary: { background: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db' },
-    btnDanger: { background: '#ef4444', color: '#fff' },
-    btnSuccess: { background: '#10b981', color: '#fff' },
+    btnPrimary: { background: 'var(--color-accent-2)', color: 'var(--color-text)' },
+    btnSecondary: { background: 'var(--color-text)', color: 'var(--color-text-faint)', border: '1px solid var(--color-text-muted)' },
+    btnDanger: { background: 'var(--color-danger)', color: 'var(--color-text)' },
+    btnSuccess: { background: 'var(--color-success)', color: 'var(--color-text)' },
     btnSmall: { padding: '6px 12px', fontSize: '12px' },
-    input: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '14px', marginBottom: '10px' },
-    textarea: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '14px', minHeight: '100px', marginBottom: '10px', fontFamily: 'monospace' },
-    select: { width: '100%', padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '14px', marginBottom: '10px', background: '#fff' },
-    label: { display: 'block', marginBottom: '5px', fontWeight: '500', color: '#374151', fontSize: '14px' },
-    modal: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 },
-    modalContent: { background: '#fff', padding: '24px', borderRadius: '12px', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' },
-    dayCard: { padding: '15px', border: '1px solid #e5e7eb', borderRadius: '8px', marginBottom: '10px' },
+    input: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: '6px', fontSize: '14px', marginBottom: '10px' },
+    textarea: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: '6px', fontSize: '14px', minHeight: '100px', marginBottom: '10px', fontFamily: 'monospace' },
+    select: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: '6px', fontSize: '14px', marginBottom: '10px', background: 'var(--color-text)' },
+    label: { display: 'block', marginBottom: '5px', fontWeight: '500', color: 'var(--color-text-faint)', fontSize: '14px' },
+    modal: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--color-black-a50)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 },
+    modalContent: { background: 'var(--color-text)', padding: '24px', borderRadius: '12px', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' },
+    dayCard: { padding: '15px', border: '1px solid var(--color-text)', borderRadius: '8px', marginBottom: '10px' },
     badge: { display: 'inline-block', padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '500' },
     badgeActive: { background: '#dcfce7', color: '#166534' },
-    badgeDraft: { background: '#fef3c7', color: '#92400e' },
-    badgeCompleted: { background: '#e5e7eb', color: '#4b5563' },
-    fieldGroup: { background: '#f9fafb', padding: '15px', borderRadius: '8px', marginBottom: '15px' },
+    badgeDraft: { background: 'var(--color-warning)', color: '#92400e' },
+    badgeCompleted: { background: 'var(--color-text)', color: 'var(--color-text-faint)' },
+    fieldGroup: { background: 'var(--color-text)', padding: '15px', borderRadius: '8px', marginBottom: '15px' },
     row: { display: 'flex', gap: '10px', marginBottom: '10px' },
-    resultRow: { display: 'flex', justifyContent: 'space-between', padding: '10px', borderBottom: '1px solid #e5e7eb' }
+    resultRow: { display: 'flex', justifyContent: 'space-between', padding: '10px', borderBottom: '1px solid var(--color-text)' }
   };
 
   if (loading) return <div style={styles.page}>Loading...</div>;
@@ -644,10 +644,10 @@ const AdminMonthlyFocus = () => {
     ...styles.btn,
     padding: '8px 18px',
     borderRadius: '8px 8px 0 0',
-    border: '1px solid #e5e7eb',
-    borderBottom: activeTab === id ? '2px solid #fff' : '1px solid #e5e7eb',
-    background: activeTab === id ? '#fff' : '#f3f4f6',
-    color: activeTab === id ? '#111827' : '#6b7280',
+    border: '1px solid var(--color-text)',
+    borderBottom: activeTab === id ? '2px solid var(--color-text)' : '1px solid var(--color-text)',
+    background: activeTab === id ? 'var(--color-text)' : 'var(--color-text)',
+    color: activeTab === id ? '#111827' : 'var(--color-text-faint)',
     fontWeight: activeTab === id ? 700 : 500,
     position: 'relative',
     top: '1px',
@@ -672,7 +672,7 @@ const AdminMonthlyFocus = () => {
       )}
 
       {/* Tabs: Admin-created vs Elite-created focuses */}
-      <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid #e5e7eb', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--color-text)', marginBottom: '20px' }}>
         <button style={tabStyle('admin')} onClick={() => setActiveTab('admin')}>
           🛠️ Admin Focuses ({adminCount})
         </button>
@@ -697,40 +697,40 @@ const AdminMonthlyFocus = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <div style={{ width: '70px' }}>
-                  <label style={{ fontSize: '12px', color: '#6b7280' }}>Icon</label>
+                  <label style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>Icon</label>
                   <input style={styles.input} value={notifForm.icon}
                     onChange={e => setNotifForm({ ...notifForm, icon: e.target.value })} placeholder="🎯" />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '12px', color: '#6b7280' }}>Topic</label>
+                  <label style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>Topic</label>
                   <input style={styles.input} value={notifForm.topic}
                     onChange={e => setNotifForm({ ...notifForm, topic: e.target.value })} placeholder="🏛️ ChessNexus Official" />
                 </div>
               </div>
               <div>
-                <label style={{ fontSize: '12px', color: '#6b7280' }}>Title *</label>
+                <label style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>Title *</label>
                 <input style={styles.input} value={notifForm.title}
                   onChange={e => setNotifForm({ ...notifForm, title: e.target.value })} placeholder="Monthly Focus: June Endgame Goals" />
               </div>
               <div>
-                <label style={{ fontSize: '12px', color: '#6b7280' }}>Description</label>
+                <label style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>Description</label>
                 <textarea style={{ ...styles.input, minHeight: '70px', resize: 'vertical' }} value={notifForm.desc}
                   onChange={e => setNotifForm({ ...notifForm, desc: e.target.value })}
                   placeholder="June Monthly Focus challenge starts on June 17th — ..." />
               </div>
               <div>
-                <label style={{ fontSize: '12px', color: '#6b7280' }}>Date label</label>
+                <label style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>Date label</label>
                 <input style={styles.input} value={notifForm.date}
                   onChange={e => setNotifForm({ ...notifForm, date: e.target.value })} placeholder="June 2026" />
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '12px', color: '#6b7280' }}>Link</label>
+                  <label style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>Link</label>
                   <input style={styles.input} value={notifForm.link}
                     onChange={e => setNotifForm({ ...notifForm, link: e.target.value })} placeholder="/monthly-focus" />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <label style={{ fontSize: '12px', color: '#6b7280' }}>Link label</label>
+                  <label style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>Link label</label>
                   <input style={styles.input} value={notifForm.linkLabel}
                     onChange={e => setNotifForm({ ...notifForm, linkLabel: e.target.value })} placeholder="Go to Monthly Focus →" />
                 </div>
@@ -746,7 +746,7 @@ const AdminMonthlyFocus = () => {
                   </button>
                 )}
               </div>
-              <p style={{ fontSize: '11.5px', color: '#9ca3af', margin: '4px 0 0', lineHeight: 1.5 }}>
+              <p style={{ fontSize: '11.5px', color: 'var(--color-text-muted)', margin: '4px 0 0', lineHeight: 1.5 }}>
                 Create a draft, then <b>Publish</b> it to show it to all users. Each published
                 notification appears as a new unread item in everyone's bell.
               </p>
@@ -757,29 +757,29 @@ const AdminMonthlyFocus = () => {
           <div style={styles.main}>
             <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>All Notifications ({notifications.length})</h3>
             {notifications.length === 0 ? (
-              <p style={{ color: '#9ca3af' }}>No notifications yet. Create one on the left.</p>
+              <p style={{ color: 'var(--color-text-muted)' }}>No notifications yet. Create one on the left.</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {notifications.map(n => (
                   <div key={n._id} style={{
-                    border: '1px solid #e5e7eb', borderRadius: '10px', padding: '14px',
-                    background: n.published ? '#f0fdf4' : '#fff'
+                    border: '1px solid var(--color-text)', borderRadius: '10px', padding: '14px',
+                    background: n.published ? '#f0fdf4' : 'var(--color-text)'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '11px', fontWeight: 700, color: '#0891b2' }}>{n.topic}</div>
+                        <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-accent-2)' }}>{n.topic}</div>
                         <div style={{ fontSize: '15px', fontWeight: 700, color: '#111827', margin: '2px 0' }}>
                           {n.icon} {n.title}
                         </div>
-                        {n.desc && <div style={{ fontSize: '13px', color: '#4b5563', lineHeight: 1.5 }}>{n.desc}</div>}
-                        <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '5px' }}>
+                        {n.desc && <div style={{ fontSize: '13px', color: 'var(--color-text-faint)', lineHeight: 1.5 }}>{n.desc}</div>}
+                        <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '5px' }}>
                           {n.date} {n.link ? `• ${n.link}` : ''}
                         </div>
                       </div>
                       <span style={{
                         fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: '999px',
-                        background: n.published ? '#dcfce7' : '#f3f4f6',
-                        color: n.published ? '#15803d' : '#6b7280', whiteSpace: 'nowrap'
+                        background: n.published ? '#dcfce7' : 'var(--color-text)',
+                        color: n.published ? 'var(--color-success)' : 'var(--color-text-faint)', whiteSpace: 'nowrap'
                       }}>
                         {n.published ? '● Published' : '○ Draft'}
                       </span>
@@ -812,22 +812,22 @@ const AdminMonthlyFocus = () => {
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <div>
-                <label style={{ fontSize: '12px', color: '#6b7280' }}>Title * <span style={{ color: '#9ca3af' }}>(small)</span></label>
+                <label style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>Title * <span style={{ color: 'var(--color-text-muted)' }}>(small)</span></label>
                 <input style={styles.input} value={liveNoteForm.title}
                   onChange={e => setLiveNoteForm({ ...liveNoteForm, title: e.target.value })}
                   placeholder="Live Tournament Tonight" />
               </div>
               <div>
-                <label style={{ fontSize: '12px', color: '#6b7280' }}>Note <span style={{ color: '#9ca3af' }}>(smaller than title)</span></label>
+                <label style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>Note <span style={{ color: 'var(--color-text-muted)' }}>(smaller than title)</span></label>
                 <input style={styles.input} value={liveNoteForm.note}
                   onChange={e => setLiveNoteForm({ ...liveNoteForm, note: e.target.value })}
                   placeholder="Join from the Arena page" />
               </div>
               <div>
-                <label style={{ fontSize: '12px', color: '#6b7280' }}>Date &amp; time (IST) *</label>
+                <label style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>Date &amp; time (IST) *</label>
                 <input type="datetime-local" style={styles.input} value={liveNoteForm.targetLocal}
                   onChange={e => setLiveNoteForm({ ...liveNoteForm, targetLocal: e.target.value })} />
-                <p style={{ fontSize: '11px', color: '#9ca3af', margin: '4px 0 0' }}>
+                <p style={{ fontSize: '11px', color: 'var(--color-text-muted)', margin: '4px 0 0' }}>
                   Users see a countdown to this time. At zero it switches to “LIVE NOW”.
                 </p>
               </div>
@@ -842,7 +842,7 @@ const AdminMonthlyFocus = () => {
                   </button>
                 )}
               </div>
-              <p style={{ fontSize: '11.5px', color: '#9ca3af', margin: '4px 0 0', lineHeight: 1.5 }}>
+              <p style={{ fontSize: '11.5px', color: 'var(--color-text-muted)', margin: '4px 0 0', lineHeight: 1.5 }}>
                 Create a draft, then <b>Activate</b> it. The active note shows as a small
                 dismissible banner with a countdown at the top of the pages that have the
                 floating Schedule button (Home, Dashboard, Puzzles, Race, Arcade, Study,
@@ -855,28 +855,28 @@ const AdminMonthlyFocus = () => {
           <div style={styles.main}>
             <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>All Live Notes ({liveNotes.length})</h3>
             {liveNotes.length === 0 ? (
-              <p style={{ color: '#9ca3af' }}>No live notes yet. Create one on the left.</p>
+              <p style={{ color: 'var(--color-text-muted)' }}>No live notes yet. Create one on the left.</p>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {liveNotes.map(n => (
                   <div key={n._id} style={{
-                    border: '1px solid #e5e7eb', borderRadius: '10px', padding: '14px',
-                    background: n.active ? '#f0fdf4' : '#fff'
+                    border: '1px solid var(--color-text)', borderRadius: '10px', padding: '14px',
+                    background: n.active ? '#f0fdf4' : 'var(--color-text)'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: '15px', fontWeight: 700, color: '#111827', margin: '2px 0' }}>
                           {n.title}
                         </div>
-                        {n.note && <div style={{ fontSize: '13px', color: '#4b5563', lineHeight: 1.5 }}>{n.note}</div>}
-                        <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '5px' }}>
+                        {n.note && <div style={{ fontSize: '13px', color: 'var(--color-text-faint)', lineHeight: 1.5 }}>{n.note}</div>}
+                        <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '5px' }}>
                           ⏳ {n.targetAt ? new Date(n.targetAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) + ' IST' : '—'}
                         </div>
                       </div>
                       <span style={{
                         fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: '999px',
-                        background: n.active ? '#dcfce7' : '#f3f4f6',
-                        color: n.active ? '#15803d' : '#6b7280', whiteSpace: 'nowrap'
+                        background: n.active ? '#dcfce7' : 'var(--color-text)',
+                        color: n.active ? 'var(--color-success)' : 'var(--color-text-faint)', whiteSpace: 'nowrap'
                       }}>
                         {n.active ? '● Active' : '○ Draft'}
                       </span>
@@ -947,7 +947,7 @@ const AdminMonthlyFocus = () => {
           ))}
 
           {visibleFocuses.length === 0 && (
-            <div style={{ textAlign: 'center', color: '#6b7280', padding: '20px' }}>
+            <div style={{ textAlign: 'center', color: 'var(--color-text-faint)', padding: '20px' }}>
               {activeTab === 'elite' ? 'No elite users have created focuses yet' : 'No focuses created yet'}
             </div>
           )}
@@ -956,7 +956,7 @@ const AdminMonthlyFocus = () => {
         {/* Main Content - Selected Focus */}
         <div style={styles.main}>
           {!selectedFocus ? (
-            <div style={{ textAlign: 'center', padding: '60px', color: '#6b7280' }}>
+            <div style={{ textAlign: 'center', padding: '60px', color: 'var(--color-text-faint)' }}>
               <h2 style={{ marginBottom: '10px' }}>Select or Create a Focus</h2>
               <p>Choose a focus from the sidebar or create a new one</p>
             </div>
@@ -966,9 +966,9 @@ const AdminMonthlyFocus = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div>
                   <h2 style={{ margin: '0 0 5px 0' }}>{selectedFocus.title}</h2>
-                  <p style={{ margin: 0, color: '#6b7280' }}>{selectedFocus.month} • Theme: {selectedFocus.theme}</p>
+                  <p style={{ margin: 0, color: 'var(--color-text-faint)' }}>{selectedFocus.month} • Theme: {selectedFocus.theme}</p>
                   {isEliteFocus(selectedFocus) && (
-                    <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#7c3aed', fontWeight: 600 }}>
+                    <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--color-accent-2)', fontWeight: 600 }}>
                       💎 Elite challenge — created by {selectedFocus.createdBy?.displayName || selectedFocus.createdBy?.username || 'an elite user'}
                     </p>
                   )}
@@ -1023,7 +1023,7 @@ const AdminMonthlyFocus = () => {
                 </div>
 
                 {focusDays.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '40px', background: '#f9fafb', borderRadius: '8px', color: '#6b7280' }}>
+                  <div style={{ textAlign: 'center', padding: '40px', background: 'var(--color-text)', borderRadius: '8px', color: 'var(--color-text-faint)' }}>
                     <p>No days created yet. Add days 1-7 to build the focus cycle.</p>
                   </div>
                 ) : (
@@ -1034,32 +1034,32 @@ const AdminMonthlyFocus = () => {
                       return (
                         <div key={dayNum} style={{
                           ...styles.dayCard,
-                          background: running ? '#ecfdf5' : day ? '#fff' : '#f9fafb',
+                          background: running ? '#ecfdf5' : day ? 'var(--color-text)' : 'var(--color-text)',
                           opacity: day ? 1 : 0.5,
-                          border: running ? '2px solid #10b981' : '1px solid #e5e7eb'
+                          border: running ? '2px solid var(--color-success)' : '1px solid var(--color-text)'
                         }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                             <div>
                               <strong>Day {dayNum}</strong>
                               {day ? (
                                 <>
-                                  <span style={{ marginLeft: '10px', color: '#6b7280' }}>
+                                  <span style={{ marginLeft: '10px', color: 'var(--color-text-faint)' }}>
                                     {day.title}
                                   </span>
                                   <span style={{
                                     ...styles.badge,
                                     marginLeft: '10px',
                                     background: day.taskType === 'puzzles' ? '#dbeafe' : 
-                                               day.taskType === 'find_mistakes' ? '#fef3c7' : '#dcfce7',
+                                               day.taskType === 'find_mistakes' ? 'var(--color-warning)' : '#dcfce7',
                                     color: day.taskType === 'puzzles' ? '#1e40af' : 
                                            day.taskType === 'find_mistakes' ? '#92400e' : '#166534'
                                   }}>
                                     {day.taskType.replace('_', ' ')}
                                   </span>
-                                  <span style={{ marginLeft: '10px', fontSize: '12px', color: '#6b7280' }}>
+                                  <span style={{ marginLeft: '10px', fontSize: '12px', color: 'var(--color-text-faint)' }}>
                                     {day.timerEnabled ? `⏱️ ${Math.floor(day.timeLimit/60)}min` : 'No timer'}
                                   </span>
-                                  <span style={{ marginLeft: '10px', fontSize: '12px', color: '#10b981' }}>
+                                  <span style={{ marginLeft: '10px', fontSize: '12px', color: 'var(--color-success)' }}>
                                     {day.xpReward} XP
                                   </span>
                                   {/* Day Status Badge */}
@@ -1067,8 +1067,8 @@ const AdminMonthlyFocus = () => {
                                     <span style={{
                                       ...styles.badge,
                                       marginLeft: '10px',
-                                      background: running ? '#10b981' : '#6b7280',
-                                      color: '#fff'
+                                      background: running ? 'var(--color-success)' : 'var(--color-text-faint)',
+                                      color: 'var(--color-text)'
                                     }}>
                                       {running ? `LIVE - ${formatTimeRemaining(day.endTime)}` : 'ENDED'}
                                     </span>
@@ -1077,15 +1077,15 @@ const AdminMonthlyFocus = () => {
                                     <span style={{
                                       ...styles.badge,
                                       marginLeft: '10px',
-                                      background: '#f59e0b',
-                                      color: '#fff'
+                                      background: 'var(--color-warning)',
+                                      color: 'var(--color-text)'
                                     }}>
                                       NOT STARTED
                                     </span>
                                   )}
                                 </>
                               ) : (
-                                <span style={{ marginLeft: '10px', color: '#9ca3af' }}>Not created</span>
+                                <span style={{ marginLeft: '10px', color: 'var(--color-text-muted)' }}>Not created</span>
                               )}
                             </div>
                             {day && (
@@ -1093,7 +1093,7 @@ const AdminMonthlyFocus = () => {
                                 {/* Start/Stop/Reset Controls */}
                                 {!day.isStarted && (
                                   <button 
-                                    style={{...styles.btn, background: '#10b981', color: '#fff', ...styles.btnSmall}}
+                                    style={{...styles.btn, background: 'var(--color-success)', color: 'var(--color-text)', ...styles.btnSmall}}
                                     onClick={() => startDay(dayNum)}
                                   >
                                     ▶️ Start Day
@@ -1101,7 +1101,7 @@ const AdminMonthlyFocus = () => {
                                 )}
                                 {running && (
                                   <button 
-                                    style={{...styles.btn, background: '#ef4444', color: '#fff', ...styles.btnSmall}}
+                                    style={{...styles.btn, background: 'var(--color-danger)', color: 'var(--color-text)', ...styles.btnSmall}}
                                     onClick={() => stopDay(dayNum)}
                                   >
                                     ⏹️ Stop
@@ -1109,7 +1109,7 @@ const AdminMonthlyFocus = () => {
                                 )}
                                 {day.isStarted && !running && (
                                   <button 
-                                    style={{...styles.btn, background: '#f59e0b', color: '#fff', ...styles.btnSmall}}
+                                    style={{...styles.btn, background: 'var(--color-warning)', color: 'var(--color-text)', ...styles.btnSmall}}
                                     onClick={() => resetDay(dayNum)}
                                   >
                                     🔄 Reset
@@ -1301,7 +1301,7 @@ const AdminMonthlyFocus = () => {
                     value={dayForm.timeLimit}
                     onChange={e => setDayForm({...dayForm, timeLimit: parseInt(e.target.value) || 600})}
                   />
-                  <span style={{ marginLeft: '10px', color: '#6b7280' }}>
+                  <span style={{ marginLeft: '10px', color: 'var(--color-text-faint)' }}>
                     = {Math.floor(dayForm.timeLimit / 60)} minutes {dayForm.timeLimit % 60} seconds
                   </span>
                 </div>
@@ -1311,7 +1311,7 @@ const AdminMonthlyFocus = () => {
             {/* Scoring Settings */}
             <div style={styles.fieldGroup}>
               <h4 style={{ margin: '0 0 10px 0' }}>📊 Skill Score Settings</h4>
-              <p style={{ color: '#6b7280', marginBottom: '15px', fontSize: '13px' }}>
+              <p style={{ color: 'var(--color-text-faint)', marginBottom: '15px', fontSize: '13px' }}>
                 Points awarded per correct answer (separate from XP)
               </p>
               <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
@@ -1421,7 +1421,7 @@ const AdminMonthlyFocus = () => {
                 <h4 style={{ margin: '0 0 15px 0' }}>🧩 Puzzles (Max 20)</h4>
 
                 {/* Engine-judged toggle */}
-                <div style={{ background: '#f5f3ff', border: '1px solid #c4b5fd', borderRadius: '8px', padding: '12px', marginBottom: '15px' }}>
+                <div style={{ background: '#f5f3ff', border: '1px solid var(--color-accent-2)', borderRadius: '8px', padding: '12px', marginBottom: '15px' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: '#5b21b6' }}>
                     <input type="checkbox" checked={dayForm.engineJudged}
                       onChange={e => setDayForm({ ...dayForm, engineJudged: e.target.checked })} />
@@ -1438,27 +1438,27 @@ const AdminMonthlyFocus = () => {
                         <input style={{ ...styles.input, width: '140px' }} type="number" min="0" max="500"
                           value={dayForm.engineToleranceCp}
                           onChange={e => setDayForm({ ...dayForm, engineToleranceCp: parseInt(e.target.value) || 0 })} />
-                        <span style={{ fontSize: '11px', color: '#6b7280', display: 'block' }}>Lower = stricter (~50 strict, ~100 lenient)</span>
+                        <span style={{ fontSize: '11px', color: 'var(--color-text-faint)', display: 'block' }}>Lower = stricter (~50 strict, ~100 lenient)</span>
                       </div>
                       <div>
                         <label style={styles.label}>Engine depth</label>
                         <input style={{ ...styles.input, width: '140px' }} type="number" min="6" max="18"
                           value={dayForm.engineDepth}
                           onChange={e => setDayForm({ ...dayForm, engineDepth: parseInt(e.target.value) || 12 })} />
-                        <span style={{ fontSize: '11px', color: '#6b7280', display: 'block' }}>Higher = stronger but slower</span>
+                        <span style={{ fontSize: '11px', color: 'var(--color-text-faint)', display: 'block' }}>Higher = stronger but slower</span>
                       </div>
                     </div>
                   )}
                 </div>
 
-                <p style={{ color: '#6b7280', marginBottom: '15px', fontSize: '13px' }}>
+                <p style={{ color: 'var(--color-text-faint)', marginBottom: '15px', fontSize: '13px' }}>
                   {dayForm.engineJudged
                     ? 'Enter the FEN and how many moves the user must play. Stockfish judges each move and plays the replies.'
                     : 'Enter FEN position and the solution move (e.g., "Nxf7+" or multi-move "Nxf7+ Rxf7 Qxc3")'}
                 </p>
 
                 {dayForm.puzzles.map((puzzle, index) => (
-                  <div key={index} style={{ marginBottom: '15px', padding: '12px', background: '#fff', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
+                  <div key={index} style={{ marginBottom: '15px', padding: '12px', background: 'var(--color-text)', borderRadius: '6px', border: '1px solid var(--color-text)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <strong>Puzzle {index + 1}</strong>
                       <button
@@ -1679,12 +1679,12 @@ const AdminMonthlyFocus = () => {
             {dayForm.taskType === 'tactics_identification' && (
               <div style={styles.fieldGroup}>
                 <h4 style={{ margin: '0 0 15px 0' }}>🎯 Tactics Identification</h4>
-                <p style={{ color: '#6b7280', marginBottom: '15px', fontSize: '13px' }}>
+                <p style={{ color: 'var(--color-text-faint)', marginBottom: '15px', fontSize: '13px' }}>
                   Enter FEN position and the tactic name (Pin, Fork, Skewer, Discovery, etc.)
                 </p>
                 
                 {dayForm.tacticsItems.map((item, index) => (
-                  <div key={index} style={{ marginBottom: '15px', padding: '12px', background: '#fff', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
+                  <div key={index} style={{ marginBottom: '15px', padding: '12px', background: 'var(--color-text)', borderRadius: '6px', border: '1px solid var(--color-text)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <strong>Position {index + 1}</strong>
                       <button 
@@ -1721,7 +1721,7 @@ const AdminMonthlyFocus = () => {
             {dayForm.taskType === 'multiple_choice' && (
               <div style={styles.fieldGroup}>
                 <h4 style={{ margin: '0 0 15px 0' }}>❓ Multiple Choice Questions</h4>
-                <p style={{ color: '#6b7280', marginBottom: '15px', fontSize: '13px' }}>
+                <p style={{ color: 'var(--color-text-faint)', marginBottom: '15px', fontSize: '13px' }}>
                   Create FEN positions with questions and customizable answer options (2-6 options per question)
                 </p>
                 
@@ -1757,7 +1757,7 @@ const AdminMonthlyFocus = () => {
                   };
                   
                   return (
-                    <div key={index} style={{ marginBottom: '20px', padding: '15px', background: '#fff', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                    <div key={index} style={{ marginBottom: '20px', padding: '15px', background: 'var(--color-text)', borderRadius: '8px', border: '1px solid var(--color-text)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                         <strong>Question {index + 1}</strong>
                         <button 
@@ -1846,7 +1846,7 @@ const AdminMonthlyFocus = () => {
             {dayForm.taskType === 'pgn_blunder_analysis' && (
               <div style={styles.fieldGroup}>
                 <h4 style={{ margin: '0 0 15px 0' }}>📊 PGN Blunder Analysis (User-Submitted Games)</h4>
-                <p style={{ color: '#6b7280', marginBottom: '15px', fontSize: '13px' }}>
+                <p style={{ color: 'var(--color-text-faint)', marginBottom: '15px', fontSize: '13px' }}>
                   Users will paste their own PGN games and analyze them with Stockfish. Configure the limits below.
                 </p>
                 
@@ -1874,7 +1874,7 @@ const AdminMonthlyFocus = () => {
                         blunderTask: {...dayForm.blunderTask, blunderLimit: parseInt(e.target.value) || 0}
                       })}
                     />
-                    <small style={{ color: '#6b7280', fontSize: '11px' }}>
+                    <small style={{ color: 'var(--color-text-faint)', fontSize: '11px' }}>
                       Users get points if their game has ≤ this many blunders
                     </small>
                   </div>
@@ -1892,7 +1892,7 @@ const AdminMonthlyFocus = () => {
                         blunderTask: {...dayForm.blunderTask, thresholdCp: parseInt(e.target.value) || 150}
                       })}
                     />
-                    <small style={{ color: '#6b7280', fontSize: '11px' }}>
+                    <small style={{ color: 'var(--color-text-faint)', fontSize: '11px' }}>
                       Eval drop to count as blunder (150 = 1.5 pawns)
                     </small>
                   </div>
@@ -1910,13 +1910,13 @@ const AdminMonthlyFocus = () => {
                         blunderTask: {...dayForm.blunderTask, stockfishDepth: parseInt(e.target.value) || 15}
                       })}
                     />
-                    <small style={{ color: '#6b7280', fontSize: '11px' }}>
+                    <small style={{ color: 'var(--color-text-faint)', fontSize: '11px' }}>
                       Higher = more accurate but slower (default: 15)
                     </small>
                   </div>
                 </div>
                 
-                <div style={{ marginTop: '15px', padding: '12px', background: '#fef3c7', borderRadius: '6px', fontSize: '13px', color: '#92400e' }}>
+                <div style={{ marginTop: '15px', padding: '12px', background: 'var(--color-warning)', borderRadius: '6px', fontSize: '13px', color: '#92400e' }}>
                   ⚠️ <strong>Note:</strong> Analysis will take 60-120 seconds per game when users submit
                 </div>
               </div>
@@ -1941,7 +1941,7 @@ const AdminMonthlyFocus = () => {
             <h2 style={{ marginTop: 0 }}>📊 Day {showDayResults} Results</h2>
             
             {dayResults.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-text-faint)' }}>
                 No results yet for this day.
               </div>
             ) : (
@@ -1952,7 +1952,7 @@ const AdminMonthlyFocus = () => {
                 
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ background: '#f9fafb', borderBottom: '2px solid #e5e7eb' }}>
+                    <tr style={{ background: 'var(--color-text)', borderBottom: '2px solid var(--color-text)' }}>
                       <th style={{ padding: '12px', textAlign: 'left' }}>User</th>
                       <th style={{ padding: '12px', textAlign: 'center' }}>Score</th>
                       <th style={{ padding: '12px', textAlign: 'center' }}>Time</th>
@@ -1963,7 +1963,7 @@ const AdminMonthlyFocus = () => {
                   </thead>
                   <tbody>
                     {dayResults.map((result, index) => (
-                      <tr key={index} style={{ borderBottom: '1px solid #e5e7eb' }}>
+                      <tr key={index} style={{ borderBottom: '1px solid var(--color-text)' }}>
                         <td style={{ padding: '12px' }}>
                           {result.userId?.displayName || result.userId?.username || 'Unknown'}
                         </td>
@@ -1973,7 +1973,7 @@ const AdminMonthlyFocus = () => {
                         <td style={{ padding: '12px', textAlign: 'center' }}>
                           {result.totalTime ? `${Math.floor(result.totalTime/60)}:${(result.totalTime%60).toString().padStart(2,'0')}` : '-'}
                         </td>
-                        <td style={{ padding: '12px', textAlign: 'center', color: '#10b981', fontWeight: '500' }}>
+                        <td style={{ padding: '12px', textAlign: 'center', color: 'var(--color-success)', fontWeight: '500' }}>
                           +{result.xpEarned + (result.bonusXpEarned || 0)}
                         </td>
                         <td style={{ padding: '12px', textAlign: 'center' }}>
@@ -2019,7 +2019,7 @@ const AdminMonthlyFocus = () => {
 
             <div style={{ maxHeight: '60vh', overflowY: 'auto', paddingRight: '10px' }}>
               {!viewingAnswers.answers || viewingAnswers.answers.length === 0 ? (
-                <p style={{ textAlign: 'center', color: '#6b7280', padding: '20px' }}>No detailed answers recorded for this result.</p>
+                <p style={{ textAlign: 'center', color: 'var(--color-text-faint)', padding: '20px' }}>No detailed answers recorded for this result.</p>
               ) : (
                 viewingAnswers.answers.map((ans, idx) => (
                   <div key={idx} style={{ 
@@ -2030,48 +2030,48 @@ const AdminMonthlyFocus = () => {
                     border: `1px solid ${ans.isCorrect ? '#bbf7d0' : '#fecaca'}`
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                      <strong style={{ color: '#374151' }}>Question #{idx + 1}</strong>
+                      <strong style={{ color: 'var(--color-text-faint)' }}>Question #{idx + 1}</strong>
                       <span style={{ 
                         padding: '2px 8px', 
                         borderRadius: '4px', 
                         fontSize: '12px', 
                         fontWeight: 'bold',
-                        background: ans.isCorrect ? '#10b981' : '#ef4444',
-                        color: '#fff'
+                        background: ans.isCorrect ? 'var(--color-success)' : 'var(--color-danger)',
+                        color: 'var(--color-text)'
                       }}>
                         {ans.isCorrect ? 'CORRECT' : 'INCORRECT'}
                       </span>
                     </div>
 
                     {ans.fen && (
-                      <div style={{ marginBottom: '10px', fontSize: '12px', color: '#6b7280', fontFamily: 'monospace', background: '#f3f4f6', padding: '6px', borderRadius: '4px' }}>
+                      <div style={{ marginBottom: '10px', fontSize: '12px', color: 'var(--color-text-faint)', fontFamily: 'monospace', background: 'var(--color-text)', padding: '6px', borderRadius: '4px' }}>
                         FEN: {ans.fen}
                       </div>
                     )}
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                       <div>
-                        <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>USER ANSWER</div>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>USER ANSWER</div>
                         <div style={{ 
                           fontWeight: '500', 
                           color: ans.isCorrect ? '#065f46' : '#991b1b',
-                          background: '#fff',
+                          background: 'var(--color-text)',
                           padding: '8px',
                           borderRadius: '4px',
-                          border: '1px solid #e5e7eb'
+                          border: '1px solid var(--color-text)'
                         }}>
                           {ans.userAnswer || ans.userTag || '(No answer)'}
                         </div>
                       </div>
                       <div>
-                        <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>EXPECTED</div>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>EXPECTED</div>
                         <div style={{ 
                           fontWeight: '500', 
-                          color: '#374151',
-                          background: '#fff',
+                          color: 'var(--color-text-faint)',
+                          background: 'var(--color-text)',
                           padding: '8px',
                           borderRadius: '4px',
-                          border: '1px solid #e5e7eb'
+                          border: '1px solid var(--color-text)'
                         }}>
                           {ans.correctAnswer || ans.correctTag || '(No answer)'}
                         </div>
@@ -2079,7 +2079,7 @@ const AdminMonthlyFocus = () => {
                     </div>
 
                     {ans.timeTaken && (
-                      <div style={{ marginTop: '10px', fontSize: '12px', color: '#6b7280' }}>
+                      <div style={{ marginTop: '10px', fontSize: '12px', color: 'var(--color-text-faint)' }}>
                         Time taken: <strong>{ans.timeTaken}s</strong>
                       </div>
                     )}

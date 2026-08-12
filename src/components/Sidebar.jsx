@@ -1693,7 +1693,7 @@ export default function Sidebar({ user, onNavigate }) {
                         <div
                           key={r._id}
                           style={{
-                            background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.25)',
+                            background: 'rgba(139,92,246,0.06)', border: '1px solid var(--color-accent-2-a15)',
                             borderRadius: 'var(--radius-md)', padding: '9px 11px', marginBottom: '8px',
                           }}
                         >

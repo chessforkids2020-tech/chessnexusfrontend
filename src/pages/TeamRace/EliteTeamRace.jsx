@@ -84,7 +84,7 @@ const EliteTeamRace = () => {
 
   const statusClass = (s) => ({ created: 'created', waiting: 'waiting', running: 'running', finished: 'finished' }[s] || 'created');
 
-  if (loading) return <div className="elite-tr-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}><span style={{ color:'#9ca3af' }}>Loading…</span></div>;
+  if (loading) return <div className="elite-tr-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}><span style={{ color:'var(--color-text-muted)' }}>Loading…</span></div>;
 
   return (
     <div className="elite-tr-root">

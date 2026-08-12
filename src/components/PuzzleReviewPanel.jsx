@@ -83,7 +83,7 @@ function EvalBar({ cp, isMate, mateIn, forWhite, height = 300 }) {
       overflow: 'hidden',
       display: 'flex',
       flexDirection: 'column',
-      border: '1px solid rgba(255,255,255,0.2)',
+      border: '1px solid var(--color-white-a20)',
       flexShrink: 0,
     }}>
       {/* black side on top */}
@@ -101,9 +101,9 @@ function MiniPuzzleCard({ puzzle, index, onClick }) {
 
   const resultColor = puzzle.isSolved
     ? puzzle.isCorrect
-      ? '#10b981'
-      : '#ef4444'
-    : '#64748b';
+      ? 'var(--color-success)'
+      : 'var(--color-danger)'
+    : 'var(--color-text-faint)';
   const resultLabel = puzzle.isSolved
     ? puzzle.isCorrect
       ? '✓ Correct'
@@ -115,7 +115,7 @@ function MiniPuzzleCard({ puzzle, index, onClick }) {
       onClick={onClick}
       style={{
         cursor: 'pointer',
-        background: 'rgba(255,255,255,0.06)',
+        background: 'var(--color-white-a07)',
         border: `2px solid ${resultColor}40`,
         borderRadius: 12,
         padding: 8,
@@ -136,7 +136,7 @@ function MiniPuzzleCard({ puzzle, index, onClick }) {
       }}
       title="Click to study this puzzle"
     >
-      <div style={{ fontSize: 11, fontWeight: 700, color: '#cbd5e1', letterSpacing: '0.05em' }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-muted)', letterSpacing: '0.05em' }}>
         PUZZLE #{index + 1}
       </div>
 
@@ -164,10 +164,10 @@ function MiniPuzzleCard({ puzzle, index, onClick }) {
       </div>
 
       {puzzle.rating && (
-        <div style={{ fontSize: 10, color: '#94a3b8' }}>Rating {puzzle.rating}</div>
+        <div style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>Rating {puzzle.rating}</div>
       )}
 
-      <div style={{ fontSize: 10, color: '#60a5fa', marginTop: -2 }}>
+      <div style={{ fontSize: 10, color: 'var(--color-accent-2)', marginTop: -2 }}>
         🔍 Tap to study
       </div>
     </div>
@@ -268,7 +268,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           newArrows.push({
             from: line.move.slice(0, 2),
             to: line.move.slice(2, 4),
-            color: i === 0 ? '#22c55e' : i === 1 ? '#eab308' : '#94a3b8',
+            color: i === 0 ? 'var(--color-success)' : i === 1 ? 'var(--color-warning)' : 'var(--color-text-muted)',
           });
         }
       });
@@ -328,7 +328,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0,0,0,0.85)',
+        background: 'var(--color-black-a65)',
         backdropFilter: 'blur(6px)',
         zIndex: 2000,
         overflowY: 'auto',           /* backdrop scrolls — nothing gets clipped */
@@ -339,10 +339,10 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
       }}
     >
       <div style={{
-        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+        background: 'linear-gradient(135deg, var(--color-surface-2) 0%, var(--color-surface) 100%)',
         borderRadius: 20,
-        border: '1px solid rgba(255,255,255,0.1)',
-        boxShadow: '0 40px 80px rgba(0,0,0,0.7)',
+        border: '1px solid var(--color-white-a10)',
+        boxShadow: '0 40px 80px var(--color-black-a65)',
         width: '100%',
         maxWidth: 900,
         margin: 'auto',             /* centers vertically when shorter than viewport */
@@ -365,7 +365,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
 
           {/* title row */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-            <div style={{ color: '#f1f5f9', fontWeight: 800, fontSize: 16 }}>
+            <div style={{ color: 'var(--color-text)', fontWeight: 800, fontSize: 16 }}>
               Puzzle #{index + 1} — Review
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -373,15 +373,15 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
                 onClick={() => setOrientation(o => o === 'white' ? 'black' : 'white')}
                 title="Flip board"
                 style={{
-                  background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)',
-                  borderRadius: 8, color: '#94a3b8', padding: '5px 12px', cursor: 'pointer', fontSize: 15,
+                  background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)',
+                  borderRadius: 8, color: 'var(--color-text-muted)', padding: '5px 12px', cursor: 'pointer', fontSize: 15,
                 }}
               >⇅ Flip</button>
               <button
                 onClick={onClose}
                 style={{
-                  background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.4)',
-                  borderRadius: 8, color: '#f87171', padding: '5px 12px', cursor: 'pointer', fontWeight: 700, fontSize: 15,
+                  background: 'var(--color-danger-a20)', border: '1px solid var(--color-danger-a30)',
+                  borderRadius: 8, color: 'var(--color-danger)', padding: '5px 12px', cursor: 'pointer', fontWeight: 700, fontSize: 15,
                 }}
               >✕ Close</button>
             </div>
@@ -390,7 +390,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           {/* eval bar + board */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <EvalBar cp={evalCp} isMate={isMate} mateIn={mateIn} forWhite={currentChess.turn() === 'w'} height={boardSize} />
-            <div style={{ borderRadius: 6, overflow: 'hidden', boxShadow: '0 8px 30px rgba(0,0,0,0.5)' }}>
+            <div style={{ borderRadius: 6, overflow: 'hidden', boxShadow: '0 8px 30px var(--color-black-a50)' }}>
               <Chessboard
                 position={fen}
                 onDrop={onDrop}
@@ -405,25 +405,25 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           </div>
 
           {/* side to move + analysing indicator */}
-          <div style={{ color: '#94a3b8', fontSize: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ color: 'var(--color-text-muted)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
             <span>{sideToMove} to move</span>
             {analyzing && (
-              <span style={{ color: '#60a5fa', display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#60a5fa', display: 'inline-block', animation: 'pulseDot 1s infinite' }} />
+              <span style={{ color: 'var(--color-accent-2)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-accent-2)', display: 'inline-block', animation: 'pulseDot 1s infinite' }} />
                 Analysing depth {targetDepth}…
               </span>
             )}
             {evalInfo && !analyzing && (
               <span style={{
-                background: 'rgba(255,255,255,0.08)',
-                border: '1px solid rgba(255,255,255,0.15)',
+                background: 'var(--color-white-a07)',
+                border: '1px solid var(--color-white-a13)',
                 borderRadius: 20,
                 padding: '2px 10px',
-                color: '#f1f5f9',
+                color: 'var(--color-text)',
                 fontWeight: 800,
                 fontSize: 13,
               }}>
-                {evalLabel} {analysisDepth > 0 && <span style={{ color: '#475569', fontWeight: 400 }}>d{analysisDepth}</span>}
+                {evalLabel} {analysisDepth > 0 && <span style={{ color: 'var(--color-text-faint)', fontWeight: 400 }}>d{analysisDepth}</span>}
               </span>
             )}
           </div>
@@ -433,7 +433,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            background: 'rgba(255,255,255,0.04)',
+            background: 'var(--color-white-a04)',
             borderRadius: 12,
             padding: '8px 12px',
             width: '100%',
@@ -442,9 +442,9 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
             <NavBtn onClick={() => goTo(-1)} disabled={moveIdx <= -1} title="Go to start">⏮</NavBtn>
             <NavBtn onClick={() => goTo(moveIdx - 1)} disabled={moveIdx < 0} title="Previous">◀</NavBtn>
             <div style={{
-              background: 'rgba(255,255,255,0.08)',
+              background: 'var(--color-white-a07)',
               borderRadius: 8, padding: '4px 14px',
-              color: '#cbd5e1', fontSize: 12, minWidth: 100, textAlign: 'center',
+              color: 'var(--color-text-muted)', fontSize: 12, minWidth: 100, textAlign: 'center',
             }}>
               {moveIdx === -999 ? 'Free play'
                 : moveIdx < 0 ? 'Start position'
@@ -458,7 +458,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           <button
             onClick={() => goTo(-1)}
             style={{
-              background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.35)',
+              background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)',
               borderRadius: 8, color: '#93c5fd', padding: '7px 20px',
               cursor: 'pointer', fontSize: 13, fontWeight: 600, width: '100%',
             }}
@@ -469,7 +469,7 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
         <div style={{
           flex: '0 0 270px',
           minWidth: 240,
-          borderLeft: '1px solid rgba(255,255,255,0.07)',
+          borderLeft: '1px solid var(--color-white-a07)',
           padding: '18px 16px 20px',
           display: 'flex',
           flexDirection: 'column',
@@ -478,38 +478,38 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
 
           {/* puzzle result */}
           <div style={{
-            background: puzzle.isCorrect ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)',
-            border: `1px solid ${puzzle.isCorrect ? 'rgba(16,185,129,0.3)' : 'rgba(239,68,68,0.3)'}`,
+            background: puzzle.isCorrect ? 'var(--color-success-a12)' : 'var(--color-danger-a12)',
+            border: `1px solid ${puzzle.isCorrect ? 'var(--color-success-a30)' : 'var(--color-danger-a30)'}`,
             borderRadius: 12, padding: '10px 14px',
           }}>
-            <div style={{ color: '#64748b', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
               Puzzle Info
             </div>
-            <div style={{ color: '#e2e8f0', fontSize: 13 }}>
-              Rating: <strong style={{ color: '#f59e0b' }}>{puzzle.rating || '—'}</strong>
+            <div style={{ color: 'var(--color-text)', fontSize: 13 }}>
+              Rating: <strong style={{ color: 'var(--color-warning)' }}>{puzzle.rating || '—'}</strong>
             </div>
-            <div style={{ color: puzzle.isCorrect ? '#10b981' : '#ef4444', fontSize: 13, fontWeight: 700, marginTop: 3 }}>
+            <div style={{ color: puzzle.isCorrect ? 'var(--color-success)' : 'var(--color-danger)', fontSize: 13, fontWeight: 700, marginTop: 3 }}>
               {puzzle.isCorrect ? '✓ Solved correctly!' : '✗ Got this wrong'}
             </div>
             {puzzle.pointsEarned !== undefined && (
-              <div style={{ fontSize: 12, color: puzzle.pointsEarned >= 0 ? '#34d399' : '#f87171', marginTop: 2 }}>
+              <div style={{ fontSize: 12, color: puzzle.pointsEarned >= 0 ? 'var(--color-success)' : 'var(--color-danger)', marginTop: 2 }}>
                 {puzzle.pointsEarned >= 0 ? `+${puzzle.pointsEarned}` : puzzle.pointsEarned} pts
               </div>
             )}
           </div>
 
           {/* solution moves */}
-          <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '10px 14px' }}>
-            <div style={{ color: '#64748b', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+          <div style={{ background: 'var(--color-white-a04)', borderRadius: 12, padding: '10px 14px' }}>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
               Solution
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-              {solution.length === 0 && <span style={{ color: '#475569', fontSize: 12 }}>No solution recorded</span>}
+              {solution.length === 0 && <span style={{ color: 'var(--color-text-faint)', fontSize: 12 }}>No solution recorded</span>}
               {solution.map((move, i) => (
                 <button key={i} onClick={() => goTo(i)} style={{
-                  background: moveIdx === i ? 'rgba(59,130,246,0.4)' : 'rgba(255,255,255,0.07)',
-                  border: moveIdx === i ? '1px solid #3b82f6' : '1px solid rgba(255,255,255,0.12)',
-                  borderRadius: 6, color: moveIdx === i ? '#bfdbfe' : '#94a3b8',
+                  background: moveIdx === i ? 'rgba(59,130,246,0.4)' : 'var(--color-white-a07)',
+                  border: moveIdx === i ? '1px solid var(--color-accent-2)' : '1px solid var(--color-white-a13)',
+                  borderRadius: 6, color: moveIdx === i ? '#bfdbfe' : 'var(--color-text-muted)',
                   padding: '3px 8px', cursor: 'pointer', fontSize: 12,
                   fontWeight: moveIdx === i ? 700 : 400, fontFamily: 'monospace',
                 }}>
@@ -520,21 +520,21 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
           </div>
 
           {/* ── STOCKFISH ANALYSE BUTTON — prominent, always visible ── */}
-          <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 14px' }}>
-            <div style={{ color: '#64748b', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+          <div style={{ background: 'var(--color-white-a04)', borderRadius: 12, padding: '12px 14px' }}>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
               Stockfish Analysis
             </div>
 
             {/* depth */}
             <div style={{ marginBottom: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                <span style={{ color: '#94a3b8', fontSize: 12 }}>Depth</span>
-                <span style={{ color: '#60a5fa', fontSize: 12, fontWeight: 700 }}>{targetDepth}</span>
+                <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>Depth</span>
+                <span style={{ color: 'var(--color-accent-2)', fontSize: 12, fontWeight: 700 }}>{targetDepth}</span>
               </div>
               <input
                 type="range" min={8} max={25} value={targetDepth}
                 onChange={e => setTargetDepth(Number(e.target.value))}
-                style={{ width: '100%', cursor: 'pointer', accentColor: '#3b82f6' }}
+                style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--color-accent-2)' }}
               />
             </div>
 
@@ -549,11 +549,11 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
                 width: '100%',
                 padding: '12px 8px',
                 background: analyzeEnabled
-                  ? 'linear-gradient(135deg, rgba(239,68,68,0.3), rgba(239,68,68,0.15))'
+                  ? 'linear-gradient(135deg, var(--color-danger-a30), var(--color-danger-a12))'
                   : 'linear-gradient(135deg, rgba(34,197,94,0.35), rgba(34,197,94,0.15))',
-                border: `2px solid ${analyzeEnabled ? '#ef4444' : '#22c55e'}`,
+                border: `2px solid ${analyzeEnabled ? 'var(--color-danger)' : 'var(--color-success)'}`,
                 borderRadius: 10,
-                color: analyzeEnabled ? '#fca5a5' : '#86efac',
+                color: analyzeEnabled ? 'var(--color-danger)' : '#86efac',
                 cursor: 'pointer',
                 fontWeight: 800,
                 fontSize: 15,
@@ -567,22 +567,22 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
 
           {/* evaluation + best lines (shown after analysis) */}
           {(evalInfo || analysisLines.length > 0) && (
-            <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '10px 14px' }}>
+            <div style={{ background: 'var(--color-white-a04)', borderRadius: 12, padding: '10px 14px' }}>
               {evalInfo && (
                 <div style={{ textAlign: 'center', marginBottom: 10 }}>
-                  <div style={{ fontSize: 28, fontWeight: 900, color: '#f1f5f9', lineHeight: 1 }}>{evalLabel}</div>
-                  {analysisDepth > 0 && <div style={{ color: '#475569', fontSize: 11, marginTop: 2 }}>depth {analysisDepth}</div>}
+                  <div style={{ fontSize: 28, fontWeight: 900, color: 'var(--color-text)', lineHeight: 1 }}>{evalLabel}</div>
+                  {analysisDepth > 0 && <div style={{ color: 'var(--color-text-faint)', fontSize: 11, marginTop: 2 }}>depth {analysisDepth}</div>}
                 </div>
               )}
               {analysisLines.length > 0 && (
                 <>
-                  <div style={{ color: '#64748b', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+                  <div style={{ color: 'var(--color-text-faint)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
                     Best Lines
                   </div>
                   {analysisLines.slice(0, 3).map((line, i) => {
                     const forWhite = currentChess.turn() === 'w';
                     const label = formatScore(line, forWhite);
-                    const dotColors = ['#22c55e', '#eab308', '#94a3b8'];
+                    const dotColors = ['var(--color-success)', 'var(--color-warning)', 'var(--color-text-muted)'];
                     return (
                       <div key={i} style={{
                         display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5,
@@ -590,8 +590,8 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
                         background: i === 0 ? 'rgba(34,197,94,0.08)' : 'transparent',
                       }}>
                         <div style={{ width: 8, height: 8, borderRadius: '50%', background: dotColors[i], flexShrink: 0 }} />
-                        <div style={{ color: '#cbd5e1', fontWeight: 700, fontSize: 12, minWidth: 46 }}>{label}</div>
-                        <div style={{ color: '#94a3b8', fontSize: 11, fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ color: 'var(--color-text-muted)', fontWeight: 700, fontSize: 12, minWidth: 46 }}>{label}</div>
+                        <div style={{ color: 'var(--color-text-muted)', fontSize: 11, fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {line.move}
                         </div>
                       </div>
@@ -604,10 +604,10 @@ function PuzzleAnalysisModal({ puzzle, index, onClose }) {
 
           {/* tips */}
           <div style={{
-            background: 'rgba(59,130,246,0.06)', borderRadius: 12, padding: '8px 14px',
-            color: '#475569', fontSize: 11, lineHeight: 1.7,
+            background: 'var(--color-accent-2-a15)', borderRadius: 12, padding: '8px 14px',
+            color: 'var(--color-text-faint)', fontSize: 11, lineHeight: 1.7,
           }}>
-            <strong style={{ color: '#64748b' }}>Tips</strong><br />
+            <strong style={{ color: 'var(--color-text-faint)' }}>Tips</strong><br />
             • ▶ / ◀ steps through the solution<br />
             • Drag pieces to explore freely<br />
             • Green arrow = best move<br />
@@ -635,10 +635,10 @@ function NavBtn({ onClick, disabled, title, children }) {
       disabled={disabled}
       title={title}
       style={{
-        background: disabled ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.08)',
-        border: '1px solid rgba(255,255,255,0.1)',
+        background: disabled ? 'var(--color-white-a04)' : 'var(--color-white-a07)',
+        border: '1px solid var(--color-white-a10)',
         borderRadius: 8,
-        color: disabled ? '#334155' : '#cbd5e1',
+        color: disabled ? '#334155' : 'var(--color-text-muted)',
         width: 32,
         height: 32,
         cursor: disabled ? 'default' : 'pointer',
@@ -673,8 +673,8 @@ export default function PuzzleReviewPanel({ dailyBatch }) {
           display: 'inline-flex',
           alignItems: 'center',
           gap: 8,
-          background: 'rgba(59,130,246,0.12)',
-          border: '1px solid rgba(59,130,246,0.25)',
+          background: 'var(--color-accent-2-a15)',
+          border: '1px solid var(--color-accent-2-a15)',
           borderRadius: 24,
           padding: '6px 20px',
           color: '#93c5fd',
@@ -683,7 +683,7 @@ export default function PuzzleReviewPanel({ dailyBatch }) {
         }}>
           🔍 Study Today's Puzzles
         </div>
-        <div style={{ color: '#475569', fontSize: 11, marginTop: 6 }}>
+        <div style={{ color: 'var(--color-text-faint)', fontSize: 11, marginTop: 6 }}>
           Tap any board to study the position with Stockfish analysis
         </div>
       </div>

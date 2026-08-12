@@ -46,7 +46,7 @@ const timeControlGroups = [
     name: '👑 CLASSICAL',
     description: 'Over 30 minutes',
     color: '#118AB2',
-    gradient: 'linear-gradient(135deg, #118AB2 0%, #06B6D4 100%)',
+    gradient: 'linear-gradient(135deg, #118AB2 0%, var(--color-accent) 100%)',
     timeControls: [
       { label: '20+0', value: '20+0' },
       { label: '20+5', value: '20+5' },

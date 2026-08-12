@@ -1584,7 +1584,7 @@ export default function UserDashboard() {
                 { label: 'Confirm new password', val: editConfirmPw, set: setEditConfirmPw },
               ].map(({ label, val, set }) => (
                 <div key={label} style={{ marginBottom: '10px' }}>
-                  <label style={{ display: 'block', color: 'rgba(255,255,255,0.55)', fontSize: '12px', marginBottom: '4px' }}>{label}</label>
+                  <label style={{ display: 'block', color: 'var(--color-text-muted)', fontSize: '12px', marginBottom: '4px' }}>{label}</label>
                   <input
                     type="password"
                     value={val}
@@ -1626,7 +1626,7 @@ export default function UserDashboard() {
               onClick={() => setShowEditProfile(false)}
               style={{
                 marginTop: '18px', width: '100%', padding: '8px', borderRadius: 'var(--radius-md)',
-                background: 'transparent', color: 'rgba(255,255,255,0.4)',
+                background: 'transparent', color: 'var(--color-text-faint)',
                 border: '1px solid var(--color-white-a10)', fontSize: '13px', cursor: 'pointer',
               }}
             >
@@ -1854,7 +1854,7 @@ export default function UserDashboard() {
                     silver:   { color: 'var(--color-text)', label: 'Silver Crown' },
                     gold:     { color: 'var(--color-warning)', label: 'Gold Crown' },
                     platinum: { color: 'var(--color-text)', label: 'Platinum Crown' },
-                    gem:      { color: '#60a5fa', label: 'Gem Crown' },
+                    gem:      { color: 'var(--color-accent-2)', label: 'Gem Crown' },
                   }[tier];
                   if (!cs) return null;
                   return (

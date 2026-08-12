@@ -52,7 +52,7 @@ function CountryFlag({ country, height = 14, style }) {
       src={`https://flagcdn.com/${code.toLowerCase()}.svg`}
       alt={code}
       height={height}
-      style={{ display: 'inline-block', verticalAlign: 'middle', borderRadius: '2px', boxShadow: '0 0 1px rgba(0,0,0,0.4)', ...style }}
+      style={{ display: 'inline-block', verticalAlign: 'middle', borderRadius: '2px', boxShadow: '0 0 1px var(--color-black-a35)', ...style }}
       onError={(e) => { e.currentTarget.style.display = 'none'; }}
     />
   );
@@ -87,18 +87,18 @@ const styles = {
     gap: '16px',
   },
   infoCard: {
-    background: 'rgba(255,255,255,0.04)',
+    background: 'var(--color-white-a04)',
     borderRadius: '16px',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--color-white-a07)',
     textAlign: 'left',
     padding: '18px 20px',
-    color: '#ffffff',
+    color: 'var(--color-text)',
     position: 'relative',
     overflow: 'hidden',
   },
   infoCardH4: {
     margin: 0,
-    color: '#67e8f9',
+    color: 'var(--color-accent)',
     fontWeight: 600,
     fontFamily: "'Poppins', sans-serif",
     marginBottom: '10px',
@@ -108,27 +108,27 @@ const styles = {
   },
   infoCardP: {
     margin: 0,
-    color: '#ffffff',
+    color: 'var(--color-text)',
     fontWeight: 700,
     fontFamily: "'Poppins', sans-serif",
     fontSize: '18px',
   },
   editIcon: {
     marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer',
-    fontSize: '14px', color: '#06b6d4', transition: 'all 0.3s ease',
+    fontSize: '14px', color: 'var(--color-accent)', transition: 'all 0.3s ease',
   },
   input: {
-    padding: '8px 12px', borderRadius: '12px', border: '1px solid rgba(6,182,212,0.3)',
-    width: '100%', fontFamily: "'Poppins', sans-serif", background: 'rgba(0,0,0,0.3)',
-    color: '#ffffff', boxSizing: 'border-box',
+    padding: '8px 12px', borderRadius: '12px', border: '1px solid var(--color-accent-a30)',
+    width: '100%', fontFamily: "'Poppins', sans-serif", background: 'var(--color-black-a35)',
+    color: 'var(--color-text)', boxSizing: 'border-box',
   },
   saveBtn: {
-    cursor: 'pointer', background: 'linear-gradient(135deg, #10b981 0%, #06b6d4 100%)',
+    cursor: 'pointer', background: 'linear-gradient(135deg, var(--color-success) 0%, var(--color-accent) 100%)',
     color: 'white', border: 'none', borderRadius: '12px', padding: '8px 12px', fontWeight: 600,
   },
   cancelBtn: {
-    cursor: 'pointer', background: 'rgba(239,68,68,0.15)', color: '#ef4444',
-    border: '1px solid rgba(239,68,68,0.3)', borderRadius: '12px', padding: '8px 12px', fontWeight: 600,
+    cursor: 'pointer', background: 'var(--color-danger-a12)', color: 'var(--color-danger)',
+    border: '1px solid var(--color-danger-a30)', borderRadius: '12px', padding: '8px 12px', fontWeight: 600,
   },
 };
 
@@ -159,7 +159,7 @@ export default function ProfilePanel() {
   const [editPasswordMsg, setEditPasswordMsg] = useState(null);
 
   if (!user) {
-    return <p style={{ color: '#64748b', fontSize: 14 }}>Loading your profile…</p>;
+    return <p style={{ color: 'var(--color-text-faint)', fontSize: 14 }}>Loading your profile…</p>;
   }
 
   if (user.role === 'guest') {
@@ -170,10 +170,10 @@ export default function ProfilePanel() {
         borderRadius: '16px',
       }}>
         <div style={{ fontSize: 40, marginBottom: 14 }}>🔒</div>
-        <div style={{ color: '#c4b5fd', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Guest Account</div>
-        <div style={{ color: '#9ca3af', fontSize: 13, lineHeight: 1.6 }}>
+        <div style={{ color: 'var(--color-accent-2)', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Guest Account</div>
+        <div style={{ color: 'var(--color-text-muted)', fontSize: 13, lineHeight: 1.6 }}>
           Profile settings are not available for guest users.<br />
-          <strong style={{ color: '#a78bfa' }}>Create a free account</strong> to personalise your profile, save progress, and access all features.
+          <strong style={{ color: 'var(--color-accent-2)' }}>Create a free account</strong> to personalise your profile, save progress, and access all features.
         </div>
       </div>
     );
@@ -241,13 +241,13 @@ export default function ProfilePanel() {
   return (
     <>
     <section style={{
-      background: 'rgba(255,255,255,0.04)',
-      border: '1px solid rgba(255,255,255,0.08)',
+      background: 'var(--color-white-a04)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: 16,
       padding: '28px 24px',
     }}>
-      <h2 style={{ fontSize: 18, fontWeight: 600, color: '#e2e8f0', marginBottom: 4 }}>👤 Your Profile</h2>
-      <p style={{ color: '#64748b', fontSize: 13, marginBottom: 24 }}>
+      <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>👤 Your Profile</h2>
+      <p style={{ color: 'var(--color-text-faint)', fontSize: 13, marginBottom: 24 }}>
         Manage your account details. Changes are saved to your account and apply everywhere.
       </p>
 
@@ -269,16 +269,16 @@ export default function ProfilePanel() {
               <p style={{ ...styles.infoCardP, margin: 0 }}>{user.displayName}</p>
               {user.role === 'elite' && (
                 <span style={{
-                  background: 'linear-gradient(135deg, rgba(251,191,36,0.25), rgba(245,158,11,0.15))',
-                  border: '1px solid rgba(251,191,36,0.55)', color: '#fbbf24',
+                  background: 'linear-gradient(135deg, var(--color-warning-a20), var(--color-warning-a12))',
+                  border: '1px solid rgba(251,191,36,0.55)', color: 'var(--color-warning)',
                   fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '8px',
-                  whiteSpace: 'nowrap', textShadow: '0 0 8px rgba(251,191,36,0.4)',
+                  whiteSpace: 'nowrap', textShadow: '0 0 8px var(--color-warning-a30)',
                 }}>💎 Elite</span>
               )}
               <span style={{
-                background: user.isCoach ? 'rgba(6,182,212,0.18)' : 'rgba(16,185,129,0.12)',
-                border: `1px solid ${user.isCoach ? 'rgba(6,182,212,0.4)' : 'rgba(16,185,129,0.35)'}`,
-                color: user.isCoach ? '#67e8f9' : '#6ee7b7',
+                background: user.isCoach ? 'var(--color-accent-a20)' : 'var(--color-success-a12)',
+                border: `1px solid ${user.isCoach ? 'var(--color-accent-a40)' : 'var(--color-success-a30)'}`,
+                color: user.isCoach ? 'var(--color-accent)' : 'var(--color-success)',
                 fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '8px', whiteSpace: 'nowrap',
               }}>{user.isCoach ? '🎓 Coach' : '♟ Player'}</span>
             </div>
@@ -344,25 +344,25 @@ export default function ProfilePanel() {
                 { label: 'Confirm new password', val: editConfirmPw, set: setEditConfirmPw },
               ].map(({ label, val, set }) => (
                 <div key={label}>
-                  <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', marginBottom: '3px' }}>{label}</div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: '11px', marginBottom: '3px' }}>{label}</div>
                   <input type="password" value={val} onChange={(e) => set(e.target.value)} autoComplete="off" style={styles.input} />
                 </div>
               ))}
               <div style={{ display: 'flex', gap: '5px' }}>
-                <button onClick={handleSavePassword} disabled={isSavingPassword} style={{ ...styles.saveBtn, background: 'linear-gradient(135deg, #7c3aed, #a855f7)', flex: 1 }}>
+                <button onClick={handleSavePassword} disabled={isSavingPassword} style={{ ...styles.saveBtn, background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent-2))', flex: 1 }}>
                   {isSavingPassword ? '...' : 'Change'}
                 </button>
                 <button onClick={() => { setIsEditingPassword(false); setEditPasswordMsg(null); }} style={styles.cancelBtn}>✕</button>
               </div>
               {editPasswordMsg && (
-                <p style={{ margin: 0, fontSize: '12px', color: editPasswordMsg.type === 'ok' ? '#2dd4bf' : '#f87171' }}>{editPasswordMsg.text}</p>
+                <p style={{ margin: 0, fontSize: '12px', color: editPasswordMsg.type === 'ok' ? '#2dd4bf' : 'var(--color-danger)' }}>{editPasswordMsg.text}</p>
               )}
             </div>
           ) : (
             <>
               <p style={styles.infoCardP}>••••••••</p>
               {editPasswordMsg && (
-                <p style={{ margin: '4px 0 0', fontSize: '12px', color: editPasswordMsg.type === 'ok' ? '#2dd4bf' : '#f87171' }}>{editPasswordMsg.text}</p>
+                <p style={{ margin: '4px 0 0', fontSize: '12px', color: editPasswordMsg.type === 'ok' ? '#2dd4bf' : 'var(--color-danger)' }}>{editPasswordMsg.text}</p>
               )}
             </>
           )}
@@ -385,7 +385,7 @@ export default function ProfilePanel() {
                 <button onClick={() => { setIsEditingCountry(false); setEditCountryMsg(null); }} style={styles.cancelBtn} title="Cancel">✕</button>
               </div>
               {editCountryMsg && (
-                <p style={{ margin: 0, fontSize: '12px', color: editCountryMsg.type === 'ok' ? '#2dd4bf' : '#f87171' }}>{editCountryMsg.text}</p>
+                <p style={{ margin: 0, fontSize: '12px', color: editCountryMsg.type === 'ok' ? '#2dd4bf' : 'var(--color-danger)' }}>{editCountryMsg.text}</p>
               )}
             </div>
           ) : (
@@ -399,7 +399,7 @@ export default function ProfilePanel() {
                 ) : 'Not set'}
               </p>
               {editCountryMsg && (
-                <p style={{ margin: '4px 0 0', fontSize: '12px', color: editCountryMsg.type === 'ok' ? '#2dd4bf' : '#f87171' }}>{editCountryMsg.text}</p>
+                <p style={{ margin: '4px 0 0', fontSize: '12px', color: editCountryMsg.type === 'ok' ? '#2dd4bf' : 'var(--color-danger)' }}>{editCountryMsg.text}</p>
               )}
             </>
           )}
@@ -422,7 +422,7 @@ export default function ProfilePanel() {
                 autoFocus
               />
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px', marginRight: 'auto' }}>{editBioValue.length}/150</span>
+                <span style={{ color: 'var(--color-text-faint)', fontSize: '11px', marginRight: 'auto' }}>{editBioValue.length}/150</span>
                 <button onClick={handleSaveBio} disabled={isSavingBio} style={styles.saveBtn} title="Save">{isSavingBio ? '...' : '✓ Save'}</button>
                 <button onClick={() => setIsEditingBio(false)} style={styles.cancelBtn} title="Cancel">✕</button>
               </div>
@@ -434,7 +434,7 @@ export default function ProfilePanel() {
               fontSize: '15px',
               lineHeight: 1.6,
               whiteSpace: 'pre-wrap',
-              color: user.biography ? '#ffffff' : 'rgba(255,255,255,0.45)',
+              color: user.biography ? 'var(--color-text)' : 'var(--color-text-faint)',
             }}>
               {user.biography || 'Not set — tell others about yourself!'}
             </p>

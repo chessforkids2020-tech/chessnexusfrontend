@@ -413,7 +413,7 @@ export default function HomepagePuzzle() {
       {showSolution && puzzle && (
         <div style={{ 
           textAlign: 'center', 
-          color: '#2e7d32', 
+          color: 'var(--color-success)', 
           fontWeight: 'bold', 
           marginBottom: '10px',
           padding: '8px',
@@ -433,7 +433,7 @@ export default function HomepagePuzzle() {
           padding: '10px 20px', // Reduced padding
           backgroundColor: '#fff3cd',
           borderRadius: '8px',
-          border: '2px solid #ffc107',
+          border: '2px solid var(--color-warning)',
           width: '100%' // Ensure it takes full width
         }}>
           <p style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 'bold', color: '#856404' }}>
@@ -444,17 +444,17 @@ export default function HomepagePuzzle() {
             style={{
               padding: '8px 16px',
               fontSize: '14px',
-              backgroundColor: '#4CAF50',
+              backgroundColor: 'var(--color-success)',
               color: 'white',
               border: 'none',
               borderRadius: '6px',
               cursor: 'pointer',
               fontWeight: 'bold',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+              boxShadow: '0 2px 4px var(--color-black-a20)',
               transition: 'all 0.3s ease'
             }}
             onMouseEnter={(e) => e.target.style.backgroundColor = '#45a049'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#4CAF50'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = 'var(--color-success)'}
           >
             💡 Show Solution
           </button>
@@ -478,8 +478,8 @@ export default function HomepagePuzzle() {
             gap: '10px',
           }}>
             <span style={{ fontSize: '48px', lineHeight: 1 }}>😞</span>
-            <p style={{ color: '#fff', fontWeight: 700, fontSize: '15px', margin: 0 }}>Puzzle unavailable</p>
-            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '12px', margin: 0 }}>Try again later</p>
+            <p style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: '15px', margin: 0 }}>Puzzle unavailable</p>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '12px', margin: 0 }}>Try again later</p>
           </div>
         )}
         <Chessboard

@@ -95,22 +95,22 @@ function DebugPanel({ logs, onClose }) {
         width: '500px',
         height: '400px',
         background: '#1e1e1e',
-        color: '#fff',
-        border: '1px solid #333',
+        color: 'var(--color-text)',
+        border: '1px solid var(--color-text)',
         borderRadius: '8px',
         zIndex: 9999,
         fontFamily: 'monospace',
         fontSize: '12px',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
+        boxShadow: '0 4px 12px var(--color-black-a50)',
         userSelect: 'text',
       }}
     >
       <div
         style={{
           padding: '8px',
-          background: '#333',
+          background: 'var(--color-text)',
           borderRadius: '8px 8px 0 0',
           cursor: 'move',
           display: 'flex',
@@ -126,7 +126,7 @@ function DebugPanel({ logs, onClose }) {
             style={{
               background: '#555',
               border: 'none',
-              color: '#fff',
+              color: 'var(--color-text)',
               cursor: 'pointer',
               fontSize: '12px',
               marginRight: '8px',
@@ -141,7 +141,7 @@ function DebugPanel({ logs, onClose }) {
             style={{
               background: 'none',
               border: 'none',
-              color: '#fff',
+              color: 'var(--color-text)',
               cursor: 'pointer',
               fontSize: '16px',
             }}
@@ -155,7 +155,7 @@ function DebugPanel({ logs, onClose }) {
           flex: 1,
           overflowY: 'auto',
           padding: '8px',
-          background: '#000',
+          background: 'var(--color-bg)',
           whiteSpace: 'pre-wrap',
           wordWrap: 'break-word',
         }}
@@ -175,7 +175,7 @@ function getColor(type) {
     case 'error': return '#ff6b6b';
     case 'warn': return '#ffd93d';
     case 'success': return '#6bcf7f';
-    default: return '#fff';
+    default: return 'var(--color-text)';
   }
 }
 

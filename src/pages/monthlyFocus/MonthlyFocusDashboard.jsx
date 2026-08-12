@@ -225,7 +225,7 @@ export default function MonthlyFocusDashboard() {
   // Fireworks burst when badge popup appears
   useEffect(() => {
     if (!badgePopup) return;
-    const color = badgePopup.color || '#ffd700';
+    const color = badgePopup.color || 'var(--color-warning)';
     const end = Date.now() + 2200;
     const frame = () => {
       canvasConfetti({
@@ -233,7 +233,7 @@ export default function MonthlyFocusDashboard() {
         angle: 60,
         spread: 55,
         origin: { x: 0, y: 0.85 },
-        colors: [color, '#ffffff', '#ffd700'],
+        colors: [color, 'var(--color-text)', 'var(--color-warning)'],
         startVelocity: 45,
         ticks: 120,
       });
@@ -242,7 +242,7 @@ export default function MonthlyFocusDashboard() {
         angle: 120,
         spread: 55,
         origin: { x: 1, y: 0.85 },
-        colors: [color, '#ffffff', '#ffd700'],
+        colors: [color, 'var(--color-text)', 'var(--color-warning)'],
         startVelocity: 45,
         ticks: 120,
       });
@@ -270,12 +270,12 @@ export default function MonthlyFocusDashboard() {
     } catch (_) {}
 
     const BADGE_DEFS = [
-      { key: 'champion',  icon: '🏆', name: 'Champion',  desc: 'All 7 days completed + 5 perfect scores!', color: '#fbbf24', check: () => perfectDays >= 5 && completedDays >= 7 },
-      { key: 'perfect',   icon: '👑', name: 'Perfect',   desc: 'Perfect score on 5 or more days!',          color: '#a78bfa', check: () => perfectDays >= 5 },
-      { key: 'achiever',  icon: '🎯', name: 'Achiever',  desc: 'All 7 days completed — full week warrior!', color: '#06b6d4', check: () => completedDays >= 7 },
+      { key: 'champion',  icon: '🏆', name: 'Champion',  desc: 'All 7 days completed + 5 perfect scores!', color: 'var(--color-warning)', check: () => perfectDays >= 5 && completedDays >= 7 },
+      { key: 'perfect',   icon: '👑', name: 'Perfect',   desc: 'Perfect score on 5 or more days!',          color: 'var(--color-accent-2)', check: () => perfectDays >= 5 },
+      { key: 'achiever',  icon: '🎯', name: 'Achiever',  desc: 'All 7 days completed — full week warrior!', color: 'var(--color-accent)', check: () => completedDays >= 7 },
       { key: 'dedicated', icon: '🔥', name: 'Dedicated', desc: '5 days done — you\'re on fire!',            color: '#f97316', check: () => completedDays >= 5 },
-      { key: 'active',    icon: '⭐', name: 'Active',    desc: '3 days completed — showing up daily!',     color: '#3b82f6', check: () => completedDays >= 3 },
-      { key: 'beginner',  icon: '🌱', name: 'Beginner',  desc: 'You started your focus journey!',           color: '#22c55e', check: () => completedDays >= 1 },
+      { key: 'active',    icon: '⭐', name: 'Active',    desc: '3 days completed — showing up daily!',     color: 'var(--color-accent-2)', check: () => completedDays >= 3 },
+      { key: 'beginner',  icon: '🌱', name: 'Beginner',  desc: 'You started your focus journey!',           color: 'var(--color-success)', check: () => completedDays >= 1 },
     ];
 
     for (const badge of BADGE_DEFS) {
@@ -375,7 +375,7 @@ export default function MonthlyFocusDashboard() {
     return (
       <div className="focus-dashboard loading">
         <div className="spinner"></div>
-        <p style={{ color: '#9ca3af', fontSize: '1.1em', marginTop: '20px' }}>Loading Monthly Focus...</p>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '1.1em', marginTop: '20px' }}>Loading Monthly Focus...</p>
       </div>
     );
   }
@@ -422,7 +422,7 @@ export default function MonthlyFocusDashboard() {
           recycle={false}
           numberOfPieces={280}
           gravity={0.25}
-          colors={['#06b6d4','#10b981','#ffd700','#ff6b6b','#a78bfa','#34d399']}
+          colors={['var(--color-accent)','var(--color-success)','var(--color-warning)','#ff6b6b','var(--color-accent-2)','var(--color-success)']}
           style={{ position: 'fixed', top: 0, left: 0, zIndex: 9999, pointerEvents: 'none' }}
         />
       )}
@@ -438,7 +438,7 @@ export default function MonthlyFocusDashboard() {
               exit={{ opacity: 0 }}
               style={{
                 position: 'fixed', inset: 0, zIndex: 9100,
-                background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)',
+                background: 'var(--color-black-a65)', backdropFilter: 'blur(6px)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 padding: '20px'
               }}
@@ -459,7 +459,7 @@ export default function MonthlyFocusDashboard() {
                   textAlign: 'center',
                   maxWidth: '380px',
                   width: '100%',
-                  boxShadow: `0 0 60px ${badgePopup.color}55, 0 24px 60px rgba(0,0,0,0.6)`,
+                  boxShadow: `0 0 60px ${badgePopup.color}55, 0 24px 60px var(--color-black-a65)`,
                   position: 'relative',
                   overflow: 'hidden'
                 }}
@@ -483,11 +483,11 @@ export default function MonthlyFocusDashboard() {
                   Badge Unlocked!
                 </div>
 
-                <h2 style={{ margin: '0 0 10px', fontSize: '28px', fontWeight: '800', color: '#ffffff' }}>
+                <h2 style={{ margin: '0 0 10px', fontSize: '28px', fontWeight: '800', color: 'var(--color-text)' }}>
                   {badgePopup.name}
                 </h2>
 
-                <p style={{ color: '#9ca3af', fontSize: '15px', lineHeight: 1.5, margin: '0 0 28px' }}>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: '15px', lineHeight: 1.5, margin: '0 0 28px' }}>
                   {badgePopup.desc}
                 </p>
 
@@ -511,7 +511,7 @@ export default function MonthlyFocusDashboard() {
                     width: '100%', padding: '14px',
                     background: `linear-gradient(135deg, ${badgePopup.color}, ${badgePopup.color}bb)`,
                     border: 'none', borderRadius: '12px',
-                    color: '#000', fontWeight: '800', fontSize: '15px', cursor: 'pointer',
+                    color: 'var(--color-bg)', fontWeight: '800', fontSize: '15px', cursor: 'pointer',
                     letterSpacing: '0.03em'
                   }}
                 >
@@ -557,10 +557,10 @@ export default function MonthlyFocusDashboard() {
           to="/monthly-focus"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '6px',
-            color: '#9ca3af', fontSize: '13px', fontWeight: '600',
+            color: 'var(--color-text-muted)', fontSize: '13px', fontWeight: '600',
             textDecoration: 'none', padding: '6px 14px',
-            background: 'rgba(255,255,255,0.05)',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: 'var(--color-white-a04)',
+            border: '1px solid var(--color-white-a07)',
             borderRadius: '20px', transition: 'color 0.2s'
           }}
         >
@@ -730,7 +730,7 @@ export default function MonthlyFocusDashboard() {
           <span style={{ fontSize: '2em' }}>🔒</span>
           <div>
             <div className="tm-eyebrow">TODAY’S MISSION</div>
-            <p style={{ margin: 0, color: '#9ca3af' }}>Admin hasn’t opened today’s task yet — check back soon!</p>
+            <p style={{ margin: 0, color: 'var(--color-text-muted)' }}>Admin hasn’t opened today’s task yet — check back soon!</p>
           </div>
         </motion.div>
       )}
@@ -777,15 +777,15 @@ export default function MonthlyFocusDashboard() {
                 {/* Not Started Badge */}
                 {!day.isStarted && (
                   <div style={{
-                    background: 'rgba(245, 158, 11, 0.15)',
-                    color: '#f59e0b',
+                    background: 'var(--color-warning-a12)',
+                    color: 'var(--color-warning)',
                     padding: '10px',
                     borderRadius: '8px',
                     textAlign: 'center',
                     marginBottom: '12px',
                     fontSize: '13px',
                     fontWeight: '600',
-                    border: '1px solid rgba(245, 158, 11, 0.3)'
+                    border: '1px solid var(--color-warning-a30)'
                   }}>
                     ⏳ Waiting for Admin to Start
                   </div>
@@ -794,15 +794,15 @@ export default function MonthlyFocusDashboard() {
                 {/* Ended Badge - can still do for 5 XP */}
                 {day.isStarted && !running && status !== 'completed' && (
                   <div style={{
-                    background: 'rgba(245, 158, 11, 0.15)',
-                    color: '#f59e0b',
+                    background: 'var(--color-warning-a12)',
+                    color: 'var(--color-warning)',
                     padding: '10px',
                     borderRadius: '8px',
                     textAlign: 'center',
                     marginBottom: '12px',
                     fontSize: '13px',
                     fontWeight: '600',
-                    border: '1px solid rgba(245, 158, 11, 0.3)'
+                    border: '1px solid var(--color-warning-a30)'
                   }}>
                     ⏱️ Time's Up - Complete for 5 XP
                   </div>
@@ -815,12 +815,12 @@ export default function MonthlyFocusDashboard() {
                   borderRadius: '20px',
                   fontSize: '12px',
                   marginBottom: '12px',
-                  background: day.taskType === 'puzzles' ? 'rgba(6, 182, 212, 0.15)' : 
-                             day.taskType === 'find_mistakes' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                  color: day.taskType === 'puzzles' ? '#06b6d4' : 
-                         day.taskType === 'find_mistakes' ? '#f59e0b' : '#10b981',
-                  border: `1px solid ${day.taskType === 'puzzles' ? 'rgba(6, 182, 212, 0.3)' : 
-                         day.taskType === 'find_mistakes' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(16, 185, 129, 0.3)'}`,
+                  background: day.taskType === 'puzzles' ? 'var(--color-accent-a15)' : 
+                             day.taskType === 'find_mistakes' ? 'var(--color-warning-a12)' : 'var(--color-success-a12)',
+                  color: day.taskType === 'puzzles' ? 'var(--color-accent)' : 
+                         day.taskType === 'find_mistakes' ? 'var(--color-warning)' : 'var(--color-success)',
+                  border: `1px solid ${day.taskType === 'puzzles' ? 'var(--color-accent-a30)' : 
+                         day.taskType === 'find_mistakes' ? 'var(--color-warning-a30)' : 'var(--color-success-a30)'}`,
                   fontWeight: '600'
                 }}>
                   {day.taskType === 'puzzles' && '🧩 Puzzles'}
@@ -865,10 +865,10 @@ export default function MonthlyFocusDashboard() {
               gridColumn: '1/-1', 
               textAlign: 'center', 
               padding: '60px 20px', 
-              color: '#9ca3af',
+              color: 'var(--color-text-muted)',
               background: 'rgba(23, 23, 23, 0.5)',
               borderRadius: '16px',
-              border: '1px solid rgba(255, 255, 255, 0.05)'
+              border: '1px solid var(--color-white-a04)'
             }}>
               <p style={{ fontSize: '1.1em', margin: 0 }}>No days created yet. Check back soon!</p>
             </div>

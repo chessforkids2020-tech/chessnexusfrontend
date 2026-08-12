@@ -386,7 +386,7 @@ function TeamLobby() {
               onClick={() => setShowLeaderboard(!showLeaderboard)}
               style={{
                 padding: '8px 16px',
-                backgroundColor: showLeaderboard ? '#dc3545' : '#007bff',
+                backgroundColor: showLeaderboard ? 'var(--color-danger)' : 'var(--color-accent-2)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
@@ -648,11 +648,11 @@ function TeamLobby() {
 // Helper function to generate consistent team colors
 function getTeamColor(teamId) {
   const colors = [
-    '#667eea',
-    '#28a745',
-    '#ffc107',
-    '#dc3545',
-    '#17a2b8',
+    'var(--color-accent-2)',
+    'var(--color-success)',
+    'var(--color-warning)',
+    'var(--color-danger)',
+    'var(--color-accent)',
     '#6f42c1',
     '#fd7e14',
     '#20c997'

@@ -3,7 +3,7 @@
 .tp-page {
   min-height: 100vh;
   background: #0d1117;
-  color: #ffffff;
+  color: var(--color-text);
   font-family: 'Poppins', sans-serif;
   padding: 40px 32px 60px;
   max-width: 1100px;
@@ -18,12 +18,12 @@
 .tp-back {
   display: inline-block;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--color-text-muted);
   text-decoration: none;
   margin-bottom: 14px;
   transition: color 0.15s ease;
 }
-.tp-back:hover { color: #10b981; }
+.tp-back:hover { color: var(--color-success); }
 
 .tp-title {
   font-size: 26px;
@@ -34,35 +34,35 @@
 
 .tp-subtitle {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--color-text-muted);
   margin: 0;
   max-width: 560px;
   line-height: 1.5;
 }
-.tp-subtitle strong { color: rgba(255, 255, 255, 0.85); font-weight: 600; }
+.tp-subtitle strong { color: var(--color-text); font-weight: 600; }
 
 /* ── Loading / error / empty states ── */
 .tp-state {
   padding: 48px 0;
   text-align: center;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-text-muted);
 }
-.tp-error { color: #f87171; }
+.tp-error { color: var(--color-danger); }
 
 /* ── Group section ── */
 /* Each group carries its own accent color via --accent, used for the heading,
    the card titles, and the icon tint — so the page is easy to scan by topic. */
 .tp-group {
   margin-bottom: 30px;
-  --accent: #10b981;            /* fallback solid accent */
-  --accent-soft: rgba(16, 185, 129, 0.14);  /* icon background */
-  --accent-line: rgba(16, 185, 129, 0.30);  /* icon border */
+  --accent: var(--color-success);            /* fallback solid accent */
+  --accent-soft: var(--color-success-a12);  /* icon background */
+  --accent-line: var(--color-success-a30);  /* icon border */
 }
-.tp-g-checkmates { --accent: #f87171; --accent-soft: rgba(248, 113, 113, 0.14); --accent-line: rgba(248, 113, 113, 0.30); } /* red */
-.tp-g-tactics    { --accent: #60a5fa; --accent-soft: rgba(96, 165, 250, 0.14);  --accent-line: rgba(96, 165, 250, 0.30); }  /* blue */
-.tp-g-attacks    { --accent: #fbbf24; --accent-soft: rgba(251, 191, 36, 0.14);  --accent-line: rgba(251, 191, 36, 0.30); }  /* amber */
-.tp-g-endgames   { --accent: #34d399; --accent-soft: rgba(52, 211, 153, 0.14);  --accent-line: rgba(52, 211, 153, 0.30); }  /* green */
+.tp-g-checkmates { --accent: var(--color-danger); --accent-soft: var(--color-danger-a12); --accent-line: var(--color-danger-a30); } /* red */
+.tp-g-tactics    { --accent: var(--color-accent-2); --accent-soft: var(--color-accent-2-a15);  --accent-line: var(--color-accent-2-a30); }  /* blue */
+.tp-g-attacks    { --accent: var(--color-warning); --accent-soft: var(--color-warning-a12);  --accent-line: var(--color-warning-a30); }  /* amber */
+.tp-g-endgames   { --accent: var(--color-success); --accent-soft: rgba(52, 211, 153, 0.14);  --accent-line: rgba(52, 211, 153, 0.30); }  /* green */
 
 .tp-group-title {
   font-size: 12px;
@@ -88,7 +88,7 @@
   width: 100%;
   text-align: left;
   background: #161b22;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-white-a07);
   border-radius: 12px;
   padding: 14px 16px;
   cursor: pointer;
@@ -139,21 +139,21 @@
 
 .tp-card-count {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--color-text-faint);
   white-space: nowrap;
 }
 
 .tp-card-desc {
   font-size: 11.5px;
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--color-text-muted);
 }
 
 .tp-card-arrow {
   flex-shrink: 0;
   align-self: center;
   font-size: 20px;
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--color-text-faint);
   transition: color 0.15s ease, transform 0.15s ease;
 }
 .tp-card:hover .tp-card-arrow {

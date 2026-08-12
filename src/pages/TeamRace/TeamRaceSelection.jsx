@@ -105,9 +105,9 @@ function TeamRaceSelection() {
             onClick={() => navigate(isAdmin ? '/admin/team-race' : '/elite/team-race')}
             style={{
               marginLeft: '10px',
-              background: 'linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.15))',
+              background: 'linear-gradient(135deg, var(--color-warning-a20), var(--color-warning-a12))',
               border: '1px solid rgba(251,191,36,0.5)',
-              color: '#fbbf24',
+              color: 'var(--color-warning)',
               padding: '8px 18px',
               borderRadius: '8px',
               fontWeight: 700,
@@ -131,9 +131,9 @@ function TeamRaceSelection() {
         <div className="races-grid">
           {races.map(race => {
             const badges = {
-              created: { color: '#6c757d', label: '📅 Scheduled' },
-              waiting: { color: '#ffc107', label: '⏳ Join Now' },
-              running: { color: '#28a745', label: '🏃 In Progress' }
+              created: { color: 'var(--color-text-faint)', label: '📅 Scheduled' },
+              waiting: { color: 'var(--color-warning)', label: '⏳ Join Now' },
+              running: { color: 'var(--color-success)', label: '🏃 In Progress' }
             };
             const badge = badges[race.status] || badges.waiting;
             
@@ -209,26 +209,26 @@ function TeamRaceSelection() {
 
       {recentRaces.length > 0 && (
         <div className="recent-races-section">
-          <h2 style={{ color: '#e2e8f0', fontSize: 20, fontWeight: 700, marginBottom: 16, marginTop: 40, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <h2 style={{ color: 'var(--color-text)', fontSize: 20, fontWeight: 700, marginBottom: 16, marginTop: 40, display: 'flex', alignItems: 'center', gap: 8 }}>
             🏆 Recently Finished Team Races
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
             {recentRaces.map(race => (
               <div key={race._id} style={{
                 background: 'rgba(139,92,246,0.07)',
-                border: '1px solid rgba(139,92,246,0.18)',
+                border: '1px solid var(--color-accent-2-a15)',
                 borderRadius: 14,
                 padding: '16px 18px',
               }}>
-                <div style={{ color: '#fff', fontWeight: 700, fontSize: 15, marginBottom: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 15, marginBottom: 8, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {race.raceName || 'Team Race'}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 10 }}>
-                  <div style={{ color: '#9ca3af', fontSize: 13 }}>📚 Topic: <span style={{ color: '#e2e8f0' }}>{getTopicTitle(race.topic)}</span></div>
-                  <div style={{ color: '#9ca3af', fontSize: 13 }}>👥 Players: <span style={{ color: '#e2e8f0' }}>{race.playerCount}</span></div>
-                  <div style={{ color: '#9ca3af', fontSize: 13 }}>⏱️ Duration: <span style={{ color: '#e2e8f0' }}>{Math.floor(race.duration / 60)} min</span></div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>📚 Topic: <span style={{ color: 'var(--color-text)' }}>{getTopicTitle(race.topic)}</span></div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 Players: <span style={{ color: 'var(--color-text)' }}>{race.playerCount}</span></div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱️ Duration: <span style={{ color: 'var(--color-text)' }}>{Math.floor(race.duration / 60)} min</span></div>
                 </div>
-                <div style={{ fontSize: 11, color: '#6b7280' }}>
+                <div style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>
                   Finished {(() => {
                     const diff = Date.now() - new Date(race.finishedAt).getTime();
                     const mins = Math.floor(diff / 60000);

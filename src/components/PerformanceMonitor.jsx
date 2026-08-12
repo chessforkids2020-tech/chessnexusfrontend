@@ -15,7 +15,7 @@ const formatTypeLabel = (t) => TOURNAMENT_TYPE_LABELS[t] || 'Standard';
 // Tiny inline sparkline for the puzzle stat cards. Renders a smooth-ish area
 // line of `data` (array of numbers) — progress over the selected window's
 // buckets (hours for 24h, days for 7d). No axes/labels, just the trend shape.
-function Sparkline({ data, color = '#a78bfa', width = 96, height = 26, fill = false }) {
+function Sparkline({ data, color = 'var(--color-accent-2)', width = 96, height = 26, fill = false }) {
   if (!Array.isArray(data) || data.length < 2) return null;
   // For the min/max we ignore a flat baseline so a real line still shows.
   const max = Math.max(...data);
@@ -55,11 +55,11 @@ const styles = {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
   contentWrapper: {
-    background: 'var(--obsidian-surface-elevated, rgba(23, 23, 23, 0.7))',
+    background: 'var(--obsidian-surface-elevated, var(--color-surface))',
     borderRadius: '20px',
-    boxShadow: 'var(--obsidian-shadow, 0 8px 32px rgba(0, 0, 0, 0.5))',
+    boxShadow: 'var(--obsidian-shadow, 0 8px 32px var(--color-black-a50))',
     padding: 'clamp(16px, 4vw, 32px) clamp(12px, 3vw, 28px)',
-    border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+    border: '1px solid var(--obsidian-border, var(--color-border))',
     backdropFilter: 'blur(10px)',
   },
   topSection: {
@@ -87,22 +87,22 @@ const styles = {
     letterSpacing: '0.02em',
   },
   highestPointCard: {
-    background: 'var(--obsidian-panel, linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)))',
+    background: 'var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)))',
     borderRadius: '18px',
     padding: 'clamp(16px, 3vw, 20px)',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-    border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+    border: '1px solid var(--obsidian-border, var(--color-border))',
     boxShadow: '0 12px 30px rgba(2, 6, 23, 0.28)',
     backdropFilter: 'blur(10px)',
   },
   highestPointIcon: {
     fontSize: 'clamp(24px, 6vw, 32px)',
-    filter: 'drop-shadow(0 4px 12px rgba(6, 182, 212, 0.3))',
+    filter: 'drop-shadow(0 4px 12px var(--color-accent-a30))',
   },
   highestPointLabel: {
     fontSize: 'clamp(11px, 2.5vw, 13px)',
-    color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))',
+    color: 'var(--obsidian-text-muted, var(--color-text-muted))',
     marginBottom: '4px',
     fontWeight: '500',
     textTransform: 'uppercase',
@@ -120,10 +120,10 @@ const styles = {
     fontWeight: '500',
   },
   dailyPuzzleCard: {
-    background: 'var(--obsidian-panel, linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)))',
+    background: 'var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)))',
     borderRadius: '18px',
     padding: 'clamp(16px, 4vw, 24px)',
-    border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+    border: '1px solid var(--obsidian-border, var(--color-border))',
     boxShadow: '0 12px 30px rgba(2, 6, 23, 0.22)',
     backdropFilter: 'blur(10px)',
     display: 'flex',
@@ -132,7 +132,7 @@ const styles = {
   },
   dailyPuzzleHeader: {
     fontSize: 'clamp(13px, 3vw, 15px)',
-    color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))',
+    color: 'var(--obsidian-text-muted, var(--color-text-muted))',
     marginBottom: '20px',
     textAlign: 'center',
     lineHeight: '1.5',
@@ -162,7 +162,7 @@ const styles = {
   },
   circleBackground: {
     fill: 'none',
-    stroke: 'rgba(148, 163, 184, 0.18)',
+    stroke: 'var(--color-border)',
     strokeWidth: '8',
   },
   circleProgress: {
@@ -186,10 +186,10 @@ const styles = {
     letterSpacing: '0.5px',
   },
   ratingCard: {
-    background: 'var(--obsidian-panel, linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)))',
+    background: 'var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)))',
     borderRadius: '18px',
     padding: 'clamp(16px, 3vw, 20px)',
-    border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+    border: '1px solid var(--obsidian-border, var(--color-border))',
     boxShadow: '0 12px 30px rgba(2, 6, 23, 0.22)',
     backdropFilter: 'blur(10px)',
   },
@@ -200,11 +200,11 @@ const styles = {
     marginTop: '16px',
   },
   ratingItem: {
-    background: 'rgba(6, 182, 212, 0.1)',
+    background: 'var(--color-accent-a12)',
     borderRadius: '12px',
     padding: 'clamp(12px, 3vw, 16px)',
     textAlign: 'center',
-    border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+    border: '1px solid var(--obsidian-border, var(--color-border))',
     transition: 'all 0.3s ease',
   },
   crownValue: {
@@ -213,7 +213,7 @@ const styles = {
   },
   ratingLabel: {
     fontSize: 'clamp(10px, 2.5vw, 11px)',
-    color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))',
+    color: 'var(--obsidian-text-muted, var(--color-text-muted))',
     marginBottom: '6px',
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -225,10 +225,10 @@ const styles = {
     color: 'var(--obsidian-text-soft, #dbeafe)',
   },
   puzzleRatingCard: {
-    background: 'var(--obsidian-panel, linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)))',
+    background: 'var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)))',
     borderRadius: '18px',
     padding: 'clamp(16px, 3vw, 20px)',
-    border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+    border: '1px solid var(--obsidian-border, var(--color-border))',
     boxShadow: '0 12px 30px rgba(2, 6, 23, 0.22)',
     backdropFilter: 'blur(10px)',
     display: 'flex',
@@ -238,10 +238,10 @@ const styles = {
     marginTop: '24px',
   },
   focusCard: {
-    background: 'var(--obsidian-panel, linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)))',
+    background: 'var(--obsidian-panel, linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04)))',
     borderRadius: '18px',
     padding: 'clamp(16px, 3vw, 24px)',
-    border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+    border: '1px solid var(--obsidian-border, var(--color-border))',
     boxShadow: '0 12px 30px rgba(2, 6, 23, 0.22)',
     backdropFilter: 'blur(10px)',
     marginTop: '24px',
@@ -254,7 +254,7 @@ const styles = {
   },
   focusSubtitle: {
     fontSize: 'clamp(11px, 2.5vw, 13px)',
-    color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))',
+    color: 'var(--obsidian-text-muted, var(--color-text-muted))',
     marginBottom: '16px',
   },
   focusStatsGrid: {
@@ -267,11 +267,11 @@ const styles = {
     borderRadius: '12px',
     padding: 'clamp(12px, 3vw, 16px)',
     textAlign: 'center',
-    border: '1px solid var(--obsidian-border, rgba(148, 163, 184, 0.16))',
+    border: '1px solid var(--obsidian-border, var(--color-border))',
   },
   focusStatLabel: {
     fontSize: 'clamp(10px, 2.5vw, 11px)',
-    color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))',
+    color: 'var(--obsidian-text-muted, var(--color-text-muted))',
     marginBottom: '6px',
     fontWeight: '600',
     textTransform: 'uppercase',
@@ -285,7 +285,7 @@ const styles = {
   focusEmptyState: {
     textAlign: 'center',
     padding: '20px',
-    color: 'var(--obsidian-text-muted, rgba(203, 213, 225, 0.74))',
+    color: 'var(--obsidian-text-muted, var(--color-text-muted))',
     fontSize: 'clamp(13px, 3vw, 14px)',
   },
   focusBadge: {
@@ -320,7 +320,7 @@ const styles = {
   },
   mfMonth: {
     fontSize: 'clamp(11px, 2.5vw, 13px)',
-    color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))',
+    color: 'var(--obsidian-text-muted, var(--color-text-muted))',
     margin: '2px 0 0 0',
   },
   mfViewAll: {
@@ -335,14 +335,14 @@ const styles = {
     padding: '16px',
     background: 'rgba(251,191,36,0.07)',
     borderRadius: '14px',
-    border: '1px solid rgba(251,191,36,0.2)',
+    border: '1px solid var(--color-warning-a20)',
   },
   mfOfficialLabel: {
     fontSize: '11px',
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: '0.8px',
-    color: '#fbbf24',
+    color: 'var(--color-warning)',
     marginBottom: '4px',
   },
   mfOfficialFocusName: {
@@ -363,7 +363,7 @@ const styles = {
     borderRadius: '12px',
     padding: '12px 10px',
     textAlign: 'center',
-    border: '1px solid rgba(148,163,184,0.16)',
+    border: '1px solid var(--color-border)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
@@ -383,7 +383,7 @@ const styles = {
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
-    color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))',
+    color: 'var(--obsidian-text-muted, var(--color-text-muted))',
   },
   mfJoinInvite: {
     marginTop: '16px',
@@ -399,7 +399,7 @@ const styles = {
     color: 'var(--obsidian-text-soft, #dbeafe)',
   },
   mfJoinLink: {
-    color: '#818cf8',
+    color: 'var(--color-accent-2)',
     fontWeight: '700',
     textDecoration: 'none',
     whiteSpace: 'nowrap',
@@ -408,7 +408,7 @@ const styles = {
     marginTop: '16px',
     overflowX: 'auto',
     borderRadius: '12px',
-    border: '1px solid rgba(148,163,184,0.16)',
+    border: '1px solid var(--color-border)',
   },
   mfTable: {
     width: '100%',
@@ -579,8 +579,8 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
       ...styles.crownValue,
       color: 'var(--obsidian-text-soft, #dbeafe)'
     };
-    if (tier === 'gold') return { ...base, color: '#f59e0b' };
-    if (tier === 'platinum') return { ...base, color: '#8b5cf6' };
+    if (tier === 'gold') return { ...base, color: 'var(--color-warning)' };
+    if (tier === 'platinum') return { ...base, color: 'var(--color-accent-2)' };
     if (tier === 'gem') return { ...base, color: '#38bdf8' };
     return base;
   };
@@ -618,7 +618,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
       <div style={{ padding: 'clamp(16px,4vw,24px)', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         {/* Header */}
         <h3 style={{ ...styles.columnTitle, marginBottom: 14 }}>🧩 Today's Daily Puzzles</h3>
-        <div style={{ fontSize: 'clamp(12px, 2.5vw, 13px)', color: 'var(--obsidian-text-muted, rgba(203,213,225,0.74))', textAlign: 'center', marginBottom: 16, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 'clamp(12px, 2.5vw, 13px)', color: 'var(--obsidian-text-muted, var(--color-text-muted))', textAlign: 'center', marginBottom: 16, lineHeight: 1.5 }}>
           {totalPuzzlesDp >= 5 ? "🎉 You've finished your daily batch of 5 puzzles!"
             : totalPuzzlesDp > 0 ? `📈 Progress: ${totalPuzzlesDp}/5 puzzles completed`
             : '🚀 Start your daily puzzles!'}
@@ -629,33 +629,33 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, flex: 1 }}>
             <div style={{ position: 'relative', width: 'clamp(72px,18vw,96px)', height: 'clamp(72px,18vw,96px)' }}>
               <svg style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }} viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="rgba(148,163,184,0.18)" strokeWidth="8" />
-                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="#10b981" strokeWidth="8" strokeLinecap="round"
+                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="var(--color-border)" strokeWidth="8" />
+                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="var(--color-success)" strokeWidth="8" strokeLinecap="round"
                   strokeDasharray={circumferenceDp} strokeDashoffset={correctOffsetDp} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
               </svg>
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: 'clamp(20px,5vw,28px)', fontWeight: 800, color: '#10b981' }}>
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: 'clamp(20px,5vw,28px)', fontWeight: 800, color: 'var(--color-success)' }}>
                 {dailyStats.correct}
               </div>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#10b981' }}>Correct</span>
+            <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--color-success)' }}>Correct</span>
           </div>
 
           {/* Divider */}
-          <div style={{ width: 1, height: 90, background: 'var(--obsidian-border, rgba(148,163,184,0.16))', flexShrink: 0 }} />
+          <div style={{ width: 1, height: 90, background: 'var(--obsidian-border, var(--color-border))', flexShrink: 0 }} />
 
           {/* Wrong */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, flex: 1 }}>
             <div style={{ position: 'relative', width: 'clamp(72px,18vw,96px)', height: 'clamp(72px,18vw,96px)' }}>
               <svg style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }} viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="rgba(148,163,184,0.18)" strokeWidth="8" />
-                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="#ef4444" strokeWidth="8" strokeLinecap="round"
+                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="var(--color-border)" strokeWidth="8" />
+                <circle cx="50" cy="50" r={radiusDp} fill="none" stroke="var(--color-danger)" strokeWidth="8" strokeLinecap="round"
                   strokeDasharray={circumferenceDp} strokeDashoffset={wrongOffsetDp} style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
               </svg>
-              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: 'clamp(20px,5vw,28px)', fontWeight: 800, color: '#ef4444' }}>
+              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', fontSize: 'clamp(20px,5vw,28px)', fontWeight: 800, color: 'var(--color-danger)' }}>
                 {dailyStats.wrong}
               </div>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#ef4444' }}>Wrong</span>
+            <span style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--color-danger)' }}>Wrong</span>
           </div>
         </div>
       </div>
@@ -675,12 +675,12 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
               onClick={() => openDetailedStats('timedRace')}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.3)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(6, 182, 212, 0.3)';
+                e.currentTarget.style.borderColor = 'var(--color-accent-a30)';
+                e.currentTarget.style.boxShadow = '0 8px 24px var(--color-accent-a30)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'var(--obsidian-border, rgba(148, 163, 184, 0.16))';
+                e.currentTarget.style.borderColor = 'var(--obsidian-border, var(--color-border))';
                 e.currentTarget.style.boxShadow = '0 12px 30px rgba(2, 6, 23, 0.28)';
               }}
             >
@@ -700,12 +700,12 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
               onClick={() => openDetailedStats('arenaRace')}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.3)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(6, 182, 212, 0.3)';
+                e.currentTarget.style.borderColor = 'var(--color-accent-a30)';
+                e.currentTarget.style.boxShadow = '0 8px 24px var(--color-accent-a30)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'var(--obsidian-border, rgba(148, 163, 184, 0.16))';
+                e.currentTarget.style.borderColor = 'var(--obsidian-border, var(--color-border))';
                 e.currentTarget.style.boxShadow = '0 12px 30px rgba(2, 6, 23, 0.28)';
               }}
             >
@@ -725,12 +725,12 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
               onClick={() => openDetailedStats('teamRace')}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.3)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(6, 182, 212, 0.3)';
+                e.currentTarget.style.borderColor = 'var(--color-accent-a30)';
+                e.currentTarget.style.boxShadow = '0 8px 24px var(--color-accent-a30)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'var(--obsidian-border, rgba(148, 163, 184, 0.16))';
+                e.currentTarget.style.borderColor = 'var(--obsidian-border, var(--color-border))';
                 e.currentTarget.style.boxShadow = '0 12px 30px rgba(2, 6, 23, 0.28)';
               }}
             >
@@ -775,7 +775,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                       <circle
                         style={{
                           ...styles.circleProgress,
-                          stroke: '#10b981',
+                          stroke: 'var(--color-success)',
                           strokeDasharray: circumference,
                           strokeDashoffset: correctOffset,
                         }}
@@ -784,11 +784,11 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                         r={radius}
                       />
                     </svg>
-                    <div style={{ ...styles.circleText, color: '#10b981' }}>
+                    <div style={{ ...styles.circleText, color: 'var(--color-success)' }}>
                       {dailyStats.correct}
                     </div>
                   </div>
-                  <div style={{ ...styles.circleLabel, color: '#10b981' }}>
+                  <div style={{ ...styles.circleLabel, color: 'var(--color-success)' }}>
                     Correct
                   </div>
                 </div>
@@ -806,7 +806,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                       <circle
                         style={{
                           ...styles.circleProgress,
-                          stroke: '#ef4444',
+                          stroke: 'var(--color-danger)',
                           strokeDasharray: circumference,
                           strokeDashoffset: wrongOffset,
                         }}
@@ -815,11 +815,11 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                         r={radius}
                       />
                     </svg>
-                    <div style={{ ...styles.circleText, color: '#ef4444' }}>
+                    <div style={{ ...styles.circleText, color: 'var(--color-danger)' }}>
                       {dailyStats.wrong}
                     </div>
                   </div>
-                  <div style={{ ...styles.circleLabel, color: '#ef4444' }}>
+                  <div style={{ ...styles.circleLabel, color: 'var(--color-danger)' }}>
                     Wrong
                   </div>
                 </div>
@@ -844,7 +844,7 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                 {arenaSummary.lastFinish ? (
                   <>
                     <div style={styles.ratingValue}>#{arenaSummary.lastFinish.rank}</div>
-                    <div style={{ fontSize: '11.5px', fontWeight: 600, color: '#67e8f9', marginTop: '2px' }}>
+                    <div style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--color-accent)', marginTop: '2px' }}>
                       {formatTypeLabel(arenaSummary.lastFinish.tournamentType)}
                     </div>
                   </>
@@ -869,13 +869,13 @@ const PerformanceMonitor = ({ user, publicTrainingStats = null, publicArenaSumma
                     gap: '6px',
                     padding: '10px 16px',
                     borderRadius: '10px',
-                    background: 'linear-gradient(135deg, #06b6d4, #10b981)',
+                    background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))',
                     color: '#04201f',
                     fontWeight: 700,
                     fontSize: '13px',
                     textDecoration: 'none',
                     textAlign: 'center',
-                    boxShadow: '0 6px 18px rgba(6,182,212,0.3)',
+                    boxShadow: '0 6px 18px var(--color-accent-a30)',
                   }}
                 >
                   🏟️ arena Dashboard →

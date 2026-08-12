@@ -6,10 +6,10 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 28px 20px 60px;
-  color: #e5e7eb;
+  color: var(--color-text);
 }
 
-.pc-muted { padding: 60px 0; text-align: center; color: #94a3b8; font-size: 14px; }
+.pc-muted { padding: 60px 0; text-align: center; color: var(--color-text-muted); font-size: 14px; }
 
 /* ── Header ───────────────────────────────────────────────────────────── */
 .pc-head {
@@ -17,7 +17,7 @@
   gap: 22px;
   align-items: flex-start;
   padding-bottom: 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--color-white-a07);
 }
 
 /* A coach's face is the thing a parent actually looks at, so it leads the page
@@ -34,7 +34,7 @@
   font-size: 72px;
   font-weight: 800;
   color: #04211d;
-  background: linear-gradient(135deg, #06b6d4, #10b981);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
 }
 .pc-photo img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -48,7 +48,7 @@
   margin: 0 0 8px;
   font-size: 27px;
   font-weight: 800;
-  color: #f8fafc;
+  color: var(--color-text);
   letter-spacing: -0.01em;
 }
 .pc-title {
@@ -57,7 +57,7 @@
   font-size: 13px;
   font-weight: 800;
   color: #241a05;
-  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  background: linear-gradient(135deg, var(--color-warning), var(--color-warning));
 }
 .pc-verified {
   width: 22px;
@@ -68,7 +68,7 @@
   font-size: 12px;
   font-weight: 800;
   color: #04211d;
-  background: #34d399;
+  background: var(--color-success);
 }
 
 /* The coach's one-line pitch, under the name. */
@@ -77,7 +77,7 @@
   font-size: 16px;
   font-style: italic;
   line-height: 1.45;
-  color: #cbd5e1;
+  color: var(--color-text-muted);
 }
 
 /* Label / value rows. The label column is fixed so the values line up down the
@@ -94,14 +94,14 @@
   margin: 0;
   min-width: 0;
   font-size: 14.5px;
-  color: #e2e8f0;
+  color: var(--color-text);
   overflow-wrap: anywhere;
 }
 
 /* Ratings inline: "FIDE 2343   Lichess 2585". */
 .pc-rate-line { display: flex; gap: 18px; flex-wrap: wrap; }
-.pc-hr { text-decoration: none; color: #e2e8f0; white-space: nowrap; }
-.pc-hr strong { font-weight: 700; color: #67e8f9; }
+.pc-hr { text-decoration: none; color: var(--color-text); white-space: nowrap; }
+.pc-hr strong { font-weight: 700; color: var(--color-accent); }
 a.pc-hr:hover strong { text-decoration: underline; }
 .pc-hr-l { font-size: 12.5px; color: #7c8899; }
 
@@ -112,16 +112,16 @@ a.pc-hr:hover strong { text-decoration: underline; }
   border-radius: 999px;
   font-size: 12.5px;
   font-weight: 600;
-  color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text-muted);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a10);
 }
 .pc-badge-open {
-  color: #6ee7b7;
-  background: rgba(16, 185, 129, 0.12);
-  border-color: rgba(16, 185, 129, 0.35);
+  color: var(--color-success);
+  background: var(--color-success-a12);
+  border-color: var(--color-success-a30);
 }
-.pc-badge-full { color: #94a3b8; }
+.pc-badge-full { color: var(--color-text-muted); }
 
 /* ── Sections ─────────────────────────────────────────────────────────── */
 .pc-section { margin-top: 30px; }
@@ -129,7 +129,7 @@ a.pc-hr:hover strong { text-decoration: underline; }
   margin: 0 0 12px;
   font-size: 17px;
   font-weight: 700;
-  color: #e2e8f0;
+  color: var(--color-text);
 }
 
 /* pre-wrap: the coach typed their own line breaks and paragraphs. */
@@ -156,9 +156,9 @@ a.pc-hr:hover strong { text-decoration: underline; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #64748b;
+  color: var(--color-text-faint);
 }
-.pc-fact-v { font-size: 14px; color: #cbd5e1; }
+.pc-fact-v { font-size: 14px; color: var(--color-text-muted); }
 
 /* ── Ask to join ──────────────────────────────────────────────────────── */
 .pc-cta {
@@ -166,11 +166,11 @@ a.pc-hr:hover strong { text-decoration: underline; }
   padding: 26px 24px;
   border-radius: 16px;
   text-align: center;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.05));
-  border: 1px solid rgba(6, 182, 212, 0.28);
+  background: linear-gradient(135deg, var(--color-accent-a12), var(--color-success-a12));
+  border: 1px solid var(--color-accent-a30);
 }
-.pc-cta h2 { margin: 0 0 6px; font-size: 19px; font-weight: 800; color: #f1f5f9; }
-.pc-cta p { margin: 0 0 18px; font-size: 13.5px; line-height: 1.6; color: #94a3b8; }
+.pc-cta h2 { margin: 0 0 6px; font-size: 19px; font-weight: 800; color: var(--color-text); }
+.pc-cta p { margin: 0 0 18px; font-size: 13.5px; line-height: 1.6; color: var(--color-text-muted); }
 
 .pc-btn {
   display: inline-block;
@@ -179,26 +179,26 @@ a.pc-hr:hover strong { text-decoration: underline; }
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  color: #e2e8f0;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--color-text);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a13);
 }
 .pc-btn-primary {
   color: #04211d;
-  background: linear-gradient(135deg, #06b6d4, #10b981);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
   border: none;
   font-weight: 800;
 }
 
 .pc-foot { margin-top: 26px; text-align: center; }
-.pc-foot a { font-size: 13px; color: #64748b; text-decoration: none; }
-.pc-foot a:hover { color: #cbd5e1; }
+.pc-foot a { font-size: 13px; color: var(--color-text-faint); text-decoration: none; }
+.pc-foot a:hover { color: var(--color-text-muted); }
 
 /* ── Not available ────────────────────────────────────────────────────── */
 .pc-empty { padding: 60px 20px; text-align: center; }
 .pc-empty-ic { font-size: 52px; margin-bottom: 14px; }
-.pc-empty h1 { margin: 0 0 8px; font-size: 22px; font-weight: 800; color: #f1f5f9; }
-.pc-empty p { margin: 0 0 20px; font-size: 14px; color: #94a3b8; }
+.pc-empty h1 { margin: 0 0 8px; font-size: 22px; font-weight: 800; color: var(--color-text); }
+.pc-empty p { margin: 0 0 20px; font-size: 14px; color: var(--color-text-muted); }
 
 /* Tablet: keep the photo beside the text, just smaller. */
 @media (max-width: 760px) {

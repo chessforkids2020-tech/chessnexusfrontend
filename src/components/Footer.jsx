@@ -17,14 +17,14 @@ export default function Footer() {
           @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
           .site-footer {
-            background: rgba(10, 10, 10, 0.95);
+            background: var(--color-bg);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid var(--color-white-a04);
             padding: 20px;
             text-align: center;
             position: relative;
-            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 -2px 20px var(--color-black-a50);
             z-index: 50;
           }
 
@@ -47,30 +47,30 @@ export default function Footer() {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: #06b6d4;
+            color: var(--color-accent);
             text-decoration: none;
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
             font-weight: 600;
             padding: 8px 16px;
             border-radius: 20px;
-            background: rgba(6, 182, 212, 0.1);
-            border: 1px solid rgba(6, 182, 212, 0.2);
+            background: var(--color-accent-a12);
+            border: 1px solid var(--color-accent-a20);
             transition: all 0.3s ease;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 1px 2px var(--color-black-a35);
           }
 
           .contact-link:hover {
-            background: rgba(6, 182, 212, 0.2);
-            border-color: rgba(6, 182, 212, 0.4);
-            color: #67e8f9;
+            background: var(--color-accent-a20);
+            border-color: var(--color-accent-a40);
+            color: var(--color-accent);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+            box-shadow: 0 4px 12px var(--color-accent-a30);
           }
 
           .contact-icon {
             font-size: 16px;
-            filter: drop-shadow(0 1px 2px rgba(6, 182, 212, 0.3));
+            filter: drop-shadow(0 1px 2px var(--color-accent-a30));
           }
 
           .footer-nav {
@@ -82,7 +82,7 @@ export default function Footer() {
           }
 
           .footer-nav a {
-            color: #06b6d4;
+            color: var(--color-accent);
             text-decoration: none;
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
@@ -91,12 +91,12 @@ export default function Footer() {
           }
 
           .footer-nav a:hover {
-            color: #67e8f9;
+            color: var(--color-accent);
             text-decoration: underline;
           }
 
           .footer-sep {
-            color: rgba(255, 255, 255, 0.25);
+            color: var(--color-white-a20);
             font-size: 13px;
           }
 
@@ -113,18 +113,18 @@ export default function Footer() {
             width: 34px;
             height: 34px;
             border-radius: 50%;
-            color: #06b6d4;
-            background: rgba(6, 182, 212, 0.1);
-            border: 1px solid rgba(6, 182, 212, 0.2);
+            color: var(--color-accent);
+            background: var(--color-accent-a12);
+            border: 1px solid var(--color-accent-a20);
             transition: all 0.3s ease;
           }
 
           .footer-social a:hover {
-            color: #ffffff;
-            background: rgba(6, 182, 212, 0.25);
-            border-color: rgba(6, 182, 212, 0.5);
+            color: var(--color-text);
+            background: var(--color-accent-a20);
+            border-color: var(--color-accent-a40);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+            box-shadow: 0 4px 12px var(--color-accent-a30);
           }
 
           .footer-social svg {
@@ -140,8 +140,8 @@ export default function Footer() {
             font-family: 'Poppins', sans-serif;
             font-size: 14px;
             font-weight: 500;
-            color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            color: var(--color-text);
+            text-shadow: 0 2px 4px var(--color-black-a35);
             letter-spacing: 0.5px;
           }
 
@@ -162,8 +162,8 @@ export default function Footer() {
             height: 2px;
             background: linear-gradient(90deg,
               transparent,
-              rgba(6, 182, 212, 0.3) 30%,
-              rgba(16, 185, 129, 0.3) 70%,
+              var(--color-accent-a30) 30%,
+              var(--color-success-a30) 70%,
               transparent
             );
           }

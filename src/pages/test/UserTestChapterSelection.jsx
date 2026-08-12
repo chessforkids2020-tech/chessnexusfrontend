@@ -33,7 +33,7 @@ const UserTestChapterSelection = () => {
   const styles = {
     page: {
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)',
+      background: 'linear-gradient(135deg, var(--color-bg) 0%, #1a1a2e 100%)',
       padding: '40px 20px',
       fontFamily: 'Inter, Arial, sans-serif',
     },
@@ -47,18 +47,18 @@ const UserTestChapterSelection = () => {
     },
     studyTitle: {
       fontSize: '16px',
-      color: '#f59e0b',
+      color: 'var(--color-warning)',
       marginBottom: '10px',
     },
     title: {
       fontSize: '32px',
       fontWeight: '700',
-      color: '#fff',
+      color: 'var(--color-text)',
       marginBottom: '10px',
     },
     subtitle: {
       fontSize: '15px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     grid: {
       display: 'flex',
@@ -66,10 +66,10 @@ const UserTestChapterSelection = () => {
       gap: '15px',
     },
     card: {
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '16px',
       padding: '25px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
       display: 'flex',
@@ -78,20 +78,20 @@ const UserTestChapterSelection = () => {
     },
     cardHover: {
       transform: 'translateX(10px)',
-      boxShadow: '0 10px 30px rgba(245, 158, 11, 0.15)',
-      border: '1px solid rgba(245, 158, 11, 0.4)',
+      boxShadow: '0 10px 30px var(--color-warning-a12)',
+      border: '1px solid var(--color-warning-a30)',
     },
     chapterNumber: {
       width: '50px',
       height: '50px',
       borderRadius: '12px',
-      background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
+      background: 'linear-gradient(135deg, var(--color-warning) 0%, var(--color-danger) 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       fontSize: '20px',
       fontWeight: '700',
-      color: '#fff',
+      color: 'var(--color-text)',
       flexShrink: 0,
     },
     cardContent: {
@@ -100,16 +100,16 @@ const UserTestChapterSelection = () => {
     cardTitle: {
       fontSize: '18px',
       fontWeight: '600',
-      color: '#fff',
+      color: 'var(--color-text)',
       marginBottom: '5px',
     },
     cardMeta: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     puzzleCount: {
-      background: 'rgba(245, 158, 11, 0.2)',
-      color: '#f59e0b',
+      background: 'var(--color-warning-a20)',
+      color: 'var(--color-warning)',
       padding: '6px 12px',
       borderRadius: '20px',
       fontSize: '13px',
@@ -118,8 +118,8 @@ const UserTestChapterSelection = () => {
     backButton: {
       padding: '12px 24px',
       background: 'rgba(38, 38, 38, 0.8)',
-      color: '#fff',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a20)',
       borderRadius: '10px',
       cursor: 'pointer',
       fontSize: '14px',
@@ -127,15 +127,15 @@ const UserTestChapterSelection = () => {
     },
     loading: {
       textAlign: 'center',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       padding: '60px',
       fontSize: '18px',
     },
     empty: {
       textAlign: 'center',
-      color: '#6b7280',
+      color: 'var(--color-text-faint)',
       padding: '60px',
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '20px',
     },
   };
@@ -168,7 +168,7 @@ const UserTestChapterSelection = () => {
         </div>
 
         {error && (
-          <div style={{ ...styles.empty, color: '#ef4444', marginBottom: '20px' }}>
+          <div style={{ ...styles.empty, color: 'var(--color-danger)', marginBottom: '20px' }}>
             {error}
           </div>
         )}

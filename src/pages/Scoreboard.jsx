@@ -16,7 +16,7 @@ export default function Scoreboard() {
   const styles = {
     pageWrapper: {
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       position: 'relative',
       overflow: 'hidden',
       padding: '20px',
@@ -27,17 +27,17 @@ export default function Scoreboard() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
       padding: '28px',
       marginTop: '20px',
       position: 'relative',
@@ -52,9 +52,9 @@ export default function Scoreboard() {
     },
     backButton: {
       padding: '10px 20px',
-      background: 'rgba(0, 0, 0, 0.4)',
-      color: '#9ca3af',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-black-a35)',
+      color: 'var(--color-text-muted)',
+      border: '1px solid var(--color-white-a10)',
       borderRadius: '10px',
       cursor: 'pointer',
       fontSize: '14px',
@@ -66,13 +66,13 @@ export default function Scoreboard() {
       fontSize: '32px',
       fontWeight: '700',
       marginBottom: '12px',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
     },
     subtitle: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginBottom: '32px',
       fontSize: '15px',
       lineHeight: '1.6',
@@ -84,14 +84,14 @@ export default function Scoreboard() {
       marginBottom: '32px',
     },
     roundCard: {
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '16px',
       padding: '32px 24px',
       textAlign: 'center',
       cursor: 'pointer',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+      boxShadow: '0 4px 16px var(--color-black-a35)',
       position: 'relative',
       overflow: 'hidden',
     },
@@ -99,43 +99,43 @@ export default function Scoreboard() {
       margin: '0 0 12px 0',
       fontSize: '48px',
       fontWeight: '700',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
-      textShadow: '0 0 20px rgba(6, 182, 212, 0.3)',
+      textShadow: '0 0 20px var(--color-accent-a30)',
     },
     roundLabel: {
       fontSize: '12px',
       fontWeight: '600',
       textTransform: 'uppercase',
       letterSpacing: '1px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginBottom: '8px',
     },
     roundAction: {
       margin: 0,
-      color: '#67e8f9',
+      color: 'var(--color-accent)',
       fontSize: '14px',
       fontWeight: '500',
     },
     infoBox: {
       marginTop: '28px',
       padding: '20px',
-      backgroundColor: 'rgba(6, 182, 212, 0.05)',
+      backgroundColor: 'var(--color-accent-a06)',
       borderRadius: '12px',
-      border: '1px solid rgba(6, 182, 212, 0.1)',
+      border: '1px solid var(--color-accent-a12)',
     },
     infoTitle: {
       margin: '0 0 12px 0',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       fontSize: '16px',
       fontWeight: '600',
     },
     infoList: {
       margin: '8px 0',
       paddingLeft: '20px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '14px',
       lineHeight: '1.8',
     },
@@ -150,11 +150,11 @@ export default function Scoreboard() {
             onClick={() => navigate('/dashboard')}
             style={styles.backButton}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+              e.currentTarget.style.borderColor = 'var(--color-white-a20)';
               e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.borderColor = 'var(--color-white-a10)';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
@@ -177,15 +177,15 @@ export default function Scoreboard() {
             style={styles.roundCard}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
-              e.currentTarget.style.boxShadow = '0 12px 32px rgba(6, 182, 212, 0.3)';
-              e.currentTarget.style.border = '1px solid rgba(6, 182, 212, 0.2)';
-              e.currentTarget.style.background = 'rgba(6, 182, 212, 0.08)';
+              e.currentTarget.style.boxShadow = '0 12px 32px var(--color-accent-a30)';
+              e.currentTarget.style.border = '1px solid var(--color-accent-a20)';
+              e.currentTarget.style.background = 'var(--color-accent-a08)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0) scale(1)';
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3)';
-              e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.05)';
-              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)';
+              e.currentTarget.style.boxShadow = '0 4px 16px var(--color-black-a35)';
+              e.currentTarget.style.border = '1px solid var(--color-white-a04)';
+              e.currentTarget.style.background = 'var(--color-black-a35)';
             }}
           >
             <div style={styles.roundLabel}>Round</div>

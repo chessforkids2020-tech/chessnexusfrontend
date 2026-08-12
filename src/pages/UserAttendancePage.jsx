@@ -14,11 +14,11 @@ const styles = {
   page: {
     padding: '24px',
     fontFamily: 'Inter, Arial, sans-serif',
-    background: '#0a0a0a',
+    background: 'var(--color-bg)',
     minHeight: '100vh',
     position: 'relative',
     overflow: 'hidden',
-    color: '#ffffff'
+    color: 'var(--color-text)'
   },
   pageBackground: {
     position: 'fixed',
@@ -26,7 +26,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+    background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
     pointerEvents: 'none',
     zIndex: 0
   },
@@ -37,34 +37,34 @@ const styles = {
     zIndex: 1
   },
   title: {
-    color: '#ffffff',
+    color: 'var(--color-text)',
     fontSize: '34px',
     fontWeight: '700',
     marginBottom: '8px',
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text'
   },
   subtitle: {
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontSize: '18px',
     fontStyle: 'italic'
   },
   section: {
-    background: 'rgba(23, 23, 23, 0.7)',
+    background: 'var(--color-surface)',
     borderRadius: '20px',
     padding: '28px',
     marginBottom: '24px',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
+    border: '1px solid var(--color-white-a04)',
     backdropFilter: 'blur(10px)',
     WebkitBackdropFilter: 'blur(10px)',
     position: 'relative',
     zIndex: 1
   },
   sectionTitle: {
-    color: '#ffffff',
+    color: 'var(--color-text)',
     fontSize: '24px',
     fontWeight: '600',
     marginBottom: '20px',
@@ -79,26 +79,26 @@ const styles = {
     marginBottom: '20px'
   },
   statCard: {
-    background: 'rgba(0, 0, 0, 0.3)',
+    background: 'var(--color-black-a35)',
     padding: '12px 14px',
     borderRadius: '10px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    border: '1px solid var(--color-white-a04)',
     textAlign: 'center',
     transition: 'all 0.2s ease',
     cursor: 'default'
   },
   statCardHover: {
-    borderColor: 'rgba(6, 182, 212, 0.2)'
+    borderColor: 'var(--color-accent-a20)'
   },
   statNumber: {
     fontSize: '20px',
     fontWeight: 'bold',
-    color: '#06b6d4',
+    color: 'var(--color-accent)',
     display: 'block',
     marginBottom: '4px'
   },
   statLabel: {
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontSize: '12px',
     fontWeight: '500'
   },
@@ -109,23 +109,23 @@ const styles = {
     fontSize: '14px'
   },
   tableHeader: {
-    background: 'rgba(0, 0, 0, 0.4)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+    background: 'var(--color-black-a35)',
+    borderBottom: '1px solid var(--color-white-a10)'
   },
   th: {
     padding: '16px',
     textAlign: 'left',
     fontWeight: '600',
-    color: '#67e8f9',
+    color: 'var(--color-accent)',
     fontSize: '13px',
     textTransform: 'uppercase',
     letterSpacing: '0.05em'
   },
   td: {
     padding: '16px',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+    borderBottom: '1px solid var(--color-white-a04)',
     verticalAlign: 'middle',
-    color: '#ffffff'
+    color: 'var(--color-text)'
   },
   button: {
     padding: '12px 24px',
@@ -141,44 +141,44 @@ const styles = {
     gap: '8px'
   },
   primaryBtn: {
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-    color: '#ffffff',
-    boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)'
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+    color: 'var(--color-text)',
+    boxShadow: '0 4px 16px var(--color-accent-a40)'
   },
   primaryBtnHover: {
     transform: 'translateY(-2px)',
-    boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+    boxShadow: '0 6px 24px var(--color-accent-a40)'
   },
   secondaryBtn: {
-    background: 'rgba(6, 182, 212, 0.15)',
-    color: '#06b6d4',
-    border: '1px solid rgba(6, 182, 212, 0.3)'
+    background: 'var(--color-accent-a15)',
+    color: 'var(--color-accent)',
+    border: '1px solid var(--color-accent-a30)'
   },
   secondaryBtnHover: {
-    background: 'rgba(6, 182, 212, 0.25)',
+    background: 'var(--color-accent-a20)',
     transform: 'translateY(-2px)'
   },
   input: {
     padding: '12px 16px',
-    background: 'rgba(0, 0, 0, 0.3)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'var(--color-black-a35)',
+    border: '1px solid var(--color-white-a10)',
     borderRadius: '12px',
     fontSize: '14px',
-    color: '#ffffff',
+    color: 'var(--color-text)',
     transition: 'all 0.3s ease'
   },
   inputFocus: {
     outline: 'none',
-    borderColor: '#06b6d4',
-    boxShadow: '0 0 0 2px rgba(6, 182, 212, 0.2)'
+    borderColor: 'var(--color-accent)',
+    boxShadow: '0 0 0 2px var(--color-accent-a20)'
   },
   select: {
     padding: '12px 16px',
-    background: 'rgba(0, 0, 0, 0.3)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'var(--color-black-a35)',
+    border: '1px solid var(--color-white-a10)',
     borderRadius: '12px',
     fontSize: '14px',
-    color: '#ffffff'
+    color: 'var(--color-text)'
   },
   formGroup: {
     marginBottom: '20px'
@@ -187,7 +187,7 @@ const styles = {
     display: 'block',
     fontSize: '14px',
     fontWeight: '500',
-    color: '#67e8f9',
+    color: 'var(--color-accent)',
     marginBottom: '8px'
   },
   modal: {
@@ -196,7 +196,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(0, 0, 0, 0.8)',
+    background: 'var(--color-black-a65)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -205,15 +205,15 @@ const styles = {
     WebkitBackdropFilter: 'blur(5px)'
   },
   modalContent: {
-    background: 'rgba(23, 23, 23, 0.9)',
+    background: 'var(--color-surface)',
     padding: '32px',
     borderRadius: '20px',
     width: '90%',
     maxWidth: '500px',
     maxHeight: '80vh',
     overflow: 'auto',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+    border: '1px solid var(--color-white-a10)',
+    boxShadow: '0 20px 60px var(--color-black-a50)',
     backdropFilter: 'blur(10px)',
     WebkitBackdropFilter: 'blur(10px)'
   },
@@ -226,8 +226,8 @@ const styles = {
   modalTitle: {
     fontSize: '20px',
     fontWeight: '600',
-    color: '#ffffff',
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+    color: 'var(--color-text)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text'
@@ -237,7 +237,7 @@ const styles = {
     border: 'none',
     fontSize: '24px',
     cursor: 'pointer',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     transition: 'all 0.3s ease',
     width: '32px',
     height: '32px',
@@ -247,8 +247,8 @@ const styles = {
     borderRadius: '8px'
   },
   closeBtnHover: {
-    background: 'rgba(239, 68, 68, 0.2)',
-    color: '#ef4444',
+    background: 'var(--color-danger-a20)',
+    color: 'var(--color-danger)',
     transform: 'rotate(90deg)'
   },
   grid: {
@@ -257,11 +257,11 @@ const styles = {
     gap: '20px'
   },
   card: {
-    background: 'rgba(23, 23, 23, 0.7)',
+    background: 'var(--color-surface)',
     borderRadius: '16px',
     padding: '24px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+    border: '1px solid var(--color-white-a04)',
+    boxShadow: '0 4px 16px var(--color-black-a35)',
     cursor: 'pointer',
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
     position: 'relative',
@@ -269,8 +269,8 @@ const styles = {
   },
   cardHover: {
     transform: 'translateY(-8px) scale(1.02)',
-    boxShadow: '0 12px 40px rgba(6, 182, 212, 0.3)',
-    borderColor: 'rgba(6, 182, 212, 0.2)'
+    boxShadow: '0 12px 40px var(--color-accent-a30)',
+    borderColor: 'var(--color-accent-a20)'
   },
   badge: {
     padding: '6px 12px',
@@ -282,33 +282,33 @@ const styles = {
     gap: '4px'
   },
   presentBadge: {
-    background: 'rgba(16, 185, 129, 0.2)',
-    color: '#10b981',
-    border: '1px solid rgba(16, 185, 129, 0.3)'
+    background: 'var(--color-success-a20)',
+    color: 'var(--color-success)',
+    border: '1px solid var(--color-success-a30)'
   },
   absentBadge: {
-    background: 'rgba(239, 68, 68, 0.2)',
-    color: '#ef4444',
-    border: '1px solid rgba(239, 68, 68, 0.3)'
+    background: 'var(--color-danger-a20)',
+    color: 'var(--color-danger)',
+    border: '1px solid var(--color-danger-a30)'
   },
   catchupBadge: {
-    background: 'rgba(245, 158, 11, 0.2)',
-    color: '#f59e0b',
-    border: '1px solid rgba(245, 158, 11, 0.3)'
+    background: 'var(--color-warning-a20)',
+    color: 'var(--color-warning)',
+    border: '1px solid var(--color-warning-a30)'
   },
   paidBadge: {
-    background: 'rgba(59, 130, 246, 0.2)',
-    color: '#3b82f6',
-    border: '1px solid rgba(59, 130, 246, 0.3)'
+    background: 'var(--color-accent-2-a15)',
+    color: 'var(--color-accent-2)',
+    border: '1px solid var(--color-accent-2-a30)'
   },
   unpaidBadge: {
-    background: 'rgba(239, 68, 68, 0.2)',
-    color: '#ef4444',
-    border: '1px solid rgba(239, 68, 68, 0.3)'
+    background: 'var(--color-danger-a20)',
+    color: 'var(--color-danger)',
+    border: '1px solid var(--color-danger-a30)'
   },
   tabs: {
     display: 'flex',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+    borderBottom: '1px solid var(--color-white-a10)',
     marginBottom: '32px',
     gap: '4px'
   },
@@ -318,13 +318,13 @@ const styles = {
     borderBottom: '2px solid transparent',
     transition: 'all 0.3s ease',
     fontWeight: '600',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontSize: '15px',
     position: 'relative'
   },
   activeTab: {
-    color: '#ffffff',
-    borderBottom: '2px solid #06b6d4'
+    color: 'var(--color-text)',
+    borderBottom: '2px solid var(--color-accent)'
   },
   tabContent: {
     padding: '24px 0',
@@ -339,28 +339,28 @@ const styles = {
   monthTitle: {
     fontSize: '20px',
     fontWeight: '600',
-    color: '#ffffff',
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+    color: 'var(--color-text)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
     backgroundClip: 'text'
   },
   navBtn: {
     padding: '12px 20px',
-    background: 'rgba(6, 182, 212, 0.15)',
-    border: '1px solid rgba(6, 182, 212, 0.3)',
+    background: 'var(--color-accent-a15)',
+    border: '1px solid var(--color-accent-a30)',
     borderRadius: '12px',
     cursor: 'pointer',
     fontSize: '14px',
     fontWeight: '600',
-    color: '#06b6d4',
+    color: 'var(--color-accent)',
     transition: 'all 0.3s ease',
     display: 'flex',
     alignItems: 'center',
     gap: '8px'
   },
   navBtnHover: {
-    background: 'rgba(6, 182, 212, 0.25)',
+    background: 'var(--color-accent-a20)',
     transform: 'translateY(-2px)'
   },
   loadingContainer: {
@@ -370,7 +370,7 @@ const styles = {
     minHeight: '400px'
   },
   loadingText: {
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontSize: '16px',
     textAlign: 'center'
   }
@@ -613,9 +613,9 @@ const UserAttendancePage = () => {
 
     if (classes.length === 0 && holidays.length === 0) {
       return (
-        <div style={{ textAlign: 'center', padding: '40px 20px', color: '#9ca3af' }}>
+        <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--color-text-muted)' }}>
           <div style={{ fontSize: 44, marginBottom: 10 }}>📅</div>
-          <h3 style={{ color: '#e5e7eb', margin: '0 0 6px' }}>No classes scheduled yet</h3>
+          <h3 style={{ color: 'var(--color-text)', margin: '0 0 6px' }}>No classes scheduled yet</h3>
           <p style={{ margin: 0 }}>When your coach sets your class days and times, they'll show up here.</p>
         </div>
       );
@@ -625,22 +625,22 @@ const UserAttendancePage = () => {
       <div>
         {next && (
           <div style={{
-            background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.35)',
+            background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a30)',
             borderRadius: 12, padding: '14px 18px', marginBottom: 20,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             gap: 14, flexWrap: 'wrap',
           }}>
             <div>
-              <div style={{ color: '#67e8f9', fontSize: 12, fontWeight: 700, letterSpacing: 0.5 }}>⏰ NEXT CLASS</div>
-              <div style={{ color: '#fff', fontSize: 16, fontWeight: 600, marginTop: 3 }}>
+              <div style={{ color: 'var(--color-accent)', fontSize: 12, fontWeight: 700, letterSpacing: 0.5 }}>⏰ NEXT CLASS</div>
+              <div style={{ color: 'var(--color-text)', fontSize: 16, fontWeight: 600, marginTop: 3 }}>
                 {next.when.toLocaleString([], { weekday: 'long', hour: 'numeric', minute: '2-digit' })}
                 {' — '}{next.item.title} · {next.item.coachName}
               </div>
             </div>
             {next.item.meetingLink && (
               <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer"
-                 style={{ padding: '8px 18px', borderRadius: 8, background: '#06b6d4',
-                          color: '#0a0a0a', fontWeight: 700, textDecoration: 'none' }}>
+                 style={{ padding: '8px 18px', borderRadius: 8, background: 'var(--color-accent)',
+                          color: 'var(--color-bg)', fontWeight: 700, textDecoration: 'none' }}>
                 Join
               </a>
             )}
@@ -649,30 +649,30 @@ const UserAttendancePage = () => {
 
         {classes.length > 0 && (
           <>
-            <h3 style={{ color: '#e5e7eb', margin: '0 0 12px' }}>Weekly classes</h3>
+            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px' }}>Weekly classes</h3>
             <div style={{ display: 'grid', gap: 12, marginBottom: 26 }}>
               {classes.map(c => (
                 <div key={c._id} style={{
-                  background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)',
                   borderRadius: 10, padding: '14px 16px',
                 }}>
-                  <div style={{ color: '#fff', fontWeight: 600 }}>{c.title}</div>
-                  <div style={{ color: '#9ca3af', fontSize: 13, marginTop: 2 }}>{c.coachName}</div>
+                  <div style={{ color: 'var(--color-text)', fontWeight: 600 }}>{c.title}</div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13, marginTop: 2 }}>{c.coachName}</div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: '10px 0 6px' }}>
                     {(c.days || []).map(d => (
                       <span key={d} style={{
                         padding: '3px 9px', borderRadius: 999, fontSize: 12, fontWeight: 600,
-                        background: 'rgba(6,182,212,0.15)', color: '#67e8f9',
+                        background: 'var(--color-accent-a15)', color: 'var(--color-accent)',
                       }}>{localDayLabel(d, c.timeUTC) || DAY_NAMES[d]}</span>
                     ))}
                   </div>
-                  <div style={{ color: '#d1d5db', fontSize: 13 }}>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
                     🕐 {(c.days || []).length > 0 ? localTimeLabel(c.days[0], c.timeUTC) : ''}
                     {c.durationMinutes ? ` · ${c.durationMinutes} min` : ''}
                   </div>
                   {c.meetingLink && (
                     <a href={c.meetingLink} target="_blank" rel="noopener noreferrer"
-                       style={{ color: '#06b6d4', fontSize: 13, marginTop: 8, display: 'inline-block' }}>
+                       style={{ color: 'var(--color-accent)', fontSize: 13, marginTop: 8, display: 'inline-block' }}>
                       Join link ↗
                     </a>
                   )}
@@ -684,16 +684,16 @@ const UserAttendancePage = () => {
 
         {upcomingHolidays.length > 0 && (
           <>
-            <h3 style={{ color: '#e5e7eb', margin: '0 0 12px' }}>Upcoming holidays</h3>
+            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px' }}>Upcoming holidays</h3>
             <div style={{ display: 'grid', gap: 8 }}>
               {upcomingHolidays.map(h => (
                 <div key={h.date} style={{
-                  background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)',
+                  background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a20)',
                   borderRadius: 8, padding: '10px 14px',
                   display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap',
                 }}>
-                  <span style={{ color: '#fca5a5', fontWeight: 600 }}>{fmtEnrollDate(h.date)}</span>
-                  <span style={{ color: '#9ca3af', fontSize: 13 }}>{h.labels.join(' · ')}</span>
+                  <span style={{ color: 'var(--color-danger)', fontWeight: 600 }}>{fmtEnrollDate(h.date)}</span>
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>{h.labels.join(' · ')}</span>
                 </div>
               ))}
             </div>
@@ -775,14 +775,14 @@ const UserAttendancePage = () => {
         if (!next) return null;
         return (
           <div style={{
-            background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.35)',
+            background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a30)',
             borderRadius: 12, padding: '14px 18px', marginBottom: 20,
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             gap: 14, flexWrap: 'wrap',
           }}>
             <div>
-              <div style={{ color: '#67e8f9', fontSize: 12, fontWeight: 700, letterSpacing: 0.5 }}>⏰ NEXT CLASS</div>
-              <div style={{ color: '#fff', fontSize: 16, fontWeight: 600, marginTop: 3 }}>
+              <div style={{ color: 'var(--color-accent)', fontSize: 12, fontWeight: 700, letterSpacing: 0.5 }}>⏰ NEXT CLASS</div>
+              <div style={{ color: 'var(--color-text)', fontSize: 16, fontWeight: 600, marginTop: 3 }}>
                 {next.when.toLocaleString([], { weekday: 'long', hour: 'numeric', minute: '2-digit' })}
                 {' — '}{next.item.title} · {next.item.coachName}
               </div>
@@ -790,15 +790,15 @@ const UserAttendancePage = () => {
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {next.item.meetingLink && (
                 <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer"
-                   style={{ padding: '8px 18px', borderRadius: 8, background: '#06b6d4',
-                            color: '#0a0a0a', fontWeight: 700, textDecoration: 'none' }}>
+                   style={{ padding: '8px 18px', borderRadius: 8, background: 'var(--color-accent)',
+                            color: 'var(--color-bg)', fontWeight: 700, textDecoration: 'none' }}>
                   Join
                 </a>
               )}
               <button onClick={() => setActiveTab('schedule')}
                 style={{ padding: '8px 18px', borderRadius: 8, cursor: 'pointer',
-                         background: 'transparent', border: '1px solid rgba(6,182,212,0.5)',
-                         color: '#67e8f9', fontWeight: 600 }}>
+                         background: 'transparent', border: '1px solid var(--color-accent-a40)',
+                         color: 'var(--color-accent)', fontWeight: 600 }}>
                 Full schedule
               </button>
             </div>
@@ -886,7 +886,7 @@ const UserAttendancePage = () => {
                     {a.totalStudents > 0 && <span>Students done: <strong>{a.completedStudents}/{a.totalStudents}</strong></span>}
                   </div>
                   {!isTest && !isRush && !isArena && <div className="mcp-assign-bar" style={{ marginTop: 8 }}><div style={{ width: `${pct}%` }} /></div>}
-                  <div style={{ marginTop: 10, fontSize: '13px', color: '#9ca3af' }}>
+                  <div style={{ marginTop: 10, fontSize: '13px', color: 'var(--color-text-muted)' }}>
                     Open the <strong style={{ color: '#e7eaf0' }}>Assignments</strong> tab to do this.
                   </div>
                 </div>
@@ -928,7 +928,7 @@ const UserAttendancePage = () => {
         </button>
       </div>
 
-      <div style={{overflowX: 'auto', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)'}}>
+      <div style={{overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--color-white-a04)'}}>
         <table style={styles.table}>
           <thead style={styles.tableHeader}>
             <tr>
@@ -939,7 +939,7 @@ const UserAttendancePage = () => {
           </thead>
           <tbody>
             {attendanceData.map((record, idx) => (
-              <tr key={idx} style={{backgroundColor: idx % 2 === 0 ? 'rgba(0, 0, 0, 0.2)' : 'transparent'}}>
+              <tr key={idx} style={{backgroundColor: idx % 2 === 0 ? 'var(--color-black-a20)' : 'transparent'}}>
                 <td style={styles.td}>
                   {new Date(record.date).toLocaleDateString('en-IN', {
                     timeZone: 'Asia/Kolkata',
@@ -970,7 +970,7 @@ const UserAttendancePage = () => {
             ))}
             {attendanceData.length === 0 && (
               <tr>
-                <td colSpan="3" style={{...styles.td, textAlign: 'center', color: '#9ca3af', padding: '40px'}}>
+                <td colSpan="3" style={{...styles.td, textAlign: 'center', color: 'var(--color-text-muted)', padding: '40px'}}>
                   No attendance records for this month
                 </td>
               </tr>
@@ -1001,7 +1001,7 @@ const UserAttendancePage = () => {
         </button>
       </div>
 
-      <div style={{overflowX: 'auto', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)'}}>
+      <div style={{overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--color-white-a04)'}}>
         <table style={styles.table}>
           <thead style={styles.tableHeader}>
             <tr>
@@ -1013,7 +1013,7 @@ const UserAttendancePage = () => {
           </thead>
           <tbody>
             {paymentHistory.map((payment, idx) => (
-              <tr key={idx} style={{backgroundColor: idx % 2 === 0 ? 'rgba(0, 0, 0, 0.2)' : 'transparent'}}>
+              <tr key={idx} style={{backgroundColor: idx % 2 === 0 ? 'var(--color-black-a20)' : 'transparent'}}>
                 <td style={styles.td}>
                   {payment.fromDate ? new Date(payment.fromDate).toLocaleDateString('en-IN', {
                     timeZone: 'Asia/Kolkata',
@@ -1050,7 +1050,7 @@ const UserAttendancePage = () => {
             ))}
             {paymentHistory.length === 0 && (
               <tr>
-                <td colSpan="4" style={{...styles.td, textAlign: 'center', color: '#9ca3af', padding: '40px'}}>
+                <td colSpan="4" style={{...styles.td, textAlign: 'center', color: 'var(--color-text-muted)', padding: '40px'}}>
                   No payment records found
                 </td>
               </tr>
@@ -1111,7 +1111,7 @@ const UserAttendancePage = () => {
               marginLeft: 6, minWidth: 18, height: 18, padding: '0 5px',
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 11, fontWeight: 800, lineHeight: 1,
-              color: '#fff', background: '#ef4444', borderRadius: 999,
+              color: 'var(--color-text)', background: 'var(--color-danger)', borderRadius: 999,
             }}>{msgUnread > 99 ? '99+' : msgUnread}</span>
           )}
         </div>

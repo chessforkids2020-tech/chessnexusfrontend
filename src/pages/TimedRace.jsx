@@ -458,7 +458,7 @@ export default function TimedRace() {
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: isMobile ? '4px' : '10px',
       position: 'relative',
@@ -470,7 +470,7 @@ export default function TimedRace() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -493,23 +493,23 @@ export default function TimedRace() {
       marginBottom: '12px',
     },
     glassCard: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: isMobile ? '12px' : '28px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       position: isMobile ? 'relative' : 'sticky',
       top: isMobile ? '0' : '20px',
     },
     glassCardCenter: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: isMobile ? '4px' : '10px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       width: isMobile ? '100%' : undefined,
       boxSizing: 'border-box',
@@ -517,8 +517,8 @@ export default function TimedRace() {
       overflow: 'hidden',
     },
     statCard: {
-      background: 'rgba(0, 0, 0, 0.4)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '16px',
       padding: isMobile ? '6px' : '8px',
       textAlign: 'center',
@@ -527,37 +527,37 @@ export default function TimedRace() {
       flex: isMobile ? '1' : undefined,
     },
     statCardTimer: {
-      background: timeLeft < 60 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-      borderColor: timeLeft < 60 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(16, 185, 129, 0.3)',
+      background: timeLeft < 60 ? 'var(--color-danger-a12)' : 'var(--color-success-a12)',
+      borderColor: timeLeft < 60 ? 'var(--color-danger-a30)' : 'var(--color-success-a30)',
     },
     statCardScore: {
-      background: 'rgba(6, 182, 212, 0.1)',
-      borderColor: 'rgba(6, 182, 212, 0.3)',
+      background: 'var(--color-accent-a12)',
+      borderColor: 'var(--color-accent-a30)',
     },
     statValue: {
       fontSize: isMobile ? '36px' : '48px',
       fontWeight: '700',
       marginBottom: '4px',
       fontFamily: 'monospace',
-      color: timeLeft < 60 ? '#ef4444' : '#10b981',
-      textShadow: timeLeft < 60 ? '0 0 20px rgba(239, 68, 68, 0.4)' : '0 0 20px rgba(16, 185, 129, 0.4)',
+      color: timeLeft < 60 ? 'var(--color-danger)' : 'var(--color-success)',
+      textShadow: timeLeft < 60 ? '0 0 20px var(--color-danger-a30)' : '0 0 20px var(--color-success-a30)',
     },
     statValueScore: {
       fontSize: isMobile ? '28px' : '32px',
       fontWeight: '700',
-      color: '#06b6d4',
-      textShadow: '0 0 20px rgba(6, 182, 212, 0.4)',
+      color: 'var(--color-accent)',
+      textShadow: '0 0 20px var(--color-accent-a40)',
     },
     statLabel: {
       fontSize: '11px',
-      color: '#6b7280',
+      color: 'var(--color-text-faint)',
       fontWeight: '600',
       letterSpacing: '1.5px',
       textTransform: 'uppercase',
     },
     compactCard: {
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '16px',
       padding: isMobile ? '12px' : '15px',
       marginBottom: isMobile ? '0' : '20px',
@@ -566,18 +566,18 @@ export default function TimedRace() {
     topicText: {
       fontSize: isMobile ? '18px' : '22px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     leaderboardTitle: {
       fontSize: '14px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '12px',
       textAlign: 'center',
     },
     leaderboardItem: {
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '12px',
       padding: '8px 12px',
       marginBottom: '8px',
@@ -587,8 +587,8 @@ export default function TimedRace() {
       transition: 'all 0.3s ease',
     },
     button: {
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#ffffff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '14px 32px',
       borderRadius: '12px',
@@ -596,14 +596,14 @@ export default function TimedRace() {
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
+      boxShadow: '0 4px 16px var(--color-accent-a40)',
       width: '100%',
       marginBottom: '10px',
     },
     buttonSecondary: {
-      background: 'rgba(0, 0, 0, 0.4)',
-      color: '#9ca3af',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-black-a35)',
+      color: 'var(--color-text-muted)',
+      border: '1px solid var(--color-white-a10)',
       padding: '14px 32px',
       borderRadius: '12px',
       fontSize: '15px',
@@ -613,23 +613,23 @@ export default function TimedRace() {
       width: '100%',
     },
     puzzleHeader: {
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '12px',
       padding: isMobile ? '8px 12px' : '10px 16px',
       marginBottom: '12px',
       textAlign: 'center',
       fontSize: isMobile ? '14px' : '16px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     boardContainer: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'rgba(0, 0, 0, 0.2)',
+      background: 'var(--color-black-a20)',
       borderRadius: '12px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
       padding: isMobile ? '0' : '12px',
       width: '100%',
       boxSizing: 'border-box',
@@ -638,17 +638,17 @@ export default function TimedRace() {
     placeholderIcon: {
       fontSize: isMobile ? '48px' : '64px',
       marginBottom: '16px',
-      filter: 'drop-shadow(0 4px 12px rgba(6, 182, 212, 0.3))',
+      filter: 'drop-shadow(0 4px 12px var(--color-accent-a30))',
     },
     placeholderText: {
       fontSize: isMobile ? '16px' : '18px',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       textAlign: 'center',
       lineHeight: '1.8',
     },
     infoStatCard: {
-      background: 'rgba(0, 0, 0, 0.4)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '16px',
       padding: '20px',
       textAlign: 'center',
@@ -681,7 +681,7 @@ export default function TimedRace() {
                 <div style={{
                   fontSize: '14px',
                   fontWeight: '600',
-                  color: currentPosition && currentPosition.split(' ')[1] === 'w' ? '#ffffff' : '#d1d5db',
+                  color: currentPosition && currentPosition.split(' ')[1] === 'w' ? 'var(--color-text)' : 'var(--color-text-muted)',
                   marginBottom: '4px',
                   textAlign: 'center'
                 }}>
@@ -701,7 +701,7 @@ export default function TimedRace() {
                     <div style={styles.placeholderIcon}>⏳</div>
                     <div style={styles.placeholderText}>
                       <strong>Loading puzzles...</strong><br/>
-                      <small style={{ color: '#9ca3af' }}>Please wait while we prepare your race.</small>
+                      <small style={{ color: 'var(--color-text-muted)' }}>Please wait while we prepare your race.</small>
                     </div>
                   </div>
                 ) : noPuzzlesAvailable ? (
@@ -710,7 +710,7 @@ export default function TimedRace() {
                     <div style={styles.placeholderText}>
                       <strong>No puzzles available</strong><br/>
                       This topic doesn't have any puzzles yet.<br/>
-                      <small style={{ color: '#9ca3af' }}>Please choose a different topic.</small>
+                      <small style={{ color: 'var(--color-text-muted)' }}>Please choose a different topic.</small>
                     </div>
                   </div>
                 ) : raceCompleted ? (
@@ -718,7 +718,7 @@ export default function TimedRace() {
                     <div style={styles.placeholderIcon}>🎉</div>
                     <div style={styles.placeholderText}>
                       <strong style={{ 
-                        background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+                        background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text',
@@ -727,7 +727,7 @@ export default function TimedRace() {
                         Congratulations!
                       </strong><br/>
                       You've completed all {availablePuzzles.length} puzzles!<br/>
-                      <small style={{ color: '#9ca3af' }}>Final Score: {score} points</small>
+                      <small style={{ color: 'var(--color-text-muted)' }}>Final Score: {score} points</small>
                     </div>
                   </div>
                 ) : currentPuzzleData ? (
@@ -745,7 +745,7 @@ export default function TimedRace() {
                     <div style={styles.placeholderIcon}>🏆</div>
                     <div style={styles.placeholderText}>
                       Chess Puzzle Area<br/>
-                      <small style={{ color: '#9ca3af' }}>Loading puzzle...</small>
+                      <small style={{ color: 'var(--color-text-muted)' }}>Loading puzzle...</small>
                     </div>
                   </div>
                 )}
@@ -762,18 +762,18 @@ export default function TimedRace() {
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <span style={{
                         fontWeight: '600',
-                        color: index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : '#9ca3af',
+                        color: index === 0 ? 'var(--color-warning)' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : 'var(--color-text-muted)',
                         marginRight: '10px',
                         minWidth: '24px',
                         fontSize: isMobile ? '12px' : '13px'
                       }}>
                         #{player.rank}
                       </span>
-                      <span style={{ flex: 1, fontSize: isMobile ? '12px' : '13px', color: '#d1d5db' }}>
+                      <span style={{ flex: 1, fontSize: isMobile ? '12px' : '13px', color: 'var(--color-text-muted)' }}>
                         {player.name}
                       </span>
                     </div>
-                    <span style={{ fontWeight: '600', color: '#10b981', fontSize: isMobile ? '12px' : '13px' }}>
+                    <span style={{ fontWeight: '600', color: 'var(--color-success)', fontSize: isMobile ? '12px' : '13px' }}>
                       {player.points}
                     </span>
                   </div>
@@ -813,7 +813,7 @@ export default function TimedRace() {
                 <div style={{
                   fontSize: '14px',
                   fontWeight: '600',
-                  color: currentPosition && currentPosition.split(' ')[1] === 'w' ? '#ffffff' : '#d1d5db',
+                  color: currentPosition && currentPosition.split(' ')[1] === 'w' ? 'var(--color-text)' : 'var(--color-text-muted)',
                   marginBottom: '8px',
                   textAlign: 'center'
                 }}>
@@ -835,18 +835,18 @@ export default function TimedRace() {
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         <span style={{
                           fontWeight: '600',
-                          color: index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : '#9ca3af',
+                          color: index === 0 ? 'var(--color-warning)' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : 'var(--color-text-muted)',
                           marginRight: '10px',
                           minWidth: '24px',
                           fontSize: isMobile ? '12px' : '13px'
                         }}>
                           #{player.rank}
                         </span>
-                        <span style={{ flex: 1, fontSize: isMobile ? '12px' : '13px', color: '#d1d5db' }}>
+                        <span style={{ flex: 1, fontSize: isMobile ? '12px' : '13px', color: 'var(--color-text-muted)' }}>
                           {player.name}
                         </span>
                       </div>
-                      <span style={{ fontWeight: '600', color: '#10b981', fontSize: isMobile ? '12px' : '13px' }}>
+                      <span style={{ fontWeight: '600', color: 'var(--color-success)', fontSize: isMobile ? '12px' : '13px' }}>
                         {player.points}
                       </span>
                     </div>
@@ -880,7 +880,7 @@ export default function TimedRace() {
                     <div style={styles.placeholderText}>
                       <strong>No puzzles available</strong><br/>
                       This topic doesn't have any puzzles yet.<br/>
-                      <small style={{ color: '#9ca3af' }}>Please choose a different topic.</small>
+                      <small style={{ color: 'var(--color-text-muted)' }}>Please choose a different topic.</small>
                     </div>
                   </div>
                 ) : raceCompleted ? (
@@ -888,7 +888,7 @@ export default function TimedRace() {
                     <div style={styles.placeholderIcon}>🎉</div>
                     <div style={styles.placeholderText}>
                       <strong style={{ 
-                        background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+                        background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         backgroundClip: 'text',
@@ -897,7 +897,7 @@ export default function TimedRace() {
                         Congratulations!
                       </strong><br/>
                       You've completed all {availablePuzzles.length} puzzles!<br/>
-                      <small style={{ color: '#9ca3af' }}>Final Score: {score} points</small>
+                      <small style={{ color: 'var(--color-text-muted)' }}>Final Score: {score} points</small>
                     </div>
                   </div>
                 ) : currentPuzzleData ? (
@@ -915,7 +915,7 @@ export default function TimedRace() {
                     <div style={styles.placeholderIcon}>🏆</div>
                     <div style={styles.placeholderText}>
                       Chess Puzzle Area<br/>
-                      <small style={{ color: '#9ca3af' }}>Loading puzzle...</small>
+                      <small style={{ color: 'var(--color-text-muted)' }}>Loading puzzle...</small>
                     </div>
                   </div>
                 )}

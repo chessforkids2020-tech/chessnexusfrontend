@@ -212,7 +212,7 @@ const AdminTestManagement = () => {
   const styles = {
     page: {
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       padding: '20px',
       fontFamily: 'Inter, Arial, sans-serif',
     },
@@ -229,7 +229,7 @@ const AdminTestManagement = () => {
     title: {
       fontSize: '28px',
       fontWeight: '700',
-      background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
+      background: 'linear-gradient(135deg, var(--color-warning) 0%, var(--color-danger) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
     },
@@ -239,15 +239,15 @@ const AdminTestManagement = () => {
       gap: '20px',
     },
     panel: {
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '16px',
       padding: '20px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
     },
     panelTitle: {
       fontSize: '18px',
       fontWeight: '600',
-      color: '#fff',
+      color: 'var(--color-text)',
       marginBottom: '15px',
       display: 'flex',
       justifyContent: 'space-between',
@@ -269,17 +269,17 @@ const AdminTestManagement = () => {
       border: '1px solid transparent',
     },
     listItemActive: {
-      background: 'rgba(245, 158, 11, 0.2)',
-      border: '1px solid #f59e0b',
+      background: 'var(--color-warning-a20)',
+      border: '1px solid var(--color-warning)',
     },
     listItemTitle: {
       fontSize: '14px',
       fontWeight: '500',
-      color: '#fff',
+      color: 'var(--color-text)',
     },
     listItemMeta: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginTop: '4px',
     },
     button: {
@@ -292,17 +292,17 @@ const AdminTestManagement = () => {
       transition: 'all 0.2s',
     },
     primaryBtn: {
-      background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-warning) 0%, var(--color-danger) 100%)',
+      color: 'var(--color-text)',
     },
     secondaryBtn: {
       background: 'rgba(38, 38, 38, 0.8)',
-      color: '#fff',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a20)',
     },
     dangerBtn: {
-      background: '#ef4444',
-      color: '#fff',
+      background: 'var(--color-danger)',
+      color: 'var(--color-text)',
     },
     form: {
       display: 'flex',
@@ -317,22 +317,22 @@ const AdminTestManagement = () => {
     label: {
       fontSize: '13px',
       fontWeight: '500',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     input: {
       padding: '10px 14px',
       borderRadius: '8px',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      border: '1px solid var(--color-white-a20)',
       background: 'rgba(38, 38, 38, 0.8)',
-      color: '#fff',
+      color: 'var(--color-text)',
       fontSize: '14px',
     },
     textarea: {
       padding: '10px 14px',
       borderRadius: '8px',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      border: '1px solid var(--color-white-a20)',
       background: 'rgba(38, 38, 38, 0.8)',
-      color: '#fff',
+      color: 'var(--color-text)',
       fontSize: '14px',
       minHeight: '80px',
       resize: 'vertical',
@@ -343,26 +343,26 @@ const AdminTestManagement = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.8)',
+      background: 'var(--color-black-a65)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 1000,
     },
     modalContent: {
-      background: '#171717',
+      background: 'var(--color-surface-2)',
       borderRadius: '16px',
       padding: '25px',
       maxWidth: '600px',
       width: '90%',
       maxHeight: '90vh',
       overflowY: 'auto',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
     },
     modalTitle: {
       fontSize: '20px',
       fontWeight: '600',
-      color: '#fff',
+      color: 'var(--color-text)',
       marginBottom: '20px',
     },
     buttonGroup: {
@@ -377,13 +377,13 @@ const AdminTestManagement = () => {
       fontSize: '14px',
     },
     alertError: {
-      background: 'rgba(239, 68, 68, 0.2)',
-      border: '1px solid #ef4444',
-      color: '#fca5a5',
+      background: 'var(--color-danger-a20)',
+      border: '1px solid var(--color-danger)',
+      color: 'var(--color-danger)',
     },
     alertSuccess: {
       background: 'rgba(34, 197, 94, 0.2)',
-      border: '1px solid #22c55e',
+      border: '1px solid var(--color-success)',
       color: '#86efac',
     },
     actions: {
@@ -410,18 +410,18 @@ const AdminTestManagement = () => {
     },
     uciCode: {
       fontFamily: 'monospace',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       padding: '4px 8px',
       borderRadius: '4px',
       fontSize: '12px',
-      color: '#f59e0b',
+      color: 'var(--color-warning)',
     },
   };
 
   if (loading) {
     return (
       <div style={styles.page}>
-        <div style={{ ...styles.container, textAlign: 'center', color: '#fff', paddingTop: '100px' }}>
+        <div style={{ ...styles.container, textAlign: 'center', color: 'var(--color-text)', paddingTop: '100px' }}>
           Loading...
         </div>
       </div>
@@ -446,7 +446,7 @@ const AdminTestManagement = () => {
           <div style={styles.panel}>
             <div style={styles.panelTitle}>
               <span>📚 Studies</span>
-              <span style={{ fontSize: '11px', color: '#6b7280', fontWeight: 'normal' }}>
+              <span style={{ fontSize: '11px', color: 'var(--color-text-faint)', fontWeight: 'normal' }}>
                 (from Study Management)
               </span>
             </div>
@@ -469,7 +469,7 @@ const AdminTestManagement = () => {
                       fontWeight: '600',
                       marginRight: '8px',
                       background: study.studyType === 'basics' ? '#10b98133' : '#3b82f633',
-                      color: study.studyType === 'basics' ? '#10b981' : '#3b82f6'
+                      color: study.studyType === 'basics' ? 'var(--color-success)' : 'var(--color-accent-2)'
                     }}>
                       {study.studyType?.toUpperCase() || 'BASICS'}
                     </span>
@@ -478,7 +478,7 @@ const AdminTestManagement = () => {
                 </div>
               ))}
               {studies.length === 0 && (
-                <div style={{ color: '#6b7280', textAlign: 'center', padding: '20px' }}>
+                <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '20px' }}>
                   No studies yet. Create studies in Study Management tab first.
                 </div>
               )}
@@ -549,12 +549,12 @@ const AdminTestManagement = () => {
                     </div>
                   ))
                 ) : (
-                  <div style={{ color: '#6b7280', textAlign: 'center', padding: '20px' }}>
+                  <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '20px' }}>
                     No chapters yet. Add one to this study.
                   </div>
                 )
               ) : (
-                <div style={{ color: '#6b7280', textAlign: 'center', padding: '20px' }}>
+                <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '20px' }}>
                   Select a study to view chapters.
                 </div>
               )}
@@ -639,12 +639,12 @@ const AdminTestManagement = () => {
                     </div>
                   ))
                 ) : (
-                  <div style={{ color: '#6b7280', textAlign: 'center', padding: '20px' }}>
+                  <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '20px' }}>
                     No puzzles yet. Add puzzles to this chapter.
                   </div>
                 )
               ) : (
-                <div style={{ color: '#6b7280', textAlign: 'center', padding: '20px' }}>
+                <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '20px' }}>
                   Select a chapter to view puzzles.
                 </div>
               )}
@@ -762,7 +762,7 @@ const AdminTestManagement = () => {
                         placeholder="e.g., e2e4 e7e5 g1f3"
                         required
                       />
-                      <span style={{ fontSize: '11px', color: '#6b7280' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--color-text-faint)' }}>
                         Space-separated UCI moves (e.g., e2e4 d7d5 e4d5)
                       </span>
                     </div>
@@ -785,7 +785,7 @@ const AdminTestManagement = () => {
                         arePiecesDraggable={false}
                       />
                     </div>
-                    <div style={{ marginTop: '10px', fontSize: '13px', color: '#9ca3af' }}>
+                    <div style={{ marginTop: '10px', fontSize: '13px', color: 'var(--color-text-muted)' }}>
                       {previewChess.turn() === 'w' ? '⚪ White' : '⚫ Black'} to move
                     </div>
                   </div>

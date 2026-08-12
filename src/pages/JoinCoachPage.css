@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px 18px;
-  background: #0a0a0a;
+  background: var(--color-bg);
 }
 
 .jc-card {
@@ -14,13 +14,13 @@
   max-width: 420px;
   padding: 32px 26px 26px;
   text-align: center;
-  background: rgba(23, 23, 23, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-surface);
+  border: 1px solid var(--color-white-a07);
   border-radius: 18px;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
-  color: #e5e7eb;
+  box-shadow: 0 18px 44px var(--color-black-a35);
+  color: var(--color-text);
 }
-.jc-muted { color: #9ca3af; font-size: 14px; }
+.jc-muted { color: var(--color-text-muted); font-size: 14px; }
 
 .jc-ic { font-size: 52px; line-height: 1; margin-bottom: 12px; }
 .jc-photo {
@@ -30,23 +30,23 @@
   object-fit: cover;
   margin: 0 auto 14px;
   display: block;
-  border: 2px solid rgba(6, 182, 212, 0.4);
+  border: 2px solid var(--color-accent-a40);
 }
 
-.jc-title { margin: 0 0 4px; font-size: 22px; font-weight: 800; color: #f8fafc; }
-.jc-academy { margin: 0 0 6px; font-size: 13.5px; color: #94a3b8; }
+.jc-title { margin: 0 0 4px; font-size: 22px; font-weight: 800; color: var(--color-text); }
+.jc-academy { margin: 0 0 6px; font-size: 13.5px; color: var(--color-text-muted); }
 .jc-verified {
   display: inline-block;
   margin-bottom: 10px;
   font-size: 12px;
-  color: #6ee7b7;
+  color: var(--color-success);
 }
 
 .jc-sub {
   margin: 10px 0 18px;
   font-size: 13.5px;
   line-height: 1.6;
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .jc-btn {
@@ -55,7 +55,7 @@
   padding: 12px 20px;
   border: none;
   border-radius: 11px;
-  background: linear-gradient(135deg, #06b6d4, #10b981);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
   color: #04211d;
   font-size: 14.5px;
   font-weight: 800;
@@ -70,18 +70,18 @@
   display: inline-block;
   margin-top: 14px;
   font-size: 13px;
-  color: #64748b;
+  color: var(--color-text-faint);
   text-decoration: none;
 }
-.jc-ghost:hover { color: #cbd5e1; }
+.jc-ghost:hover { color: var(--color-text-muted); }
 
 .jc-ok {
   margin: 14px 0 0;
   padding: 11px 14px;
   border-radius: 11px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  color: #6ee7b7;
+  background: var(--color-success-a12);
+  border: 1px solid var(--color-success-a30);
+  color: var(--color-success);
   font-size: 14px;
   font-weight: 700;
 }
@@ -90,9 +90,9 @@
   margin-bottom: 12px;
   padding: 9px 12px;
   border-radius: 10px;
-  background: rgba(248, 113, 113, 0.12);
-  border: 1px solid rgba(248, 113, 113, 0.35);
-  color: #fca5a5;
+  background: var(--color-danger-a12);
+  border: 1px solid var(--color-danger-a30);
+  color: var(--color-danger);
   font-size: 12.5px;
 }
 
@@ -104,7 +104,7 @@
   margin: 4px 0 7px;
   font-size: 12.5px;
   font-weight: 700;
-  color: #cbd5e1;
+  color: var(--color-text-muted);
   text-align: left;
 }
 .jc-note {
@@ -112,9 +112,9 @@
   box-sizing: border-box;
   padding: 11px 13px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(0, 0, 0, 0.3);
-  color: #f1f5f9;
+  border: 1px solid var(--color-white-a13);
+  background: var(--color-black-a35);
+  color: var(--color-text);
   font-size: 13.5px;
   line-height: 1.55;
   font-family: inherit;
@@ -126,6 +126,6 @@
 .jc-note-count {
   margin: 5px 0 12px;
   font-size: 11.5px;
-  color: #64748b;
+  color: var(--color-text-faint);
   text-align: right;
 }

@@ -63,7 +63,7 @@ function TeamRaceResults() {
     canvas.height = window.innerHeight;
 
     const confettiPieces = [];
-    const colors = ['#FFD700', '#FFA500', '#FF6347', '#FFFF00', '#FFB6C1', '#87CEEB'];
+    const colors = ['var(--color-warning)', '#FFA500', '#FF6347', '#FFFF00', '#FFB6C1', '#87CEEB'];
 
     class ConfettiPiece {
       constructor() {
@@ -104,11 +104,11 @@ function TeamRaceResults() {
   }, [showConfetti]);
 
   const sortedResults = [...results].sort((a, b) => b.totalScore - a.totalScore);
-  const teamColors = ['#f59e0b', '#94a3b8', '#b45309'];
+  const teamColors = ['var(--color-warning)', 'var(--color-text-muted)', '#b45309'];
   const topTeams = [teams[1], teams[0], teams[2]];
   const podiumConfig = [
-    { place: 2, tone: '#94a3b8', label: 'Silver', className: 'is-second' },
-    { place: 1, tone: '#f59e0b', label: 'Champion', className: 'is-first' },
+    { place: 2, tone: 'var(--color-text-muted)', label: 'Silver', className: 'is-second' },
+    { place: 1, tone: 'var(--color-warning)', label: 'Champion', className: 'is-first' },
     { place: 3, tone: '#b45309', label: 'Bronze', className: 'is-third' }
   ];
 
@@ -116,8 +116,8 @@ function TeamRaceResults() {
     return (
       <div className="tournament-leaderboard-container">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '3px solid transparent', borderTopColor: '#06b6d4', borderLeftColor: '#10b981', animation: 'tr-spin 0.9s linear infinite' }} />
-          <div style={{ color: '#06b6d4', fontSize: '14px', fontFamily: 'Inter, system-ui, sans-serif' }}>Loading results...</div>
+          <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '3px solid transparent', borderTopColor: 'var(--color-accent)', borderLeftColor: 'var(--color-success)', animation: 'tr-spin 0.9s linear infinite' }} />
+          <div style={{ color: 'var(--color-accent)', fontSize: '14px', fontFamily: 'Inter, system-ui, sans-serif' }}>Loading results...</div>
         </div>
       </div>
     );
@@ -176,7 +176,7 @@ function TeamRaceResults() {
                   </div>
 
                   <div className="trophy-score">{team.totalScore} pts</div>
-                  <div className="podium-base" style={{ borderColor: `${cfg.tone}66`, background: `linear-gradient(180deg, ${cfg.tone}33 0%, rgba(10, 13, 21, 0.92) 100%), rgba(0, 0, 0, 0.25)` }} />
+                  <div className="podium-base" style={{ borderColor: `${cfg.tone}66`, background: `linear-gradient(180deg, ${cfg.tone}33 0%, rgba(10, 13, 21, 0.92) 100%), var(--color-black-a20)` }} />
                 </article>
               );
             })}
@@ -199,7 +199,7 @@ function TeamRaceResults() {
               <tbody>
                 {teams.map((team, i) => {
                   const medals = ['🥇', '🥈', '🥉'];
-                  const col = teamColors[i] || '#64748b';
+                  const col = teamColors[i] || 'var(--color-text-faint)';
                   return (
                     <tr key={team._id} className={i === 0 ? 'team-row-first' : ''}>
                       <td className="rank-cell">{medals[i] || i + 1}</td>
@@ -209,7 +209,7 @@ function TeamRaceResults() {
                           <span style={{ fontWeight: '700', color: col }}>{team.teamName}</span>
                         </div>
                       </td>
-                      <td style={{ textAlign: 'center', color: '#9ca3af', fontSize: '14px' }}>{getTeamPlayers(team._id).length}</td>
+                      <td style={{ textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '14px' }}>{getTeamPlayers(team._id).length}</td>
                       <td className="score-cell" style={{ textAlign: 'right' }}>{team.totalScore}</td>
                     </tr>
                   );
@@ -236,7 +236,7 @@ function TeamRaceResults() {
                 {sortedResults.map((r, i) => {
                   const medals = ['🥇', '🥈', '🥉'];
                   const teamIdx = teams.findIndex(t => String(t._id) === String(r.teamId?._id || r.teamId));
-                  const col = teamColors[teamIdx] || '#64748b';
+                  const col = teamColors[teamIdx] || 'var(--color-text-faint)';
                   return (
                     <tr key={r._id}>
                       <td className="rank-cell">{medals[i] || i + 1}</td>
@@ -261,7 +261,7 @@ function TeamRaceResults() {
         )}
 
         {teams.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: '#64748b', fontSize: '16px' }}>
+          <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--color-text-faint)', fontSize: '16px' }}>
             No results available yet.
           </div>
         )}

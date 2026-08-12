@@ -181,8 +181,8 @@ function EliteTeamRaceManage() {
   const formatTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
   // ── Render ────────────────────────────────────────────────────────────────────
-  if (loading) return <div className="elite-tr-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}><span style={{ color:'#9ca3af' }}>Loading…</span></div>;
-  if (!race)   return <div className="elite-tr-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}><span style={{ color:'#9ca3af' }}>Race not found.</span></div>;
+  if (loading) return <div className="elite-tr-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}><span style={{ color:'var(--color-text-muted)' }}>Loading…</span></div>;
+  if (!race)   return <div className="elite-tr-root" style={{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'60vh' }}><span style={{ color:'var(--color-text-muted)' }}>Race not found.</span></div>;
 
   // Only the creator can manage this race; admins bypass this check
   const creatorId = race.createdBy?._id || race.createdBy;
@@ -190,9 +190,9 @@ function EliteTeamRaceManage() {
     return (
       <div className="elite-tr-root" style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', minHeight:'60vh', gap:'16px' }}>
         <div style={{ fontSize:'3rem' }}>🔒</div>
-        <h2 style={{ color:'#e5e7eb', margin:0 }}>Access Denied</h2>
-        <p style={{ color:'#9ca3af', textAlign:'center', maxWidth:'380px' }}>
-          You can only manage races <strong style={{ color:'#fbbf24' }}>you created</strong>.
+        <h2 style={{ color:'var(--color-text)', margin:0 }}>Access Denied</h2>
+        <p style={{ color:'var(--color-text-muted)', textAlign:'center', maxWidth:'380px' }}>
+          You can only manage races <strong style={{ color:'var(--color-warning)' }}>you created</strong>.
         </p>
         <button onClick={() => navigate('/elite/team-race')} className="btn-elite-back">← Back to Races</button>
       </div>
@@ -200,7 +200,7 @@ function EliteTeamRaceManage() {
  }
 
   const timerPct = race.duration ? (timeLeft / race.duration) * 100 : 100;
-  const timerColor = timerPct > 50 ? '#10b981' : timerPct > 20 ? '#fbbf24' : '#ef4444';
+  const timerColor = timerPct > 50 ? 'var(--color-success)' : timerPct > 20 ? 'var(--color-warning)' : 'var(--color-danger)';
 
   return (
     <div className="elite-tr-root">

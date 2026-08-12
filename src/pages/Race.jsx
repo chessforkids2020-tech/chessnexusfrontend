@@ -33,8 +33,8 @@ function RaceCard({ race, onJoin }) {
 
   return (
     <div style={{
-      background: 'rgba(0,0,0,0.35)',
-      border: `1px solid ${isArena ? 'rgba(245,158,11,0.25)' : 'rgba(139,92,246,0.25)'}`,
+      background: 'var(--color-black-a35)',
+      border: `1px solid ${isArena ? 'var(--color-warning-a20)' : 'var(--color-accent-2-a15)'}`,
       borderRadius: 14,
       padding: '14px 16px',
     }}>
@@ -42,14 +42,14 @@ function RaceCard({ race, onJoin }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <span style={{
             display: 'inline-block', fontSize: 11, fontWeight: 700,
-            background: isArena ? 'rgba(245,158,11,0.18)' : 'rgba(139,92,246,0.18)',
-            color: isArena ? '#fbbf24' : '#a78bfa',
+            background: isArena ? 'var(--color-warning-a20)' : 'var(--color-accent-2-a15)',
+            color: isArena ? 'var(--color-warning)' : 'var(--color-accent-2)',
             padding: '2px 9px', borderRadius: 20, marginBottom: 6,
           }}>
             {isArena ? '👑 Arena Race' : '👥 Team Race'}
           </span>
           <div style={{
-            color: '#fff', fontWeight: 700, fontSize: 15,
+            color: 'var(--color-text)', fontWeight: 700, fontSize: 15,
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>
             {title.length > 24 ? title.slice(0, 24) + '…' : title}
@@ -59,8 +59,8 @@ function RaceCard({ race, onJoin }) {
           onClick={() => onJoin(race)}
           style={{
             marginLeft: 12, flexShrink: 0,
-            background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-            color: '#fff', border: 'none', borderRadius: 10,
+            background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+            color: 'var(--color-text)', border: 'none', borderRadius: 10,
             padding: '8px 16px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
           }}
         >
@@ -69,21 +69,21 @@ function RaceCard({ race, onJoin }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 8, padding: '6px 8px' }}>
-          <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Topic</div>
-          <div style={{ fontSize: 12, color: '#e2e8f0', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div style={{ background: 'var(--color-white-a04)', borderRadius: 8, padding: '6px 8px' }}>
+          <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Topic</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {race.topic || '—'}
           </div>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 8, padding: '6px 8px' }}>
-          <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Players</div>
-          <div style={{ fontSize: 12, color: '#e2e8f0', fontWeight: 600 }}>
+        <div style={{ background: 'var(--color-white-a04)', borderRadius: 8, padding: '6px 8px' }}>
+          <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Players</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text)', fontWeight: 600 }}>
             {race.playerCount !== undefined ? race.playerCount : '—'}
           </div>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 8, padding: '6px 8px' }}>
-          <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Starts in</div>
-          <div style={{ fontSize: 12, color: isOpen ? '#10b981' : '#fbbf24', fontWeight: 700 }}>
+        <div style={{ background: 'var(--color-white-a04)', borderRadius: 8, padding: '6px 8px' }}>
+          <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', marginBottom: 2 }}>Starts in</div>
+          <div style={{ fontSize: 12, color: isOpen ? 'var(--color-success)' : 'var(--color-warning)', fontWeight: 700 }}>
             {countdown}
           </div>
         </div>
@@ -230,23 +230,23 @@ export default function Race() {
       <div style={styles.contentGrid} className="content-grid">
         <div style={styles.glassCard} className="board-section board-glass-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: '#ffffff' }}>🏁 Upcoming Races</h2>
+            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--color-text)' }}>🏁 Upcoming Races</h2>
             <button
               onClick={fetchRaces}
               disabled={loadingRaces}
-              style={{ background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', fontSize: 20, lineHeight: 1, transition: 'color 0.2s' }}
+              style={{ background: 'none', border: 'none', color: 'var(--color-text-faint)', cursor: 'pointer', fontSize: 20, lineHeight: 1, transition: 'color 0.2s' }}
               title="Refresh"
-              onMouseEnter={e => e.currentTarget.style.color = '#06b6d4'}
-              onMouseLeave={e => e.currentTarget.style.color = '#6b7280'}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--color-accent)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--color-text-faint)'}
             >↻</button>
           </div>
 
           {loadingRaces ? (
-            <div style={{ color: '#6b7280', textAlign: 'center', padding: '50px 0', fontSize: 14 }}>
+            <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '50px 0', fontSize: 14 }}>
               Loading races...
             </div>
           ) : races.length === 0 ? (
-            <div style={{ color: '#6b7280', textAlign: 'center', padding: '50px 0', fontSize: 14, lineHeight: 1.8 }}>
+            <div style={{ color: 'var(--color-text-faint)', textAlign: 'center', padding: '50px 0', fontSize: 14, lineHeight: 1.8 }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🏁</div>
               No upcoming races right now.<br />Check back soon!
             </div>
@@ -315,7 +315,7 @@ export default function Race() {
 const styles = {
   container: {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    background: '#0a0a0a',
+    background: 'var(--color-bg)',
     minHeight: '100vh',
     padding: '20px',
     position: 'relative',
@@ -330,7 +330,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+    background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
     pointerEvents: 'none',
     zIndex: 0,
   },
@@ -345,12 +345,12 @@ const styles = {
     zIndex: 1,
   },
   glassCard: {
-    background: 'rgba(23, 23, 23, 0.7)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-white-a04)',
     borderRadius: '20px',
     backdropFilter: 'blur(10px)',
     padding: '24px 28px 28px 28px',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
   },
   menuSection: {
     display: 'flex',
@@ -360,12 +360,12 @@ const styles = {
   menuTitle: {
     fontSize: '20px',
     fontWeight: '600',
-    color: '#ffffff',
+    color: 'var(--color-text)',
     margin: 0,
   },
   modeCard: {
-    background: 'rgba(0, 0, 0, 0.4)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    background: 'var(--color-black-a35)',
+    border: '1px solid var(--color-white-a04)',
     borderRadius: '16px',
     padding: '22px',
     cursor: 'pointer',
@@ -392,22 +392,22 @@ const styles = {
     flexShrink: 0,
   },
   mode1: {
-    background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(14, 165, 233, 0.15))',
+    background: 'linear-gradient(135deg, var(--color-accent-a15), rgba(14, 165, 233, 0.15))',
   },
   mode2: {
-    background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(234, 179, 8, 0.15))',
+    background: 'linear-gradient(135deg, var(--color-warning-a12), rgba(234, 179, 8, 0.15))',
   },
   mode3: {
-    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(124, 58, 237, 0.15))',
+    background: 'linear-gradient(135deg, var(--color-accent-2-a15), rgba(124, 58, 237, 0.15))',
   },
   modeTitle: {
     fontSize: '18px',
     fontWeight: '600',
-    color: '#ffffff',
+    color: 'var(--color-text)',
     margin: 0,
   },
   modeDesc: {
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontSize: '14px',
     lineHeight: '1.5',
     margin: 0,
@@ -418,7 +418,7 @@ const styles = {
     top: '50%',
     transform: 'translateY(-50%)',
     fontSize: '20px',
-    color: '#4b5563',
+    color: 'var(--color-text-faint)',
     transition: 'all 0.3s ease',
   },
 };

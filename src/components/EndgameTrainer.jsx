@@ -68,45 +68,45 @@ const S = {
   cardCount: { fontSize: 26, fontWeight: 900, color: PREMIUM_ACCENT, marginTop: 2, position: "relative", zIndex: 1 },
   cardSub: { fontSize: 11.5, color: "#cdb989", fontWeight: 600, marginLeft: 6 },
   cardHint: { fontSize: 12, fontWeight: 800, color: PREMIUM_ACCENT, marginTop: 10, position: "relative", zIndex: 1 },
-  backBtn: { background: "rgba(255,255,255,0.05)", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontWeight: 700, fontSize: 13 },
+  backBtn: { background: "var(--color-white-a04)", color: "var(--color-text)", border: "1px solid var(--color-white-a13)", borderRadius: 8, padding: "6px 12px", cursor: "pointer", fontWeight: 700, fontSize: 13 },
   // list rows
   listRow: {
     display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", marginBottom: 8,
-    borderRadius: 12, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(20,17,8,0.5)",
+    borderRadius: 12, border: "1px solid var(--color-white-a07)", background: "rgba(20,17,8,0.5)",
   },
   goalBadge: (goal) => ({
     fontSize: 11, fontWeight: 800, padding: "3px 9px", borderRadius: 999, whiteSpace: "nowrap",
-    background: goal === "draw" ? "rgba(245,158,11,0.16)" : "rgba(16,185,129,0.16)",
-    color: goal === "draw" ? "#fbbf24" : "#34d399",
+    background: goal === "draw" ? "var(--color-warning-a12)" : "var(--color-success-a12)",
+    color: goal === "draw" ? "var(--color-warning)" : "var(--color-success)",
   }),
   playBtn: { background: `linear-gradient(135deg, ${PREMIUM_ACCENT}, #e0a92e)`, color: "#1a1206", border: "none", borderRadius: 10, padding: "8px 16px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
   lockBtn: { background: "rgba(245,196,81,0.14)", color: PREMIUM_ACCENT, border: `1px solid ${PREMIUM_ACCENT}55`, borderRadius: 10, padding: "8px 14px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
   // play modal
-  overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200000, padding: 16 },
-  modal: { position: "relative", background: "rgba(23,23,23,0.97)", color: "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 22, padding: "12px 22px 22px", maxWidth: 960, width: "100%", maxHeight: "92vh", overflow: "auto" },
+  overlay: { position: "fixed", inset: 0, background: "var(--color-black-a65)", backdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200000, padding: 16 },
+  modal: { position: "relative", background: "var(--color-surface)", color: "var(--color-text)", border: "1px solid var(--color-white-a10)", borderRadius: 22, padding: "12px 22px 22px", maxWidth: 960, width: "100%", maxHeight: "92vh", overflow: "auto" },
   verdict: (kind) => ({
     marginTop: 12, padding: "10px 14px", borderRadius: 12, fontWeight: 800, fontSize: 14,
-    background: kind === "mastered" ? "rgba(16,185,129,0.16)" : kind === "slip" ? "rgba(245,158,11,0.16)" : "rgba(239,68,68,0.16)",
-    color: kind === "mastered" ? "#34d399" : kind === "slip" ? "#fbbf24" : "#f87171",
+    background: kind === "mastered" ? "var(--color-success-a12)" : kind === "slip" ? "var(--color-warning-a12)" : "var(--color-danger-a12)",
+    color: kind === "mastered" ? "var(--color-success)" : kind === "slip" ? "var(--color-warning)" : "var(--color-danger)",
   }),
   // Study-mode: move chips (like the study/analysis pop-up), engine + mode buttons.
-  analyzeBtn: { background: "rgba(6,182,212,0.16)", color: "#22d3ee", border: "1px solid rgba(6,182,212,0.5)", borderRadius: 10, padding: "7px 14px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
+  analyzeBtn: { background: "var(--color-accent-a15)", color: "var(--color-accent)", border: "1px solid var(--color-accent-a40)", borderRadius: 10, padding: "7px 14px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
   playSwitchBtn: { background: `linear-gradient(135deg, ${PREMIUM_ACCENT}, #e0a92e)`, color: "#1a1206", border: "none", borderRadius: 10, padding: "7px 14px", cursor: "pointer", fontWeight: 800, fontSize: 13, whiteSpace: "nowrap" },
-  moveWrap: { display: "flex", flexWrap: "wrap", gap: "2px 6px", alignItems: "center", background: "rgba(0,0,0,0.28)", borderRadius: 12, padding: 12, maxHeight: 220, overflowY: "auto", lineHeight: 1.7 },
-  moveNum: { color: "#6b7280", fontSize: 13, fontWeight: 700, marginLeft: 6 },
+  moveWrap: { display: "flex", flexWrap: "wrap", gap: "2px 6px", alignItems: "center", background: "var(--color-black-a35)", borderRadius: 12, padding: 12, maxHeight: 220, overflowY: "auto", lineHeight: 1.7 },
+  moveNum: { color: "var(--color-text-faint)", fontSize: 13, fontWeight: 700, marginLeft: 6 },
   // Plain clickable move text — no box. Only the active move gets a subtle highlight.
   moveChip: (active) => ({
     padding: "1px 4px", borderRadius: 5, fontSize: 14, fontWeight: 700, cursor: "pointer",
     background: active ? PREMIUM_ACCENT : "transparent",
-    color: active ? "#1a1206" : "#e2e8f0",
+    color: active ? "#1a1206" : "var(--color-text)",
   }),
   startChip: (active) => ({
     padding: "4px 10px", borderRadius: 8, fontSize: 12.5, fontWeight: 800, cursor: "pointer",
-    background: active ? PREMIUM_ACCENT : "rgba(255,255,255,0.05)",
-    color: active ? "#1a1206" : "#cbd5e1", border: `1px solid ${active ? PREMIUM_ACCENT : "rgba(255,255,255,0.1)"}`,
+    background: active ? PREMIUM_ACCENT : "var(--color-white-a04)",
+    color: active ? "#1a1206" : "var(--color-text-muted)", border: `1px solid ${active ? PREMIUM_ACCENT : "var(--color-white-a10)"}`,
   }),
   navRow: { display: "flex", gap: 6, alignItems: "center", justifyContent: "center", marginTop: 10 },
-  navBtn: { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#e2e8f0", borderRadius: 8, padding: "5px 12px", cursor: "pointer", fontSize: 14 },
+  navBtn: { background: "var(--color-white-a04)", border: "1px solid var(--color-white-a10)", color: "var(--color-text)", borderRadius: 8, padding: "5px 12px", cursor: "pointer", fontSize: 14 },
 };
 
 // Board size that fits the study pop-up in the viewport. The modal is capped at
@@ -251,7 +251,7 @@ function StudyView({ pick, onPlay }) {
       <div style={{ flex: "1 1 300px", minWidth: 280 }}>
         {/* Stockfish + Play buttons at the top of the right column (clear of ✕). */}
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 12, paddingRight: 40 }}>
-          <button style={{ ...S.analyzeBtn, ...(engineOn ? { background: "rgba(6,182,212,0.28)" } : {}) }} onClick={() => setEngineOn(v => !v)}>
+          <button style={{ ...S.analyzeBtn, ...(engineOn ? { background: "var(--color-accent-a30)" } : {}) }} onClick={() => setEngineOn(v => !v)}>
             🐟 Stockfish {engineOn ? "on" : "off"}
           </button>
           <button style={S.playSwitchBtn} onClick={onPlay}>▶ Play vs Stockfish</button>
@@ -259,11 +259,11 @@ function StudyView({ pick, onPlay }) {
 
         <div style={{ marginBottom: 10 }}>
           <span style={S.goalBadge(pick.goal)}>{GOAL_LABEL[pick.goal]}</span>
-          {pick.idea ? <span style={{ marginLeft: 8, color: "#94a3b8", fontSize: 13 }}>{pick.idea}</span> : null}
+          {pick.idea ? <span style={{ marginLeft: 8, color: "var(--color-text-muted)", fontSize: 13 }}>{pick.idea}</span> : null}
         </div>
-        <div style={{ fontSize: 13, color: "#cbd5e1", marginBottom: 8 }}>
+        <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginBottom: 8 }}>
           Study the perfect line{goalWin ? " that converts the win" : " that holds the draw"}, or
-          <strong style={{ color: "#e2e8f0" }}> play your own moves on the board</strong> to explore variations.
+          <strong style={{ color: "var(--color-text)" }}> play your own moves on the board</strong> to explore variations.
           Turn on Stockfish, or hit <strong style={{ color: PREMIUM_ACCENT }}>Play vs Stockfish</strong> to try it out.
         </div>
 
@@ -273,13 +273,13 @@ function StudyView({ pick, onPlay }) {
           </div>
         )}
 
-        <div style={{ fontSize: 12, color: "#94a3b8", fontWeight: 700, marginBottom: 6 }}>Moves &amp; variations</div>
+        <div style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 700, marginBottom: 6 }}>Moves &amp; variations</div>
         <div style={S.moveWrap}>
           <span style={S.startChip(currentId === null)} onClick={goStart}>Start</span>
           {loadingLine ? (
-            <span style={{ color: "#94a3b8", fontSize: 13, marginLeft: 6 }}>Loading the perfect line…</span>
+            <span style={{ color: "var(--color-text-muted)", fontSize: 13, marginLeft: 6 }}>Loading the perfect line…</span>
           ) : !hasMoves ? (
-            <span style={{ color: "#94a3b8", fontSize: 13, marginLeft: 6 }}>Play a move on the board to start a line.</span>
+            <span style={{ color: "var(--color-text-muted)", fontSize: 13, marginLeft: 6 }}>Play a move on the board to start a line.</span>
           ) : (
             <StudyVariation
               tree={tree} nodeId={firstNode(tree)} ply={1} startColor={startColor}
@@ -292,7 +292,7 @@ function StudyView({ pick, onPlay }) {
         <div style={{ ...S.navRow, justifyContent: "flex-start", marginTop: 12 }}>
           <button style={S.navBtn} onClick={goStart} disabled={currentId === null}>⏮</button>
           <button style={S.navBtn} onClick={goBack} disabled={currentId === null}>◀</button>
-          <span style={{ fontSize: 12.5, color: "#cbd5e1", minWidth: 44, textAlign: "center", fontWeight: 700 }}>{curPly}</span>
+          <span style={{ fontSize: 12.5, color: "var(--color-text-muted)", minWidth: 44, textAlign: "center", fontWeight: 700 }}>{curPly}</span>
           <button style={S.navBtn} onClick={goFwd} disabled={!nextNode(tree, currentId)}>▶</button>
           <button style={S.navBtn} onClick={goEnd} disabled={!nextNode(tree, currentId)}>⏭</button>
         </div>
@@ -467,11 +467,11 @@ function PlayView({ pick, onResult, onBack }) {
     return (evalInfo.cp > 0 ? "+" : "") + p;
   })();
   const evalColor = (() => {
-    if (!evalInfo) return "#94a3b8";
+    if (!evalInfo) return "var(--color-text-muted)";
     const v = evalInfo.mate != null ? (evalInfo.mate > 0 ? 9999 : -9999) : (evalInfo.cp || 0);
-    if (v > 150) return "#34d399";
-    if (v < -150) return "#f87171";
-    return "#fbbf24";
+    if (v > 150) return "var(--color-success)";
+    if (v < -150) return "var(--color-danger)";
+    return "var(--color-warning)";
   })();
 
   return (
@@ -494,10 +494,10 @@ function PlayView({ pick, onResult, onBack }) {
           </div>
           <div style={{ marginBottom: 8 }}>
             <span style={S.goalBadge(pick.goal)}>{GOAL_LABEL[pick.goal]}</span>
-            {pick.idea ? <span style={{ marginLeft: 8, color: "#94a3b8", fontSize: 13 }}>{pick.idea}</span> : null}
+            {pick.idea ? <span style={{ marginLeft: 8, color: "var(--color-text-muted)", fontSize: 13 }}>{pick.idea}</span> : null}
           </div>
-          <div style={{ fontSize: 13, color: "#cbd5e1", marginBottom: 8 }}>
-            You play <strong style={{ color: "#fff", textTransform: "capitalize" }}>{trainerSide}</strong>.
+          <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginBottom: 8 }}>
+            You play <strong style={{ color: "var(--color-text)", textTransform: "capitalize" }}>{trainerSide}</strong>.
             {wantWin ? " Convert the win against Stockfish." : " Hold the draw against Stockfish."}
           </div>
           {/* Difficulty selector — changes Stockfish's strength for the next reply. */}
@@ -510,28 +510,28 @@ function PlayView({ pick, onResult, onBack }) {
                 style={{
                   flex: 1, padding: "6px 8px", borderRadius: 8, cursor: status === "thinking" ? "default" : "pointer",
                   fontSize: 12.5, fontWeight: 700,
-                  border: level === key ? "1px solid #34d399" : "1px solid rgba(255,255,255,0.14)",
-                  background: level === key ? "rgba(52,211,153,0.15)" : "rgba(0,0,0,0.25)",
-                  color: level === key ? "#6ee7b7" : "#cbd5e1",
+                  border: level === key ? "1px solid var(--color-success)" : "1px solid var(--color-white-a13)",
+                  background: level === key ? "rgba(52,211,153,0.15)" : "var(--color-black-a20)",
+                  color: level === key ? "var(--color-success)" : "var(--color-text-muted)",
                 }}
               >
                 {cfg.label}
               </button>
             ))}
           </div>
-          <div style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(0,0,0,0.3)", marginBottom: 10 }}>
-            <div style={{ fontSize: 12, color: "#94a3b8", fontWeight: 700 }}>Stockfish eval (your side)</div>
+          <div style={{ padding: "10px 12px", borderRadius: 10, background: "var(--color-black-a35)", marginBottom: 10 }}>
+            <div style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 700 }}>Stockfish eval (your side)</div>
             <div style={{ fontSize: 18, fontWeight: 900, color: evalColor }}>
               {status === "thinking" ? "Stockfish thinking…" : evalText}
             </div>
           </div>
           {/* Move notation — your moves + Stockfish's replies, in play order. */}
-          <div style={{ fontSize: 12, color: "#94a3b8", fontWeight: 700, marginBottom: 6 }}>
+          <div style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 700, marginBottom: 6 }}>
             Moves <span style={{ fontWeight: 500 }}>· you vs Stockfish</span>
           </div>
           <div style={{ ...S.moveWrap, marginBottom: 10 }}>
             {history.length === 0 ? (
-              <span style={{ color: "#94a3b8", fontSize: 13 }}>Make a move to begin.</span>
+              <span style={{ color: "var(--color-text-muted)", fontSize: 13 }}>Make a move to begin.</span>
             ) : (
               (() => {
                 // Pair into numbered rows using each move's actual color, so a
@@ -560,7 +560,7 @@ function PlayView({ pick, onResult, onBack }) {
           </div>
 
           {slipped && status === "play" && (
-            <div style={{ fontSize: 12, color: "#fbbf24", marginBottom: 8 }}>⚠️ Technique slipped — mastery won't be awarded this attempt.</div>
+            <div style={{ fontSize: 12, color: "var(--color-warning)", marginBottom: 8 }}>⚠️ Technique slipped — mastery won't be awarded this attempt.</div>
           )}
           {verdict && <div style={S.verdict(verdict.kind)}>{verdict.text}</div>}
           {status === "done" && (
@@ -651,7 +651,7 @@ export default function EndgameTrainer({ emptyFallback = null }) {
           <h2 style={{ ...S.bandTitle, marginLeft: 6 }}>{FAMILY_ICON[family]} {FAMILY_LABEL[family]} endgames</h2>
         </div>
         <p style={S.bandSub}>Study the perfect technique for each — then play it out vs Stockfish at Easy, Medium or Hard. Master = convert without the eval ever slipping.</p>
-        {error && <div style={{ color: "#f87171", marginBottom: 10, fontSize: 13 }}>{error}</div>}
+        {error && <div style={{ color: "var(--color-danger)", marginBottom: 10, fontSize: 13 }}>{error}</div>}
         <div style={{ marginBottom: 6 }}>
           {picks.map((p) => {
             const prog = progress[String(p._id)];
@@ -664,7 +664,7 @@ export default function EndgameTrainer({ emptyFallback = null }) {
                   <div style={{ fontSize: 12.5, color: "#cdb989" }}>
                     <span style={S.goalBadge(p.goal)}>{GOAL_LABEL[p.goal]}</span>
                     {p.idea ? <span style={{ marginLeft: 8 }}>{p.idea}</span> : null}
-                    {prog?.attempts ? <span style={{ marginLeft: 8, color: "#94a3b8" }}>· {prog.attempts} attempt{prog.attempts === 1 ? "" : "s"}</span> : null}
+                    {prog?.attempts ? <span style={{ marginLeft: 8, color: "var(--color-text-muted)" }}>· {prog.attempts} attempt{prog.attempts === 1 ? "" : "s"}</span> : null}
                   </div>
                 </div>
                 {p.locked ? (
@@ -706,7 +706,7 @@ export default function EndgameTrainer({ emptyFallback = null }) {
           🎁 <strong>Coach free trial</strong> — premium endgames are free for you for
           {" "}<strong>{data.coach.daysLeft} more day{data.coach.daysLeft === 1 ? "" : "s"}</strong>.
           After that you can still open them by spending XP, or{" "}
-          <a href="/coach/subscription" style={{ color: "#fbbf24", fontWeight: 700 }}>subscribe</a>{" "}
+          <a href="/coach/subscription" style={{ color: "var(--color-warning)", fontWeight: 700 }}>subscribe</a>{" "}
           to keep them free forever.
         </div>
       )}
@@ -719,7 +719,7 @@ export default function EndgameTrainer({ emptyFallback = null }) {
               key={fam}
               style={S.card}
               onClick={() => setFamily(fam)}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = `0 16px 34px rgba(0,0,0,0.5), 0 0 0 1px ${PREMIUM_ACCENT}66`; }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-5px)"; e.currentTarget.style.boxShadow = `0 16px 34px var(--color-black-a50), 0 0 0 1px ${PREMIUM_ACCENT}66`; }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}
             >
               <div style={S.cardGlyph}>{FAMILY_ICON[fam]}</div>

@@ -183,7 +183,7 @@ export default function StudyDuelBoard() {
 
   const cardStyle = {
     background: 'rgba(15,15,15,0.7)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--color-white-a07)',
     borderRadius: 16,
     backdropFilter: 'blur(20px)',
     padding: 20,
@@ -193,25 +193,25 @@ export default function StudyDuelBoard() {
   const isMyTurn = chess.turn() === myColor[0] && opponentConnected && !gameOver;
 
   return (
-    <div style={{ background: '#0a0a0a', minHeight: '100vh', padding: 20, fontFamily: "'Segoe UI', sans-serif", color: '#fff' }}>
+    <div style={{ background: 'var(--color-bg)', minHeight: '100vh', padding: 20, fontFamily: "'Segoe UI', sans-serif", color: 'var(--color-text)' }}>
       <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(circle at 70% 30%, rgba(251,191,36,0.08) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
       <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-          <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
+          <button onClick={() => navigate(-1)} style={{ padding: '8px 16px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)', borderRadius: 8, color: 'var(--color-text)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
             ← Leave
           </button>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: '#fbbf24' }}>⚔ Study Duel</div>
-            <div style={{ fontSize: 12, color: '#6b7280' }}>Room: {roomCode} • You play as {myColor}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--color-warning)' }}>⚔ Study Duel</div>
+            <div style={{ fontSize: 12, color: 'var(--color-text-faint)' }}>Room: {roomCode} • You play as {myColor}</div>
           </div>
           {/* Turn indicator */}
           <div style={{
             padding: '8px 16px',
-            background: isMyTurn ? 'rgba(16,185,129,0.15)' : 'rgba(251,191,36,0.1)',
-            border: `1px solid ${isMyTurn ? 'rgba(16,185,129,0.4)' : 'rgba(251,191,36,0.3)'}`,
+            background: isMyTurn ? 'var(--color-success-a12)' : 'var(--color-warning-a12)',
+            border: `1px solid ${isMyTurn ? 'var(--color-success-a30)' : 'var(--color-warning-a30)'}`,
             borderRadius: 10,
-            color: isMyTurn ? '#34d399' : '#fbbf24',
+            color: isMyTurn ? 'var(--color-success)' : 'var(--color-warning)',
             fontWeight: 700,
             fontSize: 13,
           }}>
@@ -224,7 +224,7 @@ export default function StudyDuelBoard() {
           <div style={{ flex: '0 0 auto' }}>
             {/* Opponent label */}
             {players.find(p => p.color !== myColor) && (
-              <div style={{ padding: '8px 16px', background: 'rgba(0,0,0,0.4)', borderRadius: '10px 10px 0 0', display: 'flex', gap: 10, alignItems: 'center', marginBottom: -2 }}>
+              <div style={{ padding: '8px 16px', background: 'var(--color-black-a35)', borderRadius: '10px 10px 0 0', display: 'flex', gap: 10, alignItems: 'center', marginBottom: -2 }}>
                 <span style={{ fontSize: 16 }}>{myColor === 'white' ? '♚' : '♔'}</span>
                 <span style={{ fontWeight: 600, fontSize: 14 }}>{players.find(p => p.color !== myColor)?.username || 'Opponent'}</span>
               </div>
@@ -246,7 +246,7 @@ export default function StudyDuelBoard() {
             <div style={{ padding: '8px 16px', background: 'rgba(251,191,36,0.08)', borderRadius: '0 0 10px 10px', display: 'flex', gap: 10, alignItems: 'center', marginTop: -2 }}>
               <span style={{ fontSize: 16 }}>{myColor === 'white' ? '♔' : '♚'}</span>
               <span style={{ fontWeight: 700, fontSize: 14 }}>{players.find(p => p.color === myColor)?.username || 'You'}</span>
-              <span style={{ marginLeft: 'auto', color: '#a5b4fc', fontWeight: 700, fontSize: 14 }}>{myAccuracy}%</span>
+              <span style={{ marginLeft: 'auto', color: 'var(--color-accent-2)', fontWeight: 700, fontSize: 14 }}>{myAccuracy}%</span>
             </div>
           </div>
 
@@ -254,8 +254,8 @@ export default function StudyDuelBoard() {
           <div style={{ flex: '1 1 260px', display: 'flex', flexDirection: 'column', gap: 14, minWidth: 240 }}>
             {/* Deviation */}
             {deviationMsg && (
-              <div style={{ ...cardStyle, borderColor: 'rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.08)' }}>
-                <div style={{ color: '#f87171', fontSize: 13 }}>📉 {deviationMsg}</div>
+              <div style={{ ...cardStyle, borderColor: 'var(--color-danger-a30)', background: 'var(--color-danger-a12)' }}>
+                <div style={{ color: 'var(--color-danger)', fontSize: 13 }}>📉 {deviationMsg}</div>
               </div>
             )}
 
@@ -276,7 +276,7 @@ export default function StudyDuelBoard() {
             {/* Moves */}
             {userMoves.length > 0 && (
               <div style={cardStyle}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#9ca3af', marginBottom: 10, textTransform: 'uppercase' }}>My Moves</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 10, textTransform: 'uppercase' }}>My Moves</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {userMoves.map((m, i) => (
                     <span key={i} style={{
@@ -297,29 +297,29 @@ export default function StudyDuelBoard() {
 
             {/* Opponent disconnected */}
             {opponentDisconnected && !gameOver && (
-              <div style={{ ...cardStyle, borderColor: 'rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.08)' }}>
-                <div style={{ color: '#f87171', fontWeight: 700 }}>⚠ Opponent disconnected</div>
+              <div style={{ ...cardStyle, borderColor: 'var(--color-danger-a30)', background: 'var(--color-danger-a12)' }}>
+                <div style={{ color: 'var(--color-danger)', fontWeight: 700 }}>⚠ Opponent disconnected</div>
               </div>
             )}
 
             {/* Game over */}
             {gameOver && results && (
               <div style={{ ...cardStyle, borderColor: 'rgba(99,102,241,0.4)', background: 'rgba(99,102,241,0.08)' }}>
-                <div style={{ fontSize: 20, fontWeight: 900, color: '#a5b4fc', marginBottom: 16 }}>🏁 Duel Complete!</div>
+                <div style={{ fontSize: 20, fontWeight: 900, color: 'var(--color-accent-2)', marginBottom: 16 }}>🏁 Duel Complete!</div>
                 {results.map((p, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(0,0,0,0.3)', borderRadius: 8, marginBottom: 8 }}>
-                    <span style={{ fontWeight: 700, color: '#fff' }}>{p.username}</span>
-                    <span style={{ color: '#a5b4fc', fontWeight: 700 }}>{p.accuracy}% accuracy</span>
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--color-black-a35)', borderRadius: 8, marginBottom: 8 }}>
+                    <span style={{ fontWeight: 700, color: 'var(--color-text)' }}>{p.username}</span>
+                    <span style={{ color: 'var(--color-accent-2)', fontWeight: 700 }}>{p.accuracy}% accuracy</span>
                   </div>
                 ))}
                 {results.length >= 2 && (
-                  <div style={{ textAlign: 'center', marginTop: 12, color: '#fbbf24', fontWeight: 800, fontSize: 16 }}>
+                  <div style={{ textAlign: 'center', marginTop: 12, color: 'var(--color-warning)', fontWeight: 800, fontSize: 16 }}>
                     🏆 Winner: {results.sort((a, b) => b.accuracy - a.accuracy)[0]?.username}
                   </div>
                 )}
                 <button
                   onClick={() => navigate('/study/sparring/duel/create')}
-                  style={{ width: '100%', marginTop: 16, padding: '12px 0', background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 10, color: '#fbbf24', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}
+                  style={{ width: '100%', marginTop: 16, padding: '12px 0', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 10, color: 'var(--color-warning)', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}
                 >
                   ⚔ New Duel
                 </button>

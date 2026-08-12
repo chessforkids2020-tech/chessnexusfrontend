@@ -42,7 +42,7 @@ const TestChapterSelectionDetail = () => {
   const styles = {
     page: {
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       padding: '20px',
       fontFamily: 'Inter, Arial, sans-serif',
       position: 'relative',
@@ -50,22 +50,22 @@ const TestChapterSelectionDetail = () => {
     container: {
       maxWidth: '1000px',
       margin: '0 auto',
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
       borderRadius: '20px',
       padding: '30px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      color: '#ffffff',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
+      border: '1px solid var(--color-white-a04)',
+      color: 'var(--color-text)',
     },
     backButton: {
       padding: '10px 20px',
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
-      color: '#ffffff',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a10)',
       borderRadius: '10px',
       cursor: 'pointer',
       marginBottom: '25px',
@@ -77,7 +77,7 @@ const TestChapterSelectionDetail = () => {
       fontSize: '28px',
       fontWeight: '700',
       margin: '0 0 10px 0',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -85,7 +85,7 @@ const TestChapterSelectionDetail = () => {
     },
     subtitle: {
       fontSize: '16px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       textAlign: 'center',
       marginBottom: '30px',
       fontStyle: 'italic',
@@ -96,39 +96,39 @@ const TestChapterSelectionDetail = () => {
       gap: '20px',
     },
     chapterCard: {
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
       borderRadius: '16px',
       padding: '24px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
+      border: '1px solid var(--color-white-a04)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
       cursor: 'pointer',
       textAlign: 'center',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     chapterNumber: {
       fontSize: '13px',
-      color: '#67e8f9',
+      color: 'var(--color-accent)',
       fontWeight: '600',
       marginBottom: '10px',
     },
     chapterTitle: {
       fontSize: '18px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       margin: '0',
     },
     loading: {
       textAlign: 'center',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '16px',
       padding: '40px',
     },
     error: {
       textAlign: 'center',
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       fontSize: '16px',
       padding: '40px',
     },
@@ -162,13 +162,13 @@ const TestChapterSelectionDetail = () => {
           onClick={() => navigate('/study/test')}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(6, 182, 212, 0.3)';
-            e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.2)';
+            e.currentTarget.style.boxShadow = '0 6px 20px var(--color-accent-a30)';
+            e.currentTarget.style.borderColor = 'var(--color-accent-a20)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
+            e.currentTarget.style.borderColor = 'var(--color-white-a10)';
           }}
         >
           ← Back to Studies
@@ -188,13 +188,13 @@ const TestChapterSelectionDetail = () => {
                 onClick={() => handleChapterClick(chapter)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-5px)';
-                  e.currentTarget.style.boxShadow = '0 12px 40px rgba(6, 182, 212, 0.3)';
-                  e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.2)';
+                  e.currentTarget.style.boxShadow = '0 12px 40px var(--color-accent-a30)';
+                  e.currentTarget.style.borderColor = 'var(--color-accent-a20)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 8px 32px rgba(0, 0, 0, 0.5)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+                  e.currentTarget.style.boxShadow = '0 8px 32px var(--color-black-a50)';
+                  e.currentTarget.style.borderColor = 'var(--color-white-a04)';
                 }}
               >
                 <div style={styles.chapterNumber}>Chapter {chapter.chapterNumber}</div>

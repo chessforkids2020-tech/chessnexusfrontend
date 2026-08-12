@@ -78,8 +78,8 @@ const BookReader = () => {
         <button style={styles.backButton} onClick={() => navigate(`/study/books/${id}`)}>← Contents</button>
         <div style={styles.paywall}>
           <div style={{ fontSize: 48 }}>🔒</div>
-          <h2 style={{ color: '#34d399', margin: '12px 0 6px' }}>This chapter is locked</h2>
-          <p style={{ color: '#cbd5e1', maxWidth: 460, textAlign: 'center' }}>
+          <h2 style={{ color: 'var(--color-success)', margin: '12px 0 6px' }}>This chapter is locked</h2>
+          <p style={{ color: 'var(--color-text-muted)', maxWidth: 460, textAlign: 'center' }}>
             Chapter 1 is free for everyone. To read the rest, <strong>unlock the whole book with your XP</strong>,
             or get it free as a supporter, verified coach, or elite member.
           </p>
@@ -99,7 +99,7 @@ const BookReader = () => {
       <div style={styles.container}>
         <button style={styles.backButton} onClick={() => navigate(`/study/books/${id}`)}>← Contents</button>
         <h1 style={styles.title}>{node.title}</h1>
-        <p style={{ color: '#9ca3af' }}>This section has sub-topics — open them from the contents page.</p>
+        <p style={{ color: 'var(--color-text-muted)' }}>This section has sub-topics — open them from the contents page.</p>
       </div>
     );
   }
@@ -119,7 +119,7 @@ const BookReader = () => {
             ? <BoardBlock key={block._id} block={block} />
             : <div key={block._id} style={styles.prose} dangerouslySetInnerHTML={{ __html: block.contentHtml }} />
         ))}
-        {(page.blocks || []).length === 0 && <div style={{ color: '#9ca3af' }}>This page is empty.</div>}
+        {(page.blocks || []).length === 0 && <div style={{ color: 'var(--color-text-muted)' }}>This page is empty.</div>}
       </div>
 
       <div style={styles.nav}>
@@ -134,21 +134,21 @@ const BookReader = () => {
 const styles = {
   container: { maxWidth: 760, margin: '0 auto', padding: 20 },
   topBar: { display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' },
-  backButton: { background: 'none', border: 'none', color: '#34d399', cursor: 'pointer', fontSize: 15, padding: 0 },
-  nodeTitle: { flex: 1, fontWeight: 800, color: '#e5e7eb', fontSize: 18 },
-  pageInfo: { color: '#9ca3af', fontSize: 14 },
-  title: { fontSize: 26, color: '#e5e7eb' },
+  backButton: { background: 'none', border: 'none', color: 'var(--color-success)', cursor: 'pointer', fontSize: 15, padding: 0 },
+  nodeTitle: { flex: 1, fontWeight: 800, color: 'var(--color-text)', fontSize: 18 },
+  pageInfo: { color: 'var(--color-text-muted)', fontSize: 14 },
+  title: { fontSize: 26, color: 'var(--color-text)' },
   page: { display: 'flex', flexDirection: 'column', gap: 18 },
-  prose: { color: '#d1d5db', lineHeight: 1.7, fontSize: 16 },
+  prose: { color: 'var(--color-text-muted)', lineHeight: 1.7, fontSize: 16 },
   boardBlock: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, margin: '8px 0' },
-  diagramLabel: { color: '#34d399', fontWeight: 700 },
-  caption: { color: '#cbd5e1', fontStyle: 'italic', fontSize: 14, textAlign: 'center' },
-  resetBtn: { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: '#cbd5e1', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 13 },
+  diagramLabel: { color: 'var(--color-success)', fontWeight: 700 },
+  caption: { color: 'var(--color-text-muted)', fontStyle: 'italic', fontSize: 14, textAlign: 'center' },
+  resetBtn: { background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)', color: 'var(--color-text-muted)', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 13 },
   nav: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, marginTop: 24 },
-  navBtn: { background: '#34d399', color: '#06281d', border: 'none', padding: '10px 18px', borderRadius: 8, cursor: 'pointer', fontWeight: 700 },
+  navBtn: { background: 'var(--color-success)', color: '#06281d', border: 'none', padding: '10px 18px', borderRadius: 8, cursor: 'pointer', fontWeight: 700 },
   paywall: { display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 40 },
-  supportBtn: { marginTop: 16, background: '#34d399', color: '#06281d', border: 'none', padding: '12px 22px', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 16 },
-  xpBtn: { marginTop: 16, background: 'linear-gradient(135deg, #7c3aed, #06b6d4)', color: '#fff', border: 'none', padding: '12px 22px', borderRadius: 8, cursor: 'pointer', fontWeight: 800, fontSize: 16 },
+  supportBtn: { marginTop: 16, background: 'var(--color-success)', color: '#06281d', border: 'none', padding: '12px 22px', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 16 },
+  xpBtn: { marginTop: 16, background: 'linear-gradient(135deg, var(--color-accent-2), var(--color-accent))', color: 'var(--color-text)', border: 'none', padding: '12px 22px', borderRadius: 8, cursor: 'pointer', fontWeight: 800, fontSize: 16 },
   error: { background: '#fdecea', color: '#c62828', padding: '10px 14px', borderRadius: 6 },
 };
 

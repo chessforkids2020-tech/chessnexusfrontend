@@ -13,8 +13,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const cardStyle = {
-  background: 'linear-gradient(135deg, rgba(6,182,212,0.12), rgba(16,185,129,0.06))',
-  border: '1px solid rgba(6,182,212,0.3)',
+  background: 'linear-gradient(135deg, var(--color-accent-a12), var(--color-success-a12))',
+  border: '1px solid var(--color-accent-a30)',
   borderRadius: 14,
   padding: 22,
   marginBottom: 22,
@@ -32,24 +32,24 @@ export default function UpgradeCard() {
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 32, lineHeight: 1 }}>🚀</div>
           <div style={{ flex: '1 1 260px', minWidth: 0 }}>
-            <h2 style={{ margin: 0, fontSize: 17, color: '#f1f5f9' }}>
+            <h2 style={{ margin: 0, fontSize: 17, color: 'var(--color-text)' }}>
               You're part of the ChessNexus community ♥
             </h2>
-            <p style={{ margin: '6px 0 0', color: '#94a3b8', fontSize: 13.5, lineHeight: 1.6 }}>
-              Ready for what's next? Become a <b style={{ color: '#e2e8f0' }}>Coach</b> and share your love
-              of chess by building your own academy — or <b style={{ color: '#e2e8f0' }}>support ChessNexus</b> and
+            <p style={{ margin: '6px 0 0', color: 'var(--color-text-muted)', fontSize: 13.5, lineHeight: 1.6 }}>
+              Ready for what's next? Become a <b style={{ color: 'var(--color-text)' }}>Coach</b> and share your love
+              of chess by building your own academy — or <b style={{ color: 'var(--color-text)' }}>support ChessNexus</b> and
               help keep the platform free, ad-free and growing for every player here.
             </p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
           <button onClick={goCoach} style={{
-            background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)', color: '#04211d',
+            background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)', color: '#04211d',
             border: 'none', borderRadius: 10, padding: '11px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer',
           }}>🎓 Become a Coach</button>
           <button onClick={goSupport} style={{
-            background: 'rgba(255,255,255,0.05)', color: '#e2e8f0',
-            border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '11px 20px',
+            background: 'var(--color-white-a04)', color: 'var(--color-text)',
+            border: '1px solid var(--color-white-a13)', borderRadius: 10, padding: '11px 20px',
             fontSize: 14, fontWeight: 600, cursor: 'pointer',
           }}>☕ Support ChessNexus</button>
         </div>

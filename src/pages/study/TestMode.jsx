@@ -218,7 +218,7 @@ const TestMode = () => {
   const styles = {
     page: {
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       padding: '20px',
       fontFamily: 'Inter, Arial, sans-serif',
     },
@@ -230,9 +230,9 @@ const TestMode = () => {
       WebkitBackdropFilter: 'blur(20px)',
       borderRadius: '16px',
       padding: '30px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      color: '#ffffff',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
+      border: '1px solid var(--color-white-a04)',
+      color: 'var(--color-text)',
       position: 'relative',
       zIndex: '1',
     },
@@ -254,8 +254,8 @@ const TestMode = () => {
       background: 'rgba(23, 23, 23, 0.6)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
-      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+      border: '1px solid var(--color-white-a07)',
+      boxShadow: '0 4px 16px var(--color-black-a35)',
     },
     
     // Right card - 70%
@@ -265,17 +265,17 @@ const TestMode = () => {
       background: 'rgba(23, 23, 23, 0.6)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
-      boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+      border: '1px solid var(--color-white-a07)',
+      boxShadow: '0 4px 16px var(--color-black-a35)',
     },
     
     timer: {
       fontSize: '48px',
       fontWeight: '700',
-      color: timeLeft < 60 ? '#ef4444' : '#06b6d4',
+      color: timeLeft < 60 ? 'var(--color-danger)' : 'var(--color-accent)',
       marginBottom: '10px',
       fontFamily: 'monospace',
-      textShadow: timeLeft < 60 ? '0 2px 10px rgba(239, 68, 68, 0.5)' : '0 2px 10px rgba(6, 182, 212, 0.3)',
+      textShadow: timeLeft < 60 ? '0 2px 10px rgba(239, 68, 68, 0.5)' : '0 2px 10px var(--color-accent-a30)',
     },
     infoSection: {
       width: '100%',
@@ -284,18 +284,18 @@ const TestMode = () => {
     },
     puzzleCount: {
       fontSize: '20px',
-      color: '#e5e7eb',
+      color: 'var(--color-text)',
       marginBottom: '15px',
       fontWeight: '600',
     },
     toMove: {
       fontSize: '18px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '500',
       padding: '12px 24px',
-      background: 'rgba(6, 182, 212, 0.1)',
+      background: 'var(--color-accent-a12)',
       borderRadius: '8px',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      border: '1px solid var(--color-accent-a20)',
       display: 'inline-block',
     },
     buttonSection: {
@@ -307,11 +307,11 @@ const TestMode = () => {
     skipButton: {
       width: '100%',
       padding: '14px 20px',
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
-      color: '#ffffff',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a10)',
       borderRadius: '10px',
       cursor: 'pointer',
       fontSize: '15px',
@@ -321,11 +321,11 @@ const TestMode = () => {
     backButton: {
       width: '100%',
       padding: '14px 20px',
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
-      color: '#ffffff',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a10)',
       borderRadius: '10px',
       cursor: 'pointer',
       fontSize: '15px',
@@ -334,25 +334,25 @@ const TestMode = () => {
     },
     loading: {
       textAlign: 'center',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '16px',
       padding: '40px',
     },
     error: {
       textAlign: 'center',
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       fontSize: '16px',
       padding: '40px',
     },
     message: {
       padding: '15px',
-      background: isSolved ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-      color: isSolved ? '#10b981' : '#ef4444',
+      background: isSolved ? 'var(--color-success-a12)' : 'var(--color-danger-a12)',
+      color: isSolved ? 'var(--color-success)' : 'var(--color-danger)',
       borderRadius: '10px',
       marginBottom: '20px',
       fontWeight: '600',
       textAlign: 'center',
-      border: isSolved ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+      border: isSolved ? '1px solid var(--color-success-a30)' : '1px solid var(--color-danger-a30)',
       width: '100%',
     },
     waitingOverlay: {
@@ -360,8 +360,8 @@ const TestMode = () => {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      background: 'rgba(0, 0, 0, 0.85)',
-      color: '#67e8f9',
+      background: 'var(--color-black-a65)',
+      color: 'var(--color-accent)',
       padding: '15px 30px',
       borderRadius: '10px',
       fontSize: '15px',
@@ -369,7 +369,7 @@ const TestMode = () => {
       zIndex: '10',
       pointerEvents: 'none',
       backdropFilter: 'blur(8px)',
-      border: '1px solid rgba(6, 182, 212, 0.3)',
+      border: '1px solid var(--color-accent-a30)',
     },
   };
 
@@ -392,11 +392,11 @@ const TestMode = () => {
             onClick={() => navigate('/study/test')}
             style={{
               padding: '10px 20px',
-              background: 'rgba(23, 23, 23, 0.7)',
+              background: 'var(--color-surface)',
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
-              color: '#ffffff',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              color: 'var(--color-text)',
+              border: '1px solid var(--color-white-a10)',
               borderRadius: '8px',
               cursor: 'pointer',
               fontSize: '14px',
@@ -406,13 +406,13 @@ const TestMode = () => {
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(6, 182, 212, 0.3)';
-              e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.2)';
+              e.currentTarget.style.boxShadow = '0 6px 20px var(--color-accent-a30)';
+              e.currentTarget.style.borderColor = 'var(--color-accent-a20)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
               e.currentTarget.style.boxShadow = 'none';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.borderColor = 'var(--color-white-a10)';
             }}
           >
             Back to Selection
@@ -453,13 +453,13 @@ const TestMode = () => {
                 onClick={nextPuzzle}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(6, 182, 212, 0.3)';
-                  e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.2)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px var(--color-accent-a30)';
+                  e.currentTarget.style.borderColor = 'var(--color-accent-a20)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.borderColor = 'var(--color-white-a10)';
                 }}
               >
                 Skip Puzzle
@@ -470,13 +470,13 @@ const TestMode = () => {
                 onClick={() => navigate('/study')}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(6, 182, 212, 0.3)';
-                  e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.2)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px var(--color-accent-a30)';
+                  e.currentTarget.style.borderColor = 'var(--color-accent-a20)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.borderColor = 'var(--color-white-a10)';
                 }}
               >
                 Back to Studies

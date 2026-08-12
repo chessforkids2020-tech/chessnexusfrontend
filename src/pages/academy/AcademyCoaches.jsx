@@ -156,7 +156,7 @@ export default function AcademyCoaches() {
   return (
     <div className="acad-wrap">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}>
-        <h1 style={{ color: '#fff', margin: 0 }}>👨‍🏫 Coaches</h1>
+        <h1 style={{ color: 'var(--color-text)', margin: 0 }}>👨‍🏫 Coaches</h1>
         {isOwner && (
           <button className="btn-primary" onClick={() => { setShowInvite(true); setInviteErr(''); }}>
             + Add coach
@@ -170,13 +170,13 @@ export default function AcademyCoaches() {
       {showInvite && (
         <div
           onClick={() => setShowInvite(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', display: 'grid', placeItems: 'center', zIndex: 2000, padding: 16 }}
+          style={{ position: 'fixed', inset: 0, background: 'var(--color-black-a50)', display: 'grid', placeItems: 'center', zIndex: 2000, padding: 16 }}
         >
           <div
             onClick={e => e.stopPropagation()}
-            style={{ background: '#141a2a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 22, width: 'min(420px, 94vw)', boxShadow: '0 24px 60px rgba(0,0,0,0.45)' }}
+            style={{ background: '#141a2a', border: '1px solid var(--color-white-a10)', borderRadius: 14, padding: 22, width: 'min(420px, 94vw)', boxShadow: '0 24px 60px var(--color-black-a35)' }}
           >
-            <h3 style={{ margin: '0 0 4px', color: '#fff' }}>➕ Add a coach</h3>
+            <h3 style={{ margin: '0 0 4px', color: 'var(--color-text)' }}>➕ Add a coach</h3>
             <p style={{ margin: '0 0 16px', color: '#9aa4bf', fontSize: 13, lineHeight: 1.5 }}>
               Enter the coach's <b>Chess Nexus username</b>. They'll get an invitation
               in their notifications and join once they accept.
@@ -186,7 +186,7 @@ export default function AcademyCoaches() {
               </span>
             </p>
 
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#cbd5e1', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--color-text-muted)', marginBottom: 6 }}>
               Coach username
             </label>
             <input
@@ -195,7 +195,7 @@ export default function AcademyCoaches() {
               onKeyDown={e => { if (e.key === 'Enter' && !inviteBusy) sendInvite(); }}
               placeholder="e.g. coachqueen"
               autoFocus
-              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)', color: '#fff', marginBottom: 12, boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', marginBottom: 12, boxSizing: 'border-box' }}
             />
             {inviteErr && <div className="acad-error" style={{ marginBottom: 12 }}>⚠️ {inviteErr}</div>}
 
@@ -229,7 +229,7 @@ export default function AcademyCoaches() {
                   <span>
                     {i.name}{i.username ? ` · @${i.username}` : ''}
                     {!i.isCoach && (
-                      <span style={{ color: '#fbbf24', marginLeft: 8, fontSize: 12 }}>
+                      <span style={{ color: 'var(--color-warning)', marginLeft: 8, fontSize: 12 }}>
                         · will onboard as a coach when they accept
                       </span>
                     )}

@@ -198,10 +198,10 @@ export default function EventRegistration() {
 
         {/* Motivation */}
         {event.motivation && (
-          <div className="event-features" style={{ marginBottom: '24px', background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(16,185,129,0.08))', border: '1px solid rgba(99,102,241,0.25)', borderRadius: '12px', padding: '18px' }}>
-            <h3 style={{ marginTop: 0, color: '#1e293b' }}>💬 A Message for Every Participant:</h3>
+          <div className="event-features" style={{ marginBottom: '24px', background: 'linear-gradient(135deg, rgba(99,102,241,0.08), var(--color-success-a12))', border: '1px solid rgba(99,102,241,0.25)', borderRadius: '12px', padding: '18px' }}>
+            <h3 style={{ marginTop: 0, color: 'var(--color-surface-2)' }}>💬 A Message for Every Participant:</h3>
             {event.motivation.split('\n\n').map((para, idx) => (
-              <p key={idx} style={{ margin: '8px 0', lineHeight: '1.7', fontSize: '15px', whiteSpace: 'pre-line', color: '#ffffff' }}>{para}</p>
+              <p key={idx} style={{ margin: '8px 0', lineHeight: '1.7', fontSize: '15px', whiteSpace: 'pre-line', color: 'var(--color-text)' }}>{para}</p>
             ))}
           </div>
         )}
@@ -255,7 +255,7 @@ export default function EventRegistration() {
 
           <div className="form-group">
             <label htmlFor="lichessUsername">
-              Lichess Username <span style={{ fontWeight: 400, color: '#94a3b8', fontSize: '0.82rem' }}>(optional, but recommended)</span>
+              Lichess Username <span style={{ fontWeight: 400, color: 'var(--color-text-muted)', fontSize: '0.82rem' }}>(optional, but recommended)</span>
             </label>
             <input
               id="lichessUsername"

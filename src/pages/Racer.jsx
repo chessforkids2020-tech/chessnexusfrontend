@@ -5,7 +5,7 @@ const styles = {
   page: {
     padding: '20px',
     fontFamily: 'Inter, Arial, sans-serif',
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'var(--color-surface)',
     minHeight: '100vh',
   },
   header: {
@@ -14,16 +14,16 @@ const styles = {
     alignItems: 'center',
     marginBottom: '30px',
     padding: '20px',
-    background: 'linear-gradient(135deg, #1a5f1a, #2e7d32)',
+    background: 'linear-gradient(135deg, var(--color-success), var(--color-success))',
     borderRadius: '15px',
-    color: '#fff',
-    boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+    color: 'var(--color-text)',
+    boxShadow: '0 8px 25px var(--color-black-a20)',
   },
   title: {
     fontSize: '36px',
     fontWeight: '800',
     margin: '0',
-    textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
+    textShadow: '2px 2px 4px var(--color-black-a35)',
     letterSpacing: '2px',
   },
   subtitle: {
@@ -32,8 +32,8 @@ const styles = {
     opacity: '0.9',
   },
   backButton: {
-    background: '#6c757d',
-    color: '#fff',
+    background: 'var(--color-text-faint)',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '12px 24px',
     borderRadius: '8px',
@@ -50,21 +50,21 @@ const styles = {
     marginTop: '20px',
   },
   card: {
-    background: '#fff',
+    background: 'var(--color-text)',
     borderRadius: '16px',
     padding: '25px',
-    boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
-    border: '2px solid #e9ecef',
+    boxShadow: '0 8px 25px var(--color-black-a20)',
+    border: '2px solid var(--color-surface-2)',
     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
   },
   cardHover: {
     transform: 'translateY(-5px)',
-    boxShadow: '0 12px 35px rgba(0,0,0,0.15)',
+    boxShadow: '0 12px 35px var(--color-black-a20)',
   },
   cardTitle: {
     fontSize: '24px',
     fontWeight: '700',
-    color: '#1a5f1a',
+    color: 'var(--color-success)',
     margin: '0 0 15px 0',
     display: 'flex',
     alignItems: 'center',
@@ -72,7 +72,7 @@ const styles = {
   },
   cardDescription: {
     fontSize: '14px',
-    color: '#6c757d',
+    color: 'var(--color-text-faint)',
     lineHeight: '1.6',
     margin: '0 0 20px 0',
   },
@@ -85,27 +85,27 @@ const styles = {
   statItem: {
     textAlign: 'center',
     padding: '15px',
-    background: '#f8f9fa',
+    background: 'var(--color-surface)',
     borderRadius: '10px',
-    border: '1px solid #e9ecef',
+    border: '1px solid var(--color-surface-2)',
   },
   statNumber: {
     display: 'block',
     fontSize: '28px',
     fontWeight: '800',
-    color: '#1a5f1a',
+    color: 'var(--color-success)',
     marginBottom: '5px',
   },
   statLabel: {
     fontSize: '12px',
-    color: '#6c757d',
+    color: 'var(--color-text-faint)',
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
   },
   button: {
-    background: 'linear-gradient(135deg, #1a5f1a, #2e7d32)',
-    color: '#fff',
+    background: 'linear-gradient(135deg, var(--color-success), var(--color-success))',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '12px 24px',
     borderRadius: '8px',
@@ -117,8 +117,8 @@ const styles = {
     marginRight: '10px',
   },
   secondaryButton: {
-    background: '#6c757d',
-    color: '#fff',
+    background: 'var(--color-text-faint)',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '12px 24px',
     borderRadius: '8px',
@@ -129,10 +129,10 @@ const styles = {
     boxShadow: '0 4px 15px rgba(108, 117, 125, 0.3)',
   },
   tableContainer: {
-    background: '#fff',
+    background: 'var(--color-text)',
     borderRadius: '12px',
     overflow: 'hidden',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+    boxShadow: '0 4px 12px var(--color-black-a20)',
     marginTop: '20px',
   },
   table: {
@@ -141,7 +141,7 @@ const styles = {
     fontSize: 14,
   },
   tableHeader: {
-    background: '#f9fafb',
+    background: 'var(--color-text)',
     position: 'sticky',
     top: 0,
     zIndex: 1,
@@ -150,12 +150,12 @@ const styles = {
     padding: '16px 12px',
     textAlign: 'left',
     fontWeight: 600,
-    color: '#374151',
-    borderBottom: '2px solid #e5e7eb',
+    color: 'var(--color-text-faint)',
+    borderBottom: '2px solid var(--color-text)',
     fontSize: 13,
   },
   tableRow: {
-    borderBottom: '1px solid #f3f4f6',
+    borderBottom: '1px solid var(--color-text)',
     transition: 'background-color 0.2s',
   },
   td: {
@@ -166,13 +166,13 @@ const styles = {
   loading: {
     textAlign: 'center',
     padding: '50px',
-    color: '#6c757d',
+    color: 'var(--color-text-faint)',
     fontSize: '18px',
   },
   error: {
     textAlign: 'center',
     padding: '30px',
-    color: '#dc2626',
+    color: 'var(--color-danger)',
     background: '#fef2f2',
     borderRadius: '8px',
     margin: '20px 0',
@@ -183,26 +183,26 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'var(--color-black-a50)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
   },
   modal: {
-    background: '#fff',
+    background: 'var(--color-text)',
     borderRadius: '12px',
     padding: '24px',
     maxWidth: '500px',
     width: '90%',
     maxHeight: '80vh',
     overflowY: 'auto',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    boxShadow: '0 20px 25px -5px var(--color-black-a20), 0 10px 10px -5px var(--color-black-a20)',
   },
   modalTitle: {
     fontSize: '24px',
     fontWeight: '700',
-    color: '#1a5f1a',
+    color: 'var(--color-success)',
     margin: '0 0 20px 0',
     textAlign: 'center',
   },
@@ -216,16 +216,16 @@ const styles = {
     display: 'block',
     fontSize: '14px',
     fontWeight: '600',
-    color: '#374151',
+    color: 'var(--color-text-faint)',
     marginBottom: '6px',
   },
   input: {
     width: '100%',
     padding: '10px 12px',
-    border: '2px solid #e9ecef',
+    border: '2px solid var(--color-surface-2)',
     borderRadius: '8px',
     fontSize: '14px',
-    backgroundColor: '#fff',
+    backgroundColor: 'var(--color-text)',
     transition: 'border-color 0.2s',
     boxSizing: 'border-box',
   },
@@ -235,8 +235,8 @@ const styles = {
     gap: '12px',
   },
   cancelButton: {
-    background: '#6c757d',
-    color: '#fff',
+    background: 'var(--color-text-faint)',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '6px',
@@ -246,8 +246,8 @@ const styles = {
     transition: 'background-color 0.2s',
   },
   saveButton: {
-    background: 'linear-gradient(135deg, #1a5f1a, #2e7d32)',
-    color: '#fff',
+    background: 'linear-gradient(135deg, var(--color-success), var(--color-success))',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '6px',
@@ -608,7 +608,7 @@ export default function Racer() {
           </p>
 
           <div style={{ marginBottom: '20px' }}>
-            <h3 style={{ margin: '0 0 10px 0', color: '#1a5f1a' }}>Available Topics:</h3>
+            <h3 style={{ margin: '0 0 10px 0', color: 'var(--color-success)' }}>Available Topics:</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '15px' }}>
               {topics.map(topic => (
                 <div key={topic.id} style={{
@@ -616,12 +616,12 @@ export default function Racer() {
                   alignItems: 'center',
                   gap: '6px',
                   padding: '6px 12px',
-                  background: topic.puzzles > 0 ? '#f0f9f0' : '#f9fafb',
-                  color: topic.puzzles > 0 ? '#064f28' : '#6b7280',
+                  background: topic.puzzles > 0 ? '#f0f9f0' : 'var(--color-text)',
+                  color: topic.puzzles > 0 ? '#064f28' : 'var(--color-text-faint)',
                   borderRadius: '20px',
                   fontSize: '12px',
                   fontWeight: '500',
-                  border: `1px solid ${topic.puzzles > 0 ? '#bbf7d0' : '#e5e7eb'}`
+                  border: `1px solid ${topic.puzzles > 0 ? '#bbf7d0' : 'var(--color-text)'}`
                 }}>
                   <span>{topic.icon}</span>
                   <span>{topic.title}</span>
@@ -646,7 +646,7 @@ export default function Racer() {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#dc2626',
+                      color: 'var(--color-danger)',
                       cursor: 'pointer',
                       fontSize: '10px',
                       padding: '2px'
@@ -728,7 +728,7 @@ export default function Racer() {
                 <td style={styles.td}>
                   <div>
                     <strong>{racer.completedRaces}/{racer.totalRaces}</strong>
-                    <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--color-text-faint)' }}>
                       {Math.round((racer.completedRaces / racer.totalRaces) * 100)}% completion
                     </div>
                   </div>
@@ -736,7 +736,7 @@ export default function Racer() {
                 <td style={styles.td}>
                   <div>
                     <strong>{racer.averageScore} avg</strong>
-                    <div style={{ fontSize: '11px', color: '#6b7280' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--color-text-faint)' }}>
                       Best: {racer.bestScore} pts
                     </div>
                   </div>
@@ -902,7 +902,7 @@ export default function Racer() {
               </div>
             ) : (
               <div style={styles.modalContent}>
-                <p style={{ marginBottom: '20px', color: '#6c757d' }}>
+                <p style={{ marginBottom: '20px', color: 'var(--color-text-faint)' }}>
                   Click the edit button (✏️) next to any topic to modify it, or use the "Add Topic" button to create new topics.
                 </p>
                 <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
@@ -912,16 +912,16 @@ export default function Racer() {
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       padding: '12px',
-                      border: '1px solid #e9ecef',
+                      border: '1px solid var(--color-surface-2)',
                       borderRadius: '8px',
                       marginBottom: '8px',
-                      background: '#f8f9fa'
+                      background: 'var(--color-surface)'
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <span style={{ fontSize: '20px' }}>{topic.icon}</span>
                         <div>
                           <strong>{topic.title}</strong>
-                          <div style={{ fontSize: '12px', color: '#6c757d' }}>
+                          <div style={{ fontSize: '12px', color: 'var(--color-text-faint)' }}>
                             {topic.puzzles} puzzles • {topic.difficulty}
                           </div>
                         </div>
@@ -979,7 +979,7 @@ export default function Racer() {
                   value={settingsForm.defaultDuration}
                   onChange={(e) => setSettingsForm({...settingsForm, defaultDuration: parseInt(e.target.value) || 5})}
                 />
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Range: 1-60 minutes</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Range: 1-60 minutes</small>
               </div>
               
               <div style={styles.formGroup}>
@@ -992,7 +992,7 @@ export default function Racer() {
                   value={settingsForm.pointsPerPuzzle}
                   onChange={(e) => setSettingsForm({...settingsForm, pointsPerPuzzle: parseInt(e.target.value) || 10})}
                 />
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Range: 1-100 points</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Range: 1-100 points</small>
               </div>
               
               <div style={styles.formGroup}>
@@ -1005,7 +1005,7 @@ export default function Racer() {
                   value={settingsForm.timeBonus}
                   onChange={(e) => setSettingsForm({...settingsForm, timeBonus: parseInt(e.target.value) || 0})}
                 />
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Bonus points for solving quickly (0-50)</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Bonus points for solving quickly (0-50)</small>
               </div>
               
               <div style={styles.formGroup}>
@@ -1018,7 +1018,7 @@ export default function Racer() {
                   value={settingsForm.timeBonusThreshold}
                   onChange={(e) => setSettingsForm({...settingsForm, timeBonusThreshold: parseInt(e.target.value) || 30})}
                 />
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Time limit to earn bonus points (5-300 seconds)</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Time limit to earn bonus points (5-300 seconds)</small>
               </div>
               
               <div style={styles.formGroup}>
@@ -1032,7 +1032,7 @@ export default function Racer() {
                     setSettingsForm({...settingsForm, difficultyLevels: levels.length > 0 ? levels : ['Beginner', 'Intermediate', 'Advanced']});
                   }}
                 />
-                <small style={{ color: '#6c757d', fontSize: '12px' }}>Separate levels with commas (e.g., Beginner, Intermediate, Advanced)</small>
+                <small style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>Separate levels with commas (e.g., Beginner, Intermediate, Advanced)</small>
               </div>
             </div>
             <div style={styles.modalButtons}>
@@ -1062,8 +1062,8 @@ export default function Racer() {
             ) : racerDetails ? (
               <div style={styles.modalContent}>
                 {/* User Info */}
-                <div style={{ marginBottom: '24px', padding: '16px', background: '#f8f9fa', borderRadius: '8px' }}>
-                  <h3 style={{ margin: '0 0 12px 0', color: '#1a5f1a' }}>User Information</h3>
+                <div style={{ marginBottom: '24px', padding: '16px', background: 'var(--color-surface)', borderRadius: '8px' }}>
+                  <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>User Information</h3>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
                     <div><strong>Display Name:</strong> {racerDetails.user.displayName}</div>
                     {racerDetails.user.age && <div><strong>Age:</strong> {racerDetails.user.age}</div>}
@@ -1076,7 +1076,7 @@ export default function Racer() {
 
                 {/* Statistics */}
                 <div style={{ marginBottom: '24px' }}>
-                  <h3 style={{ margin: '0 0 12px 0', color: '#1a5f1a' }}>📊 Performance Statistics</h3>
+                  <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>📊 Performance Statistics</h3>
                   <div style={styles.statGrid}>
                     <div style={styles.statItem}>
                       <span style={styles.statNumber}>{racerDetails.statistics.totalAttempts}</span>
@@ -1108,7 +1108,7 @@ export default function Racer() {
                 {/* Topic Breakdown */}
                 {racerDetails.topicBreakdown.length > 0 && (
                   <div style={{ marginBottom: '24px' }}>
-                    <h3 style={{ margin: '0 0 12px 0', color: '#1a5f1a' }}>🎯 Topic Performance</h3>
+                    <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>🎯 Topic Performance</h3>
                     <div style={{ display: 'grid', gap: '8px' }}>
                       {racerDetails.topicBreakdown.map(topic => (
                         <div key={topic.topic} style={{
@@ -1116,9 +1116,9 @@ export default function Racer() {
                           justifyContent: 'space-between',
                           alignItems: 'center',
                           padding: '12px',
-                          background: '#f8f9fa',
+                          background: 'var(--color-surface)',
                           borderRadius: '8px',
-                          border: '1px solid #e9ecef'
+                          border: '1px solid var(--color-surface-2)'
                         }}>
                           <div style={{ fontWeight: '600' }}>{topic.topic}</div>
                           <div style={{ display: 'flex', gap: '16px', fontSize: '14px' }}>
@@ -1136,8 +1136,8 @@ export default function Racer() {
                 {/* Recent Activity */}
                 {racerDetails.recentActivity.length > 0 && (
                   <div style={{ marginBottom: '24px' }}>
-                    <h3 style={{ margin: '0 0 12px 0', color: '#1a5f1a' }}>🕒 Recent Activity</h3>
-                    <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #e9ecef', borderRadius: '8px' }}>
+                    <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>🕒 Recent Activity</h3>
+                    <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--color-surface-2)', borderRadius: '8px' }}>
                       {racerDetails.recentActivity.map((activity, index) => (
                         <div key={index} style={{
                           padding: '8px 12px',
@@ -1149,16 +1149,16 @@ export default function Racer() {
                         }}>
                           <div style={{ flex: 1 }}>
                             <strong>{activity.puzzle}</strong> 
-                            <span style={{ color: '#6c757d', marginLeft: '8px' }}>
+                            <span style={{ color: 'var(--color-text-faint)', marginLeft: '8px' }}>
                               {activity.topic} • {activity.difficulty}
                             </span>
                           </div>
                           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                            <span style={{ color: activity.correct ? '#064f28' : '#dc2626' }}>
+                            <span style={{ color: activity.correct ? '#064f28' : 'var(--color-danger)' }}>
                               {activity.correct ? '✓' : '✗'} {activity.score}pts
                             </span>
                             <span>{activity.timeTaken}s</span>
-                            <span style={{ color: '#6c757d' }}>
+                            <span style={{ color: 'var(--color-text-faint)' }}>
                               {new Date(activity.date).toLocaleDateString()}
                             </span>
                           </div>
@@ -1171,8 +1171,8 @@ export default function Racer() {
                 {/* Performance Timeline */}
                 {racerDetails.performanceTimeline.length > 0 && (
                   <div style={{ marginBottom: '24px' }}>
-                    <h3 style={{ margin: '0 0 12px 0', color: '#1a5f1a' }}>📈 Performance Over Time</h3>
-                    <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid #e9ecef', borderRadius: '8px' }}>
+                    <h3 style={{ margin: '0 0 12px 0', color: 'var(--color-success)' }}>📈 Performance Over Time</h3>
+                    <div style={{ maxHeight: '150px', overflowY: 'auto', border: '1px solid var(--color-surface-2)', borderRadius: '8px' }}>
                       {racerDetails.performanceTimeline.map((day, index) => (
                         <div key={index} style={{
                           padding: '6px 12px',
@@ -1195,7 +1195,7 @@ export default function Racer() {
                 )}
               </div>
             ) : (
-              <div style={{ textAlign: 'center', padding: '40px', color: '#dc2626' }}>
+              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--color-danger)' }}>
                 Failed to load racer details
               </div>
             )}

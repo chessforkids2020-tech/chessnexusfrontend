@@ -51,7 +51,7 @@ export default function ReportPage() {
           <span className="title-icon">🚩</span>
           Submit a Report
         </h1>
-        <p style={{ textAlign: "center", color: "#9ca3af", marginTop: -8, marginBottom: 24 }}>
+        <p style={{ textAlign: "center", color: "var(--color-text-muted)", marginTop: -8, marginBottom: 24 }}>
           Found a bug or want to report something? Tell us below — the Chess Nexus
           team reviews every report.
         </p>
@@ -67,7 +67,7 @@ export default function ReportPage() {
                   </h3>
                   {isLoggedIn ? (
                     <>
-                      <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>
+                      <p style={{ color: "var(--color-text-muted)", lineHeight: 1.6 }}>
                         Thanks, {displayName}! The Chess Nexus team will shortly
                         review your report and reply in your inbox.
                       </p>
@@ -81,7 +81,7 @@ export default function ReportPage() {
                       </Link>
                     </>
                   ) : (
-                    <p style={{ color: "#cbd5e1", lineHeight: 1.6 }}>
+                    <p style={{ color: "var(--color-text-muted)", lineHeight: 1.6 }}>
                       Thanks! The Chess Nexus team will review your report and reply
                       to your email shortly.
                     </p>
@@ -90,7 +90,7 @@ export default function ReportPage() {
                     <button
                       type="button"
                       className="submit-btn"
-                      style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.2)" }}
+                      style={{ background: "transparent", border: "1px solid var(--color-white-a20)" }}
                       onClick={() => setStatus("")}
                     >
                       <span>Submit another</span>

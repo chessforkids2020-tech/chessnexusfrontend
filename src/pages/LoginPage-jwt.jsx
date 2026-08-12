@@ -76,11 +76,11 @@ const styles = {
     padding: "30px",
     backgroundColor: "#1e1e1e",
     borderRadius: "12px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.3)"
+    boxShadow: "0 4px 20px var(--color-black-a35)"
   },
   title: {
     textAlign: "center",
-    color: "#fff",
+    color: "var(--color-text)",
     marginBottom: "20px"
   },
   form: {
@@ -94,22 +94,22 @@ const styles = {
     borderRadius: "8px",
     border: "1px solid #444",
     backgroundColor: "#2a2a2a",
-    color: "#fff"
+    color: "var(--color-text)"
   },
   button: {
     padding: "14px",
     fontSize: "16px",
     borderRadius: "8px",
     border: "none",
-    backgroundColor: "#4CAF50",
-    color: "#fff",
+    backgroundColor: "var(--color-success)",
+    color: "var(--color-text)",
     cursor: "pointer",
     fontWeight: "bold"
   },
   error: {
     padding: "10px",
     backgroundColor: "#ff4444",
-    color: "#fff",
+    color: "var(--color-text)",
     borderRadius: "6px",
     textAlign: "center"
   }

@@ -222,7 +222,7 @@ export default function ArenaJoin() {
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '20px',
       position: 'relative',
@@ -234,7 +234,7 @@ export default function ArenaJoin() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -248,17 +248,17 @@ export default function ArenaJoin() {
       textAlign: 'center',
       marginBottom: '40px',
       padding: '32px 24px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     title: {
       fontSize: '48px',
       fontWeight: '700',
       margin: '0 0 12px 0',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -266,22 +266,22 @@ export default function ArenaJoin() {
     subtitle: {
       fontSize: '16px',
       margin: '0',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '400',
     },
     card: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '20px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
       marginBottom: '16px',
     },
     sectionTitle: {
       fontSize: '24px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '2px',
       display: 'flex',
       alignItems: 'center',
@@ -289,8 +289,8 @@ export default function ArenaJoin() {
       gap: '12px',
     },
     roomCard: {
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '16px',
       padding: '24px',
       marginBottom: '20px',
@@ -302,12 +302,12 @@ export default function ArenaJoin() {
       gap: '16px',
       marginBottom: '20px',
       paddingBottom: '16px',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+      borderBottom: '1px solid var(--color-white-a04)',
     },
     roomCode: {
       fontSize: '28px',
       fontWeight: '700',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       fontFamily: 'monospace',
       letterSpacing: '3px',
     },
@@ -318,14 +318,14 @@ export default function ArenaJoin() {
       marginBottom: '24px',
     },
     statBox: {
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '12px',
       padding: '16px',
     },
     statLabel: {
       fontSize: '11px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '600',
       textTransform: 'uppercase',
       letterSpacing: '0.5px',
@@ -333,19 +333,19 @@ export default function ArenaJoin() {
     },
     statValue: {
       fontSize: '18px',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       fontWeight: '600',
     },
     progressCard: {
-      background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      background: 'linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-success-a12) 100%)',
+      border: '1px solid var(--color-accent-a20)',
       borderRadius: '12px',
       padding: '20px',
       marginBottom: '20px',
     },
     progressTitle: {
       fontSize: '14px',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       fontWeight: '600',
       marginBottom: '16px',
       textTransform: 'uppercase',
@@ -359,32 +359,32 @@ export default function ArenaJoin() {
     },
     progressLabel: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     progressValue: {
       fontSize: '16px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     timerBox: {
-      background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
-      border: '2px solid rgba(6, 182, 212, 0.3)',
+      background: 'linear-gradient(135deg, var(--color-accent-a15) 0%, var(--color-accent-2-a15) 100%)',
+      border: '2px solid var(--color-accent-a30)',
       borderRadius: '12px',
       padding: '20px',
       textAlign: 'center',
       marginBottom: '20px',
     },
     timerWarning: {
-      background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%)',
-      border: '2px solid rgba(245, 158, 11, 0.3)',
+      background: 'linear-gradient(135deg, var(--color-warning-a12) 0%, var(--color-warning-a12) 100%)',
+      border: '2px solid var(--color-warning-a30)',
     },
     timerDanger: {
-      background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%)',
-      border: '2px solid rgba(239, 68, 68, 0.3)',
+      background: 'linear-gradient(135deg, var(--color-danger-a12) 0%, rgba(220, 38, 38, 0.15) 100%)',
+      border: '2px solid var(--color-danger-a30)',
     },
     timerLabel: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '600',
       textTransform: 'uppercase',
       letterSpacing: '1px',
@@ -394,20 +394,20 @@ export default function ArenaJoin() {
       fontSize: '36px',
       fontWeight: '700',
       fontFamily: 'monospace',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
     },
     input: {
       width: '100%',
       maxWidth: '500px',
       margin: '0 auto 24px',
       display: 'block',
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a10)',
       borderRadius: '12px',
       padding: '20px',
       fontSize: '32px',
       fontWeight: '700',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       textAlign: 'center',
       fontFamily: 'monospace',
       letterSpacing: '8px',
@@ -416,8 +416,8 @@ export default function ArenaJoin() {
       transition: 'all 0.3s ease',
     },
     button: {
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '16px 40px',
       borderRadius: '12px',
@@ -425,12 +425,12 @@ export default function ArenaJoin() {
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
+      boxShadow: '0 4px 16px var(--color-accent-a40)',
     },
     buttonSecondary: {
-      background: 'rgba(0, 0, 0, 0.4)',
-      color: '#9ca3af',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-black-a35)',
+      color: 'var(--color-text-muted)',
+      border: '1px solid var(--color-white-a10)',
       padding: '16px 40px',
       borderRadius: '12px',
       fontSize: '16px',
@@ -453,18 +453,18 @@ export default function ArenaJoin() {
       margin: '0 auto 20px',
     },
     statusError: {
-      background: 'rgba(239, 68, 68, 0.15)',
-      color: '#ef4444',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      background: 'var(--color-danger-a12)',
+      color: 'var(--color-danger)',
+      border: '1px solid var(--color-danger-a20)',
     },
     statusSuccess: {
-      background: 'rgba(16, 185, 129, 0.15)',
-      color: '#10b981',
-      border: '1px solid rgba(16, 185, 129, 0.2)',
+      background: 'var(--color-success-a12)',
+      color: 'var(--color-success)',
+      border: '1px solid var(--color-success-a20)',
     },
     hint: {
       textAlign: 'center',
-      color: '#6b7280',
+      color: 'var(--color-text-faint)',
       fontSize: '13px',
       marginTop: '16px',
     },
@@ -477,12 +477,12 @@ export default function ArenaJoin() {
       marginBottom: '20px',
     },
     loadingText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '16px',
     },
     publicRaceCard: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(6, 182, 212, 0.3)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-accent-a30)',
       borderRadius: '20px',
       padding: '24px',
       marginBottom: '16px',
@@ -490,11 +490,11 @@ export default function ArenaJoin() {
       flexDirection: 'column',
       gap: '16px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(6, 182, 212, 0.1)',
+      boxShadow: '0 8px 32px var(--color-accent-a12)',
     },
     publicJoinButton: {
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '12px 24px',
       borderRadius: '12px',
@@ -552,15 +552,15 @@ export default function ArenaJoin() {
                   }}
                   whileHover={!isCompleted ? { 
                     y: -4,
-                    boxShadow: '0 12px 40px rgba(6, 182, 212, 0.2)',
-                    border: '1px solid rgba(6, 182, 212, 0.2)'
+                    boxShadow: '0 12px 40px var(--color-accent-a20)',
+                    border: '1px solid var(--color-accent-a20)'
                   } : {}}
                   transition={{ duration: 0.3 }}
                 >
                   <div style={styles.roomHeader}>
                     <span style={{ fontSize: '32px' }}>🔥</span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '4px' }}>ROOM CODE</div>
+                      <div style={{ fontSize: '11px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>ROOM CODE</div>
                       <div style={styles.roomCode}>{room.roomId}</div>
                     </div>
                   </div>
@@ -593,11 +593,11 @@ export default function ArenaJoin() {
                       </div>
                       <div style={styles.progressRow}>
                         <span style={styles.progressLabel}>Score</span>
-                        <span style={{ ...styles.progressValue, color: '#fbbf24' }}>⭐ {room.userProgress.score}</span>
+                        <span style={{ ...styles.progressValue, color: 'var(--color-warning)' }}>⭐ {room.userProgress.score}</span>
                       </div>
                       <div style={styles.progressRow}>
                         <span style={styles.progressLabel}>Solved</span>
-                        <span style={{ ...styles.progressValue, color: '#10b981' }}>✅ {room.userProgress.puzzlesSolved}</span>
+                        <span style={{ ...styles.progressValue, color: 'var(--color-success)' }}>✅ {room.userProgress.puzzlesSolved}</span>
                       </div>
                     </div>
                   )}
@@ -622,7 +622,7 @@ export default function ArenaJoin() {
                     }}
                     whileHover={!loading && !isCompleted ? { 
                       y: -2,
-                      boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+                      boxShadow: '0 6px 24px var(--color-accent-a40)'
                     } : {}}
                     transition={{ duration: 0.2 }}
                   >
@@ -660,7 +660,7 @@ export default function ArenaJoin() {
                 <h2 style={{ ...styles.sectionTitle, justifyContent: 'flex-start', margin: 0 }}>
                   <span>🏁</span> Today's Arena Races
                 </h2>
-                <span style={{ background: 'rgba(6,182,212,0.15)', color: '#06b6d4', borderRadius: 20, padding: '3px 12px', fontSize: 13, fontWeight: 700 }}>
+                <span style={{ background: 'var(--color-accent-a15)', color: 'var(--color-accent)', borderRadius: 20, padding: '3px 12px', fontSize: 13, fontWeight: 700 }}>
                   {sorted.length} race{sorted.length !== 1 ? 's' : ''} today
                 </span>
               </div>
@@ -699,34 +699,34 @@ export default function ArenaJoin() {
                           ? '1px solid rgba(34,197,94,0.5)'
                           : isSoon
                           ? '1px solid rgba(251,191,36,0.5)'
-                          : '1px solid rgba(6,182,212,0.25)',
+                          : '1px solid var(--color-accent-a20)',
                         boxShadow: isLive
                           ? '0 0 20px rgba(34,197,94,0.15)'
-                          : '0 8px 32px rgba(6,182,212,0.08)',
+                          : '0 8px 32px var(--color-accent-a08)',
                       }}
-                      whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(6, 182, 212, 0.2)' }}
+                      whileHover={{ y: -4, boxShadow: '0 12px 40px var(--color-accent-a20)' }}
                     >
                       {/* Header row */}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <h3 style={{ color: '#fff', margin: '0 0 4px 0', fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>
+                          <h3 style={{ color: 'var(--color-text)', margin: '0 0 4px 0', fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>
                             {displayName}
                           </h3>
-                          <div style={{ color: '#06b6d4', fontWeight: 700, fontFamily: 'monospace', fontSize: 12, letterSpacing: 1 }}>ROOM: {race.roomId}</div>
+                          <div style={{ color: 'var(--color-accent)', fontWeight: 700, fontFamily: 'monospace', fontSize: 12, letterSpacing: 1 }}>ROOM: {race.roomId}</div>
                         </div>
                         {isLive && (
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#052e16', border: '1px solid #22c55e', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, color: '#22c55e', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 4, background: '#052e16', border: '1px solid var(--color-success)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, color: 'var(--color-success)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'schedPulse 1.4s infinite' }} />
                             LIVE
                           </span>
                         )}
                         {!isLive && isSoon && (
-                          <span style={{ background: 'rgba(251,191,36,0.15)', color: '#fbbf24', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          <span style={{ background: 'var(--color-warning-a12)', color: 'var(--color-warning)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
                             SOON
                           </span>
                         )}
                         {!isLive && !isSoon && (
-                          <span style={{ background: 'rgba(6,182,212,0.1)', color: '#06b6d4', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          <span style={{ background: 'var(--color-accent-a12)', color: 'var(--color-accent)', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}>
                             SCHEDULED
                           </span>
                         )}
@@ -734,11 +734,11 @@ export default function ArenaJoin() {
 
                       {/* Countdown only (no date / start time) */}
                       {fmtStartTime && (
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', borderRadius: 10, padding: '10px 14px' }}>
-                          <div style={{ fontSize: 10, color: '#6b7280', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--color-black-a35)', borderRadius: 10, padding: '10px 14px' }}>
+                          <div style={{ fontSize: 10, color: 'var(--color-text-faint)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                             {isLive ? 'In progress' : 'Starts in'}
                           </div>
-                          <div style={{ fontSize: 20, fontWeight: 800, color: isLive ? '#22c55e' : isSoon ? '#fbbf24' : '#06b6d4' }}>
+                          <div style={{ fontSize: 20, fontWeight: 800, color: isLive ? 'var(--color-success)' : isSoon ? 'var(--color-warning)' : 'var(--color-accent)' }}>
                             {isLive ? '🚀 Now' : fmtCountdown(diffMs)}
                           </div>
                         </div>
@@ -746,10 +746,10 @@ export default function ArenaJoin() {
 
                       {/* Stats */}
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                        <div style={{ color: '#9ca3af', fontSize: 13 }}>📚 <span style={{ color: '#fff' }}>{race.topicTitle || race.topic}</span></div>
-                        <div style={{ color: '#9ca3af', fontSize: 13 }}>⏱️ <span style={{ color: '#fff' }}>{race.timeLimit} min</span></div>
-                        <div style={{ color: '#9ca3af', fontSize: 13 }}>👥 <span style={{ color: '#fff' }}>{race.playerCount} joined</span></div>
-                        <div style={{ color: '#9ca3af', fontSize: 13 }}>🧩 <span style={{ color: '#fff' }}>{race.puzzleCount} puzzles</span></div>
+                        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>📚 <span style={{ color: 'var(--color-text)' }}>{race.topicTitle || race.topic}</span></div>
+                        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱️ <span style={{ color: 'var(--color-text)' }}>{race.timeLimit} min</span></div>
+                        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 <span style={{ color: 'var(--color-text)' }}>{race.playerCount} joined</span></div>
+                        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>🧩 <span style={{ color: 'var(--color-text)' }}>{race.puzzleCount} puzzles</span></div>
                       </div>
 
                       <button
@@ -766,10 +766,10 @@ export default function ArenaJoin() {
                         style={{
                           ...styles.publicJoinButton,
                           background: isLive
-                            ? 'linear-gradient(135deg, #22c55e, #16a34a)'
+                            ? 'linear-gradient(135deg, var(--color-success), var(--color-success))'
                             : isSoon
-                            ? 'linear-gradient(135deg, #f59e0b, #d97706)'
-                            : 'linear-gradient(135deg, #06b6d4, #10b981)',
+                            ? 'linear-gradient(135deg, var(--color-warning), #d97706)'
+                            : 'linear-gradient(135deg, var(--color-accent), var(--color-success))',
                         }}
                       >
                         {isLive ? '🚀 Join Now — Live!' : isSoon ? '⚡ Join — Starting Soon' : '👀 Preview & Wait'}
@@ -805,7 +805,7 @@ export default function ArenaJoin() {
             </h2>
 
             <div style={{ maxWidth: '100%' }}>
-              <p style={{ textAlign: 'center', color: '#9ca3af', marginBottom: '20px', fontSize: '15px' }}>
+              <p style={{ textAlign: 'center', color: 'var(--color-text-muted)', marginBottom: '20px', fontSize: '15px' }}>
                 Enter the 6-character room code
               </p>
 
@@ -852,7 +852,7 @@ export default function ArenaJoin() {
                 }}
                 whileHover={!loading && roomCode.trim() ? { 
                   y: -2,
-                  boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+                  boxShadow: '0 6px 24px var(--color-accent-a40)'
                 } : {}}
                 transition={{ duration: 0.2 }}
               >
@@ -877,7 +877,7 @@ export default function ArenaJoin() {
             </h2>
 
             <div style={{ maxWidth: '100%', textAlign: 'center' }}>
-              <p style={{ color: '#9ca3af', marginBottom: '24px', fontSize: '15px' }}>
+              <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px', fontSize: '15px' }}>
                 Host your own puzzle race! Choose a topic, set the time limit, and invite your friends.
               </p>
 
@@ -888,7 +888,7 @@ export default function ArenaJoin() {
                   width: '100%',
                   fontSize: '18px',
                   padding: '18px',
-                  background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)',
+                  background: 'linear-gradient(135deg, var(--color-accent-2) 0%, #6366f1 100%)',
                   boxShadow: '0 4px 16px rgba(168, 85, 247, 0.4)',
                 }}
                 whileHover={{ 
@@ -921,21 +921,21 @@ export default function ArenaJoin() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
               {recentRaces.map(race => (
                 <div key={race._id} style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.07)',
+                  background: 'var(--color-white-a04)',
+                  border: '1px solid var(--color-white-a07)',
                   borderRadius: 14,
                   padding: '16px 18px',
                 }}>
-                  <div style={{ color: '#fff', fontWeight: 700, fontSize: 15, marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 15, marginBottom: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {(race.name || `${race.topic} Race`).replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim()}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: 8 }}>
-                    <div style={{ color: '#9ca3af', fontSize: 13 }}>📚 <span style={{ color: '#e2e8f0' }}>{race.topic}</span></div>
-                    <div style={{ color: '#9ca3af', fontSize: 13 }}>👥 <span style={{ color: '#e2e8f0' }}>{race.playerCount} players</span></div>
-                    <div style={{ color: '#9ca3af', fontSize: 13 }}>⏱️ <span style={{ color: '#e2e8f0' }}>{race.timeLimit} min</span></div>
-                    <div style={{ color: '#9ca3af', fontSize: 13 }}>🧩 <span style={{ color: '#e2e8f0' }}>{race.puzzleCount} puzzles</span></div>
+                    <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>📚 <span style={{ color: 'var(--color-text)' }}>{race.topic}</span></div>
+                    <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 <span style={{ color: 'var(--color-text)' }}>{race.playerCount} players</span></div>
+                    <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱️ <span style={{ color: 'var(--color-text)' }}>{race.timeLimit} min</span></div>
+                    <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>🧩 <span style={{ color: 'var(--color-text)' }}>{race.puzzleCount} puzzles</span></div>
                   </div>
-                  <div style={{ fontSize: 11, color: '#4b5563' }}>
+                  <div style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>
                     Finished {(() => {
                       const diff = Date.now() - new Date(race.finishedAt).getTime();
                       const mins = Math.floor(diff / 60000);

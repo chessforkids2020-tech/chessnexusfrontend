@@ -47,7 +47,7 @@ export default function StarBoard({
             <div key={sq} style={{
               position: 'absolute', left, top, width: cell, height: cell,
               display: 'grid', placeItems: 'center',
-              fontSize: cell * 0.62, filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.5))',
+              fontSize: cell * 0.62, filter: 'drop-shadow(0 2px 3px var(--color-black-a50))',
               animation: 'ba-star-pulse 1.1s ease-in-out infinite',
             }}>⭐</div>
           );

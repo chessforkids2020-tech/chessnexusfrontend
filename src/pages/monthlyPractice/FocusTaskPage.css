@@ -9,8 +9,8 @@
 /* Page Container */
 .focus-task-page {
   min-height: 100vh;
-  background: #0a0a0a;
-  color: #ffffff;
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family: 'Poppins', sans-serif;
   padding: 40px 20px;
   position: relative;
@@ -25,8 +25,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 30% 40%, rgba(6, 182, 212, 0.08) 0%, transparent 50%), 
-              radial-gradient(circle at 70% 60%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+  background: radial-gradient(circle at 30% 40%, var(--color-accent-a08) 0%, transparent 50%), 
+              radial-gradient(circle at 70% 60%, var(--color-success-a12) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
   animation: pulse-bg 8s ease-in-out infinite;
@@ -67,18 +67,18 @@
 }
 
 .focus-task-loading-text {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 1.2em;
   font-weight: 500;
 }
 
 /* Card Styles */
 .focus-card {
-  background: rgba(23, 23, 23, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--color-surface);
+  border: 1px solid var(--color-white-a04);
   border-radius: 20px;
   padding: 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px var(--color-black-a50);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   margin-bottom: 24px;
@@ -86,27 +86,27 @@
 }
 
 .focus-card:hover {
-  border-color: rgba(6, 182, 212, 0.2);
+  border-color: var(--color-accent-a20);
 }
 
 /* Error State */
 .focus-error-card {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--color-danger-a12);
+  border: 1px solid var(--color-danger-a30);
   text-align: center;
 }
 
 .focus-error-title {
   font-size: 2em;
   margin: 0 0 16px 0;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: linear-gradient(135deg, var(--color-danger) 0%, var(--color-danger) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .focus-error-message {
-  color: #fca5a5;
+  color: var(--color-danger);
   font-size: 1.1em;
   margin-bottom: 24px;
 }
@@ -118,10 +118,10 @@
   align-items: center;
   margin-bottom: 32px;
   padding: 24px 32px;
-  background: rgba(23, 23, 23, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--color-surface);
+  border: 1px solid var(--color-white-a04);
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px var(--color-black-a50);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
@@ -131,7 +131,7 @@
   font-family: 'Orbitron', sans-serif;
   font-size: 2em;
   font-weight: 900;
-  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -141,10 +141,10 @@
 .focus-day-badge {
   display: inline-block;
   padding: 8px 20px;
-  background: rgba(6, 182, 212, 0.15);
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: var(--color-accent-a15);
+  border: 1px solid var(--color-accent-a30);
   border-radius: 25px;
-  color: #06b6d4;
+  color: var(--color-accent);
   font-weight: 700;
   font-size: 0.95em;
   letter-spacing: 0.5px;
@@ -156,26 +156,26 @@
   align-items: center;
   gap: 8px;
   padding: 12px 24px;
-  background: rgba(245, 158, 11, 0.15);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: var(--color-warning-a12);
+  border: 1px solid var(--color-warning-a30);
   border-radius: 25px;
   font-weight: 700;
   font-size: 1.2em;
-  color: #f59e0b;
+  color: var(--color-warning);
   font-family: 'Orbitron', monospace;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+  box-shadow: 0 4px 16px var(--color-warning-a20);
 }
 
 .focus-timer-danger {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.4);
-  color: #ef4444;
+  background: var(--color-danger-a12);
+  border-color: var(--color-danger-a30);
+  color: var(--color-danger);
   animation: pulse-timer 1s infinite;
 }
 
 @keyframes pulse-timer {
   0%, 100% {
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 4px 16px var(--color-danger-a30);
   }
   50% {
     box-shadow: 0 4px 24px rgba(239, 68, 68, 0.6);
@@ -198,10 +198,10 @@
 }
 
 .focus-btn-primary {
-  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+  border: 1px solid var(--color-white-a20);
+  box-shadow: 0 4px 16px var(--color-accent-a40);
 }
 
 .focus-btn-primary:hover {
@@ -210,10 +210,10 @@
 }
 
 .focus-btn-success {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+  border: 1px solid var(--color-white-a20);
+  box-shadow: 0 4px 16px var(--color-success-a30);
 }
 
 .focus-btn-success:hover {
@@ -222,14 +222,14 @@
 }
 
 .focus-btn-secondary {
-  background: rgba(23, 23, 23, 0.7);
-  color: #9ca3af;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-white-a10);
 }
 
 .focus-btn-secondary:hover {
-  border-color: rgba(6, 182, 212, 0.3);
-  color: #06b6d4;
+  border-color: var(--color-accent-a30);
+  color: var(--color-accent);
   transform: translateY(-3px);
 }
 
@@ -265,14 +265,14 @@
   font-size: 2.2em;
   font-weight: 900;
   margin: 0 0 16px 0;
-  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .focus-status-message {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 1.2em;
   margin-bottom: 32px;
   line-height: 1.6;
@@ -280,8 +280,8 @@
 
 /* Instructions Section */
 .focus-instructions {
-  background: rgba(6, 182, 212, 0.05);
-  border: 1px solid rgba(6, 182, 212, 0.2);
+  background: var(--color-accent-a06);
+  border: 1px solid var(--color-accent-a20);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 32px;
@@ -290,7 +290,7 @@
 .focus-instructions-title {
   font-size: 1.3em;
   font-weight: 700;
-  color: #06b6d4;
+  color: var(--color-accent);
   margin: 0 0 16px 0;
   display: flex;
   align-items: center;
@@ -300,7 +300,7 @@
 .focus-instructions-list {
   margin: 0;
   padding-left: 24px;
-  color: #d1d5db;
+  color: var(--color-text-muted);
   line-height: 1.8;
 }
 
@@ -323,34 +323,34 @@
   align-items: center;
   gap: 6px;
   padding: 10px 20px;
-  background: rgba(6, 182, 212, 0.15);
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: var(--color-accent-a15);
+  border: 1px solid var(--color-accent-a30);
   border-radius: 25px;
-  color: #06b6d4;
+  color: var(--color-accent);
   font-weight: 700;
   font-size: 0.95em;
   letter-spacing: 0.3px;
-  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
+  box-shadow: 0 4px 12px var(--color-accent-a15);
 }
 
 .focus-info-badge-xp {
-  background: rgba(16, 185, 129, 0.15);
-  border-color: rgba(16, 185, 129, 0.3);
-  color: #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  background: var(--color-success-a12);
+  border-color: var(--color-success-a30);
+  color: var(--color-success);
+  box-shadow: 0 4px 12px var(--color-success-a12);
 }
 
 .focus-info-badge-points {
-  background: rgba(245, 158, 11, 0.15);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: #f59e0b;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+  background: var(--color-warning-a12);
+  border-color: var(--color-warning-a30);
+  color: var(--color-warning);
+  box-shadow: 0 4px 12px var(--color-warning-a12);
 }
 
 /* Skill Score Breakdown */
 .focus-skill-score-breakdown {
-  background: rgba(16, 185, 129, 0.05);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: var(--color-success-a12);
+  border: 1px solid var(--color-success-a20);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 32px;
@@ -359,7 +359,7 @@
 .focus-breakdown-title {
   font-size: 1.3em;
   font-weight: 700;
-  color: #10b981;
+  color: var(--color-success);
   margin: 0 0 20px 0;
   display: flex;
   align-items: center;
@@ -379,20 +379,20 @@
   padding: 12px 16px;
   background: rgba(23, 23, 23, 0.4);
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-white-a04);
 }
 
 .focus-breakdown-label {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 0.95em;
   font-weight: 500;
 }
 
 .focus-breakdown-value {
-  color: #10b981;
+  color: var(--color-success);
   font-weight: 700;
   font-size: 1.05em;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -401,7 +401,7 @@
 /* Puzzle Card */
 .focus-puzzle-card {
   background: rgba(23, 23, 23, 0.6);
-  border: 2px solid rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--color-white-a04);
   border-radius: 16px;
   padding: 28px;
   margin-bottom: 20px;
@@ -409,13 +409,13 @@
 }
 
 .focus-puzzle-card:hover {
-  border-color: rgba(6, 182, 212, 0.2);
+  border-color: var(--color-accent-a20);
 }
 
 .focus-puzzle-card-active {
-  border-color: rgba(6, 182, 212, 0.5);
-  background: rgba(6, 182, 212, 0.05);
-  box-shadow: 0 0 24px rgba(6, 182, 212, 0.2);
+  border-color: var(--color-accent-a40);
+  background: var(--color-accent-a06);
+  box-shadow: 0 0 24px var(--color-accent-a20);
 }
 
 .focus-puzzle-content {
@@ -440,11 +440,11 @@
   margin: 0 0 12px 0;
   font-size: 1.2em;
   font-weight: 700;
-  color: #06b6d4;
+  color: var(--color-accent);
 }
 
 .focus-puzzle-description {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   margin: 0 0 20px 0;
   font-size: 1em;
   line-height: 1.5;
@@ -455,7 +455,7 @@
   display: block;
   font-weight: 600;
   margin-bottom: 8px;
-  color: #e5e7eb;
+  color: var(--color-text);
   font-size: 0.95em;
   letter-spacing: 0.3px;
 }
@@ -464,10 +464,10 @@
   width: 100%;
   padding: 14px 18px;
   background: rgba(23, 23, 23, 0.8);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--color-white-a10);
   border-radius: 12px;
   font-size: 16px;
-  color: #ffffff;
+  color: var(--color-text);
   font-family: 'Poppins', sans-serif;
   transition: all 0.3s ease;
   -webkit-backdrop-filter: blur(10px);
@@ -475,24 +475,24 @@
 }
 
 .focus-input::placeholder {
-  color: #6b7280;
+  color: var(--color-text-faint);
 }
 
 .focus-input:focus {
   outline: none;
-  border-color: rgba(6, 182, 212, 0.5);
-  box-shadow: 0 0 16px rgba(6, 182, 212, 0.2);
-  background: rgba(6, 182, 212, 0.05);
+  border-color: var(--color-accent-a40);
+  box-shadow: 0 0 16px var(--color-accent-a20);
+  background: var(--color-accent-a06);
 }
 
 /* PGN Display & Viewer */
 .focus-pgn-section {
-  background: rgba(23, 23, 23, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--color-surface);
+  border: 1px solid var(--color-white-a04);
   border-radius: 20px;
   padding: 32px;
   margin-bottom: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px var(--color-black-a50);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
@@ -500,7 +500,7 @@
 .focus-pgn-title {
   font-family: 'Orbitron', sans-serif;
   font-size: 1.5em;
-  color: #06b6d4;
+  color: var(--color-accent);
   margin-bottom: 0;
   display: flex;
   align-items: center;
@@ -524,23 +524,23 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-white-a10);
 }
 
 .focus-side-white {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--color-white-a10);
+  color: var(--color-text);
+  border-color: var(--color-white-a20);
 }
 
 .focus-side-black {
-  background: rgba(0, 0, 0, 0.4);
-  color: #9ca3af;
-  border-color: rgba(255, 255, 255, 0.05);
+  background: var(--color-black-a35);
+  color: var(--color-text-muted);
+  border-color: var(--color-white-a04);
 }
 
 .focus-side-badge strong {
-  color: #06b6d4;
+  color: var(--color-accent);
 }
 
 .focus-pgn-viewer {
@@ -549,15 +549,15 @@
   align-items: center;
   gap: 20px;
   padding: 24px;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--color-black-a35);
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-white-a04);
 }
 
 .pgn-btn {
-  background: rgba(6, 182, 212, 0.1);
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  color: #06b6d4;
+  background: var(--color-accent-a12);
+  border: 1px solid var(--color-accent-a30);
+  color: var(--color-accent);
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -570,7 +570,7 @@
 }
 
 .pgn-btn:hover:not(:disabled) {
-  background: rgba(6, 182, 212, 0.2);
+  background: var(--color-accent-a20);
   transform: scale(1.1);
 }
 
@@ -590,31 +590,31 @@
 }
 
 .pgn-history-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--color-black-a20);
 }
 
 .pgn-history-list::-webkit-scrollbar-thumb {
-  background: rgba(6, 182, 212, 0.3);
+  background: var(--color-accent-a30);
   border-radius: 3px;
 }
 
 .pgn-history-list span:hover {
-  background: rgba(6, 182, 212, 0.1) !important;
-  color: #06b6d4 !important;
+  background: var(--color-accent-a12) !important;
+  color: var(--color-accent) !important;
 }
 
 .focus-pgn-content {
-  background: rgba(23, 23, 23, 0.9);
+  background: var(--color-surface);
   padding: 20px;
   border-radius: 12px;
   overflow: auto;
   font-size: 14px;
   font-family: 'Courier New', monospace;
-  color: #d1d5db;
+  color: var(--color-text-muted);
   white-space: pre-wrap;
   word-break: break-word;
   max-height: 280px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-white-a04);
   line-height: 1.6;
 }
 
@@ -623,7 +623,7 @@
   margin: 0 0 20px 0;
   font-size: 1.3em;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-text);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -649,26 +649,26 @@
 .focus-tactics-btn {
   padding: 10px 18px;
   background: rgba(23, 23, 23, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--color-white-a10);
   border-radius: 20px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
   transition: all 0.3s ease;
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
 
 .focus-tactics-btn:hover {
-  border-color: rgba(6, 182, 212, 0.4);
+  border-color: var(--color-accent-a40);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
+  box-shadow: 0 4px 12px var(--color-accent-a20);
 }
 
 .focus-tactics-btn-active {
-  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
   color: white;
   border-color: transparent;
-  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+  box-shadow: 0 4px 16px var(--color-accent-a40);
 }
 
 /* Submit Section */
@@ -676,7 +676,7 @@
   text-align: center;
   margin-top: 40px;
   padding-top: 32px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--color-white-a04);
 }
 
 /* Result Card */
@@ -684,18 +684,18 @@
   padding: 48px 32px;
   text-align: center;
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--color-white-a10);
+  box-shadow: 0 12px 40px var(--color-black-a65);
 }
 
 .focus-result-success {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
-  border-color: rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, var(--color-success-a20) 0%, rgba(5, 150, 105, 0.2) 100%);
+  border-color: var(--color-success-a30);
 }
 
 .focus-result-partial {
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
-  border-color: rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, var(--color-warning-a20) 0%, rgba(217, 119, 6, 0.2) 100%);
+  border-color: var(--color-warning-a30);
 }
 
 .focus-result-icon {
@@ -708,7 +708,7 @@
   font-size: 2.5em;
   font-weight: 900;
   margin: 0 0 16px 0;
-  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -718,7 +718,7 @@
   font-size: 3em;
   font-weight: 800;
   margin: 16px 0;
-  background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -727,73 +727,73 @@
 .focus-result-xp {
   font-size: 1.8em;
   font-weight: 700;
-  color: #10b981;
+  color: var(--color-success);
   margin: 16px 0;
 }
 
 .focus-result-bonus {
   font-size: 1.3em;
-  color: #f59e0b;
+  color: var(--color-warning);
   margin: 8px 0;
 }
 
 .focus-result-message {
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 1.1em;
   margin: 24px 0;
 }
 
 /* Answer Review */
 .focus-answer-review {
-  background: rgba(23, 23, 23, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--color-surface);
+  border: 1px solid var(--color-white-a04);
   border-radius: 16px;
   padding: 24px;
   margin-top: 32px;
   text-align: left;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px var(--color-black-a50);
 }
 
 .focus-answer-review-title {
   font-size: 1.4em;
   font-weight: 700;
   margin: 0 0 20px 0;
-  color: #06b6d4;
+  color: var(--color-accent);
 }
 
 .focus-answer-item {
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
 }
 
 .focus-answer-correct {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--color-success-a12);
+  border: 1px solid var(--color-success-a30);
 }
 
 .focus-answer-wrong {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--color-danger-a12);
+  border: 1px solid var(--color-danger-a30);
 }
 
 .focus-answer-label {
   font-weight: 600;
-  color: #e5e7eb;
+  color: var(--color-text);
   margin-bottom: 8px;
 }
 
 .focus-answer-value {
-  color: #d1d5db;
+  color: var(--color-text-muted);
   font-size: 0.95em;
 }
 
 .focus-answer-correct-value {
-  color: #10b981;
+  color: var(--color-success);
   font-weight: 600;
 }
 
@@ -802,7 +802,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   text-decoration: none;
   font-weight: 600;
   padding: 12px 20px;
@@ -812,8 +812,8 @@
 }
 
 .focus-back-link:hover {
-  color: #06b6d4;
-  background: rgba(6, 182, 212, 0.1);
+  color: var(--color-accent);
+  background: var(--color-accent-a12);
   transform: translateX(-4px);
 }
 
@@ -843,25 +843,25 @@
   align-items: center;
   gap: 8px;
   letter-spacing: 0.3px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px var(--color-black-a20);
 }
 
 .focus-side-white {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: var(--color-white-a10);
+  color: var(--color-text);
+  border: 1px solid var(--color-text-faint);
 }
 
 .focus-side-black {
-  background: rgba(0, 0, 0, 0.4);
-  color: #e5e7eb;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-black-a35);
+  color: var(--color-text);
+  border: 1px solid var(--color-white-a10);
 }
 
 .focus-side-both {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(90deg, var(--color-white-a10) 0%, var(--color-black-a35) 100%);
+  color: var(--color-text);
+  border: 1px solid var(--color-white-a20);
 }
 
 @media (max-width: 768px) {
@@ -932,8 +932,8 @@
 
 /* Scoring Note */
 .focus-scoring-note {
-  background: rgba(6, 182, 212, 0.1);
-  border: 1px solid rgba(6, 182, 212, 0.2);
+  background: var(--color-accent-a12);
+  border: 1px solid var(--color-accent-a20);
   border-radius: 12px;
   padding: 12px 16px;
   margin-bottom: 16px;
@@ -943,7 +943,7 @@
 .focus-scoring-note p {
   margin: 0;
   font-size: 14px;
-  color: #94a3b8;
+  color: var(--color-text-muted);
   font-weight: 500;
 }
 
@@ -971,7 +971,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
+  background: var(--color-black-a65);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -985,7 +985,7 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  background: #3b82f6;
+  background: var(--color-accent-2);
   color: white;
   border: none;
   border-radius: 50%;
@@ -998,24 +998,24 @@
   font-size: 20px;
   font-weight: bold;
   z-index: 1001;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 10px var(--color-black-a35);
   transition: all 0.2s ease;
 }
 
 .focus-popup-close:hover {
-  background: #2563eb;
+  background: var(--color-accent-2);
   transform: scale(1.1);
 }
 
 .focus-popup-content {
-  background: #1a1a1a;
+  background: var(--color-surface);
   border-radius: 12px;
   padding: 15px;
   max-width: 95vw;
   max-height: 95vh;
   position: relative;
-  border: 1px solid #3b82f6;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--color-accent-2);
+  box-shadow: 0 10px 30px var(--color-black-a50);
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -52,7 +52,7 @@ const ConfirmDialog = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: 'var(--color-black-a50)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -64,13 +64,13 @@ const ConfirmDialog = () => {
       padding: '24px',
       maxWidth: '400px',
       width: '90%',
-      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+      boxShadow: '0 20px 25px -5px var(--color-black-a20), 0 10px 10px -5px var(--color-black-a20)',
       animation: 'dialogFadeIn 0.2s ease-out',
     },
     message: {
       fontSize: '16px',
       lineHeight: '1.5',
-      color: '#374151',
+      color: 'var(--color-text-faint)',
       marginBottom: '24px',
     },
     buttons: {
@@ -88,12 +88,12 @@ const ConfirmDialog = () => {
       transition: 'all 0.2s',
     },
     cancelButton: {
-      backgroundColor: '#f3f4f6',
-      color: '#374151',
-      border: '1px solid #d1d5db',
+      backgroundColor: 'var(--color-text)',
+      color: 'var(--color-text-faint)',
+      border: '1px solid var(--color-text-muted)',
     },
     confirmButton: {
-      backgroundColor: '#dc2626',
+      backgroundColor: 'var(--color-danger)',
       color: 'white',
     },
   };

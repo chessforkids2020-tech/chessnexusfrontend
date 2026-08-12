@@ -83,9 +83,9 @@ export default function ArenaGameReplayModal({ moves, startFen, finalFen, white,
     <div style={S.overlay} onClick={onClose}>
       <div style={S.modal} onClick={e => e.stopPropagation()}>
         <div style={S.head}>
-          <div style={{ fontWeight: 800, color: '#e2e8f0', fontSize: 15 }}>
-            {white || 'White'} <span style={{ color: '#64748b' }}>vs</span> {black || 'Black'}
-            {result ? <span style={{ marginLeft: 8, color: '#94a3b8', fontWeight: 700 }}>{resultLabel(result)}</span> : null}
+          <div style={{ fontWeight: 800, color: 'var(--color-text)', fontSize: 15 }}>
+            {white || 'White'} <span style={{ color: 'var(--color-text-faint)' }}>vs</span> {black || 'Black'}
+            {result ? <span style={{ marginLeft: 8, color: 'var(--color-text-muted)', fontWeight: 700 }}>{resultLabel(result)}</span> : null}
           </div>
           <button onClick={onClose} style={S.closeBtn} title="Close (Esc)">✕</button>
         </div>
@@ -96,12 +96,12 @@ export default function ArenaGameReplayModal({ moves, startFen, finalFen, white,
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <Chessboard position={finalFen} boardWidth={boardW} orientation={orientation} draggable={false} />
               </div>
-              <div style={{ marginTop: 10, color: '#94a3b8', fontSize: 13 }}>
+              <div style={{ marginTop: 10, color: 'var(--color-text-muted)', fontSize: 13 }}>
                 Final position. Move-by-move replay isn’t available for this game.
               </div>
             </div>
           ) : (
-            <div style={{ padding: '28px 8px', color: '#94a3b8', textAlign: 'center', fontSize: 14 }}>
+            <div style={{ padding: '28px 8px', color: 'var(--color-text-muted)', textAlign: 'center', fontSize: 14 }}>
               Moves aren’t available for this game.
             </div>
           )
@@ -152,37 +152,37 @@ export default function ArenaGameReplayModal({ moves, startFen, finalFen, white,
 
 const S = {
   overlay: {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)',
+    position: 'fixed', inset: 0, background: 'var(--color-black-a65)', backdropFilter: 'blur(4px)',
     zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
   },
   modal: {
     width: '100%', maxWidth: 820, maxHeight: '90vh', overflowY: 'auto',
-    background: 'rgba(17,20,32,0.98)', border: '1px solid rgba(6,182,212,0.3)',
-    borderRadius: 16, padding: 18, boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+    background: 'rgba(17,20,32,0.98)', border: '1px solid var(--color-accent-a30)',
+    borderRadius: 16, padding: 18, boxShadow: '0 20px 60px var(--color-black-a65)',
   },
   head: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  closeBtn: { background: 'none', border: 'none', color: '#94a3b8', fontSize: 18, cursor: 'pointer' },
+  closeBtn: { background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: 18, cursor: 'pointer' },
   // Two-column body: board (left) + moves (right). Wraps on narrow screens.
   body: { display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' },
   boardCol: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, flex: '0 0 auto' },
   movesCol: {
     flex: '1 1 200px', minWidth: 180, alignSelf: 'stretch',
     display: 'flex', flexDirection: 'column',
-    background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10,
+    background: 'var(--color-black-a20)', border: '1px solid var(--color-white-a07)', borderRadius: 10,
     overflow: 'hidden',
   },
   movesTitle: {
-    fontSize: 12, fontWeight: 800, color: '#94a3b8', padding: '8px 12px',
-    borderBottom: '1px solid rgba(255,255,255,0.08)', letterSpacing: 0.4,
+    fontSize: 12, fontWeight: 800, color: 'var(--color-text-muted)', padding: '8px 12px',
+    borderBottom: '1px solid var(--color-white-a07)', letterSpacing: 0.4,
   },
   movesScroll: { overflowY: 'auto', padding: 6, maxHeight: 420 },
   moveRow: { display: 'grid', gridTemplateColumns: '28px 1fr 1fr', alignItems: 'center', gap: 4 },
-  moveNum: { fontSize: 12, color: '#64748b', textAlign: 'right', paddingRight: 4 },
-  moveCell: { fontSize: 13, color: '#cbd5e1', padding: '3px 7px', borderRadius: 6, cursor: 'pointer' },
-  moveCellActive: { background: 'rgba(6,182,212,0.28)', color: '#67e8f9', fontWeight: 700 },
+  moveNum: { fontSize: 12, color: 'var(--color-text-faint)', textAlign: 'right', paddingRight: 4 },
+  moveCell: { fontSize: 13, color: 'var(--color-text-muted)', padding: '3px 7px', borderRadius: 6, cursor: 'pointer' },
+  moveCellActive: { background: 'var(--color-accent-a30)', color: 'var(--color-accent)', fontWeight: 700 },
   controls: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 },
   navBtn: {
-    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
-    color: '#e2e8f0', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 14,
+    background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)',
+    color: 'var(--color-text)', borderRadius: 8, padding: '6px 12px', cursor: 'pointer', fontSize: 14,
   },
 };

@@ -69,10 +69,10 @@ const Leaderboard = () => {
 
   const getRankColor = (rank) => {
     switch (rank) {
-      case 1: return '#FFD700'; // Gold
+      case 1: return 'var(--color-warning)'; // Gold
       case 2: return '#C0C0C0'; // Silver  
       case 3: return '#CD7F32'; // Bronze
-      default: return '#06b6d4'; // Cyan
+      default: return 'var(--color-accent)'; // Cyan
     }
   };
 
@@ -88,7 +88,7 @@ const Leaderboard = () => {
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '20px',
       position: 'relative',
@@ -100,7 +100,7 @@ const Leaderboard = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -114,30 +114,30 @@ const Leaderboard = () => {
       textAlign: 'center',
       marginBottom: '40px',
       padding: '32px 28px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     title: {
       fontSize: '42px',
       fontWeight: '700',
       margin: '0 0 12px 0',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
     },
     trophyIcon: {
       display: 'inline',
-      color: '#FFD700',
+      color: 'var(--color-warning)',
       textShadow: '0 0 10px rgba(255, 215, 0, 0.5)',
       marginRight: '10px',
     },
     batchInfo: {
       fontSize: '16px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '400',
       display: 'flex',
       gap: '20px',
@@ -145,17 +145,17 @@ const Leaderboard = () => {
       flexWrap: 'wrap',
     },
     batchInfoItem: {
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       padding: '8px 16px',
       borderRadius: '8px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     userHighlight: {
       marginBottom: '40px',
     },
     userTitle: {
       textAlign: 'center',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '20px',
       fontSize: '28px',
       fontWeight: '600',
@@ -165,12 +165,12 @@ const Leaderboard = () => {
       alignItems: 'center',
       gap: '30px',
       padding: '32px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-      borderTop: '4px solid #FFD700',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
+      borderTop: '4px solid var(--color-warning)',
     },
     userRank: {
       textAlign: 'center',
@@ -190,42 +190,42 @@ const Leaderboard = () => {
     userStat: {
       textAlign: 'center',
       padding: '16px',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       borderRadius: '12px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
       minWidth: '120px',
     },
     statValue: {
       display: 'block',
       fontSize: '32px',
       fontWeight: 'bold',
-      color: '#10b981',
-      textShadow: '0 0 10px rgba(16, 185, 129, 0.3)',
+      color: 'var(--color-success)',
+      textShadow: '0 0 10px var(--color-success-a30)',
     },
     statLabel: {
       display: 'block',
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginTop: '8px',
       textTransform: 'uppercase',
       letterSpacing: '1px',
     },
     leaderboardSection: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '32px',
       marginBottom: '40px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     sectionTitle: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       margin: '0 0 32px 0',
       fontSize: '32px',
       textAlign: 'center',
       fontWeight: '600',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -233,8 +233,8 @@ const Leaderboard = () => {
     tableContainer: {
       overflowX: 'auto',
       borderRadius: '16px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      background: 'rgba(0, 0, 0, 0.3)',
+      border: '1px solid var(--color-white-a04)',
+      background: 'var(--color-black-a35)',
     },
     table: {
       width: '100%',
@@ -242,26 +242,26 @@ const Leaderboard = () => {
       minWidth: '1000px',
     },
     headerRow: {
-      background: 'rgba(0, 0, 0, 0.5)',
+      background: 'var(--color-black-a50)',
     },
     th: {
       padding: '20px 16px',
       textAlign: 'left',
       fontWeight: '600',
-      color: '#ffffff',
-      borderBottom: '2px solid rgba(255, 255, 255, 0.05)',
+      color: 'var(--color-text)',
+      borderBottom: '2px solid var(--color-white-a04)',
       fontSize: '14px',
       textTransform: 'uppercase',
       letterSpacing: '1px',
     },
     row: {
-      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+      borderBottom: '1px solid var(--color-white-a04)',
       transition: 'all 0.3s ease',
     },
     td: {
       padding: '20px 16px',
       verticalAlign: 'middle',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     rankCell: {
       textAlign: 'center',
@@ -275,19 +275,19 @@ const Leaderboard = () => {
     },
     displayName: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginTop: '4px',
     },
     countryCell: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     scoreCell: {
       textAlign: 'center',
       fontSize: '20px',
       fontWeight: 'bold',
-      color: '#10b981',
-      textShadow: '0 0 10px rgba(16, 185, 129, 0.3)',
+      color: 'var(--color-success)',
+      textShadow: '0 0 10px var(--color-success-a30)',
     },
     correctCell: {
       textAlign: 'center',
@@ -295,7 +295,7 @@ const Leaderboard = () => {
     },
     percentage: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginTop: '4px',
     },
     timeCell: {
@@ -303,7 +303,7 @@ const Leaderboard = () => {
       fontFamily: 'monospace',
       fontWeight: 'bold',
       fontSize: '16px',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
     },
     performanceCell: {
       textAlign: 'center',
@@ -311,8 +311,8 @@ const Leaderboard = () => {
       fontSize: '14px',
       padding: '8px 16px',
       borderRadius: '8px',
-      background: 'rgba(6, 182, 212, 0.1)',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      background: 'var(--color-accent-a12)',
+      border: '1px solid var(--color-accent-a20)',
     },
     actionSection: {
       display: 'flex',
@@ -322,8 +322,8 @@ const Leaderboard = () => {
       flexWrap: 'wrap',
     },
     actionButton: {
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '16px 32px',
       borderRadius: '12px',
@@ -331,64 +331,64 @@ const Leaderboard = () => {
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 20px rgba(6, 182, 212, 0.4)',
+      boxShadow: '0 4px 20px var(--color-accent-a40)',
       display: 'flex',
       alignItems: 'center',
       gap: '10px',
     },
     footerMessage: {
       textAlign: 'center',
-      background: 'rgba(245, 158, 11, 0.1)',
-      color: '#f59e0b',
+      background: 'var(--color-warning-a12)',
+      color: 'var(--color-warning)',
       padding: '28px',
       borderRadius: '20px',
       fontSize: '18px',
       lineHeight: '1.6',
       fontWeight: '500',
-      border: '1px solid rgba(245, 158, 11, 0.2)',
+      border: '1px solid var(--color-warning-a20)',
       backdropFilter: 'blur(10px)',
     },
     loadingContainer: {
       textAlign: 'center',
       padding: '60px 20px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     loadingIcon: {
       fontSize: '56px',
       marginBottom: '20px',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
     },
     loadingTitle: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '12px',
       fontSize: '24px',
       fontWeight: '600',
     },
     loadingText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '15px',
     },
     errorContainer: {
       textAlign: 'center',
       padding: '60px 40px',
-      background: 'rgba(239, 68, 68, 0.15)',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      background: 'var(--color-danger-a12)',
+      border: '1px solid var(--color-danger-a20)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     errorTitle: {
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       marginBottom: '12px',
       fontSize: '24px',
       fontWeight: '600',
     },
     errorText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '15px',
       marginBottom: '24px',
     },
@@ -425,7 +425,7 @@ const Leaderboard = () => {
               style={styles.actionButton}
               whileHover={{ 
                 y: -2,
-                boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+                boxShadow: '0 6px 24px var(--color-accent-a40)'
               }}
               transition={{ duration: 0.2 }}
             >
@@ -463,13 +463,13 @@ const Leaderboard = () => {
           </h1>
           <div style={styles.batchInfo}>
             <span style={styles.batchInfoItem}>
-              <strong style={{color: '#ffffff'}}>Batch:</strong> {batchInfo?.name || 'Unknown'}
+              <strong style={{color: 'var(--color-text)'}}>Batch:</strong> {batchInfo?.name || 'Unknown'}
             </span>
             <span style={styles.batchInfoItem}>
-              <strong style={{color: '#ffffff'}}>Round:</strong> {batchInfo?.round?.number || 'N/A'}
+              <strong style={{color: 'var(--color-text)'}}>Round:</strong> {batchInfo?.round?.number || 'N/A'}
             </span>
             <span style={styles.batchInfoItem}>
-              <strong style={{color: '#ffffff'}}>Participants:</strong> {leaderboard.length}
+              <strong style={{color: 'var(--color-text)'}}>Participants:</strong> {leaderboard.length}
             </span>
           </div>
         </motion.div>
@@ -535,16 +535,16 @@ const Leaderboard = () => {
                     style={{
                       ...styles.row,
                       background: entry.user._id === currentUser?._id 
-                        ? 'rgba(6, 182, 212, 0.15)' 
+                        ? 'var(--color-accent-a15)' 
                         : 'transparent',
                       borderLeft: entry.user._id === currentUser?._id 
-                        ? '4px solid #06b6d4' 
+                        ? '4px solid var(--color-accent)' 
                         : 'none'
                     }}
                     whileHover={{ 
                       background: entry.user._id === currentUser?._id 
-                        ? 'rgba(6, 182, 212, 0.25)' 
-                        : 'rgba(255, 255, 255, 0.05)'
+                        ? 'var(--color-accent-a20)' 
+                        : 'var(--color-white-a04)'
                     }}
                     transition={{ duration: 0.2 }}
                   >
@@ -613,7 +613,7 @@ const Leaderboard = () => {
             onClick={handleViewResults}
             whileHover={{ 
               y: -2,
-              boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+              boxShadow: '0 6px 24px var(--color-accent-a40)'
             }}
             transition={{ duration: 0.2 }}
           >
@@ -624,7 +624,7 @@ const Leaderboard = () => {
             onClick={handleGoToDashboard}
             whileHover={{ 
               y: -2,
-              boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+              boxShadow: '0 6px 24px var(--color-accent-a40)'
             }}
             transition={{ duration: 0.2 }}
           >

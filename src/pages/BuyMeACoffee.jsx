@@ -11,17 +11,17 @@ import { useSupporterRefresh } from '../context/SupporterContext';
 import SEO from '../components/SEO';
 
 const C = {
-  base: '#0a0a0a',
-  panel: 'rgba(23,23,23,0.7)',
-  panelBorder: 'rgba(255,255,255,0.06)',
-  text: '#e5e7eb',
+  base: 'var(--color-bg)',
+  panel: 'var(--color-surface)',
+  panelBorder: 'var(--color-white-a07)',
+  text: 'var(--color-text)',
   textDim: 'rgba(229,231,235,0.7)',
   textFaint: 'rgba(229,231,235,0.45)',
-  cyan: '#06b6d4',
-  green: '#10b981',
-  amber: '#f59e0b',
-  amberSoft: 'rgba(245,158,11,0.18)',
-  amberBorder: 'rgba(245,158,11,0.45)'
+  cyan: 'var(--color-accent)',
+  green: 'var(--color-success)',
+  amber: 'var(--color-warning)',
+  amberSoft: 'var(--color-warning-a20)',
+  amberBorder: 'var(--color-warning-a30)'
 };
 
 // Two choices combine to set the price and how long the badge lasts:
@@ -185,7 +185,7 @@ export default function BuyMeACoffee() {
         description: `${isCustom ? 'Custom Coffee' : selectedCoffee?.name} — ${effectiveMonths} ${effectiveMonths === 1 ? 'month' : 'months'} supporter badge`,
         order_id: orderId,
         prefill: { name: user?.displayName || '' },
-        theme: { color: '#f59e0b' },
+        theme: { color: 'var(--color-warning)' },
         modal: {
           ondismiss: () => setSubmitting(false)
         },
@@ -266,13 +266,13 @@ export default function BuyMeACoffee() {
                 {/* Badge preview */}
                 <div style={{ padding: '20px 24px', borderBottom: `1px solid ${C.panelBorder}` }}>
                   <div style={{ color: C.textDim, fontSize: 11, fontWeight: 700, letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 12 }}>What you'll get</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(245,158,11,0.10)', border: '1px solid rgba(245,158,11,0.30)', borderRadius: 12, padding: '10px 14px', marginBottom: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', borderRadius: 12, padding: '10px 14px', marginBottom: 12 }}>
                     <span style={{ color: C.text, fontWeight: 700, fontSize: 16 }}>{user?.displayName || 'You'}</span>
                     <span style={{ fontSize: 18 }}>☕</span>
-                    <span style={{ color: C.amber, fontSize: 11, fontWeight: 600, background: 'rgba(245,158,11,0.15)', padding: '2px 8px', borderRadius: 999 }}>Preview</span>
+                    <span style={{ color: C.amber, fontSize: 11, fontWeight: 600, background: 'var(--color-warning-a12)', padding: '2px 8px', borderRadius: 999 }}>Preview</span>
                   </div>
                   <p style={{ color: C.textDim, fontSize: 13, lineHeight: 1.65, margin: 0 }}>
-                    A <strong style={{ color: '#fde68a' }}>☕ supporter badge</strong> appears next to your display name for{' '}
+                    A <strong style={{ color: 'var(--color-warning)' }}>☕ supporter badge</strong> appears next to your display name for{' '}
                     <strong style={{ color: C.text }}>{monthsLabel}</strong> — visible on your dashboard, leaderboards, and everywhere on ChessNexus. One-time payment, no auto-renewal.
                   </p>
                 </div>
@@ -387,7 +387,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             <span style={styles.eliteSubtle}>Our little gratitude towards our supporters 💛</span>
           </div>
           <p style={styles.eliteIntro}>
-            Support ChessNexus for <strong style={{ color: '#fde68a' }}>6 months or more</strong> and become{' '}
+            Support ChessNexus for <strong style={{ color: 'var(--color-warning)' }}>6 months or more</strong> and become{' '}
             <strong style={{ color: C.text }}>an Elite member</strong> — creator tools and perks reserved for the
             people who keep ChessNexus alive.
           </p>
@@ -400,7 +400,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             <Eliter icon="♟️" text="Study endgames unlimited — full Endgame Mastery access" />
           </div>
           <p style={styles.eliteNote}>
-            💛 Once you support for 6 months or more, we'll add your <strong style={{ color: '#fde68a' }}>Elite badge shortly</strong> —
+            💛 Once you support for 6 months or more, we'll add your <strong style={{ color: 'var(--color-warning)' }}>Elite badge shortly</strong> —
             our team reviews and enrolls Elite members personally, so it may take a little while after payment.
           </p>
         </div>
@@ -475,7 +475,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
               >
                 {isElite && <span style={styles.tierEliteRibbon}>👑 ELITE</span>}
                 <div style={{ fontSize: 36, marginBottom: 6 }}>{coffee.emoji}</div>
-                <div style={{ ...styles.tierName, ...(isElite ? { color: '#fde68a' } : null) }}>{coffee.name}</div>
+                <div style={{ ...styles.tierName, ...(isElite ? { color: 'var(--color-warning)' } : null) }}>{coffee.name}</div>
                 <div style={{ ...styles.tierAmount, ...(isElite ? { color: '#f5c451' } : null) }}>
                   {currency === 'INR' ? `₹${price}` : `$${price}`}
                 </div>
@@ -516,7 +516,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
               </div>
             )}
             {customBelowMin ? (
-              <div style={{ color: '#f87171', fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
+              <div style={{ color: 'var(--color-danger)', fontSize: 12, fontWeight: 700, textAlign: 'center' }}>
                 Minimum is {currency === 'INR' ? '₹' : '$'}{minBase}/mo.
               </div>
             ) : (
@@ -543,41 +543,41 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
         {/* Where the money goes */}
         <div style={{ marginTop: 26 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
-            <span style={{ color: '#fde68a', fontSize: 13, fontWeight: 700, letterSpacing: 0.5, whiteSpace: 'nowrap' }}>☕ WHERE YOUR COFFEE GOES</span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.07)' }} />
+            <div style={{ flex: 1, height: 1, background: 'var(--color-white-a07)' }} />
+            <span style={{ color: 'var(--color-warning)', fontSize: 13, fontWeight: 700, letterSpacing: 0.5, whiteSpace: 'nowrap' }}>☕ WHERE YOUR COFFEE GOES</span>
+            <div style={{ flex: 1, height: 1, background: 'var(--color-white-a07)' }} />
           </div>
           <div style={styles.whyGrid}>
             <WhyCard
               icon="🖥️"
               title="Always-On Servers"
               text="Every cup helps keep ChessNexus.in running 24 × 7. No downtime, no slow nights — just fast, reliable chess for everyone, always."
-              accent="rgba(6,182,212,0.18)"
-              border="rgba(6,182,212,0.25)"
+              accent="var(--color-accent-a20)"
+              border="var(--color-accent-a20)"
               step="01"
             />
             <WhyCard
               icon="🗄️"
               title="Your Progress, Remembered"
               text="Your games, ratings, streaks, and puzzle history need a home. Coffee keeps our databases healthy so every move you make is recorded and learned from."
-              accent="rgba(16,185,129,0.18)"
-              border="rgba(16,185,129,0.25)"
+              accent="var(--color-success-a20)"
+              border="var(--color-success-a20)"
               step="02"
             />
             <WhyCard
               icon="👨‍💻"
               title="Full-Time Developers"
               text="The people who build arenas, 3D rooms, team races, and everything in between work full time for ChessNexus. Your coffee is what keeps them here — building for you."
-              accent="rgba(139,92,246,0.18)"
-              border="rgba(139,92,246,0.25)"
+              accent="var(--color-accent-2-a15)"
+              border="var(--color-accent-2-a15)"
               step="03"
             />
             <WhyCard
               icon="🧑‍🏫"
               title="Live Classroom"
               text="Real-time video classes where coaches teach on a shared board — the servers, video, and tools that let every lesson happen live keep running on your coffee."
-              accent="rgba(245,158,11,0.18)"
-              border="rgba(245,158,11,0.25)"
+              accent="var(--color-warning-a20)"
+              border="var(--color-warning-a20)"
               step="04"
             />
           </div>
@@ -595,8 +595,8 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             <div style={{ fontSize: 40, marginBottom: 6 }}>👑☕</div>
             <div style={{ fontWeight: 800, color: C.text, fontSize: 19 }}>Be our very first supporter</div>
             <p style={{ color: C.textDim, fontSize: 14, lineHeight: 1.6, margin: '10px auto 0', maxWidth: 460 }}>
-              ChessNexus is brand new and built by a tiny team. Our <strong style={{ color: '#fde68a' }}>first {FOUNDING_LIMIT} supporters</strong> get a
-              permanent <strong style={{ color: '#fde68a' }}>👑 Founding Supporter</strong> badge — it never expires, as a thank-you for believing early.
+              ChessNexus is brand new and built by a tiny team. Our <strong style={{ color: 'var(--color-warning)' }}>first {FOUNDING_LIMIT} supporters</strong> get a
+              permanent <strong style={{ color: 'var(--color-warning)' }}>👑 Founding Supporter</strong> badge — it never expires, as a thank-you for believing early.
             </p>
             <button
               type="button"
@@ -611,7 +611,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             {/* Founding-supporter incentive stays visible while spots remain. */}
             {foundingLeft > 0 && (
               <div style={styles.foundingBanner}>
-                👑 <strong style={{ color: '#fde68a' }}>{foundingLeft} Founding Supporter {foundingLeft === 1 ? 'spot' : 'spots'} left</strong>
+                👑 <strong style={{ color: 'var(--color-warning)' }}>{foundingLeft} Founding Supporter {foundingLeft === 1 ? 'spot' : 'spots'} left</strong>
                 {' '}— early supporters get a permanent badge that never expires.
               </div>
             )}
@@ -660,7 +660,7 @@ function WhyCard({ icon, title, text, accent, border, step }) {
       {step && (
         <div style={{
           position: 'absolute', top: 10, right: 12,
-          fontSize: 11, fontWeight: 800, color: 'rgba(255,255,255,0.10)',
+          fontSize: 11, fontWeight: 800, color: 'var(--color-white-a10)',
           letterSpacing: 1, fontFamily: 'monospace',
         }}>{step}</div>
       )}
@@ -678,7 +678,7 @@ function PayCard({ title, sub, emoji, accent, onClick, disabled, disabledText })
       onClick={disabled ? undefined : onClick}
       style={{
         ...styles.payCard,
-        borderColor: disabled ? 'rgba(255,255,255,0.05)' : `${accent}55`,
+        borderColor: disabled ? 'var(--color-white-a04)' : `${accent}55`,
         cursor: disabled ? 'not-allowed' : 'pointer',
         opacity: disabled ? 0.55 : 1
       }}
@@ -694,7 +694,7 @@ function PayCard({ title, sub, emoji, accent, onClick, disabled, disabledText })
 function BankRow({ label, value }) {
   if (!value) return null;
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px dashed rgba(255,255,255,0.06)' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px dashed var(--color-white-a07)' }}>
       <span style={{ color: C.textDim, fontSize: 13 }}>{label}</span>
       <span style={{ color: C.text, fontSize: 13, fontWeight: 600, fontFamily: 'monospace' }}>{value}</span>
     </div>
@@ -714,9 +714,9 @@ const styles = {
     position: 'absolute',
     inset: 0,
     background:
-      'radial-gradient(circle at 20% 10%, rgba(6,182,212,0.10), transparent 40%), ' +
-      'radial-gradient(circle at 85% 0%, rgba(16,185,129,0.10), transparent 45%), ' +
-      'radial-gradient(circle at 50% 100%, rgba(245,158,11,0.10), transparent 50%)',
+      'radial-gradient(circle at 20% 10%, var(--color-accent-a12), transparent 40%), ' +
+      'radial-gradient(circle at 85% 0%, var(--color-success-a12), transparent 45%), ' +
+      'radial-gradient(circle at 50% 100%, var(--color-warning-a12), transparent 50%)',
     pointerEvents: 'none'
   },
   container: {
@@ -739,7 +739,7 @@ const styles = {
     borderRadius: 999,
     background: C.amberSoft,
     border: `1px solid ${C.amberBorder}`,
-    color: '#fde68a',
+    color: 'var(--color-warning)',
     fontSize: 12,
     fontWeight: 600,
     letterSpacing: 0.4
@@ -761,8 +761,8 @@ const styles = {
     display: 'inline-block',
     padding: '8px 14px',
     borderRadius: 999,
-    background: 'rgba(16,185,129,0.12)',
-    border: '1px solid rgba(16,185,129,0.4)',
+    background: 'var(--color-success-a12)',
+    border: '1px solid var(--color-success-a30)',
     color: '#a7f3d0',
     fontSize: 13,
     fontWeight: 600
@@ -772,9 +772,9 @@ const styles = {
     display: 'inline-block',
     padding: '8px 14px',
     borderRadius: 999,
-    background: 'rgba(6,182,212,0.12)',
-    border: '1px solid rgba(6,182,212,0.4)',
-    color: '#a5f3fc',
+    background: 'var(--color-accent-a12)',
+    border: '1px solid var(--color-accent-a40)',
+    color: 'var(--color-accent)',
     fontSize: 13,
     fontWeight: 600
   },
@@ -783,9 +783,9 @@ const styles = {
     display: 'inline-block',
     padding: '8px 14px',
     borderRadius: 999,
-    background: 'rgba(245,158,11,0.14)',
-    border: '1px solid rgba(245,158,11,0.45)',
-    color: '#fde68a',
+    background: 'var(--color-warning-a12)',
+    border: '1px solid var(--color-warning-a30)',
+    color: 'var(--color-warning)',
     fontSize: 13,
     fontWeight: 600
   },
@@ -795,7 +795,7 @@ const styles = {
     display: 'flex',
     gap: 16,
     alignItems: 'flex-start',
-    background: 'linear-gradient(135deg, rgba(16,185,129,0.10), rgba(6,182,212,0.07))',
+    background: 'linear-gradient(135deg, var(--color-success-a12), var(--color-accent-a06))',
     border: '1px solid rgba(52,211,153,0.34)',
     borderRadius: 16,
     padding: '18px 20px',
@@ -809,16 +809,16 @@ const styles = {
     display: 'grid',
     placeItems: 'center',
     borderRadius: 12,
-    background: 'rgba(16,185,129,0.14)',
+    background: 'var(--color-success-a12)',
     border: '1px solid rgba(52,211,153,0.3)',
   },
-  xpPerkTitle: { color: '#6ee7b7', fontWeight: 800, fontSize: 15, marginBottom: 6 },
-  xpPerkText: { color: '#94a3b8', fontSize: 13.5, lineHeight: 1.65, margin: 0 },
+  xpPerkTitle: { color: 'var(--color-success)', fontWeight: 800, fontSize: 15, marginBottom: 6 },
+  xpPerkText: { color: 'var(--color-text-muted)', fontSize: 13.5, lineHeight: 1.65, margin: 0 },
 
   eliteCard: {
     marginTop: 22,
-    background: 'linear-gradient(135deg, rgba(245,158,11,0.10), rgba(139,92,246,0.08))',
-    border: '1px solid rgba(245,158,11,0.35)',
+    background: 'linear-gradient(135deg, var(--color-warning-a12), rgba(139,92,246,0.08))',
+    border: '1px solid var(--color-warning-a30)',
     borderRadius: 20,
     padding: '22px 24px',
     backdropFilter: 'blur(14px)',
@@ -835,9 +835,9 @@ const styles = {
     display: 'inline-block',
     padding: '5px 12px',
     borderRadius: 999,
-    background: 'rgba(245,158,11,0.20)',
+    background: 'var(--color-warning-a20)',
     border: `1px solid ${C.amberBorder}`,
-    color: '#fde68a',
+    color: 'var(--color-warning)',
     fontSize: 12,
     fontWeight: 800,
     letterSpacing: 0.8
@@ -868,7 +868,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: 10,
-    background: 'rgba(255,255,255,0.04)',
+    background: 'var(--color-white-a04)',
     border: `1px solid ${C.panelBorder}`,
     borderRadius: 12,
     padding: '11px 14px'
@@ -901,7 +901,7 @@ const styles = {
   },
   currencyToggle: {
     display: 'inline-flex',
-    background: 'rgba(255,255,255,0.04)',
+    background: 'var(--color-white-a04)',
     border: `1px solid ${C.panelBorder}`,
     borderRadius: 999,
     padding: 4
@@ -917,9 +917,9 @@ const styles = {
     cursor: 'pointer'
   },
   currencyBtnActive: {
-    background: 'linear-gradient(135deg, rgba(6,182,212,0.2), rgba(16,185,129,0.2))',
+    background: 'linear-gradient(135deg, var(--color-accent-a20), var(--color-success-a20))',
     color: C.text,
-    boxShadow: '0 0 0 1px rgba(6,182,212,0.4)'
+    boxShadow: '0 0 0 1px var(--color-accent-a40)'
   },
   durationTabs: {
     display: 'flex',
@@ -940,7 +940,7 @@ const styles = {
     fontFamily: 'Poppins, sans-serif'
   },
   durationTabActive: {
-    background: 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.08))',
+    background: 'linear-gradient(135deg, var(--color-warning-a20), var(--color-warning-a12))',
     color: C.text,
     boxShadow: `0 0 0 1px ${C.amberBorder}`
   },
@@ -962,7 +962,7 @@ const styles = {
   },
   tierCardActive: {
     borderColor: C.amberBorder,
-    boxShadow: '0 8px 28px rgba(245,158,11,0.18)',
+    boxShadow: '0 8px 28px var(--color-warning-a20)',
     transform: 'translateY(-2px)'
   },
   // Elite tier (American Espresso) — distinct gold look to mark the Elite path.
@@ -1009,7 +1009,7 @@ const styles = {
   customInputWrap: {
     display: 'inline-flex',
     alignItems: 'center',
-    background: 'rgba(255,255,255,0.04)',
+    background: 'var(--color-white-a04)',
     border: `1px solid ${C.panelBorder}`,
     borderRadius: 10,
     padding: '6px 10px'
@@ -1050,7 +1050,7 @@ const styles = {
   },
   confirmBox: {
     marginTop: 18,
-    background: 'rgba(245,158,11,0.06)',
+    background: 'var(--color-warning-a12)',
     border: `1px solid ${C.amberBorder}`,
     borderRadius: 14,
     padding: 16
@@ -1063,7 +1063,7 @@ const styles = {
   },
   confirmInput: {
     flex: '1 1 220px',
-    background: 'rgba(255,255,255,0.04)',
+    background: 'var(--color-white-a04)',
     border: `1px solid ${C.panelBorder}`,
     borderRadius: 10,
     padding: '10px 12px',
@@ -1072,7 +1072,7 @@ const styles = {
     fontFamily: 'Poppins, sans-serif'
   },
   primaryBtn: {
-    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+    background: 'linear-gradient(135deg, var(--color-warning), #d97706)',
     color: '#1f2937',
     border: 'none',
     padding: '10px 18px',
@@ -1092,16 +1092,16 @@ const styles = {
   },
   thankBox: {
     marginTop: 18,
-    background: 'rgba(16,185,129,0.08)',
-    border: '1px solid rgba(16,185,129,0.4)',
+    background: 'var(--color-success-a12)',
+    border: '1px solid var(--color-success-a30)',
     borderRadius: 14,
     padding: 18,
     textAlign: 'center'
   },
   firstSupporterCard: {
     textAlign: 'center',
-    background: 'linear-gradient(135deg, rgba(245,158,11,0.10), rgba(139,92,246,0.07))',
-    border: '1px solid rgba(245,158,11,0.35)',
+    background: 'linear-gradient(135deg, var(--color-warning-a12), rgba(139,92,246,0.07))',
+    border: '1px solid var(--color-warning-a30)',
     borderRadius: 18,
     padding: '30px 24px',
     backdropFilter: 'blur(14px)',
@@ -1111,8 +1111,8 @@ const styles = {
     marginBottom: 14,
     padding: '10px 16px',
     borderRadius: 12,
-    background: 'rgba(245,158,11,0.10)',
-    border: '1px solid rgba(245,158,11,0.30)',
+    background: 'var(--color-warning-a12)',
+    border: '1px solid var(--color-warning-a30)',
     color: C.textDim,
     fontSize: 13.5,
     lineHeight: 1.5

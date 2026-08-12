@@ -17,7 +17,7 @@ const addLog = (message, type = 'info') => {
 const styles = {
   page: {
     fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    background: '#0a0a0a',
+    background: 'var(--color-bg)',
     minHeight: '100vh',
     padding: '20px',
     position: 'relative',
@@ -29,7 +29,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+    background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
     pointerEvents: 'none',
     zIndex: 0,
   },
@@ -41,12 +41,12 @@ const styles = {
     zIndex: 1,
   },
   boardSection: {
-    background: 'rgba(23, 23, 23, 0.7)',
+    background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    border: '1px solid var(--color-white-a04)',
     borderRadius: '20px',
     padding: '30px',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
     justifySelf: 'center',
   },
   infoSection: {
@@ -55,19 +55,19 @@ const styles = {
     gap: '20px',
   },
   statsFlyer: {
-    background: 'rgba(23, 23, 23, 0.7)',
+    background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
     borderRadius: '20px',
     padding: '25px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    border: '1px solid var(--color-white-a04)',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     gap: '15px',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
   },
   timerTile: {
-    background: 'rgba(23, 23, 23, 0.9)',
+    background: 'var(--color-surface)',
     backdropFilter: 'blur(5px)',
     borderRadius: '16px',
     padding: '20px',
@@ -79,7 +79,7 @@ const styles = {
     maxWidth: '180px',
   },
   scoreTile: {
-    background: 'rgba(23, 23, 23, 0.9)',
+    background: 'var(--color-surface)',
     backdropFilter: 'blur(5px)',
     borderRadius: '16px',
     padding: '20px',
@@ -123,13 +123,13 @@ const styles = {
     letterSpacing: '1px',
   },
   leaderboardSection: {
-    background: 'rgba(23, 23, 23, 0.7)',
+    background: 'var(--color-surface)',
     backdropFilter: 'blur(10px)',
     borderRadius: '20px',
     padding: '25px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    border: '1px solid var(--color-white-a04)',
     flex: 1,
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
   },
   puzzleInfo: {
     textAlign: 'center',
@@ -137,7 +137,7 @@ const styles = {
     padding: '15px',
     background: 'rgba(23, 23, 23, 0.5)',
     borderRadius: '12px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    border: '1px solid var(--color-white-a04)',
   },
   puzzleNumber: {
     fontSize: '24px',
@@ -154,58 +154,58 @@ const styles = {
     fontSize: '20px',
     fontWeight: '700',
     marginBottom: '15px',
-    color: '#ffffff',
+    color: 'var(--color-text)',
   },
   leaderboardItem: {
     display: 'flex',
     justifyContent: 'space-between',
     padding: '12px 0',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-    color: '#d1d5db',
+    borderBottom: '1px solid var(--color-white-a04)',
+    color: 'var(--color-text-muted)',
     fontSize: '14px',
   },
   currentPlayer: {
-    background: 'rgba(6, 182, 212, 0.1)',
+    background: 'var(--color-accent-a12)',
     borderRadius: '8px',
     padding: '12px 15px',
     margin: '0 -10px',
-    border: '1px solid rgba(6, 182, 212, 0.2)',
+    border: '1px solid var(--color-accent-a20)',
   },
   error: {
-    color: '#ef4444',
+    color: 'var(--color-danger)',
     textAlign: 'center',
     padding: '20px',
-    background: 'rgba(239, 68, 68, 0.1)',
+    background: 'var(--color-danger-a12)',
     borderRadius: '12px',
-    border: '1px solid rgba(239, 68, 68, 0.2)',
+    border: '1px solid var(--color-danger-a20)',
     backdropFilter: 'blur(10px)',
   },
   loading: {
     textAlign: 'center',
     padding: '40px',
-    color: '#ffffff',
-    background: 'rgba(23, 23, 23, 0.7)',
+    color: 'var(--color-text)',
+    background: 'var(--color-surface)',
     borderRadius: '20px',
-    border: '1px solid rgba(255, 255, 255, 0.05)',
+    border: '1px solid var(--color-white-a04)',
     backdropFilter: 'blur(10px)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    boxShadow: '0 8px 32px var(--color-black-a50)',
   },
 };
 
 const adminStyles = {
   page: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent-2) 0%, #764ba2 100%)',
     padding: '20px',
     fontFamily: 'Inter, Arial, sans-serif',
   },
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
-    background: '#fff',
+    background: 'var(--color-text)',
     borderRadius: '20px',
     padding: '30px',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+    boxShadow: '0 20px 40px var(--color-black-a20)',
   },
   header: {
     textAlign: 'center',
@@ -214,9 +214,9 @@ const adminStyles = {
   title: {
     fontSize: '28px',
     fontWeight: '800',
-    color: '#1a1a1a',
+    color: 'var(--color-surface)',
     marginBottom: '10px',
-    background: 'linear-gradient(135deg, #667eea, #764ba2)',
+    background: 'linear-gradient(135deg, var(--color-accent-2), #764ba2)',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent',
   },
@@ -224,8 +224,8 @@ const adminStyles = {
     position: 'absolute',
     top: '20px',
     left: '20px',
-    background: '#6c757d',
-    color: '#fff',
+    background: 'var(--color-text-faint)',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '10px 20px',
     borderRadius: '8px',
@@ -243,24 +243,24 @@ const adminStyles = {
     textAlign: 'left',
     padding: '12px',
     borderBottom: '2px solid #eee',
-    color: '#666',
+    color: 'var(--color-text-faint)',
     fontWeight: '600',
   },
   td: {
     padding: '12px',
     borderBottom: '1px solid #eee',
-    color: '#1a1a1a',
+    color: 'var(--color-surface)',
   },
   score: {
     fontWeight: '700',
-    color: '#667eea',
+    color: 'var(--color-accent-2)',
   },
   correct: {
-    color: '#28a745',
+    color: 'var(--color-success)',
     fontWeight: '600',
   },
   wrong: {
-    color: '#dc3545',
+    color: 'var(--color-danger)',
     fontWeight: '600',
   }
 };
@@ -1114,27 +1114,27 @@ export default function ArenaRace({ isAdminView = false }) {
         <div style={adminStyles.container}>
           <div style={adminStyles.header}>
             <div style={adminStyles.title}>🏆 Live Race Monitoring</div>
-            <div style={{ fontSize: '20px', color: '#667eea', fontWeight: '700' }}>Room: {roomId}</div>
+            <div style={{ fontSize: '20px', color: 'var(--color-accent-2)', fontWeight: '700' }}>Room: {roomId}</div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px', marginBottom: '30px' }}>
-            <div style={{ padding: '20px', background: '#f8f9fa', borderRadius: '12px', textAlign: 'center', border: '1px solid #e9ecef' }}>
-              <div style={{ fontSize: '12px', color: '#666', textTransform: 'uppercase', fontWeight: '600', marginBottom: '5px' }}>Time Left</div>
-              <div style={{ fontSize: '28px', fontWeight: '800', color: timeLeft < 60 ? '#dc3545' : '#1a1a1a' }}>
+            <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--color-surface-2)' }}>
+              <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', textTransform: 'uppercase', fontWeight: '600', marginBottom: '5px' }}>Time Left</div>
+              <div style={{ fontSize: '28px', fontWeight: '800', color: timeLeft < 60 ? 'var(--color-danger)' : 'var(--color-surface)' }}>
                 {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
               </div>
             </div>
-            <div style={{ padding: '20px', background: '#f8f9fa', borderRadius: '12px', textAlign: 'center', border: '1px solid #e9ecef' }}>
-              <div style={{ fontSize: '12px', color: '#666', textTransform: 'uppercase', fontWeight: '600', marginBottom: '5px' }}>Active Players</div>
-              <div style={{ fontSize: '28px', fontWeight: '800', color: '#667eea' }}>{leaderboard.length}</div>
+            <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--color-surface-2)' }}>
+              <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', textTransform: 'uppercase', fontWeight: '600', marginBottom: '5px' }}>Active Players</div>
+              <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-accent-2)' }}>{leaderboard.length}</div>
             </div>
-            <div style={{ padding: '20px', background: '#f8f9fa', borderRadius: '12px', textAlign: 'center', border: '1px solid #e9ecef', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+            <div style={{ padding: '20px', background: 'var(--color-surface)', borderRadius: '12px', textAlign: 'center', border: '1px solid var(--color-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
               <button 
                 onClick={() => fetchLeaderboard(true)}
                 style={{
                   padding: '12px 20px',
-                  background: '#6c757d',
-                  color: '#fff',
+                  background: 'var(--color-text-faint)',
+                  color: 'var(--color-text)',
                   border: 'none',
                   borderRadius: '10px',
                   fontWeight: '700',
@@ -1147,8 +1147,8 @@ export default function ArenaRace({ isAdminView = false }) {
                 onClick={endRace}
                 style={{
                   padding: '12px 20px',
-                  background: '#dc3545',
-                  color: '#fff',
+                  background: 'var(--color-danger)',
+                  color: 'var(--color-text)',
                   border: 'none',
                   borderRadius: '10px',
                   fontWeight: '700',
@@ -1160,7 +1160,7 @@ export default function ArenaRace({ isAdminView = false }) {
             </div>
           </div>
 
-          <div style={{ background: '#fff', borderRadius: '16px', border: '1px solid #eee', overflow: 'hidden' }}>
+          <div style={{ background: 'var(--color-text)', borderRadius: '16px', border: '1px solid #eee', overflow: 'hidden' }}>
             <table style={adminStyles.table}>
               <thead>
                 <tr>
@@ -1192,8 +1192,8 @@ export default function ArenaRace({ isAdminView = false }) {
                         fontSize: '11px',
                         fontWeight: '700',
                         textTransform: 'uppercase',
-                        background: player.status === 'racing' ? '#e7f5ff' : '#f8f9fa',
-                        color: player.status === 'racing' ? '#228be6' : '#666'
+                        background: player.status === 'racing' ? '#e7f5ff' : 'var(--color-surface)',
+                        color: player.status === 'racing' ? '#228be6' : 'var(--color-text-faint)'
                       }}>
                         {player.status}
                       </span>
@@ -1302,25 +1302,25 @@ export default function ArenaRace({ isAdminView = false }) {
               style={{
                 background: 'rgba(23, 23, 23, 0.8)',
                 backdropFilter: 'blur(10px)',
-                color: '#ef4444',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: 'var(--color-danger)',
+                border: '1px solid var(--color-danger-a30)',
                 padding: '12px 24px',
                 borderRadius: '12px',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer',
-                boxShadow: '0 4px 16px rgba(239, 68, 68, 0.2)',
+                boxShadow: '0 4px 16px var(--color-danger-a20)',
                 transition: 'all 0.3s ease'
               }}
               onMouseOver={(e) => {
                 e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 8px 24px rgba(239, 68, 68, 0.3)';
+                e.target.style.boxShadow = '0 8px 24px var(--color-danger-a30)';
                 e.target.style.borderColor = 'rgba(239, 68, 68, 0.5)';
               }}
               onMouseOut={(e) => {
                 e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 16px rgba(239, 68, 68, 0.2)';
-                e.target.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                e.target.style.boxShadow = '0 4px 16px var(--color-danger-a20)';
+                e.target.style.borderColor = 'var(--color-danger-a30)';
               }}
             >
               ⏭️ Skip Puzzle
@@ -1337,14 +1337,14 @@ export default function ArenaRace({ isAdminView = false }) {
             textAlign: 'center',
             marginBottom: '20px',
             padding: '15px',
-            backgroundColor: 'rgba(15, 23, 42, 0.6)',
+            backgroundColor: 'var(--color-surface)',
             borderRadius: '12px',
-            border: '1px solid rgba(6, 182, 212, 0.2)',
+            border: '1px solid var(--color-accent-a20)',
           }}>
             <div style={{
               fontSize: '24px',
               fontWeight: '700',
-              color: '#06b6d4',
+              color: 'var(--color-accent)',
               marginBottom: '8px',
             }}>
               Puzzle {currentPuzzleIndex + 1}
@@ -1352,7 +1352,7 @@ export default function ArenaRace({ isAdminView = false }) {
             <div style={{
               fontSize: '18px',
               fontWeight: '600',
-              color: chess.turn() === 'w' ? '#ffffff' : '#9ca3af',
+              color: chess.turn() === 'w' ? 'var(--color-text)' : 'var(--color-text-muted)',
             }}>
               {chess.turn() === 'w' ? 'White' : 'Black'} to move
             </div>

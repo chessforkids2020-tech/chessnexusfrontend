@@ -3,14 +3,14 @@
   padding: 20px 20px;
   text-align: center;
 
- background: rgba(255, 255, 255, 0.9);
+ background: var(--color-text);
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
   border-top: 3px solid rgba(255, 107, 107, 0.25);
 
   box-shadow:
     0 -15px 40px rgba(255, 107, 107, 0.25),
-    0 -5px 15px rgba(0, 0, 0, 0.15);
+    0 -5px 15px var(--color-black-a20);
 }
 
 .footer-text {

@@ -31,16 +31,16 @@ const styles = {
   },
   filterBtn: {
     padding: "10px 20px",
-    border: "2px solid #e5e7eb",
+    border: "2px solid var(--color-text)",
     borderRadius: 8,
-    background: "#fff",
+    background: "var(--color-text)",
     cursor: "pointer",
     fontWeight: 500,
     transition: "all 0.2s"
   },
   filterBtnActive: {
     background: "#0b6623",
-    color: "#fff",
+    color: "var(--color-text)",
     border: "2px solid #0b6623"
   },
   requestsGrid: {
@@ -49,12 +49,12 @@ const styles = {
     gap: 20
   },
   requestCard: {
-    background: "#fff",
-    border: "2px solid #e5e7eb",
+    background: "var(--color-text)",
+    border: "2px solid var(--color-text)",
     borderRadius: 12,
     padding: 20,
     transition: "all 0.3s ease",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
+    boxShadow: "0 2px 8px var(--color-black-a20)"
   },
   requestHeader: {
     display: "flex",
@@ -73,7 +73,7 @@ const styles = {
   },
   username: {
     fontSize: 14,
-    color: "#6b7280",
+    color: "var(--color-text-faint)",
     marginBottom: 2
   },
   statusBadge: {
@@ -84,16 +84,16 @@ const styles = {
     textTransform: "uppercase"
   },
   statusPending: {
-    background: "#fef3c7",
+    background: "var(--color-warning)",
     color: "#d97706"
   },
   statusApproved: {
     background: "#d1fae5",
-    color: "#059669"
+    color: "var(--color-success)"
   },
   statusRejected: {
     background: "#fee2e2",
-    color: "#dc2626"
+    color: "var(--color-danger)"
   },
   infoGrid: {
     display: "grid",
@@ -108,7 +108,7 @@ const styles = {
   },
   infoLabel: {
     fontSize: 12,
-    color: "#6b7280",
+    color: "var(--color-text-faint)",
     fontWeight: 500,
     textTransform: "uppercase"
   },
@@ -118,20 +118,20 @@ const styles = {
     fontWeight: 500
   },
   chessInfo: {
-    background: "#f9fafb",
+    background: "var(--color-text)",
     padding: 12,
     borderRadius: 8,
     marginBottom: 16
   },
   chessLabel: {
     fontSize: 12,
-    color: "#6b7280",
+    color: "var(--color-text-faint)",
     fontWeight: 500,
     marginBottom: 6
   },
   chessValue: {
     fontSize: 14,
-    color: "#374151"
+    color: "var(--color-text-faint)"
   },
   actions: {
     display: "flex",
@@ -141,8 +141,8 @@ const styles = {
   approveBtn: {
     flex: 1,
     padding: "10px 16px",
-    background: "#059669",
-    color: "#fff",
+    background: "var(--color-success)",
+    color: "var(--color-text)",
     border: "none",
     borderRadius: 8,
     fontWeight: 600,
@@ -152,8 +152,8 @@ const styles = {
   rejectBtn: {
     flex: 1,
     padding: "10px 16px",
-    background: "#dc2626",
-    color: "#fff",
+    background: "var(--color-danger)",
+    color: "var(--color-text)",
     border: "none",
     borderRadius: 8,
     fontWeight: 600,
@@ -162,8 +162,8 @@ const styles = {
   },
   deleteBtn: {
     padding: "10px 16px",
-    background: "#6b7280",
-    color: "#fff",
+    background: "var(--color-text-faint)",
+    color: "var(--color-text)",
     border: "none",
     borderRadius: 8,
     fontWeight: 600,
@@ -183,17 +183,17 @@ const styles = {
   emptyState: {
     textAlign: "center",
     padding: 60,
-    color: "#6b7280"
+    color: "var(--color-text-faint)"
   },
   loading: {
     textAlign: "center",
     padding: 40,
     fontSize: 18,
-    color: "#6b7280"
+    color: "var(--color-text-faint)"
   },
   submittedDate: {
     fontSize: 12,
-    color: "#9ca3af",
+    color: "var(--color-text-muted)",
     marginTop: 8
   }
 };
@@ -388,7 +388,7 @@ function SignupRequests() {
                     style={styles.approveBtn}
                     onClick={() => handleApprove(request._id)}
                     onMouseOver={(e) => e.target.style.background = '#047857'}
-                    onMouseOut={(e) => e.target.style.background = '#059669'}
+                    onMouseOut={(e) => e.target.style.background = 'var(--color-success)'}
                   >
                     ✓ Approve
                   </button>
@@ -396,7 +396,7 @@ function SignupRequests() {
                     style={styles.rejectBtn}
                     onClick={() => handleReject(request._id)}
                     onMouseOver={(e) => e.target.style.background = '#b91c1c'}
-                    onMouseOut={(e) => e.target.style.background = '#dc2626'}
+                    onMouseOut={(e) => e.target.style.background = 'var(--color-danger)'}
                   >
                     ✗ Reject
                   </button>
@@ -408,8 +408,8 @@ function SignupRequests() {
                   <button
                     style={styles.deleteBtn}
                     onClick={() => handleDelete(request._id)}
-                    onMouseOver={(e) => e.target.style.background = '#4b5563'}
-                    onMouseOut={(e) => e.target.style.background = '#6b7280'}
+                    onMouseOver={(e) => e.target.style.background = 'var(--color-text-faint)'}
+                    onMouseOut={(e) => e.target.style.background = 'var(--color-text-faint)'}
                   >
                     🗑️ Delete
                   </button>

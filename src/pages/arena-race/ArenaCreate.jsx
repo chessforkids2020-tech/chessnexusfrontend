@@ -94,7 +94,7 @@ export default function ArenaCreate() {
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '20px',
       position: 'relative',
@@ -106,7 +106,7 @@ export default function ArenaCreate() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -125,22 +125,22 @@ export default function ArenaCreate() {
       fontSize: '42px',
       fontWeight: '700',
       margin: '0 0 8px 0',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
     },
     subtitle: {
       fontSize: '16px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     card: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '32px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     formGroup: {
       marginBottom: '24px',
@@ -149,17 +149,17 @@ export default function ArenaCreate() {
       display: 'block',
       fontSize: '14px',
       fontWeight: '600',
-      color: '#e5e7eb',
+      color: 'var(--color-text)',
       marginBottom: '8px',
     },
     input: {
       width: '100%',
       padding: '14px 16px',
       fontSize: '16px',
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a10)',
       borderRadius: '12px',
-      color: '#fff',
+      color: 'var(--color-text)',
       outline: 'none',
       transition: 'all 0.3s ease',
       boxSizing: 'border-box',
@@ -168,10 +168,10 @@ export default function ArenaCreate() {
       width: '100%',
       padding: '14px 16px',
       fontSize: '16px',
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a10)',
       borderRadius: '12px',
-      color: '#fff',
+      color: 'var(--color-text)',
       outline: 'none',
       transition: 'all 0.3s ease',
       cursor: 'pointer',
@@ -186,31 +186,31 @@ export default function ArenaCreate() {
       flex: 1,
       height: '8px',
       borderRadius: '4px',
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-white-a10)',
       outline: 'none',
       cursor: 'pointer',
-      accentColor: '#10b981',
+      accentColor: 'var(--color-success)',
     },
     rangeValue: {
       minWidth: '60px',
       textAlign: 'center',
       padding: '8px 12px',
-      background: 'rgba(16, 185, 129, 0.2)',
-      border: '1px solid rgba(16, 185, 129, 0.3)',
+      background: 'var(--color-success-a20)',
+      border: '1px solid var(--color-success-a30)',
       borderRadius: '8px',
-      color: '#10b981',
+      color: 'var(--color-success)',
       fontWeight: '700',
       fontSize: '16px',
     },
     hint: {
       fontSize: '12px',
-      color: '#6b7280',
+      color: 'var(--color-text-faint)',
       marginTop: '6px',
     },
     error: {
-      background: 'rgba(239, 68, 68, 0.15)',
-      color: '#ef4444',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      background: 'var(--color-danger-a12)',
+      color: 'var(--color-danger)',
+      border: '1px solid var(--color-danger-a20)',
       padding: '12px 16px',
       borderRadius: '12px',
       fontSize: '14px',
@@ -222,13 +222,13 @@ export default function ArenaCreate() {
       padding: '16px 24px',
       fontSize: '18px',
       fontWeight: '700',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       border: 'none',
       borderRadius: '12px',
-      color: '#fff',
+      color: 'var(--color-text)',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
+      boxShadow: '0 4px 16px var(--color-accent-a40)',
     },
     buttonDisabled: {
       opacity: 0.6,
@@ -238,7 +238,7 @@ export default function ArenaCreate() {
       display: 'block',
       textAlign: 'center',
       marginTop: '20px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       textDecoration: 'none',
       fontSize: '14px',
       cursor: 'pointer',
@@ -250,12 +250,12 @@ export default function ArenaCreate() {
     },
     puzzleCount: {
       fontSize: '12px',
-      color: '#6b7280',
+      color: 'var(--color-text-faint)',
       marginLeft: 'auto',
     },
     scoringInfo: {
-      background: 'rgba(6, 182, 212, 0.1)',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      background: 'var(--color-accent-a12)',
+      border: '1px solid var(--color-accent-a20)',
       borderRadius: '12px',
       padding: '20px',
       marginBottom: '24px',
@@ -263,7 +263,7 @@ export default function ArenaCreate() {
     scoringTitle: {
       fontSize: '16px',
       fontWeight: '600',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       marginBottom: '12px',
       textAlign: 'center',
     },
@@ -275,16 +275,16 @@ export default function ArenaCreate() {
     },
     scoringLabel: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     scoringValue: {
       fontSize: '14px',
       fontWeight: '600',
-      color: '#10b981',
+      color: 'var(--color-success)',
     },
     scoringNote: {
       fontSize: '12px',
-      color: '#6b7280',
+      color: 'var(--color-text-faint)',
       textAlign: 'center',
       marginTop: '12px',
       fontStyle: 'italic',
@@ -299,8 +299,8 @@ export default function ArenaCreate() {
           <div style={styles.card}>
             <div style={{ textAlign: 'center', padding: '40px 0' }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
-              <h2 style={{ color: '#fff', marginBottom: '8px' }}>Login Required</h2>
-              <p style={{ color: '#9ca3af' }}>Please log in to create an arena race</p>
+              <h2 style={{ color: 'var(--color-text)', marginBottom: '8px' }}>Login Required</h2>
+              <p style={{ color: 'var(--color-text-muted)' }}>Please log in to create an arena race</p>
             </div>
           </div>
         </div>
@@ -354,7 +354,7 @@ export default function ArenaCreate() {
             <div style={styles.formGroup}>
               <label style={styles.label}>Puzzle Topic *</label>
               {loadingTopics ? (
-                <div style={{ ...styles.input, color: '#6b7280' }}>Loading topics...</div>
+                <div style={{ ...styles.input, color: 'var(--color-text-faint)' }}>Loading topics...</div>
               ) : (
                 <select
                   style={styles.select}
@@ -375,12 +375,12 @@ export default function ArenaCreate() {
             {clubId && (
               <div style={styles.formGroup}>
                 <label style={styles.label}>Club Visibility</label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#e5e7eb', fontSize: 14 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 10, color: 'var(--color-text)', fontSize: 14 }}>
                   <input
                     type="checkbox"
                     checked={linkToClub}
                     onChange={(e) => setLinkToClub(e.target.checked)}
-                    style={{ width: 16, height: 16, accentColor: '#10b981' }}
+                    style={{ width: 16, height: 16, accentColor: 'var(--color-success)' }}
                   />
                   Show in this club's Featured Club Events
                 </label>
@@ -427,7 +427,7 @@ export default function ArenaCreate() {
             )}
             {coachMode && (
               <div style={{ ...styles.scoringInfo, marginBottom: 24 }}>
-                <div style={{ color: '#67e8f9', fontSize: 14 }}>
+                <div style={{ color: 'var(--color-accent)', fontSize: 14 }}>
                   🎓 All your accepted students will be able to join this race. No join code is shared — it's private to your class.
                 </div>
               </div>
@@ -490,7 +490,7 @@ export default function ArenaCreate() {
                 ...(loading || loadingTopics ? styles.buttonDisabled : {})
               }}
               disabled={loading || loadingTopics}
-              whileHover={!loading && !loadingTopics ? { y: -2, boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)' } : {}}
+              whileHover={!loading && !loadingTopics ? { y: -2, boxShadow: '0 6px 24px var(--color-accent-a40)' } : {}}
               transition={{ duration: 0.2 }}
             >
               {loading ? '🔄 Creating Race...' : '🚀 Create Race'}

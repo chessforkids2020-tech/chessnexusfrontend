@@ -37,7 +37,7 @@ function LuxuryGoldResults() {
 
     const confettiPieces = [];
     const confettiCount = 150;
-    const colors = ['#FFD700', '#FFA500', '#FF6347', '#FFFF00', '#FFB6C1', '#87CEEB'];
+    const colors = ['var(--color-warning)', '#FFA500', '#FF6347', '#FFFF00', '#FFB6C1', '#87CEEB'];
 
     class ConfettiPiece {
       constructor() {
@@ -108,7 +108,7 @@ function LuxuryGoldResults() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       padding: '60px 20px',
       fontFamily: '"Playfair Display", serif',
       position: 'relative',
@@ -128,7 +128,7 @@ function LuxuryGoldResults() {
         left: 0,
         width: '100%',
         height: '100%',
-        backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%)',
+        backgroundImage: 'radial-gradient(circle at 20% 50%, var(--color-warning-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-warning-a12) 0%, transparent 50%)',
         opacity: 0.3
       }} />
 
@@ -142,20 +142,20 @@ function LuxuryGoldResults() {
           <div style={{
             width: '120px',
             height: '2px',
-            background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
+            background: 'linear-gradient(90deg, transparent, var(--color-warning), transparent)',
             margin: '0 auto 30px'
           }} />
           
           <div style={{
             fontSize: '72px',
             fontWeight: '700',
-            background: 'linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%)',
+            background: 'linear-gradient(135deg, var(--color-warning) 0%, #FFA500 50%, var(--color-warning) 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
             marginBottom: '20px',
             letterSpacing: '3px',
-            textShadow: '0 0 40px rgba(255, 215, 0, 0.3)'
+            textShadow: '0 0 40px var(--color-warning-a30)'
           }}>
             HALL OF FAME
           </div>
@@ -174,7 +174,7 @@ function LuxuryGoldResults() {
           <div style={{
             width: '120px',
             height: '2px',
-            background: 'linear-gradient(90deg, transparent, #FFD700, transparent)',
+            background: 'linear-gradient(90deg, transparent, var(--color-warning), transparent)',
             margin: '30px auto 0'
           }} />
         </div>
@@ -191,7 +191,7 @@ function LuxuryGoldResults() {
           {[teams[1], teams[0], teams[2]].map((team, idx) => {
             const actualRank = idx === 0 ? 2 : idx === 1 ? 1 : 3;
             const heights = { 1: '350px', 2: '280px', 3: '220px' };
-            const colors = { 1: '#FFD700', 2: '#C0C0C0', 3: '#CD7F32' };
+            const colors = { 1: 'var(--color-warning)', 2: '#C0C0C0', 3: '#CD7F32' };
             const crowns = { 1: '👑', 2: '🥈', 3: '🥉' };
             
             return (
@@ -288,7 +288,7 @@ function LuxuryGoldResults() {
                     </div>
                     <div style={{
                       textAlign: 'center',
-                      color: '#666',
+                      color: 'var(--color-text-faint)',
                       fontSize: '12px',
                       textTransform: 'uppercase',
                       letterSpacing: '2px',
@@ -301,9 +301,9 @@ function LuxuryGoldResults() {
                   <div style={{
                     textAlign: 'center',
                     padding: '10px',
-                    background: 'rgba(255,255,255,0.05)',
+                    background: 'var(--color-white-a04)',
                     borderRadius: '10px',
-                    border: '1px solid rgba(255,255,255,0.1)'
+                    border: '1px solid var(--color-white-a10)'
                   }}>
                     <div style={{
                       fontSize: '13px',
@@ -322,12 +322,12 @@ function LuxuryGoldResults() {
         {/* Detailed Team Cards */}
         {teams.map((team, index) => {
           const teamPlayers = getTeamPlayers(team._id);
-          const borderColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
-          const borderColor = borderColors[index] || '#666';
+          const borderColors = ['var(--color-warning)', '#C0C0C0', '#CD7F32'];
+          const borderColor = borderColors[index] || 'var(--color-text-faint)';
           
           return (
             <div key={team._id} style={{
-              background: 'linear-gradient(135deg, rgba(255,215,0,0.05) 0%, rgba(0,0,0,0.3) 100%)',
+              background: 'linear-gradient(135deg, rgba(255,215,0,0.05) 0%, var(--color-black-a35) 100%)',
               border: `2px solid ${borderColor}44`,
               borderRadius: '20px',
               padding: '40px',
@@ -335,7 +335,7 @@ function LuxuryGoldResults() {
               position: 'relative',
               overflow: 'hidden',
               animation: `slideIn 0.8s ease-out ${index * 0.15}s both`,
-              boxShadow: `0 10px 40px rgba(0,0,0,0.5), inset 0 0 60px ${borderColor}11`
+              boxShadow: `0 10px 40px var(--color-black-a50), inset 0 0 60px ${borderColor}11`
             }}>
               {/* Decorative corner */}
               <div style={{
@@ -367,7 +367,7 @@ function LuxuryGoldResults() {
                     justifyContent: 'center',
                     fontSize: '36px',
                     fontWeight: 'bold',
-                    color: '#000',
+                    color: 'var(--color-bg)',
                     boxShadow: `0 10px 30px ${borderColor}66`,
                     transform: 'rotate(5deg)'
                   }}>
@@ -415,23 +415,23 @@ function LuxuryGoldResults() {
                 {teamPlayers.sort((a, b) => b.totalScore - a.totalScore).map((result, idx) => (
                   <div key={result._id} style={{
                     background: idx === 0 
-                      ? `linear-gradient(90deg, ${borderColor}22 0%, rgba(255,255,255,0.05) 100%)`
-                      : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${idx === 0 ? borderColor + '44' : 'rgba(255,255,255,0.1)'}`,
+                      ? `linear-gradient(90deg, ${borderColor}22 0%, var(--color-white-a04) 100%)`
+                      : 'var(--color-white-a04)',
+                    border: `1px solid ${idx === 0 ? borderColor + '44' : 'var(--color-white-a10)'}`,
                     borderRadius: '15px',
                     padding: '25px',
                     transition: 'all 0.3s',
                     cursor: 'pointer'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = `linear-gradient(90deg, ${borderColor}33 0%, rgba(255,255,255,0.08) 100%)`;
+                    e.currentTarget.style.background = `linear-gradient(90deg, ${borderColor}33 0%, var(--color-white-a07) 100%)`;
                     e.currentTarget.style.transform = 'translateX(5px)';
                     e.currentTarget.style.boxShadow = `0 5px 20px ${borderColor}33`;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.background = idx === 0 
-                      ? `linear-gradient(90deg, ${borderColor}22 0%, rgba(255,255,255,0.05) 100%)`
-                      : 'rgba(255,255,255,0.03)';
+                      ? `linear-gradient(90deg, ${borderColor}22 0%, var(--color-white-a04) 100%)`
+                      : 'var(--color-white-a04)';
                     e.currentTarget.style.transform = 'translateX(0)';
                     e.currentTarget.style.boxShadow = 'none';
                   }}>
@@ -445,14 +445,14 @@ function LuxuryGoldResults() {
                         <div style={{
                           width: '50px',
                           height: '50px',
-                          background: idx === 0 ? borderColor : 'rgba(255,255,255,0.1)',
+                          background: idx === 0 ? borderColor : 'var(--color-white-a10)',
                           borderRadius: '50%',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontSize: '20px',
                           fontWeight: 'bold',
-                          color: idx === 0 ? '#000' : '#fff',
+                          color: idx === 0 ? 'var(--color-bg)' : 'var(--color-text)',
                           boxShadow: idx === 0 ? `0 0 20px ${borderColor}66` : 'none'
                         }}>
                           {idx + 1}
@@ -461,7 +461,7 @@ function LuxuryGoldResults() {
                           <div style={{
                             fontSize: '20px',
                             fontWeight: '600',
-                            color: '#fff',
+                            color: 'var(--color-text)',
                             fontFamily: 'sans-serif'
                           }}>
                             {result.userId.displayName}
@@ -484,13 +484,13 @@ function LuxuryGoldResults() {
                         {result.totalScore}
                       </div>
                       <div style={{
-                        background: 'rgba(255,255,255,0.1)',
+                        background: 'var(--color-white-a10)',
                         padding: '8px 16px',
                         borderRadius: '10px',
                         fontSize: '14px',
                         color: '#ddd',
                         fontFamily: 'sans-serif',
-                        border: '1px solid rgba(255,255,255,0.2)'
+                        border: '1px solid var(--color-white-a20)'
                       }}>
                         ✓ {result.correctPuzzles}/{result.puzzles.length}
                       </div>

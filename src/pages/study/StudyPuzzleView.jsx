@@ -62,22 +62,22 @@ const StudyPuzzleView = () => {
 
   const studyTypeColors = {
     positional: {
-      color: '#06b6d4',
-      gradient: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      accentColor: 'rgba(6, 182, 212, 0.15)',
-      bgColor: 'rgba(6, 182, 212, 0.2)'
+      color: 'var(--color-accent)',
+      gradient: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      accentColor: 'var(--color-accent-a15)',
+      bgColor: 'var(--color-accent-a20)'
     },
     realtime: {
-      color: '#ef4444',
-      gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-      accentColor: 'rgba(239, 68, 68, 0.15)',
-      bgColor: 'rgba(239, 68, 68, 0.2)'
+      color: 'var(--color-danger)',
+      gradient: 'linear-gradient(135deg, var(--color-danger) 0%, var(--color-danger) 100%)',
+      accentColor: 'var(--color-danger-a12)',
+      bgColor: 'var(--color-danger-a20)'
     },
     tournament: {
-      color: '#fbbf24',
-      gradient: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
-      accentColor: 'rgba(251, 191, 36, 0.15)',
-      bgColor: 'rgba(251, 191, 36, 0.2)'
+      color: 'var(--color-warning)',
+      gradient: 'linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning) 100%)',
+      accentColor: 'var(--color-warning-a12)',
+      bgColor: 'var(--color-warning-a20)'
     }
   };
 
@@ -449,7 +449,7 @@ const StudyPuzzleView = () => {
   const styles = {
     page: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '8px 20px 20px 20px',
       position: 'relative',
@@ -462,9 +462,9 @@ const StudyPuzzleView = () => {
       right: 0,
       bottom: 0,
       background: `
-        radial-gradient(circle at 30% 20%, rgba(6, 182, 212, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 70% 60%, rgba(239, 68, 68, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)
+        radial-gradient(circle at 30% 20%, var(--color-accent-a15) 0%, transparent 50%),
+        radial-gradient(circle at 70% 60%, var(--color-danger-a12) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, var(--color-success-a12) 0%, transparent 50%)
       `,
       pointerEvents: 'none',
       zIndex: 0,
@@ -476,8 +476,8 @@ const StudyPuzzleView = () => {
       right: 0,
       bottom: 0,
       backgroundImage: `
-        linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px)
+        linear-gradient(var(--color-accent-a06) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-accent-a06) 1px, transparent 1px)
       `,
       backgroundSize: '50px 50px',
       pointerEvents: 'none',
@@ -501,11 +501,11 @@ const StudyPuzzleView = () => {
       top: '50%',
       transform: 'translateY(-50%)',
       padding: '12px 24px',
-      background: 'rgba(15, 15, 15, 0.6)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      color: '#ffffff',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '16px',
       cursor: 'pointer',
       fontSize: '14px',
@@ -523,11 +523,11 @@ const StudyPuzzleView = () => {
       top: '50%',
       transform: 'translateY(-50%)',
       padding: '12px 24px',
-      background: 'rgba(15, 15, 15, 0.6)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
-      color: '#ffffff',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '16px',
       cursor: 'pointer',
       fontSize: '14px',
@@ -547,8 +547,8 @@ const StudyPuzzleView = () => {
     leftPanel: {
       flex: isMobile ? 'none' : '0 0 220px',
       display: isMobile && !showPuzzleList ? 'none' : 'block',
-      background: 'rgba(15, 15, 15, 0.6)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '20px',
       backdropFilter: 'blur(20px)',
       padding: '24px',
@@ -559,7 +559,7 @@ const StudyPuzzleView = () => {
       left: isMobile ? '20px' : 'auto',
       right: isMobile ? '20px' : 'auto',
       zIndex: isMobile ? 1000 : 'auto',
-      boxShadow: isMobile ? '0 20px 60px rgba(0, 0, 0, 0.5)' : 'none',
+      boxShadow: isMobile ? '0 20px 60px var(--color-black-a50)' : 'none',
     },
     puzzleListTitle: {
       fontSize: '18px',
@@ -590,7 +590,7 @@ const StudyPuzzleView = () => {
       textTransform: 'uppercase',
     },
     tableRow: {
-      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+      borderBottom: '1px solid var(--color-white-a04)',
       cursor: 'pointer',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     },
@@ -603,14 +603,14 @@ const StudyPuzzleView = () => {
       textAlign: 'center',
       fontSize: '14px',
       fontWeight: '600',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     tableCellName: {
       padding: '12px 8px',
       textAlign: 'left',
       fontSize: '14px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     centerPanel: {
       flex: isMobile ? 'none' : '1',
@@ -624,8 +624,8 @@ const StudyPuzzleView = () => {
     },
     chessboardContainer: {
       marginBottom: '24px',
-      background: 'rgba(15, 15, 15, 0.6)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '20px',
       backdropFilter: 'blur(20px)',
       padding: '0px 10px 10px 10px',
@@ -639,44 +639,44 @@ const StudyPuzzleView = () => {
     },
     button: {
       padding: '12px 24px',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '14px',
       cursor: 'pointer',
       fontSize: '15px',
       fontWeight: '600',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      background: 'rgba(15, 15, 15, 0.6)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
     },
     navigationButton: {
-      background: 'rgba(15, 15, 15, 0.6)',
+      background: 'var(--color-surface)',
       borderColor: currentColor.color + '40',
       color: currentColor.color,
     },
     navigationButtonDisabled: {
       background: 'rgba(23, 23, 23, 0.8)',
-      borderColor: 'rgba(255, 255, 255, 0.05)',
-      color: '#64748b',
+      borderColor: 'var(--color-white-a04)',
+      color: 'var(--color-text-faint)',
       cursor: 'not-allowed',
     },
     resetButton: {
-      borderColor: '#9ca3af',
-      color: '#9ca3af',
+      borderColor: 'var(--color-text-muted)',
+      color: 'var(--color-text-muted)',
     },
     solutionButton: {
       background: currentColor.accentColor,
       borderColor: currentColor.color + '60',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     rightPanel: {
       flex: isMobile ? 'none' : '0 0 350px',
       width: isMobile ? '100%' : 'auto',
-      background: 'rgba(15, 15, 15, 0.6)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '20px',
       backdropFilter: 'blur(20px)',
       padding: '24px',
@@ -689,23 +689,23 @@ const StudyPuzzleView = () => {
       alignItems: 'center',
       gap: '12px',
       padding: '16px',
-      background: 'rgba(0, 0, 0, 0.4)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '14px',
       marginBottom: '20px',
     },
     kingIcon: {
       fontSize: '28px',
-      filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5))',
+      filter: 'drop-shadow(0 4px 8px var(--color-black-a50))',
     },
     turnText: {
       fontSize: '15px',
       fontWeight: '600',
-      color: chess.turn() === 'w' ? '#ffffff' : '#cbd5e1',
+      color: chess.turn() === 'w' ? 'var(--color-text)' : 'var(--color-text-muted)',
     },
     movesContainer: {
-      background: 'rgba(0, 0, 0, 0.4)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '14px',
       padding: '20px',
       marginBottom: '20px',
@@ -722,7 +722,7 @@ const StudyPuzzleView = () => {
       fontFamily: 'monospace',
       fontSize: '15px',
       lineHeight: '1.8',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     moveRow: {
       marginBottom: '8px',
@@ -733,19 +733,19 @@ const StudyPuzzleView = () => {
     moveNumber: {
       minWidth: '32px',
       fontWeight: '600',
-      color: '#94a3b8',
+      color: 'var(--color-text-muted)',
     },
     whiteMove: {
       minWidth: '75px',
-      color: '#f3f4f6',
+      color: 'var(--color-text)',
     },
     blackMove: {
       minWidth: '75px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     solutionContainer: {
-      background: 'rgba(0, 0, 0, 0.4)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '14px',
       padding: '20px',
       marginBottom: '20px',
@@ -758,35 +758,35 @@ const StudyPuzzleView = () => {
       fontWeight: '600',
     },
     descriptionContainer: {
-      background: 'rgba(0, 0, 0, 0.4)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '14px',
       padding: '20px',
     },
     descriptionText: {
       fontSize: '15px',
       lineHeight: '1.6',
-      color: '#94a3b8',
+      color: 'var(--color-text-muted)',
     },
     loading: {
       textAlign: 'center',
-      color: '#94a3b8',
+      color: 'var(--color-text-muted)',
       fontSize: '18px',
       padding: '60px',
       fontStyle: 'italic',
-      background: 'rgba(15, 15, 15, 0.6)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: '20px',
       backdropFilter: 'blur(20px)',
     },
     error: {
       textAlign: 'center',
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       fontSize: '18px',
       padding: '60px',
       fontWeight: '500',
-      background: 'rgba(15, 15, 15, 0.6)',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-danger-a20)',
       borderRadius: '20px',
       backdropFilter: 'blur(20px)',
     },
@@ -796,7 +796,7 @@ const StudyPuzzleView = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.7)',
+      background: 'var(--color-black-a65)',
       zIndex: 999,
       display: isMobile && showPuzzleList ? 'block' : 'none',
     },
@@ -1021,7 +1021,7 @@ const StudyPuzzleView = () => {
 
               {/* Edit this position in the board editor */}
               <motion.button
-                style={{ ...styles.button, ...styles.resetButton, background: 'rgba(99,102,241,0.1)', borderColor: 'rgba(99,102,241,0.3)', color: '#a5b4fc' }}
+                style={{ ...styles.button, ...styles.resetButton, background: 'rgba(99,102,241,0.1)', borderColor: 'rgba(99,102,241,0.3)', color: 'var(--color-accent-2)' }}
                 onClick={() => navigate('/create-position', { state: { customFen: puzzles[currentPuzzleIndex]?.puzzleFen } })}
                 title="Open this position in the board editor"
                 whileHover={{ scale: 1.05, background: 'rgba(99,102,241,0.2)', boxShadow: '0 8px 24px rgba(99,102,241,0.15)' }}
@@ -1040,12 +1040,12 @@ const StudyPuzzleView = () => {
           >
             {/* ── Analyze with Stockfish (evaluates the position; plays nothing) ── */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: anMode ? 8 : 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: anMode ? '#38bdf8' : '#4b5563', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: anMode ? '#38bdf8' : 'var(--color-text-faint)', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
                 🔍 {anMode ? (anDepth ? `Analysing · depth ${anDepth}` : 'Starting…') : 'Analysis'}
               </div>
               <button
                 onClick={toggleAnalysis}
-                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'rgba(239,68,68,0.12)' : 'rgba(56,189,248,0.12)', color: anMode ? '#ef4444' : '#38bdf8', border: `1px solid ${anMode ? 'rgba(239,68,68,0.35)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'var(--color-danger-a12)' : 'rgba(56,189,248,0.12)', color: anMode ? 'var(--color-danger)' : '#38bdf8', border: `1px solid ${anMode ? 'var(--color-danger-a30)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
               >{anMode ? '■ Stop' : '🔍 Analyse'}</button>
             </div>
             {anMode && (
@@ -1057,7 +1057,7 @@ const StudyPuzzleView = () => {
                         ? `M${Math.abs(anEval.mate)}${anEval.mate < 0 ? ' ♚' : ''}`
                         : `${anEval.cp > 0 ? '+' : ''}${(anEval.cp / 100).toFixed(2)}`}
                   </span>
-                  <span style={{ fontSize: 11, color: '#7dd3fc' }}>
+                  <span style={{ fontSize: 11, color: 'var(--color-accent-2)' }}>
                     {anEval == null ? '' : anEval.mate != null
                       ? (anEval.mate > 0 ? 'White mates' : 'Black mates')
                       : anEval.cp > 30 ? 'White is better' : anEval.cp < -30 ? 'Black is better' : 'Equal'}
@@ -1075,9 +1075,9 @@ const StudyPuzzleView = () => {
                     <div key={i} style={{ display: 'flex', gap: 8, marginTop: 6, fontSize: 11.5, lineHeight: 1.5 }}>
                       <span style={{
                         flex: '0 0 auto', minWidth: 46, fontWeight: 700, fontVariantNumeric: 'tabular-nums',
-                        color: i === 1 ? '#7dd3fc' : '#64748b',
+                        color: i === 1 ? 'var(--color-accent-2)' : 'var(--color-text-faint)',
                       }}>{ev}</span>
-                      <span style={{ color: i === 1 ? '#cbd5e1' : '#94a3b8', wordBreak: 'break-word' }}>{ln.san}</span>
+                      <span style={{ color: i === 1 ? 'var(--color-text-muted)' : 'var(--color-text-muted)', wordBreak: 'break-word' }}>{ln.san}</span>
                     </div>
                   );
                 })}
@@ -1086,25 +1086,25 @@ const StudyPuzzleView = () => {
 
             {/* ── Stockfish Toggle ── */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: sfMode ? '#22c55e' : '#4b5563', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: sfMode ? 'var(--color-success)' : 'var(--color-text-faint)', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
                 🤖
                 {sfMode ? (sfThinking ? 'Thinking…' : sfReady ? 'Stockfish ON' : 'Loading…') : 'vs Computer'}
               </div>
               <button
                 onClick={toggleSfMode}
-                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: sfMode ? 'rgba(239,68,68,0.12)' : 'rgba(34,197,94,0.12)', color: sfMode ? '#ef4444' : '#22c55e', border: `1px solid ${sfMode ? 'rgba(239,68,68,0.35)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
+                style={{ padding: '5px 14px', borderRadius: 20, cursor: 'pointer', fontSize: 12, fontWeight: 700, background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
               >{sfMode ? '■ Stop' : '▶ Play vs Stockfish'}</button>
             </div>
             {sfMode && (
               <>
                 <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
                   {['easy', 'medium', 'hard'].map(lvl => (
-                    <button key={lvl} onClick={() => setSfLevel(lvl)} style={{ flex: 1, padding: '4px 0', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontWeight: 700, textTransform: 'capitalize', background: sfLevel === lvl ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.04)', color: sfLevel === lvl ? '#22c55e' : '#6b7280', border: `1px solid ${sfLevel === lvl ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.07)'}` }}>{lvl.charAt(0).toUpperCase() + lvl.slice(1)}</button>
+                    <button key={lvl} onClick={() => setSfLevel(lvl)} style={{ flex: 1, padding: '4px 0', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontWeight: 700, textTransform: 'capitalize', background: sfLevel === lvl ? 'rgba(34,197,94,0.18)' : 'var(--color-white-a04)', color: sfLevel === lvl ? 'var(--color-success)' : 'var(--color-text-faint)', border: `1px solid ${sfLevel === lvl ? 'rgba(34,197,94,0.4)' : 'var(--color-white-a07)'}` }}>{lvl.charAt(0).toUpperCase() + lvl.slice(1)}</button>
                   ))}
                 </div>
-                <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14, textAlign: 'center' }}>
-                  You play <span style={{ color: '#a5b4fc' }}>{humanColor}</span> · Stockfish plays <span style={{ color: '#fca5a5' }}>{humanColor === 'white' ? 'black' : 'white'}</span>
-                  {sfThinking && <span style={{ marginLeft: 8, color: '#fbbf24' }}>● thinking</span>}
+                <div style={{ fontSize: 11, color: 'var(--color-text-faint)', marginBottom: 14, textAlign: 'center' }}>
+                  You play <span style={{ color: 'var(--color-accent-2)' }}>{humanColor}</span> · Stockfish plays <span style={{ color: 'var(--color-danger)' }}>{humanColor === 'white' ? 'black' : 'white'}</span>
+                  {sfThinking && <span style={{ marginLeft: 8, color: 'var(--color-warning)' }}>● thinking</span>}
                 </div>
               </>
             )}
@@ -1123,7 +1123,7 @@ const StudyPuzzleView = () => {
               <h3 style={styles.sectionTitle}>Your Moves</h3>
               <div style={styles.movesList}>
                 {userMoves.length === 0 ? (
-                  <div style={{ color: '#64748b', fontStyle: 'italic' }}>
+                  <div style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
                     No moves yet. Make a move on the board!
                   </div>
                 ) : (
@@ -1146,7 +1146,7 @@ const StudyPuzzleView = () => {
               >
                 <h3 style={{ ...styles.sectionTitle, marginBottom: 8 }}>Solution</h3>
                 <div style={{ fontFamily: 'monospace', fontSize: 14, color: currentColor.color, lineHeight: 1.9, letterSpacing: 0.2 }}>
-                  {puzzles[currentPuzzleIndex]?.puzzleSolutions?.[0]?.pgn || <span style={{ color: '#64748b', fontStyle: 'italic' }}>No solution provided</span>}
+                  {puzzles[currentPuzzleIndex]?.puzzleSolutions?.[0]?.pgn || <span style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>No solution provided</span>}
                 </div>
                 {currentPuzzle.puzzleSolutions?.[0]?.description && (
                   <div style={{ ...styles.descriptionText, marginTop: 12, fontSize: 13 }}>
@@ -1161,7 +1161,7 @@ const StudyPuzzleView = () => {
                 {currentPuzzle.puzzleDescription ? (
                   currentPuzzle.puzzleDescription
                 ) : (
-                  <span style={{ color: '#64748b', fontStyle: 'italic' }}>
+                  <span style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
                     No description available. Try to find the best move!
                   </span>
                 )}

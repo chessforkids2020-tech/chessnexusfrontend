@@ -172,7 +172,7 @@ export default function StreakMilestoneModal({ streak, user, onClose, onDismiss,
 
         {phase === 'error' && (
           <>
-            <p style={{ ...S.body, color: '#fca5a5' }}>{err}</p>
+            <p style={{ ...S.body, color: 'var(--color-danger)' }}>{err}</p>
             <button type="button" style={S.primary} onClick={() => setPhase('offer')}>Try again</button>
             <button type="button" style={S.ghost} onClick={onClose}>Close</button>
           </>
@@ -189,38 +189,38 @@ const S = {
     zIndex: 10000, padding: 20,
   },
   card: {
-    background: '#0f172a', border: '1px solid rgba(148,163,184,0.22)',
+    background: 'var(--color-surface)', border: '1px solid var(--color-border-strong)',
     borderRadius: 18, padding: '28px 26px', maxWidth: 460, width: '100%',
-    textAlign: 'center', boxShadow: '0 24px 60px rgba(0,0,0,0.5)',
+    textAlign: 'center', boxShadow: '0 24px 60px var(--color-black-a50)',
   },
   flame: { fontSize: 46, lineHeight: 1 },
-  title: { margin: '8px 0 6px', fontSize: 26, fontWeight: 800, color: '#f8fafc' },
-  body: { margin: '0 0 18px', fontSize: 14.5, lineHeight: 1.6, color: '#cbd5e1' },
-  bodyQuiet: { margin: '0 0 18px', fontSize: 13, lineHeight: 1.55, color: '#94a3b8' },
+  title: { margin: '8px 0 6px', fontSize: 26, fontWeight: 800, color: 'var(--color-text)' },
+  body: { margin: '0 0 18px', fontSize: 14.5, lineHeight: 1.6, color: 'var(--color-text-muted)' },
+  bodyQuiet: { margin: '0 0 18px', fontSize: 13, lineHeight: 1.55, color: 'var(--color-text-muted)' },
   cost: {
     display: 'flex', justifyContent: 'space-between', alignItems: 'baseline',
     gap: 10, padding: '9px 12px', marginBottom: 10, borderRadius: 10,
-    background: 'rgba(6,182,212,0.10)', border: '1px solid rgba(6,182,212,0.3)',
-    fontSize: 13, color: '#e2e8f0',
+    background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a30)',
+    fontSize: 13, color: 'var(--color-text)',
   },
-  costShort: { background: 'rgba(245,158,11,0.10)', borderColor: 'rgba(245,158,11,0.4)', color: '#fcd34d' },
-  costBal: { fontSize: 12, color: '#94a3b8' },
+  costShort: { background: 'var(--color-warning-a12)', borderColor: 'var(--color-warning-a30)', color: 'var(--color-warning)' },
+  costBal: { fontSize: 12, color: 'var(--color-text-muted)' },
   primaryOff: { opacity: 0.5, cursor: 'not-allowed' },
   warn: {
-    textAlign: 'left', background: 'rgba(245,158,11,0.10)',
-    border: '1px solid rgba(245,158,11,0.35)', borderRadius: 10,
-    padding: '10px 12px', marginBottom: 16, color: '#fcd34d', fontSize: 13,
+    textAlign: 'left', background: 'var(--color-warning-a12)',
+    border: '1px solid var(--color-warning-a30)', borderRadius: 10,
+    padding: '10px 12px', marginBottom: 16, color: 'var(--color-warning)', fontSize: 13,
   },
-  warnBody: { margin: '4px 0 0', color: '#e2e8f0', fontSize: 12.5, lineHeight: 1.5 },
-  link: { color: '#fcd34d', fontWeight: 700 },
+  warnBody: { margin: '4px 0 0', color: 'var(--color-text)', fontSize: 12.5, lineHeight: 1.5 },
+  link: { color: 'var(--color-warning)', fontWeight: 700 },
   primary: {
     width: '100%', padding: '11px 16px', borderRadius: 10, border: 'none',
-    background: '#22c55e', color: '#04210f', fontWeight: 800, fontSize: 14.5,
+    background: 'var(--color-success)', color: '#04210f', fontWeight: 800, fontSize: 14.5,
     cursor: 'pointer', marginBottom: 8,
   },
   ghost: {
     width: '100%', padding: '9px 16px', borderRadius: 10,
-    border: '1px solid rgba(148,163,184,0.25)', background: 'transparent',
-    color: '#94a3b8', fontWeight: 600, fontSize: 13.5, cursor: 'pointer',
+    border: '1px solid var(--color-border-strong)', background: 'transparent',
+    color: 'var(--color-text-muted)', fontWeight: 600, fontSize: 13.5, cursor: 'pointer',
   },
 };

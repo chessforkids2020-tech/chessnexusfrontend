@@ -16,7 +16,7 @@ function moveNumber(ply, startWhite) {
   return { isWhiteMove, fullMove };
 }
 
-export default function AnalysisMoveTree({ tree, currentId, accentColor = '#a5b4fc', onSelect }) {
+export default function AnalysisMoveTree({ tree, currentId, accentColor = 'var(--color-accent-2)', onSelect }) {
   const { nodes, rootId } = tree;
   const root = nodes[rootId];
   const startWhite = (root.fen || '').includes(' w ');
@@ -27,7 +27,7 @@ export default function AnalysisMoveTree({ tree, currentId, accentColor = '#a5b4
     return (
       <span key={node.id} style={{ whiteSpace: 'nowrap' }}>
         {withNumber && (
-          <span style={{ color: '#64748b', marginRight: 3 }}>
+          <span style={{ color: 'var(--color-text-faint)', marginRight: 3 }}>
             {fullMove}{isWhiteMove ? '.' : '…'}
           </span>
         )}
@@ -35,7 +35,7 @@ export default function AnalysisMoveTree({ tree, currentId, accentColor = '#a5b4
           onClick={() => onSelect(node.id)}
           style={{
             background: isCurrent ? accentColor : 'transparent',
-            color: isCurrent ? '#0a0a0a' : '#e5e7eb',
+            color: isCurrent ? 'var(--color-bg)' : 'var(--color-text)',
             border: 'none',
             borderRadius: 4,
             cursor: 'pointer',
@@ -78,13 +78,13 @@ export default function AnalysisMoveTree({ tree, currentId, accentColor = '#a5b4
               style={{
                 margin: '2px 0 2px 0',
                 paddingLeft: 12 + depth * 10,
-                borderLeft: '2px solid rgba(255,255,255,0.12)',
-                color: '#9ca3af',
+                borderLeft: '2px solid var(--color-white-a13)',
+                color: 'var(--color-text-muted)',
               }}
             >
-              <span style={{ color: '#6b7280' }}>(</span>
+              <span style={{ color: 'var(--color-text-faint)' }}>(</span>
               {renderLine(nodes[vId], depth + 1)}
-              <span style={{ color: '#6b7280' }}>)</span>
+              <span style={{ color: 'var(--color-text-faint)' }}>)</span>
             </div>
           );
         });

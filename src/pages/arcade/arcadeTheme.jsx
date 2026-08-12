@@ -3,24 +3,24 @@ import './arcade.css';
 
 // Shared theme, layout helpers, and constants for arcade pages
 const T = {
-  bg: "#0a0a0a",
-  bgRadial: "radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 50%)",
-  glass: "rgba(23, 23, 23, 0.7)",
-  glassBorder: "rgba(255, 255, 255, 0.05)",
-  glassShadow: "0 8px 32px rgba(0, 0, 0, 0.5)",
+  bg: "var(--color-bg)",
+  bgRadial: "radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)",
+  glass: "var(--color-surface)",
+  glassBorder: "var(--color-white-a04)",
+  glassShadow: "0 8px 32px var(--color-black-a50)",
   blur: "blur(10px)",
   blurHeavy: "blur(12px)",
-  accent1: "#06b6d4",
-  accent2: "#10b981",
-  accentGrad: "linear-gradient(135deg, #06b6d4 0%, #10b981 100%)",
-  accentGlow: "0 4px 16px rgba(6, 182, 212, 0.4)",
-  text: "#ffffff",
-  textMuted: "#9ca3af",
-  textDim: "#6b7280",
-  p1: "#f59e0b",
-  p2: "#06b6d4",
-  correct: "#10b981",
-  wrong: "#ef4444",
+  accent1: "var(--color-accent)",
+  accent2: "var(--color-success)",
+  accentGrad: "linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)",
+  accentGlow: "0 4px 16px var(--color-accent-a40)",
+  text: "var(--color-text)",
+  textMuted: "var(--color-text-muted)",
+  textDim: "var(--color-text-faint)",
+  p1: "var(--color-warning)",
+  p2: "var(--color-accent)",
+  correct: "var(--color-success)",
+  wrong: "var(--color-danger)",
   font: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
 };
 
@@ -71,8 +71,8 @@ function GradHeading({ children, size = 28, style = {} }) {
 
 function Btn({ children, onClick, primary, ghost, full, style = {} }) {
   const base = { border: "none", borderRadius: 12, padding: "10px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: T.font };
-  const primaryStyle = primary ? { background: T.accentGrad, color: "#fff", boxShadow: T.accentGlow } : {};
-  const ghostStyle = ghost ? { background: "transparent", border: "1px solid rgba(255,255,255,0.07)", color: T.textMuted } : {};
+  const primaryStyle = primary ? { background: T.accentGrad, color: "var(--color-text)", boxShadow: T.accentGlow } : {};
+  const ghostStyle = ghost ? { background: "transparent", border: "1px solid var(--color-white-a07)", color: T.textMuted } : {};
   const fullStyle = full ? { width: "100%" } : {};
   return (
     <button onClick={onClick} style={{ ...base, ...primaryStyle, ...ghostStyle, ...fullStyle, ...style }}>{children}</button>

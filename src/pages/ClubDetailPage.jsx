@@ -202,7 +202,7 @@ function ClubChat({ chatId, currentUser }) {
         </button>
       </form>
       {hasDisallowedLink && (
-        <div style={{ color: '#ef4444', fontSize: 12, marginTop: 6 }}>
+        <div style={{ color: 'var(--color-danger)', fontSize: 12, marginTop: 6 }}>
           Only chessnexus.in links are allowed in club chats.
         </div>
       )}
@@ -379,7 +379,7 @@ export default function ClubDetailPage() {
               : <span className="sh-privacy-badge sh-privacy-public">🌍 Public</span>}
           </div>
           {club.description && <p className="sh-detail-desc">{club.description}</p>}
-          <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>👥 {club.memberCount} members</span>
+          <span style={{ fontSize: 13, color: 'var(--color-text-faint)' }}>👥 {club.memberCount} members</span>
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'flex-start' }}>
           {!isMember && !club.isPrivate && (
@@ -503,8 +503,8 @@ export default function ClubDetailPage() {
               {club.isPrivate ? (
                 // Private club: share invite link
                 <>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', margin: '0 0 14px', lineHeight: 1.6 }}>
-                    This is a <strong style={{ color: '#f87171' }}>private club</strong>. Share the invite link — only people with it can find and join.
+                  <p style={{ fontSize: 13, color: 'var(--color-text-faint)', margin: '0 0 14px', lineHeight: 1.6 }}>
+                    This is a <strong style={{ color: 'var(--color-danger)' }}>private club</strong>. Share the invite link — only people with it can find and join.
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                     {showCode ? (
@@ -526,7 +526,7 @@ export default function ClubDetailPage() {
               ) : (
                 // Public club: share join code
                 <>
-                  <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', margin: '0 0 14px' }}>
+                  <p style={{ fontSize: 13, color: 'var(--color-text-faint)', margin: '0 0 14px' }}>
                     Share this code — anyone with it can join.
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
@@ -556,12 +556,12 @@ export default function ClubDetailPage() {
                   <UserAvatar user={m} size={42} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#ffffff' }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)' }}>
                     <PlayerName linkToProfile displayName={m.displayName} username={m.username} userId={m.userId} />
                   </div>
                 </div>
                 {m.role === 'owner' && <span className="sh-owner-badge">Owner</span>}
-                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
+                <span style={{ fontSize: 11, color: 'var(--color-white-a20)' }}>
                   {m.joinedAt ? new Date(m.joinedAt).toLocaleDateString() : ''}
                 </span>
               </div>
@@ -619,8 +619,8 @@ export default function ClubDetailPage() {
             // Private club — non-member: show code entry
             <div className="sh-card" style={{ textAlign: 'center', padding: '40px 20px' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff', marginBottom: 8 }}>Private Club</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 20, lineHeight: 1.6 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>Private Club</div>
+              <div style={{ fontSize: 13, color: 'var(--color-text-faint)', marginBottom: 20, lineHeight: 1.6 }}>
                 You need an invite link to join this club.
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -630,8 +630,8 @@ export default function ClubDetailPage() {
                   value={codeInput}
                   onChange={e => setCodeInput(e.target.value.toUpperCase())}
                   style={{
-                    flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-                    borderRadius: 10, padding: '9px 14px', color: '#fff', fontSize: 13,
+                    flex: 1, background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a10)',
+                    borderRadius: 10, padding: '9px 14px', color: 'var(--color-text)', fontSize: 13,
                     fontFamily: 'monospace', letterSpacing: 2, outline: 'none'
                   }}
                   maxLength={12}
@@ -649,8 +649,8 @@ export default function ClubDetailPage() {
             // Public club — non-member: locked chat
             <div className="sh-card" style={{ textAlign: 'center', padding: '40px 20px' }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>🔒</div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: '#ffffff', marginBottom: 8 }}>Members Only Chat</div>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 20, lineHeight: 1.6 }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', marginBottom: 8 }}>Members Only Chat</div>
+              <div style={{ fontSize: 13, color: 'var(--color-text-faint)', marginBottom: 20, lineHeight: 1.6 }}>
                 Join the club to chat with its members.
               </div>
               <button className="sh-btn-primary" onClick={() => joinByCode()} disabled={joining}>

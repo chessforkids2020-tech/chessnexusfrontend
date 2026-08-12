@@ -38,9 +38,9 @@ export default function FenCopyBar({ fen, style }) {
         onFocus={(e) => e.target.select()}
         style={{
           flex: 1, minWidth: 0,
-          background: 'rgba(0,0,0,0.35)',
-          border: '1px solid rgba(255,255,255,0.15)',
-          borderRadius: 8, color: '#e2e8f0',
+          background: 'var(--color-black-a35)',
+          border: '1px solid var(--color-white-a13)',
+          borderRadius: 8, color: 'var(--color-text)',
           padding: '8px 12px', fontSize: 12, fontFamily: 'monospace',
           outline: 'none', textOverflow: 'ellipsis',
         }}
@@ -50,10 +50,10 @@ export default function FenCopyBar({ fen, style }) {
         title="Copy FEN to clipboard"
         style={{
           padding: '8px 14px',
-          background: state === 'copied' ? 'rgba(16,185,129,0.18)' : 'rgba(99,102,241,0.15)',
-          border: `1px solid ${state === 'copied' ? 'rgba(16,185,129,0.5)' : 'rgba(99,102,241,0.4)'}`,
+          background: state === 'copied' ? 'var(--color-success-a20)' : 'rgba(99,102,241,0.15)',
+          border: `1px solid ${state === 'copied' ? 'var(--color-success-a30)' : 'rgba(99,102,241,0.4)'}`,
           borderRadius: 8,
-          color: state === 'copied' ? '#6ee7b7' : '#a5b4fc',
+          color: state === 'copied' ? 'var(--color-success)' : 'var(--color-accent-2)',
           cursor: 'pointer', fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap',
         }}
       >

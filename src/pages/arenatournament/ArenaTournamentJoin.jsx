@@ -102,22 +102,22 @@ export default function ArenaTournamentJoin() {
   const getStatusColor = (status) => {
     switch (status) {
       case 'scheduled':
-        return '#06b6d4'; // Cyan
+        return 'var(--color-accent)'; // Cyan
       case 'lobby':
-        return '#f59e0b'; // Amber
+        return 'var(--color-warning)'; // Amber
       case 'active':
-        return '#10b981'; // Emerald
+        return 'var(--color-success)'; // Emerald
       case 'finished':
-        return '#8b5cf6'; // Violet
+        return 'var(--color-accent-2)'; // Violet
       default:
-        return '#6b7280'; // Gray
+        return 'var(--color-text-faint)'; // Gray
     }
   };
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       padding: '40px 20px',
       fontFamily: 'Inter, Arial, sans-serif',
       position: 'relative',
@@ -131,7 +131,7 @@ export default function ArenaTournamentJoin() {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'radial-gradient(circle at 20% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)',
+        background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-success-a12) 0%, transparent 50%)',
         pointerEvents: 'none',
         zIndex: 0
       }} />
@@ -144,11 +144,11 @@ export default function ArenaTournamentJoin() {
         animation: 'slideIn 0.6s ease-out'
       }}>
         <div style={{
-          background: 'rgba(23, 23, 23, 0.7)',
+          background: 'var(--color-surface)',
           borderRadius: '20px',
           padding: '40px',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          boxShadow: '0 20px 40px var(--color-black-a50)',
+          border: '1px solid var(--color-white-a04)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)'
         }}>
@@ -156,7 +156,7 @@ export default function ArenaTournamentJoin() {
             fontSize: '32px',
             fontWeight: '800',
             marginBottom: '10px',
-            background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+            background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
@@ -164,7 +164,7 @@ export default function ArenaTournamentJoin() {
             Join Arena Tournament
           </h1>
           <p style={{ 
-            color: '#9ca3af', 
+            color: 'var(--color-text-muted)', 
             marginBottom: '30px',
             fontStyle: 'italic'
           }}>
@@ -173,12 +173,12 @@ export default function ArenaTournamentJoin() {
 
           {error && (
             <div style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              color: '#ef4444',
+              background: 'var(--color-danger-a12)',
+              color: 'var(--color-danger)',
               padding: '16px',
               borderRadius: '12px',
               marginBottom: '20px',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
+              border: '1px solid var(--color-danger-a20)',
               backdropFilter: 'blur(5px)',
               WebkitBackdropFilter: 'blur(5px)',
               display: 'flex',
@@ -196,7 +196,7 @@ export default function ArenaTournamentJoin() {
                 display: 'block', 
                 marginBottom: '8px', 
                 fontWeight: '600', 
-                color: '#ffffff',
+                color: 'var(--color-text)',
                 fontSize: '14px'
               }}>
                 Tournament Code
@@ -210,25 +210,25 @@ export default function ArenaTournamentJoin() {
                 style={{
                   width: '100%',
                   padding: '14px',
-                  background: 'rgba(0, 0, 0, 0.3)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'var(--color-black-a35)',
+                  border: '1px solid var(--color-white-a10)',
                   borderRadius: '12px',
                   fontSize: '18px',
                   fontFamily: 'monospace',
                   textAlign: 'center',
                   letterSpacing: '2px',
                   textTransform: 'uppercase',
-                  color: '#ffffff',
+                  color: 'var(--color-text)',
                   transition: 'all 0.3s ease',
                   outline: 'none'
                 }}
                 maxLength={8}
                 onFocus={(e) => {
-                  e.target.style.borderColor = '#06b6d4';
-                  e.target.style.boxShadow = '0 0 0 3px rgba(6, 182, 212, 0.1)';
+                  e.target.style.borderColor = 'var(--color-accent)';
+                  e.target.style.boxShadow = '0 0 0 3px var(--color-accent-a12)';
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                  e.target.style.borderColor = 'var(--color-white-a10)';
                   e.target.style.boxShadow = 'none';
                 }}
               />
@@ -240,9 +240,9 @@ export default function ArenaTournamentJoin() {
               style={{
                 width: '100%',
                 padding: '16px',
-                background: loading || !joinCode.trim() ? 'rgba(107, 114, 128, 0.3)' : 'rgba(6, 182, 212, 0.15)',
-                color: loading || !joinCode.trim() ? '#9ca3af' : '#06b6d4',
-                border: loading || !joinCode.trim() ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid rgba(6, 182, 212, 0.3)',
+                background: loading || !joinCode.trim() ? 'rgba(107, 114, 128, 0.3)' : 'var(--color-accent-a15)',
+                color: loading || !joinCode.trim() ? 'var(--color-text-muted)' : 'var(--color-accent)',
+                border: loading || !joinCode.trim() ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid var(--color-accent-a30)',
                 borderRadius: '12px',
                 fontSize: '16px',
                 fontWeight: '600',
@@ -256,14 +256,14 @@ export default function ArenaTournamentJoin() {
               }}
               onMouseEnter={(e) => {
                 if (!loading && joinCode.trim()) {
-                  e.target.style.background = 'rgba(6, 182, 212, 0.25)';
-                  e.target.style.boxShadow = '0 12px 40px rgba(6, 182, 212, 0.3)';
+                  e.target.style.background = 'var(--color-accent-a20)';
+                  e.target.style.boxShadow = '0 12px 40px var(--color-accent-a30)';
                   e.target.style.transform = 'translateY(-2px)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!loading && joinCode.trim()) {
-                  e.target.style.background = 'rgba(6, 182, 212, 0.15)';
+                  e.target.style.background = 'var(--color-accent-a15)';
                   e.target.style.boxShadow = 'none';
                   e.target.style.transform = 'translateY(0)';
                 }
@@ -278,7 +278,7 @@ export default function ArenaTournamentJoin() {
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    background: 'linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.2), transparent)',
+                    background: 'linear-gradient(90deg, transparent, var(--color-accent-a20), transparent)',
                     animation: 'shimmer 1.5s infinite'
                   }} />
                 </>
@@ -288,11 +288,11 @@ export default function ArenaTournamentJoin() {
 
           {tournament && (
             <div style={{
-              background: 'rgba(0, 0, 0, 0.3)',
+              background: 'var(--color-black-a35)',
               borderRadius: '16px',
               padding: '24px',
               marginBottom: '20px',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
+              border: '1px solid var(--color-white-a04)',
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
               animation: 'slideInUp 0.5s ease-out'
@@ -300,9 +300,9 @@ export default function ArenaTournamentJoin() {
               <h2 style={{ 
                 fontSize: '24px', 
                 fontWeight: '700', 
-                color: '#ffffff', 
+                color: 'var(--color-text)', 
                 marginBottom: '20px',
-                background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+                background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
@@ -317,44 +317,44 @@ export default function ArenaTournamentJoin() {
                 marginBottom: '20px'
               }}>
                 <div>
-                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
                     Hosted by
                   </div>
-                  <div style={{ fontSize: '16px', fontWeight: '600', color: '#67e8f9' }}>
+                  <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-accent)' }}>
                     ChessNexus
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
                     Time Control
                   </div>
-                  <div style={{ fontSize: '16px', fontWeight: '600', color: '#06b6d4' }}>
+                  <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-accent)' }}>
                     {tournament.timeControl.minutes}+{tournament.timeControl.increment || 0}
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
                     Duration
                   </div>
-                  <div style={{ fontSize: '16px', fontWeight: '600', color: '#10b981' }}>
+                  <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-success)' }}>
                     {tournament.tournamentDuration.hours > 0 && `${tournament.tournamentDuration.hours}h `}
                     {tournament.tournamentDuration.minutes}min
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
                     Starts
                   </div>
-                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#ffffff' }}>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--color-text)' }}>
                     {formatDate(tournament.scheduledStartTime)}
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
                     Status
                   </div>
                   <div style={{ 
@@ -372,10 +372,10 @@ export default function ArenaTournamentJoin() {
                 </div>
 
                 <div>
-                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '4px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>
                     Participants
                   </div>
-                  <div style={{ fontSize: '16px', fontWeight: '600', color: '#8b5cf6' }}>
+                  <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--color-accent-2)' }}>
                     {tournament.participantCount}
                   </div>
                 </div>
@@ -385,18 +385,18 @@ export default function ArenaTournamentJoin() {
                 <div style={{ 
                   marginTop: '20px', 
                   paddingTop: '20px', 
-                  borderTop: '1px solid rgba(255, 255, 255, 0.1)' 
+                  borderTop: '1px solid var(--color-white-a10)' 
                 }}>
                   <div style={{ 
                     fontSize: '13px', 
-                    color: '#9ca3af', 
+                    color: 'var(--color-text-muted)', 
                     marginBottom: '8px',
                     fontWeight: '600'
                   }}>
                     Description:
                   </div>
                   <p style={{ 
-                    color: '#d1d5db', 
+                    color: 'var(--color-text-muted)', 
                     lineHeight: '1.6', 
                     margin: 0,
                     fontStyle: 'italic'
@@ -410,8 +410,8 @@ export default function ArenaTournamentJoin() {
                 <>
                   {/* Team Battle: team selection grid */}
                   {tournament.tournamentType === 'team_battle' && tournament.teams && tournament.teams.length > 0 && (
-                    <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                      <div style={{ fontSize: '13px', fontWeight: '700', color: '#a855f7', marginBottom: '12px' }}>
+                    <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid var(--color-white-a10)' }}>
+                      <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--color-accent-2)', marginBottom: '12px' }}>
                         ⚔️ Select Your Team
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '10px' }}>
@@ -431,8 +431,8 @@ export default function ArenaTournamentJoin() {
                                 style={{
                                   padding: '12px 14px',
                                   borderRadius: '12px',
-                                  border: `2px solid ${isSelected ? team.color : isFull ? 'rgba(255,255,255,0.05)' : isTooUnbalanced ? 'rgba(255,193,7,0.5)' : 'rgba(255,255,255,0.1)'}`,
-                                  background: isSelected ? `${team.color}22` : isFull ? 'rgba(0,0,0,0.2)' : isTooUnbalanced ? 'rgba(40,30,0,0.5)' : 'rgba(0,0,0,0.3)',
+                                  border: `2px solid ${isSelected ? team.color : isFull ? 'var(--color-white-a04)' : isTooUnbalanced ? 'rgba(255,193,7,0.5)' : 'var(--color-white-a10)'}`,
+                                  background: isSelected ? `${team.color}22` : isFull ? 'var(--color-black-a20)' : isTooUnbalanced ? 'rgba(40,30,0,0.5)' : 'var(--color-black-a35)',
                                   cursor: isBlocked ? 'not-allowed' : 'pointer',
                                   opacity: isFull ? 0.45 : isTooUnbalanced ? 0.7 : 1,
                                   transition: 'all 0.2s ease',
@@ -440,10 +440,10 @@ export default function ArenaTournamentJoin() {
                                 }}
                               >
                                 <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: team.color, margin: '0 auto 6px' }} />
-                                <div style={{ fontSize: '12px', fontWeight: '700', color: isSelected ? team.color : isTooUnbalanced ? '#fbbf24' : '#ffffff', marginBottom: '4px' }}>
+                                <div style={{ fontSize: '12px', fontWeight: '700', color: isSelected ? team.color : isTooUnbalanced ? 'var(--color-warning)' : 'var(--color-text)', marginBottom: '4px' }}>
                                   {team.teamName}
                                 </div>
-                                <div style={{ fontSize: '11px', color: isFull ? '#ef4444' : isTooUnbalanced ? '#fbbf24' : '#9ca3af' }}>
+                                <div style={{ fontSize: '11px', color: isFull ? 'var(--color-danger)' : isTooUnbalanced ? 'var(--color-warning)' : 'var(--color-text-muted)' }}>
                                   {isFull ? 'FULL' : isTooUnbalanced ? '⚖️ Too large' : `${count} / 30`}
                                 </div>
                               </div>
@@ -452,7 +452,7 @@ export default function ArenaTournamentJoin() {
                         })()}
                       </div>
                       {selectedTeamId && (
-                        <div style={{ fontSize: '12px', color: '#a855f7', marginTop: '10px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--color-accent-2)', marginTop: '10px', textAlign: 'center' }}>
                           ✓ Joining as <strong>{tournament.teams.find(t => t.teamId === selectedTeamId)?.teamName}</strong>
                         </div>
                       )}
@@ -461,7 +461,7 @@ export default function ArenaTournamentJoin() {
                         const minCount = Math.min(...counts);
                         const hasUnbalanced = counts.some(c => c >= minCount + 2);
                         return hasUnbalanced ? (
-                          <div style={{ fontSize: '12px', color: '#fbbf24', marginTop: '10px', padding: '8px 12px', background: 'rgba(40,30,0,0.5)', borderRadius: '8px', border: '1px solid rgba(255,193,7,0.3)' }}>
+                          <div style={{ fontSize: '12px', color: 'var(--color-warning)', marginTop: '10px', padding: '8px 12px', background: 'rgba(40,30,0,0.5)', borderRadius: '8px', border: '1px solid rgba(255,193,7,0.3)' }}>
                             ⚖️ Some teams have too many players — please join a smaller team for fair play.
                           </div>
                         ) : null;
@@ -475,9 +475,9 @@ export default function ArenaTournamentJoin() {
                     style={{
                       width: '100%',
                       padding: '16px',
-                      background: (joining || (tournament.tournamentType === 'team_battle' && !selectedTeamId)) ? 'rgba(107, 114, 128, 0.3)' : 'rgba(16, 185, 129, 0.15)',
-                      color: (joining || (tournament.tournamentType === 'team_battle' && !selectedTeamId)) ? '#9ca3af' : '#10b981',
-                      border: (joining || (tournament.tournamentType === 'team_battle' && !selectedTeamId)) ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid rgba(16, 185, 129, 0.3)',
+                      background: (joining || (tournament.tournamentType === 'team_battle' && !selectedTeamId)) ? 'rgba(107, 114, 128, 0.3)' : 'var(--color-success-a12)',
+                      color: (joining || (tournament.tournamentType === 'team_battle' && !selectedTeamId)) ? 'var(--color-text-muted)' : 'var(--color-success)',
+                      border: (joining || (tournament.tournamentType === 'team_battle' && !selectedTeamId)) ? '1px solid rgba(107, 114, 128, 0.2)' : '1px solid var(--color-success-a30)',
                       borderRadius: '12px',
                       fontSize: '16px',
                       fontWeight: '600',
@@ -491,14 +491,14 @@ export default function ArenaTournamentJoin() {
                     }}
                     onMouseEnter={(e) => {
                       if (!joining && !(tournament.tournamentType === 'team_battle' && !selectedTeamId)) {
-                        e.target.style.background = 'rgba(16, 185, 129, 0.25)';
-                        e.target.style.boxShadow = '0 12px 40px rgba(16, 185, 129, 0.3)';
+                        e.target.style.background = 'var(--color-success-a20)';
+                        e.target.style.boxShadow = '0 12px 40px var(--color-success-a30)';
                         e.target.style.transform = 'translateY(-2px)';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!joining && !(tournament.tournamentType === 'team_battle' && !selectedTeamId)) {
-                        e.target.style.background = 'rgba(16, 185, 129, 0.15)';
+                        e.target.style.background = 'var(--color-success-a12)';
                         e.target.style.boxShadow = 'none';
                         e.target.style.transform = 'translateY(0)';
                       }
@@ -510,7 +510,7 @@ export default function ArenaTournamentJoin() {
                         <div style={{
                           position: 'absolute',
                           top: 0, left: 0, right: 0, bottom: 0,
-                          background: 'linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.2), transparent)',
+                          background: 'linear-gradient(90deg, transparent, var(--color-success-a20), transparent)',
                           animation: 'shimmer 1.5s infinite'
                         }} />
                       </>
@@ -529,8 +529,8 @@ export default function ArenaTournamentJoin() {
                   }}
                   style={{
                     width: '100%', padding: '16px', marginTop: '24px',
-                    background: 'rgba(139, 92, 246, 0.15)', color: '#a855f7',
-                    border: '1px solid rgba(139, 92, 246, 0.3)', borderRadius: '12px',
+                    background: 'var(--color-accent-2-a15)', color: 'var(--color-accent-2)',
+                    border: '1px solid var(--color-accent-2-a30)', borderRadius: '12px',
                     fontSize: '16px', fontWeight: '600', cursor: 'pointer'
                   }}
                 >
@@ -545,9 +545,9 @@ export default function ArenaTournamentJoin() {
             style={{
               width: '100%',
               padding: '16px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              color: '#ffffff',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: 'var(--color-white-a04)',
+              color: 'var(--color-text)',
+              border: '1px solid var(--color-white-a10)',
               borderRadius: '12px',
               fontSize: '16px',
               fontWeight: '600',
@@ -557,15 +557,15 @@ export default function ArenaTournamentJoin() {
               WebkitBackdropFilter: 'blur(10px)'
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = 'rgba(6, 182, 212, 0.15)';
-              e.target.style.borderColor = 'rgba(6, 182, 212, 0.3)';
-              e.target.style.color = '#67e8f9';
+              e.target.style.background = 'var(--color-accent-a15)';
+              e.target.style.borderColor = 'var(--color-accent-a30)';
+              e.target.style.color = 'var(--color-accent)';
               e.target.style.transform = 'translateY(-2px)';
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = 'rgba(255, 255, 255, 0.05)';
-              e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-              e.target.style.color = '#ffffff';
+              e.target.style.background = 'var(--color-white-a04)';
+              e.target.style.borderColor = 'var(--color-white-a10)';
+              e.target.style.color = 'var(--color-text)';
               e.target.style.transform = 'translateY(0)';
             }}
           >

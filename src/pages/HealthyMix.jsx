@@ -1038,21 +1038,21 @@ export default function HealthyMix() {
           background: 'rgba(139,92,246,0.08)',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
-          border: '1px solid rgba(139,92,246,0.2)',
+          border: '1px solid var(--color-accent-2-a15)',
           borderRadius: 14,
-          color: '#c4b5fd',
+          color: 'var(--color-accent-2)',
           fontWeight: 600,
           fontSize: 14,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: 16,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+          boxShadow: '0 4px 20px var(--color-black-a35)'
         }}>
           <span>📋 Coach assignment{assignTarget > 0 ? ` · ${assignProgress}/${assignTarget} puzzles` : ''}</span>
           {assignTarget > 0 && (
-            <div style={{ flex: 1, maxWidth: 240, height: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 999, overflow: 'hidden' }}>
-              <div style={{ width: `${Math.min(100, Math.round((assignProgress / assignTarget) * 100))}%`, height: '100%', background: 'linear-gradient(90deg,#8b5cf6,#06b6d4)' }} />
+            <div style={{ flex: 1, maxWidth: 240, height: 8, background: 'var(--color-white-a07)', borderRadius: 999, overflow: 'hidden' }}>
+              <div style={{ width: `${Math.min(100, Math.round((assignProgress / assignTarget) * 100))}%`, height: '100%', background: 'linear-gradient(90deg,var(--color-accent-2),var(--color-accent))' }} />
             </div>
           )}
         </div>
@@ -1060,29 +1060,29 @@ export default function HealthyMix() {
 
       {/* Assignment finished popup - glass version */}
       {assignDone && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
-          <div style={{ background: 'rgba(20,22,30,0.9)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(139,92,246,0.3)', borderRadius: 20, padding: '32px 36px', textAlign: 'center', maxWidth: 420, width: '90%', boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'var(--color-black-a65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+          <div style={{ background: 'rgba(20,22,30,0.9)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid var(--color-accent-2-a30)', borderRadius: 20, padding: '32px 36px', textAlign: 'center', maxWidth: 420, width: '90%', boxShadow: '0 24px 64px var(--color-black-a65)' }}>
             <div style={{ fontSize: 52, marginBottom: 12 }}>🎉</div>
-            <h2 style={{ color: '#fff', fontSize: 24, fontWeight: 800, margin: '0 0 8px' }}>Assignment finished!</h2>
-            <p style={{ color: '#9ca3af', margin: '0 0 22px' }}>You completed all {assignTarget} puzzles your coach assigned.</p>
+            <h2 style={{ color: 'var(--color-text)', fontSize: 24, fontWeight: 800, margin: '0 0 8px' }}>Assignment finished!</h2>
+            <p style={{ color: 'var(--color-text-muted)', margin: '0 0 22px' }}>You completed all {assignTarget} puzzles your coach assigned.</p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 24 }}>
-              <div style={{ flex: 1, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 12, padding: '12px 8px' }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#34d399' }}>{assignDone.solved}</div>
-                <div style={{ fontSize: 11, color: '#9ca3af' }}>SOLVED</div>
+              <div style={{ flex: 1, background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a20)', borderRadius: 12, padding: '12px 8px' }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-success)' }}>{assignDone.solved}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>SOLVED</div>
               </div>
-              <div style={{ flex: 1, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 12, padding: '12px 8px' }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#f87171' }}>{assignDone.failed}</div>
-                <div style={{ fontSize: 11, color: '#9ca3af' }}>FAILED</div>
+              <div style={{ flex: 1, background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a20)', borderRadius: 12, padding: '12px 8px' }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-danger)' }}>{assignDone.failed}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>FAILED</div>
               </div>
-              <div style={{ flex: 1, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)', borderRadius: 12, padding: '12px 8px' }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#fbbf24' }}>🔥 {assignDone.maxStreak}</div>
-                <div style={{ fontSize: 11, color: '#9ca3af' }}>BEST STREAK</div>
+              <div style={{ flex: 1, background: 'rgba(251,191,36,0.08)', border: '1px solid var(--color-warning-a20)', borderRadius: 12, padding: '12px 8px' }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--color-warning)' }}>🔥 {assignDone.maxStreak}</div>
+                <div style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>BEST STREAK</div>
               </div>
             </div>
             <button
               onClick={submitAssignment}
               disabled={assignSubmitting}
-              style={{ width: '100%', background: 'linear-gradient(135deg,#06b6d4,#8b5cf6)', color: '#fff', border: 'none', borderRadius: 12, padding: '13px 0', fontSize: 15, fontWeight: 700, cursor: assignSubmitting ? 'wait' : 'pointer', boxShadow: '0 6px 24px rgba(6,182,212,0.3)' }}
+              style={{ width: '100%', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: 'var(--color-text)', border: 'none', borderRadius: 12, padding: '13px 0', fontSize: 15, fontWeight: 700, cursor: assignSubmitting ? 'wait' : 'pointer', boxShadow: '0 6px 24px var(--color-accent-a30)' }}
             >
               {assignSubmitting ? 'Submitting…' : 'Submit to coach'}
             </button>

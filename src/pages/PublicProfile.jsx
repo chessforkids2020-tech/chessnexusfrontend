@@ -59,7 +59,7 @@ const TRACKS = [
   },
 ];
 
-const TIER_COLOR = { starter: '#6366f1', gold: '#f59e0b', plat: '#06b6d4' };
+const TIER_COLOR = { starter: '#6366f1', gold: 'var(--color-warning)', plat: 'var(--color-accent)' };
 const CROWN_LABELS = { gold: '👑 Gold Crown', platinum: '👑 Platinum Crown', gem: '💎 Gem Crown', none: null };
 
 export default function PublicProfile() {
@@ -103,7 +103,7 @@ export default function PublicProfile() {
     return (
       <div style={s.page}>
         <div style={s.card}>
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: '#94a3b8', fontSize: '18px' }}>
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--color-text-muted)', fontSize: '18px' }}>
             ⏳ Loading profile...
           </div>
         </div>
@@ -117,7 +117,7 @@ export default function PublicProfile() {
         <div style={s.card}>
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
-            <div style={{ fontSize: '20px', color: '#ef4444', marginBottom: '24px' }}>{error}</div>
+            <div style={{ fontSize: '20px', color: 'var(--color-danger)', marginBottom: '24px' }}>{error}</div>
             <Link to="/" style={s.backBtn}>← Back to Home</Link>
           </div>
         </div>
@@ -155,7 +155,7 @@ export default function PublicProfile() {
           <div style={s.heroText}>
             <h1 style={s.heroName}>{profile.displayName || profile.username}</h1>
             {profile.country && <div style={s.heroBadge}>🌍 {profile.country}</div>}
-            {crownLabel && <div style={{ ...s.heroBadge, background: '#fef3c7', color: '#92400e' }}>{crownLabel}</div>}
+            {crownLabel && <div style={{ ...s.heroBadge, background: 'var(--color-warning)', color: '#92400e' }}>{crownLabel}</div>}
             {profile.chessExperience && <div style={s.heroBadge}>♟️ {profile.chessExperience}</div>}
             {memberYear && <div style={{ ...s.heroBadge, background: '#f0fdf4', color: '#166534' }}>Member since {memberYear}</div>}
           </div>
@@ -167,7 +167,7 @@ export default function PublicProfile() {
             margin: '0 0 18px',
             fontSize: '15px',
             lineHeight: 1.6,
-            color: '#475569',
+            color: 'var(--color-text-faint)',
             whiteSpace: 'pre-wrap',
           }}>
             {profile.biography}
@@ -246,7 +246,7 @@ export default function PublicProfile() {
                 <div key={track.id} style={s.track}>
                   <div style={s.trackLabel}>
                     <span style={{ fontSize: '18px' }}>{track.icon}</span>
-                    <span style={{ fontWeight: '600', color: '#1e293b' }}>{track.name}</span>
+                    <span style={{ fontWeight: '600', color: 'var(--color-surface-2)' }}>{track.name}</span>
                   </div>
                   <div style={s.trackSteps}>
                     {track.badges.map((badge, i) => {
@@ -258,19 +258,19 @@ export default function PublicProfile() {
                           {i > 0 && (
                             <div style={{
                               width: '32px', height: '3px', alignSelf: 'center',
-                              background: earnedSet.has(track.badges[i - 1].id) ? TIER_COLOR[badge.tier] : '#e2e8f0',
+                              background: earnedSet.has(track.badges[i - 1].id) ? TIER_COLOR[badge.tier] : 'var(--color-text)',
                               borderRadius: '2px', flexShrink: 0,
                             }} />
                           )}
                           <div style={{
                             ...s.badgeStep,
-                            background: earned ? '#f0fdf4' : isNext ? '#fefce8' : '#f8fafc',
-                            border: `2px solid ${earned ? TIER_COLOR[badge.tier] : isNext ? '#fbbf24' : '#e2e8f0'}`,
+                            background: earned ? '#f0fdf4' : isNext ? '#fefce8' : 'var(--color-text)',
+                            border: `2px solid ${earned ? TIER_COLOR[badge.tier] : isNext ? 'var(--color-warning)' : 'var(--color-text)'}`,
                             boxShadow: earned ? `0 0 0 3px ${TIER_COLOR[badge.tier]}22` : 'none',
                           }}>
                             <div style={{ fontSize: '26px' }}>{badge.emoji}</div>
-                            <div style={{ fontSize: '12px', fontWeight: '700', color: '#1e293b', marginTop: '4px' }}>{badge.name}</div>
-                            <div style={{ fontSize: '10px', color: earned ? TIER_COLOR[badge.tier] : '#94a3b8', marginTop: '2px', fontWeight: '600' }}>
+                            <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-surface-2)', marginTop: '4px' }}>{badge.name}</div>
+                            <div style={{ fontSize: '10px', color: earned ? TIER_COLOR[badge.tier] : 'var(--color-text-muted)', marginTop: '2px', fontWeight: '600' }}>
                               {earned ? (badge.tier === 'plat' ? '💎 Platinum' : badge.tier === 'gold' ? '🥇 Gold' : '✓ Done') : (isNext ? `→ ${badge.threshold}` : badge.threshold)}
                             </div>
                           </div>
@@ -285,12 +285,12 @@ export default function PublicProfile() {
         </div>
 
         {/* ── Footer ──────────────────────────────────────── */}
-        <div style={{ textAlign: 'center', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid #e2e8f0' }}>
-          <p style={{ color: '#94a3b8', fontSize: '14px', margin: '0 0 16px' }}>
+        <div style={{ textAlign: 'center', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--color-text)' }}>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: '14px', margin: '0 0 16px' }}>
             Want to challenge {profile.displayName}? Join our chess community!
           </p>
           <Link to="/login" style={{ ...s.shareBtn, display: 'inline-block', textDecoration: 'none', marginRight: '12px' }}>Log In</Link>
-          <Link to="/signup" style={{ ...s.shareBtn, display: 'inline-block', textDecoration: 'none', background: '#10b981' }}>Sign Up Free</Link>
+          <Link to="/signup" style={{ ...s.shareBtn, display: 'inline-block', textDecoration: 'none', background: 'var(--color-success)' }}>Sign Up Free</Link>
         </div>
       </div>
     </div>
@@ -301,7 +301,7 @@ export default function PublicProfile() {
 const s = {
   page: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+    background: 'linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-2) 50%, var(--color-surface) 100%)',
     padding: '20px',
     fontFamily: 'Inter, Arial, sans-serif',
   },
@@ -313,19 +313,19 @@ const s = {
     alignItems: 'center',
   },
   backBtn: {
-    color: '#94a3b8',
+    color: 'var(--color-text-muted)',
     textDecoration: 'none',
     fontSize: '14px',
     fontWeight: '500',
     padding: '8px 14px',
-    background: 'rgba(255,255,255,0.06)',
+    background: 'var(--color-white-a07)',
     borderRadius: '8px',
-    border: '1px solid rgba(255,255,255,0.1)',
+    border: '1px solid var(--color-white-a10)',
     cursor: 'pointer',
   },
   shareBtn: {
     background: '#6366f1',
-    color: '#fff',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '8px 18px',
     borderRadius: '8px',
@@ -336,12 +336,12 @@ const s = {
   card: {
     maxWidth: '860px',
     margin: '0 auto',
-    background: 'rgba(255,255,255,0.04)',
+    background: 'var(--color-white-a04)',
     backdropFilter: 'blur(12px)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    border: '1px solid var(--color-white-a07)',
     borderRadius: '24px',
     padding: '32px',
-    boxShadow: '0 20px 60px rgba(0,0,0,0.4)',
+    boxShadow: '0 20px 60px var(--color-black-a35)',
   },
   heroSection: {
     display: 'flex',
@@ -356,7 +356,7 @@ const s = {
     flexShrink: 0,
     borderRadius: '50%',
     overflow: 'hidden',
-    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+    background: 'linear-gradient(135deg, #6366f1, var(--color-accent-2))',
     boxShadow: '0 0 0 3px rgba(99,102,241,0.4)',
     display: 'flex',
     alignItems: 'center',
@@ -370,7 +370,7 @@ const s = {
   avatarInitials: {
     fontSize: '36px',
     fontWeight: '800',
-    color: '#fff',
+    color: 'var(--color-text)',
   },
   heroText: {
     flex: 1,
@@ -379,14 +379,14 @@ const s = {
   heroName: {
     fontSize: 'clamp(22px, 5vw, 32px)',
     fontWeight: '800',
-    color: '#f8fafc',
+    color: 'var(--color-text)',
     margin: '0 0 8px',
   },
   heroBadge: {
     display: 'inline-block',
-    background: 'rgba(255,255,255,0.07)',
-    color: '#cbd5e1',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--color-white-a07)',
+    color: 'var(--color-text-muted)',
+    border: '1px solid var(--color-white-a10)',
     borderRadius: '20px',
     padding: '4px 12px',
     fontSize: '13px',
@@ -403,10 +403,10 @@ const s = {
   platformLink: {
     display: 'inline-block',
     padding: '8px 16px',
-    background: 'rgba(255,255,255,0.06)',
-    border: '1px solid rgba(255,255,255,0.1)',
+    background: 'var(--color-white-a07)',
+    border: '1px solid var(--color-white-a10)',
     borderRadius: '10px',
-    color: '#94a3b8',
+    color: 'var(--color-text-muted)',
     textDecoration: 'none',
     fontSize: '13px',
   },
@@ -417,8 +417,8 @@ const s = {
     marginBottom: '32px',
   },
   statCard: {
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--color-white-a04)',
+    border: '1px solid var(--color-white-a07)',
     borderRadius: '16px',
     padding: '20px',
     textAlign: 'center',
@@ -426,19 +426,19 @@ const s = {
   statValue: {
     fontSize: '28px',
     fontWeight: '800',
-    color: '#f8fafc',
+    color: 'var(--color-text)',
     marginBottom: '4px',
   },
   statLabel: {
     fontSize: '12px',
-    color: '#64748b',
+    color: 'var(--color-text-faint)',
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
   },
   badgeSection: {
-    background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.07)',
+    background: 'var(--color-white-a04)',
+    border: '1px solid var(--color-white-a07)',
     borderRadius: '16px',
     padding: '24px',
   },
@@ -453,20 +453,20 @@ const s = {
   sectionTitle: {
     fontSize: '18px',
     fontWeight: '700',
-    color: '#f8fafc',
+    color: 'var(--color-text)',
     margin: 0,
   },
   badgeCount: {
     fontSize: '13px',
     fontWeight: '600',
-    color: '#94a3b8',
-    background: 'rgba(255,255,255,0.06)',
+    color: 'var(--color-text-muted)',
+    background: 'var(--color-white-a07)',
     padding: '4px 10px',
     borderRadius: '20px',
   },
   showAllBtn: {
     background: 'rgba(99,102,241,0.2)',
-    color: '#a5b4fc',
+    color: 'var(--color-accent-2)',
     border: '1px solid rgba(99,102,241,0.3)',
     padding: '6px 14px',
     borderRadius: '8px',
@@ -488,14 +488,14 @@ const s = {
     cursor: 'default',
   },
   badgeEarned: {
-    background: 'rgba(16,185,129,0.1)',
-    border: '2px solid rgba(16,185,129,0.3)',
+    background: 'var(--color-success-a12)',
+    border: '2px solid var(--color-success-a30)',
     color: '#a7f3d0',
   },
   badgeLocked: {
-    background: 'rgba(255,255,255,0.03)',
-    border: '2px solid rgba(255,255,255,0.06)',
-    color: '#475569',
+    background: 'var(--color-white-a04)',
+    border: '2px solid var(--color-white-a07)',
+    color: 'var(--color-text-faint)',
     opacity: 0.6,
   },
   tracksWrap: {
@@ -513,7 +513,7 @@ const s = {
     alignItems: 'center',
     gap: '8px',
     fontSize: '14px',
-    color: '#94a3b8',
+    color: 'var(--color-text-muted)',
   },
   trackSteps: {
     display: 'flex',

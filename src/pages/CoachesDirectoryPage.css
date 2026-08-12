@@ -4,7 +4,7 @@
   max-width: 1100px;
   margin: 0 auto;
   padding: 30px 20px 60px;
-  color: #e5e7eb;
+  color: var(--color-text);
 }
 
 .cd-head { margin-bottom: 24px; text-align: center; }
@@ -12,7 +12,7 @@
   margin: 0 0 8px;
   font-size: 30px;
   font-weight: 800;
-  color: #f8fafc;
+  color: var(--color-text);
   letter-spacing: -0.02em;
 }
 .cd-head p {
@@ -20,7 +20,7 @@
   margin: 0 auto;
   font-size: 14px;
   line-height: 1.65;
-  color: #94a3b8;
+  color: var(--color-text-muted);
 }
 
 /* ── Filters ──────────────────────────────────────────────────────────── */
@@ -31,9 +31,9 @@
   padding: 12px 16px;
   margin-bottom: 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(0, 0, 0, 0.3);
-  color: #f1f5f9;
+  border: 1px solid var(--color-white-a13);
+  background: var(--color-black-a35);
+  color: var(--color-text);
   font-size: 14.5px;
   font-family: inherit;
   outline: none;
@@ -51,15 +51,15 @@
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
-  color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--color-text-muted);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a13);
   transition: all 0.15s ease;
 }
 .cd-chip.on {
-  color: #6ee7b7;
-  background: rgba(16, 185, 129, 0.14);
-  border-color: rgba(16, 185, 129, 0.45);
+  color: var(--color-success);
+  background: var(--color-success-a12);
+  border-color: var(--color-success-a30);
 }
 
 .cd-select {
@@ -67,9 +67,9 @@
   border-radius: 999px;
   font-size: 13px;
   font-family: inherit;
-  color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--color-text-muted);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a13);
   cursor: pointer;
   outline: none;
 }
@@ -77,7 +77,7 @@
 .cd-count {
   margin-bottom: 14px;
   font-size: 12.5px;
-  color: #64748b;
+  color: var(--color-text-faint);
 }
 
 /* ── Grid ─────────────────────────────────────────────────────────────── */
@@ -99,14 +99,14 @@
   padding: 18px;
   border-radius: 16px;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
   transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
 }
 .cd-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(6, 182, 212, 0.45);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  border-color: var(--color-accent-a40);
+  box-shadow: 0 16px 36px var(--color-black-a35);
 }
 
 /* align-items: flex-start — the text column is now several lines tall, so
@@ -126,7 +126,7 @@
   font-size: 34px;
   font-weight: 800;
   color: #04211d;
-  background: linear-gradient(135deg, #06b6d4, #10b981);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
 }
 .cd-photo img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -137,7 +137,7 @@
   gap: 7px;
   font-size: 15.5px;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--color-text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -149,7 +149,7 @@
   font-size: 10.5px;
   font-weight: 800;
   color: #241a05;
-  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  background: linear-gradient(135deg, var(--color-warning), var(--color-warning));
 }
 .cd-country { margin-top: 2px; font-size: 12px; color: #7c8899; }
 
@@ -160,7 +160,7 @@
   font-size: 13px;
   font-style: italic;
   line-height: 1.45;
-  color: #cbd5e1;
+  color: var(--color-text-muted);
   display: -webkit-box;
   -webkit-line-clamp: 1;
   line-clamp: 1;
@@ -177,7 +177,7 @@
   font-size: 12px;
   color: #7c8899;
 }
-.cd-fact b { font-weight: 800; color: #67e8f9; }
+.cd-fact b { font-weight: 800; color: var(--color-accent); }
 .cd-fact-lang { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 
 /* Bio preview. Two lines, so every card in the grid stays the same height. */
@@ -185,7 +185,7 @@
   margin: 0 0 12px;
   font-size: 12.5px;
   line-height: 1.6;
-  color: #94a3b8;
+  color: var(--color-text-muted);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -199,28 +199,28 @@
   border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
-  color: #94a3b8;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-text-muted);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
 }
 .cd-tag-open {
-  color: #6ee7b7;
-  background: rgba(16, 185, 129, 0.12);
-  border-color: rgba(16, 185, 129, 0.3);
+  color: var(--color-success);
+  background: var(--color-success-a12);
+  border-color: var(--color-success-a30);
 }
 
 /* ── Empty / loading ──────────────────────────────────────────────────── */
-.cd-muted { padding: 50px 0; text-align: center; color: #94a3b8; font-size: 14px; }
+.cd-muted { padding: 50px 0; text-align: center; color: var(--color-text-muted); font-size: 14px; }
 
 .cd-empty { padding: 50px 20px; text-align: center; }
 .cd-empty-ic { font-size: 48px; margin-bottom: 12px; }
-.cd-empty h2 { margin: 0 0 8px; font-size: 20px; font-weight: 800; color: #f1f5f9; }
+.cd-empty h2 { margin: 0 0 8px; font-size: 20px; font-weight: 800; color: var(--color-text); }
 .cd-empty p {
   max-width: 420px;
   margin: 0 auto 20px;
   font-size: 14px;
   line-height: 1.6;
-  color: #94a3b8;
+  color: var(--color-text-muted);
 }
 
 .cd-btn {
@@ -234,5 +234,5 @@
   cursor: pointer;
   text-decoration: none;
   color: #04211d;
-  background: linear-gradient(135deg, #06b6d4, #10b981);
+  background: linear-gradient(135deg, var(--color-accent), var(--color-success));
 }

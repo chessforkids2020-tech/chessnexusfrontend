@@ -174,7 +174,7 @@ export default function WaitingRoom() {
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '20px',
       position: 'relative',
@@ -186,7 +186,7 @@ export default function WaitingRoom() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -200,12 +200,12 @@ export default function WaitingRoom() {
     },
     mainCard: {
       flex: 1,
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '32px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     },
     sidePanel: {
@@ -215,18 +215,18 @@ export default function WaitingRoom() {
       gap: '20px',
     },
     sideCard: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '24px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     title: {
       fontSize: '32px',
       fontWeight: '700',
       margin: '0 0 8px 0',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -234,7 +234,7 @@ export default function WaitingRoom() {
     subtitle: {
       fontSize: '16px',
       margin: '0 0 24px 0',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '400',
     },
     metaInfo: {
@@ -242,23 +242,23 @@ export default function WaitingRoom() {
       gap: '20px',
       marginBottom: '24px',
       padding: '16px',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       borderRadius: '16px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     metaItem: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       fontSize: '14px',
       fontWeight: '500',
     },
     metaValue: {
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       fontWeight: '600',
     },
     sectionTitle: {
       fontSize: '20px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       margin: '0 0 16px 0',
       display: 'flex',
       alignItems: 'center',
@@ -267,12 +267,12 @@ export default function WaitingRoom() {
     instructions: {
       marginBottom: '24px',
       padding: '20px',
-      background: 'rgba(6, 182, 212, 0.1)',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      background: 'var(--color-accent-a12)',
+      border: '1px solid var(--color-accent-a20)',
       borderRadius: '16px',
     },
     instructionsText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '14px',
       lineHeight: '1.6',
       margin: '0',
@@ -280,8 +280,8 @@ export default function WaitingRoom() {
     messagesContainer: {
       marginTop: '20px',
       borderRadius: '16px',
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       padding: '20px',
       minHeight: '200px',
       maxHeight: '300px',
@@ -289,12 +289,12 @@ export default function WaitingRoom() {
     },
     messageItem: {
       padding: '12px',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-      color: '#ffffff',
+      borderBottom: '1px solid var(--color-white-a04)',
+      color: 'var(--color-text)',
       fontSize: '14px',
     },
     noMessages: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontStyle: 'italic',
       textAlign: 'center',
       padding: '40px 20px',
@@ -305,8 +305,8 @@ export default function WaitingRoom() {
       marginTop: '24px',
     },
     primaryButton: {
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '12px 24px',
       borderRadius: '12px',
@@ -314,12 +314,12 @@ export default function WaitingRoom() {
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
+      boxShadow: '0 4px 16px var(--color-accent-a40)',
     },
     secondaryButton: {
-      background: 'rgba(255, 255, 255, 0.05)',
-      color: '#9ca3af',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-white-a04)',
+      color: 'var(--color-text-muted)',
+      border: '1px solid var(--color-white-a10)',
       padding: '12px 24px',
       borderRadius: '12px',
       fontSize: '14px',
@@ -334,63 +334,63 @@ export default function WaitingRoom() {
     },
     participantRow: {
       padding: '12px',
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '12px',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       fontSize: '14px',
       transition: 'all 0.2s ease',
     },
     roundInfoItem: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '14px',
       marginBottom: '8px',
     },
     roundInfoValue: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       fontWeight: '500',
     },
     loadingContainer: {
       textAlign: 'center',
       padding: '60px 20px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     loadingIcon: {
       fontSize: '56px',
       marginBottom: '20px',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
     },
     loadingTitle: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '12px',
       fontSize: '24px',
       fontWeight: '600',
     },
     loadingText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '15px',
     },
     errorContainer: {
       textAlign: 'center',
       padding: '60px 40px',
-      background: 'rgba(239, 68, 68, 0.15)',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      background: 'var(--color-danger-a12)',
+      border: '1px solid var(--color-danger-a20)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     errorTitle: {
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       marginBottom: '12px',
       fontSize: '24px',
       fontWeight: '600',
     },
     errorText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '15px',
       marginBottom: '24px',
     },
@@ -427,7 +427,7 @@ export default function WaitingRoom() {
               onClick={() => nav('/')}
               whileHover={{ 
                 y: -2,
-                boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+                boxShadow: '0 6px 24px var(--color-accent-a40)'
               }}
               transition={{ duration: 0.2 }}
             >
@@ -505,7 +505,7 @@ export default function WaitingRoom() {
               Puzzles: <span style={styles.metaValue}>{ (batch?.puzzles||[]).length }</span>
             </div>
             <div style={styles.metaItem}>
-              Status: <span style={{...styles.metaValue, color: batch?.isLive ? '#10b981' : '#f59e0b'}}>
+              Status: <span style={{...styles.metaValue, color: batch?.isLive ? 'var(--color-success)' : 'var(--color-warning)'}}>
                 {batch?.isLive ? 'Live' : 'Waiting'}
               </span>
             </div>
@@ -537,7 +537,7 @@ export default function WaitingRoom() {
               style={styles.secondaryButton}
               onClick={() => nav(-1)}
               whileHover={{ 
-                borderColor: 'rgba(255, 255, 255, 0.2)',
+                borderColor: 'var(--color-white-a20)',
                 y: -2 
               }}
               transition={{ duration: 0.2 }}
@@ -549,7 +549,7 @@ export default function WaitingRoom() {
               onClick={() => nav('/')}
               whileHover={{ 
                 y: -2,
-                boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)'
+                boxShadow: '0 6px 24px var(--color-accent-a40)'
               }}
               transition={{ duration: 0.2 }}
             >
@@ -576,8 +576,8 @@ export default function WaitingRoom() {
                     key={u._id} 
                     style={styles.participantRow}
                     whileHover={{ 
-                      borderColor: 'rgba(6, 182, 212, 0.2)',
-                      background: 'rgba(6, 182, 212, 0.1)'
+                      borderColor: 'var(--color-accent-a20)',
+                      background: 'var(--color-accent-a12)'
                     }}
                     transition={{ duration: 0.2 }}
                   >

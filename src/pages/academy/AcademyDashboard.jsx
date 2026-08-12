@@ -85,7 +85,7 @@ export default function AcademyDashboard() {
   const labels = (graphs?.students || []).map(p => shortLabel(p.label, grain));
   const col = (arr) => (arr || []).map(p => p.count);
   const barData = { labels, datasets: [{ label: 'Students joined', data: col(graphs?.students), backgroundColor: 'rgba(6,182,212,0.6)', borderRadius: 6 }] };
-  const lineData = { labels, datasets: [{ label: 'Classes', data: col(graphs?.classes), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.15)', fill: true, tension: 0.3 }] };
+  const lineData = { labels, datasets: [{ label: 'Classes', data: col(graphs?.classes), borderColor: 'var(--color-success)', backgroundColor: 'var(--color-success-a12)', fill: true, tension: 0.3 }] };
   const activityData = { labels, datasets: [{ label: 'Activities', data: col(graphs?.activities), backgroundColor: 'rgba(167,139,250,0.6)', borderRadius: 6 }] };
   const fee = graphs?.feeRequests || {};
   const feeData = {
@@ -96,7 +96,7 @@ export default function AcademyDashboard() {
       { label: 'Rejected', data: col(fee.rejected), backgroundColor: 'rgba(239,68,68,0.6)', stack: 'f' },
     ],
   };
-  const stackedOpts = { ...CHART_OPTS, plugins: { legend: { display: true, position: 'bottom', labels: { color: '#94a3b8', boxWidth: 12, font: { size: 11 } } } }, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } } };
+  const stackedOpts = { ...CHART_OPTS, plugins: { legend: { display: true, position: 'bottom', labels: { color: 'var(--color-text-muted)', boxWidth: 12, font: { size: 11 } } } }, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } } };
   const periodLabel = PERIODS.find(p => p.key === period)?.label.toLowerCase() || 'this month';
 
   return (
@@ -128,7 +128,7 @@ export default function AcademyDashboard() {
 
       {/* New coaches requesting to join — act on the Coaches page */}
       {data.isOwner && data.pendingRequests > 0 && (
-        <div className="acad-req" style={{ borderColor: 'rgba(6,182,212,0.35)', background: 'rgba(6,182,212,0.08)' }}>
+        <div className="acad-req" style={{ borderColor: 'var(--color-accent-a30)', background: 'var(--color-accent-a08)' }}>
           <div className="acad-req-row">
             <span>🔔 <strong>{data.pendingRequests}</strong> coach{data.pendingRequests === 1 ? '' : 'es'} requesting to join your academy</span>
             <Link to="/academy/coaches" className="acad-req-approve" style={{ textDecoration: 'none' }}>Review →</Link>

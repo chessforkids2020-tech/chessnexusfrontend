@@ -60,9 +60,9 @@ function applyCastle960(fen, kingFrom, rookFrom, isKingside) {
 }
 
 const CROWN_TIERS = {
-  gold:     { emoji: '👑', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.5)', glow: '0 0 8px rgba(245,158,11,0.6)', shadow: '0 0 8px rgba(245,158,11,0.7)', label: 'Gold Crown' },
-  platinum: { emoji: '👑', color: '#e2e8f0', bg: 'rgba(226,232,240,0.12)', border: 'rgba(226,232,240,0.45)', glow: '0 0 10px rgba(226,232,240,0.5)', shadow: '0 0 10px rgba(255,255,255,0.9)', label: 'Platinum Crown' },
-  gem:      { emoji: '💎', color: '#60a5fa', bg: 'rgba(96,165,250,0.15)', border: 'rgba(96,165,250,0.5)', glow: '0 0 10px rgba(96,165,250,0.6)', shadow: '0 0 12px rgba(96,165,250,0.8)', label: 'Gem Crown' },
+  gold:     { emoji: '👑', color: 'var(--color-warning)', bg: 'var(--color-warning-a12)', border: 'rgba(245,158,11,0.5)', glow: '0 0 8px rgba(245,158,11,0.6)', shadow: '0 0 8px rgba(245,158,11,0.7)', label: 'Gold Crown' },
+  platinum: { emoji: '👑', color: 'var(--color-text)', bg: 'rgba(226,232,240,0.12)', border: 'var(--color-text-faint)', glow: '0 0 10px var(--color-text-faint)', shadow: '0 0 10px var(--color-text)', label: 'Platinum Crown' },
+  gem:      { emoji: '💎', color: 'var(--color-accent-2)', bg: 'var(--color-accent-2-a15)', border: 'rgba(96,165,250,0.5)', glow: '0 0 10px rgba(96,165,250,0.6)', shadow: '0 0 12px rgba(96,165,250,0.8)', label: 'Gem Crown' },
 };
 const getCrownStyle = (tier) => CROWN_TIERS[tier] || null;
 
@@ -1207,7 +1207,7 @@ export default function ArenaTournamentLive() {
     return (
       <div style={{
         minHeight: '100vh',
-        background: '#0a0a0a',
+        background: 'var(--color-bg)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -1221,27 +1221,27 @@ export default function ArenaTournamentLive() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(circle at 20% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%)',
+          background: 'radial-gradient(circle at 20% 50%, var(--color-accent-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-success-a12) 0%, transparent 50%)',
           pointerEvents: 'none',
           zIndex: 0
         }} />
         
         <div style={{ 
-          color: '#ffffff', 
+          color: 'var(--color-text)', 
           fontSize: '24px', 
           fontWeight: '600',
           position: 'relative',
           zIndex: 1,
           textAlign: 'center',
-          background: 'rgba(23, 23, 23, 0.7)',
+          background: 'var(--color-surface)',
           padding: '40px',
           borderRadius: '20px',
-          border: '1px solid rgba(255, 255, 255, 0.05)',
+          border: '1px solid var(--color-white-a04)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
+          boxShadow: '0 20px 40px var(--color-black-a50)'
         }}>
-          <div style={{ fontSize: '48px', marginBottom: '20px', color: '#06b6d4' }}>⚡</div>
+          <div style={{ fontSize: '48px', marginBottom: '20px', color: 'var(--color-accent)' }}>⚡</div>
           Loading tournament...
         </div>
       </div>
@@ -1257,15 +1257,15 @@ export default function ArenaTournamentLive() {
       {comebackSurgeToast === 'fired' && (
         <div style={{
           position: 'fixed', top: '24px', left: '50%', transform: 'translateX(-50%)',
-          zIndex: 9999, background: 'linear-gradient(135deg, #f97316, #dc2626)',
-          color: '#fff', fontWeight: '800', fontSize: '17px',
+          zIndex: 9999, background: 'linear-gradient(135deg, #f97316, var(--color-danger))',
+          color: 'var(--color-text)', fontWeight: '800', fontSize: '17px',
           padding: '14px 28px', borderRadius: '16px',
           boxShadow: '0 8px 32px rgba(249, 115, 22, 0.55)',
           display: 'flex', alignItems: 'center', gap: '10px',
           animation: 'fadeInDown 0.3s ease'
         }}>
           <span style={{ fontSize: '22px' }}>🔥</span>
-          COMEBACK SURGE! Win scored <span style={{ color: '#fde68a', margin: '0 4px' }}>+4 pts</span>
+          COMEBACK SURGE! Win scored <span style={{ color: 'var(--color-warning)', margin: '0 4px' }}>+4 pts</span>
         </div>
       )}
 
@@ -1276,9 +1276,9 @@ export default function ArenaTournamentLive() {
           <div style={{
             position: 'fixed', top: '80px', left: '50%', transform: 'translateX(-50%)',
             zIndex: 9998, background: 'linear-gradient(135deg, #1e1b4b, #312e81)',
-            color: '#fff', fontWeight: '800', fontSize: '17px',
+            color: 'var(--color-text)', fontWeight: '800', fontSize: '17px',
             padding: '14px 28px', borderRadius: '16px',
-            boxShadow: `0 8px 32px rgba(0,0,0,0.6), ${cs.shadow}`,
+            boxShadow: `0 8px 32px var(--color-black-a65), ${cs.shadow}`,
             display: 'flex', alignItems: 'center', gap: '10px',
             animation: 'fadeInDown 0.3s ease',
             border: `1px solid ${cs.color}`
@@ -1294,8 +1294,8 @@ export default function ArenaTournamentLive() {
       {carryBonusToast > 0 && (
         <div style={{
           position: 'fixed', top: '136px', left: '50%', transform: 'translateX(-50%)',
-          zIndex: 9997, background: 'linear-gradient(135deg, #7c3aed, #4f46e5)',
-          color: '#fff', fontWeight: '800', fontSize: '17px',
+          zIndex: 9997, background: 'linear-gradient(135deg, var(--color-accent-2), #4f46e5)',
+          color: 'var(--color-text)', fontWeight: '800', fontSize: '17px',
           padding: '14px 28px', borderRadius: '16px',
           boxShadow: '0 8px 32px rgba(124,58,237,0.55)',
           display: 'flex', alignItems: 'center', gap: '10px',
@@ -1310,13 +1310,13 @@ export default function ArenaTournamentLive() {
       {carryExpiredToast && (
         <div style={{
           position: 'fixed', top: '136px', left: '50%', transform: 'translateX(-50%)',
-          zIndex: 9997, background: 'linear-gradient(135deg, #374151, #1f2937)',
-          color: '#fff', fontWeight: '800', fontSize: '17px',
+          zIndex: 9997, background: 'linear-gradient(135deg, var(--color-text-faint), #1f2937)',
+          color: 'var(--color-text)', fontWeight: '800', fontSize: '17px',
           padding: '14px 28px', borderRadius: '16px',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+          boxShadow: '0 8px 32px var(--color-black-a50)',
           display: 'flex', alignItems: 'center', gap: '10px',
           animation: 'fadeInDown 0.3s ease',
-          border: '1px solid rgba(255,255,255,0.1)'
+          border: '1px solid var(--color-white-a10)'
         }}>
           <span style={{ fontSize: '22px' }}>⚠️</span>
           Your carry bonus has expired!
@@ -1341,11 +1341,11 @@ export default function ArenaTournamentLive() {
             justifyContent: 'space-between',
             gap: '12px',
             background: marathonPhasePending
-              ? 'rgba(245,158,11,0.12)'
+              ? 'var(--color-warning-a12)'
               : marathonPhase === 1
-                ? 'rgba(6,182,212,0.12)'
-                : 'rgba(239,68,68,0.08)',
-            border: `1px solid ${marathonPhasePending ? 'rgba(245,158,11,0.4)' : marathonPhase === 1 ? 'rgba(6,182,212,0.4)' : 'rgba(239,68,68,0.2)'}`,
+                ? 'var(--color-accent-a12)'
+                : 'var(--color-danger-a12)',
+            border: `1px solid ${marathonPhasePending ? 'var(--color-warning-a30)' : marathonPhase === 1 ? 'var(--color-accent-a40)' : 'var(--color-danger-a20)'}`,
             marginBottom: '4px'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1353,7 +1353,7 @@ export default function ArenaTournamentLive() {
                 {marathonPhasePending ? '⏳' : marathonPhase === 1 ? '⚡' : '🔫'}
               </span>
               <div>
-                <div style={{ fontSize: '13px', fontWeight: '700', color: marathonPhasePending ? '#f59e0b' : marathonPhase === 1 ? '#06b6d4' : '#ef4444' }}>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: marathonPhasePending ? 'var(--color-warning)' : marathonPhase === 1 ? 'var(--color-accent)' : 'var(--color-danger)' }}>
                   {marathonPhasePending
                     ? 'Phase Transition — Finish Your Game!'
                     : marathonPhase === 1
@@ -1361,14 +1361,14 @@ export default function ArenaTournamentLive() {
                       : 'BULLET PHASE  ·  2+1'}
                 </div>
                 {marathonPhaseBanner && (
-                  <div style={{ fontSize: '11px', color: '#9ca3af', marginTop: '1px' }}>{marathonPhaseBanner}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginTop: '1px' }}>{marathonPhaseBanner}</div>
                 )}
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '16px', fontSize: '11px', color: '#9ca3af', whiteSpace: 'nowrap' }}>
-              <span style={{ color: marathonPhase === 0 && !marathonPhasePending ? '#ef4444' : '#6b7280', fontWeight: marathonPhase === 0 ? '700' : '400' }}>Phase 1 (45m): 2+1</span>
+            <div style={{ display: 'flex', gap: '16px', fontSize: '11px', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
+              <span style={{ color: marathonPhase === 0 && !marathonPhasePending ? 'var(--color-danger)' : 'var(--color-text-faint)', fontWeight: marathonPhase === 0 ? '700' : '400' }}>Phase 1 (45m): 2+1</span>
               <span>→</span>
-              <span style={{ color: marathonPhase === 1 ? '#06b6d4' : '#6b7280', fontWeight: marathonPhase === 1 ? '700' : '400' }}>Phase 2 (45m): 3+2</span>
+              <span style={{ color: marathonPhase === 1 ? 'var(--color-accent)' : 'var(--color-text-faint)', fontWeight: marathonPhase === 1 ? '700' : '400' }}>Phase 2 (45m): 3+2</span>
             </div>
           </div>
         )}
@@ -1377,18 +1377,18 @@ export default function ArenaTournamentLive() {
         <div className="at-live-chat">
           <div className="at-live-chat-inner" style={{ padding: 0, borderRadius: '16px', overflow: 'hidden' }}>
             {/* Individual Leaderboard header */}
-            <div style={{ padding: '12px 14px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ fontSize: '17px', fontWeight: '700', margin: 0, background: 'linear-gradient(135deg, #06b6d4, #10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--color-white-a07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: '17px', fontWeight: '700', margin: 0, background: 'linear-gradient(135deg, var(--color-accent), var(--color-success))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 🏆 Leaderboard
               </h3>
-              <div style={{ color: '#9ca3af', fontSize: '12px', fontWeight: '500' }}>{leaderboard.length} players</div>
+              <div style={{ color: 'var(--color-text-muted)', fontSize: '12px', fontWeight: '500' }}>{leaderboard.length} players</div>
             </div>
 
             {/* Column headers */}
-            <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 52px', gap: '8px', padding: '5px 12px', borderBottom: '2px solid rgba(255,255,255,0.1)' }}>
-              <div style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Rank</div>
-              <div style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Player</div>
-              <div style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Score</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '28px 1fr 52px', gap: '8px', padding: '5px 12px', borderBottom: '2px solid var(--color-white-a10)' }}>
+              <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Rank</div>
+              <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Player</div>
+              <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Score</div>
             </div>
 
             {/* Leaderboard rows */}
@@ -1404,28 +1404,28 @@ export default function ArenaTournamentLive() {
                       gridTemplateColumns: '28px 1fr 52px',
                       gap: '8px',
                       padding: '5px 10px',
-                      background: isMe ? 'rgba(6,182,212,0.15)' : crown ? crown.bg : index % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent',
+                      background: isMe ? 'var(--color-accent-a15)' : crown ? crown.bg : index % 2 === 0 ? 'var(--color-white-a04)' : 'transparent',
                       borderRadius: '6px',
                       marginTop: '1px',
-                      border: isMe ? '1px solid #06b6d4' : crown ? `1px solid ${crown.border}` : '1px solid rgba(255,255,255,0.03)',
+                      border: isMe ? '1px solid var(--color-accent)' : crown ? `1px solid ${crown.border}` : '1px solid var(--color-white-a04)',
                       boxShadow: crown && !isMe ? crown.glow : 'none',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: index < 3 ? 'linear-gradient(135deg, #fbbf24, #f59e0b)' : 'linear-gradient(135deg, #6b7280, #4b5563)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: index < 3 ? '#000' : '#fff', fontWeight: '800', fontSize: '9px', flexShrink: 0 }}>
+                      <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: index < 3 ? 'linear-gradient(135deg, var(--color-warning), var(--color-warning))' : 'linear-gradient(135deg, var(--color-text-faint), var(--color-text-faint))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: index < 3 ? 'var(--color-bg)' : 'var(--color-text)', fontWeight: '800', fontSize: '9px', flexShrink: 0 }}>
                         {index + 1}
                       </div>
                     </div>
-                    <div style={{ fontWeight: '600', color: '#fff', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {onlineUserIds.includes(p.userId) && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block', boxShadow: '0 0 4px #10b981', flexShrink: 0 }} title="Online" />}
+                    <div style={{ fontWeight: '600', color: 'var(--color-text)', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {onlineUserIds.includes(p.userId) && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', boxShadow: '0 0 4px var(--color-success)', flexShrink: 0 }} title="Online" />}
                       {crown && <span title={`${crown.label}`} style={{ fontSize: '13px', flexShrink: 0, filter: `drop-shadow(${crown.glow})` }}>{crown.emoji}</span>}
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0, color: crown?.color || '#fff', fontWeight: crown ? '700' : '600', textShadow: crown ? `0 0 8px ${crown.color}88` : 'none' }}><PlayerName displayName={p.displayName} username={p.username} userId={p.userId} /></span>
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0, color: crown?.color || 'var(--color-text)', fontWeight: crown ? '700' : '600', textShadow: crown ? `0 0 8px ${crown.color}88` : 'none' }}><PlayerName displayName={p.displayName} username={p.username} userId={p.userId} /></span>
                       {/* Chess960 has no rating — show only display name + points. */}
                       {tournament?.tournamentType !== 'chess960' && (
-                        <span title="Tournament rating" style={{ fontSize: '10px', fontWeight: '700', color: '#94a3b8', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
+                        <span title="Tournament rating" style={{ fontSize: '10px', fontWeight: '700', color: 'var(--color-text-muted)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
                           {p.tournamentRating ?? 1200}
                           {p.tournamentRatingChange ? (
-                            <span style={{ marginLeft: '2px', color: p.tournamentRatingChange > 0 ? '#10b981' : '#ef4444' }}>
+                            <span style={{ marginLeft: '2px', color: p.tournamentRatingChange > 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
                               {p.tournamentRatingChange > 0 ? `+${p.tournamentRatingChange}` : p.tournamentRatingChange}
                             </span>
                           ) : null}
@@ -1434,9 +1434,9 @@ export default function ArenaTournamentLive() {
                       {p.earlyBirdBonus && <span title="Early Bird: +3 pts" style={{ fontSize: '11px', flexShrink: 0 }}>🐦</span>}
                       {p.carryBonusApplied > 0 && <span title={`Carry Bonus: +${p.carryBonusApplied} pts`} style={{ fontSize: '11px', flexShrink: 0 }}>🎁</span>}
                       {p.comebackSurgeActive && <span title="Comeback Surge ready!" style={{ fontSize: '11px', flexShrink: 0 }}>⚡</span>}
-                      {isMe && <span style={{ color: '#67e8f9', fontSize: '10px', fontWeight: '500', background: 'rgba(6,182,212,0.3)', padding: '1px 4px', borderRadius: '6px', flexShrink: 0 }}>You</span>}
+                      {isMe && <span style={{ color: 'var(--color-accent)', fontSize: '10px', fontWeight: '500', background: 'var(--color-accent-a30)', padding: '1px 4px', borderRadius: '6px', flexShrink: 0 }}>You</span>}
                     </div>
-                    <div style={{ fontWeight: '800', color: crown ? crown.color : '#06b6d4', fontSize: '13px', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>{p.score}</div>
+                    <div style={{ fontWeight: '800', color: crown ? crown.color : 'var(--color-accent)', fontSize: '13px', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>{p.score}</div>
                   </div>
                 );
               })}
@@ -1457,8 +1457,8 @@ export default function ArenaTournamentLive() {
               position: 'absolute',
               top: '-6px',
               right: '-6px',
-              background: '#ef4444',
-              color: '#fff',
+              background: 'var(--color-danger)',
+              color: 'var(--color-text)',
               borderRadius: '50%',
               fontSize: '11px',
               fontWeight: '700',
@@ -1501,11 +1501,11 @@ export default function ArenaTournamentLive() {
                   padding: '10px 16px',
                   borderRadius: '10px',
                   background: firstMovePhaseRef.current === 0
-                    ? (myColor === 'white' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.12)')
-                    : (myColor === 'black' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.12)'),
+                    ? (myColor === 'white' ? 'var(--color-danger-a12)' : 'var(--color-warning-a12)')
+                    : (myColor === 'black' ? 'var(--color-danger-a12)' : 'var(--color-warning-a12)'),
                   border: firstMovePhaseRef.current === 0
-                    ? (myColor === 'white' ? '1px solid rgba(239,68,68,0.4)' : '1px solid rgba(245,158,11,0.3)')
-                    : (myColor === 'black' ? '1px solid rgba(239,68,68,0.4)' : '1px solid rgba(245,158,11,0.3)'),
+                    ? (myColor === 'white' ? '1px solid var(--color-danger-a30)' : '1px solid var(--color-warning-a30)')
+                    : (myColor === 'black' ? '1px solid var(--color-danger-a30)' : '1px solid var(--color-warning-a30)'),
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
@@ -1517,7 +1517,7 @@ export default function ArenaTournamentLive() {
                     color: (() => {
                       const isMyTurn = (firstMovePhaseRef.current === 0 && myColor === 'white') ||
                                        (firstMovePhaseRef.current === 1 && myColor === 'black');
-                      return isMyTurn ? '#f87171' : '#fbbf24';
+                      return isMyTurn ? 'var(--color-danger)' : 'var(--color-warning)';
                     })()
                   }}>
                     {(() => {
@@ -1532,7 +1532,7 @@ export default function ArenaTournamentLive() {
                     fontSize: '15px',
                     fontWeight: '800',
                     fontFamily: 'monospace',
-                    color: firstMoveCountdown <= 10 ? '#f87171' : '#ffffff',
+                    color: firstMoveCountdown <= 10 ? 'var(--color-danger)' : 'var(--color-text)',
                     minWidth: '32px',
                     textAlign: 'right'
                   }}>
@@ -1557,7 +1557,7 @@ export default function ArenaTournamentLive() {
                   gap: '8px'
                 }}>
                   <span style={{
-                    color: '#ffffff',
+                    color: 'var(--color-text)',
                     fontSize: '14px',
                     fontWeight: '600'
                   }}>
@@ -1567,21 +1567,21 @@ export default function ArenaTournamentLive() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '4px',
-                    background: myColor === 'white' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.1)',
+                    background: myColor === 'white' ? 'var(--color-black-a35)' : 'var(--color-white-a10)',
                     padding: '2px 8px',
                     borderRadius: '6px',
-                    border: myColor === 'white' ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.2)'
+                    border: myColor === 'white' ? '1px solid var(--color-white-a10)' : '1px solid var(--color-white-a20)'
                   }}>
                     <div style={{
                       width: '10px',
                       height: '10px',
                       borderRadius: '50%',
-                      background: myColor === 'white' ? '#000000' : '#ffffff',
-                      border: myColor === 'white' ? '1px solid #ffffff' : '1px solid #374151'
+                      background: myColor === 'white' ? 'var(--color-bg)' : 'var(--color-text)',
+                      border: myColor === 'white' ? '1px solid var(--color-text)' : '1px solid var(--color-text-faint)'
                     }} />
                     <span style={{
                       fontSize: '11px',
-                      color: '#ffffff',
+                      color: 'var(--color-text)',
                       fontWeight: '600'
                     }}>
                       {myColor === 'white' ? 'Black' : 'White'}
@@ -1590,13 +1590,13 @@ export default function ArenaTournamentLive() {
                 </div>
                 {/* Opponent Time */}
                 <div style={{
-                  background: 'rgba(0, 0, 0, 0.6)',
-                  color: '#ffffff',
+                  background: 'var(--color-black-a65)',
+                  color: 'var(--color-text)',
                   padding: '4px 12px',
                   borderRadius: '8px',
                   fontSize: '14px',
                   fontWeight: '600',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  border: '1px solid var(--color-white-a10)',
                   fontFamily: 'monospace'
                 }}>
                   ⏱ {formatTime(myColor === 'white' ? blackTimeRemaining : whiteTimeRemaining)}
@@ -1608,10 +1608,10 @@ export default function ArenaTournamentLive() {
                 marginBottom: '8px',
                 width: '100%',
                 maxWidth: `${boardWidth}px`,
-                background: 'rgba(0, 0, 0, 0.2)',
+                background: 'var(--color-black-a20)',
                 borderRadius: '16px',
                 padding: '0',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
+                border: '1px solid var(--color-white-a04)',
                 backdropFilter: 'blur(5px)',
                 WebkitBackdropFilter: 'blur(5px)',
                 display: 'flex',
@@ -1633,7 +1633,7 @@ export default function ArenaTournamentLive() {
                   onPremoveChange={(p) => { chessboardPremoveRef.current = p; }}
                   boardStyle={{
                     borderRadius: '8px',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+                    boxShadow: '0 8px 32px var(--color-black-a50)'
                   }}
                 />
               </div>
@@ -1655,7 +1655,7 @@ export default function ArenaTournamentLive() {
                   gap: '8px'
                 }}>
                   <span style={{
-                    color: '#06b6d4',
+                    color: 'var(--color-accent)',
                     fontSize: '14px',
                     fontWeight: '600'
                   }}>
@@ -1665,21 +1665,21 @@ export default function ArenaTournamentLive() {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '4px',
-                    background: myColor === 'white' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.4)',
+                    background: myColor === 'white' ? 'var(--color-white-a10)' : 'var(--color-black-a35)',
                     padding: '2px 8px',
                     borderRadius: '6px',
-                    border: myColor === 'white' ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.1)'
+                    border: myColor === 'white' ? '1px solid var(--color-white-a20)' : '1px solid var(--color-white-a10)'
                   }}>
                     <div style={{
                       width: '10px',
                       height: '10px',
                       borderRadius: '50%',
-                      background: myColor === 'white' ? '#ffffff' : '#000000',
-                      border: myColor === 'white' ? '1px solid #374151' : '1px solid #ffffff'
+                      background: myColor === 'white' ? 'var(--color-text)' : 'var(--color-bg)',
+                      border: myColor === 'white' ? '1px solid var(--color-text-faint)' : '1px solid var(--color-text)'
                     }} />
                     <span style={{
                       fontSize: '11px',
-                      color: '#06b6d4',
+                      color: 'var(--color-accent)',
                       fontWeight: '600'
                     }}>
                       {myColor === 'white' ? 'White' : 'Black'}
@@ -1688,13 +1688,13 @@ export default function ArenaTournamentLive() {
                 </div>
                 {/* My Time */}
                 <div style={{
-                  background: 'rgba(6, 182, 212, 0.2)',
-                  color: '#06b6d4',
+                  background: 'var(--color-accent-a20)',
+                  color: 'var(--color-accent)',
                   padding: '4px 12px',
                   borderRadius: '8px',
                   fontSize: '14px',
                   fontWeight: '600',
-                  border: '1px solid rgba(6, 182, 212, 0.3)',
+                  border: '1px solid var(--color-accent-a30)',
                   fontFamily: 'monospace'
                 }}>
                   ⏱ {formatTime(myColor === 'white' ? whiteTimeRemaining : blackTimeRemaining)}
@@ -1705,23 +1705,23 @@ export default function ArenaTournamentLive() {
               
               {/* Draw offer banners */}
               {drawOfferState === 'incoming' && (
-                <div style={{ width: '100%', maxWidth: `${boardWidth}px`, marginBottom: '8px', padding: '12px 16px', borderRadius: '12px', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                  <span style={{ fontSize: '13px', fontWeight: '600', color: '#34d399' }}>🤝 Opponent offers a draw</span>
+                <div style={{ width: '100%', maxWidth: `${boardWidth}px`, marginBottom: '8px', padding: '12px 16px', borderRadius: '12px', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                  <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-success)' }}>🤝 Opponent offers a draw</span>
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={() => { socket.emit('respondArenaDraw', { gameId: currentGame, accept: true }); setDrawOfferState(null); }} style={{ padding: '6px 14px', background: 'rgba(16,185,129,0.25)', color: '#34d399', border: '1px solid rgba(16,185,129,0.5)', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }}>Accept</button>
-                    <button onClick={() => { socket.emit('respondArenaDraw', { gameId: currentGame, accept: false }); setDrawOfferState(null); }} style={{ padding: '6px 14px', background: 'rgba(239,68,68,0.15)', color: '#f87171', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }}>Decline</button>
+                    <button onClick={() => { socket.emit('respondArenaDraw', { gameId: currentGame, accept: true }); setDrawOfferState(null); }} style={{ padding: '6px 14px', background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }}>Accept</button>
+                    <button onClick={() => { socket.emit('respondArenaDraw', { gameId: currentGame, accept: false }); setDrawOfferState(null); }} style={{ padding: '6px 14px', background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: '8px', fontSize: '13px', fontWeight: '700', cursor: 'pointer' }}>Decline</button>
                   </div>
                 </div>
               )}
               {drawOfferState === 'sent' && (
-                <div style={{ width: '100%', maxWidth: `${boardWidth}px`, marginBottom: '8px', padding: '10px 16px', borderRadius: '10px', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', textAlign: 'center', fontSize: '13px', fontWeight: '600', color: '#fbbf24' }}>⏳ Draw offer sent — waiting for opponent...</div>
+                <div style={{ width: '100%', maxWidth: `${boardWidth}px`, marginBottom: '8px', padding: '10px 16px', borderRadius: '10px', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', textAlign: 'center', fontSize: '13px', fontWeight: '600', color: 'var(--color-warning)' }}>⏳ Draw offer sent — waiting for opponent...</div>
               )}
             </div>
           ) : (
             <div style={{
               textAlign: 'center',
               padding: '60px 20px',
-              color: '#9ca3af',
+              color: 'var(--color-text-muted)',
               width: '100%'
             }}>
               <div style={{ marginBottom: '20px' }}>
@@ -1734,7 +1734,7 @@ export default function ArenaTournamentLive() {
               <h3 style={{ 
                 fontSize: '28px', 
                 marginBottom: '16px', 
-                color: isPaused ? '#f59e0b' : '#ffffff',
+                color: isPaused ? 'var(--color-warning)' : 'var(--color-text)',
                 fontWeight: '700'
               }}>
                 {isPaused ? '⏸ Paused' : waitingForPairing ? 'Searching for opponent...' : 'Finding opponent...'}
@@ -1755,9 +1755,9 @@ export default function ArenaTournamentLive() {
                       onClick={handleResume}
                       style={{
                         padding: '14px 28px',
-                        background: 'rgba(16, 185, 129, 0.15)',
-                        color: '#34d399',
-                        border: '1px solid rgba(16, 185, 129, 0.35)',
+                        background: 'var(--color-success-a12)',
+                        color: 'var(--color-success)',
+                        border: '1px solid var(--color-success-a30)',
                         borderRadius: '12px',
                         fontSize: '16px',
                         fontWeight: '700',
@@ -1767,12 +1767,12 @@ export default function ArenaTournamentLive() {
                         WebkitBackdropFilter: 'blur(10px)'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(16, 185, 129, 0.28)';
-                        e.currentTarget.style.boxShadow = '0 8px 24px rgba(16, 185, 129, 0.3)';
+                        e.currentTarget.style.background = 'var(--color-success-a30)';
+                        e.currentTarget.style.boxShadow = '0 8px 24px var(--color-success-a30)';
                         e.currentTarget.style.transform = 'translateY(-2px)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(16, 185, 129, 0.15)';
+                        e.currentTarget.style.background = 'var(--color-success-a12)';
                         e.currentTarget.style.boxShadow = 'none';
                         e.currentTarget.style.transform = 'translateY(0)';
                       }}
@@ -1784,9 +1784,9 @@ export default function ArenaTournamentLive() {
                       onClick={handlePause}
                       style={{
                         padding: '14px 28px',
-                        background: 'rgba(245, 158, 11, 0.12)',
-                        color: '#fbbf24',
-                        border: '1px solid rgba(245, 158, 11, 0.3)',
+                        background: 'var(--color-warning-a12)',
+                        color: 'var(--color-warning)',
+                        border: '1px solid var(--color-warning-a30)',
                         borderRadius: '12px',
                         fontSize: '16px',
                         fontWeight: '700',
@@ -1796,12 +1796,12 @@ export default function ArenaTournamentLive() {
                         WebkitBackdropFilter: 'blur(10px)'
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(245, 158, 11, 0.24)';
-                        e.currentTarget.style.boxShadow = '0 8px 24px rgba(245, 158, 11, 0.25)';
+                        e.currentTarget.style.background = 'var(--color-warning-a20)';
+                        e.currentTarget.style.boxShadow = '0 8px 24px var(--color-warning-a20)';
                         e.currentTarget.style.transform = 'translateY(-2px)';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(245, 158, 11, 0.12)';
+                        e.currentTarget.style.background = 'var(--color-warning-a12)';
                         e.currentTarget.style.boxShadow = 'none';
                         e.currentTarget.style.transform = 'translateY(0)';
                       }}
@@ -1814,9 +1814,9 @@ export default function ArenaTournamentLive() {
                   onClick={() => navigate(`/arenatournament/lobby/${tournamentId}`)}
                   style={{
                     padding: '14px 28px',
-                    background: 'rgba(6, 182, 212, 0.15)',
-                    color: '#06b6d4',
-                    border: '1px solid rgba(6, 182, 212, 0.3)',
+                    background: 'var(--color-accent-a15)',
+                    color: 'var(--color-accent)',
+                    border: '1px solid var(--color-accent-a30)',
                     borderRadius: '12px',
                     fontSize: '16px',
                     fontWeight: '600',
@@ -1826,12 +1826,12 @@ export default function ArenaTournamentLive() {
                     WebkitBackdropFilter: 'blur(10px)'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(6, 182, 212, 0.25)';
-                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(6, 182, 212, 0.3)';
+                    e.currentTarget.style.background = 'var(--color-accent-a20)';
+                    e.currentTarget.style.boxShadow = '0 12px 40px var(--color-accent-a30)';
                     e.currentTarget.style.transform = 'translateY(-2px)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(6, 182, 212, 0.15)';
+                    e.currentTarget.style.background = 'var(--color-accent-a15)';
                     e.currentTarget.style.boxShadow = 'none';
                     e.currentTarget.style.transform = 'translateY(0)';
                   }}
@@ -1848,11 +1848,11 @@ export default function ArenaTournamentLive() {
 
           {/* Time section — hidden on mobile/tablet (shown in mobile banner instead) */}
           <div className="at-live-right-timer" style={{
-            background: 'rgba(245, 158, 11, 0.1)',
+            background: 'var(--color-warning-a12)',
             borderRadius: '12px',
             padding: '8px 16px',
             textAlign: 'center',
-            border: '1px solid rgba(245, 158, 11, 0.2)',
+            border: '1px solid var(--color-warning-a20)',
             backdropFilter: 'blur(5px)',
             WebkitBackdropFilter: 'blur(5px)',
             display: 'flex',
@@ -1861,7 +1861,7 @@ export default function ArenaTournamentLive() {
             gap: '10px'
           }}>
             <div style={{ 
-              color: '#fbbf24', 
+              color: 'var(--color-warning)', 
               fontSize: '12px', 
               fontWeight: '600',
               textTransform: 'uppercase',
@@ -1871,7 +1871,7 @@ export default function ArenaTournamentLive() {
               Time Remaining
             </div>
             <div style={{ 
-              color: '#fbbf24', 
+              color: 'var(--color-warning)', 
               fontSize: '22px', 
               fontWeight: '800', 
               fontFamily: 'monospace',
@@ -1886,32 +1886,32 @@ export default function ArenaTournamentLive() {
             <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                 {/* Sound toggle */}
-                <button onClick={() => setSoundEnabled(v => !v)} title={soundEnabled ? 'Sound On' : 'Sound Off'} style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: soundEnabled ? 'rgba(16,185,129,0.15)' : 'rgba(107,114,128,0.18)', color: soundEnabled ? '#34d399' : '#9ca3af', border: `1px solid ${soundEnabled ? 'rgba(16,185,129,0.3)' : 'rgba(107,114,128,0.25)'}`, borderRadius: '10px', fontSize: '18px', cursor: 'pointer' }}>
+                <button onClick={() => setSoundEnabled(v => !v)} title={soundEnabled ? 'Sound On' : 'Sound Off'} style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: soundEnabled ? 'var(--color-success-a12)' : 'rgba(107,114,128,0.18)', color: soundEnabled ? 'var(--color-success)' : 'var(--color-text-muted)', border: `1px solid ${soundEnabled ? 'var(--color-success-a30)' : 'rgba(107,114,128,0.25)'}`, borderRadius: '10px', fontSize: '18px', cursor: 'pointer' }}>
                   {soundEnabled ? '🔔' : '🔕'}
                 </button>
                 {/* Offer Draw */}
                 {drawOfferState !== 'sent' && drawOfferState !== 'incoming' && (
-                  <button onClick={() => { socket.emit('offerArenaDraw', { gameId: currentGame }); }} title="Offer Draw" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(16,185,129,0.12)', color: '#34d399', border: '1px solid rgba(16,185,129,0.25)', borderRadius: '10px', fontSize: '20px', cursor: 'pointer' }}>🤝</button>
+                  <button onClick={() => { socket.emit('offerArenaDraw', { gameId: currentGame }); }} title="Offer Draw" style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-success-a12)', color: 'var(--color-success)', border: '1px solid var(--color-success-a20)', borderRadius: '10px', fontSize: '20px', cursor: 'pointer' }}>🤝</button>
                 )}
                 {/* Back to Lobby */}
                 <button onClick={() => navigate(`/arenatournament/lobby/${tournamentId}`)} title="Back to Lobby"
-                  style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.05)', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', fontSize: '18px', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(6,182,212,0.15)'; e.currentTarget.style.color = '#67e8f9'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#94a3b8'; }}
+                  style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-white-a04)', color: 'var(--color-text-muted)', border: '1px solid var(--color-white-a10)', borderRadius: '10px', fontSize: '18px', cursor: 'pointer' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-accent-a15)'; e.currentTarget.style.color = 'var(--color-accent)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-white-a04)'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
                 >←</button>
                 {/* Pause/Resume next game toggle */}
                 <button
                   onClick={isPaused ? handleResume : handlePause}
                   title={isPaused ? 'Resume auto-pairing for next game' : 'Pause auto-pairing after this game'}
-                  style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isPaused ? 'rgba(245,158,11,0.2)' : 'rgba(107,114,128,0.15)', color: isPaused ? '#fbbf24' : '#9ca3af', border: `1px solid ${isPaused ? 'rgba(245,158,11,0.4)' : 'rgba(107,114,128,0.25)'}`, borderRadius: '10px', fontSize: '16px', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = isPaused ? 'rgba(245,158,11,0.32)' : 'rgba(107,114,128,0.28)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = isPaused ? 'rgba(245,158,11,0.2)' : 'rgba(107,114,128,0.15)'; }}
+                  style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: isPaused ? 'var(--color-warning-a20)' : 'rgba(107,114,128,0.15)', color: isPaused ? 'var(--color-warning)' : 'var(--color-text-muted)', border: `1px solid ${isPaused ? 'var(--color-warning-a30)' : 'rgba(107,114,128,0.25)'}`, borderRadius: '10px', fontSize: '16px', cursor: 'pointer' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = isPaused ? 'var(--color-warning-a30)' : 'rgba(107,114,128,0.28)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = isPaused ? 'var(--color-warning-a20)' : 'rgba(107,114,128,0.15)'; }}
                 >{isPaused ? '▶' : '⏸'}</button>
                 {/* Resign */}
                 <button onClick={handleResign} title="Resign"
-                  style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(239,68,68,0.15)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '10px', fontSize: '18px', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.28)'; e.currentTarget.style.boxShadow = '0 0 14px rgba(239,68,68,0.3)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; e.currentTarget.style.boxShadow = 'none'; }}
+                  style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: '10px', fontSize: '18px', cursor: 'pointer' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-danger-a30)'; e.currentTarget.style.boxShadow = '0 0 14px var(--color-danger-a30)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--color-danger-a12)'; e.currentTarget.style.boxShadow = 'none'; }}
                 >🏳️</button>
               </div>
             </div>
@@ -1921,12 +1921,12 @@ export default function ArenaTournamentLive() {
               never affects the live game (a new move snaps back to live). */}
           {currentGame && gameState && totalPlies > 0 && (
             <div style={{
-              marginTop: '12px', background: 'rgba(0,0,0,0.28)',
-              border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '10px',
+              marginTop: '12px', background: 'var(--color-black-a35)',
+              border: '1px solid var(--color-white-a07)', borderRadius: '12px', padding: '10px',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', color: '#94a3b8', textTransform: 'uppercase' }}>Moves</span>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: reviewing ? '#fbbf24' : '#34d399' }}>
+                <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>Moves</span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: reviewing ? 'var(--color-warning)' : 'var(--color-success)' }}>
                   {reviewing ? `${reviewPly}/${totalPlies}` : '● Live'}
                 </span>
               </div>
@@ -1942,13 +1942,13 @@ export default function ArenaTournamentLive() {
                   }));
                   const activePly = reviewing ? reviewPly : totalPlies;
                   const cell = (it) => it == null
-                    ? <span style={{ color: '#4b5563' }}>…</span>
+                    ? <span style={{ color: 'var(--color-text-faint)' }}>…</span>
                     : <span
                         onClick={() => setReviewPly(it.ply >= totalPlies ? null : it.ply)}
                         style={{
                           cursor: 'pointer', padding: '1px 5px', borderRadius: '4px', fontWeight: 600,
-                          background: it.ply === activePly ? '#2563eb' : 'transparent',
-                          color: it.ply === activePly ? '#fff' : '#e2e8f0',
+                          background: it.ply === activePly ? 'var(--color-accent-2)' : 'transparent',
+                          color: it.ply === activePly ? 'var(--color-text)' : 'var(--color-text)',
                         }}
                       >{it.san}</span>;
                   // Group into rows keyed by move number (white then black).
@@ -1968,7 +1968,7 @@ export default function ArenaTournamentLive() {
                   }
                   return rows.map(r => (
                     <div key={r.no} style={{ display: 'grid', gridTemplateColumns: '28px 1fr 1fr', gap: '4px', alignItems: 'center' }}>
-                      <span style={{ color: '#6b7280', fontSize: '12px' }}>{r.no}.</span>
+                      <span style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>{r.no}.</span>
                       <span>{cell(r.w)}</span>
                       <span>{cell(r.b)}</span>
                     </div>
@@ -1979,7 +1979,7 @@ export default function ArenaTournamentLive() {
               {/* Compact review controls. */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', marginTop: '8px' }}>
                 {(() => {
-                  const b = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#e2e8f0', borderRadius: '6px', padding: '3px 9px', cursor: 'pointer', fontSize: '13px' };
+                  const b = { background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a13)', color: 'var(--color-text)', borderRadius: '6px', padding: '3px 9px', cursor: 'pointer', fontSize: '13px' };
                   const bd = { ...b, opacity: 0.35, cursor: 'default' };
                   const atStart = reviewing && reviewPly <= 0;
                   return (
@@ -2000,9 +2000,9 @@ export default function ArenaTournamentLive() {
             <h3 style={{
               fontSize: '14px',
               fontWeight: '700',
-              color: '#ffffff',
+              color: 'var(--color-text)',
               marginBottom: '12px',
-              background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+              background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text'
@@ -2012,43 +2012,43 @@ export default function ArenaTournamentLive() {
             {tournament?.tournamentType === 'team_battle' ? (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 20px', width: '100%' }}>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Score</div>
-                  <div style={{ fontSize: '28px', fontWeight: '800', color: '#06b6d4', lineHeight: 1 }}>
+                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Score</div>
+                  <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-accent)', lineHeight: 1 }}>
                     {myParticipant ? myParticipant.score : '0'}
                   </div>
                 </div>
                 <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Games</div>
-                  <div style={{ fontSize: '28px', fontWeight: '800', color: '#ffffff', lineHeight: 1 }}>
+                  <div style={{ fontSize: '11px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Games</div>
+                  <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--color-text)', lineHeight: 1 }}>
                     {myParticipant ? myParticipant.gamesPlayed : '0'}
                   </div>
                 </div>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 12px', width: '100%' }}>
-                <div style={{ textAlign: 'center', background: 'rgba(6,182,212,0.08)', borderRadius: '10px', padding: '10px 4px' }}>
-                  <div style={{ fontSize: '10px', color: '#9ca3af', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Score</div>
-                  <div style={{ fontSize: '26px', fontWeight: '800', color: '#06b6d4', lineHeight: 1 }}>
+                <div style={{ textAlign: 'center', background: 'var(--color-accent-a08)', borderRadius: '10px', padding: '10px 4px' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Score</div>
+                  <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-accent)', lineHeight: 1 }}>
                     {myParticipant ? myParticipant.score : '0'}
                   </div>
                 </div>
-                <div style={{ textAlign: 'center', background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '10px 4px' }}>
-                  <div style={{ fontSize: '10px', color: '#9ca3af', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Rank</div>
-                  <div style={{ fontSize: '26px', fontWeight: '800', color: '#f59e0b', lineHeight: 1 }}>
+                <div style={{ textAlign: 'center', background: 'var(--color-white-a04)', borderRadius: '10px', padding: '10px 4px' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Rank</div>
+                  <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-warning)', lineHeight: 1 }}>
                     {myParticipant
                       ? (() => { const r = leaderboard.findIndex(p => p.userId === myParticipant.userId) + 1; return r > 0 ? `#${r}` : '—'; })()
                       : '—'}
                   </div>
                 </div>
-                <div style={{ textAlign: 'center', background: 'rgba(16,185,129,0.08)', borderRadius: '10px', padding: '10px 4px' }}>
-                  <div style={{ fontSize: '10px', color: '#9ca3af', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Wins</div>
-                  <div style={{ fontSize: '26px', fontWeight: '800', color: '#10b981', lineHeight: 1 }}>
+                <div style={{ textAlign: 'center', background: 'var(--color-success-a12)', borderRadius: '10px', padding: '10px 4px' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Wins</div>
+                  <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-success)', lineHeight: 1 }}>
                     {myParticipant ? (myParticipant.wins ?? 0) : '0'}
                   </div>
                 </div>
-                <div style={{ textAlign: 'center', background: 'rgba(239,68,68,0.08)', borderRadius: '10px', padding: '10px 4px' }}>
-                  <div style={{ fontSize: '10px', color: '#9ca3af', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Losses</div>
-                  <div style={{ fontSize: '26px', fontWeight: '800', color: '#ef4444', lineHeight: 1 }}>
+                <div style={{ textAlign: 'center', background: 'var(--color-danger-a12)', borderRadius: '10px', padding: '10px 4px' }}>
+                  <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: '600' }}>Losses</div>
+                  <div style={{ fontSize: '26px', fontWeight: '800', color: 'var(--color-danger)', lineHeight: 1 }}>
                     {myParticipant ? (myParticipant.losses ?? 0) : '0'}
                   </div>
                 </div>
@@ -2060,21 +2060,21 @@ export default function ArenaTournamentLive() {
           {tournament?.tournamentType !== 'team_battle' && myParticipant && (
             (myParticipant.earlyBirdBonus || myParticipant.comebackSurgeActive || myParticipant.carryBonusApplied > 0 || myParticipant.crownTierAtJoin)
           ) && (
-            <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)', padding: '10px 12px' }}>
-              <div style={{ fontSize: '10px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '8px' }}>Active Bonuses</div>
+            <div style={{ background: 'var(--color-black-a20)', borderRadius: '12px', border: '1px solid var(--color-white-a07)', padding: '10px 12px' }}>
+              <div style={{ fontSize: '10px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '8px' }}>Active Bonuses</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {myParticipant.earlyBirdBonus && (
-                  <span title="Early Bird: +3 pts for joining early" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.35)', color: '#fbbf24' }}>
+                  <span title="Early Bird: +3 pts for joining early" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', color: 'var(--color-warning)' }}>
                     🐦 Early Bird <span style={{ opacity: 0.8 }}>+3</span>
                   </span>
                 )}
                 {myParticipant.comebackSurgeActive && (
-                  <span title="Comeback Surge: next win = +4 pts" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.35)', color: '#34d399' }}>
+                  <span title="Comeback Surge: next win = +4 pts" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', background: 'var(--color-success-a12)', border: '1px solid var(--color-success-a30)', color: 'var(--color-success)' }}>
                     ⚡ Surge <span style={{ opacity: 0.8 }}>next win +4</span>
                   </span>
                 )}
                 {myParticipant.carryBonusApplied > 0 && (
-                  <span title={`Carry Bonus: +${myParticipant.carryBonusApplied} pts from previous tournament`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.35)', color: '#a78bfa' }}>
+                  <span title={`Carry Bonus: +${myParticipant.carryBonusApplied} pts from previous tournament`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '3px 9px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)', color: 'var(--color-accent-2)' }}>
                     🎁 Carry <span style={{ opacity: 0.8 }}>+{myParticipant.carryBonusApplied}</span>
                   </span>
                 )}
@@ -2089,22 +2089,22 @@ export default function ArenaTournamentLive() {
 
           {/* Tournament Info card — non-team only */}
           {tournament?.tournamentType !== 'team_battle' && (
-            <div style={{ background: 'rgba(0,0,0,0.25)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)', padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ background: 'var(--color-black-a20)', borderRadius: '12px', border: '1px solid var(--color-white-a07)', padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '12px', fontWeight: '700', color: '#e5e7eb' }}>
+                <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-text)' }}>
                   {tournament?.tournamentType === 'chess960' && '🎲 Chess960'}
                   {tournament?.tournamentType === 'bullet_blitz_marathon' && '🏃 Bullet → Blitz Marathon'}
                   {(!tournament?.tournamentType || tournament?.tournamentType === 'standard') && '♟ Standard'}
                 </span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: '600', color: '#10b981' }}>
-                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 5px #10b981', display: 'inline-block' }} />
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: '600', color: 'var(--color-success)' }}>
+                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--color-success)', boxShadow: '0 0 5px var(--color-success)', display: 'inline-block' }} />
                   {onlineUserIds.length} online
                 </span>
               </div>
               {tournament?.tournamentType === 'bullet_blitz_marathon' && (
                 <div>
                   {marathonPhase === 0
-                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.35)', color: '#f87171' }}>🔴 Phase 1 · Bullet</span>
+                    ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: 'var(--color-danger-a12)', border: '1px solid var(--color-danger-a30)', color: 'var(--color-danger)' }}>🔴 Phase 1 · Bullet</span>
                     : <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: '700', background: 'rgba(234,179,8,0.15)', border: '1px solid rgba(234,179,8,0.35)', color: '#fde047' }}>🟡 Phase 2 · Blitz</span>
                   }
                 </div>
@@ -2123,28 +2123,28 @@ export default function ArenaTournamentLive() {
 
           {/* Team Score Cards — right panel (team_battle only) */}
           {tournament?.tournamentType === 'team_battle' && teamLeaderboard.length > 0 && (
-            <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', overflow: 'hidden' }}>
-              <div style={{ padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, background: 'linear-gradient(135deg, #a855f7, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>⚔️ Teams</h3>
-                <div style={{ color: '#9ca3af', fontSize: '12px', fontWeight: '500' }}>{teamLeaderboard.length} teams</div>
+            <div style={{ background: 'var(--color-black-a35)', borderRadius: '16px', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', overflow: 'hidden' }}>
+              <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-white-a04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, background: 'linear-gradient(135deg, var(--color-accent-2), #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>⚔️ Teams</h3>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: '12px', fontWeight: '500' }}>{teamLeaderboard.length} teams</div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '44px 1fr 56px', gap: '8px', padding: '5px 12px', borderBottom: '2px solid rgba(255,255,255,0.1)' }}>
-                <div style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Rank</div>
-                <div style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Team</div>
-                <div style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Score</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '44px 1fr 56px', gap: '8px', padding: '5px 12px', borderBottom: '2px solid var(--color-white-a10)' }}>
+                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Rank</div>
+                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Team</div>
+                <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'right' }}>Score</div>
               </div>
               {teamLeaderboard.map((team, i) => {
                 const medals = ['🥇', '🥈', '🥉'];
                 const isMyTeam = myParticipant?.teamId === team.teamId;
                 return (
-                  <div key={team.teamId} style={{ display: 'grid', gridTemplateColumns: '44px 1fr 56px', gap: '8px', padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'center', background: isMyTeam ? `${team.color}12` : 'transparent', borderLeft: isMyTeam ? `3px solid ${team.color}` : '3px solid transparent' }}>
+                  <div key={team.teamId} style={{ display: 'grid', gridTemplateColumns: '44px 1fr 56px', gap: '8px', padding: '8px 12px', borderBottom: '1px solid var(--color-white-a04)', alignItems: 'center', background: isMyTeam ? `${team.color}12` : 'transparent', borderLeft: isMyTeam ? `3px solid ${team.color}` : '3px solid transparent' }}>
                     <div style={{ fontSize: '14px', textAlign: 'center' }}>{medals[i] || `#${i + 1}`}</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
                       <div style={{ width: '9px', height: '9px', borderRadius: '50%', background: team.color, boxShadow: `0 0 6px ${team.color}`, flexShrink: 0 }} />
-                      <span style={{ fontSize: '12px', fontWeight: '700', color: isMyTeam ? team.color : '#e5e7eb', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{team.teamName}</span>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: isMyTeam ? team.color : 'var(--color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{team.teamName}</span>
                       {isMyTeam && <span style={{ fontSize: '9px', fontWeight: '700', color: team.color, background: `${team.color}22`, border: `1px solid ${team.color}55`, borderRadius: '4px', padding: '1px 4px', flexShrink: 0 }}>You</span>}
                     </div>
-                    <div style={{ fontSize: '15px', fontWeight: '800', color: '#34d399', textAlign: 'right' }}>{team.totalScore}</div>
+                    <div style={{ fontSize: '15px', fontWeight: '800', color: 'var(--color-success)', textAlign: 'right' }}>{team.totalScore}</div>
                   </div>
                 );
               })}
@@ -2157,15 +2157,15 @@ export default function ArenaTournamentLive() {
               marginTop: '8px',
               padding: '8px 14px',
               borderRadius: '10px',
-              background: 'rgba(245, 158, 11, 0.08)',
-              border: '1px solid rgba(245, 158, 11, 0.2)',
+              background: 'var(--color-warning-a12)',
+              border: '1px solid var(--color-warning-a20)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px'
             }}>
               <span style={{ fontSize: '14px' }}>⏸</span>
-              <span style={{ fontSize: '12px', fontWeight: '600', color: '#fbbf24' }}>
+              <span style={{ fontSize: '12px', fontWeight: '600', color: 'var(--color-warning)' }}>
                 {pausedCount} player{pausedCount !== 1 ? 's' : ''} paused
               </span>
             </div>
@@ -2210,7 +2210,7 @@ export default function ArenaTournamentLive() {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0, 0, 0, 0.85)',
+          background: 'var(--color-black-a65)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -2220,11 +2220,11 @@ export default function ArenaTournamentLive() {
           animation: 'fadeIn 0.3s ease-out'
         }}>
           <div style={{
-            background: 'linear-gradient(145deg, #171717, #0a0a0a)',
+            background: 'linear-gradient(145deg, var(--color-surface-2), var(--color-bg))',
             padding: '40px',
             borderRadius: '24px',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 20px rgba(6, 182, 212, 0.1)',
+            border: '1px solid var(--color-white-a10)',
+            boxShadow: '0 25px 50px -12px var(--color-black-a50), 0 0 20px var(--color-accent-a12)',
             textAlign: 'center',
             maxWidth: '500px',
             width: '90%',
@@ -2234,8 +2234,8 @@ export default function ArenaTournamentLive() {
               fontSize: '32px',
               fontWeight: '800',
               marginBottom: '24px',
-              color: '#ffffff',
-              background: 'linear-gradient(to right, #ffffff, #9ca3af)',
+              color: 'var(--color-text)',
+              background: 'linear-gradient(to right, var(--color-text), var(--color-text-muted))',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent'
             }}>
@@ -2253,19 +2253,19 @@ export default function ArenaTournamentLive() {
                 <div style={{
                   fontSize: '20px',
                   fontWeight: '700',
-                  color: gameEndData.winner === 'white' ? '#fbbf24' : '#ffffff',
+                  color: gameEndData.winner === 'white' ? 'var(--color-warning)' : 'var(--color-text)',
                   marginBottom: '8px',
-                  textShadow: gameEndData.winner === 'white' ? '0 0 10px rgba(251, 191, 36, 0.3)' : 'none'
+                  textShadow: gameEndData.winner === 'white' ? '0 0 10px var(--color-warning-a30)' : 'none'
                 }}>
                   <PlayerName displayName={gameEndData.whitePlayerDisplayName} username={gameEndData.whitePlayerUsername} />
                 </div>
-                <div style={{ color: '#9ca3af', fontSize: '14px' }}>White</div>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>White</div>
               </div>
 
               <div style={{
                 fontSize: '24px',
                 fontWeight: '900',
-                color: '#4b5563'
+                color: 'var(--color-text-faint)'
               }}>
                 {gameEndData.result === 'draw' ? '=' : 'VS'}
               </div>
@@ -2274,33 +2274,33 @@ export default function ArenaTournamentLive() {
                 <div style={{
                   fontSize: '20px',
                   fontWeight: '700',
-                  color: gameEndData.winner === 'black' ? '#fbbf24' : '#ffffff',
+                  color: gameEndData.winner === 'black' ? 'var(--color-warning)' : 'var(--color-text)',
                   marginBottom: '8px',
-                  textShadow: gameEndData.winner === 'black' ? '0 0 10px rgba(251, 191, 36, 0.3)' : 'none'
+                  textShadow: gameEndData.winner === 'black' ? '0 0 10px var(--color-warning-a30)' : 'none'
                 }}>
                   <PlayerName displayName={gameEndData.blackPlayerDisplayName} username={gameEndData.blackPlayerUsername} />
                 </div>
-                <div style={{ color: '#9ca3af', fontSize: '14px' }}>Black</div>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>Black</div>
               </div>
             </div>
 
             <div style={{
               padding: '16px',
-              background: 'rgba(255, 255, 255, 0.03)',
+              background: 'var(--color-white-a04)',
               marginBottom: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.05)'
+              border: '1px solid var(--color-white-a04)'
             }}>
               <div style={{
                 fontSize: '18px',
                 fontWeight: '600',
-                color: '#06b6d4',
+                color: 'var(--color-accent)',
                 marginBottom: '4px'
               }}>
                 {gameEndData.result === 'white_won' ? <><PlayerName displayName={gameEndData.whitePlayerDisplayName} username={gameEndData.whitePlayerUsername} /> Won!</> : 
                  gameEndData.result === 'black_won' ? <><PlayerName displayName={gameEndData.blackPlayerDisplayName} username={gameEndData.blackPlayerUsername} /> Won!</> : 
                  'Draw!'}
               </div>
-              <div style={{ color: '#6b7280', fontSize: '14px', textTransform: 'capitalize' }}>
+              <div style={{ color: 'var(--color-text-faint)', fontSize: '14px', textTransform: 'capitalize' }}>
                 {gameEndData.reason === 'no_first_move_white'
                   ? 'Forfeit — White did not make the first move in time'
                   : gameEndData.reason === 'no_first_move_black'
@@ -2321,9 +2321,9 @@ export default function ArenaTournamentLive() {
               if (!isWinner || !myStreak) return null;
               return (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '16px' }}>
-                  <div style={{ padding: '8px 18px', borderRadius: '12px', background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.35)', color: '#fbbf24', fontWeight: '700', fontSize: '14px' }}>
+                  <div style={{ padding: '8px 18px', borderRadius: '12px', background: 'var(--color-warning-a12)', border: '1px solid var(--color-warning-a30)', color: 'var(--color-warning)', fontWeight: '700', fontSize: '14px' }}>
                     🔥 {myStreak}-game win streak!
-                    {bonus > 0 && <span style={{ marginLeft: '8px', color: '#34d399' }}>+{bonus} bonus pts</span>}
+                    {bonus > 0 && <span style={{ marginLeft: '8px', color: 'var(--color-success)' }}>+{bonus} bonus pts</span>}
                     {(gameEndData.comebackBonus || 0) > 0 && (
                       <span style={{ marginLeft: '8px', color: '#f97316', fontWeight: '800' }}>⚡ COMEBACK SURGE! +4 pts</span>
                     )}
@@ -2336,29 +2336,29 @@ export default function ArenaTournamentLive() {
             {myParticipant && pairingEnabled && (
               <div style={{ marginBottom: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                 {isPaused ? (
-                  <div style={{ color: '#fbbf24', fontSize: '13px', fontWeight: '600' }}>⏸ Paused — click Resume to get paired</div>
+                  <div style={{ color: 'var(--color-warning)', fontSize: '13px', fontWeight: '600' }}>⏸ Paused — click Resume to get paired</div>
                 ) : (
-                  <div style={{ color: '#9ca3af', fontSize: '13px', fontWeight: '500' }}>⚡ Finding next opponent automatically...</div>
+                  <div style={{ color: 'var(--color-text-muted)', fontSize: '13px', fontWeight: '500' }}>⚡ Finding next opponent automatically...</div>
                 )}
                 <div style={{ display: 'flex', gap: '12px' }}>
                   {isPaused ? (
                     <button
                       onClick={() => { setShowGameEndPopup(false); setGameEndData(null); handleResume(); }}
-                      style={{ padding: '10px 24px', background: 'rgba(16,185,129,0.2)', color: '#34d399', border: '1px solid rgba(16,185,129,0.4)', borderRadius: '10px', fontWeight: '700', fontSize: '14px', cursor: 'pointer' }}
+                      style={{ padding: '10px 24px', background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: '10px', fontWeight: '700', fontSize: '14px', cursor: 'pointer' }}
                     >
                       ▶ Resume
                     </button>
                   ) : (
                     <button
                       onClick={() => { setShowGameEndPopup(false); setGameEndData(null); handlePause(); }}
-                      style={{ padding: '10px 24px', background: 'rgba(245,158,11,0.12)', color: '#fbbf24', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '10px', fontWeight: '700', fontSize: '14px', cursor: 'pointer' }}
+                      style={{ padding: '10px 24px', background: 'var(--color-warning-a12)', color: 'var(--color-warning)', border: '1px solid var(--color-warning-a30)', borderRadius: '10px', fontWeight: '700', fontSize: '14px', cursor: 'pointer' }}
                     >
                       ⏸ Pause
                     </button>
                   )}
                   <button
                     onClick={() => { setShowGameEndPopup(false); setGameEndData(null); }}
-                    style={{ padding: '10px 24px', background: 'rgba(107,114,128,0.18)', color: '#9ca3af', border: '1px solid rgba(107,114,128,0.25)', borderRadius: '10px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
+                    style={{ padding: '10px 24px', background: 'rgba(107,114,128,0.18)', color: 'var(--color-text-muted)', border: '1px solid rgba(107,114,128,0.25)', borderRadius: '10px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
                   >
                     Close
                   </button>
@@ -2366,7 +2366,7 @@ export default function ArenaTournamentLive() {
               </div>
             )}
 
-            <div style={{ color: '#9ca3af', fontSize: '12px', fontWeight: '500' }}>
+            <div style={{ color: 'var(--color-text-muted)', fontSize: '12px', fontWeight: '500' }}>
               Returning to lobby in 7 seconds...
             </div>
           </div>

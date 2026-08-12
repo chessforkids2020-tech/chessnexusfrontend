@@ -162,7 +162,7 @@ const StudyMode = ({ result, onClose }) => {
               orientation="white"
               boardStyle={{
                 borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                boxShadow: '0 4px 12px var(--color-black-a35)'
               }}
               boardWidth={boardSize}
               draggable={showingSolution}
@@ -177,7 +177,7 @@ const StudyMode = ({ result, onClose }) => {
               <div><strong>Difficulty:</strong> {result.puzzle?.difficulty || 'medium'}</div>
               <div><strong>Your Result:</strong> 
                 <span style={{
-                  color: result.correct ? '#059669' : '#dc2626',
+                  color: result.correct ? 'var(--color-success)' : 'var(--color-danger)',
                   fontWeight: 'bold'
                 }}>
                   {result.correct ? ' ✅ Correct' : ' ✗ Incorrect'}
@@ -273,7 +273,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: 'var(--color-black-a65)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -281,25 +281,25 @@ const styles = {
     padding: '20px'
   },
   modal: {
-    backgroundColor: '#fff',
+    backgroundColor: 'var(--color-text)',
     borderRadius: '12px',
     maxWidth: '900px',
     width: '100%',
     maxHeight: '90vh',
     overflow: 'auto',
-    boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
+    boxShadow: '0 20px 40px var(--color-black-a35)'
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '20px',
-    borderBottom: '1px solid #e2e8f0',
-    backgroundColor: '#f8fafc'
+    borderBottom: '1px solid var(--color-text)',
+    backgroundColor: 'var(--color-text)'
   },
   title: {
     margin: 0,
-    color: '#1e293b',
+    color: 'var(--color-surface-2)',
     fontSize: '1.5em'
   },
   closeButton: {
@@ -307,7 +307,7 @@ const styles = {
     border: 'none',
     fontSize: '1.5em',
     cursor: 'pointer',
-    color: '#64748b',
+    color: 'var(--color-text-faint)',
     padding: '5px',
     borderRadius: '4px'
   },
@@ -329,13 +329,13 @@ const styles = {
   puzzleInfo: {
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'var(--color-text)',
     borderRadius: '8px'
   },
   moveAnalysis: {
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'var(--color-text)',
     borderRadius: '8px'
   },
   moveComparison: {
@@ -346,16 +346,16 @@ const styles = {
   },
   moveList: {
     fontFamily: 'monospace',
-    backgroundColor: '#fff',
+    backgroundColor: 'var(--color-text)',
     padding: '8px',
     borderRadius: '4px',
-    border: '1px solid #e2e8f0',
+    border: '1px solid var(--color-text)',
     marginTop: '4px'
   },
   solutionControls: {
     marginBottom: '20px',
     padding: '15px',
-    backgroundColor: '#f8fafc',
+    backgroundColor: 'var(--color-text)',
     borderRadius: '8px'
   },
   buttonGroup: {
@@ -365,8 +365,8 @@ const styles = {
     flexWrap: 'wrap'
   },
   controlButton: {
-    backgroundColor: '#059669',
-    color: '#fff',
+    backgroundColor: 'var(--color-success)',
+    color: 'var(--color-text)',
     border: 'none',
     padding: '8px 16px',
     borderRadius: '6px',

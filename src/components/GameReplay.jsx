@@ -305,11 +305,11 @@ function EnginePanel({ fen, numLines = ENGINE_LINES, enabled = true, onToggle })
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const CLASS_META = {
-  brilliant:   { icon: '✨', color: '#10b981', label: 'Brilliant!' },
-  blunder:     { icon: '⁉️', color: '#ef4444', label: 'Blunder' },
-  mistake:     { icon: '?!', color: '#f59e0b', label: 'Mistake' },
-  inaccuracy:  { icon: '?!', color: '#eab308', label: 'Inaccuracy' },
-  good:        { icon: '',   color: '#10b981', label: '' },
+  brilliant:   { icon: '✨', color: 'var(--color-success)', label: 'Brilliant!' },
+  blunder:     { icon: '⁉️', color: 'var(--color-danger)', label: 'Blunder' },
+  mistake:     { icon: '?!', color: 'var(--color-warning)', label: 'Mistake' },
+  inaccuracy:  { icon: '?!', color: 'var(--color-warning)', label: 'Inaccuracy' },
+  good:        { icon: '',   color: 'var(--color-success)', label: '' },
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -485,7 +485,7 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
   const arrows = useMemo(() => {
     if (!currentAnalysis || !onMainline) return [];
     if (currentAnalysis.classification === 'brilliant') {
-      if (curNode.from && curNode.to) return [{ from: curNode.from, to: curNode.to, color: '#10b981' }];
+      if (curNode.from && curNode.to) return [{ from: curNode.from, to: curNode.to, color: 'var(--color-success)' }];
       return [];
     }
     if (!currentAnalysis.bestMove || currentAnalysis.classification === 'good' || currentAnalysis.classification === 'inaccuracy') return [];
@@ -494,7 +494,7 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
     try {
       const c = new Chess(prevFen);
       const m = c.move(currentAnalysis.bestMove);
-      if (m) return [{ from: m.from, to: m.to, color: '#10b981' }];
+      if (m) return [{ from: m.from, to: m.to, color: 'var(--color-success)' }];
     } catch {}
     return [];
   }, [currentAnalysis, onMainline, curNode, tree, path]);
@@ -680,7 +680,7 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
                     }
                   </div>
                   {currentAnalysis.classification === 'brilliant' && currentAnalysis.winChanceGain > 0 && (
-                    <div className="gr-comment-best" style={{ color: '#10b981' }}>
+                    <div className="gr-comment-best" style={{ color: 'var(--color-success)' }}>
                       Win chance gained: <strong>+{currentAnalysis.winChanceGain}%</strong>
                     </div>
                   )}
@@ -700,7 +700,7 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
                 <div className="gr-summary-stats">
                   {totalBrilliant > 0 && (
                     <div className="gr-summary-stat">
-                      <span className="gr-stat-val" style={{ color: '#10b981' }}>✨ {totalBrilliant}</span>
+                      <span className="gr-stat-val" style={{ color: 'var(--color-success)' }}>✨ {totalBrilliant}</span>
                       <span className="gr-stat-lbl">Brilliant</span>
                     </div>
                   )}
@@ -709,15 +709,15 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
                     <span className="gr-stat-lbl">Accuracy</span>
                   </div>
                   <div className="gr-summary-stat">
-                    <span className="gr-stat-val" style={{ color: '#ef4444' }}>{totalBlunders}</span>
+                    <span className="gr-stat-val" style={{ color: 'var(--color-danger)' }}>{totalBlunders}</span>
                     <span className="gr-stat-lbl">Blunders</span>
                   </div>
                   <div className="gr-summary-stat">
-                    <span className="gr-stat-val" style={{ color: '#f59e0b' }}>{totalMistakes}</span>
+                    <span className="gr-stat-val" style={{ color: 'var(--color-warning)' }}>{totalMistakes}</span>
                     <span className="gr-stat-lbl">Mistakes</span>
                   </div>
                   <div className="gr-summary-stat">
-                    <span className="gr-stat-val" style={{ color: '#eab308' }}>{totalInaccuracies}</span>
+                    <span className="gr-stat-val" style={{ color: 'var(--color-warning)' }}>{totalInaccuracies}</span>
                     <span className="gr-stat-lbl">Inaccuracies</span>
                   </div>
                 </div>

@@ -184,7 +184,7 @@ export default function PuzzleTournament() {
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '20px',
       position: 'relative',
@@ -196,7 +196,7 @@ export default function PuzzleTournament() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -210,33 +210,33 @@ export default function PuzzleTournament() {
       textAlign: 'center',
       marginBottom: '40px',
       padding: '32px 28px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     title: {
       fontSize: '42px',
       fontWeight: '700',
       margin: '0 0 12px 0',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     trophyIcon: {
       display: 'inline',
-      color: '#FFD700', // Gold color for trophy
+      color: 'var(--color-warning)', // Gold color for trophy
       textShadow: '0 0 10px rgba(255, 215, 0, 0.5)',
       marginRight: '10px',
     },
     subtitle: {
       fontSize: '16px',
       margin: '0',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '400',
     },
     noAssignment: {
-      background: 'rgba(239, 68, 68, 0.15)',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      background: 'var(--color-danger-a12)',
+      border: '1px solid var(--color-danger-a20)',
       borderRadius: '20px',
       padding: '24px',
       marginBottom: '30px',
@@ -249,12 +249,12 @@ export default function PuzzleTournament() {
       gap: '24px', // Reduced gap between rounds
     },
     roundContainer: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '24px', // Reduced padding
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     },
     roundHeader: {
@@ -263,28 +263,28 @@ export default function PuzzleTournament() {
       alignItems: 'center',
       marginBottom: '20px', // Reduced margin
       paddingBottom: '12px', // Reduced padding
-      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+      borderBottom: '1px solid var(--color-white-a04)',
     },
     roundTitle: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       fontSize: '22px', // Slightly smaller font
       fontWeight: '600',
       margin: '0',
     },
     globalTime: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '13px', // Smaller font
       fontWeight: '500',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       padding: '5px 10px', // Reduced padding
       borderRadius: '8px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     batchContainer: {
       marginBottom: '16px', // Reduced margin
       padding: '20px', // Reduced padding
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '16px',
       backdropFilter: 'blur(10px)',
       transition: 'all 0.3s ease',
@@ -293,7 +293,7 @@ export default function PuzzleTournament() {
       marginBottom: '12px', // Reduced margin
     },
     batchTitle: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       fontSize: '18px', // Smaller font
       fontWeight: '600',
       margin: '0 0 8px 0',
@@ -305,22 +305,22 @@ export default function PuzzleTournament() {
       fontSize: '14px',
     },
     duration: {
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       fontWeight: '500',
-      background: 'rgba(6, 182, 212, 0.15)',
+      background: 'var(--color-accent-a15)',
       padding: '4px 10px', // Reduced padding
       borderRadius: '8px',
-      border: '1px solid rgba(6, 182, 212, 0.2)',
+      border: '1px solid var(--color-accent-a20)',
     },
     participants: {
-      color: '#9ca3af',
-      background: 'rgba(0, 0, 0, 0.3)',
+      color: 'var(--color-text-muted)',
+      background: 'var(--color-black-a35)',
       padding: '4px 10px', // Reduced padding
       borderRadius: '8px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     viewResults: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '14px',
       marginBottom: '16px', // Reduced margin
       fontStyle: 'italic',
@@ -335,8 +335,8 @@ export default function PuzzleTournament() {
       justifyContent: 'flex-end',
     },
     joinButton: {
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '8px 20px', // Reduced padding
       borderRadius: '10px', // Slightly smaller
@@ -346,11 +346,11 @@ export default function PuzzleTournament() {
       textDecoration: 'none',
       display: 'inline-block',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
+      boxShadow: '0 4px 16px var(--color-accent-a40)',
     },
     joinButtonWaiting: {
-      background: 'linear-gradient(135deg, #f59e0b 0%, #f97316 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-warning) 0%, #f97316 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '8px 20px', // Reduced padding
       borderRadius: '10px', // Slightly smaller
@@ -360,7 +360,7 @@ export default function PuzzleTournament() {
       textDecoration: 'none',
       display: 'inline-block',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 16px rgba(245, 158, 11, 0.4)',
+      boxShadow: '0 4px 16px var(--color-warning-a30)',
     },
     resultsButton: {
       background: 'rgba(111, 66, 193, 0.15)',
@@ -374,9 +374,9 @@ export default function PuzzleTournament() {
       transition: 'all 0.3s ease',
     },
     boardButton: {
-      background: 'rgba(255, 215, 0, 0.15)',
-      color: '#FFD700',
-      border: '1px solid rgba(255, 215, 0, 0.2)',
+      background: 'var(--color-warning-a12)',
+      color: 'var(--color-warning)',
+      border: '1px solid var(--color-warning-a20)',
       padding: '8px 20px', // Reduced padding
       borderRadius: '10px', // Slightly smaller
       fontSize: '14px',
@@ -385,71 +385,71 @@ export default function PuzzleTournament() {
       transition: 'all 0.3s ease',
     },
     noBatchesMessage: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontStyle: 'italic',
       textAlign: 'center',
       padding: '30px', // Reduced padding
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       borderRadius: '16px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     noRounds: {
       textAlign: 'center',
       padding: '40px', // Reduced padding
-      color: '#9ca3af',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      color: 'var(--color-text-muted)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     loadingContainer: {
       textAlign: 'center',
       padding: '60px 20px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     loadingIcon: {
       fontSize: '56px',
       marginBottom: '20px',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
     },
     loadingTitle: {
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '12px',
       fontSize: '24px',
       fontWeight: '600',
     },
     loadingText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '15px',
     },
     errorContainer: {
       textAlign: 'center',
       padding: '60px 40px',
-      background: 'rgba(239, 68, 68, 0.15)',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      background: 'var(--color-danger-a12)',
+      border: '1px solid var(--color-danger-a20)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     errorTitle: {
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       marginBottom: '12px',
       fontSize: '24px',
       fontWeight: '600',
     },
     errorText: {
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontSize: '15px',
       marginBottom: '24px',
     },
     retryButton: {
-      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-danger) 0%, var(--color-danger) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '12px 28px',
       borderRadius: '12px',
@@ -457,7 +457,7 @@ export default function PuzzleTournament() {
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 16px rgba(239, 68, 68, 0.4)',
+      boxShadow: '0 4px 16px var(--color-danger-a30)',
     },
   };
 
@@ -518,13 +518,13 @@ export default function PuzzleTournament() {
             left: '50%',
             transform: 'translateX(-50%)',
             zIndex: 1000,
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            background: 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
             color: 'white',
             padding: '12px 24px',
             borderRadius: '12px',
-            boxShadow: '0 8px 32px rgba(16, 185, 129, 0.3)',
+            boxShadow: '0 8px 32px var(--color-success-a30)',
             backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
+            border: '1px solid var(--color-white-a20)',
             fontSize: '14px',
             fontWeight: '500',
             animation: 'pulse 2s infinite'
@@ -547,8 +547,8 @@ export default function PuzzleTournament() {
           </p>
 
           {latestAssignedUser && (
-            <div style={{ color: '#9ca3af', marginTop: 8, fontSize: 14 }}>
-              🔔 Latest assigned: <strong style={{ color: '#06b6d4' }}>{latestAssignedUser.name}</strong> — {latestAssignedUser.batchName}
+            <div style={{ color: 'var(--color-text-muted)', marginTop: 8, fontSize: 14 }}>
+              🔔 Latest assigned: <strong style={{ color: 'var(--color-accent)' }}>{latestAssignedUser.name}</strong> — {latestAssignedUser.batchName}
             </div>
           )}
         </div>
@@ -560,8 +560,8 @@ export default function PuzzleTournament() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <h3 style={{ color: '#ef4444', margin: '0 0 12px 0' }}>📋 Assignment Status</h3>
-            <p style={{ color: '#9ca3af', margin: '0' }}>
+            <h3 style={{ color: 'var(--color-danger)', margin: '0 0 12px 0' }}>📋 Assignment Status</h3>
+            <p style={{ color: 'var(--color-text-muted)', margin: '0' }}>
               You are not assigned to any round yet. Please contact an administrator.
             </p>
           </motion.div>
@@ -602,8 +602,8 @@ export default function PuzzleTournament() {
                       key={batch._id}
                       style={styles.batchContainer}
                       whileHover={{ 
-                        borderColor: 'rgba(6, 182, 212, 0.2)',
-                        boxShadow: '0 8px 32px rgba(6, 182, 212, 0.2)'
+                        borderColor: 'var(--color-accent-a20)',
+                        boxShadow: '0 8px 32px var(--color-accent-a20)'
                       }}
                       transition={{ duration: 0.3 }}
                     >
@@ -611,7 +611,7 @@ export default function PuzzleTournament() {
                         <h3 style={styles.batchTitle}>{batch.name}</h3>
                         {/* Latest assigned user for this batch */}
                         {batch?.users && batch.users.length > 0 && (
-                          <div style={{ color: '#9ca3af', fontSize: 13 }}>
+                          <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
                             Latest assigned: {formatDisplayName(batch.users[batch.users.length - 1])}
                           </div>
                         )}
@@ -635,7 +635,7 @@ export default function PuzzleTournament() {
 
                           if (batchDone) {
                             return (
-                              <span style={{ color: '#9ca3af', fontSize: '14px' }}>
+                              <span style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>
                                 ✅ Batch finished
                               </span>
                             );
@@ -643,7 +643,7 @@ export default function PuzzleTournament() {
 
                           if (!isAssignedToBatch) {
                             return (
-                              <span style={{ color: '#9ca3af', fontSize: '14px' }}>
+                              <span style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>
                                 Contact admin to be assigned
                               </span>
                             );
@@ -742,8 +742,8 @@ export default function PuzzleTournament() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <h3 style={{ color: '#ffffff', margin: '0 0 12px 0' }}>📭 No Assigned Rounds</h3>
-            <p style={{ color: '#9ca3af', margin: '0' }}>
+            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px 0' }}>📭 No Assigned Rounds</h3>
+            <p style={{ color: 'var(--color-text-muted)', margin: '0' }}>
               You don't have any tournament rounds assigned yet. Contact an administrator to be assigned to a round.
             </p>
           </motion.div>
@@ -756,8 +756,8 @@ export default function PuzzleTournament() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <h3 style={{ color: '#ffffff', margin: '0 0 12px 0' }}>📭 No Rounds Available</h3>
-            <p style={{ color: '#9ca3af', margin: '0' }}>
+            <h3 style={{ color: 'var(--color-text)', margin: '0 0 12px 0' }}>📭 No Rounds Available</h3>
+            <p style={{ color: 'var(--color-text-muted)', margin: '0' }}>
               There are currently no tournament rounds available. Check back later!
             </p>
           </motion.div>

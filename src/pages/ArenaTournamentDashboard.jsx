@@ -24,28 +24,28 @@ const TYPE_ICON = {
   team_battle: "🛡️",
 };
 const TYPE_COLOR = {
-  standard:              { bg: "rgba(16,185,129,0.22)", color: "#34d399", border: "rgba(16,185,129,0.4)" },
-  chess960:              { bg: "rgba(139,92,246,0.22)", color: "#a78bfa", border: "rgba(139,92,246,0.4)" },
-  bullet_blitz_marathon: { bg: "rgba(245,158,11,0.22)", color: "#fbbf24", border: "rgba(245,158,11,0.4)" },
-  team_battle:           { bg: "rgba(99,102,241,0.22)", color: "#818cf8", border: "rgba(99,102,241,0.4)" },
+  standard:              { bg: "var(--color-success-a20)", color: "var(--color-success)", border: "var(--color-success-a30)" },
+  chess960:              { bg: "var(--color-accent-2-a15)", color: "var(--color-accent-2)", border: "rgba(139,92,246,0.4)" },
+  bullet_blitz_marathon: { bg: "var(--color-warning-a20)", color: "var(--color-warning)", border: "var(--color-warning-a30)" },
+  team_battle:           { bg: "rgba(99,102,241,0.22)", color: "var(--color-accent-2)", border: "rgba(99,102,241,0.4)" },
 };
 const typeLabel = (t) => TYPE_LABELS[t] || "Standard";
 const typeColor = (t) => TYPE_COLOR[t] || TYPE_COLOR.standard;
 
 const CROWN = {
-  none:     { label: "None",     color: "#6b7280", filter: "grayscale(1) brightness(0.6)" },
+  none:     { label: "None",     color: "var(--color-text-faint)", filter: "grayscale(1) brightness(0.6)" },
   bronze:   { label: "Bronze",   color: "#c08457", filter: "sepia(1) saturate(2.4) brightness(0.78) hue-rotate(-12deg) drop-shadow(0 0 14px rgba(176,110,58,0.7))" },
-  silver:   { label: "Silver",   color: "#e5e7eb", filter: "grayscale(1) brightness(1.35) drop-shadow(0 0 12px rgba(226,232,240,0.5))" },
-  gold:     { label: "Gold",     color: "#fbbf24", filter: "drop-shadow(0 0 16px rgba(251,191,36,0.7))" },
-  platinum: { label: "Platinum", color: "#f8fafc", filter: "grayscale(1) brightness(1.65) drop-shadow(0 0 16px rgba(226,232,240,0.8))" },
-  gem:      { label: "Gem",      color: "#60a5fa", filter: "hue-rotate(200deg) saturate(2.4) brightness(1.05) drop-shadow(0 0 16px rgba(59,130,246,0.9))" },
+  silver:   { label: "Silver",   color: "var(--color-text)", filter: "grayscale(1) brightness(1.35) drop-shadow(0 0 12px var(--color-text-faint))" },
+  gold:     { label: "Gold",     color: "var(--color-warning)", filter: "drop-shadow(0 0 16px var(--color-warning-a30))" },
+  platinum: { label: "Platinum", color: "var(--color-text)", filter: "grayscale(1) brightness(1.65) drop-shadow(0 0 16px rgba(226,232,240,0.8))" },
+  gem:      { label: "Gem",      color: "var(--color-accent-2)", filter: "hue-rotate(200deg) saturate(2.4) brightness(1.05) drop-shadow(0 0 16px rgba(59,130,246,0.9))" },
 };
 const TIER_ORDER = ["none", "bronze", "silver", "gold", "platinum", "gem"];
 
 // Marathon podium trophies (no crown progression). Ordered best → worst.
 const MARATHON_PLACES = [
-  { key: "first",  img: "marathonfirst",  label: "1st", color: "#fbbf24", glow: "rgba(251,191,36,0.75)" },
-  { key: "second", img: "marathonsecond", label: "2nd", color: "#e5e7eb", glow: "rgba(226,232,240,0.6)" },
+  { key: "first",  img: "marathonfirst",  label: "1st", color: "var(--color-warning)", glow: "rgba(251,191,36,0.75)" },
+  { key: "second", img: "marathonsecond", label: "2nd", color: "var(--color-text)", glow: "rgba(226,232,240,0.6)" },
   { key: "third",  img: "marathonthird",  label: "3rd", color: "#c08457", glow: "rgba(176,110,58,0.65)" },
 ];
 
@@ -244,7 +244,7 @@ export default function ArenaTournamentDashboard() {
             gap: 4px !important;
             padding: 10px 4px !important;
             border-bottom: 0 !important;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid var(--color-white-a07);
             border-radius: 12px;
           }
           /* Shrink the medal so three fit comfortably. */
@@ -264,14 +264,14 @@ export default function ArenaTournamentDashboard() {
       `}</style>
       {/* obsidian background glows */}
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: "-20%", left: "-10%", width: "50%", height: "50%", background: "radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%)", borderRadius: "50%" }} />
-        <div style={{ position: "absolute", bottom: "-10%", right: "-5%", width: "40%", height: "40%", background: "radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%)", borderRadius: "50%" }} />
+        <div style={{ position: "absolute", top: "-20%", left: "-10%", width: "50%", height: "50%", background: "radial-gradient(circle, var(--color-accent-a06) 0%, transparent 70%)", borderRadius: "50%" }} />
+        <div style={{ position: "absolute", bottom: "-10%", right: "-5%", width: "40%", height: "40%", background: "radial-gradient(circle, var(--color-success-a12) 0%, transparent 70%)", borderRadius: "50%" }} />
       </div>
       <div style={{ position: "relative", zIndex: 1 }}>
       <SEO title={`${isPublic ? `${ownerName}'s ` : ""}Arena Tournament Dashboard — Chess Nexus`} noIndex />
 
       {loading ? (
-          <p style={{ color: "#9ca3af", marginTop: 24 }}>Loading…</p>
+          <p style={{ color: "var(--color-text-muted)", marginTop: 24 }}>Loading…</p>
         ) : tab === "games" ? (
           <GamesPanel name={ownerName} onBack={() => setTab("overview")} />
         ) : (
@@ -295,10 +295,10 @@ export default function ArenaTournamentDashboard() {
                         {verified && <span style={S.verified}>✓</span>}
                       </div>
                       {memberYear && (
-                        <div style={{ fontSize: 13, color: "#9ca3af", marginTop: 2 }}>Member since {memberYear}</div>
+                        <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginTop: 2 }}>Member since {memberYear}</div>
                       )}
                       <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
-                        <Chip icon="🏆" color="#fbbf24">{trophies} Trophies</Chip>
+                        <Chip icon="🏆" color="var(--color-warning)">{trophies} Trophies</Chip>
                       </div>
                     </div>
                   </div>
@@ -306,7 +306,7 @@ export default function ArenaTournamentDashboard() {
                   {/* RIGHT — Trophy Case: latest 5 (crowns, marathon & team battle). View All for more. */}
                   <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
                     {totalTrophies === 0
-                      ? <span style={{ color: "#6b7280", fontSize: 13 }}>No trophies yet</span>
+                      ? <span style={{ color: "var(--color-text-faint)", fontSize: 13 }}>No trophies yet</span>
                       : (
                         <>
                           {allTrophies.slice(0, 5).map((t) => (
@@ -328,7 +328,7 @@ export default function ArenaTournamentDashboard() {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
                 <div>
                   <h1 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>Arena Tournaments</h1>
-                  <p style={{ color: "#9ca3af", fontSize: 12, margin: "3px 0 0" }}>Learn. Compete. Be the Champion.</p>
+                  <p style={{ color: "var(--color-text-muted)", fontSize: 12, margin: "3px 0 0" }}>Learn. Compete. Be the Champion.</p>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   <button onClick={() => setTab(tab === "games" ? "overview" : "games")} style={S.ghostBtn}>
@@ -350,7 +350,7 @@ export default function ArenaTournamentDashboard() {
                   tier === "gold"     ? "rgba(160,80,40,0.09)"    :
                   tier === "platinum" ? "rgba(150,60,70,0.08)"    :
                                         "rgba(120,50,100,0.09)"
-                } 0%, rgba(23,23,23,0.7) 50%)`,
+                } 0%, var(--color-surface) 50%)`,
                 borderTop: `1px solid ${
                   tier === "none"     ? "rgba(140,60,60,0.18)"    :
                   tier === "bronze"   ? "rgba(160,70,50,0.28)"    :
@@ -363,7 +363,7 @@ export default function ArenaTournamentDashboard() {
                 <div style={{ display: "grid", gridTemplateColumns: "22% 28% 1fr", gap: 18, alignItems: "start" }}>
 
                   {/* LEFT — small: Crown status */}
-                  <div style={{ textAlign: "center", borderRight: "1px solid rgba(255,255,255,0.07)", paddingRight: 16 }}>
+                  <div style={{ textAlign: "center", borderRight: "1px solid var(--color-white-a07)", paddingRight: 16 }}>
                     <SectionLabel center style={{ color: "#b8860b", fontSize: 13 }}>Crown Status</SectionLabel>
                     <div style={{ marginTop: 10, position: "relative", width: 110, height: 110, margin: "10px auto 0", overflow: "visible" }}>
                       {/* sparkle burst behind crown — very dim */}
@@ -399,13 +399,13 @@ export default function ArenaTournamentDashboard() {
                         />
                       )}
                     </div>
-                    <div style={{ marginTop: -8, fontSize: 13.5, fontWeight: 800, color: tier === "none" ? "#6b7280" : (CROWN[tier] || CROWN.gold).color, textAlign: "center" }}>
+                    <div style={{ marginTop: -8, fontSize: 13.5, fontWeight: 800, color: tier === "none" ? "var(--color-text-faint)" : (CROWN[tier] || CROWN.gold).color, textAlign: "center" }}>
                       {tier === "none" ? "No Crown" : `${CROWN[tier]?.label} Crown`}
                     </div>
                   </div>
 
                   {/* MIDDLE — medium: To next crown */}
-                  <div style={{ textAlign: "center", borderRight: "1px solid rgba(255,255,255,0.07)", paddingRight: 16 }}>
+                  <div style={{ textAlign: "center", borderRight: "1px solid var(--color-white-a07)", paddingRight: 16 }}>
                     <SectionLabel center>To Next Crown</SectionLabel>
                     {next ? (
                       <>
@@ -416,12 +416,12 @@ export default function ArenaTournamentDashboard() {
                         <div style={S.progressTrack}>
                           <div style={{ ...S.progressFill, width: `${Math.min(100, (next.have / next.of) * 100)}%` }} />
                         </div>
-                        <div style={{ fontSize: 11.5, color: "#9ca3af", marginTop: 5 }}>
+                        <div style={{ fontSize: 11.5, color: "var(--color-text-muted)", marginTop: 5 }}>
                           {next.have} / {next.of} · Get {CROWN[next.next].label} Crown
                         </div>
                       </>
                     ) : (
-                      <div style={{ marginTop: 24, fontSize: 13.5, fontWeight: 700, color: "#60a5fa" }}>
+                      <div style={{ marginTop: 24, fontSize: 13.5, fontWeight: 700, color: "var(--color-accent-2)" }}>
                         💎 Highest crown reached!
                       </div>
                     )}
@@ -430,7 +430,7 @@ export default function ArenaTournamentDashboard() {
                   {/* RIGHT — bigger: Crown guide */}
                   <div>
                     <SectionLabel>Crown Guide</SectionLabel>
-                    <p style={{ fontSize: 12.5, color: "#9ca3af", margin: "8px 0 14px", lineHeight: 1.6 }}>
+                    <p style={{ fontSize: 12.5, color: "var(--color-text-muted)", margin: "8px 0 14px", lineHeight: 1.6 }}>
                       Road to next crown
                     </p>
                     {/* Crown tier progress path */}
@@ -445,7 +445,7 @@ export default function ArenaTournamentDashboard() {
                           return (
                             <div key={t} style={{ textAlign: "center", flex: 1, opacity: isPast ? 1 : 0.38 }}>
                               <Crown tier={t} size={36} />
-                              <div style={{ fontSize: 10, fontWeight: 700, marginTop: 4, color: isActive ? CROWN[t].color : "#6b7280", whiteSpace: "nowrap" }}>
+                              <div style={{ fontSize: 10, fontWeight: 700, marginTop: 4, color: isActive ? CROWN[t].color : "var(--color-text-faint)", whiteSpace: "nowrap" }}>
                                 {CROWN[t].label}
                               </div>
                             </div>
@@ -459,7 +459,7 @@ export default function ArenaTournamentDashboard() {
                         <div style={{
                           position: "absolute", top: "50%", transform: "translateY(-50%)",
                           left: `${100 / 12}%`, right: `${100 / 12}%`,
-                          height: 3, borderRadius: 999, background: "rgba(255,255,255,0.10)",
+                          height: 3, borderRadius: 999, background: "var(--color-white-a10)",
                         }} />
                         {/* filled track up to active tier */}
                         <div style={{
@@ -468,10 +468,10 @@ export default function ArenaTournamentDashboard() {
                           height: 3, borderRadius: 999,
                           background: tier === "none" ? "transparent"
                             : tier === "bronze"   ? "#c08457"
-                            : tier === "silver"   ? "linear-gradient(90deg,#c08457,#e5e7eb)"
-                            : tier === "gold"     ? "linear-gradient(90deg,#c08457,#fbbf24)"
-                            : tier === "platinum" ? "linear-gradient(90deg,#c08457,#f8fafc)"
-                            :                       "linear-gradient(90deg,#c08457,#60a5fa)",
+                            : tier === "silver"   ? "linear-gradient(90deg,#c08457,var(--color-text))"
+                            : tier === "gold"     ? "linear-gradient(90deg,#c08457,var(--color-warning))"
+                            : tier === "platinum" ? "linear-gradient(90deg,#c08457,var(--color-text))"
+                            :                       "linear-gradient(90deg,#c08457,var(--color-accent-2))",
                           width: tier === "none"     ? "0%"
                             : tier === "bronze"   ? `${(1/5)*100*(4/5)}%`
                             : tier === "silver"   ? `${(2/5)*100*(4/5)}%`
@@ -494,9 +494,9 @@ export default function ArenaTournamentDashboard() {
                                   height: isActive ? 11 : 7,
                                   borderRadius: "50%",
                                   background: isActive
-                                    ? (CROWN[tier]?.color || "#fbbf24")
-                                    : isPast ? "rgba(255,255,255,0.40)" : "rgba(255,255,255,0.12)",
-                                  boxShadow: isActive ? `0 0 10px ${CROWN[tier]?.color || "#fbbf24"}, 0 0 4px ${CROWN[tier]?.color || "#fbbf24"}` : "none",
+                                    ? (CROWN[tier]?.color || "var(--color-warning)")
+                                    : isPast ? "var(--color-text-faint)" : "var(--color-white-a13)",
+                                  boxShadow: isActive ? `0 0 10px ${CROWN[tier]?.color || "var(--color-warning)"}, 0 0 4px ${CROWN[tier]?.color || "var(--color-warning)"}` : "none",
                                   transition: "all 0.3s",
                                 }} />
                               </div>
@@ -516,8 +516,8 @@ export default function ArenaTournamentDashboard() {
                 <Card style={{ background: "linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(10,10,20,0.98) 100%)", border: "1px solid rgba(99,102,241,0.18)", minWidth: 0 }}>
                   <SectionLabel>Boost Your Points</SectionLabel>
                   <div style={{ display: "flex", gap: 10, marginTop: 12, alignItems: "stretch" }}>
-                    <Boost icon="⚡" title="Play 3 Tournaments" sub="Carry Bonus"    pts="+2 Points" color="#fbbf24" />
-                    <Boost icon="🐦" title="Join Early"         sub="Early Bird Bonus" pts="+3 Points" color="#34d399" />
+                    <Boost icon="⚡" title="Play 3 Tournaments" sub="Carry Bonus"    pts="+2 Points" color="var(--color-warning)" />
+                    <Boost icon="🐦" title="Join Early"         sub="Early Bird Bonus" pts="+3 Points" color="var(--color-success)" />
                   </div>
                 </Card>
 
@@ -539,8 +539,8 @@ export default function ArenaTournamentDashboard() {
                         "Control the center and watch for tactics.",
                         "Practice endgames — they decide close games.",
                       ].map((tip) => (
-                        <li key={tip} style={{ display: "flex", gap: 7, fontSize: 11.5, color: "#cbd5e1", lineHeight: 1.5 }}>
-                          <span style={{ color: "#10b981", flexShrink: 0 }}>✓</span>{tip}
+                        <li key={tip} style={{ display: "flex", gap: 7, fontSize: 11.5, color: "var(--color-text-muted)", lineHeight: 1.5 }}>
+                          <span style={{ color: "var(--color-success)", flexShrink: 0 }}>✓</span>{tip}
                         </li>
                       ))}
                     </ul>
@@ -578,8 +578,8 @@ export default function ArenaTournamentDashboard() {
                               </div>
                               {/* PART 2 — starts in */}
                               <div style={{ textAlign: "center", flexShrink: 0, padding: "0 12px" }}>
-                                <div style={{ fontSize: 10, color: "#6b7280", fontWeight: 600 }}>Starts in</div>
-                                <div style={{ fontSize: 13, color: "#06b6d4", fontWeight: 800, marginTop: 2 }}>{startsIn(t.scheduledStartTime)}</div>
+                                <div style={{ fontSize: 10, color: "var(--color-text-faint)", fontWeight: 600 }}>Starts in</div>
+                                <div style={{ fontSize: 13, color: "var(--color-accent)", fontWeight: 800, marginTop: 2 }}>{startsIn(t.scheduledStartTime)}</div>
                               </div>
                               {/* PART 3 — join button */}
                               <div style={{ flexShrink: 0 }}>
@@ -606,12 +606,12 @@ export default function ArenaTournamentDashboard() {
                         <RankCircle rank={t.myRank} />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontWeight: 700, fontSize: 13.5, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
-                          <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>{typeLabel(t.tournamentType)}</div>
+                          <div style={{ fontSize: 11.5, color: "var(--color-text-muted)", marginTop: 2 }}>{typeLabel(t.tournamentType)}</div>
                         </div>
                         <div style={{ textAlign: "right", flexShrink: 0 }}>
-                          <div style={{ fontSize: 11, color: "#9ca3af" }}>{timeAgo(t.endTime || t.scheduledStartTime)}</div>
-                          <div style={{ fontWeight: 800, fontSize: 15, color: t.myRank === 1 ? "#fbbf24" : "#e5e7eb" }}>#{t.myRank}</div>
-                          <div style={{ color: "#34d399", fontSize: 12.5, fontWeight: 700 }}>{t.myScore} pts</div>
+                          <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>{timeAgo(t.endTime || t.scheduledStartTime)}</div>
+                          <div style={{ fontWeight: 800, fontSize: 15, color: t.myRank === 1 ? "var(--color-warning)" : "var(--color-text)" }}>#{t.myRank}</div>
+                          <div style={{ color: "var(--color-success)", fontSize: 12.5, fontWeight: 700 }}>{t.myScore} pts</div>
                         </div>
                       </div>
                     ))}</div>}
@@ -642,19 +642,19 @@ export default function ArenaTournamentDashboard() {
                   />
                   {teamBattleTrophies > 0 ? (
                     <>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: "#818cf8", marginTop: 8 }}>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "var(--color-accent-2)", marginTop: 8 }}>
                         Team Battle Champion
                       </div>
-                      <div style={{ fontSize: 12, color: "#9ca3af", fontWeight: 600, marginTop: 2 }}>
+                      <div style={{ fontSize: 12, color: "var(--color-text-muted)", fontWeight: 600, marginTop: 2 }}>
                         {teamBattleTrophies} {teamBattleTrophies === 1 ? "trophy" : "trophies"} won
                       </div>
                     </>
                   ) : (
                     <>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: "#6b7280", marginTop: 8 }}>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "var(--color-text-faint)", marginTop: 8 }}>
                         No Trophy Yet
                       </div>
-                      <div style={{ fontSize: 12, color: "#6b7280", fontWeight: 600, marginTop: 2 }}>
+                      <div style={{ fontSize: 12, color: "var(--color-text-faint)", fontWeight: 600, marginTop: 2 }}>
                         Win a team battle to get one
                       </div>
                     </>
@@ -668,8 +668,8 @@ export default function ArenaTournamentDashboard() {
                   <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                     <div style={{ fontSize: 40, lineHeight: 1 }}>🏆</div>
                     <div>
-                      <div style={{ fontWeight: 800, fontSize: 15, color: "#34d399" }}>Congratulations!</div>
-                      <div style={{ fontSize: 13, color: "#cbd5e1", marginTop: 2 }}>You won your last tournament!</div>
+                      <div style={{ fontWeight: 800, fontSize: 15, color: "var(--color-success)" }}>Congratulations!</div>
+                      <div style={{ fontSize: 13, color: "var(--color-text-muted)", marginTop: 2 }}>You won your last tournament!</div>
                     </div>
                   </div>
                 </Card>
@@ -680,7 +680,7 @@ export default function ArenaTournamentDashboard() {
                 <SectionLabel>Marathon Trophies</SectionLabel>
                 <MarathonPodiumCard counts={marathonCounts} best={bestMarathon} />
                 {marathonTotal === 0 && (
-                  <div style={{ textAlign: "center", fontSize: 12, color: "#6b7280", marginTop: 8 }}>
+                  <div style={{ textAlign: "center", fontSize: 12, color: "var(--color-text-faint)", marginTop: 8 }}>
                     No marathon trophies yet — finish top 3 in a marathon to earn one.
                   </div>
                 )}
@@ -693,11 +693,11 @@ export default function ArenaTournamentDashboard() {
               ) : (
                 <Card>
                   <SectionLabel>Performance Overview</SectionLabel>
-                  <div style={{ marginTop: 14, borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  <div style={{ marginTop: 14, borderRadius: 12, overflow: "hidden", border: "1px solid var(--color-white-a07)" }}>
                     {/* header row */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", background: "rgba(255,255,255,0.04)", padding: "8px 10px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", background: "var(--color-white-a04)", padding: "8px 10px" }}>
                       {["Type", "Played", "Wins", "Top 3", "Win %", "Points"].map((h, i) => (
-                        <div key={h} style={{ fontSize: 9.5, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.04em", textAlign: i === 0 ? "left" : "center" }}>{h}</div>
+                        <div key={h} style={{ fontSize: 9.5, fontWeight: 700, color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", textAlign: i === 0 ? "left" : "center" }}>{h}</div>
                       ))}
                     </div>
                     {/* per-type rows */}
@@ -705,18 +705,18 @@ export default function ArenaTournamentDashboard() {
                       const tc = typeColor(row.type);
                       const dim = row.played === 0;
                       return (
-                        <div key={row.type} style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", padding: "9px 10px", borderTop: "1px solid rgba(255,255,255,0.05)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
+                        <div key={row.type} style={{ display: "grid", gridTemplateColumns: "1.6fr 0.7fr 0.7fr 0.7fr 0.8fr 0.9fr", padding: "9px 10px", borderTop: "1px solid var(--color-white-a04)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 7, minWidth: 0 }}>
                             <span style={{ width: 22, height: 22, borderRadius: 6, background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                               {TYPE_ICON[row.type] || "♞"}
                             </span>
-                            <span style={{ fontSize: 11.5, fontWeight: 700, color: "#e5e7eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(row.type)}</span>
+                            <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--color-text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(row.type)}</span>
                           </div>
-                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#e5e7eb" }}>{row.played}</div>
-                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#34d399" }}>{row.wins}</div>
-                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#fbbf24" }}>{row.top3}</div>
-                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#06b6d4" }}>{row.winRate}%</div>
-                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "#a78bfa" }}>{row.points}</div>
+                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "var(--color-text)" }}>{row.played}</div>
+                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "var(--color-success)" }}>{row.wins}</div>
+                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "var(--color-warning)" }}>{row.top3}</div>
+                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "var(--color-accent)" }}>{row.winRate}%</div>
+                          <div style={{ textAlign: "center", fontSize: 13, fontWeight: 800, color: "var(--color-accent-2)" }}>{row.points}</div>
                         </div>
                       );
                     })}
@@ -810,10 +810,10 @@ function MonthStatsCard({ title, rows, compareRows = [], showArrows = false }) {
   const Delta = ({ cur, prev, kind }) => {
     if (!showArrows || prev == null) return null;
     const d = cur - prev;
-    if (d === 0) return <span style={{ fontSize: 10, color: "#6b7280", marginLeft: 3 }}>＝</span>;
+    if (d === 0) return <span style={{ fontSize: 10, color: "var(--color-text-faint)", marginLeft: 3 }}>＝</span>;
     const up = d > 0;
     const good = kind === "bad" ? !up : up;
-    const color = kind === "neutral" ? "#9ca3af" : good ? "#34d399" : "#f87171";
+    const color = kind === "neutral" ? "var(--color-text-muted)" : good ? "var(--color-success)" : "var(--color-danger)";
     return (
       <span title={`${up ? "+" : ""}${d}% vs last month`} style={{ fontSize: 10.5, fontWeight: 800, color, marginLeft: 3 }}>
         {up ? "▲" : "▼"}{Math.abs(d)}
@@ -824,10 +824,10 @@ function MonthStatsCard({ title, rows, compareRows = [], showArrows = false }) {
   return (
     <Card>
       <SectionLabel>{title} · By Type</SectionLabel>
-      <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)", marginTop: 12 }}>
-        <div style={{ display: "grid", gridTemplateColumns: COLS, background: "rgba(255,255,255,0.04)", padding: "9px 12px" }}>
+      <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid var(--color-white-a07)", marginTop: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: COLS, background: "var(--color-white-a04)", padding: "9px 12px" }}>
           {HEADERS.map((h, i) => (
-            <div key={h} style={{ fontSize: 9.5, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.04em", textAlign: i === 0 ? "left" : "center" }}>{h}</div>
+            <div key={h} style={{ fontSize: 9.5, fontWeight: 700, color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", textAlign: i === 0 ? "left" : "center" }}>{h}</div>
           ))}
         </div>
         {data.map((r) => {
@@ -835,23 +835,23 @@ function MonthStatsCard({ title, rows, compareRows = [], showArrows = false }) {
           const cmp = cmpByType[r.type] || blank;
           const dim = r.games === 0;
           return (
-            <div key={r.type} style={{ display: "grid", gridTemplateColumns: COLS, padding: "10px 12px", borderTop: "1px solid rgba(255,255,255,0.05)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
+            <div key={r.type} style={{ display: "grid", gridTemplateColumns: COLS, padding: "10px 12px", borderTop: "1px solid var(--color-white-a04)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
                 <span style={{ width: 22, height: 22, borderRadius: 6, background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 11, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {TYPE_ICON[r.type] || "♞"}
                 </span>
-                <span style={{ fontSize: 11.5, fontWeight: 700, color: "#e5e7eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(r.type)}</span>
+                <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--color-text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(r.type)}</span>
               </div>
-              <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 800, color: "#ffffff" }}>
+              <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 800, color: "var(--color-text)" }}>
                 {r.winRate}%<Delta cur={r.winRate} prev={cmp.winRate} kind="good" />
               </div>
-              <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 800, color: "#ffffff" }}>
+              <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 800, color: "var(--color-text)" }}>
                 {r.loseRate}%<Delta cur={r.loseRate} prev={cmp.loseRate} kind="bad" />
               </div>
-              <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 800, color: "#ffffff" }}>
+              <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 800, color: "var(--color-text)" }}>
                 {r.drawRate}%<Delta cur={r.drawRate} prev={cmp.drawRate} kind="neutral" />
               </div>
-              <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 800, color: "#e5e7eb" }}>{r.games}</div>
+              <div style={{ textAlign: "center", fontSize: 12.5, fontWeight: 800, color: "var(--color-text)" }}>{r.games}</div>
             </div>
           );
         })}
@@ -884,14 +884,14 @@ function LifetimeStatsCard({ rows }) {
   return (
     <Card>
       <SectionLabel>Lifetime Tournament Stats · All Types</SectionLabel>
-      <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3, marginBottom: 12 }}>
+      <div style={{ fontSize: 11, color: "var(--color-text-faint)", marginTop: 3, marginBottom: 12 }}>
         Every finished tournament since you joined. Win / Lose / Draw count individual games.
       </div>
-      <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)" }}>
+      <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid var(--color-white-a07)" }}>
         {/* header */}
-        <div style={{ display: "grid", gridTemplateColumns: COLS, background: "rgba(255,255,255,0.04)", padding: "9px 12px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: COLS, background: "var(--color-white-a04)", padding: "9px 12px" }}>
           {HEADERS.map((h, i) => (
-            <div key={h} style={{ fontSize: 9.5, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.04em", textAlign: i === 0 ? "left" : "center" }}>{h}</div>
+            <div key={h} style={{ fontSize: 9.5, fontWeight: 700, color: "var(--color-text-muted)", textTransform: "uppercase", letterSpacing: "0.04em", textAlign: i === 0 ? "left" : "center" }}>{h}</div>
           ))}
         </div>
         {/* per-type rows */}
@@ -899,39 +899,39 @@ function LifetimeStatsCard({ rows }) {
           const tc = typeColor(r.type);
           const dim = r.played === 0;
           return (
-            <div key={r.type} style={{ display: "grid", gridTemplateColumns: COLS, padding: "10px 12px", borderTop: "1px solid rgba(255,255,255,0.05)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
+            <div key={r.type} style={{ display: "grid", gridTemplateColumns: COLS, padding: "10px 12px", borderTop: "1px solid var(--color-white-a04)", alignItems: "center", opacity: dim ? 0.4 : 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
                 <span style={{ width: 24, height: 24, borderRadius: 6, background: tc.bg, border: `1px solid ${tc.border}`, color: tc.color, fontSize: 12, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {TYPE_ICON[r.type] || "♞"}
                 </span>
-                <span style={{ fontSize: 12.5, fontWeight: 700, color: "#e5e7eb", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(r.type)}</span>
+                <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--color-text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{typeLabel(r.type)}</span>
               </div>
-              <StatCell value={r.played} color="#e5e7eb" />
-              <StatCell value={r.first} color="#fbbf24" />
-              <StatCell value={r.top3} color="#fbbf24" />
-              <StatCell value={r.gamesWon} color="#34d399" />
-              <StatCell value={r.gamesLost} color="#f87171" />
-              <StatCell value={r.gamesDrawn} color="#9ca3af" />
-              <StatCell value={`${r.winRate}%`} color="#34d399" />
-              <StatCell value={`${r.loseRate}%`} color="#f87171" />
-              <StatCell value={`${r.drawRate}%`} color="#9ca3af" />
-              <StatCell value={r.points} color="#a78bfa" />
+              <StatCell value={r.played} color="var(--color-text)" />
+              <StatCell value={r.first} color="var(--color-warning)" />
+              <StatCell value={r.top3} color="var(--color-warning)" />
+              <StatCell value={r.gamesWon} color="var(--color-success)" />
+              <StatCell value={r.gamesLost} color="var(--color-danger)" />
+              <StatCell value={r.gamesDrawn} color="var(--color-text-muted)" />
+              <StatCell value={`${r.winRate}%`} color="var(--color-success)" />
+              <StatCell value={`${r.loseRate}%`} color="var(--color-danger)" />
+              <StatCell value={`${r.drawRate}%`} color="var(--color-text-muted)" />
+              <StatCell value={r.points} color="var(--color-accent-2)" />
             </div>
           );
         })}
         {/* totals */}
-        <div style={{ display: "grid", gridTemplateColumns: COLS, padding: "11px 12px", borderTop: "2px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.03)", alignItems: "center" }}>
-          <div style={{ fontSize: 12.5, fontWeight: 800, color: "#ffffff" }}>Total</div>
-          <StatCell value={tot.played} color="#ffffff" bold />
-          <StatCell value={tot.first} color="#fbbf24" bold />
-          <StatCell value={tot.top3} color="#fbbf24" bold />
-          <StatCell value={tot.gamesWon} color="#34d399" bold />
-          <StatCell value={tot.gamesLost} color="#f87171" bold />
-          <StatCell value={tot.gamesDrawn} color="#9ca3af" bold />
-          <StatCell value={`${totPct(tot.gamesWon)}%`} color="#34d399" bold />
-          <StatCell value={`${totPct(tot.gamesLost)}%`} color="#f87171" bold />
-          <StatCell value={`${totPct(tot.gamesDrawn)}%`} color="#9ca3af" bold />
-          <StatCell value={tot.points} color="#a78bfa" bold />
+        <div style={{ display: "grid", gridTemplateColumns: COLS, padding: "11px 12px", borderTop: "2px solid var(--color-white-a13)", background: "var(--color-white-a04)", alignItems: "center" }}>
+          <div style={{ fontSize: 12.5, fontWeight: 800, color: "var(--color-text)" }}>Total</div>
+          <StatCell value={tot.played} color="var(--color-text)" bold />
+          <StatCell value={tot.first} color="var(--color-warning)" bold />
+          <StatCell value={tot.top3} color="var(--color-warning)" bold />
+          <StatCell value={tot.gamesWon} color="var(--color-success)" bold />
+          <StatCell value={tot.gamesLost} color="var(--color-danger)" bold />
+          <StatCell value={tot.gamesDrawn} color="var(--color-text-muted)" bold />
+          <StatCell value={`${totPct(tot.gamesWon)}%`} color="var(--color-success)" bold />
+          <StatCell value={`${totPct(tot.gamesLost)}%`} color="var(--color-danger)" bold />
+          <StatCell value={`${totPct(tot.gamesDrawn)}%`} color="var(--color-text-muted)" bold />
+          <StatCell value={tot.points} color="var(--color-accent-2)" bold />
         </div>
       </div>
     </Card>
@@ -1142,14 +1142,14 @@ function GamesPanel({ name, onBack }) {
       <main className="atg-main">
         <div className="atg-games-section atg-games-section--full">
           {/* Analysis tip banner */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, background: "linear-gradient(135deg, rgba(6,182,212,0.1), rgba(16,185,129,0.1))", border: "1px solid rgba(6,182,212,0.25)", borderRadius: 12, padding: "12px 18px", marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10, background: "linear-gradient(135deg, var(--color-accent-a12), var(--color-success-a12))", border: "1px solid var(--color-accent-a20)", borderRadius: 12, padding: "12px 18px", marginBottom: 16 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
               <span style={{ fontSize: 20, flexShrink: 0 }}>🔍</span>
-              <span style={{ fontSize: 13.5, fontWeight: 600, color: "#cbd5e1", lineHeight: 1.4 }}>
-                Analyze your games in the <strong style={{ color: "#06b6d4" }}>Analysis page</strong> — find blunders, mistakes and inaccuracies.
+              <span style={{ fontSize: 13.5, fontWeight: 600, color: "var(--color-text-muted)", lineHeight: 1.4 }}>
+                Analyze your games in the <strong style={{ color: "var(--color-accent)" }}>Analysis page</strong> — find blunders, mistakes and inaccuracies.
               </span>
             </div>
-            <Link to="/game-analysis" style={{ flexShrink: 0, textDecoration: "none", color: "#022c22", background: "linear-gradient(135deg,#06b6d4,#10b981)", borderRadius: 9, padding: "7px 16px", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap" }}>
+            <Link to="/game-analysis" style={{ flexShrink: 0, textDecoration: "none", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-success))", borderRadius: 9, padding: "7px 16px", fontSize: 13, fontWeight: 700, whiteSpace: "nowrap" }}>
               Analyze my game →
             </Link>
           </div>
@@ -1273,7 +1273,7 @@ function GamesPanel({ name, onBack }) {
 // ── Sub-components ────────────────────────────────────────────────────────────
 // ── Blunder DNA card — your mistake profile across ALL analyzed games ─────────
 // Reads /api/game-insights/dna (whole-history, not just one run). Own profile only.
-const DNA_COLORS = { tactics: "#22d3ee", loose: "#fbbf24", endgame: "#a78bfa" };
+const DNA_COLORS = { tactics: "var(--color-accent)", loose: "var(--color-warning)", endgame: "var(--color-accent-2)" };
 function BlunderDnaCard() {
   const [dna, setDna]   = React.useState(null);
   const [loaded, setLd] = React.useState(false);
@@ -1290,23 +1290,23 @@ function BlunderDnaCard() {
     <Card>
       <SectionLabel>🧬 Your Blunder DNA</SectionLabel>
       {!loaded ? (
-        <div style={{ fontSize: 12, color: "#6b7280", marginTop: 12 }}>Loading…</div>
+        <div style={{ fontSize: 12, color: "var(--color-text-faint)", marginTop: 12 }}>Loading…</div>
       ) : !dna ? (
-        <div style={{ fontSize: 12, color: "#6b7280", marginTop: 12, lineHeight: 1.6 }}>
-          No mistakes analyzed yet. Open the <strong style={{ color: "#9ca3af" }}>Nexus Guide</strong> on your
-          dashboard and click <strong style={{ color: "#9ca3af" }}>Analyze my games</strong> to build your profile.
+        <div style={{ fontSize: 12, color: "var(--color-text-faint)", marginTop: 12, lineHeight: 1.6 }}>
+          No mistakes analyzed yet. Open the <strong style={{ color: "var(--color-text-muted)" }}>Nexus Guide</strong> on your
+          dashboard and click <strong style={{ color: "var(--color-text-muted)" }}>Analyze my games</strong> to build your profile.
         </div>
       ) : (
         <>
-          <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 6, marginBottom: 12 }}>
+          <div style={{ fontSize: 11, color: "var(--color-text-muted)", marginTop: 6, marginBottom: 12 }}>
             From {dna.total} mistakes across your games
           </div>
           {dna.dna.map((d) => (
             <div key={d.key} style={{ display: "flex", alignItems: "center", gap: 10, margin: "9px 0" }}>
-              <span style={{ flex: "0 0 42px", textAlign: "right", fontSize: 14, fontWeight: 800, color: "#fff", fontVariantNumeric: "tabular-nums" }}>{d.pct}%</span>
-              <span style={{ flex: "0 0 108px", fontSize: 12.5, color: "#cbd5e1" }}>{d.label}</span>
-              <div style={{ flex: 1, height: 8, background: "rgba(255,255,255,0.06)", borderRadius: 999, overflow: "hidden" }}>
-                <div style={{ width: `${d.pct}%`, height: "100%", borderRadius: 999, background: DNA_COLORS[d.key] || "#22d3ee", transition: "width .5s ease" }} />
+              <span style={{ flex: "0 0 42px", textAlign: "right", fontSize: 14, fontWeight: 800, color: "var(--color-text)", fontVariantNumeric: "tabular-nums" }}>{d.pct}%</span>
+              <span style={{ flex: "0 0 108px", fontSize: 12.5, color: "var(--color-text-muted)" }}>{d.label}</span>
+              <div style={{ flex: 1, height: 8, background: "var(--color-white-a07)", borderRadius: 999, overflow: "hidden" }}>
+                <div style={{ width: `${d.pct}%`, height: "100%", borderRadius: 999, background: DNA_COLORS[d.key] || "var(--color-accent)", transition: "width .5s ease" }} />
               </div>
             </div>
           ))}
@@ -1320,35 +1320,35 @@ const Card       = ({ children, highlight, style: extra }) => (
   <div style={{ ...S.card, ...(highlight ? S.cardHighlight : {}), ...extra }}>{children}</div>
 );
 const SectionLabel = ({ children, center, style: extra }) => (
-  <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "#9ca3af", textAlign: center ? "center" : "left", ...extra }}>
+  <div style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--color-text-muted)", textAlign: center ? "center" : "left", ...extra }}>
     {children}
   </div>
 );
 const Chip = ({ icon, children, color }) => (
-  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 700, color, background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 999, padding: "4px 12px" }}>
+  <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 12.5, fontWeight: 700, color, background: "var(--color-black-a35)", border: "1px solid var(--color-white-a07)", borderRadius: 999, padding: "4px 12px" }}>
     <span style={{ display: "inline-flex" }}>{icon}</span>{children}
   </span>
 );
 const MiniStat = ({ label, value }) => (
   <div style={{ textAlign: "center" }}>
-    <div style={{ fontSize: 17, fontWeight: 800, color: "#ffffff" }}>{value}</div>
-    <div style={{ fontSize: 10, color: "#9ca3af", fontWeight: 600, marginTop: 2 }}>{label}</div>
+    <div style={{ fontSize: 17, fontWeight: 800, color: "var(--color-text)" }}>{value}</div>
+    <div style={{ fontSize: 10, color: "var(--color-text-muted)", fontWeight: 600, marginTop: 2 }}>{label}</div>
   </div>
 );
 const Boost = ({ icon, title, sub, pts, color }) => (
-  <div style={{ flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "12px 14px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 90 }}>
+  <div style={{ flex: 1, background: "var(--color-white-a04)", border: "1px solid var(--color-white-a07)", borderRadius: 12, padding: "12px 14px", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 90 }}>
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
       <span style={{ fontSize: 20 }}>{icon}</span>
       <div>
-        <div style={{ fontWeight: 700, fontSize: 12.5, color: "#ffffff" }}>{title}</div>
-        <div style={{ fontSize: 11, color: "#9ca3af" }}>{sub}</div>
+        <div style={{ fontWeight: 700, fontSize: 12.5, color: "var(--color-text)" }}>{title}</div>
+        <div style={{ fontSize: 11, color: "var(--color-text-muted)" }}>{sub}</div>
       </div>
     </div>
-    <div style={{ color: color || "#10b981", fontWeight: 800, fontSize: 18, marginTop: 10 }}>{pts}</div>
+    <div style={{ color: color || "var(--color-success)", fontWeight: 800, fontSize: 18, marginTop: 10 }}>{pts}</div>
   </div>
 );
 const Empty = ({ text }) => (
-  <div style={{ textAlign: "center", color: "#9ca3af", padding: "24px 0", fontSize: 13 }}>{text}</div>
+  <div style={{ textAlign: "center", color: "var(--color-text-muted)", padding: "24px 0", fontSize: 13 }}>{text}</div>
 );
 
 /* Rank medal — ribbon image for 1st/2nd/3rd, plain circle otherwise */
@@ -1364,7 +1364,7 @@ const RankCircle = ({ rank }) => {
     );
   }
   return (
-    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, color: "#9ca3af", flexShrink: 0 }}>
+    <div style={{ width: 38, height: 38, borderRadius: "50%", background: "var(--color-white-a10)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, color: "var(--color-text-muted)", flexShrink: 0 }}>
       {rank}
     </div>
   );
@@ -1419,7 +1419,7 @@ const MarathonPodiumCard = ({ counts, best }) => {
                 <span style={{
                   position: "absolute", bottom: 2, right: -4,
                   minWidth: 18, height: 18, padding: "0 5px", borderRadius: 999,
-                  background: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.18)",
+                  background: "var(--color-black-a65)", border: "1px solid var(--color-white-a13)",
                   color: s.color, fontSize: 11, fontWeight: 800,
                   display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1,
                 }}>
@@ -1429,7 +1429,7 @@ const MarathonPodiumCard = ({ counts, best }) => {
             </div>
             <div style={{
               fontSize: s.tier === "big" ? 12 : 10.5, fontWeight: 800, marginTop: 4,
-              color: s.earned ? s.color : "#6b7280",
+              color: s.earned ? s.color : "var(--color-text-faint)",
             }}>
               {s.label}
             </div>
@@ -1480,10 +1480,10 @@ const Ring = ({ value, total, center }) => {
   const R = 26, C = 2 * Math.PI * R;
   return (
     <svg width="72" height="72" style={{ margin: "6px auto", display: "block" }}>
-      <circle cx="36" cy="36" r={R} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="6" />
-      <circle cx="36" cy="36" r={R} fill="none" stroke="#10b981" strokeWidth="6" strokeLinecap="round"
+      <circle cx="36" cy="36" r={R} fill="none" stroke="var(--color-white-a10)" strokeWidth="6" />
+      <circle cx="36" cy="36" r={R} fill="none" stroke="var(--color-success)" strokeWidth="6" strokeLinecap="round"
         strokeDasharray={C} strokeDashoffset={C * (1 - pct)} transform="rotate(-90 36 36)" />
-      <text x="36" y="41" textAnchor="middle" fontSize="19" fontWeight="800" fill="#e5e7eb">{center}</text>
+      <text x="36" y="41" textAnchor="middle" fontSize="19" fontWeight="800" fill="var(--color-text)">{center}</text>
     </svg>
   );
 };
@@ -1499,10 +1499,10 @@ const Ribbon = ({ rank }) => {
   }
   return (
     <div style={{ margin: "6px auto", width: 52, height: 52, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-      background: rank ? "linear-gradient(135deg,#fbbf24,#f59e0b)" : "rgba(0,0,0,0.3)",
-      color: rank ? "#3a2a00" : "#9ca3af", fontSize: 18, fontWeight: 800,
-      boxShadow: rank ? "0 0 18px rgba(251,191,36,0.45)" : "none",
-      border: rank ? "none" : "1px solid rgba(255,255,255,0.06)" }}>
+      background: rank ? "linear-gradient(135deg,var(--color-warning),var(--color-warning))" : "var(--color-black-a35)",
+      color: rank ? "#3a2a00" : "var(--color-text-muted)", fontSize: 18, fontWeight: 800,
+      boxShadow: rank ? "0 0 18px var(--color-warning-a30)" : "none",
+      border: rank ? "none" : "1px solid var(--color-white-a07)" }}>
     {rank ? `#${rank}` : "—"}
     </div>
   );
@@ -1510,45 +1510,45 @@ const Ribbon = ({ rank }) => {
 // ── Styles ────────────────────────────────────────────────────────────────────
 const S = {
   // ── Page & layout ──────────────────────────────────────────────────────────
-  page:        { minHeight: "100vh", background: "#0a0a0a", color: "#ffffff", fontFamily: "'Poppins', system-ui, sans-serif", padding: "28px clamp(14px,4vw,40px) 72px", maxWidth: 1300, margin: "0 auto", position: "relative" },
+  page:        { minHeight: "100vh", background: "var(--color-bg)", color: "var(--color-text)", fontFamily: "'Poppins', system-ui, sans-serif", padding: "28px clamp(14px,4vw,40px) 72px", maxWidth: 1300, margin: "0 auto", position: "relative" },
   inner:       { maxWidth: 1200, margin: "0 auto" },
   cols:        { display: "grid", gridTemplateColumns: "70% 30%", gap: 18, alignItems: "flex-start" },
   colMain:     { display: "grid", gap: 18, minWidth: 0 },
   colSide:     { display: "grid", gap: 16, minWidth: 0 },
 
   // ── Cards — obsidian glass ─────────────────────────────────────────────────
-  card:        { background: "rgba(23,23,23,0.7)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 18, padding: "18px 20px", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", WebkitBackdropFilter: "blur(10px)", backdropFilter: "blur(10px)", position: "relative", overflow: "hidden" },
-  cardHighlight: { background: "linear-gradient(135deg, rgba(6,182,212,0.1) 0%, rgba(16,185,129,0.1) 100%)", border: "1px solid rgba(6,182,212,0.3)", boxShadow: "0 8px 32px rgba(6,182,212,0.1)" },
+  card:        { background: "var(--color-surface)", border: "1px solid var(--color-white-a04)", borderRadius: 18, padding: "18px 20px", boxShadow: "0 8px 32px var(--color-black-a50)", WebkitBackdropFilter: "blur(10px)", backdropFilter: "blur(10px)", position: "relative", overflow: "hidden" },
+  cardHighlight: { background: "linear-gradient(135deg, var(--color-accent-a12) 0%, var(--color-success-a12) 100%)", border: "1px solid var(--color-accent-a30)", boxShadow: "0 8px 32px var(--color-accent-a12)" },
 
   // ── Avatar ─────────────────────────────────────────────────────────────────
-  avatar:      { width: 72, height: 72, borderRadius: "50%", background: "rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800, overflow: "hidden", flexShrink: 0, border: "2px solid rgba(6,182,212,0.45)", boxShadow: "0 0 22px rgba(6,182,212,0.3)" },
-  verified:    { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: "50%", background: "#06b6d4", color: "#fff", fontSize: 11, fontWeight: 800 },
+  avatar:      { width: 72, height: 72, borderRadius: "50%", background: "var(--color-black-a35)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800, overflow: "hidden", flexShrink: 0, border: "2px solid var(--color-accent-a40)", boxShadow: "0 0 22px var(--color-accent-a30)" },
+  verified:    { display: "inline-flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, borderRadius: "50%", background: "var(--color-accent)", color: "var(--color-text)", fontSize: 11, fontWeight: 800 },
 
   // ── Stat tile ─────────────────────────────────────────────────────────────
-  tile:        { background: "rgba(0,0,0,0.3)", border: "1px solid rgba(6,182,212,0.15)", borderRadius: 12, padding: "12px 10px", textAlign: "center" },
+  tile:        { background: "var(--color-black-a35)", border: "1px solid var(--color-accent-a15)", borderRadius: 12, padding: "12px 10px", textAlign: "center" },
 
   // ── Buttons ────────────────────────────────────────────────────────────────
-  ghostBtn:    { textDecoration: "none", color: "#ffffff", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" },
-  joinBtn:     { display: "inline-block", textDecoration: "none", textAlign: "center", color: "#022c22", background: "linear-gradient(135deg,#06b6d4,#10b981)", borderRadius: 9, padding: "5px 13px", fontSize: 12, fontWeight: 700, marginTop: 5, whiteSpace: "nowrap" },
-  footerBtn:   { display: "block", textAlign: "center", textDecoration: "none", color: "rgba(255,255,255,0.7)", background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "10px", fontSize: 13, fontWeight: 600, marginTop: 14, fontFamily: "inherit" },
+  ghostBtn:    { textDecoration: "none", color: "var(--color-text)", background: "var(--color-white-a04)", border: "1px solid var(--color-white-a10)", borderRadius: 10, padding: "8px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" },
+  joinBtn:     { display: "inline-block", textDecoration: "none", textAlign: "center", color: "#022c22", background: "linear-gradient(135deg,var(--color-accent),var(--color-success))", borderRadius: 9, padding: "5px 13px", fontSize: 12, fontWeight: 700, marginTop: 5, whiteSpace: "nowrap" },
+  footerBtn:   { display: "block", textAlign: "center", textDecoration: "none", color: "var(--color-text-muted)", background: "var(--color-black-a35)", border: "1px solid var(--color-white-a07)", borderRadius: 10, padding: "10px", fontSize: 13, fontWeight: 600, marginTop: 14, fontFamily: "inherit" },
 
   // ── Links & badges ────────────────────────────────────────────────────────
-  linkSmall:   { color: "#06b6d4", textDecoration: "none", fontSize: 12.5, fontWeight: 700 },
-  earlyBirdBadge: { fontSize: 9.5, fontWeight: 700, color: "#10b981", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: 6, padding: "2px 6px", lineHeight: 1.4, display: "inline-block", textAlign: "center", marginBottom: 4 },
-  winnerBadge: { fontSize: 11, fontWeight: 800, color: "#fff", background: "linear-gradient(135deg,#f59e0b,#ef4444)", borderRadius: 6, padding: "2px 10px", letterSpacing: "0.04em" },
+  linkSmall:   { color: "var(--color-accent)", textDecoration: "none", fontSize: 12.5, fontWeight: 700 },
+  earlyBirdBadge: { fontSize: 9.5, fontWeight: 700, color: "var(--color-success)", background: "var(--color-success-a12)", border: "1px solid var(--color-success-a20)", borderRadius: 6, padding: "2px 6px", lineHeight: 1.4, display: "inline-block", textAlign: "center", marginBottom: 4 },
+  winnerBadge: { fontSize: 11, fontWeight: 800, color: "var(--color-text)", background: "linear-gradient(135deg,var(--color-warning),var(--color-danger))", borderRadius: 6, padding: "2px 10px", letterSpacing: "0.04em" },
 
   // ── Progress bar ──────────────────────────────────────────────────────────
-  progressTrack: { height: 6, borderRadius: 999, background: "rgba(255,255,255,0.08)", marginTop: 12, overflow: "hidden" },
-  progressFill:  { height: "100%", background: "linear-gradient(90deg,#06b6d4,#10b981)", borderRadius: 999 },
+  progressTrack: { height: 6, borderRadius: 999, background: "var(--color-white-a07)", marginTop: 12, overflow: "hidden" },
+  progressFill:  { height: "100%", background: "linear-gradient(90deg,var(--color-accent),var(--color-success))", borderRadius: 999 },
 
   // ── List rows ─────────────────────────────────────────────────────────────
-  upcomingRow: { display: "flex", alignItems: "center", gap: 12, padding: "11px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" },
-  recentRow:   { display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" },
+  upcomingRow: { display: "flex", alignItems: "center", gap: 12, padding: "11px 0", borderBottom: "1px solid var(--color-white-a04)" },
+  recentRow:   { display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: "1px solid var(--color-white-a04)" },
   typeIconBox: { width: 38, height: 38, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800 },
 
   // ── Trophy showcase "View All" + modal ─────────────────────────────────────
-  viewAllTrophiesBtn: { color: "#06b6d4", background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.3)", borderRadius: 999, padding: "3px 9px", fontSize: 10.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", alignSelf: "center" },
-  trophyOverlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 20 },
-  trophyModal: { background: "rgba(23,23,23,0.98)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 18, padding: "22px 24px", maxWidth: 720, width: "100%", maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.6)" },
-  trophyCloseBtn: { background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#e5e7eb", width: 32, height: 32, fontSize: 15, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center" },
+  viewAllTrophiesBtn: { color: "var(--color-accent)", background: "var(--color-accent-a08)", border: "1px solid var(--color-accent-a30)", borderRadius: 999, padding: "3px 9px", fontSize: 10.5, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", alignSelf: "center" },
+  trophyOverlay: { position: "fixed", inset: 0, background: "var(--color-black-a65)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 20 },
+  trophyModal: { background: "var(--color-surface)", border: "1px solid var(--color-white-a07)", borderRadius: 18, padding: "22px 24px", maxWidth: 720, width: "100%", maxHeight: "80vh", overflowY: "auto", boxShadow: "0 20px 60px var(--color-black-a65)" },
+  trophyCloseBtn: { background: "var(--color-white-a07)", border: "1px solid var(--color-white-a10)", borderRadius: 8, color: "var(--color-text)", width: 32, height: 32, fontSize: 15, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center" },
 };

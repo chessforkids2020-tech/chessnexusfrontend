@@ -312,8 +312,8 @@ export default function MyCoachPortal() {
                     <div className="mcp-class-coach">{isTournament ? 'Arena Tournament' : `${a.topic} · ${a.timeLimit} min`}</div>
                     <div className="mcp-class-time" style={{ marginTop: 6 }}>
                       {live
-                        ? <span style={{ color: '#f87171', fontWeight: 700 }}>🔴 Live now</span>
-                        : <span style={{ color: '#fcd34d', fontWeight: 700 }}>⏳ Waiting to start</span>}
+                        ? <span style={{ color: 'var(--color-danger)', fontWeight: 700 }}>🔴 Live now</span>
+                        : <span style={{ color: 'var(--color-warning)', fontWeight: 700 }}>⏳ Waiting to start</span>}
                       {!a.seen && <span className="mcp-class-daychip" style={{ marginLeft: 8 }}>NEW</span>}
                     </div>
                     <button
@@ -589,7 +589,7 @@ export default function MyCoachPortal() {
                   {next.item.meetingLink && (
                     <a href={next.item.meetingLink} target="_blank" rel="noopener noreferrer" className="mcp-join-btn">Join</a>
                   )}
-                  <button className="mcp-join-btn" style={{ background: 'transparent', border: '1px solid rgba(139,92,246,0.5)', color: '#c4b5fd' }} onClick={() => setTab('schedule')}>
+                  <button className="mcp-join-btn" style={{ background: 'transparent', border: '1px solid rgba(139,92,246,0.5)', color: 'var(--color-accent-2)' }} onClick={() => setTab('schedule')}>
                     Full schedule
                   </button>
                 </div>
@@ -744,8 +744,8 @@ export default function MyCoachPortal() {
           {/* Class Payment request form */}
           {coaches.map(c => (
             <div key={c.linkId} className="mcp-coach-card" style={{ display: 'block', marginBottom: 18 }}>
-              <div style={{ fontWeight: 700, color: '#fff', marginBottom: 10 }}>💰 Class Payment — {c.coachName}</div>
-              {payNotice && <div className="mcp-ok" style={{ color: '#34d399', marginBottom: 8 }}>✓ {payNotice}</div>}
+              <div style={{ fontWeight: 700, color: 'var(--color-text)', marginBottom: 10 }}>💰 Class Payment — {c.coachName}</div>
+              {payNotice && <div className="mcp-ok" style={{ color: 'var(--color-success)', marginBottom: 8 }}>✓ {payNotice}</div>}
               {payError && <div className="mcp-error" style={{ marginBottom: 8 }}>{payError}</div>}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10 }}>
                 <label className="mcp-pay-field">

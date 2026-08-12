@@ -181,7 +181,7 @@ const StudyTest = () => {
   const styles = {
     page: {
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       padding: '20px',
       fontFamily: 'Inter, Arial, sans-serif',
       position: 'relative',
@@ -189,14 +189,14 @@ const StudyTest = () => {
     container: {
       maxWidth: '1400px',
       margin: '0 auto',
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
       borderRadius: '20px',
       padding: '30px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      color: '#ffffff',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
+      border: '1px solid var(--color-white-a04)',
+      color: 'var(--color-text)',
     },
     header: {
       textAlign: 'center',
@@ -206,14 +206,14 @@ const StudyTest = () => {
       fontSize: '28px',
       fontWeight: '700',
       margin: '0 0 10px 0',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
     },
     subtitle: {
       fontSize: '16px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       margin: '0',
       fontStyle: 'italic',
     },
@@ -226,23 +226,23 @@ const StudyTest = () => {
       padding: '20px',
       marginBottom: '30px',
       gap: '20px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+      border: '1px solid var(--color-white-a04)',
+      boxShadow: '0 4px 20px var(--color-black-a35)',
     },
     statItem: {
       textAlign: 'center',
     },
     statLabel: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginBottom: '8px',
       fontWeight: '600',
     },
     statValue: {
       fontSize: '24px',
       fontWeight: '700',
-      color: '#06b6d4',
-      textShadow: '0 2px 10px rgba(6, 182, 212, 0.3)',
+      color: 'var(--color-accent)',
+      textShadow: '0 2px 10px var(--color-accent-a30)',
     },
     mainContent: {
       display: 'flex',
@@ -259,17 +259,17 @@ const StudyTest = () => {
     },
     rightSection: {
       flex: '0 0 350px',
-      background: 'rgba(23, 23, 23, 0.7)',
+      background: 'var(--color-surface)',
       backdropFilter: 'blur(10px)',
       borderRadius: '16px',
       padding: '20px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      border: '1px solid var(--color-white-a04)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     sectionTitle: {
       fontSize: '18px',
       fontWeight: '600',
-      color: '#67e8f9',
+      color: 'var(--color-accent)',
       marginBottom: '15px',
     },
     movesList: {
@@ -278,40 +278,40 @@ const StudyTest = () => {
       lineHeight: '1.8',
       maxHeight: '300px',
       overflowY: 'auto',
-      background: 'rgba(0, 0, 0, 0.3)',
+      background: 'var(--color-black-a35)',
       borderRadius: '10px',
       padding: '15px',
       marginBottom: '20px',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      border: '1px solid var(--color-white-a04)',
     },
     moveRow: {
       marginBottom: '4px',
       display: 'flex',
       gap: '12px',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     moveNumber: {
       minWidth: '30px',
       fontWeight: '600',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     whiteMove: {
       minWidth: '70px',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     blackMove: {
       minWidth: '70px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     message: {
       padding: '15px',
-      background: isSolved ? 'rgba(16, 185, 129, 0.15)' : 'rgba(6, 182, 212, 0.15)',
-      color: isSolved ? '#10b981' : '#06b6d4',
+      background: isSolved ? 'var(--color-success-a12)' : 'var(--color-accent-a15)',
+      color: isSolved ? 'var(--color-success)' : 'var(--color-accent)',
       borderRadius: '10px',
       marginBottom: '20px',
       fontWeight: '600',
       textAlign: 'center',
-      border: isSolved ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(6, 182, 212, 0.3)',
+      border: isSolved ? '1px solid var(--color-success-a30)' : '1px solid var(--color-accent-a30)',
     },
     buttonGroup: {
       display: 'flex',
@@ -327,29 +327,29 @@ const StudyTest = () => {
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+      boxShadow: '0 4px 12px var(--color-black-a35)',
     },
     nextButton: {
-      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      color: '#ffffff',
+      background: 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
     },
     finishButton: {
-      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-      color: '#ffffff',
+      background: 'linear-gradient(135deg, var(--color-danger) 0%, var(--color-danger) 100%)',
+      color: 'var(--color-text)',
     },
     loading: {
       textAlign: 'center',
       padding: '50px',
       fontSize: '16px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     waitingOverlay: {
       position: 'absolute',
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      background: 'rgba(0, 0, 0, 0.8)',
-      color: '#67e8f9',
+      background: 'var(--color-black-a65)',
+      color: 'var(--color-accent)',
       padding: '15px 30px',
       borderRadius: '10px',
       fontSize: '16px',
@@ -357,7 +357,7 @@ const StudyTest = () => {
       zIndex: '10',
       pointerEvents: 'none',
       backdropFilter: 'blur(5px)',
-      border: '1px solid rgba(6, 182, 212, 0.3)',
+      border: '1px solid var(--color-accent-a30)',
     },
   };
 
@@ -431,7 +431,7 @@ const StudyTest = () => {
             <h3 style={styles.sectionTitle}>Your Moves</h3>
             <div style={styles.movesList}>
               {userMoves.length === 0 ? (
-                <div style={{ color: '#9ca3af', fontStyle: 'italic' }}>
+                <div style={{ color: 'var(--color-text-muted)', fontStyle: 'italic' }}>
                   Make your first move!
                 </div>
               ) : (
@@ -452,11 +452,11 @@ const StudyTest = () => {
                   onClick={nextPuzzle}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
+                    e.currentTarget.style.boxShadow = '0 6px 20px var(--color-success-a30)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
                   }}
                 >
                   Next Puzzle →
@@ -468,11 +468,11 @@ const StudyTest = () => {
                   onClick={finishTest}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(239, 68, 68, 0.4)';
+                    e.currentTarget.style.boxShadow = '0 6px 20px var(--color-danger-a30)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px var(--color-black-a35)';
                   }}
                 >
                   Finish Test

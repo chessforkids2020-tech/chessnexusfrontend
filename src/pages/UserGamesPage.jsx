@@ -11,9 +11,9 @@ const DEFAULT_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
 // Move-classification display (matches the Master Games analysis scheme).
 const CLASS_META = {
-  blunder:    { symbol: '??', color: '#ef4444', label: 'Blunder' },
-  mistake:    { symbol: '?',  color: '#f59e0b', label: 'Mistake' },
-  inaccuracy: { symbol: '?!', color: '#eab308', label: 'Inaccuracy' },
+  blunder:    { symbol: '??', color: 'var(--color-danger)', label: 'Blunder' },
+  mistake:    { symbol: '?',  color: 'var(--color-warning)', label: 'Mistake' },
+  inaccuracy: { symbol: '?!', color: 'var(--color-warning)', label: 'Inaccuracy' },
 };
 
 const formatResult = (result) => {

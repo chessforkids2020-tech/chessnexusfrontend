@@ -14,14 +14,14 @@ export default function OpeningRepertoire() {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 18 }}>
         <div>
           <h1 style={{ margin: 0, fontSize: 26, fontWeight: 900, color: '#fde9b8' }}>⭐ Opening Repertoire Trainer</h1>
-          <p style={{ margin: '6px 0 0', color: '#9ca3af', fontSize: 14, maxWidth: 620 }}>
+          <p style={{ margin: '6px 0 0', color: 'var(--color-text-muted)', fontSize: 14, maxWidth: 620 }}>
             Build your own opening lines, get drilled on them with spaced repetition, and see exactly
             where you left your prep in real games.
           </p>
         </div>
         <button
           onClick={() => navigate('/master-games')}
-          style={{ padding: '8px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontWeight: 700, fontSize: 13, flexShrink: 0 }}
+          style={{ padding: '8px 14px', borderRadius: 10, border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', cursor: 'pointer', fontWeight: 700, fontSize: 13, flexShrink: 0 }}
         >
           ← Master Games
         </button>

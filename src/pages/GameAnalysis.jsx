@@ -49,7 +49,7 @@ function LichessLogo({ size = 22 }) {
 function CapsCard({ capsScore }) {
   if (!capsScore) return null;
   const { avgCpLoss, eloBand } = capsScore;
-  const color = avgCpLoss <= 30 ? '#10b981' : avgCpLoss <= 80 ? '#06b6d4' : avgCpLoss <= 150 ? '#f59e0b' : '#ef4444';
+  const color = avgCpLoss <= 30 ? 'var(--color-success)' : avgCpLoss <= 80 ? 'var(--color-accent)' : avgCpLoss <= 150 ? 'var(--color-warning)' : 'var(--color-danger)';
   return (
     <div className="ga-caps-card">
       <div className="ga-caps-glow" style={{ background: color }} />
@@ -121,7 +121,7 @@ function PatternsSection({ patterns }) {
 function PieceHeatmap({ pieceHeatmap, worstPiece }) {
   if (!pieceHeatmap || pieceHeatmap.every(p => p.count === 0)) return null;
   const max = Math.max(...pieceHeatmap.map(p => p.count), 1);
-  const PIECE_COLORS = { Pawn: '#9ca3af', Knight: '#8b5cf6', Bishop: '#06b6d4', Rook: '#f59e0b', Queen: '#ef4444' };
+  const PIECE_COLORS = { Pawn: 'var(--color-text-muted)', Knight: 'var(--color-accent-2)', Bishop: 'var(--color-accent)', Rook: 'var(--color-warning)', Queen: 'var(--color-danger)' };
   return (
     <div className="ga-piece-heatmap-wrap">
       {worstPiece && (
@@ -136,7 +136,7 @@ function PieceHeatmap({ pieceHeatmap, worstPiece }) {
             <div className="ga-piece-bar-bg">
               <div
                 className="ga-piece-bar-fill"
-                style={{ width: `${Math.round((p.count / max) * 100)}%`, background: PIECE_COLORS[p.label] || '#9ca3af' }}
+                style={{ width: `${Math.round((p.count / max) * 100)}%`, background: PIECE_COLORS[p.label] || 'var(--color-text-muted)' }}
               />
             </div>
             <span className="ga-piece-bar-count">{p.count}</span>
@@ -160,12 +160,12 @@ function TimePressureCard({ timePressureStats }) {
         <div className="ga-tp-title">Time Pressure Analysis</div>
         <div className="ga-tp-stats">
           <div className="ga-tp-stat">
-            <span className="ga-tp-stat-val" style={{ color: '#10b981' }}>{normalAccuracy ?? '—'}%</span>
+            <span className="ga-tp-stat-val" style={{ color: 'var(--color-success)' }}>{normalAccuracy ?? '—'}%</span>
             <span className="ga-tp-stat-lbl">Normal speed ({normalMoves} moves)</span>
           </div>
           <div className="ga-tp-divider" />
           <div className="ga-tp-stat">
-            <span className="ga-tp-stat-val" style={{ color: pressuredMoves > 0 && diff > 10 ? '#ef4444' : '#f59e0b' }}>
+            <span className="ga-tp-stat-val" style={{ color: pressuredMoves > 0 && diff > 10 ? 'var(--color-danger)' : 'var(--color-warning)' }}>
               {pressuredAccuracy ?? '—'}%
             </span>
             <span className="ga-tp-stat-lbl">Under pressure ({pressuredMoves} moves, &lt;60s)</span>
@@ -188,8 +188,8 @@ function TimePressureCard({ timePressureStats }) {
 export function PeerComparisonCard({ peerComparison }) {
   if (!peerComparison) return null;
   const { playerBandDisplay, avgCpLoss, benchmarkCpLoss, blundersPerGame, benchmarkBlundersPerGame, cpLossVsBenchmark, blunderVsBenchmark } = peerComparison;
-  const cpColor = cpLossVsBenchmark <= 0 ? '#10b981' : cpLossVsBenchmark <= 30 ? '#f59e0b' : '#ef4444';
-  const blunderColor = blunderVsBenchmark <= 0 ? '#10b981' : blunderVsBenchmark <= 1 ? '#f59e0b' : '#ef4444';
+  const cpColor = cpLossVsBenchmark <= 0 ? 'var(--color-success)' : cpLossVsBenchmark <= 30 ? 'var(--color-warning)' : 'var(--color-danger)';
+  const blunderColor = blunderVsBenchmark <= 0 ? 'var(--color-success)' : blunderVsBenchmark <= 1 ? 'var(--color-warning)' : 'var(--color-danger)';
   return (
     <div className="ga-peer-card">
       <div className="ga-peer-title">🎖️ You vs. Your Skill Band</div>
@@ -231,10 +231,10 @@ function ProgressHistoryCharts({ history }) {
     datasets: [{
       label: 'Accuracy %',
       data: history.map(s => s.overallAccuracy),
-      borderColor: '#06b6d4',
-      backgroundColor: 'rgba(6,182,212,0.12)',
+      borderColor: 'var(--color-accent)',
+      backgroundColor: 'var(--color-accent-a12)',
       tension: 0.35,
-      pointBackgroundColor: '#06b6d4',
+      pointBackgroundColor: 'var(--color-accent)',
       pointRadius: 4,
       fill: true
     }]
@@ -246,7 +246,7 @@ function ProgressHistoryCharts({ history }) {
       label: 'Blunders/game',
       data: history.map(s => s.blundersPerGame),
       backgroundColor: 'rgba(239,68,68,0.6)',
-      borderColor: '#ef4444',
+      borderColor: 'var(--color-danger)',
       borderWidth: 1,
       borderRadius: 4
     }]
@@ -257,10 +257,10 @@ function ProgressHistoryCharts({ history }) {
     datasets: [{
       label: 'Avg cp loss',
       data: history.map(s => s.capsAvgCpLoss),
-      borderColor: '#f59e0b',
-      backgroundColor: 'rgba(245,158,11,0.1)',
+      borderColor: 'var(--color-warning)',
+      backgroundColor: 'var(--color-warning-a12)',
       tension: 0.35,
-      pointBackgroundColor: '#f59e0b',
+      pointBackgroundColor: 'var(--color-warning)',
       pointRadius: 4,
       fill: true
     }]
@@ -269,12 +269,12 @@ function ProgressHistoryCharts({ history }) {
   const chartOpts = (label, unit, inverted = false) => ({
     responsive: true,
     plugins: {
-      legend: { labels: { color: '#9ca3af', boxWidth: 12 } },
+      legend: { labels: { color: 'var(--color-text-muted)', boxWidth: 12 } },
       tooltip: { callbacks: { label: ctx => ` ${ctx.raw}${unit}` } }
     },
     scales: {
-      x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-      y: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' }, reverse: inverted }
+      x: { ticks: { color: 'var(--color-text-muted)' }, grid: { color: 'var(--color-white-a04)' } },
+      y: { ticks: { color: 'var(--color-text-muted)' }, grid: { color: 'var(--color-white-a04)' }, reverse: inverted }
     }
   });
 
@@ -290,7 +290,7 @@ function ProgressHistoryCharts({ history }) {
     if (slope > 1.5)       velocity = '↑ Improving';
     else if (slope < -1.5) velocity = '↓ Declining';
   }
-  const velocityColor = velocity.startsWith('↑') ? '#10b981' : velocity.startsWith('↓') ? '#ef4444' : '#9ca3af';
+  const velocityColor = velocity.startsWith('↑') ? 'var(--color-success)' : velocity.startsWith('↓') ? 'var(--color-danger)' : 'var(--color-text-muted)';
 
   return (
     <div className="ga-history-section">
@@ -303,7 +303,7 @@ function ProgressHistoryCharts({ history }) {
         {accDiff !== null && (
           <div className="ga-history-meta-card">
             <span className="ga-history-meta-label">vs. last session</span>
-            <span className="ga-history-meta-val" style={{ color: accDiff >= 0 ? '#10b981' : '#ef4444' }}>
+            <span className="ga-history-meta-val" style={{ color: accDiff >= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
               {accDiff >= 0 ? '+' : ''}{accDiff}% accuracy
             </span>
           </div>
@@ -311,7 +311,7 @@ function ProgressHistoryCharts({ history }) {
         {blunderDiff !== null && (
           <div className="ga-history-meta-card">
             <span className="ga-history-meta-label">Blunders/game change</span>
-            <span className="ga-history-meta-val" style={{ color: blunderDiff <= 0 ? '#10b981' : '#ef4444' }}>
+            <span className="ga-history-meta-val" style={{ color: blunderDiff <= 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
               {blunderDiff >= 0 ? '+' : ''}{blunderDiff}
             </span>
           </div>
@@ -366,7 +366,7 @@ export function EndgameStats({ endgameStats }) {
                 </span>
               </td>
               <td>
-                <span style={{ color: e.winRate >= 60 ? '#10b981' : e.winRate >= 40 ? '#f59e0b' : '#ef4444', fontWeight: 600 }}>
+                <span style={{ color: e.winRate >= 60 ? 'var(--color-success)' : e.winRate >= 40 ? 'var(--color-warning)' : 'var(--color-danger)', fontWeight: 600 }}>
                   {e.winRate}%
                 </span>
               </td>
@@ -381,12 +381,12 @@ export function EndgameStats({ endgameStats }) {
 
 
 function phaseLabel(accuracy, blunders = 0, mistakes = 0) {
-  if (accuracy === null || accuracy === undefined) return { label: 'No Data', color: '#6b7280' };
+  if (accuracy === null || accuracy === undefined) return { label: 'No Data', color: 'var(--color-text-faint)' };
   const tiers = [
-    { label: 'Weak',       color: '#ef4444' },
-    { label: 'Needs Work', color: '#f59e0b' },
-    { label: 'Good',       color: '#06b6d4' },
-    { label: 'Strong',     color: '#10b981' },
+    { label: 'Weak',       color: 'var(--color-danger)' },
+    { label: 'Needs Work', color: 'var(--color-warning)' },
+    { label: 'Good',       color: 'var(--color-accent)' },
+    { label: 'Strong',     color: 'var(--color-success)' },
   ];
   // Accuracy-based tier (0–3)
   const accTier = accuracy >= 80 ? 3 : accuracy >= 60 ? 2 : accuracy >= 45 ? 1 : 0;
@@ -403,7 +403,7 @@ function AccuracyDoughnut({ accuracy, color, size = 120 }) {
   const data = {
     datasets: [{
       data: [value, 100 - value],
-      backgroundColor: [color, 'rgba(255,255,255,0.06)'],
+      backgroundColor: [color, 'var(--color-white-a07)'],
       borderWidth: 0,
       circumference: 270,
       rotation: -135
@@ -454,13 +454,13 @@ function TacticsBar({ tacticsStats }) {
   if (total === 0) return <p className="ga-no-data">No tactics missed — great play! 🎉</p>;
 
   const TACTICS = [
-    { key: 'missedCheckmate', label: 'Missed Checkmate', icon: '♔', color: '#ef4444', bg: 'rgba(239,68,68,0.14)',   glowBg: '#ef4444', count: missedCheckmate,
+    { key: 'missedCheckmate', label: 'Missed Checkmate', icon: '♔', color: 'var(--color-danger)', bg: 'var(--color-danger-a12)',   glowBg: 'var(--color-danger)', count: missedCheckmate,
       desc: "You had checkmate available but didn't play it." },
-    { key: 'hangingPiece',    label: 'Hanging Piece',    icon: '🪝', color: '#f59e0b', bg: 'rgba(245,158,11,0.14)', glowBg: '#f59e0b', count: hangingPiece,
+    { key: 'hangingPiece',    label: 'Hanging Piece',    icon: '🪝', color: 'var(--color-warning)', bg: 'var(--color-warning-a12)', glowBg: 'var(--color-warning)', count: hangingPiece,
       desc: "Opponent's piece was free to capture but you missed it." },
-    { key: 'fork',            label: 'Missed Fork',      icon: '⚔️', color: '#8b5cf6', bg: 'rgba(139,92,246,0.14)', glowBg: '#8b5cf6', count: fork,
+    { key: 'fork',            label: 'Missed Fork',      icon: '⚔️', color: 'var(--color-accent-2)', bg: 'var(--color-accent-2-a15)', glowBg: 'var(--color-accent-2)', count: fork,
       desc: 'You could have attacked two pieces at once.' },
-    { key: 'positional',      label: 'Other Blunder',    icon: '❓', color: '#9ca3af', bg: 'rgba(107,114,128,0.14)', glowBg: '#6b7280', count: positional,
+    { key: 'positional',      label: 'Other Blunder',    icon: '❓', color: 'var(--color-text-muted)', bg: 'rgba(107,114,128,0.14)', glowBg: 'var(--color-text-faint)', count: positional,
       desc: 'A bad move that gave away your advantage.' },
   ];
 
@@ -504,9 +504,9 @@ function HeatmapBar({ blunderHeatmap }) {
   return (
     <div className="ga-heatmap-v2">
       <div className="ga-hm-legend">
-        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: '#ef4444' }} />Blunders</div>
-        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: '#f59e0b' }} />Mistakes</div>
-        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: '#eab308' }} />Inaccuracies</div>
+        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: 'var(--color-danger)' }} />Blunders</div>
+        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: 'var(--color-warning)' }} />Mistakes</div>
+        <div className="ga-hm-legend-item"><span className="ga-hm-dot" style={{ background: 'var(--color-warning)' }} />Inaccuracies</div>
       </div>
       <div className="ga-hm-rows">
         {blunderHeatmap.map((b, i) => {
@@ -519,9 +519,9 @@ function HeatmapBar({ blunderHeatmap }) {
               <span className="ga-hm-range">Moves {b.range}</span>
               <div className="ga-hm-track-bg">
                 <div className="ga-hm-track-fill" style={{ width: `${trackWidth}%` }}>
-                  {blunderW > 0 && <div className="ga-hm-seg" style={{ width: `${blunderW}%`, background: '#ef4444' }} />}
-                  {mistakeW > 0 && <div className="ga-hm-seg" style={{ width: `${mistakeW}%`, background: '#f59e0b' }} />}
-                  {inaccW   > 0 && <div className="ga-hm-seg" style={{ width: `${inaccW}%`,   background: '#eab308' }} />}
+                  {blunderW > 0 && <div className="ga-hm-seg" style={{ width: `${blunderW}%`, background: 'var(--color-danger)' }} />}
+                  {mistakeW > 0 && <div className="ga-hm-seg" style={{ width: `${mistakeW}%`, background: 'var(--color-warning)' }} />}
+                  {inaccW   > 0 && <div className="ga-hm-seg" style={{ width: `${inaccW}%`,   background: 'var(--color-warning)' }} />}
                 </div>
               </div>
               <span className="ga-hm-total">{b.total}</span>
@@ -569,7 +569,7 @@ function OpeningsTable({ openings }) {
                       className="ga-winrate-bar-fill"
                       style={{
                         width: `${o.winRate}%`,
-                        background: o.winRate >= 60 ? '#10b981' : o.winRate >= 40 ? '#f59e0b' : '#ef4444'
+                        background: o.winRate >= 60 ? 'var(--color-success)' : o.winRate >= 40 ? 'var(--color-warning)' : 'var(--color-danger)'
                       }}
                     />
                   </div>
@@ -674,10 +674,10 @@ function PlaystyleCard({ playstyle }) {
 // ─── GameBreakdownTable ───────────────────────────────────────────────────────
 
 const THEME_COLORS = {
-  missedCheckmate: '#ef4444',
-  hangingPiece:    '#f59e0b',
-  fork:            '#8b5cf6',
-  positional:      '#6b7280'
+  missedCheckmate: 'var(--color-danger)',
+  hangingPiece:    'var(--color-warning)',
+  fork:            'var(--color-accent-2)',
+  positional:      'var(--color-text-faint)'
 };
 const THEME_LABELS = {
   missedCheckmate: 'Missed Mate',
@@ -715,14 +715,14 @@ export function GameBreakdownTable({ games }) {
                 </span>
               </td>
               <td className="ga-game-acc">
-                <span style={{ color: g.accuracy >= 70 ? '#10b981' : g.accuracy >= 40 ? '#f59e0b' : '#ef4444' }}>
+                <span style={{ color: g.accuracy >= 70 ? 'var(--color-success)' : g.accuracy >= 40 ? 'var(--color-warning)' : 'var(--color-danger)' }}>
                   {g.accuracy}%
                 </span>
               </td>
               <td className="ga-game-blunders">
                 {g.totalBlunders > 0
-                  ? <span style={{ color: '#ef4444' }}>{g.totalBlunders}</span>
-                  : <span style={{ color: '#10b981' }}>0</span>}
+                  ? <span style={{ color: 'var(--color-danger)' }}>{g.totalBlunders}</span>
+                  : <span style={{ color: 'var(--color-success)' }}>0</span>}
               </td>
               <td className="ga-game-themes">
                 {(!g.gameThemes || g.gameThemes.length === 0)
@@ -732,9 +732,9 @@ export function GameBreakdownTable({ games }) {
                       key={ti}
                       className="ga-theme-pill"
                       style={{
-                        background:   (THEME_COLORS[t.theme] || '#6b7280') + '22',
-                        color:        THEME_COLORS[t.theme] || '#6b7280',
-                        borderColor:  (THEME_COLORS[t.theme] || '#6b7280') + '66'
+                        background:   (THEME_COLORS[t.theme] || 'var(--color-text-faint)') + '22',
+                        color:        THEME_COLORS[t.theme] || 'var(--color-text-faint)',
+                        borderColor:  (THEME_COLORS[t.theme] || 'var(--color-text-faint)') + '66'
                       }}
                       title={t.description}
                     >
@@ -761,10 +761,10 @@ export function TrendCharts({ trends }) {
     datasets: [{
       label: 'Accuracy %',
       data: trends.accuracyPerGame,
-      borderColor: '#06b6d4',
-      backgroundColor: 'rgba(6,182,212,0.12)',
+      borderColor: 'var(--color-accent)',
+      backgroundColor: 'var(--color-accent-a12)',
       tension: 0.35,
-      pointBackgroundColor: '#06b6d4',
+      pointBackgroundColor: 'var(--color-accent)',
       pointRadius: 4,
       fill: true
     }]
@@ -772,12 +772,12 @@ export function TrendCharts({ trends }) {
   const accuracyOptions = {
     responsive: true,
     plugins: {
-      legend: { labels: { color: '#9ca3af', boxWidth: 12 } },
+      legend: { labels: { color: 'var(--color-text-muted)', boxWidth: 12 } },
       tooltip: { callbacks: { label: ctx => ` ${ctx.raw}% accuracy` } }
     },
     scales: {
-      x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-      y: { min: 0, max: 100, ticks: { color: '#9ca3af', callback: v => `${v}%` }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      x: { ticks: { color: 'var(--color-text-muted)' }, grid: { color: 'var(--color-white-a04)' } },
+      y: { min: 0, max: 100, ticks: { color: 'var(--color-text-muted)', callback: v => `${v}%` }, grid: { color: 'var(--color-white-a04)' } }
     }
   };
 
@@ -787,7 +787,7 @@ export function TrendCharts({ trends }) {
       label: 'Blunders',
       data: trends.blundersPerGame,
       backgroundColor: 'rgba(239,68,68,0.65)',
-      borderColor: '#ef4444',
+      borderColor: 'var(--color-danger)',
       borderWidth: 1,
       borderRadius: 4
     }]
@@ -795,12 +795,12 @@ export function TrendCharts({ trends }) {
   const blundersOptions = {
     responsive: true,
     plugins: {
-      legend: { labels: { color: '#9ca3af', boxWidth: 12 } },
+      legend: { labels: { color: 'var(--color-text-muted)', boxWidth: 12 } },
       tooltip: { callbacks: { label: ctx => ` ${ctx.raw} blunder${ctx.raw !== 1 ? 's' : ''}` } }
     },
     scales: {
-      x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-      y: { min: 0, ticks: { color: '#9ca3af', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      x: { ticks: { color: 'var(--color-text-muted)' }, grid: { color: 'var(--color-white-a04)' } },
+      y: { min: 0, ticks: { color: 'var(--color-text-muted)', stepSize: 1 }, grid: { color: 'var(--color-white-a04)' } }
     }
   };
 
@@ -981,7 +981,7 @@ function ChessNexusCoachCard_DISABLED({ result, history }) {
   // 2. Blunder Rate
   const bpg = result.blundersPerGame ?? 0;
   const blunderRate  = bpg > 3 ? 'High 🔴' : bpg > 1 ? 'Medium 🟠' : 'Low 🟢';
-  const blunderColor = bpg > 3 ? '#ef4444' : bpg > 1 ? '#f59e0b' : '#10b981';
+  const blunderColor = bpg > 3 ? 'var(--color-danger)' : bpg > 1 ? 'var(--color-warning)' : 'var(--color-success)';
 
   // 3. Best Opening
   const bestOpening = result.openingIntelligence?.bestOpening?.name
@@ -1005,14 +1005,14 @@ function ChessNexusCoachCard_DISABLED({ result, history }) {
   // 5. Trend — compare recent half vs older half of accuracyPerGame
   const acc = result.trends?.accuracyPerGame ?? [];
   let trend = 'Stable →';
-  let trendColor = '#9ca3af';
+  let trendColor = 'var(--color-text-muted)';
   if (acc.length >= 6) {
     const half     = Math.floor(acc.length / 2);
     const recent   = acc.slice(-half).reduce((a, b) => a + b, 0) / half;
     const previous = acc.slice(0, half).reduce((a, b) => a + b, 0) / half;
     const diff = recent - previous;
-    if (diff > 5)       { trend = 'Improving 📈'; trendColor = '#10b981'; }
-    else if (diff < -5) { trend = 'Declining 📉'; trendColor = '#ef4444'; }
+    if (diff > 5)       { trend = 'Improving 📈'; trendColor = 'var(--color-success)'; }
+    else if (diff < -5) { trend = 'Declining 📉'; trendColor = 'var(--color-danger)'; }
   }
 
   // 6. Improved vs last session (from saved history snapshots)
@@ -1026,7 +1026,7 @@ function ChessNexusCoachCard_DISABLED({ result, history }) {
         label: diff > 0 ? `+${diff}% vs last session 📈`
              : diff < 0 ? `${diff}% vs last session 📉`
              : 'Same as last session →',
-        color: diff > 0 ? '#10b981' : diff < 0 ? '#ef4444' : '#9ca3af',
+        color: diff > 0 ? 'var(--color-success)' : diff < 0 ? 'var(--color-danger)' : 'var(--color-text-muted)',
       };
     }
   }
@@ -1837,7 +1837,7 @@ export default function GameAnalysis() {
 
           {/* Guest notice for chess.com / lichess */}
           {(!user || user.role === 'guest') && platform !== 'chessnexus' && platform !== 'otb' && platform !== 'quick' && (
-            <p className="ga-scout-hint">🔭 Analysing 50 games in scout mode. <a href="/login" style={{color:'#f59e0b'}}>Log in</a> to track your progress over time.</p>
+            <p className="ga-scout-hint">🔭 Analysing 50 games in scout mode. <a href="/login" style={{color:'var(--color-warning)'}}>Log in</a> to track your progress over time.</p>
           )}
 
           {/* Username input — hidden for ChessNexus (uses DB games automatically) and OTB */}
@@ -1961,7 +1961,7 @@ export default function GameAnalysis() {
                 </div>
               )}
 
-              <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, margin: '4px 0' }}>— or —</div>
+              <div style={{ textAlign: 'center', color: 'var(--color-text-faint)', fontSize: 12, margin: '4px 0' }}>— or —</div>
               <textarea
                 className="ga-pgn-textarea"
                 placeholder={'Paste a PGN here…\n1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 …'}
@@ -1982,7 +1982,7 @@ export default function GameAnalysis() {
                 <button
                   type="button"
                   className="ga-analyze-btn"
-                  style={{ background: 'rgba(6,182,212,0.15)', color: '#06b6d4', border: '1px solid rgba(6,182,212,0.4)' }}
+                  style={{ background: 'var(--color-accent-a15)', color: 'var(--color-accent)', border: '1px solid var(--color-accent-a40)' }}
                   disabled={pgnAnalyzing || loading || !quickPgn.trim()}
                   title={!quickPgn.trim() ? 'Paste a PGN to get a detailed report' : undefined}
                   onClick={handleQuickDetailed}

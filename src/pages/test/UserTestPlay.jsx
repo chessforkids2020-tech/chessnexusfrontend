@@ -298,7 +298,7 @@ const UserTestPlay = () => {
   const styles = {
     page: {
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)',
+      background: 'linear-gradient(135deg, var(--color-bg) 0%, #1a1a2e 100%)',
       padding: '20px',
       fontFamily: 'Inter, Arial, sans-serif',
     },
@@ -312,9 +312,9 @@ const UserTestPlay = () => {
       alignItems: 'center',
       marginBottom: '20px',
       padding: '15px 20px',
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '16px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
     },
     titleSection: {
       display: 'flex',
@@ -322,17 +322,17 @@ const UserTestPlay = () => {
     },
     studyTitle: {
       fontSize: '13px',
-      color: '#f59e0b',
+      color: 'var(--color-warning)',
     },
     chapterTitle: {
       fontSize: '18px',
       fontWeight: '600',
-      color: '#fff',
+      color: 'var(--color-text)',
     },
     timer: {
       fontSize: '32px',
       fontWeight: '700',
-      color: timeLeft <= 30 ? '#ef4444' : timeLeft <= 60 ? '#f59e0b' : '#22c55e',
+      color: timeLeft <= 30 ? 'var(--color-danger)' : timeLeft <= 60 ? 'var(--color-warning)' : 'var(--color-success)',
       fontFamily: 'monospace',
     },
     main: {
@@ -341,10 +341,10 @@ const UserTestPlay = () => {
       gap: '25px',
     },
     boardSection: {
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '20px',
       padding: '25px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
     },
     boardContainer: {
       maxWidth: '550px',
@@ -356,26 +356,26 @@ const UserTestPlay = () => {
       gap: '20px',
     },
     card: {
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '16px',
       padding: '20px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
     },
     cardTitle: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       marginBottom: '10px',
     },
     progressBar: {
       height: '8px',
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: 'var(--color-white-a10)',
       borderRadius: '4px',
       overflow: 'hidden',
       marginBottom: '10px',
     },
     progressFill: {
       height: '100%',
-      background: 'linear-gradient(90deg, #f59e0b, #ef4444)',
+      background: 'linear-gradient(90deg, var(--color-warning), var(--color-danger))',
       borderRadius: '4px',
       transition: 'width 0.3s ease',
     },
@@ -384,16 +384,16 @@ const UserTestPlay = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
       padding: '10px 0',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+      borderBottom: '1px solid var(--color-white-a04)',
     },
     statLabel: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     statValue: {
       fontSize: '18px',
       fontWeight: '600',
-      color: '#fff',
+      color: 'var(--color-text)',
     },
     message: {
       textAlign: 'center',
@@ -408,18 +408,18 @@ const UserTestPlay = () => {
       border: '1px solid rgba(34, 197, 94, 0.3)',
     },
     wrongMessage: {
-      background: 'rgba(239, 68, 68, 0.2)',
-      color: '#fca5a5',
-      border: '1px solid rgba(239, 68, 68, 0.3)',
+      background: 'var(--color-danger-a20)',
+      color: 'var(--color-danger)',
+      border: '1px solid var(--color-danger-a30)',
     },
     playerTurn: {
       textAlign: 'center',
       padding: '15px',
       borderRadius: '10px',
       background: playerColor === 'white' 
-        ? 'rgba(255, 255, 255, 0.1)' 
-        : 'rgba(0, 0, 0, 0.3)',
-      color: '#fff',
+        ? 'var(--color-white-a10)' 
+        : 'var(--color-black-a35)',
+      color: 'var(--color-text)',
       fontSize: '16px',
       marginBottom: '15px',
     },
@@ -435,23 +435,23 @@ const UserTestPlay = () => {
       marginBottom: '10px',
     },
     skipBtn: {
-      background: 'rgba(239, 68, 68, 0.2)',
-      color: '#fca5a5',
-      border: '1px solid rgba(239, 68, 68, 0.3)',
+      background: 'var(--color-danger-a20)',
+      color: 'var(--color-danger)',
+      border: '1px solid var(--color-danger-a30)',
     },
     finishBtn: {
-      background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-warning) 0%, var(--color-danger) 100%)',
+      color: 'var(--color-text)',
     },
     loading: {
       textAlign: 'center',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       padding: '100px 20px',
       fontSize: '18px',
     },
     error: {
       textAlign: 'center',
-      color: '#ef4444',
+      color: 'var(--color-danger)',
       padding: '100px 20px',
       fontSize: '18px',
     },
@@ -537,7 +537,7 @@ const UserTestPlay = () => {
                   boardWidth={boardSize}
                   boardStyle={{
                     borderRadius: '10px',
-                    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.5)',
+                    boxShadow: '0 10px 30px var(--color-black-a50)',
                   }}
                   draggable={!waitingForStockfish && !isSolved && !testFinished}
                 />
@@ -558,7 +558,7 @@ const UserTestPlay = () => {
                   }} 
                 />
               </div>
-              <div style={{ textAlign: 'center', color: '#fff', fontSize: '18px' }}>
+              <div style={{ textAlign: 'center', color: 'var(--color-text)', fontSize: '18px' }}>
                 Puzzle {displayPuzzleNumber || (currentPuzzleIndex + 1)}
               </div>
             </div>
@@ -572,7 +572,7 @@ const UserTestPlay = () => {
               </div>
               <div style={styles.stat}>
                 <span style={styles.statLabel}>Points</span>
-                <span style={{ ...styles.statValue, color: '#22c55e' }}>
+                <span style={{ ...styles.statValue, color: 'var(--color-success)' }}>
                   {puzzlesSolved * 2}
                 </span>
               </div>

@@ -50,8 +50,8 @@ export default function AcademySidebar({ onNavigate }) {
                 key={item.path}
                 style={active ? styles.navItemActive : styles.navItem}
                 onClick={() => go(item.path)}
-                onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = 'rgba(6,182,212,0.10)'; e.currentTarget.style.color = '#67e8f9'; } }}
-                onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#ffffff'; } }}
+                onMouseEnter={(e) => { if (!active) { e.currentTarget.style.background = 'var(--color-accent-a12)'; e.currentTarget.style.color = 'var(--color-accent)'; } }}
+                onMouseLeave={(e) => { if (!active) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text)'; } }}
               >
                 <span style={styles.navIcon}>{item.icon}</span>
                 <span style={styles.navLabel}>{item.label}</span>
@@ -80,7 +80,7 @@ export default function AcademySidebar({ onNavigate }) {
 
 const baseItem = {
   display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
-  borderRadius: '10px', color: '#ffffff', cursor: 'pointer', fontSize: '13px',
+  borderRadius: '10px', color: 'var(--color-text)', cursor: 'pointer', fontSize: '13px',
   fontWeight: 500, fontFamily: "'Poppins', sans-serif",
   whiteSpace: 'nowrap', overflow: 'hidden', background: 'transparent',
   border: '1px solid transparent',
@@ -88,37 +88,37 @@ const baseItem = {
 
 const styles = {
   sidebar: {
-    width: '170px', background: 'rgba(10,10,10,0.95)', position: 'fixed',
-    top: 0, left: 0, height: '100vh', boxShadow: '2px 0 20px rgba(0,0,0,0.5)',
+    width: '170px', background: 'var(--color-bg)', position: 'fixed',
+    top: 0, left: 0, height: '100vh', boxShadow: '2px 0 20px var(--color-black-a50)',
     zIndex: 100, display: 'flex', flexDirection: 'column',
-    fontFamily: "'Poppins', sans-serif", borderRight: '1px solid rgba(255,255,255,0.05)',
+    fontFamily: "'Poppins', sans-serif", borderRight: '1px solid var(--color-white-a04)',
     backdropFilter: 'blur(10px)',
   },
   content: { display: 'flex', flexDirection: 'column', height: '100%', padding: '20px 0', position: 'relative' },
   brand: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0 14px 4px', cursor: 'pointer', lineHeight: 1.1 },
   brandText: {
     fontFamily: "'Georgia', 'Times New Roman', serif", fontSize: '15px', fontWeight: 600, letterSpacing: '0.5px',
-    background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
     WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
   },
   brandSub: {
     fontFamily: "'Georgia', 'Times New Roman', serif", fontSize: '26px', fontWeight: 700, letterSpacing: '1px', fontStyle: 'italic',
-    background: 'linear-gradient(135deg, #67e8f9 0%, #10b981 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
     WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', marginTop: '-2px',
   },
-  separator: { height: '1px', margin: '8px 12px', background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.3), transparent)' },
+  separator: { height: '1px', margin: '8px 12px', background: 'linear-gradient(90deg, transparent, var(--color-accent-a30), transparent)' },
   navMenu: { display: 'flex', flexDirection: 'column', gap: '6px', padding: '0 10px', flex: 1, overflowY: 'auto' },
   navItem: baseItem,
   navItemActive: {
-    ...baseItem, color: '#06b6d4', fontWeight: 600,
-    background: 'rgba(6,182,212,0.15)', border: '1px solid rgba(6,182,212,0.3)',
-    boxShadow: '0 4px 12px rgba(6,182,212,0.2)',
+    ...baseItem, color: 'var(--color-accent)', fontWeight: 600,
+    background: 'var(--color-accent-a15)', border: '1px solid var(--color-accent-a30)',
+    boxShadow: '0 4px 12px var(--color-accent-a20)',
   },
   navIcon: { fontSize: '17px', flexShrink: 0, width: '20px', textAlign: 'center' },
   navLabel: { flex: 1, fontWeight: 600 },
-  badge: { background: '#f59e0b', color: '#04211d', fontSize: 10, fontWeight: 800, borderRadius: 999, padding: '1px 6px', minWidth: 16, textAlign: 'center' },
+  badge: { background: 'var(--color-warning)', color: '#04211d', fontSize: 10, fontWeight: 800, borderRadius: 999, padding: '1px 6px', minWidth: 16, textAlign: 'center' },
   footer: { display: 'flex', flexDirection: 'column', gap: '6px', padding: '0 10px', paddingBottom: '4px' },
-  footerCard: { display: 'flex', alignItems: 'stretch', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', overflow: 'hidden' },
+  footerCard: { display: 'flex', alignItems: 'stretch', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: '12px', overflow: 'hidden' },
   footerHalf: {
     flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px',
     padding: '9px 4px', cursor: 'pointer', color: 'rgba(226,232,240,0.82)',

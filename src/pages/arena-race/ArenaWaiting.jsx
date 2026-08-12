@@ -262,18 +262,18 @@ export default function ArenaWaiting() {
               icon: '👑',
               text: 'You are the Host',
               subtext: isAuto && countdown ? `Starts in ${countdown}` : waitText,
-              gradient: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
+              gradient: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, var(--color-accent-2-a15) 100%)',
               border: 'rgba(168, 85, 247, 0.3)',
-              textColor: '#a855f7'
+              textColor: 'var(--color-accent-2)'
             };
           } else {
             return {
               icon: '⏳',
               text: 'Waiting for Host to Start',
               subtext: isAuto && countdown ? `Starts in ${countdown}` : waitText,
-              gradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(251, 191, 36, 0.2) 100%)',
-              border: 'rgba(245, 158, 11, 0.3)',
-              textColor: '#f59e0b'
+              gradient: 'linear-gradient(135deg, var(--color-warning-a20) 0%, var(--color-warning-a20) 100%)',
+              border: 'var(--color-warning-a30)',
+              textColor: 'var(--color-warning)'
             };
           }
         }
@@ -284,9 +284,9 @@ export default function ArenaWaiting() {
             icon: '⏰',
             text: 'Chess Nexus Hosted Race',
             subtext: `STARTS IN ${countdown}`,
-            gradient: 'linear-gradient(135deg, rgba(6, 182, 212, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%)',
-            border: 'rgba(6, 182, 212, 0.3)',
-            textColor: '#06b6d4'
+            gradient: 'linear-gradient(135deg, var(--color-accent-a20) 0%, var(--color-success-a20) 100%)',
+            border: 'var(--color-accent-a30)',
+            textColor: 'var(--color-accent)'
           };
         }
 
@@ -294,27 +294,27 @@ export default function ArenaWaiting() {
           icon: '⏳',
           text: 'Chess Nexus Hosted Race',
           subtext: isAuto ? 'PLANNED TIME TO START' : 'Waiting for Chess Nexus to start the race',
-          gradient: 'linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(251, 191, 36, 0.2) 100%)',
-          border: 'rgba(245, 158, 11, 0.3)',
-          textColor: '#f59e0b'
+          gradient: 'linear-gradient(135deg, var(--color-warning-a20) 0%, var(--color-warning-a20) 100%)',
+          border: 'var(--color-warning-a30)',
+          textColor: 'var(--color-warning)'
         };
       case 'active':
         return {
           icon: '🏁',
           text: 'Race Started!',
           subtext: 'Redirecting to race...',
-          gradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(52, 211, 153, 0.2) 100%)',
-          border: 'rgba(16, 185, 129, 0.3)',
-          textColor: '#10b981'
+          gradient: 'linear-gradient(135deg, var(--color-success-a20) 0%, rgba(52, 211, 153, 0.2) 100%)',
+          border: 'var(--color-success-a30)',
+          textColor: 'var(--color-success)'
         };
       default:
         return {
           icon: '❓',
           text: 'Unknown Status',
           subtext: 'Please refresh the page',
-          gradient: 'linear-gradient(135deg, rgba(148, 163, 184, 0.2) 0%, rgba(203, 213, 225, 0.2) 100%)',
-          border: 'rgba(148, 163, 184, 0.3)',
-          textColor: '#94a3b8'
+          gradient: 'linear-gradient(135deg, var(--color-border) 0%, rgba(203, 213, 225, 0.2) 100%)',
+          border: 'var(--color-border-strong)',
+          textColor: 'var(--color-text-muted)'
         };
     }
   };
@@ -322,7 +322,7 @@ export default function ArenaWaiting() {
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '20px',
       position: 'relative',
@@ -334,7 +334,7 @@ export default function ArenaWaiting() {
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+      background: 'radial-gradient(circle at 20% 50%, var(--color-success-a12) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--color-accent-2-a15) 0%, transparent 50%)',
       pointerEvents: 'none',
       zIndex: 0,
     },
@@ -349,17 +349,17 @@ export default function ArenaWaiting() {
       textAlign: 'center',
       marginBottom: '40px',
       padding: '32px 28px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     title: {
       fontSize: '42px',
       fontWeight: '700',
       margin: '0 0 8px 0',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       backgroundClip: 'text',
@@ -367,10 +367,10 @@ export default function ArenaWaiting() {
     roomCode: {
       fontSize: '36px',
       fontWeight: '900',
-      color: '#06b6d4',
+      color: 'var(--color-accent)',
       fontFamily: 'monospace',
       letterSpacing: '6px',
-      textShadow: '0 0 30px rgba(6, 182, 212, 0.5)',
+      textShadow: '0 0 30px var(--color-accent-a40)',
     },
     twoColumnGrid: {
       display: 'grid',
@@ -389,24 +389,24 @@ export default function ArenaWaiting() {
       gap: '24px',
     },
     card: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '32px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     statItem: {
       padding: '20px',
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '12px',
       marginBottom: '16px',
       transition: 'all 0.3s ease',
     },
     statLabel: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '600',
       marginBottom: '8px',
       display: 'flex',
@@ -416,16 +416,16 @@ export default function ArenaWaiting() {
     statValue: {
       fontSize: '28px',
       fontWeight: '700',
-      color: '#ffffff',
+      color: 'var(--color-text)',
     },
     statusCard: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '12px',
       textAlign: 'center',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     statusIcon: {
       fontSize: '56px',
@@ -439,21 +439,21 @@ export default function ArenaWaiting() {
     },
     statusSubtext: {
       fontSize: '16px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       lineHeight: '1.6',
     },
     playersCard: {
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
       padding: '32px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     playersHeader: {
       fontSize: '22px',
       fontWeight: '700',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '24px',
       display: 'flex',
       alignItems: 'center',
@@ -465,8 +465,8 @@ export default function ArenaWaiting() {
       gap: '12px',
     },
     playerCard: {
-      background: 'rgba(0, 0, 0, 0.3)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-black-a35)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '12px',
       padding: '16px',
       display: 'flex',
@@ -478,14 +478,14 @@ export default function ArenaWaiting() {
       width: '48px',
       height: '48px',
       borderRadius: '50%',
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       fontSize: '20px',
       fontWeight: '700',
-      color: '#ffffff',
-      boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
+      color: 'var(--color-text)',
+      boxShadow: '0 4px 16px var(--color-accent-a40)',
       flexShrink: 0,
     },
     playerInfo: {
@@ -495,7 +495,7 @@ export default function ArenaWaiting() {
     playerName: {
       fontSize: '15px',
       fontWeight: '600',
-      color: '#ffffff',
+      color: 'var(--color-text)',
       marginBottom: '2px',
       whiteSpace: 'nowrap',
       overflow: 'hidden',
@@ -503,7 +503,7 @@ export default function ArenaWaiting() {
     },
     playerUsername: {
       fontSize: '12px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
@@ -518,23 +518,23 @@ export default function ArenaWaiting() {
       flexShrink: 0,
     },
     statusWaiting: {
-      background: 'rgba(245, 158, 11, 0.15)',
-      color: '#f59e0b',
-      border: '1px solid rgba(245, 158, 11, 0.2)',
+      background: 'var(--color-warning-a12)',
+      color: 'var(--color-warning)',
+      border: '1px solid var(--color-warning-a20)',
     },
     statusReady: {
-      background: 'rgba(16, 185, 129, 0.15)',
-      color: '#10b981',
-      border: '1px solid rgba(16, 185, 129, 0.2)',
+      background: 'var(--color-success-a12)',
+      color: 'var(--color-success)',
+      border: '1px solid var(--color-success-a20)',
     },
     loadingContainer: {
       textAlign: 'center',
       padding: '80px 20px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     loadingIcon: {
       fontSize: '64px',
@@ -542,22 +542,22 @@ export default function ArenaWaiting() {
     },
     loadingText: {
       fontSize: '20px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       fontWeight: '500',
     },
     errorContainer: {
       textAlign: 'center',
       padding: '60px 40px',
-      background: 'rgba(23, 23, 23, 0.7)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: 'var(--color-surface)',
+      border: '1px solid var(--color-white-a04)',
       borderRadius: '20px',
       backdropFilter: 'blur(10px)',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
+      boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     errorMessage: {
-      background: 'rgba(239, 68, 68, 0.15)',
-      color: '#ef4444',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
+      background: 'var(--color-danger-a12)',
+      color: 'var(--color-danger)',
+      border: '1px solid var(--color-danger-a20)',
       padding: '16px 24px',
       borderRadius: '12px',
       fontSize: '16px',
@@ -565,8 +565,8 @@ export default function ArenaWaiting() {
       marginBottom: '32px',
     },
     retryButton: {
-      background: 'linear-gradient(135deg, #06b6d4 0%, #10b981 100%)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-success) 100%)',
+      color: 'var(--color-text)',
       border: 'none',
       padding: '14px 32px',
       borderRadius: '12px',
@@ -574,7 +574,7 @@ export default function ArenaWaiting() {
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 16px rgba(6, 182, 212, 0.4)',
+      boxShadow: '0 4px 16px var(--color-accent-a40)',
     },
   };
 
@@ -618,7 +618,7 @@ export default function ArenaWaiting() {
             <motion.button 
               style={styles.retryButton} 
               onClick={fetchRoomData}
-              whileHover={{ y: -2, boxShadow: '0 6px 24px rgba(6, 182, 212, 0.5)' }}
+              whileHover={{ y: -2, boxShadow: '0 6px 24px var(--color-accent-a40)' }}
               transition={{ duration: 0.2 }}
             >
               Retry
@@ -681,17 +681,17 @@ export default function ArenaWaiting() {
             <div style={{ 
               marginTop: '20px', 
               padding: '16px',
-              background: 'rgba(0, 0, 0, 0.3)',
+              background: 'var(--color-black-a35)',
               borderRadius: '12px',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '12px'
             }}>
-              <span style={{ color: '#9ca3af', fontSize: '14px' }}>Room Code:</span>
+              <span style={{ color: 'var(--color-text-muted)', fontSize: '14px' }}>Room Code:</span>
               <span style={{ 
                 fontSize: '24px', 
                 fontWeight: '900', 
-                color: '#06b6d4',
+                color: 'var(--color-accent)',
                 fontFamily: 'monospace',
                 letterSpacing: '4px'
               }}>
@@ -701,10 +701,10 @@ export default function ArenaWaiting() {
                 onClick={handleCopyRoomId}
                 style={{
                   padding: '8px 16px',
-                  background: copied ? 'rgba(16, 185, 129, 0.3)' : 'rgba(6, 182, 212, 0.2)',
-                  border: `1px solid ${copied ? 'rgba(16, 185, 129, 0.5)' : 'rgba(6, 182, 212, 0.3)'}`,
+                  background: copied ? 'var(--color-success-a30)' : 'var(--color-accent-a20)',
+                  border: `1px solid ${copied ? 'var(--color-success-a30)' : 'var(--color-accent-a30)'}`,
                   borderRadius: '8px',
-                  color: copied ? '#10b981' : '#06b6d4',
+                  color: copied ? 'var(--color-success)' : 'var(--color-accent)',
                   cursor: 'pointer',
                   fontSize: '13px',
                   fontWeight: '600'
@@ -725,11 +725,11 @@ export default function ArenaWaiting() {
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     style={{
-                      background: 'rgba(239, 68, 68, 0.15)',
-                      border: '1px solid rgba(239, 68, 68, 0.4)',
+                      background: 'var(--color-danger-a12)',
+                      border: '1px solid var(--color-danger-a30)',
                       borderRadius: '10px',
                       padding: '12px 20px',
-                      color: '#f87171',
+                      color: 'var(--color-danger)',
                       fontSize: '14px',
                       fontWeight: '600',
                       marginBottom: '12px',
@@ -745,11 +745,11 @@ export default function ArenaWaiting() {
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     style={{
-                      background: 'rgba(239, 68, 68, 0.2)',
+                      background: 'var(--color-danger-a20)',
                       border: '1px solid rgba(239, 68, 68, 0.5)',
                       borderRadius: '10px',
                       padding: '14px 20px',
-                      color: '#fca5a5',
+                      color: 'var(--color-danger)',
                       fontSize: '14px',
                       fontWeight: '700',
                       marginBottom: '12px',
@@ -768,14 +768,14 @@ export default function ArenaWaiting() {
                     fontWeight: '700',
                     background: (!canStartRace || startingRace)
                       ? 'rgba(107, 114, 128, 0.5)' 
-                      : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      : 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
                     border: 'none',
                     borderRadius: '12px',
-                    color: '#fff',
+                    color: 'var(--color-text)',
                     cursor: (!canStartRace || startingRace) ? 'not-allowed' : 'pointer',
                     boxShadow: (!canStartRace || startingRace)
                       ? 'none' 
-                      : '0 4px 20px rgba(16, 185, 129, 0.5)',
+                      : '0 4px 20px var(--color-success-a30)',
                     transition: 'all 0.3s ease',
                     opacity: (!canStartRace || startingRace) ? 0.6 : 1,
                   }}
@@ -784,14 +784,14 @@ export default function ArenaWaiting() {
                 >
                   {startingRace ? '🔄 Starting...' : '🚀 Start Race'}
                 </motion.button>
-                <div style={{ color: '#9ca3af', fontSize: '13px', marginTop: '8px' }}>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: '13px', marginTop: '8px' }}>
                   {roomData.playerCount ?? 0} player{(roomData.playerCount ?? 0) !== 1 ? 's' : ''} joined
                   {(roomData.playerCount ?? 0) < 2 && (
-                    <span style={{ color: '#f87171', marginLeft: '6px' }}>(need at least 2)</span>
+                    <span style={{ color: 'var(--color-danger)', marginLeft: '6px' }}>(need at least 2)</span>
                   )}
                 </div>
                 {roomData?.plannedStartTime && (roomData.playerCount ?? 0) >= 2 && (
-                  <div style={{ color: '#67e8f9', fontSize: '12px', marginTop: '6px' }}>
+                  <div style={{ color: 'var(--color-accent)', fontSize: '12px', marginTop: '6px' }}>
                     {canHostStartNow
                       ? 'Scheduled time reached. You can start now.'
                       : `Start available in ${formatCountdown(roomData.plannedStartTime)}`}
@@ -817,8 +817,8 @@ export default function ArenaWaiting() {
                 style={styles.statItem}
                 whileHover={{ 
                   y: -2,
-                  boxShadow: '0 4px 16px rgba(6, 182, 212, 0.2)',
-                  border: '1px solid rgba(6, 182, 212, 0.2)'
+                  boxShadow: '0 4px 16px var(--color-accent-a20)',
+                  border: '1px solid var(--color-accent-a20)'
                 }}
               >
                 <div style={styles.statLabel}>
@@ -831,8 +831,8 @@ export default function ArenaWaiting() {
                 style={styles.statItem}
                 whileHover={{ 
                   y: -2,
-                  boxShadow: '0 4px 16px rgba(6, 182, 212, 0.2)',
-                  border: '1px solid rgba(6, 182, 212, 0.2)'
+                  boxShadow: '0 4px 16px var(--color-accent-a20)',
+                  border: '1px solid var(--color-accent-a20)'
                 }}
               >
                 <div style={styles.statLabel}>
@@ -845,8 +845,8 @@ export default function ArenaWaiting() {
                 style={styles.statItem}
                 whileHover={{ 
                   y: -2,
-                  boxShadow: '0 4px 16px rgba(6, 182, 212, 0.2)',
-                  border: '1px solid rgba(6, 182, 212, 0.2)'
+                  boxShadow: '0 4px 16px var(--color-accent-a20)',
+                  border: '1px solid var(--color-accent-a20)'
                 }}
               >
                 <div style={styles.statLabel}>
@@ -859,8 +859,8 @@ export default function ArenaWaiting() {
                 style={styles.statItem}
                 whileHover={{ 
                   y: -2,
-                  boxShadow: '0 4px 16px rgba(6, 182, 212, 0.2)',
-                  border: '1px solid rgba(6, 182, 212, 0.2)'
+                  boxShadow: '0 4px 16px var(--color-accent-a20)',
+                  border: '1px solid var(--color-accent-a20)'
                 }}
               >
                 <div style={styles.statLabel}>
@@ -873,8 +873,8 @@ export default function ArenaWaiting() {
                 style={styles.statItem}
                 whileHover={{ 
                   y: -2,
-                  boxShadow: '0 4px 16px rgba(6, 182, 212, 0.2)',
-                  border: '1px solid rgba(6, 182, 212, 0.2)'
+                  boxShadow: '0 4px 16px var(--color-accent-a20)',
+                  border: '1px solid var(--color-accent-a20)'
                 }}
               >
                 <div style={styles.statLabel}>
@@ -884,7 +884,7 @@ export default function ArenaWaiting() {
                   {roomData?.plannedStartTime ? new Date(roomData.plannedStartTime).toLocaleString() : 'Start anytime'}
                 </div>
                 {roomData?.plannedStartTime && roomData?.status === 'waiting' && (
-                  <div style={{ color: '#67e8f9', fontSize: '12px', marginTop: '6px' }}>
+                  <div style={{ color: 'var(--color-accent)', fontSize: '12px', marginTop: '6px' }}>
                     {roomData?.startMode === 'auto' ? 'Auto start' : 'Manual start'} · {formatCountdown(roomData.plannedStartTime)}
                   </div>
                 )}
@@ -907,7 +907,7 @@ export default function ArenaWaiting() {
                   <span>👥</span> Players ({roomData?.playerCount ?? 0})
                 </h2>
                 {allPlayers.length > 0 && (
-                  <span style={{ fontSize: '13px', color: '#9ca3af' }}>
+                  <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>
                     {startIndex + 1}–{Math.min(startIndex + PAGE_SIZE, allPlayers.length)} of {allPlayers.length}
                   </span>
                 )}
@@ -917,16 +917,16 @@ export default function ArenaWaiting() {
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                      <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '12px', fontWeight: '700', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', width: '44px' }}>#</th>
-                      <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '12px', fontWeight: '700', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Player</th>
-                      <th style={{ padding: '10px 12px', textAlign: 'center', fontSize: '12px', fontWeight: '700', color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.05em', width: '100px' }}>Status</th>
+                    <tr style={{ borderBottom: '1px solid var(--color-white-a07)' }}>
+                      <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '12px', fontWeight: '700', color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em', width: '44px' }}>#</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '12px', fontWeight: '700', color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Player</th>
+                      <th style={{ padding: '10px 12px', textAlign: 'center', fontSize: '12px', fontWeight: '700', color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.05em', width: '100px' }}>Status</th>
                     </tr>
                   </thead>
                   <tbody>
                     {pagedPlayers.length === 0 ? (
                       <tr>
-                        <td colSpan={3} style={{ padding: '40px', textAlign: 'center', color: '#6b7280', fontSize: '15px' }}>
+                        <td colSpan={3} style={{ padding: '40px', textAlign: 'center', color: 'var(--color-text-faint)', fontSize: '15px' }}>
                           👤 No players yet
                         </td>
                       </tr>
@@ -938,14 +938,14 @@ export default function ArenaWaiting() {
                         <tr
                           key={player.userId || absIndex}
                           style={{
-                            borderBottom: '1px solid rgba(255,255,255,0.04)',
-                            background: isMe ? 'rgba(6,182,212,0.07)' : absIndex % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)',
-                            borderLeft: isMe ? '3px solid #06b6d4' : '3px solid transparent',
+                            borderBottom: '1px solid var(--color-white-a04)',
+                            background: isMe ? 'var(--color-accent-a06)' : absIndex % 2 === 0 ? 'transparent' : 'var(--color-white-a04)',
+                            borderLeft: isMe ? '3px solid var(--color-accent)' : '3px solid transparent',
                             transition: 'background 0.2s',
                           }}
                         >
                           {/* Rank */}
-                          <td style={{ padding: '12px 12px', fontSize: '13px', color: '#6b7280', fontWeight: '600', textAlign: 'center' }}>
+                          <td style={{ padding: '12px 12px', fontSize: '13px', color: 'var(--color-text-faint)', fontWeight: '600', textAlign: 'center' }}>
                             {absIndex + 1}
                           </td>
                           {/* Player */}
@@ -953,16 +953,16 @@ export default function ArenaWaiting() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                               <div style={{
                                 width: '32px', height: '32px', borderRadius: '50%',
-                                background: isMe ? 'linear-gradient(135deg,#06b6d4,#10b981)' : 'rgba(255,255,255,0.08)',
+                                background: isMe ? 'linear-gradient(135deg,var(--color-accent),var(--color-success))' : 'var(--color-white-a07)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '14px', fontWeight: '700', color: '#fff', flexShrink: 0,
+                                fontSize: '14px', fontWeight: '700', color: 'var(--color-text)', flexShrink: 0,
                               }}>
                                 {(player.displayName || player.username || 'U').charAt(0).toUpperCase()}
                               </div>
                               <div style={{ minWidth: 0 }}>
-                                <div style={{ fontSize: '14px', fontWeight: '600', color: isMe ? '#67e8f9' : '#e5e7eb', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <div style={{ fontSize: '14px', fontWeight: '600', color: isMe ? 'var(--color-accent)' : 'var(--color-text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                   <PlayerName displayName={player.displayName} username={player.username} userId={player.userId} />
-                                  {isMe && <span style={{ fontSize: '10px', background: 'rgba(6,182,212,0.2)', color: '#06b6d4', border: '1px solid rgba(6,182,212,0.3)', borderRadius: '4px', padding: '1px 6px', fontWeight: '700' }}>You</span>}
+                                  {isMe && <span style={{ fontSize: '10px', background: 'var(--color-accent-a20)', color: 'var(--color-accent)', border: '1px solid var(--color-accent-a30)', borderRadius: '4px', padding: '1px 6px', fontWeight: '700' }}>You</span>}
                                 </div>
                               </div>
                             </div>
@@ -973,9 +973,9 @@ export default function ArenaWaiting() {
                               display: 'inline-block',
                               padding: '4px 12px', borderRadius: '6px',
                               fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em',
-                              background: isReady ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
-                              color: isReady ? '#10b981' : '#f59e0b',
-                              border: `1px solid ${isReady ? 'rgba(16,185,129,0.3)' : 'rgba(245,158,11,0.3)'}`,
+                              background: isReady ? 'var(--color-success-a12)' : 'var(--color-warning-a12)',
+                              color: isReady ? 'var(--color-success)' : 'var(--color-warning)',
+                              border: `1px solid ${isReady ? 'var(--color-success-a30)' : 'var(--color-warning-a30)'}`,
                             }}>
                               {player.status || 'waiting'}
                             </span>
@@ -989,15 +989,15 @@ export default function ArenaWaiting() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--color-white-a07)' }}>
                   <button
                     onClick={() => setPlayersPage(p => Math.max(0, p - 1))}
                     disabled={safePlayersPage === 0}
                     style={{
                       padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
-                      background: safePlayersPage === 0 ? 'rgba(255,255,255,0.04)' : 'rgba(6,182,212,0.15)',
-                      color: safePlayersPage === 0 ? '#4b5563' : '#06b6d4',
-                      border: `1px solid ${safePlayersPage === 0 ? 'rgba(255,255,255,0.06)' : 'rgba(6,182,212,0.3)'}`,
+                      background: safePlayersPage === 0 ? 'var(--color-white-a04)' : 'var(--color-accent-a15)',
+                      color: safePlayersPage === 0 ? 'var(--color-text-faint)' : 'var(--color-accent)',
+                      border: `1px solid ${safePlayersPage === 0 ? 'var(--color-white-a07)' : 'var(--color-accent-a30)'}`,
                       cursor: safePlayersPage === 0 ? 'not-allowed' : 'pointer',
                     }}
                   >
@@ -1010,9 +1010,9 @@ export default function ArenaWaiting() {
                       onClick={() => setPlayersPage(i)}
                       style={{
                         width: '34px', height: '34px', borderRadius: '8px', fontSize: '13px', fontWeight: '700',
-                        background: i === safePlayersPage ? 'rgba(6,182,212,0.25)' : 'rgba(255,255,255,0.04)',
-                        color: i === safePlayersPage ? '#06b6d4' : '#9ca3af',
-                        border: `1px solid ${i === safePlayersPage ? 'rgba(6,182,212,0.5)' : 'rgba(255,255,255,0.06)'}`,
+                        background: i === safePlayersPage ? 'var(--color-accent-a20)' : 'var(--color-white-a04)',
+                        color: i === safePlayersPage ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                        border: `1px solid ${i === safePlayersPage ? 'var(--color-accent-a40)' : 'var(--color-white-a07)'}`,
                         cursor: 'pointer',
                       }}
                     >
@@ -1025,9 +1025,9 @@ export default function ArenaWaiting() {
                     disabled={safePlayersPage === totalPages - 1}
                     style={{
                       padding: '6px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
-                      background: safePlayersPage === totalPages - 1 ? 'rgba(255,255,255,0.04)' : 'rgba(6,182,212,0.15)',
-                      color: safePlayersPage === totalPages - 1 ? '#4b5563' : '#06b6d4',
-                      border: `1px solid ${safePlayersPage === totalPages - 1 ? 'rgba(255,255,255,0.06)' : 'rgba(6,182,212,0.3)'}`,
+                      background: safePlayersPage === totalPages - 1 ? 'var(--color-white-a04)' : 'var(--color-accent-a15)',
+                      color: safePlayersPage === totalPages - 1 ? 'var(--color-text-faint)' : 'var(--color-accent)',
+                      border: `1px solid ${safePlayersPage === totalPages - 1 ? 'var(--color-white-a07)' : 'var(--color-accent-a30)'}`,
                       cursor: safePlayersPage === totalPages - 1 ? 'not-allowed' : 'pointer',
                     }}
                   >

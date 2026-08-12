@@ -4,12 +4,12 @@
   display: flex;
   overflow: hidden; /* only internal areas should scroll */
   background-color: #111214; /* dark chat surface */
-  color: #e5e7eb;
+  color: var(--color-text);
   width: 100%;
   height: 85vh; /* Fixed height for the chat window within the page */
   border: 1px solid #262a30;
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 12px var(--color-black-a35);
   box-sizing: border-box;
 }
 
@@ -22,7 +22,7 @@
   right: 12px !important;
   bottom: 12px !important;
   border-radius: 10px !important;
-  box-shadow: 0 14px 36px rgba(0,0,0,0.5) !important;
+  box-shadow: 0 14px 36px var(--color-black-a50) !important;
   overflow: hidden !important;
   background-color: #111214; /* small card background for clarity */
   z-index: 2000;
@@ -60,7 +60,7 @@
   right: auto !important;
   bottom: auto !important;
   border-radius: 8px !important;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.4) !important;
+  box-shadow: 0 2px 12px var(--color-black-a35) !important;
   overflow: hidden !important;
   background-color: #111214;
   position: relative !important;
@@ -117,7 +117,7 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 0.85em;
   font-weight: 600;
   cursor: pointer;
@@ -157,7 +157,7 @@
 
 .chat-item-name {
   font-weight: bold;
-  color: #f3f4f6;
+  color: var(--color-text);
   margin-bottom: 5px;
   white-space: nowrap;
   overflow: hidden;
@@ -166,7 +166,7 @@
 
 .chat-item-preview {
   font-size: 0.85em;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -178,7 +178,7 @@
 }
 
 .chat-item.unread .chat-item-name {
-  color: #fbbf24;
+  color: var(--color-warning);
   font-weight: 700;
 }
 
@@ -188,7 +188,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background-color: #22c55e;
+  background-color: var(--color-success);
   box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
   margin-right: 7px;
 }
@@ -208,7 +208,7 @@
 
 .unread-badge {
   background-color: #d4380d;
-  color: #fff;
+  color: var(--color-text);
   border-radius: 50%;
   min-width: 18px;
   height: 18px;
@@ -241,7 +241,7 @@
   background-color: #16181c;
   font-weight: bold;
   font-size: 1.1em;
-  color: #f3f4f6;
+  color: var(--color-text);
 }
 .chat-header-name {
   overflow: hidden;
@@ -257,8 +257,8 @@
   height: 34px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.08);
-  color: #e5e7eb;
+  background: var(--color-white-a07);
+  color: var(--color-text);
   font-size: 26px;
   line-height: 1;
   cursor: pointer;
@@ -266,21 +266,21 @@
   justify-content: center;
   padding: 0 0 3px;
 }
-.chat-back-btn:hover { background: rgba(255, 255, 255, 0.16); }
+.chat-back-btn:hover { background: var(--color-white-a13); }
 
 .chat-sidebar h3 {
-  color: #f3f4f6;
+  color: var(--color-text);
 }
 
 /* Ensure header text and controls are visible in compact/expanded card modes */
 .chat-container.compact .chat-header,
 .chat-container.expanded .chat-header {
-  color: #f3f4f6;
+  color: var(--color-text);
 }
 
 .chat-container.compact .btn-secondary,
 .chat-container.expanded .btn-secondary {
-  color: #e5e7eb;
+  color: var(--color-text);
   background: #262a30;
   border: 1px solid #363b42;
 }
@@ -356,7 +356,7 @@
 
 /* Subtle inner card shadow to emphasize the white chat card */
 .chat-main {
-  box-shadow: 0 6px 20px rgba(0,0,0,0.04);
+  box-shadow: 0 6px 20px var(--color-black-a20);
 }
 
 .message {
@@ -373,7 +373,7 @@
 
 .message.sent {
   align-self: flex-end; /* Right align sent messages */
-  background-color: #1890ff;
+  background-color: var(--color-accent-2);
   color: white;
   border-bottom-right-radius: 4px;
   margin-left: auto; /* Push to right */
@@ -384,7 +384,7 @@
 .message.received {
   align-self: flex-start; /* Left align received messages */
   background-color: #262a30;
-  color: #e5e7eb;
+  color: var(--color-text);
   border-bottom-left-radius: 4px;
   margin-right: auto; /* Push to left */
   margin-left: 0;
@@ -413,7 +413,7 @@
 
 .empty-messages {
   text-align: center;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-style: italic;
   padding: 40px 20px;
   width: 100%;
@@ -421,7 +421,7 @@
 
 .loading-messages {
   text-align: center;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   padding: 40px 20px;
   width: 100%;
   font-style: italic;
@@ -441,7 +441,7 @@
   padding: 10px 14px;
   border: 1px solid #363b42;
   background-color: #1f2228;
-  color: #e5e7eb;
+  color: var(--color-text);
   border-radius: 20px;
   outline: none;
   /* textarea: grow with content up to a cap, then scroll. Preserve line breaks. */
@@ -454,11 +454,11 @@
   word-break: break-word;
 }
 
-.message-input::placeholder { color: #6b7280; }
+.message-input::placeholder { color: var(--color-text-faint); }
 
 .send-button {
   padding: 0 20px;
-  background-color: #1890ff;
+  background-color: var(--color-accent-2);
   color: white;
   border: none;
   border-radius: 20px;
@@ -478,7 +478,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0,0,0,0.5);
+  background-color: var(--color-black-a50);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -490,7 +490,7 @@
    The modals render inside .chat-container in Chat.jsx, so the scoping holds. */
 .chat-container .modal-content {
   background-color: #16181c;
-  color: #e5e7eb;
+  color: var(--color-text);
   padding: 20px;
   border-radius: 8px;
   width: 400px;
@@ -501,7 +501,7 @@
 
 .chat-container .modal-content h2,
 .chat-container .modal-content h3,
-.chat-container .modal-content label { color: #f3f4f6; }
+.chat-container .modal-content label { color: var(--color-text); }
 
 .chat-container .search-input {
   width: 100%;
@@ -509,10 +509,10 @@
   margin-bottom: 10px;
   border: 1px solid #363b42;
   background-color: #1f2228;
-  color: #e5e7eb;
+  color: var(--color-text);
   border-radius: 4px;
 }
-.chat-container .search-input::placeholder { color: #6b7280; }
+.chat-container .search-input::placeholder { color: var(--color-text-faint); }
 
 .chat-container .user-list-item {
   padding: 10px;
@@ -528,7 +528,7 @@
 }
 
 .chat-container .btn-primary {
-  background-color: #1890ff;
+  background-color: var(--color-accent-2);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -538,7 +538,7 @@
 
 .chat-container .btn-secondary {
   background-color: #262a30;
-  color: #e5e7eb;
+  color: var(--color-text);
   border: 1px solid #363b42;
   padding: 8px 16px;
   border-radius: 4px;
@@ -551,7 +551,7 @@
   justify-content: center;
   align-items: center;
   height: 100%;
-  color: #9ca3af;
+  color: var(--color-text-muted);
   font-size: 1.2em;
 }
 

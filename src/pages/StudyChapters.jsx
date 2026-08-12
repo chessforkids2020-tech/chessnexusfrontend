@@ -86,24 +86,24 @@ const StudyChapters = () => {
   const styles = {
     page: {
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: 'linear-gradient(135deg, var(--color-accent-2) 0%, #764ba2 100%)',
       padding: '20px',
       fontFamily: 'Inter, Arial, sans-serif',
     },
     container: {
       maxWidth: '1400px',
       margin: '0 auto',
-      background: '#fff',
+      background: 'var(--color-text)',
       borderRadius: '20px',
       padding: '20px',
-      boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+      boxShadow: '0 20px 40px var(--color-black-a20)',
       display: 'flex',
       gap: '20px',
       height: '80vh',
     },
     sidebar: {
       width: '250px',
-      background: '#f8f9fa',
+      background: 'var(--color-surface)',
       borderRadius: '12px',
       padding: '20px',
       overflowY: 'auto',
@@ -113,14 +113,14 @@ const StudyChapters = () => {
       marginBottom: '8px',
       borderRadius: '8px',
       cursor: 'pointer',
-      background: '#fff',
-      border: '2px solid #e9ecef',
+      background: 'var(--color-text)',
+      border: '2px solid var(--color-surface-2)',
       transition: 'all 0.2s ease',
     },
     chapterItemActive: {
-      background: '#1a5f1a',
-      color: '#fff',
-      borderColor: '#1a5f1a',
+      background: 'var(--color-success)',
+      color: 'var(--color-text)',
+      borderColor: 'var(--color-success)',
     },
     center: {
       flex: 1,
@@ -136,8 +136,8 @@ const StudyChapters = () => {
     },
     nextButton: {
       padding: '12px 24px',
-      background: 'linear-gradient(135deg, #1a5f1a, #2e7d32)',
-      color: '#fff',
+      background: 'linear-gradient(135deg, var(--color-success), var(--color-success))',
+      color: 'var(--color-text)',
       border: 'none',
       borderRadius: '8px',
       fontSize: '16px',
@@ -147,7 +147,7 @@ const StudyChapters = () => {
     },
     rightPanel: {
       width: '300px',
-      background: '#f8f9fa',
+      background: 'var(--color-surface)',
       borderRadius: '12px',
       padding: '20px',
       overflowY: 'auto',
@@ -159,19 +159,19 @@ const StudyChapters = () => {
     moveItem: {
       padding: '8px',
       marginBottom: '4px',
-      background: '#fff',
+      background: 'var(--color-text)',
       borderRadius: '4px',
       fontFamily: 'monospace',
     },
     loading: {
       textAlign: 'center',
-      color: '#666',
+      color: 'var(--color-text-faint)',
       fontSize: '18px',
       padding: '40px',
     },
     error: {
       textAlign: 'center',
-      color: '#dc2626',
+      color: 'var(--color-danger)',
       fontSize: '18px',
       padding: '40px',
     },
@@ -198,7 +198,7 @@ const StudyChapters = () => {
       <div style={styles.container}>
         {/* Left Sidebar - Chapters */}
         <div style={styles.sidebar}>
-          <h3 style={{ marginTop: 0, color: '#1a5f1a' }}>Chapters</h3>
+          <h3 style={{ marginTop: 0, color: 'var(--color-success)' }}>Chapters</h3>
           {chapters.map((chapter, index) => (
             <div
               key={chapter._id}
@@ -215,7 +215,7 @@ const StudyChapters = () => {
                 {chapter.title}
               </div>
               {chapter.description && (
-                <div style={{ fontSize: '12px', marginTop: '4px', color: '#666', lineHeight: '1.3' }}>
+                <div style={{ fontSize: '12px', marginTop: '4px', color: 'var(--color-text-faint)', lineHeight: '1.3' }}>
                   {chapter.description}
                 </div>
               )}
@@ -240,7 +240,7 @@ const StudyChapters = () => {
 
         {/* Right Panel - Moves */}
         <div style={styles.rightPanel}>
-          <h3 style={{ marginTop: 0, color: '#1a5f1a' }}>Your Moves</h3>
+          <h3 style={{ marginTop: 0, color: 'var(--color-success)' }}>Your Moves</h3>
           <div style={styles.movesList}>
             {moves.map((move, index) => (
               <div key={index} style={styles.moveItem}>

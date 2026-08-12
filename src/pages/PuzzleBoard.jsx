@@ -1018,8 +1018,8 @@ function TournamentPuzzle() {
     return (
       <div style={styles.page}>
         <div style={styles.glassError}>
-          <h3 style={{color: '#ef4444', marginBottom: '16px'}}>Access Denied</h3>
-          <p style={{color: '#d1d5db', marginBottom: '20px'}}>{accessError}</p>
+          <h3 style={{color: 'var(--color-danger)', marginBottom: '16px'}}>Access Denied</h3>
+          <p style={{color: 'var(--color-text-muted)', marginBottom: '20px'}}>{accessError}</p>
           <button 
             style={styles.glassButton}
             onClick={() => navigate('/')}
@@ -1091,7 +1091,7 @@ function TournamentPuzzle() {
                     boardWidth={boardSize}
                     boardStyle={{
                       borderRadius: "8px",
-                      boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(0,0,0,0.3)",
+                      boxShadow: "0 8px 32px var(--color-black-a50), 0 0 20px var(--color-black-a35)",
                       border: "2px solid rgba(99, 102, 241, 0.4)",
                       animation: 'glassGlow 3s ease-in-out infinite'
                     }}
@@ -1168,8 +1168,8 @@ function TournamentPuzzle() {
                 style={{
                   ...styles.glassSubmitButton,
                   ...(isPuzzleCompleted ? {
-                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                    boxShadow: '0 8px 32px rgba(16, 185, 129, 0.4)',
+                    background: 'linear-gradient(135deg, var(--color-success) 0%, var(--color-success) 100%)',
+                    boxShadow: '0 8px 32px var(--color-success-a30)',
                     animation: 'pulse 2s infinite'
                   } : {})
                 }}
@@ -1202,8 +1202,8 @@ function TournamentPuzzle() {
 const styles = {
   page: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)',
-    color: '#e5e7eb',
+    background: 'linear-gradient(135deg, var(--color-surface) 0%, #1e1b4b 50%, var(--color-surface) 100%)',
+    color: 'var(--color-text)',
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     padding: '20px',
     position: 'relative'
@@ -1226,7 +1226,7 @@ const styles = {
   },
   loadingText: {
     fontSize: 18,
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontWeight: 500
   },
   glassError: {
@@ -1237,14 +1237,14 @@ const styles = {
     minHeight: '60vh',
     gap: 20,
     textAlign: 'center',
-    color: '#fca5a5'
+    color: 'var(--color-danger)'
   },
   glassButton: {
     padding: '12px 24px',
     borderRadius: 10,
     border: '1px solid rgba(99, 102, 241, 0.3)',
     background: 'rgba(99, 102, 241, 0.2)',
-    color: '#c4b5fd',
+    color: 'var(--color-accent-2)',
     cursor: 'pointer',
     fontWeight: 600,
     fontSize: '14px',
@@ -1252,11 +1252,11 @@ const styles = {
     backdropFilter: 'blur(10px)'
   },
   glassMainCard: {
-    background: 'rgba(15, 23, 42, 0.8)',
+    background: 'var(--color-surface)',
     backdropFilter: 'blur(20px)',
     borderRadius: 16,
     border: '1px solid rgba(99, 102, 241, 0.2)',
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+    boxShadow: '0 8px 32px var(--color-black-a35)',
     overflow: 'hidden'
   },
   glassHeader: {
@@ -1297,11 +1297,11 @@ const styles = {
     background: 'rgba(15, 23, 42, 0.9)',
     borderRadius: 12,
     border: '1px solid rgba(99, 102, 241, 0.3)',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+    boxShadow: '0 4px 12px var(--color-black-a20)'
   },
   glassTimeLabel: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     marginBottom: 12,
     fontWeight: 500,
     letterSpacing: '0.5px'
@@ -1309,9 +1309,9 @@ const styles = {
   glassTimer: {
     fontSize: 36,
     fontWeight: 800,
-    color: '#60a5fa',
+    color: 'var(--color-accent-2)',
     fontFamily: 'monospace',
-    textShadow: '0 2px 4px rgba(0, 0, 0, 0.3)'
+    textShadow: '0 2px 4px var(--color-black-a35)'
   },
   
   // Turn Section
@@ -1325,20 +1325,20 @@ const styles = {
   glassGameModeIndicator: {
     fontSize: 18,
     fontWeight: 600,
-    color: '#e5e7eb',
+    color: 'var(--color-text)',
     textAlign: "center",
     marginBottom: 12
   },
   glassCompetitionModeInfo: {
     fontSize: 12,
     fontWeight: 500,
-    color: '#a78bfa',
-    backgroundColor: 'rgba(167, 139, 250, 0.1)',
+    color: 'var(--color-accent-2)',
+    backgroundColor: 'var(--color-accent-2-a15)',
     padding: "6px 8px",
     borderRadius: "6px",
     textAlign: "center",
     marginTop: 8,
-    border: '1px solid rgba(167, 139, 250, 0.2)'
+    border: '1px solid var(--color-accent-2-a15)'
   },
   
   // Moves Section
@@ -1352,7 +1352,7 @@ const styles = {
   glassMovesValue: {
     fontSize: 24,
     fontWeight: 700,
-    color: '#60a5fa'
+    color: 'var(--color-accent-2)'
   },
   
   // Difficulty Section
@@ -1366,11 +1366,11 @@ const styles = {
   glassDifficultyValue: {
     fontSize: 18,
     fontWeight: 600,
-    color: '#e5e7eb'
+    color: 'var(--color-text)'
   },
   glassSectionTitle: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     marginBottom: 8,
     fontWeight: 500,
     letterSpacing: '0.5px'
@@ -1394,28 +1394,28 @@ const styles = {
   glassModeButton: { 
     padding: "12px 24px", 
     borderRadius: 10, 
-    border: "1px solid rgba(139, 92, 246, 0.3)",
-    background: 'rgba(139, 92, 246, 0.2)',
-    color: "#c4b5fd", 
+    border: "1px solid var(--color-accent-2-a30)",
+    background: 'var(--color-accent-2-a15)',
+    color: "var(--color-accent-2)", 
     cursor: "pointer",
     fontWeight: 600,
     fontSize: '14px',
     transition: 'all 0.2s ease',
     backdropFilter: 'blur(10px)',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+    boxShadow: '0 4px 12px var(--color-black-a20)'
   },
   glassSubmitButton: { 
     padding: "12px 24px", 
     borderRadius: 10, 
-    border: "1px solid rgba(245, 158, 11, 0.3)",
-    background: 'rgba(245, 158, 11, 0.2)',
-    color: "#fde68a", 
+    border: "1px solid var(--color-warning-a30)",
+    background: 'var(--color-warning-a20)',
+    color: "var(--color-warning)", 
     cursor: "pointer",
     fontWeight: 600,
     fontSize: '14px',
     transition: 'all 0.2s ease',
     backdropFilter: 'blur(10px)',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+    boxShadow: '0 4px 12px var(--color-black-a20)'
   },
   glassSubmitSection: {
     background: 'rgba(15, 23, 42, 0.9)',
@@ -1445,7 +1445,7 @@ const styles = {
     fontWeight: 600,
     marginBottom: 12,
     textAlign: 'center',
-    color: '#e5e7eb',
+    color: 'var(--color-text)',
     fontSize: '16px',
     letterSpacing: '0.5px'
   },
@@ -1467,7 +1467,7 @@ const styles = {
   },
   glassMoveNumber: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     marginRight: 12,
     minWidth: 24,
     fontWeight: 500
@@ -1476,11 +1476,11 @@ const styles = {
     fontSize: 14,
     fontWeight: 500,
     fontFamily: 'monospace',
-    color: '#e5e7eb'
+    color: 'var(--color-text)'
   },
   glassNoMoves: {
     textAlign: 'center',
-    color: '#9ca3af',
+    color: 'var(--color-text-muted)',
     fontStyle: 'italic',
     padding: 24,
     fontSize: '14px'
@@ -1493,7 +1493,7 @@ const styles = {
   },
   glassStatusMessage: {
     fontSize: 14,
-    color: '#e5e7eb',
+    color: 'var(--color-text)',
     textAlign: 'center',
     lineHeight: 1.5,
     minHeight: '40px',
@@ -1513,74 +1513,74 @@ const styles = {
     textAlign: 'center'
   },
   glassStockfishMode: {
-    color: '#c4b5fd',
+    color: 'var(--color-accent-2)',
     fontWeight: 'bold'
   },
   
   // Warning Banner
   glassWarningBanner: {
-    background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.3) 100%)',
+    background: 'linear-gradient(135deg, var(--color-danger-a20) 0%, rgba(220, 38, 38, 0.3) 100%)',
     backdropFilter: 'blur(10px)',
-    color: '#fca5a5',
+    color: 'var(--color-danger)',
     padding: '14px 20px',
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: '14px',
     borderRadius: '10px 10px 0 0',
-    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)',
+    boxShadow: '0 4px 12px var(--color-danger-a20)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     gap: '12px',
-    borderBottom: '1px solid rgba(239, 68, 68, 0.3)'
+    borderBottom: '1px solid var(--color-danger-a30)'
   },
   warningIcon: { 
     fontSize: '20px',
-    textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+    textShadow: '0 2px 4px var(--color-black-a35)'
   },
   
   // Turn Indicators
   glassUserTurnActive: {
-    color: "#10b981",
-    backgroundColor: "rgba(16, 185, 129, 0.1)",
+    color: "var(--color-success)",
+    backgroundColor: "var(--color-success-a12)",
     padding: "10px 16px",
     borderRadius: "8px",
-    border: "2px solid rgba(16, 185, 129, 0.3)",
+    border: "2px solid var(--color-success-a30)",
     fontWeight: 600,
     textAlign: "center",
     fontSize: 14,
     backdropFilter: 'blur(10px)',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+    boxShadow: '0 4px 12px var(--color-black-a20)'
   },
   glassStockfishTurnActive: {
-    color: "#ef4444",
-    backgroundColor: "rgba(239, 68, 68, 0.1)",
+    color: "var(--color-danger)",
+    backgroundColor: "var(--color-danger-a12)",
     padding: "10px 16px",
     borderRadius: "8px",
-    border: "2px solid rgba(239, 68, 68, 0.3)",
+    border: "2px solid var(--color-danger-a30)",
     fontWeight: 600,
     textAlign: "center",
     fontSize: 14,
     backdropFilter: 'blur(10px)',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+    boxShadow: '0 4px 12px var(--color-black-a20)'
   },
   glassWhiteTurn: {
-    color: "#e5e7eb",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    color: "var(--color-text)",
+    backgroundColor: "var(--color-white-a10)",
     padding: "10px 16px",
     borderRadius: "8px",
-    border: "2px solid rgba(255, 255, 255, 0.2)",
+    border: "2px solid var(--color-white-a20)",
     fontWeight: 600,
     textAlign: "center",
     fontSize: 14,
     backdropFilter: 'blur(10px)'
   },
   glassBlackTurn: {
-    color: "#e5e7eb",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    color: "var(--color-text)",
+    backgroundColor: "var(--color-black-a35)",
     padding: "10px 16px",
     borderRadius: "8px",
-    border: "2px solid rgba(0, 0, 0, 0.4)",
+    border: "2px solid var(--color-black-a35)",
     fontWeight: 600,
     textAlign: "center",
     fontSize: 14,
@@ -1596,7 +1596,7 @@ const styles = {
     height: 30,
     background: "rgba(99, 102, 241, 0.8)",
     backdropFilter: 'blur(10px)',
-    color: "#fff",
+    color: "var(--color-text)",
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
@@ -1606,8 +1606,8 @@ const styles = {
     fontWeight: "bold",
     userSelect: "none",
     zIndex: 10,
-    boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-    border: '1px solid rgba(255, 255, 255, 0.2)'
+    boxShadow: "0 2px 8px var(--color-black-a35)",
+    border: '1px solid var(--color-white-a20)'
   },
   
   // Wrong Move Popup Styles
@@ -1617,7 +1617,7 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'var(--color-black-a50)',
     backdropFilter: 'blur(10px)',
     display: 'flex',
     alignItems: 'center',
@@ -1630,8 +1630,8 @@ const styles = {
     backdropFilter: 'blur(20px)',
     padding: 30,
     borderRadius: 16,
-    border: '1px solid rgba(239, 68, 68, 0.3)',
-    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)',
+    border: '1px solid var(--color-danger-a30)',
+    boxShadow: '0 20px 40px var(--color-black-a35)',
     textAlign: 'center',
     maxWidth: 400,
     margin: 20,
@@ -1640,21 +1640,21 @@ const styles = {
   glassPopupIcon: {
     fontSize: 48,
     marginBottom: 16,
-    color: '#ef4444'
+    color: 'var(--color-danger)'
   },
   glassPopupMessage: {
     fontSize: 18,
     fontWeight: 600,
-    color: '#fca5a5',
+    color: 'var(--color-danger)',
     lineHeight: 1.4,
     marginBottom: 20
   },
   glassPopupButton: {
     marginTop: 10,
     padding: "12px 24px",
-    background: 'rgba(239, 68, 68, 0.2)',
-    border: '1px solid rgba(239, 68, 68, 0.3)',
-    color: "#fca5a5",
+    background: 'var(--color-danger-a20)',
+    border: '1px solid var(--color-danger-a30)',
+    color: "var(--color-danger)",
     borderRadius: 8,
     cursor: "pointer",
     fontWeight: 600,

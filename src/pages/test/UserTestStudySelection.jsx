@@ -25,7 +25,7 @@ const UserTestStudySelection = () => {
   const styles = {
     page: {
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)',
+      background: 'linear-gradient(135deg, var(--color-bg) 0%, #1a1a2e 100%)',
       padding: '40px 20px',
       fontFamily: 'Inter, Arial, sans-serif',
     },
@@ -40,14 +40,14 @@ const UserTestStudySelection = () => {
     title: {
       fontSize: '36px',
       fontWeight: '700',
-      background: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
+      background: 'linear-gradient(135deg, var(--color-warning) 0%, var(--color-danger) 100%)',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
       marginBottom: '10px',
     },
     subtitle: {
       fontSize: '16px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
     },
     grid: {
       display: 'grid',
@@ -55,10 +55,10 @@ const UserTestStudySelection = () => {
       gap: '25px',
     },
     card: {
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '20px',
       padding: '30px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
+      border: '1px solid var(--color-white-a10)',
       cursor: 'pointer',
       transition: 'all 0.3s ease',
       position: 'relative',
@@ -66,7 +66,7 @@ const UserTestStudySelection = () => {
     },
     cardHover: {
       transform: 'translateY(-5px)',
-      boxShadow: '0 20px 40px rgba(245, 158, 11, 0.2)',
+      boxShadow: '0 20px 40px var(--color-warning-a20)',
       border: '1px solid rgba(245, 158, 11, 0.5)',
     },
     cardIcon: {
@@ -76,12 +76,12 @@ const UserTestStudySelection = () => {
     cardTitle: {
       fontSize: '22px',
       fontWeight: '600',
-      color: '#fff',
+      color: 'var(--color-text)',
       marginBottom: '10px',
     },
     cardDesc: {
       fontSize: '14px',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       lineHeight: '1.6',
     },
     cardArrow: {
@@ -89,15 +89,15 @@ const UserTestStudySelection = () => {
       right: '20px',
       bottom: '20px',
       fontSize: '24px',
-      color: '#f59e0b',
+      color: 'var(--color-warning)',
       opacity: 0,
       transition: 'all 0.3s ease',
     },
     backButton: {
       padding: '12px 24px',
       background: 'rgba(38, 38, 38, 0.8)',
-      color: '#fff',
-      border: '1px solid rgba(255, 255, 255, 0.2)',
+      color: 'var(--color-text)',
+      border: '1px solid var(--color-white-a20)',
       borderRadius: '10px',
       cursor: 'pointer',
       fontSize: '14px',
@@ -105,15 +105,15 @@ const UserTestStudySelection = () => {
     },
     loading: {
       textAlign: 'center',
-      color: '#9ca3af',
+      color: 'var(--color-text-muted)',
       padding: '60px',
       fontSize: '18px',
     },
     empty: {
       textAlign: 'center',
-      color: '#6b7280',
+      color: 'var(--color-text-faint)',
       padding: '60px',
-      background: 'rgba(23, 23, 23, 0.9)',
+      background: 'var(--color-surface)',
       borderRadius: '20px',
     },
   };
@@ -145,7 +145,7 @@ const UserTestStudySelection = () => {
         </div>
 
         {error && (
-          <div style={{ ...styles.empty, color: '#ef4444', marginBottom: '20px' }}>
+          <div style={{ ...styles.empty, color: 'var(--color-danger)', marginBottom: '20px' }}>
             {error}
           </div>
         )}

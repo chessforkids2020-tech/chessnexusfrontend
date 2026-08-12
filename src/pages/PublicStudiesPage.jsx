@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 const STUDY_TYPES = ['all'];
 
 const typeColors = {
-  basics:     { color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+  basics:     { color: 'var(--color-success)', bg: 'var(--color-success-a12)' },
   positional: { color: '#6366f1', bg: 'rgba(99,102,241,0.15)' },
 };
 
@@ -58,10 +58,10 @@ const PublicStudiesPage = () => {
   const s = {
     page: {
       fontFamily: "'Segoe UI', sans-serif",
-      background: '#0a0a0a',
+      background: 'var(--color-bg)',
       minHeight: '100vh',
       padding: '24px 20px',
-      color: '#e2e8f0',
+      color: 'var(--color-text)',
     },
     header: {
       display: 'flex',
@@ -70,9 +70,9 @@ const PublicStudiesPage = () => {
       marginBottom: 24,
     },
     backBtn: {
-      background: 'rgba(255,255,255,0.07)',
-      border: '1px solid rgba(255,255,255,0.12)',
-      color: '#e2e8f0',
+      background: 'var(--color-white-a07)',
+      border: '1px solid var(--color-white-a13)',
+      color: 'var(--color-text)',
       borderRadius: 8,
       padding: '8px 14px',
       cursor: 'pointer',
@@ -81,12 +81,12 @@ const PublicStudiesPage = () => {
     title: {
       fontSize: 26,
       fontWeight: 700,
-      color: '#fff',
+      color: 'var(--color-text)',
       margin: 0,
     },
     subtitle: {
       fontSize: 13,
-      color: '#64748b',
+      color: 'var(--color-text-faint)',
       marginLeft: 'auto',
     },
     controls: {
@@ -103,19 +103,19 @@ const PublicStudiesPage = () => {
     },
     searchInput: {
       flex: 1,
-      background: 'rgba(255,255,255,0.06)',
-      border: '1px solid rgba(255,255,255,0.12)',
+      background: 'var(--color-white-a07)',
+      border: '1px solid var(--color-white-a13)',
       borderRadius: 8,
       padding: '8px 14px',
-      color: '#e2e8f0',
+      color: 'var(--color-text)',
       fontSize: 14,
       outline: 'none',
     },
     searchBtn: {
-      background: '#3b82f6',
+      background: 'var(--color-accent-2)',
       border: 'none',
       borderRadius: 8,
-      color: '#fff',
+      color: 'var(--color-text)',
       padding: '8px 16px',
       cursor: 'pointer',
       fontWeight: 600,
@@ -130,14 +130,14 @@ const PublicStudiesPage = () => {
       padding: '6px 14px',
       borderRadius: 20,
       border: `1px solid ${active
-        ? (type !== 'all' ? typeColors[type]?.color || '#3b82f6' : '#3b82f6')
-        : 'rgba(255,255,255,0.12)'}`,
+        ? (type !== 'all' ? typeColors[type]?.color || 'var(--color-accent-2)' : 'var(--color-accent-2)')
+        : 'var(--color-white-a13)'}`,
       background: active
-        ? (type !== 'all' ? typeColors[type]?.bg || 'rgba(59,130,246,0.15)' : 'rgba(59,130,246,0.15)')
+        ? (type !== 'all' ? typeColors[type]?.bg || 'var(--color-accent-2-a15)' : 'var(--color-accent-2-a15)')
         : 'transparent',
       color: active
-        ? (type !== 'all' ? typeColors[type]?.color || '#3b82f6' : '#3b82f6')
-        : '#94a3b8',
+        ? (type !== 'all' ? typeColors[type]?.color || 'var(--color-accent-2)' : 'var(--color-accent-2)')
+        : 'var(--color-text-muted)',
       cursor: 'pointer',
       fontSize: 13,
       fontWeight: active ? 600 : 400,
@@ -150,8 +150,8 @@ const PublicStudiesPage = () => {
       gap: 16,
     },
     card: {
-      background: 'rgba(255,255,255,0.04)',
-      border: '1px solid rgba(255,255,255,0.08)',
+      background: 'var(--color-white-a04)',
+      border: '1px solid var(--color-white-a07)',
       borderRadius: 14,
       padding: 20,
       cursor: 'pointer',
@@ -166,7 +166,7 @@ const PublicStudiesPage = () => {
     cardName: {
       fontSize: 17,
       fontWeight: 700,
-      color: '#f1f5f9',
+      color: 'var(--color-text)',
       lineHeight: 1.25,
       flex: 1,
       marginRight: 8,
@@ -176,14 +176,14 @@ const PublicStudiesPage = () => {
       fontWeight: 600,
       padding: '3px 10px',
       borderRadius: 10,
-      background: typeColors[type]?.bg || 'rgba(148,163,184,0.15)',
-      color: typeColors[type]?.color || '#94a3b8',
+      background: typeColors[type]?.bg || 'var(--color-border)',
+      color: typeColors[type]?.color || 'var(--color-text-muted)',
       textTransform: 'capitalize',
       flexShrink: 0,
     }),
     description: {
       fontSize: 13,
-      color: '#94a3b8',
+      color: 'var(--color-text-muted)',
       marginBottom: 14,
       lineHeight: 1.5,
       display: '-webkit-box',
@@ -195,7 +195,7 @@ const PublicStudiesPage = () => {
       display: 'flex',
       gap: 16,
       fontSize: 12,
-      color: '#64748b',
+      color: 'var(--color-text-faint)',
     },
     metaItem: {
       display: 'flex',
@@ -205,8 +205,8 @@ const PublicStudiesPage = () => {
     cardAuthor: {
       marginTop: 10,
       fontSize: 12,
-      color: '#64748b',
-      borderTop: '1px solid rgba(255,255,255,0.06)',
+      color: 'var(--color-text-faint)',
+      borderTop: '1px solid var(--color-white-a07)',
       paddingTop: 10,
     },
     pagination: {
@@ -218,9 +218,9 @@ const PublicStudiesPage = () => {
     pageBtn: (active) => ({
       padding: '8px 14px',
       borderRadius: 8,
-      border: `1px solid ${active ? '#3b82f6' : 'rgba(255,255,255,0.12)'}`,
-      background: active ? 'rgba(59,130,246,0.2)' : 'transparent',
-      color: active ? '#3b82f6' : '#94a3b8',
+      border: `1px solid ${active ? 'var(--color-accent-2)' : 'var(--color-white-a13)'}`,
+      background: active ? 'var(--color-accent-2-a15)' : 'transparent',
+      color: active ? 'var(--color-accent-2)' : 'var(--color-text-muted)',
       cursor: 'pointer',
       fontSize: 14,
       fontWeight: active ? 600 : 400,
@@ -228,12 +228,12 @@ const PublicStudiesPage = () => {
     empty: {
       textAlign: 'center',
       padding: '60px 20px',
-      color: '#64748b',
+      color: 'var(--color-text-faint)',
     },
     errBox: {
       textAlign: 'center',
       padding: '40px 20px',
-      color: '#f87171',
+      color: 'var(--color-danger)',
     },
   };
 
@@ -293,7 +293,7 @@ const PublicStudiesPage = () => {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
-                  whileHover={{ borderColor: typeColors[study.studyType]?.color || '#3b82f6', scale: 1.01 }}
+                  whileHover={{ borderColor: typeColors[study.studyType]?.color || 'var(--color-accent-2)', scale: 1.01 }}
                   onClick={() => navigate(`/public-studies/${study._id}`)}
                 >
                   <div style={s.cardHeader}>
@@ -308,7 +308,7 @@ const PublicStudiesPage = () => {
                     <div style={s.metaItem}>♟️ {puzzleCount} position{puzzleCount !== 1 ? 's' : ''}</div>
                   </div>
                   <div style={s.cardAuthor}>
-                    by <strong style={{ color: '#cbd5e1' }}>{study.username || 'Unknown'}</strong>
+                    by <strong style={{ color: 'var(--color-text-muted)' }}>{study.username || 'Unknown'}</strong>
                   </div>
                 </motion.div>
               );

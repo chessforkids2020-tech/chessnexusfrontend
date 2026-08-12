@@ -127,7 +127,7 @@ export default function Games() {
       title: "Play with a Friend",
       subtitle: "Private game by code • Even as a guest",
       icon: "🤝",
-      color: "#34D399",
+      color: "var(--color-success)",
       action: () => setShowFriendSetup(true)
     },
     {
@@ -146,7 +146,7 @@ export default function Games() {
       title: "3D Arena",
       subtitle: "Play on an immersive 3D board • Opens in a new tab",
       icon: "🎮",
-      color: "#A78BFA",
+      color: "var(--color-accent-2)",
       action: open3DArena
     }
   ];
@@ -232,7 +232,7 @@ export default function Games() {
           const s = Math.floor((diff % 60000) / 1000);
           countdown = h > 0 ? `${h}h ${m}m ${s}s` : `${m}:${String(s).padStart(2, '0')}`;
         }
-        const accent = isLive ? '#ef4444' : '#FFD166';
+        const accent = isLive ? 'var(--color-danger)' : '#FFD166';
         // Drop a trailing date like "– 24 Jun 2026" from the name (we show the countdown instead).
         const displayName = (featured.name || '').replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim();
         return (
@@ -244,9 +244,9 @@ export default function Games() {
               borderRadius: 20,
               padding: '34px 36px',
               minHeight: 150,
-              background: `linear-gradient(120deg, rgba(124,58,237,0.22), rgba(6,182,212,0.12) 60%, rgba(0,0,0,0.2))`,
+              background: `linear-gradient(120deg, rgba(124,58,237,0.22), var(--color-accent-a12) 60%, var(--color-black-a20))`,
               border: `1px solid ${accent}55`,
-              boxShadow: `0 10px 40px ${accent}22, inset 0 1px 0 rgba(255,255,255,0.06)`,
+              boxShadow: `0 10px 40px ${accent}22, inset 0 1px 0 var(--color-white-a07)`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -269,11 +269,11 @@ export default function Games() {
                   {isLive ? (
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', gap: 6,
-                      background: 'rgba(239,68,68,0.18)', color: '#fca5a5',
+                      background: 'var(--color-danger-a20)', color: 'var(--color-danger)',
                       border: '1px solid rgba(239,68,68,0.5)', borderRadius: 999,
                       padding: '3px 11px', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em',
                     }}>
-                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ef4444', display: 'inline-block', animation: 'heroBlink 1.2s infinite' }} />
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--color-danger)', display: 'inline-block', animation: 'heroBlink 1.2s infinite' }} />
                       Live now
                     </span>
                   ) : (
@@ -285,10 +285,10 @@ export default function Games() {
                       Upcoming Tournament
                     </span>
                   )}
-                  {tc && <span style={{ color: '#cbd5e1', fontSize: 13 }}>⏱ {tc}</span>}
-                  <span style={{ color: '#cbd5e1', fontSize: 13 }}>👥 {featured.participantCount ?? 0} joined</span>
+                  {tc && <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱ {tc}</span>}
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 {featured.participantCount ?? 0} joined</span>
                 </div>
-                <div style={{ color: '#fff', fontWeight: 800, fontSize: 28, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 520 }} title={displayName}>
+                <div style={{ color: 'var(--color-text)', fontWeight: 800, fontSize: 28, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 520 }} title={displayName}>
                   {displayName}
                 </div>
                 <div style={{ color: accent, fontWeight: 700, fontSize: 17, marginTop: 4 }}>
@@ -302,7 +302,7 @@ export default function Games() {
                 onClick={() => joinTournament(featured._id)}
                 style={{
                   background: `linear-gradient(135deg, ${accent}, ${accent}cc)`,
-                  color: isLive ? '#fff' : '#1a1500',
+                  color: isLive ? 'var(--color-text)' : '#1a1500',
                   border: 'none', borderRadius: 14, padding: '15px 32px',
                   fontSize: 16, fontWeight: 800, cursor: 'pointer',
                   boxShadow: `0 6px 22px ${accent}44`, whiteSpace: 'nowrap',
@@ -313,8 +313,8 @@ export default function Games() {
               <button
                 onClick={() => navigate('/arenatournament')}
                 style={{
-                  background: 'rgba(255,255,255,0.08)', color: '#e5e7eb',
-                  border: '1px solid rgba(255,255,255,0.18)', borderRadius: 12,
+                  background: 'var(--color-white-a07)', color: 'var(--color-text)',
+                  border: '1px solid var(--color-white-a13)', borderRadius: 12,
                   padding: '12px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
                 }}
               >
@@ -349,9 +349,9 @@ export default function Games() {
             </div>
             {option.disabled ? (
               <div style={{
-                background: 'rgba(255, 215, 0, 0.9)', color: '#000',
+                background: 'rgba(255, 215, 0, 0.9)', color: 'var(--color-bg)',
                 padding: '6px 16px', borderRadius: '12px', fontSize: '12px',
-                fontWeight: '700', boxShadow: '0 2px 8px rgba(0,0,0,0.2)', whiteSpace: 'nowrap'
+                fontWeight: '700', boxShadow: '0 2px 8px var(--color-black-a20)', whiteSpace: 'nowrap'
               }}>
                 🔜 Coming Soon
               </div>
@@ -373,20 +373,20 @@ export default function Games() {
               <div className="section-icon">🏆</div>
               <h2 className="section-title">Today's Tournament</h2>
             </div>
-            <div style={{ color: '#9ca3af', fontSize: '12px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ color: 'var(--color-text-muted)', fontSize: '12px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
 
-              <span>🕔</span> To view tournament times and days, click <strong style={{ color: '#fbbf24' }}>SCHEDULE</strong>
+              <span>🕔</span> To view tournament times and days, click <strong style={{ color: 'var(--color-warning)' }}>SCHEDULE</strong>
 
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {tournamentsLoading ? (
-                <div style={{ color: '#9ca3af', fontSize: 13, padding: '12px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ color: 'var(--color-text-muted)', fontSize: 13, padding: '12px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div className="loading-spinner" style={{ display: 'inline-block' }} />
                   Loading...
                 </div>
               ) : tournaments.length === 0 ? (
-                <div style={{ color: '#6b7280', fontSize: 13, padding: '12px 0' }}>No active tournaments right now.</div>
+                <div style={{ color: 'var(--color-text-faint)', fontSize: 13, padding: '12px 0' }}>No active tournaments right now.</div>
               ) : (
                 tournaments.slice(0, 4).map((tournament) => {
                   const startTime = new Date(tournament.scheduledStartTime);
@@ -426,7 +426,7 @@ export default function Games() {
                       key={tournament._id}
                       style={{
                         display: 'flex', alignItems: 'center', gap: 14,
-                        background: 'rgba(255,255,255,0.03)',
+                        background: 'var(--color-white-a04)',
                         border: `1px solid ${statusColor}44`,
                         borderRadius: 12, padding: '12px 16px',
                       }}
@@ -436,7 +436,7 @@ export default function Games() {
                       {/* Name + details */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                          <span style={{ color: '#e5e7eb', fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 220 }} title={tournament.name}>
+                          <span style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 220 }} title={tournament.name}>
                             {(tournament.name || '').replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim()}
                           </span>
                           <span style={{
@@ -448,8 +448,8 @@ export default function Games() {
                         </div>
                         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 4 }}>
                           <span style={{ color: statusColor, fontSize: 12, fontWeight: 600 }}>{timeDisplay}</span>
-                          <span style={{ color: '#9ca3af', fontSize: 12 }}>⏱ {timeControl}</span>
-                          <span style={{ color: '#9ca3af', fontSize: 12 }}>👥 {tournament.participantCount}</span>
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>⏱ {timeControl}</span>
+                          <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>👥 {tournament.participantCount}</span>
                         </div>
                       </div>
 
@@ -480,12 +480,12 @@ export default function Games() {
                 style={{
                   background: 'rgba(99,102,241,0.12)',
                   border: '1px solid rgba(99,102,241,0.35)',
-                  color: '#818cf8', borderRadius: 20,
+                  color: 'var(--color-accent-2)', borderRadius: 20,
                   padding: '7px 24px', fontSize: 13, fontWeight: 700,
                   cursor: 'pointer', transition: 'all 0.15s', letterSpacing: '0.02em',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.22)'; e.currentTarget.style.color = '#a5b4fc'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.12)'; e.currentTarget.style.color = '#818cf8'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.22)'; e.currentTarget.style.color = 'var(--color-accent-2)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.12)'; e.currentTarget.style.color = 'var(--color-accent-2)'; }}
               >
                 View All Tournaments →
               </button>
@@ -523,8 +523,8 @@ export default function Games() {
                   style={{
                     flex: '1 1 0',
                     minWidth: '220px',
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(139,92,246,0.25)',
+                    background: 'var(--color-white-a04)',
+                    border: '1px solid var(--color-accent-2-a15)',
                     borderRadius: '12px',
                     padding: '14px 16px',
                     cursor: 'pointer',
@@ -534,19 +534,19 @@ export default function Games() {
                     gap: '8px'
                   }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(139,92,246,0.6)'; e.currentTarget.style.background = 'rgba(139,92,246,0.07)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(139,92,246,0.25)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-accent-2-a15)'; e.currentTarget.style.background = 'var(--color-white-a04)'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                    <span style={{ fontWeight: '700', color: '#e5e7eb', fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontWeight: '700', color: 'var(--color-text)', fontSize: '14px', flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       🏆 {(t.name || '').replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim()}
                     </span>
-                    <span style={{ background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.3)', color: '#a78bfa', borderRadius: '999px', padding: '2px 9px', fontSize: '11px', fontWeight: '700', flexShrink: 0 }}>
+                    <span style={{ background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)', color: 'var(--color-accent-2)', borderRadius: '999px', padding: '2px 9px', fontSize: '11px', fontWeight: '700', flexShrink: 0 }}>
                       FINISHED
                     </span>
                   </div>
                   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                    <span style={{ color: '#9ca3af', fontSize: '12px' }}>⏱ {timeControl}</span>
-                    <span style={{ color: '#9ca3af', fontSize: '12px' }}>👥 {t.participantCount ?? 0} players</span>
+                    <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>⏱ {timeControl}</span>
+                    <span style={{ color: 'var(--color-text-muted)', fontSize: '12px' }}>👥 {t.participantCount ?? 0} players</span>
                   </div>
                   <div style={{ marginTop: '2px', color: '#6366f1', fontSize: '12px', fontWeight: '600' }}>View Results →</div>
                 </div>
@@ -566,7 +566,7 @@ export default function Games() {
 
           {/* Left column — point events */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ color: '#6b7280', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Points</div>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Points</div>
 
             {[
               { icon: '✅', label: 'Win',              desc: null,                              value: '+2 pts' },
@@ -576,47 +576,47 @@ export default function Games() {
               { icon: '👑', label: 'Beat Crown holder',desc: null,                              value: '+4 pts' },
               { icon: '🎁', label: 'Carry Bonus',      desc: 'From previous tournament',        value: 'up to +4' },
             ].map(({ icon, label, desc, value }) => (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '9px', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'var(--color-white-a04)', borderRadius: '9px', border: '1px solid var(--color-white-a07)' }}>
                 <span style={{ fontSize: '15px', width: '20px', textAlign: 'center', flexShrink: 0 }}>{icon}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: '#e5e7eb', fontSize: '13px', fontWeight: '600' }}>{label}</div>
-                  {desc && <div style={{ color: '#6b7280', fontSize: '11px', marginTop: '1px' }}>{desc}</div>}
+                  <div style={{ color: 'var(--color-text)', fontSize: '13px', fontWeight: '600' }}>{label}</div>
+                  {desc && <div style={{ color: 'var(--color-text-faint)', fontSize: '11px', marginTop: '1px' }}>{desc}</div>}
                 </div>
-                <span style={{ background: 'rgba(6,182,212,0.12)', border: '1px solid rgba(6,182,212,0.25)', color: '#06b6d4', borderRadius: '6px', padding: '3px 9px', fontSize: '12px', fontWeight: '700', flexShrink: 0 }}>{value}</span>
+                <span style={{ background: 'var(--color-accent-a12)', border: '1px solid var(--color-accent-a20)', color: 'var(--color-accent)', borderRadius: '6px', padding: '3px 9px', fontSize: '12px', fontWeight: '700', flexShrink: 0 }}>{value}</span>
               </div>
             ))}
           </div>
 
           {/* Right column — crowns + carry */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ color: '#6b7280', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Crown Tiers</div>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '2px' }}>Crown Tiers</div>
 
             {[
-              { emoji: '👑', label: 'Gold Crown',     req: '1 tournament win',    color: '#f59e0b' },
-              { emoji: '👑', label: 'Platinum Crown', req: '3 consecutive wins',  color: '#cbd5e1' },
-              { emoji: '💎', label: 'Gem Crown',      req: '5 tournament wins',   color: '#60a5fa' },
+              { emoji: '👑', label: 'Gold Crown',     req: '1 tournament win',    color: 'var(--color-warning)' },
+              { emoji: '👑', label: 'Platinum Crown', req: '3 consecutive wins',  color: 'var(--color-text-muted)' },
+              { emoji: '💎', label: 'Gem Crown',      req: '5 tournament wins',   color: 'var(--color-accent-2)' },
             ].map(({ emoji, label, req, color }) => (
-              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'rgba(255,255,255,0.03)', borderRadius: '9px', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', background: 'var(--color-white-a04)', borderRadius: '9px', border: '1px solid var(--color-white-a07)' }}>
                 <span style={{ fontSize: '18px', filter: `drop-shadow(0 0 6px ${color})`, width: '20px', textAlign: 'center', flexShrink: 0 }}>{emoji}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ color, fontSize: '13px', fontWeight: '700' }}>{label}</div>
-                  <div style={{ color: '#6b7280', fontSize: '11px', marginTop: '1px' }}>{req}</div>
+                  <div style={{ color: 'var(--color-text-faint)', fontSize: '11px', marginTop: '1px' }}>{req}</div>
                 </div>
               </div>
             ))}
 
-            <div style={{ color: '#4b5563', fontSize: '11px', padding: '0 4px' }}>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: '11px', padding: '0 4px' }}>
               ⚠️ Crown is only lost if you participate and don't finish 1st
             </div>
-            <div style={{ color: '#4b5563', fontSize: '11px', padding: '0 4px' }}>
-              Any player who beats a crowned player gets <span style={{ color: '#f59e0b', fontWeight: '700' }}>+4 pts</span> for that win
+            <div style={{ color: 'var(--color-text-faint)', fontSize: '11px', padding: '0 4px' }}>
+              Any player who beats a crowned player gets <span style={{ color: 'var(--color-warning)', fontWeight: '700' }}>+4 pts</span> for that win
             </div>
 
-            <div style={{ color: '#6b7280', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '6px', marginBottom: '2px' }}>Carry-Forward Bonus 🎁</div>
+            <div style={{ color: 'var(--color-text-faint)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: '6px', marginBottom: '2px' }}>Carry-Forward Bonus 🎁</div>
 
-            <div style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '9px' }}>
-              <div style={{ color: '#e5e7eb', fontSize: '13px', lineHeight: '1.6' }}>
-                Play <strong style={{ color: '#a78bfa' }}>≥ 3 games</strong> in <strong style={{ color: '#a78bfa' }}>3 separate tournaments</strong> → earn <strong style={{ color: '#a78bfa' }}>+2 carry pts</strong> (max +4). Auto-applied as your starting score next tournament. Expires in <strong style={{ color: '#a78bfa' }}>5 days</strong>.
+            <div style={{ padding: '12px', background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a07)', borderRadius: '9px' }}>
+              <div style={{ color: 'var(--color-text)', fontSize: '13px', lineHeight: '1.6' }}>
+                Play <strong style={{ color: 'var(--color-accent-2)' }}>≥ 3 games</strong> in <strong style={{ color: 'var(--color-accent-2)' }}>3 separate tournaments</strong> → earn <strong style={{ color: 'var(--color-accent-2)' }}>+2 carry pts</strong> (max +4). Auto-applied as your starting score next tournament. Expires in <strong style={{ color: 'var(--color-accent-2)' }}>5 days</strong>.
               </div>
             </div>
           </div>

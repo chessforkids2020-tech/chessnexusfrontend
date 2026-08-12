@@ -74,7 +74,7 @@ export default function LiveNoteBanner() {
           zIndex: 9997,
           maxWidth: 'min(92vw, 420px)',
           background: isLive ? 'rgba(5,46,22,0.96)' : 'rgba(20,20,40,0.96)',
-          border: `1.5px solid ${isLive ? '#22c55e' : '#22d3ee'}`,
+          border: `1.5px solid ${isLive ? 'var(--color-success)' : 'var(--color-accent)'}`,
           borderRadius: 12,
           padding: '9px 13px',
           display: 'flex',
@@ -83,26 +83,26 @@ export default function LiveNoteBanner() {
           // Entrance slide-in only — steady (non-animated) glow on the card.
           animation: 'lnbIn 0.25s ease-out',
           boxShadow: isLive
-            ? '0 6px 22px rgba(0,0,0,0.4), 0 0 26px 4px rgba(34,197,94,0.8), 0 0 0 1px rgba(34,197,94,0.7) inset'
-            : '0 6px 22px rgba(0,0,0,0.4), 0 0 24px 3px rgba(6,182,212,0.7), 0 0 0 1px rgba(6,182,212,0.6) inset',
+            ? '0 6px 22px var(--color-black-a35), 0 0 26px 4px rgba(34,197,94,0.8), 0 0 0 1px rgba(34,197,94,0.7) inset'
+            : '0 6px 22px var(--color-black-a35), 0 0 24px 3px rgba(6,182,212,0.7), 0 0 0 1px rgba(6,182,212,0.6) inset',
           fontFamily: 'Poppins, sans-serif',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
         }}
       >
         {isLive && (
-          <span style={{ flexShrink: 0, width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'lnbLiveDot 1.4s infinite' }} />
+          <span style={{ flexShrink: 0, width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)', display: 'inline-block', animation: 'lnbLiveDot 1.4s infinite' }} />
         )}
 
         <div style={{ minWidth: 0, flex: 1 }}>
           {/* Small title */}
-          <div style={{ color: '#ffffff', fontWeight: 700, fontSize: 13, lineHeight: 1.25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 13, lineHeight: 1.25, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {item.title}
           </div>
           {/* Smaller note + countdown / LIVE */}
           <div style={{ fontSize: 11, lineHeight: 1.3, marginTop: 1, display: 'flex', gap: 6, alignItems: 'baseline', flexWrap: 'wrap' }}>
             {item.note && (
-              <span style={{ color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.note}</span>
+              <span style={{ color: 'var(--color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.note}</span>
             )}
             {isLive ? (
               <span style={{
@@ -113,9 +113,9 @@ export default function LiveNoteBanner() {
               }}>● LIVE NOW</span>
             ) : (
               <span style={{
-                color: '#fde68a', fontWeight: 700,
+                color: 'var(--color-warning)', fontWeight: 700,
                 padding: '1px 8px', borderRadius: 999,
-                background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.5)',
+                background: 'var(--color-warning-a12)', border: '1px solid rgba(245,158,11,0.5)',
                 textShadow: '0 0 6px rgba(245,158,11,0.7)',
               }}>in {formatCountdown(diff)}</span>
             )}
@@ -130,14 +130,14 @@ export default function LiveNoteBanner() {
             flexShrink: 0,
             background: 'transparent',
             border: 'none',
-            color: 'rgba(255,255,255,0.6)',
+            color: 'var(--color-text-muted)',
             fontSize: 16,
             lineHeight: 1,
             cursor: 'pointer',
             padding: 2,
           }}
-          onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; }}
-          onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; }}
+          onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-text)'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'var(--color-text-muted)'; }}
         >
           ×
         </button>

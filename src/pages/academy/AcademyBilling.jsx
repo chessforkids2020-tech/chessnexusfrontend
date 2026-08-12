@@ -62,7 +62,7 @@ export default function AcademyBilling() {
       const rzp = new window.Razorpay({
         key: d.keyId, amount: d.amount, currency: d.currency, order_id: d.orderId,
         name: 'Chess Academy', description: `${d.academyPlan} · ${months} month(s) · ${d.coaches} coaches`,
-        theme: { color: '#06b6d4' },
+        theme: { color: 'var(--color-accent)' },
         handler: async (r) => {
           try {
             await api.post('/api/academy/billing/verify', {
@@ -92,16 +92,16 @@ export default function AcademyBilling() {
 
   return (
     <div className="acad-wrap">
-      <h1 style={{ color: '#fff', marginBottom: 6 }}>💳 Academy billing</h1>
+      <h1 style={{ color: 'var(--color-text)', marginBottom: 6 }}>💳 Academy billing</h1>
       <p className="acad-muted" style={{ marginBottom: 18 }}>
         Your academy buys ONE plan that covers all your coaches. You currently have{' '}
         <strong>{data.coachCount}</strong> coach{data.coachCount === 1 ? '' : 'es'}.
-        {data.currentPlan && <> Current plan: <strong style={{ color: '#67e8f9' }}>{data.plans[data.currentPlan]?.name || data.currentPlan}</strong>.</>}
+        {data.currentPlan && <> Current plan: <strong style={{ color: 'var(--color-accent)' }}>{data.plans[data.currentPlan]?.name || data.currentPlan}</strong>.</>}
       </p>
 
       {!data.currentPlan && (
-        <div className="acad-req" style={{ borderColor: 'rgba(245,158,11,0.4)', background: 'rgba(245,158,11,0.1)' }}>
-          <div style={{ fontSize: 14, color: '#fcd34d', fontWeight: 600 }}>
+        <div className="acad-req" style={{ borderColor: 'var(--color-warning-a30)', background: 'var(--color-warning-a12)' }}>
+          <div style={{ fontSize: 14, color: 'var(--color-warning)', fontWeight: 600 }}>
             🔒 Buy a plan to unlock your academy — add coaches, share your join link, and see your dashboard. Your academy pays for its coaches.
           </div>
         </div>

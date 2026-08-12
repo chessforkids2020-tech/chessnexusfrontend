@@ -47,7 +47,7 @@ export default function ImmortalCard({ game, onOpen, size = 128 }) {
 }
 
 const C = {
-  glass: 'rgba(22, 26, 34, 0.66)', border: 'rgba(255,255,255,0.08)',
+  glass: 'rgba(22, 26, 34, 0.66)', border: 'var(--color-white-a07)',
   text: '#e7eaf0', textMut: '#8b93a7', textFaint: '#5d6577', accent: '#f5c451'
 };
 
@@ -56,10 +56,10 @@ const st = {
     background: C.glass, backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)',
     border: `1px solid ${C.border}`, borderRadius: 14, padding: 12, cursor: 'pointer',
     color: C.text, transition: 'transform 150ms ease, border-color 150ms ease',
-    boxShadow: '0 8px 30px rgba(0,0,0,0.45)', width: '100%' },
-  board: { flexShrink: 0, borderRadius: 8, overflow: 'hidden', boxShadow: '0 2px 10px rgba(0,0,0,0.4)' },
+    boxShadow: '0 8px 30px var(--color-black-a35)', width: '100%' },
+  board: { flexShrink: 0, borderRadius: 8, overflow: 'hidden', boxShadow: '0 2px 10px var(--color-black-a35)' },
   info: { flex: 1, minWidth: 0 },
-  players: { fontSize: 16, fontWeight: 700, color: '#fff', lineHeight: 1.35 },
+  players: { fontSize: 16, fontWeight: 700, color: 'var(--color-text)', lineHeight: 1.35 },
   event: { fontSize: 13, color: C.textMut, marginTop: 6 },
   opening: { fontSize: 13, color: C.textFaint, fontStyle: 'italic', marginTop: 2 },
   star: { position: 'absolute', top: 12, right: 14, color: C.accent, fontSize: 18, lineHeight: 1 }
