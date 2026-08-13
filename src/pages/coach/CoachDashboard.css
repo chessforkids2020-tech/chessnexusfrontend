@@ -173,6 +173,36 @@
   gap: 6px;
 }
 
+/* RESET THE GRADIENT-TEXT FILL ON COACH STAT CARDS.
+ *
+ * `.stat-value` is a generic class name, and three other pages —
+ * game/Play.css, monthlyFocus/MonthlyFocusLeaderboard.css and
+ * monthlyPractice/MonthlyPracticeLeaderboard.css — declare it UNSCOPED with
+ * gradient text:
+ *
+ *     .stat-value { background: <gradient>; -webkit-text-fill-color: transparent }
+ *
+ * Vite bundles every stylesheet into one file, so those rules apply on the
+ * coach pages too. `-webkit-text-fill-color` OVERRIDES `color` entirely, so the
+ * numbers were painted with a transparent fill and vanished — while `color`
+ * stayed a healthy near-white, which is why the cards measured 16:1 contrast
+ * and still showed nothing at all.
+ *
+ * MUST BE MORE SPECIFIC THAN A BARE `.stat-value`. Putting the reset on the
+ * rule above did nothing: identical specificity means source order wins, and
+ * those three files are bundled after this one. Scoping to the card that
+ * actually contains these numbers both raises specificity and keeps the reset
+ * off every other page's stat values.
+ *
+ * `currentColor` re-links the fill to whatever `color` resolves to, so the
+ * wallet's green override still works.
+ */
+.coach-stat-card .stat-value,
+.coach-stat-row .stat-value {
+  -webkit-text-fill-color: currentColor;
+  background: none;
+}
+
 .stat-cap {
   font-size: 14px;
   font-weight: 500;
