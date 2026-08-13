@@ -7,10 +7,14 @@
 // began as Buy Me a Coffee. Only the user-facing wording has moved on;
 // renaming the route and collection is a migration, not a copy change.
 //
-// TITLES ARE NOT ASSIGNED HERE. They are derived from the tier a supporter
-// bought (espresso -> NS, latte -> NX) by CoffeeSupporter.titleFor. Admin-added
-// records are deliberately written with month-based tiers so that comping
-// someone a badge never hands out a paid title.
+// PAID TITLES ARE NOT ASSIGNED HERE. NS and NX are derived from the tier a
+// supporter bought (espresso -> NS, latte -> NX) by CoffeeSupporter.titleFor.
+// Admin-added records are deliberately written with month-based tiers so that
+// comping someone a badge never hands out a paid title.
+//
+// NC (Nexus Coach) is the exception and IS granted here, via the checkbox on
+// the add form: it is earned by helping ChessNexus grow, no tier sells it, and
+// no payment path can set it.
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,15 +22,27 @@ import api from "../api";
 import { useAuth } from "../contexts/AuthContext";
 import { markIdsSeen } from "../utils/adminCoachSeen";
 
-// What title a record confers, as the admin should read it. Mirrors titleFor()
-// in backend/models/CoffeeSupporter.js: the nexusCoach FLAG wins over the tier,
-// because NC is granted for helping rather than bought.
-const TITLE_LABEL = (row) => {
-  if (row?.nexusCoach) return "🎓 NC — Nexus Coach";
+// What title a record confers. Mirrors titleFor() in
+// backend/models/CoffeeSupporter.js: the nexusCoach FLAG wins over the tier,
+// because NC is granted for helping rather than bought — so a Nexus Coach who
+// also bought Cafe Latte shows NC here, exactly as their name renders in the app.
+//
+// Split into code and name so the table can lead with the letters (what an
+// admin scans for) and keep the full name as the secondary line.
+const TITLE_CODE = (row) => {
+  if (row?.nexusCoach) return "🎓 NC";
   const t = String(row?.tier || "").toLowerCase();
-  if (t === "espresso") return "⚔ NS — Nexus Supporter";
-  if (t === "latte") return "👑 NX — Nexus Expert";
-  return `♞ Knight — no title (${row?.tier || "—"})`;
+  if (t === "espresso") return "⚔ NS";
+  if (t === "latte") return "👑 NX";
+  return "♞ Knight";
+};
+
+const TITLE_NAME = (row) => {
+  if (row?.nexusCoach) return "Nexus Coach";
+  const t = String(row?.tier || "").toLowerCase();
+  if (t === "espresso") return "Nexus Supporter";
+  if (t === "latte") return "Nexus Expert";
+  return "no title";
 };
 
 const fmt = (d) =>
@@ -365,6 +381,10 @@ export default function AdminSupporters() {
             <tr>
               <th style={styles.th}>Supporter</th>
               <th style={styles.th}>Amount</th>
+              {/* Title in its own column, next to who and what they paid.
+                  It used to be tucked under Duration, where a title has no
+                  business being — duration is how long the badge runs. */}
+              <th style={styles.th}>Title</th>
               <th style={styles.th}>Paid on</th>
               <th style={styles.th}>Duration</th>
               <th style={styles.th}>Badge expires</th>
@@ -375,10 +395,10 @@ export default function AdminSupporters() {
           </thead>
           <tbody>
             {loading && (
-              <tr><td style={styles.td} colSpan={8}>Loading…</td></tr>
+              <tr><td style={styles.td} colSpan={9}>Loading…</td></tr>
             )}
             {!loading && rows.length === 0 && (
-              <tr><td style={styles.td} colSpan={8}>No supporters found.</td></tr>
+              <tr><td style={styles.td} colSpan={9}>No supporters found.</td></tr>
             )}
             {!loading && rows.map((r) => {
               const u = r.userId || {};
@@ -394,14 +414,21 @@ export default function AdminSupporters() {
                   <td style={styles.td}>
                     <strong>{money(r.amount, r.currency)}</strong>
                   </td>
+                  {/* TITLE. The letters are what the admin scans for, so they
+                      lead; the full name sits under them for anyone who does
+                      not have NS/NX/NC memorised. */}
+                  <td style={styles.td}>
+                    <div style={{ ...styles.name, whiteSpace: "nowrap" }}>{TITLE_CODE(r)}</div>
+                    <div style={styles.muted}>{TITLE_NAME(r)}</div>
+                  </td>
                   <td style={styles.td}>{fmt(r.paidAt)}</td>
                   <td style={styles.td}>
                     {r.months} month{r.months === 1 ? "" : "s"}
-                    {/* The TITLE this record confers, not the raw tier key.
-                        "espresso" told an admin nothing; NS/NX is the thing
-                        they and the supporter both see. The raw tier is kept
-                        alongside for support queries. */}
-                    <div style={styles.muted}>{TITLE_LABEL(r)}</div>
+                    {/* The raw tier, kept for support queries — "which tier did
+                        this person actually buy?" is a different question from
+                        "what title do they hold", and the answers differ for a
+                        Nexus Coach. The title has its own column now. */}
+                    <div style={styles.muted}>{r.tier}</div>
                   </td>
                   <td style={styles.td}>
                     {fmtDate(r.expiresAt)}
