@@ -79,8 +79,19 @@ export default function PlayerName({
 
   const inner = (
     <>
-      {/* Earned title first, in its own colour. A real trailing space, not a
-          margin: it survives restyling and copy-paste. */}
+      {/* BOTH a real space AND a flex `gap` on the wrapper — they do different
+          jobs and one without the other is a bug we have already shipped twice.
+
+          The wrapper is display:inline-flex, and a flex container DISCARDS the
+          whitespace between its children. So "NC bb" rendered as "NCbb" on
+          screen while the DOM text still read "NC bb" — which is why a
+          textContent assertion passed on a fault that was plainly visible. The
+          gap is what puts the space back visually.
+
+          The literal space stays because gap is layout, not content: it
+          disappears the moment the name is copied, serialised, or read aloud by
+          a screen reader, all of which would give "NCbb" again. */}
+      {/* Earned title first, in its own colour. */}
       {fide && (
         <>
           <span className="chess-title" title={`FIDE title: ${fide}`}>{fide}</span>{' '}
@@ -123,7 +134,7 @@ export default function PlayerName({
         to={`/player/${encodeURIComponent(profileKey)}`}
         onClick={(e) => e.stopPropagation()}   // don't trigger a parent row's onClick
         className={className}
-        style={{ display: 'inline-flex', alignItems: 'center', color: 'inherit', textDecoration: 'none', cursor: 'pointer', ...style }}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.32em', color: 'inherit', textDecoration: 'none', cursor: 'pointer', ...style }}
         title={`View ${name}'s profile`}
       >
         {inner}
@@ -132,7 +143,7 @@ export default function PlayerName({
   }
 
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', ...style }} className={className}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.32em', ...style }} className={className}>
       {inner}
     </span>
   );
