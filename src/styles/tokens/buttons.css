@@ -2,9 +2,9 @@
  *
  * ONE SIZING BASELINE FOR EVERY BUTTON CONVENTION.
  *
- * The app grew eight parallel button vocabularies — .btn-primary, .btn-ghost,
- * .mkt-btn, .sh-btn-*, .cap-btn, .atg-ctrl-btn, .focus-btn, .obsidian-button —
- * across ~177 files, each with its own hand-picked padding and radius:
+ * The app grew several parallel button vocabularies — .btn-primary, .btn-ghost,
+ * .mkt-btn, .obsidian-button — each with its own hand-picked padding and
+ * radius:
  *
  *     .btn-primary      10px 14px   radius 10px
  *     .btn-secondary     8px 16px   radius  4px
@@ -32,10 +32,16 @@
  *
  * LOAD ORDER
  *
- * Imported in main.jsx AFTER the token files but BEFORE any page CSS, and every
- * selector here is a single class (specificity 0,1,0). So a page that really
- * does need a different size still wins simply by being more specific or later
- * — no !important anywhere, nothing to fight.
+ * Imported in main.jsx AFTER the token files but BEFORE any page CSS. Every
+ * selector is a single class (specificity 0,1,0), so a page that needs a
+ * different size wins by being more specific or later — no !important
+ * anywhere, nothing to fight.
+ *
+ * SCOPE: only the GENERIC conventions belong here. Page-specific classes
+ * (.hp-hero-btn, .cap-btn, .sh-btn-*, .focus-btn, .lb-page-btn …) were listed
+ * once and it was a mistake: those pages had already chosen their sizes, and
+ * overriding one class out of a page's set breaks that page's internal scale.
+ * A page naming its own button class has made a decision. Respect it.
  */
 
 /* ── Default: medium ─────────────────────────────────────────────────── */
@@ -47,12 +53,7 @@
 .mkt-btn,
 .mkt-btn-primary,
 .mkt-btn-ghost,
-.sh-btn-primary,
-.sh-btn-secondary,
-.obsidian-button,
-.focus-btn,
-.nav-btn,
-.atg-ctrl-btn {
+.obsidian-button {
   padding: var(--btn-pad-md);
   border-radius: var(--btn-radius);
   font-size: var(--btn-font-md);
@@ -70,12 +71,7 @@
 }
 
 /* ── Small: dense controls, chips, table actions ─────────────────────── */
-.btn-sm,
-.cap-btn,
-.btn-back,
-.lb-page-btn,
-.cb-icon-btn,
-.gr-ctrl-btn {
+.btn-sm {
   padding: var(--btn-pad-sm);
   border-radius: var(--radius-md);
   font-size: var(--btn-font-sm);
@@ -92,9 +88,15 @@
               color var(--dur-fast);
 }
 
-/* ── Large: hero and primary page CTAs ───────────────────────────────── */
+/* ── Large: hero and primary page CTAs ─────────────────────────────────
+   OPT-IN ONLY. Page-specific classes deliberately do NOT appear here.
+   `.hp-hero-btn` used to, and it made the homepage hero buttons 57px tall
+   with an 18px label while every other button on that page sat at 40–50px
+   with a 14–16px one. The homepage already had a coherent scale; this file
+   overrode one class out of it and broke the set.
+   The rule: this file sizes the GENERIC conventions. A page that names its
+   own button class has already made a sizing decision, and it wins. */
 .btn-lg,
-.hp-hero-btn,
 .mkt-btn-lg {
   padding: var(--btn-pad-lg);
   border-radius: var(--radius-lg);
@@ -111,7 +113,6 @@
 .btn-secondary:disabled,
 .btn-ghost:disabled,
 .mkt-btn:disabled,
-.sh-btn-primary:disabled,
 .obsidian-button:disabled,
 button:disabled {
   opacity: 0.5;
