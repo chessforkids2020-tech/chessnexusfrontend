@@ -552,7 +552,7 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
             <Perk icon="📊" title="Weekly practice report"
                   text="Your 5-day report, free every time. Normally 100 XP." />
             <Perk icon="🎨" title="All six app themes"
-                  text="Every palette unlocked. Others earn them at 1,000 XP each." />
+                  text="Including the three that cost 1,000 XP each." />
           </div>
           <p style={styles.perksFoot}>
             Everything above is unlocked for as long as your support runs — no XP

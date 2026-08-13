@@ -1,20 +1,24 @@
 // AppThemePanel — the App Theme picker in Settings.
 //
-// Obsidian Glass is free forever: it is the default every account starts on, so
-// nobody can end up with no theme. The other five are unlocked one at a time
-// with wallet XP.
+// THREE FREE, THREE EARNED. Obsidian Glass, Midnight Cyan and Deep Ember are
+// free for everyone — one pure black, one cool, one warm, so a user who never
+// spends XP still has a real choice. The other three cost XP.
 //
-// WHY XP RATHER THAN A SUPPORTER PERK
-// The six themes shipped free to everyone. Gating them behind support would
-// take a feature away from every existing user, which makes a paywall feel
-// punitive. XP is additive instead — nobody loses anything, and a theme becomes
-// a reason to play more puzzles and games.
+// The split is 3/3 rather than 1/5 because all six shipped free and users are
+// already choosing them: locking five would take a theme away from most of the
+// people who had picked one. Three leaves a genuine free choice while still
+// giving XP something worth earning.
 //
 // Admins, elites and active supporters see every theme unlocked, matching the
 // server rule in backend/helpers/privileged.js.
 import React, { useCallback, useEffect, useState } from 'react';
 import api from '../api';
 import { useUiTheme } from '../contexts/UiThemeContext';
+
+// Mirrors FREE_THEME_IDS in backend/models/ThemeUnlock.js. Only used when the
+// server cannot be reached — the real list comes from GET /api/auth/themes, and
+// the server re-checks every unlock regardless.
+const FREE_FALLBACK = ['obsidianGlass', 'midnightCyan', 'deepEmber'];
 
 export default function AppThemePanel() {
   const { themeId: activeId, themes, setThemeId } = useUiTheme();
@@ -37,7 +41,7 @@ export default function AppThemePanel() {
     } catch {
       // Never leave the picker unusable because a lookup failed — fall back to
       // "only the free theme is owned", which is the safe assumption.
-      setOwned(new Set(['obsidianGlass']));
+      setOwned(new Set(FREE_FALLBACK));
     }
   }, []);
 
@@ -62,7 +66,18 @@ export default function AppThemePanel() {
     }
   };
 
-  const isOwned = (id) => privileged || (owned ? owned.has(id) : id === 'obsidianGlass');
+  // GRANDFATHERING. All six themes shipped free, so somebody may already be
+  // using one that now costs XP. Their choice is honoured: the theme they are
+  // ALREADY ON counts as owned, and they are never asked to buy back something
+  // they were using before the price existed.
+  //
+  // It is also the honest thing to render. The active theme is applied from
+  // localStorage on page load regardless of this panel, so showing it as locked
+  // while the whole app is painted in it would just look broken.
+  const isOwned = (id) =>
+    privileged
+    || id === activeId
+    || (owned ? owned.has(id) : FREE_FALLBACK.includes(id));
 
   return (
     <section style={S.card}>
@@ -136,7 +151,7 @@ export default function AppThemePanel() {
                 <div style={S.desc}>{t.description}</div>
 
                 {unlocked ? (
-                  t.id === 'obsidianGlass' && !privileged
+                  FREE_FALLBACK.includes(t.id) && !privileged
                     ? <div style={S.freeTag}>Free for everyone</div>
                     : null
                 ) : (
