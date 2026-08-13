@@ -85,7 +85,7 @@ const BookReader = () => {
           </p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 4 }}>
             <button style={styles.xpBtn} onClick={() => navigate(`/study/books/${id}`)}>👛 Unlock with XP</button>
-            <button style={styles.supportBtn} onClick={() => navigate('/buy-coffee')}>☕ Become a supporter</button>
+            <button style={styles.supportBtn} onClick={() => navigate('/nexus-supporter')}>♞ Become a supporter</button>
           </div>
         </div>
       </div>

@@ -54,7 +54,7 @@ export default function CoffeeCta({
   return (
     <button
       type="button"
-      onClick={() => navigate('/buy-coffee')}
+      onClick={() => navigate('/nexus-supporter')}
       style={{ ...base, ...(variants[variant] || variants.pill), ...style }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-1px)';

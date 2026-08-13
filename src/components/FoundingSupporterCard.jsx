@@ -1,7 +1,7 @@
 // FoundingSupporterCard — a compact, honest "be an early supporter" card shown on
 // common pages (dashboard, homepage) while ChessNexus is new. It advertises the
 // permanent 👑 Founding Supporter badge for the first N backers — real scarcity,
-// no fabricated supporters. Clicking goes to /buy-coffee.
+// no fabricated supporters. Clicking goes to /nexus-supporter.
 //
 // It self-hides for users who are ALREADY active supporters (nothing to sell them),
 // and once the founding spots are gone (fetched live from /api/coffee/info).
@@ -61,7 +61,7 @@ export default function FoundingSupporterCard({ compact = false, style = {} }) {
           <strong style={{ color: 'var(--color-warning)' }}>{spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left</strong>.
         </div>
       </div>
-      <button type="button" onClick={() => navigate('/buy-coffee')} style={styles.btn}>
+      <button type="button" onClick={() => navigate('/nexus-supporter')} style={styles.btn}>
         Claim ☕
       </button>
     </div>

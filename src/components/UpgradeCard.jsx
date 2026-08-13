@@ -2,7 +2,7 @@
 // Settings → Member tab, top card: invites the user to become a Coach, or to
 // support ChessNexus directly.
 //   Coach   → /coach/onboarding
-//   Support → /buy-coffee
+//   Support → /nexus-supporter
 //
 // This used to offer "Become an Elite Member", which opened a popup with two
 // choices (Collaborate / Support). Support is now a direct button — one less
@@ -23,7 +23,7 @@ export default function UpgradeCard() {
   const navigate = useNavigate();
 
   const goCoach = () => navigate('/coach/onboarding');
-  const goSupport = () => navigate('/buy-coffee');
+  const goSupport = () => navigate('/nexus-supporter');
 
   return (
     <>

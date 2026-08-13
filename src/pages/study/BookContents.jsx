@@ -114,12 +114,12 @@ const BookContents = () => {
               >
                 {unlocking ? 'Unlocking…' : (canAfford ? `👛 Unlock for ${xpPrice} XP` : `Need ${xpPrice - walletXp} more XP`)}
               </button>
-              <button style={styles.supportBtn} onClick={() => navigate('/buy-coffee')}>☕ Become a supporter</button>
+              <button style={styles.supportBtn} onClick={() => navigate('/nexus-supporter')}>♞ Become a supporter</button>
             </>
           ) : (
             <>
               🔒 Some chapters are unlocked for <strong>supporters</strong>, <strong>verified coaches</strong>, and <strong>elite</strong> members.
-              <button style={styles.supportBtn} onClick={() => navigate('/buy-coffee')}>☕ Become a supporter</button>
+              <button style={styles.supportBtn} onClick={() => navigate('/nexus-supporter')}>♞ Become a supporter</button>
             </>
           )}
         </div>

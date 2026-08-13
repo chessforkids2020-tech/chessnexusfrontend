@@ -693,10 +693,19 @@ export default function App() {
             </ProtectedRoute>
           </UserLayout>
         } />
-        {/* /support is the name that matches what the page now offers (a title,
-            not a coffee). /buy-coffee stays as an alias: it may be linked from
-            emails, chat messages and external posts, and breaking those would
-            cost a supporter for no gain. */}
+        {/* THE canonical support URL. Named for what the page actually offers —
+            the Nexus Supporter title — rather than a coffee.
+
+            The two aliases below serve the same page and are deliberately NOT
+            prerendered (see prerender.js), so Google indexes this one only and
+            the duplicates do not split its ranking. They exist because
+            /buy-coffee has been shared in emails, chat and posts; breaking
+            those links would cost real supporters for no gain. */}
+        <Route path="/nexus-supporter" element={
+          <UserLayout>
+            <BuyMeACoffee />
+          </UserLayout>
+        } />
         <Route path="/support" element={
           <UserLayout>
             <BuyMeACoffee />

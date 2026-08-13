@@ -349,7 +349,7 @@ export default function BuyMeACoffee() {
         title="Support Chess Nexus — Earn Your Nexus Title"
         description="Chess Nexus is free with no ads. If it has helped you or your students, support it once and earn a Nexus title — NS or NX — shown before your name across the site."
         keywords="support chess nexus, donate chess platform, nexus title, chess supporter title"
-        canonical="/buy-coffee"
+        canonical="/nexus-supporter"
       />
       <div style={styles.bgGlow} />
 

@@ -76,7 +76,10 @@ const ROUTES = [
   // /daily-puzzles and /invite, which all bounce to /login and would be
   // soft-404s if indexed.
   '/members',
-  '/buy-coffee',
+  // The support page. Only the canonical URL is prerendered — /support and
+  // /buy-coffee serve the same component as aliases for old shared links, and
+  // indexing all three would split the ranking across duplicates.
+  '/nexus-supporter',
   '/contest-rules',
   '/contact',
   '/privacy-policy',
