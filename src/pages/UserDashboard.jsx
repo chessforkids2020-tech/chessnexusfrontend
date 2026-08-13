@@ -349,6 +349,23 @@ function MyCoachCard() {
 }
 
 // ─── Watch My Games Card ────────────────────────────────────────────────────
+// The Nexus title (NS / NX / NC) as it appears before a name.
+//
+// The trailing space is a real space in the markup, NOT a CSS margin. A margin
+// looks identical on screen but vanishes the moment the text is copied, read by
+// a screen reader, or serialised anywhere — which is how "NC bb" became "NCbb".
+//
+// Renders nothing at all when there is no title, so the caller can drop it
+// inline without guarding every use.
+function NexusTitle({ title, size = 26 }) {
+  if (!title) return null;
+  return (
+    <>
+      <span className="nexus-title" style={{ fontSize: size }}>{title}</span>{' '}
+    </>
+  );
+}
+
 function WatchGamesCard({ displayName }) {
   const [gamesInfo, setGamesInfo] = React.useState(null);
   React.useEffect(() => {
@@ -1689,15 +1706,22 @@ export default function UserDashboard() {
             </div>
             <div className="welcome-text">
               <h1 className="welcome-title">
-                {/* The Nexus title (NS / NX) sits before the name here exactly as
-                    it does everywhere else, so a supporter sees on their own
-                    dashboard what the rest of the app sees. */}
-                {user.nexusTitle && (
+                {/* The title belongs before the NAME, not before the greeting.
+                    Rendering it ahead of the whole string produced
+                    "NC Welcome, bb!" — the title attached to the word "Welcome"
+                    instead of the person. Split so the greeting stays a
+                    greeting and the title sits where it does everywhere else:
+                    "Welcome, NC bb!" */}
+                {isPublicView ? (
                   <>
-                    <span className="nexus-title" style={{ fontSize: 26 }}>{user.nexusTitle}</span>{' '}
+                    <NexusTitle title={user.nexusTitle} />
+                    {user.displayName}
+                  </>
+                ) : (
+                  <>
+                    Welcome, <NexusTitle title={user.nexusTitle} />{user.displayName}!
                   </>
                 )}
-                {isPublicView ? user.displayName : `Welcome, ${user.displayName}!`}
                 {/* A Founding Supporter's permanent 👑 wins. Otherwise the entry
                     tier gets the ♞ — but a titled supporter already has letters,
                     so they never also carry an icon. */}

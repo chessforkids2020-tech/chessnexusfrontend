@@ -123,12 +123,21 @@ option {
    Two kinds sit before a player's name and must never be confused:
 
      .chess-title   GM / IM / FM …  EARNED, FIDE, admin-verified.
-     .nexus-title   NS / NX         BOUGHT, ChessNexus-only, lapses with support.
+     .nexus-title   NS / NX / NC    ChessNexus titles.
 
-   The FIDE title keeps its long-standing amber and is deliberately NOT themed:
-   it means the same thing on every site in chess, and a palette should not
-   restyle a real-world credential. The Nexus title follows the theme accent,
-   marking it as part of this app rather than a chess-wide fact.
+   NEITHER IS THEMED. Both are gold, and deliberately fixed rather than tied to
+   --color-accent.
+
+   A title is a mark of standing, and gold is what reads as standing — the
+   accent made the Nexus titles cyan in one theme and pink in another, so the
+   same person looked differently important depending on the reader's palette,
+   and in the cyan themes the title was indistinguishable from every link and
+   button on the page. The Nexus gold is a shade lighter than the FIDE amber:
+   related, clearly a title, still not passing itself off as a FIDE credential.
+
+   Both need a trailing space in the MARKUP, not a margin — see PlayerName.jsx.
+   A margin disappears when the name is copied, pasted, or read aloud by a
+   screen reader, which produced "NCbb" instead of "NC bb".
 
    See components/PlayerName.jsx, which renders both. */
 .chess-title {
@@ -138,6 +147,6 @@ option {
 
 .nexus-title {
   font-weight: 700;
-  color: var(--color-accent);
+  color: #d4a72c;                    /* tokenize-ignore — a title is gold in every theme */
   letter-spacing: 0.02em;
 }
