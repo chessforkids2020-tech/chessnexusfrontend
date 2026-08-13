@@ -4,35 +4,47 @@
  *
  * WHY THIS IS A STYLESHEET AND NOT 24 EDITED FILES
  * ------------------------------------------------
- * The admin pages are styled with INLINE styles — 1311 hardcoded colour
+ * The admin pages are styled with INLINE styles — over 1300 hardcoded colour
  * literals across 24 files, no shared CSS, no common layout component. When the
  * app-wide root container moved to var(--color-bg) (dark), those pages kept
  * painting white cards, and admin text that had been darkened for a white card
  * ended up white-on-white.
  *
- * Rewriting all 1311 by hand is a large, mechanical, error-prone edit across
+ * Rewriting all of them by hand is a large, mechanical, error-prone edit across
  * files that also contain live admin logic. A scoped override fixes every page
  * at once, is reversible by deleting one import, and cannot alter behaviour.
+ *
+ * THE MISTAKE THIS FILE ONCE MADE — read before adding a rule
+ * -----------------------------------------------------------
+ * The first version mapped EVERY pale background to one neutral grey. The admin
+ * pages use pale tints as a colour LANGUAGE — a green panel for success, red
+ * for danger, amber for warnings, blue for information — and flattening them
+ * all to the same grey made the pages harder to scan than the broken white
+ * version they replaced. Grey is not a neutral choice here; it is the deletion
+ * of the page's structure.
+ *
+ * So tints keep their HUE and only change their LIGHTNESS: a pale green panel
+ * becomes a dark green panel, not a dark grey one. Only genuinely NEUTRAL
+ * surfaces (white and the slate/grey family) become neutral dark.
  *
  * WHY !important
  * --------------
  * Inline `style={{...}}` beats any selector on specificity, so a stylesheet
- * cannot override it without !important. That is a deliberate, contained
- * trade-off: the rules below are scoped to `.admin-dark` and touch only
- * colours — never layout, size, or spacing.
+ * cannot override it without !important. The rules below are scoped to
+ * `.admin-dark` and touch only colour — never layout, size, or spacing.
  *
  * WHAT IS DELIBERATELY NOT TOUCHED
  * --------------------------------
- * Saturated colours are left alone: status pills, chart series, the green/red
- * of a positive or negative number, brand buttons. Those carry MEANING, and
- * flattening them to grey would make the pages harder to read, not easier.
- * Only near-white surfaces and near-black text are remapped.
+ * SATURATED colours: status pills, chart series, brand buttons, the green or
+ * red of a number. Those are already legible on a dark surface and carry
+ * meaning of their own.
  */
 
-/* ── Surfaces ──
-   Any near-white background becomes a themed surface. The attribute selectors
-   match the inline values actually present in the admin pages (#fff, #ffffff,
-   white, and the very light greys used for panels and table stripes). */
+/* ══════════════════════════════════════════════════════════════════════
+   NEUTRAL SURFACES — white and the grey/slate family only.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Cards: plain white. */
 .admin-dark [style*="background: #fff"],
 .admin-dark [style*="background:#fff"],
 .admin-dark [style*="background: white"],
@@ -47,26 +59,80 @@
   color: var(--color-text) !important;
 }
 
-/* Very light greys — panels, table stripes, inset wells. One step up from the
-   card surface so nesting stays visible. */
+/* Neutral greys — insets, table stripes, toolbars. One step up from the card so
+   nesting stays visible. Note these are the SLATE greys only; the tinted pales
+   are handled further down and must not be listed here. */
 .admin-dark [style*="#f8fafc"],
 .admin-dark [style*="#f9fafb"],
-.admin-dark [style*="#f8fff8"],
-.admin-dark [style*="#f8fffa"],
 .admin-dark [style*="#f1f5f9"],
 .admin-dark [style*="#f3f4f6"],
 .admin-dark [style*="#f5f5f5"],
 .admin-dark [style*="#fafafa"],
-.admin-dark [style*="#eee"],
-.admin-dark [style*="#e5e7eb"] {
+.admin-dark [style*="#eeeeee"] {
   background: var(--color-surface-2) !important;
   color: var(--color-text) !important;
 }
 
-/* ── Text ──
-   Near-black text was chosen for white cards and is now invisible. Remapped to
-   the theme's text colour. Mid-greys become the muted tone so the visual
-   hierarchy the page was designed with survives. */
+/* ══════════════════════════════════════════════════════════════════════
+   TINTED PANELS — keep the hue, drop the lightness.
+
+   Each block is a pale wash of one colour, used to mean something. The dark
+   equivalent is the same hue at low alpha over the card, with a matching
+   border so the panel still reads as a distinct region.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* GREEN — success, active, approved, positive totals. */
+.admin-dark [style*="#f0f9f0"],
+.admin-dark [style*="#f6fff6"],
+.admin-dark [style*="#f8fff8"],
+.admin-dark [style*="#f8fffa"],
+.admin-dark [style*="#f0fdf4"],
+.admin-dark [style*="#f0f7f0"],
+.admin-dark [style*="#fbfdfb"],
+.admin-dark [style*="#dcfce7"] {
+  background: var(--color-success-a12) !important;
+  border-color: var(--color-success-a30) !important;
+  color: var(--color-text) !important;
+}
+
+/* RED — errors, danger zones, suspended/rejected. */
+.admin-dark [style*="#fef2f2"],
+.admin-dark [style*="#fee2e2"],
+.admin-dark [style*="#fdecea"],
+.admin-dark [style*="#fff1f0"] {
+  background: var(--color-danger-a12) !important;
+  border-color: var(--color-danger-a30) !important;
+  color: var(--color-text) !important;
+}
+
+/* AMBER — warnings, pending review, "needs attention". */
+.admin-dark [style*="#fffbe6"],
+.admin-dark [style*="#fef3c7"],
+.admin-dark [style*="#ffe58f"],
+.admin-dark [style*="#fffaf0"],
+.admin-dark [style*="#fef9c3"] {
+  background: var(--color-warning-a12) !important;
+  border-color: var(--color-warning-a30) !important;
+  color: var(--color-text) !important;
+}
+
+/* BLUE / VIOLET — information, links, neutral highlights. Mapped to the
+   theme accent so an "info" panel matches whatever theme is active. */
+.admin-dark [style*="#f0f9ff"],
+.admin-dark [style*="#eff6ff"],
+.admin-dark [style*="#f5f3ff"],
+.admin-dark [style*="#eef2ff"],
+.admin-dark [style*="#e0f2fe"] {
+  background: var(--color-accent-a12) !important;
+  border-color: var(--color-accent-a30) !important;
+  color: var(--color-text) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   TEXT
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Near-black, chosen for a white card and now invisible. */
 .admin-dark [style*="color: #000"],
 .admin-dark [style*="color:#000"],
 .admin-dark [style*="color: black"],
@@ -81,6 +147,9 @@
   color: var(--color-text) !important;
 }
 
+/* Mid-greys were the SECONDARY level on a white card. Keeping them muted
+   preserves the hierarchy the page was designed with — promoting everything to
+   full white would make every label shout equally. */
 .admin-dark [style*="color: #555"],
 .admin-dark [style*="color: #666"],
 .admin-dark [style*="color:#666"],
@@ -92,11 +161,74 @@
   color: var(--color-text-muted) !important;
 }
 
-/* ── Form controls ──
-   Browsers paint these white by default regardless of the page, so they need
-   explicit treatment rather than an override of an inline value. This is the
-   part that makes admin forms usable: a dark dropdown whose options render on
-   the OS default white with white text is unreadable. */
+/* DARK SATURATED TEXT — the other half of the tinted panels.
+ *
+ * The pale panels above are paired with a DARK version of the same hue as text:
+ * #064f28 dark green on a #f0f9f0 green wash, #b91c1c dark red on #fef2f2, and
+ * so on. Once the panel is dark those greens and reds are all but invisible —
+ * fixing the background alone would have traded white-on-white for
+ * dark-green-on-dark-green.
+ *
+ * Each is lifted to the LIGHT version of its own hue, so the text still reads
+ * as "this is the success one" rather than becoming anonymous white.
+ */
+
+/* Dark greens -> light green */
+.admin-dark [style*="color: #064f28"],
+.admin-dark [style*="color:#064f28"],
+.admin-dark [style*="color: #072b05"],
+.admin-dark [style*="color: #0b6623"],
+.admin-dark [style*="color: #166534"],
+.admin-dark [style*="color: #047857"],
+.admin-dark [style*="color: #14532d"],
+.admin-dark [style*="color: #15803d"] {
+  color: var(--color-success) !important;
+}
+
+/* Dark reds -> light red */
+.admin-dark [style*="color: #b91c1c"],
+.admin-dark [style*="color:#b91c1c"],
+.admin-dark [style*="color: #991b1b"],
+.admin-dark [style*="color: #7f1d1d"],
+.admin-dark [style*="color: #dc2626"] {
+  color: var(--color-danger) !important;
+}
+
+/* Dark ambers -> light amber */
+.admin-dark [style*="color: #92400e"],
+.admin-dark [style*="color: #b45309"],
+.admin-dark [style*="color: #78350f"],
+.admin-dark [style*="color: #a16207"] {
+  color: var(--color-warning) !important;
+}
+
+/* Dark violets/blues -> the theme accent */
+.admin-dark [style*="color: #7c3aed"],
+.admin-dark [style*="color: #5b21b6"],
+.admin-dark [style*="color: #1e40af"],
+.admin-dark [style*="color: #1d4ed8"],
+.admin-dark [style*="color: #1677ff"] {
+  color: var(--color-accent) !important;
+}
+
+/* Very dark slates used as primary text (#0f172a, #334155, #1a1a2e). These are
+   NEUTRAL, not a hue, so they follow the normal text colour. */
+.admin-dark [style*="color: #0f172a"],
+.admin-dark [style*="color: #1a1a2e"],
+.admin-dark [style*="color: #1e293b"] {
+  color: var(--color-text) !important;
+}
+
+.admin-dark [style*="color: #334155"],
+.admin-dark [style*="color: #475569"] {
+  color: var(--color-text-muted) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   FORM CONTROLS
+   Browsers paint these white regardless of the page, so they need explicit
+   treatment rather than an override of an inline value.
+   ══════════════════════════════════════════════════════════════════════ */
 .admin-dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
 .admin-dark select,
 .admin-dark textarea {
@@ -110,7 +242,7 @@
   color: var(--color-text-faint) !important;
 }
 
-/* The dropdown LIST. Rendered by the OS, so it does not inherit from <select>:
+/* The dropdown LIST is drawn by the OS and does not inherit from <select>:
    without this the menu stays white while the closed control is dark. */
 .admin-dark select option,
 .admin-dark datalist option {
@@ -126,8 +258,8 @@
   box-shadow: 0 0 0 3px var(--color-accent-a20) !important;
 }
 
-/* Date/time pickers ship a dark-on-white calendar glyph that vanishes on a dark
-   field. `invert` is the standard fix — Chromium exposes no colour property. */
+/* Date/time pickers ship a dark-on-white glyph that vanishes on a dark field.
+   `invert` is the standard fix — Chromium exposes no colour property for it. */
 .admin-dark input[type="date"]::-webkit-calendar-picker-indicator,
 .admin-dark input[type="time"]::-webkit-calendar-picker-indicator,
 .admin-dark input[type="datetime-local"]::-webkit-calendar-picker-indicator,
@@ -136,14 +268,14 @@
   opacity: 0.75;
 }
 
-/* Tell the browser this is a dark UI so it themes scrollbars, autofill and any
-   control not covered above. */
+/* Tell the browser this is a dark UI so it themes scrollbars and autofill. */
 .admin-dark {
   color-scheme: dark;
 }
 
-/* ── Tables ──
-   Header rows and cell borders were drawn for a white page. */
+/* ══════════════════════════════════════════════════════════════════════
+   TABLES
+   ══════════════════════════════════════════════════════════════════════ */
 .admin-dark th {
   background: var(--color-surface-2) !important;
   color: var(--color-text) !important;
@@ -154,9 +286,11 @@
   border-color: var(--color-border) !important;
 }
 
-/* ── Hairlines ──
-   Light-grey borders disappear against a dark card; the themed border keeps the
-   same separation the layout was designed around. */
+/* ══════════════════════════════════════════════════════════════════════
+   HAIRLINES — light greys vanish against a dark card.
+   Listed AFTER the tinted panels so a tinted panel's own coloured border,
+   set above, is not overwritten by the neutral one.
+   ══════════════════════════════════════════════════════════════════════ */
 .admin-dark [style*="border: 1px solid #ddd"],
 .admin-dark [style*="border:1px solid #ddd"],
 .admin-dark [style*="border: 1px solid #e5e7eb"],
