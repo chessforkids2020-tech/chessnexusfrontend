@@ -270,7 +270,13 @@ function ProtectedRoute({ children, requiredRole, noGuest, allowCoach }) {
     // allowCoach lets any coach through a role-gated route (e.g. Monthly Focus,
     // where a free coach gets a one-time create — the backend enforces the rule).
     const coachOk = allowCoach && user.isCoach;
-    if (!allowed.includes(user.role) && !coachOk) {
+    // An ACTIVE SUPPORTER counts as elite everywhere elite is required.
+    // Supporting confers exactly what the elite role does, without granting the
+    // role itself: the role stays admin-only, while support is self-serve and
+    // expires on its own. The backend enforces the same rule — see
+    // helpers/privileged.js — so this only decides whether the page renders.
+    const supporterOk = allowed.includes('elite') && user.coffeeSupporter === true;
+    if (!allowed.includes(user.role) && !coachOk && !supporterOk) {
       return <Navigate to="/" replace />;
     }
   }

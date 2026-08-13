@@ -529,6 +529,36 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
           </p>
         </div>
 
+        {/* What every supporter can do.
+            These are the real gates in the code, not aspirations — each one is
+            enforced through helpers/privileged.js on the server. Any tier
+            unlocks all of them; the tier only decides the title. */}
+        <div style={styles.perksCard}>
+          <div style={styles.perksHead}>
+            <span style={styles.perksEyebrow}>♞ EVERY SUPPORTER GETS</span>
+            <span style={styles.perksSubtle}>Any tier — the tier only sets your title</span>
+          </div>
+          <div style={styles.perksGrid}>
+            <Perk icon="🎯" title="Create Monthly Focus challenges"
+                  text="Design your own month-long training plans and share them." />
+            <Perk icon="🏁" title="Host Team Races"
+                  text="Create races, build teams, assign players and run the whole event." />
+            <Perk icon="☁️" title="Opening repertoire in the cloud"
+                  text="Unlimited saves — no XP, no cap." />
+            <Perk icon="♟️" title="Endgame trainer and play"
+                  text="Every position open, against the engine or as a drill. No XP." />
+            <Perk icon="📚" title="All Nexus books"
+                  text="Read the full library free." />
+            <Perk icon="📊" title="Weekly practice report"
+                  text="Your 5-day report, free every time. Normally 100 XP." />
+          </div>
+          <p style={styles.perksFoot}>
+            Everything above is unlocked for as long as your support runs — no XP
+            spent on any of it. Themes, board colours and piece sets are free for
+            everyone, supporter or not.
+          </p>
+        </div>
+
         {/* Continue */}
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: 22 }}>
           <button
@@ -690,6 +720,18 @@ function BankRow({ label, value }) {
     <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px dashed var(--color-white-a07)' }}>
       <span style={{ color: C.textDim, fontSize: 13 }}>{label}</span>
       <span style={{ color: C.text, fontSize: 13, fontWeight: 600, fontFamily: 'monospace' }}>{value}</span>
+    </div>
+  );
+}
+
+function Perk({ icon, title, text }) {
+  return (
+    <div style={styles.perkItem}>
+      <span style={styles.perkIcon}>{icon}</span>
+      <span>
+        <span style={styles.perkTitle}>{title}</span>
+        <span style={styles.perkText}>{text}</span>
+      </span>
     </div>
   );
 }
@@ -899,6 +941,58 @@ const styles = {
     borderColor: C.amberBorder,
     boxShadow: '0 8px 28px var(--color-warning-a20)',
     transform: 'translateY(-2px)'
+  },
+  /* "Every supporter gets" panel. */
+  perksCard: {
+    marginTop: 22,
+    padding: '20px 22px',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-accent-a20)',
+    borderRadius: 'var(--radius-lg)',
+  },
+  perksHead: {
+    display: 'flex',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    gap: 12,
+    flexWrap: 'wrap',
+    marginBottom: 14,
+  },
+  perksEyebrow: {
+    color: 'var(--color-accent)',
+    fontSize: 12.5,
+    fontWeight: 800,
+    letterSpacing: 0.6,
+  },
+  perksSubtle: { color: C.textFaint, fontSize: 12 },
+  perksGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: 12,
+  },
+  perkItem: { display: 'flex', alignItems: 'flex-start', gap: 10 },
+  perkIcon: { fontSize: 19, lineHeight: 1.2, flexShrink: 0 },
+  perkTitle: {
+    display: 'block',
+    color: C.text,
+    fontSize: 13.5,
+    fontWeight: 700,
+    lineHeight: 1.35,
+  },
+  perkText: {
+    display: 'block',
+    color: C.textDim,
+    fontSize: 12.5,
+    lineHeight: 1.45,
+    marginTop: 1,
+  },
+  perksFoot: {
+    margin: '14px 0 0',
+    paddingTop: 12,
+    borderTop: '1px solid var(--color-white-a07)',
+    color: C.textFaint,
+    fontSize: 12.5,
+    lineHeight: 1.6,
   },
   tierName: { fontWeight: 700 },
   tierAmount: { fontSize: 22, fontWeight: 800, color: C.amber, marginTop: 10 },
