@@ -477,6 +477,12 @@ export default function useLiveKitRoom() {
       // Captured BEFORE the `!t` bail below, because the case that matters most
       // is exactly the one where `pub.track` is null.
       let videoPub = null;
+      // The MICROPHONE publication, for the same reason as videoPub above: the
+      // audio player needs it to re-request a subscription that dropped
+      // mid-class. Audio previously had no equivalent, so a lost subscription
+      // was unrecoverable without rejoining — which is exactly the "I could not
+      // hear the student for most of the lesson" report.
+      let audioPub = null;
       p.trackPublications?.forEach((pub) => {
         const isScreen = pub.source === 'screen_share' || pub.source === 'screen_share_audio';
         // Force-subscribe EVERY remote track, not just screen share. With
@@ -499,6 +505,7 @@ export default function useLiveKitRoom() {
         // button for a child whose camera was in fact on the whole time.
         if (!isLocal && !isScreen && pub.kind === 'video' && !pub.isMuted) camPublished = true;
         if (!isScreen && pub.kind === 'video') videoPub = pub;
+        if (!isScreen && pub.kind === 'audio') audioPub = pub;
         const t = pub.track;
         if (!t) return;
         if (isScreen) { if (pub.kind !== 'audio') screenTrack = t; }
@@ -521,7 +528,7 @@ export default function useLiveKitRoom() {
       // camera is off.
       let avatar = null;
       try { avatar = p.metadata ? (JSON.parse(p.metadata).avatar || null) : null; } catch { /* ignore */ }
-      list.push({ identity: p.identity, name: p.name || p.identity, isLocal, isSpeaking: p.isSpeaking, videoTrack, videoTrackRaw, videoPub, audioTrack, audioTrackRaw, screenTrack, avatar, camPublished });
+      list.push({ identity: p.identity, name: p.name || p.identity, isLocal, isSpeaking: p.isSpeaking, videoTrack, videoTrackRaw, videoPub, audioTrack, audioTrackRaw, audioPub, screenTrack, avatar, camPublished });
     };
     if (r.localParticipant) pack(r.localParticipant, true);
     r.remoteParticipants?.forEach((p) => pack(p, false));
@@ -548,6 +555,10 @@ export default function useLiveKitRoom() {
             && o.videoPub === n.videoPub
             && o.audioTrack === n.audioTrack
             && o.audioTrackRaw === n.audioTrackRaw
+            // Same reasoning as videoPub: stable for the life of a publication,
+            // so this is free in the common case but correctly forces a
+            // re-render when a mic is republished under a new publication.
+            && o.audioPub === n.audioPub
             && o.screenTrack === n.screenTrack
             && o.name === n.name
             && o.avatar === n.avatar;

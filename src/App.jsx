@@ -409,6 +409,26 @@ function ChatRedirect() {
 function AppWithTheme({ children }) {
   const { user } = useAuth();
   const userId = user?.id || user?._id || null;
+  const location = useLocation();
+
+  // ADMIN PAGES: mark the document so styles/admin-dark.css can repaint them.
+  //
+  // Those pages are styled with inline `style={{...}}` — over 1300 hardcoded
+  // colours across 24 files — and were written for a white page. When the app
+  // moved to dark themes their cards stayed white while text that had been
+  // darkened FOR a white card turned white, leaving white-on-white.
+  //
+  // Applied by PATH rather than by editing each of the 28 admin routes: routes
+  // get added and one would eventually be forgotten (one, /admin/schedule,
+  // already lacks the shared container wrapper the others use). A class on
+  // <html> also reaches portals and native dropdown lists, which render outside
+  // the React tree and so cannot be styled by a wrapper element.
+  useEffect(() => {
+    const isAdminPage = location.pathname.startsWith('/admin');
+    try {
+      document.documentElement.classList.toggle('admin-dark', isAdminPage);
+    } catch { /* SSR / prerender — no document */ }
+  }, [location.pathname]);
 
   // Remember who was last signed in, purely so the blocking script in
   // index.html can find the right uiTheme_<id> key before React boots and

@@ -21,6 +21,10 @@ import "./styles/tokens/aliases.css";
 import "./styles/tokens/buttons.css";
 
 import "./index.css";
+// Repaints the inline-styled admin pages for dark themes. Scoped to
+// html.admin-dark, which App.jsx toggles on /admin* routes — it can never
+// affect a normal page.
+import "./styles/admin-dark.css";
 import "./components/layout.css";
 import "./styles/breakpoints.css";
 

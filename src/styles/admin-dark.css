@@ -1,0 +1,168 @@
+/* styles/admin-dark.css
+ *
+ * Repaints the admin pages for the dark app themes.
+ *
+ * WHY THIS IS A STYLESHEET AND NOT 24 EDITED FILES
+ * ------------------------------------------------
+ * The admin pages are styled with INLINE styles — 1311 hardcoded colour
+ * literals across 24 files, no shared CSS, no common layout component. When the
+ * app-wide root container moved to var(--color-bg) (dark), those pages kept
+ * painting white cards, and admin text that had been darkened for a white card
+ * ended up white-on-white.
+ *
+ * Rewriting all 1311 by hand is a large, mechanical, error-prone edit across
+ * files that also contain live admin logic. A scoped override fixes every page
+ * at once, is reversible by deleting one import, and cannot alter behaviour.
+ *
+ * WHY !important
+ * --------------
+ * Inline `style={{...}}` beats any selector on specificity, so a stylesheet
+ * cannot override it without !important. That is a deliberate, contained
+ * trade-off: the rules below are scoped to `.admin-dark` and touch only
+ * colours — never layout, size, or spacing.
+ *
+ * WHAT IS DELIBERATELY NOT TOUCHED
+ * --------------------------------
+ * Saturated colours are left alone: status pills, chart series, the green/red
+ * of a positive or negative number, brand buttons. Those carry MEANING, and
+ * flattening them to grey would make the pages harder to read, not easier.
+ * Only near-white surfaces and near-black text are remapped.
+ */
+
+/* ── Surfaces ──
+   Any near-white background becomes a themed surface. The attribute selectors
+   match the inline values actually present in the admin pages (#fff, #ffffff,
+   white, and the very light greys used for panels and table stripes). */
+.admin-dark [style*="background: #fff"],
+.admin-dark [style*="background:#fff"],
+.admin-dark [style*="background: white"],
+.admin-dark [style*="background:white"],
+.admin-dark [style*="background-color: #fff"],
+.admin-dark [style*="background-color:#fff"],
+.admin-dark [style*="background-color: white"],
+.admin-dark [style*="background-color:white"],
+.admin-dark [style*="background: rgb(255, 255, 255)"],
+.admin-dark [style*="background-color: rgb(255, 255, 255)"] {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+
+/* Very light greys — panels, table stripes, inset wells. One step up from the
+   card surface so nesting stays visible. */
+.admin-dark [style*="#f8fafc"],
+.admin-dark [style*="#f9fafb"],
+.admin-dark [style*="#f8fff8"],
+.admin-dark [style*="#f8fffa"],
+.admin-dark [style*="#f1f5f9"],
+.admin-dark [style*="#f3f4f6"],
+.admin-dark [style*="#f5f5f5"],
+.admin-dark [style*="#fafafa"],
+.admin-dark [style*="#eee"],
+.admin-dark [style*="#e5e7eb"] {
+  background: var(--color-surface-2) !important;
+  color: var(--color-text) !important;
+}
+
+/* ── Text ──
+   Near-black text was chosen for white cards and is now invisible. Remapped to
+   the theme's text colour. Mid-greys become the muted tone so the visual
+   hierarchy the page was designed with survives. */
+.admin-dark [style*="color: #000"],
+.admin-dark [style*="color:#000"],
+.admin-dark [style*="color: black"],
+.admin-dark [style*="color:black"],
+.admin-dark [style*="color: #111"],
+.admin-dark [style*="color:#111"],
+.admin-dark [style*="color: #1f2937"],
+.admin-dark [style*="color: #222"],
+.admin-dark [style*="color:#222"],
+.admin-dark [style*="color: #333"],
+.admin-dark [style*="color:#333"] {
+  color: var(--color-text) !important;
+}
+
+.admin-dark [style*="color: #555"],
+.admin-dark [style*="color: #666"],
+.admin-dark [style*="color:#666"],
+.admin-dark [style*="color: #777"],
+.admin-dark [style*="color: #888"],
+.admin-dark [style*="color: #6b7280"],
+.admin-dark [style*="color: #4b5563"],
+.admin-dark [style*="color: #374151"] {
+  color: var(--color-text-muted) !important;
+}
+
+/* ── Form controls ──
+   Browsers paint these white by default regardless of the page, so they need
+   explicit treatment rather than an override of an inline value. This is the
+   part that makes admin forms usable: a dark dropdown whose options render on
+   the OS default white with white text is unreadable. */
+.admin-dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+.admin-dark select,
+.admin-dark textarea {
+  background: var(--color-surface-2) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.admin-dark input::placeholder,
+.admin-dark textarea::placeholder {
+  color: var(--color-text-faint) !important;
+}
+
+/* The dropdown LIST. Rendered by the OS, so it does not inherit from <select>:
+   without this the menu stays white while the closed control is dark. */
+.admin-dark select option,
+.admin-dark datalist option {
+  background: var(--color-surface-2) !important;
+  color: var(--color-text) !important;
+}
+
+.admin-dark input:focus,
+.admin-dark select:focus,
+.admin-dark textarea:focus {
+  outline: none !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 3px var(--color-accent-a20) !important;
+}
+
+/* Date/time pickers ship a dark-on-white calendar glyph that vanishes on a dark
+   field. `invert` is the standard fix — Chromium exposes no colour property. */
+.admin-dark input[type="date"]::-webkit-calendar-picker-indicator,
+.admin-dark input[type="time"]::-webkit-calendar-picker-indicator,
+.admin-dark input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.admin-dark input[type="month"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) !important;
+  opacity: 0.75;
+}
+
+/* Tell the browser this is a dark UI so it themes scrollbars, autofill and any
+   control not covered above. */
+.admin-dark {
+  color-scheme: dark;
+}
+
+/* ── Tables ──
+   Header rows and cell borders were drawn for a white page. */
+.admin-dark th {
+  background: var(--color-surface-2) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+
+.admin-dark td {
+  border-color: var(--color-border) !important;
+}
+
+/* ── Hairlines ──
+   Light-grey borders disappear against a dark card; the themed border keeps the
+   same separation the layout was designed around. */
+.admin-dark [style*="border: 1px solid #ddd"],
+.admin-dark [style*="border:1px solid #ddd"],
+.admin-dark [style*="border: 1px solid #e5e7eb"],
+.admin-dark [style*="border: 1px solid #eee"],
+.admin-dark [style*="border: 1px solid #ccc"],
+.admin-dark [style*="border:1px solid #ccc"],
+.admin-dark [style*="border: 1px solid #d1d5db"] {
+  border-color: var(--color-border) !important;
+}

@@ -210,12 +210,19 @@ function RemoteAudio({ participants }) {
         // hear the coach, fixed by rejoining" report. Staying mounted across the
         // mute lets the element recover on its own.
         .filter((p) => !p.isLocal && (p.audioTrackRaw || p.audioTrack))
-        .map((p) => <RemoteAudioTrack key={p.identity} track={p.audioTrackRaw || p.audioTrack} />)}
+        .map((p) => (
+          <RemoteAudioTrack
+            key={p.identity}
+            track={p.audioTrackRaw || p.audioTrack}
+            audioPub={p.audioPub}
+            who={p.name || p.identity}
+          />
+        ))}
     </div>
   );
 }
 
-function RemoteAudioTrack({ track }) {
+function RemoteAudioTrack({ track, audioPub, who }) {
   const ref = useRef(null);
   useEffect(() => {
     const el = ref.current;
@@ -238,19 +245,57 @@ function RemoteAudioTrack({ track }) {
       off = () => { try { track.off?.('unmuted', doAttach); } catch { /* */ } };
     } catch { /* older livekit — best effort */ }
 
-    // Recovery net: if the element ended up with no stream (a race on join, or a
-    // subscription that landed late), re-attach. Two checks, then it stops.
-    const recheck = [500, 2000].map(ms => setTimeout(() => {
-      if (el.isConnected && !el.srcObject) doAttach();
-    }, ms));
+    // HEALTH MONITOR — runs for the LIFE of the element.
+    //
+    // This replaces a two-shot recovery net ([500, 2000] then nothing), which
+    // only ever covered a bad JOIN. Audio that died LATER in the lesson — a
+    // subscription dropped after a wifi blip, a decoder that stalled, a
+    // renegotiation that silently killed the stream — had nothing watching it,
+    // and no way back short of rejoining. That is the "I could not hear the
+    // student for most of the class" report.
+    //
+    // Video already had exactly this watchdog; audio never got it. The checks
+    // mirror that one:
+    //
+    //   * srcObject missing or empty  -> the element lost its stream
+    //   * element paused              -> playback stopped (autoplay, or a stall)
+    //   * publication not subscribed  -> the SFU stopped sending; re-request it
+    //
+    // Deliberately NOT judged on audio levels. A silent student is normal, and
+    // treating quiet as broken would re-attach constantly during a lesson where
+    // one person is talking. Only structural failures are repaired.
+    let repairs = 0;
+    const watchdog = setInterval(() => {
+      if (!el.isConnected) return;               // unmounted — cleanup will clear
+      try {
+        // 1. Subscription lost. adaptiveStream and reconnects can both drop it,
+        //    and audio has no video element whose visibility would bring it
+        //    back, so nothing else would ever re-request it.
+        if (audioPub && audioPub.isSubscribed === false && typeof audioPub.setSubscribed === 'function') {
+          audioPub.setSubscribed(true);
+        }
+        // 2. Element lost its stream, or was left paused.
+        const stream = el.srcObject;
+        const dead = !stream || (stream.getAudioTracks?.().length ?? 0) === 0;
+        if (dead || el.paused) {
+          repairs++;
+          // Back off after the first few: a legitimately muted speaker can sit
+          // paused for a whole lesson, and re-attaching every 2s for everyone in
+          // a large class is pointless work.
+          if (repairs <= 5 || repairs % 30 === 0) doAttach();
+        } else {
+          repairs = 0;
+        }
+      } catch { /* never let diagnostics break a class */ }
+    }, 2000);
 
     return () => {
       off();
-      recheck.forEach(clearTimeout);
+      clearInterval(watchdog);
       try { track.detach(el); } catch { /* ignore */ }
     };
-  }, [track]);
-  return <audio ref={ref} autoPlay playsInline />;
+  }, [track, audioPub]);
+  return <audio ref={ref} autoPlay playsInline data-remoteaudio={who || 'unknown'} />;
 }
 
 // never your own, to avoid echo).
@@ -544,29 +589,66 @@ function MediaTile({ track, rawTrack, videoPub, muted, micOff, label, isScreen, 
       {track
         ? (
           <>
-            <video ref={ref} data-selfview={local ? "1" : undefined} autoPlay playsInline muted={muted} style={{ width: '100%', height: '100%', objectFit: 'cover', transform: (local && !isScreen) ? 'scaleX(-1)' : 'none' }} />
-            {/* The video is there but showing nothing. Offer the repair ON TOP of
-                it — this is the case students actually hit, and previously the
-                button was unreachable here because it lived only in the branch
-                where no track exists at all. */}
-            {local && blackTile && onFixVideo && !isScreen && (
+            {/* data-remotetile lets the diagnostics sweep below find OTHER
+                people's tiles. Only the self-view was tagged, so a student who
+                went black FOR THE COACH — the case that actually gets reported —
+                produced no telemetry at all: the reporter had no element to
+                measure. data-black is written by the watchdog so the sweep can
+                report the tiles already known to be stalled. */}
+            <video
+              ref={ref}
+              data-selfview={local ? "1" : undefined}
+              data-remotetile={!local && !isScreen ? (label || 'unknown') : undefined}
+              data-black={!local && blackTile ? "1" : undefined}
+              autoPlay playsInline muted={muted}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', transform: (local && !isScreen) ? 'scaleX(-1)' : 'none' }}
+            />
+            {/* The video is there but showing nothing. Say so ON TOP of it —
+                this is the case students actually hit, and previously the
+                message was unreachable here because it lived only in the branch
+                where no track exists at all.
+
+                SHOWN FOR REMOTE TILES TOO. This used to require `local`, so a
+                black tile was announced only on your own video: watching
+                somebody ELSE go black — the common case, and the one people
+                report — gave a plain black rectangle with no explanation. The
+                watchdog above was already detecting it and repairing silently,
+                so the viewer had no way to tell a broken tile from a camera
+                pointed at a dark room, and no reason to believe anything was
+                being done about it.
+
+                The BUTTON stays local-only: onFixVideo republishes your own
+                camera, which does nothing for someone else's tile (it is passed
+                as undefined for remote participants anyway). A remote viewer
+                gets the diagnosis and the reassurance that a retry is running;
+                the person who can actually fix it gets the button. */}
+            {blackTile && !isScreen && (
               <div style={{
                 position: 'absolute', inset: 0, display: 'grid', placeItems: 'center',
                 gap: 8, background: 'rgba(0,0,0,0.72)',
               }}>
-                <div style={{ fontSize: 12, color: '#facc15', fontWeight: 700 }}>
-                  Your video is not showing
+                <div style={{ fontSize: 12, color: '#facc15', fontWeight: 700, textAlign: 'center', padding: '0 8px' }}>
+                  {local ? 'Your video is not showing' : `${label || 'This student'}'s video is not showing`}
                 </div>
-                <button
-                  onClick={onFixVideo}
-                  style={{
-                    background: '#facc15', color: '#111', border: 'none',
-                    borderRadius: 'var(--radius-md)', padding: '6px 12px', fontSize: 12,
-                    fontWeight: 800, cursor: 'pointer',
-                  }}
-                >
-                  🔄 Fix my video
-                </button>
+                {local && onFixVideo ? (
+                  <button
+                    onClick={onFixVideo}
+                    style={{
+                      background: '#facc15', color: '#111', border: 'none',
+                      borderRadius: 'var(--radius-md)', padding: '6px 12px', fontSize: 12,
+                      fontWeight: 800, cursor: 'pointer',
+                    }}
+                  >
+                    🔄 Fix my video
+                  </button>
+                ) : (
+                  // Nothing for the viewer to press — the repair is automatic and
+                  // viewer-side. Saying so stops the coach chasing a child to
+                  // reload mid-lesson for something already being retried.
+                  <div style={{ fontSize: 10.5, color: '#e5e7eb', opacity: 0.85 }}>
+                    Reconnecting…
+                  </div>
+                )}
               </div>
             )}
           </>
@@ -3396,6 +3478,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   useEffect(() => {
     if (!session?.id) return;
     let lastSent = 0;
+    let lastRemoteSent = 0;      // remote-tile reports are rate-limited separately
+    let lastAudioSent = 0;       // as are remote-audio reports
     const id = setInterval(async () => {
       try {
         const lkNow = lkRef.current;
@@ -3416,6 +3500,68 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           });
         } catch { /* stats unavailable */ }
 
+        // ── REMOTE AUDIO ──
+        //
+        // Audio had NO telemetry at all: camera-report carries only video
+        // fields, so "I could not hear the student" left nothing in any log and
+        // could only ever be guessed at. Reported on the same structural signals
+        // the audio watchdog repairs on — never on volume, since a quiet student
+        // is normal and would flood this with false alarms.
+        try {
+          const auds = document.querySelectorAll('audio[data-remoteaudio]');
+          const bad = [];
+          auds.forEach((a) => {
+            const whoA = a.getAttribute('data-remoteaudio') || 'unknown';
+            const st = a.srcObject;
+            const noStream = !st || (st.getAudioTracks?.().length ?? 0) === 0;
+            // `muted` here means the ELEMENT was muted, which should never
+            // happen — it would silence a student with everything else healthy.
+            if (noStream) bad.push(`${whoA}:nostream`);
+            else if (a.paused) bad.push(`${whoA}:paused`);
+            else if (a.muted) bad.push(`${whoA}:elmuted`);
+          });
+          if (bad.length && Date.now() - lastAudioSent > 15000) {
+            lastAudioSent = Date.now();
+            api.post(`/api/coach-live/sessions/${session.id}/camera-report`, {
+              state: { isHost, audioBad: bad.join(','), audioCount: auds.length },
+            }).catch(() => {});
+          }
+        } catch { /* diagnostics must never disturb a class */ }
+
+        // ── REMOTE TILES ──
+        //
+        // Runs BEFORE the self-view early-return below, which is the point: a
+        // healthy local camera used to `return` and skip everything, so the
+        // common complaint — "I can see myself fine, but THAT student's tile is
+        // black" — produced no telemetry whatsoever. Judged on the same signal
+        // the watchdog uses (a media clock that stops advancing), not on
+        // videoWidth, which a frozen picture keeps forever.
+        try {
+          const remotes = document.querySelectorAll('video[data-remotetile]');
+          const prev = window.__rtDiag || (window.__rtDiag = {});
+          const stalled = [];
+          remotes.forEach((rv) => {
+            const who = rv.getAttribute('data-remotetile') || 'unknown';
+            const t = rv.currentTime;
+            const was = prev[who];
+            prev[who] = t;
+            // No previous sample yet — nothing to compare, wait for the next tick.
+            if (was === undefined) return;
+            const advancing = t > was;
+            if (!advancing || rv.videoWidth === 0) {
+              stalled.push(`${who}:${rv.videoWidth === 0 ? 'nosize' : 'frozen'}${rv.dataset.black === '1' ? ':flagged' : ''}`);
+            }
+          });
+          if (stalled.length && Date.now() - lastRemoteSent > 15000) {
+            lastRemoteSent = Date.now();
+            api.post(`/api/coach-live/sessions/${session.id}/camera-report`, {
+              state: {
+                isHost, remoteStalled: stalled.join(','), remoteCount: remotes.length,
+              },
+            }).catch(() => {});
+          }
+        } catch { /* diagnostics must never disturb a class */ }
+
         const el = document.querySelector('video[data-selfview="1"]');
         const videoWidth = el?.videoWidth ?? null;
         const d = window.__svDiag || { mounts: 0, attaches: 0, trackIds: [] };
@@ -3428,6 +3574,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         if (!broken && !churning) return;
         if (Date.now() - lastSent < 10000) return;   // at most one line per 10s
         lastSent = Date.now();
+        // SNAPSHOT BEFORE RESETTING. `d` is a REFERENCE to window.__svDiag, not
+        // a copy, so zeroing those fields here and reading d.mounts/d.attaches
+        // in the payload below reported 0 every time — including when churning
+        // was the very condition that triggered the report. The diagnostic was
+        // erasing the evidence it exists to capture.
+        const snap = {
+          mounts: d.mounts,
+          attaches: d.attaches,
+          trackSwaps: Math.max(0, d.trackIds.length - 1),
+        };
         // Reset so the next line reports the delta, not a running total.
         if (window.__svDiag) { window.__svDiag.mounts = 0; window.__svDiag.attaches = 0; window.__svDiag.trackIds = []; }
 
@@ -3438,8 +3594,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             black: videoWidth === 0,
             // How many times the self-view remounted / re-attached / swapped
             // camera track since the last report. Steady picture => all ~0.
-            svMounts: d.mounts, svAttaches: d.attaches,
-            svTrackSwaps: Math.max(0, d.trackIds.length - 1),
+            // From the snapshot taken BEFORE the reset above — reading the live
+            // object here always reported 0.
+            svMounts: snap.mounts, svAttaches: snap.attaches,
+            svTrackSwaps: snap.trackSwaps,
             deviceLabel: raw?.label || '',
           },
         }).catch(() => {});
