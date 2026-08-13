@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import ReactConfetti from 'react-confetti';
 import api, { resolveApiAssetUrl } from '../api';
 import AskCoachPanel from '../components/AskCoachPanel';
+import ThemeScope from '../components/ThemeScope';
 import { trackEvent } from '../lib/analytics';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import './UserDashboard.css';
@@ -1278,6 +1279,10 @@ export default function UserDashboard() {
     localStorage.setItem('dashboardTab', t);
   };
   const [publicView, setPublicView] = useState(null); // when viewing another user's profile: { activity, trainingStats, arenaSummary }
+  // The profile owner's app theme, so their profile renders in their colours
+  // for whoever opens it. null until the fetch lands, and for owners who never
+  // picked one — ThemeScope treats null as "use the viewer's theme".
+  const [profileThemeId, setProfileThemeId] = useState(null);
   // Edit profile modal
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [editCountry, setEditCountry] = useState('');
@@ -1382,6 +1387,7 @@ export default function UserDashboard() {
             enrolled: false, // never show student attendance on public profile
           });
           setBadges(data.badges || []);
+          setProfileThemeId(data.uiTheme || null);
           setPublicView({
             activity: data.activity || { activeDates: [], stats: { totalDays: 0, currentStreak: 0, totalMinutes: 0 } },
             trainingStats: data.trainingStats || { correct: 0, wrong: 0 },
@@ -1509,6 +1515,19 @@ export default function UserDashboard() {
   }
 
   return (
+    // A profile is shown in ITS OWNER'S theme, for everyone who opens it —
+    // the owner and any visitor alike. Cards, buttons and badges follow
+    // because they read --color-* tokens rather than fixed colours.
+    //
+    // Only in public-profile view (`/player/:name`). The signed-in dashboard is
+    // your own app and stays in your own theme. Scoped to this container rather
+    // than <html> so a visitor's sidebar keeps their colours: visiting a gold
+    // profile should not make someone think their own settings changed.
+    //
+    // profileThemeId is null until the fetch lands, and ThemeScope renders a
+    // passthrough for null — so the page paints in the viewer's theme first and
+    // adopts the owner's once known, never flashing an unrelated palette.
+    <ThemeScope themeId={isPublicView ? profileThemeId : null}>
     <div className="dashboard-container">
       <style>{`
         @keyframes bounce { 0%,20%,50%,80%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-5px);} }
@@ -2177,5 +2196,6 @@ export default function UserDashboard() {
 
       </div>
     </div>
+    </ThemeScope>
   );
 }

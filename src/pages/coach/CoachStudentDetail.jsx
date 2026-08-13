@@ -813,9 +813,11 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
                   aria-label={`Practice minutes per day over the last ${activity.length} days`}
                 >
                   <defs>
+                    {/* Follows the theme — was the old brand cyan hardcoded,
+                        which left this chart cyan in every theme. */}
                     <linearGradient id="csdFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.34" />
-                      <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
+                      <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.34" />
+                      <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
                     </linearGradient>
                   </defs>
                   {(() => {

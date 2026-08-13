@@ -1,19 +1,22 @@
 // AppThemePanel — the App Theme picker in Settings.
 //
-// THREE FREE, THREE EARNED. Obsidian Glass, Midnight Cyan and Deep Ember are
+// THREE FREE, SIX EARNED. Obsidian Glass, Midnight Cyan and Deep Ember are
 // free for everyone — one pure black, one cool, one warm, so a user who never
-// spends XP still has a real choice. The other three cost XP.
+// spends XP still has a real choice. The other six cost XP.
 //
-// The split is 3/3 rather than 1/5 because all six shipped free and users are
-// already choosing them: locking five would take a theme away from most of the
-// people who had picked one. Three leaves a genuine free choice while still
-// giving XP something worth earning.
+// The free three are fixed at three because the original six all shipped free
+// and users are already choosing them: locking more would take a theme away
+// from people who had picked one. Themes added since (Obsidian Emerald, Royal
+// Violet, Gold Sovereign) were never free, so making them paid takes nothing
+// from anyone and keeps XP worth earning past the first three unlocks.
 //
 // Admins, elites and active supporters see every theme unlocked, matching the
 // server rule in backend/helpers/privileged.js.
 import React, { useCallback, useEffect, useState } from 'react';
 import api from '../api';
 import { useUiTheme } from '../contexts/UiThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import { hasExplicitBoardChoice } from '../contexts/BoardThemeContext';
 
 // Mirrors FREE_THEME_IDS in backend/models/ThemeUnlock.js. Only used when the
 // server cannot be reached — the real list comes from GET /api/auth/themes, and
@@ -22,6 +25,26 @@ const FREE_FALLBACK = ['obsidianGlass', 'midnightCyan', 'deepEmber'];
 
 export default function AppThemePanel() {
   const { themeId: activeId, themes, setThemeId } = useUiTheme();
+  const { user } = useAuth();
+  const userId = user?._id || user?.id || null;
+
+  // Whether this user is still on the untouched default board — i.e. whether
+  // picking a theme will also set the matching board.
+  //
+  // Resolved once per user rather than continuously: choosing a theme in this
+  // panel flips it to false, and having the note vanish mid-interaction would
+  // read as a glitch. It is guidance, not state the UI depends on.
+  //
+  // Starts null because on first render `userId` is still null while auth
+  // resolves, and checking then would read the GUEST key and answer for the
+  // wrong account. The effect below settles it once the real id arrives.
+  const [boardUntouched, setBoardUntouched] = useState(null);
+  const boardChecked = React.useRef(false);
+  useEffect(() => {
+    if (!userId || boardChecked.current) return;
+    boardChecked.current = true;
+    setBoardUntouched(!hasExplicitBoardChoice(userId));
+  }, [userId]);
 
   const [owned, setOwned] = useState(null);      // Set of ids, null while loading
   const [price, setPrice] = useState(1000);
@@ -86,7 +109,8 @@ export default function AppThemePanel() {
           <h2 style={S.h2}>✨ App Theme</h2>
           <p style={S.sub}>
             Changes the colours of the whole app. Sizes and layout stay the same —
-            only the palette changes. Your choice is saved to this account.
+            only the palette changes. Your choice is saved to this account, and
+            your profile is shown in it to anyone who visits.
           </p>
         </div>
         {!privileged && owned && (
@@ -113,7 +137,7 @@ export default function AppThemePanel() {
               boxShadow: active ? 'var(--accent-glow)' : 'none',
             }}>
               {/* Swatch: a miniature drawn in the theme's OWN colours, not the
-                  active ones, so all six are comparable without switching to
+                  active ones, so they are all comparable without switching to
                   each in turn. Dimmed while locked. */}
               <button
                 type="button"
@@ -175,6 +199,17 @@ export default function AppThemePanel() {
         })}
       </div>
 
+      {/* Shown only while the board is still untouched, because that is exactly
+          when picking a theme will change it. Once the user has chosen a board
+          the pairing no longer applies to them, and the note would be a lie. */}
+      {boardUntouched && (
+        <p style={S.boardNote}>
+          ♟ Each theme comes with a matching chessboard. You can change the board
+          any time in <strong>Board Colours</strong> — after that it stays yours,
+          whatever theme you pick.
+        </p>
+      )}
+
       {!privileged && (
         <p style={S.foot}>
           Earn XP from puzzles, games, streaks and studies. Each theme unlocks
@@ -235,6 +270,13 @@ const S = {
     background: 'var(--color-accent-a12)',
     color: 'var(--color-accent)',
     fontSize: 12.5, fontWeight: 800, fontFamily: 'inherit',
+  },
+  boardNote: {
+    margin: '18px 0 0', padding: '10px 13px',
+    borderRadius: 'var(--radius-md)',
+    background: 'var(--color-accent-a08)',
+    border: '1px solid var(--color-accent-a20)',
+    color: 'var(--color-text-muted)', fontSize: 12.5, lineHeight: 1.6,
   },
   foot: {
     margin: '18px 0 0', paddingTop: 14,

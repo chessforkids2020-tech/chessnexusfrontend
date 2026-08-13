@@ -1,7 +1,55 @@
 <!doctype html>
-<html lang="en"><head>
+<html lang="en" data-theme="obsidianGlass"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--
+      THEME BOOTSTRAP — must stay here, inline and before any stylesheet.
+
+      NOTE: nothing may be inserted between <!doctype html> and <html>.
+      @vitejs/plugin-react finds its dev preamble by matching on the start of the
+      document, and a comment there makes it fail with "can't detect preamble" —
+      in the DEV SERVER ONLY, so a production build looks perfectly fine. The
+      data-theme default therefore lives on the <html> tag above with no comment
+      attached; this block documents it instead.
+
+      The default on <html> is only a fallback. The script below overwrites it
+      with the signed-in user's saved choice before the first paint.
+
+      React sets data-theme too (see src/contexts/UiThemeContext.jsx), but that
+      only runs after the bundle has downloaded, parsed and mounted. By then the
+      browser has already painted, so a user whose theme is Deep Ember would see
+      a flash of the default cyan first. This script runs synchronously during
+      head parsing, before the first paint, which is the only place the flash can
+      actually be prevented.
+
+      `lastUserId` is written by AppWithTheme in src/App.jsx. It exists because
+      this script cannot wait for the auth check to resolve — it needs to know
+      which uiTheme_<id> key to read while the page is still blank.
+
+      Everything is wrapped in try/catch: localStorage throws in some privacy
+      modes and inside sandboxed iframes, and a theme preference must never be
+      able to stop the page loading. The id is validated against the known list
+      so a stale or hand-edited value cannot select a palette that no longer
+      exists (which would leave the app with no colours at all).
+    -->
+    <script>
+      (function () {
+        try {
+          var VALID = ['obsidianGlass', 'midnightCyan', 'slateBlueSteel',
+                       'deepEmber', 'purpleHaze', 'obsidianRose',
+                       'obsidianEmerald', 'royalViolet', 'goldSovereign'];
+          var uid = localStorage.getItem('lastUserId');
+          var key = uid ? 'uiTheme_' + uid : 'uiTheme_guest';
+          var saved = localStorage.getItem(key);
+          if (saved && VALID.indexOf(saved) !== -1) {
+            document.documentElement.setAttribute('data-theme', saved);
+          }
+        } catch (e) {
+          /* keep the default already on <html> */
+        }
+      })();
+    </script>
 
     <!--
       Per-page SEO tags (title, description, keywords, canonical, robots,
@@ -143,8 +191,8 @@
       ]
     }
     </script>
-    <script type="module" crossorigin="" src="/assets/index-BEg-3Xb4.js"></script>
-    <link rel="stylesheet" crossorigin="" href="/assets/index-BFljTuMa.css">
+    <script type="module" crossorigin="" src="/assets/index-C-849JB5.js"></script>
+    <link rel="stylesheet" crossorigin="" href="/assets/index-dq1PSlGR.css">
   <style data-shake-animation="true">
 @keyframes shake {
   0%, 100% { transform: translateX(0); }

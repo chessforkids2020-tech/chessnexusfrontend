@@ -1,6 +1,6 @@
 /* styles/tokens/themes.css
  *
- * THE SIX COLOUR THEMES. Colour only — no sizes, no spacing. Layout lives in
+ * THE NINE COLOUR THEMES. Colour only — no sizes, no spacing. Layout lives in
  * layout.css and is shared by every theme.
  *
  * Selected by a `data-theme` attribute on <html>:
@@ -18,7 +18,7 @@
  *
  * There are ~6,700 rgba() calls in the in-scope code, and most are translucent
  * accents: rgba(6,182,212,0.15) borders, glows and hover washes. If a theme only
- * declared opaque colours, every one of those would stay cyan in all six themes
+ * declared opaque colours, every one of those would stay cyan in all nine themes
  * and the feature would visibly half-work.
  *
  * So each theme declares its accent as a space-separated RGB triplet, and the
@@ -32,10 +32,16 @@
  *
  * obsidianGlass was supplied with six keys the others lacked (sidebarBg,
  * borderSubtle, shadowSoft, hover, active, accentGlow). Rather than special-case
- * it, all six themes declare the full key set — the extras get sensible derived
+ * it, all nine themes declare the full key set — the extras get sensible derived
  * defaults elsewhere. This means no consumer ever has to ask which theme is
  * active, and a missing key can never silently render as an invalid value.
- * A unit test asserts the six blocks stay in sync.
+ * A unit test asserts the nine blocks stay in sync.
+ *
+ * Themes supplied as --color-* hexes (as Obsidian Emerald, Royal Violet and
+ * Gold Sovereign were) must be TRANSLATED to the raw keys before being added.
+ * --color-* is the derived layer built in :root at the foot of this file; a
+ * palette block that declares it directly bypasses that derivation and takes
+ * every alpha step down with it.
  */
 
 /* ════════════════════════════════════════════════════════════════════════
@@ -201,6 +207,81 @@ html {
   --board-light: #b67294;
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   7. OBSIDIAN EMERALD — deep black with rich emerald. Serious, premium.
+
+   Supplied as --color-bg/--color-accent hexes and translated to the raw key
+   set above. That translation is required, not stylistic: --color-* are
+   DERIVED in the :root block below, and an accent declared here as a hex
+   would make every rgb(var(--accent-rgb) / …) step compute to an invalid
+   value — silently dropping ~6,700 translucent borders, glows and washes.
+   ════════════════════════════════════════════════════════════════════════ */
+[data-theme="obsidianEmerald"] {
+  --accent-rgb: 16 185 129;      /* #10B981 */
+  --accent-2-rgb: 52 211 153;    /* #34D399 — supplied as accent-strong */
+  --success-rgb: 52 211 153;
+  --warning-rgb: 251 191 36;
+  --danger-rgb: 248 113 113;
+
+  --bg: #0B0F0E;
+  --surface: #121817;
+  /* One step above --surface. The palette supplied a single elevated colour
+     for both; this file needs two distinct levels, so surface-2 is lifted
+     by the same amount the other six themes use between their two steps. */
+  --surface-2: #1a2220;
+  --sidebar-bg: #090c0b;
+
+  --text: #E6EDEB;
+  --text-muted: #9AA8A3;
+
+  --board-dark: #1F2926;         /* supplied as --color-border */
+  --board-light: #6b9184;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   8. ROYAL VIOLET — very dark violet with refined purple. Luxury, gaming.
+   ════════════════════════════════════════════════════════════════════════ */
+[data-theme="royalViolet"] {
+  --accent-rgb: 139 92 246;      /* #8B5CF6 */
+  --accent-2-rgb: 124 58 237;    /* #7C3AED */
+  --success-rgb: 52 211 153;
+  --warning-rgb: 251 191 36;
+  --danger-rgb: 248 113 113;
+
+  --bg: #0F0A1F;
+  --surface: #1A1133;
+  --surface-2: #241845;
+  --sidebar-bg: #0c0819;
+
+  --text: #F0ECFF;
+  --text-muted: #B8AED9;
+
+  --board-dark: #2A1F45;
+  --board-light: #8272b8;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   9. GOLD SOVEREIGN — black with muted gold. Prestigious, chess-like.
+   ════════════════════════════════════════════════════════════════════════ */
+[data-theme="goldSovereign"] {
+  --accent-rgb: 198 168 124;     /* #C6A87C */
+  --accent-2-rgb: 212 185 138;   /* #D4B98A */
+  --success-rgb: 52 211 153;
+  --warning-rgb: 251 191 36;
+  --danger-rgb: 248 113 113;
+
+  --bg: #0A0A0C;
+  --surface: #111114;
+  --surface-2: #1a1a1e;
+  --sidebar-bg: #08080a;
+
+  --text: #EDEBE6;
+  --text-muted: #B8B5AD;
+
+  --board-dark: #222226;
+  --board-light: #a08e6b;
+}
+
 
 /* ════════════════════════════════════════════════════════════════════════
    DERIVED TOKENS — written once, correct for every theme.
@@ -209,8 +290,27 @@ html {
    application actually consumes: page code should use --color-* and never the
    raw --accent-rgb / --bg / --surface values, so that the derivation stays in
    one place.
+
+   WHY `.theme-scope` IS IN THIS SELECTOR
+   --------------------------------------
+   Custom properties inherit, but they are RESOLVED where they are DECLARED.
+   With the derivation living only in :root, putting data-theme on an inner
+   element sets that element's raw keys (--bg, --accent-rgb) and nothing else:
+   --color-accent was already computed against :root's palette and inherits
+   down as a finished value. The subtree keeps the ROOT theme's colours and the
+   nested data-theme silently does nothing.
+
+   Repeating the block for .theme-scope re-derives every --color-* INSIDE that
+   element, against the palette that element declares. That is what lets a
+   public profile render in its OWNER's theme while the surrounding app stays
+   in the viewer's own — see components/ThemeScope.jsx.
+
+   The two selectors must stay identical in content. A token added to :root and
+   forgotten here would resolve everywhere EXCEPT inside a theme scope, which
+   is the kind of bug that only shows up on one page.
    ════════════════════════════════════════════════════════════════════════ */
-:root {
+:root,
+.theme-scope {
   /* NOTE: no palette values here. The fallback lives in the `html` block at the
      top of this file, where its lower specificity lets every theme override it.
      Declaring it in :root would tie with the [data-theme] blocks and, coming
@@ -344,4 +444,27 @@ html {
   --sidebar-wash-1: transparent;
   --sidebar-wash-2: transparent;
   --sidebar-edge: var(--color-white-a07);
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   THEME SCOPE
+
+   A subtree painted in a theme other than the viewer's — a public profile
+   shown in its owner's colours. The token re-derivation is handled by
+   `.theme-scope` appearing in the big :root selector above; all this rule
+   does is PAINT.
+
+   The paint is necessary: at :root the page background comes from a
+   body/#root rule elsewhere in the app, which a nested element does not get.
+   Without it the scope would inherit the viewer's background and only the
+   accents inside would change — half-themed and worse than not doing it.
+
+   `isolation` keeps the scope's own stacking context, so a themed glow or
+   shadow inside cannot paint over the surrounding app chrome.
+   ════════════════════════════════════════════════════════════════════════ */
+.theme-scope {
+  background: var(--color-bg);
+  color: var(--color-text);
+  isolation: isolate;
 }

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import api from '../api';
 
 // 12 piece themes — index 0 is the default (mpchess-pieces)
 // Piece files follow the convention: {prefix}/{piece}.svg
@@ -116,11 +117,60 @@ export function PieceThemeProvider({ children, userId }) {
     setPieceTheme(DEFAULT_PIECE_THEME);
   }, [userId]);
 
+  // RECONCILE LOCAL AND ACCOUNT, once per signed-in user.
+  //
+  // The piece set was localStorage-only, so a second device silently showed the
+  // default MPChess pieces — which reads as the app having forgotten a setting
+  // rather than as a cold cache. Same exchange as the board and app theme:
+  //
+  //   nothing stored here  -> adopt the account's set (new device)
+  //   stored here, none on the account -> push it up (existing user)
+  //
+  // Local wins when both exist: it is what the user is looking at right now.
+  // Pushing unconditionally would let a cold browser overwrite a real choice
+  // with the default, which is the bug this is meant to prevent.
+  useEffect(() => {
+    if (!userId) return;
+    let alive = true;
+
+    let localChoice = null;
+    try { localChoice = localStorage.getItem(storageKey(userId)); } catch { /* ignore */ }
+
+    if (localChoice) {
+      api.post('/api/auth/appearance', { pieceTheme: localChoice })
+        .catch(() => { /* offline — retried next session */ });
+      return undefined;
+    }
+
+    api.get('/api/auth/board-colors')          // returns pieceTheme too
+      .then(res => {
+        if (!alive) return;
+        const serverId = res?.data?.pieceTheme;
+        if (!serverId) return;                 // never picked one anywhere
+        const found = PIECE_THEMES.find(t => t.id === serverId);
+        if (!found) return;                    // unknown id from a newer build
+        // Re-check nothing was chosen while the request was in flight, so a
+        // user who picked a set meanwhile is not yanked back.
+        try { if (localStorage.getItem(storageKey(userId))) return; } catch { /* ignore */ }
+        setPieceTheme(found);
+        try { localStorage.setItem(storageKey(userId), serverId); } catch { /* ignore */ }
+      })
+      .catch(() => { /* offline — default set stands for this session */ });
+
+    return () => { alive = false; };
+  }, [userId]);
+
   const setPieceThemeById = useCallback((id) => {
     const found = PIECE_THEMES.find(t => t.id === id);
     if (!found) return;
     setPieceTheme(found);
     try { localStorage.setItem(storageKey(userId), id); } catch { /* ignore */ }
+    // Mirror to the account so another device restores it. Fire-and-forget:
+    // the change must be instant and must still work signed out or offline.
+    if (userId) {
+      api.post('/api/auth/appearance', { pieceTheme: id })
+        .catch(() => { /* offline — local choice already applied */ });
+    }
   }, [userId]);
 
   // Convenience: returns the full path for a given piece code (e.g. 'wN', 'bK')

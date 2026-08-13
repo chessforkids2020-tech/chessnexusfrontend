@@ -134,14 +134,25 @@ function LineChart({ points, yMax, labels, compact = false }) {
 
   return (
     <svg className="at-chart-svg" viewBox={`0 0 ${width} ${height}`} width="100%" aria-hidden="true">
+      {/* Gradient stops follow the theme. These were the old brand colours
+          (#06b6d4 → #10b981) hardcoded, which left the line cyan-to-green in
+          every theme while the gridlines and dots around it — already on
+          tokens — changed. The result looked like the theme half-applied.
+
+          `var()` works here because SVG gradient stops are real DOM elements
+          and take the CSS cascade. That is NOT true of a <canvas> chart, which
+          is why Chart.js needs lib/chartTheme.js to resolve tokens in JS. */}
       <defs>
         <linearGradient id="at-line-gradient" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#06b6d4" />
-          <stop offset="100%" stopColor="#10b981" />
+          <stop offset="0%" stopColor="var(--color-accent)" />
+          <stop offset="100%" stopColor="var(--color-accent-2)" />
         </linearGradient>
         <linearGradient id="at-fill-gradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="rgba(6,182,212,0.28)" />
-          <stop offset="100%" stopColor="rgba(16,185,129,0)" />
+          {/* Opaque accent faded by stop-opacity rather than a translucent
+              colour: --color-accent-a30 already carries alpha, and multiplying
+              the two would make the wash nearly invisible. */}
+          <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.28" />
+          <stop offset="100%" stopColor="var(--color-accent-2)" stopOpacity="0" />
         </linearGradient>
       </defs>
 
@@ -186,7 +197,7 @@ function LineChart({ points, yMax, labels, compact = false }) {
             x={xOf(index)}
             y={padTop + chartHeight + 24}
             textAnchor="middle"
-            fill="rgba(219,234,254,0.82)"
+            fill="var(--color-text-muted)"
             fontSize="11"
           >
             {labels[index]}
