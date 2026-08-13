@@ -156,6 +156,49 @@
   color: var(--color-text) !important;
 }
 
+/* ══════════════════════════════════════════════════════════════════════
+   PALE GRADIENT PANELS
+   ──────────────────────────────────────────────────────────────────────
+   The banner panels (User Management, Attendance, Event Submissions) use a
+   two-stop gradient rather than a flat colour, so they survived every rule
+   above and stayed glaring white on the dark page.
+   ──────────────────────────────────────────────────────────────────────
+   The reason is subtle and worth keeping: a gradient serialises with its
+   stops converted but the FUNCTION intact —
+
+       background: linear-gradient(135deg, rgb(240, 249, 255) 0%, ...)
+
+   so [style*="background: rgb(240, 249, 255)"] does NOT match: the value
+   starts with `linear-gradient(`, not with the colour. The stop colour has to
+   be matched where it actually sits, INSIDE the function.
+
+   Replaced with a flat themed surface rather than a dark gradient: at these
+   alphas a two-stop dark gradient is indistinguishable from a flat fill, and
+   flat keeps the panels consistent with every other card.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* Green-ish banners (User Management, and the green pair) */
+.admin-dark [style*="linear-gradient(135deg, rgb(240, 249, 255) 0%, rgb(220, 252, 231)"],
+.admin-dark [style*="linear-gradient(135deg, rgb(238, 247, 238) 0%, rgb(230, 242, 230)"] {
+  background: var(--color-success-a12) !important;
+  border-color: var(--color-success-a30) !important;
+  color: var(--color-text) !important;
+}
+
+/* Amber banner (Attendance Management) */
+.admin-dark [style*="linear-gradient(135deg, rgb(255, 247, 237) 0%, rgb(254, 243, 199)"] {
+  background: var(--color-warning-a12) !important;
+  border-color: var(--color-warning-a30) !important;
+  color: var(--color-text) !important;
+}
+
+/* Neutral banner (Event Submissions) — white into slate. */
+.admin-dark [style*="linear-gradient(135deg, rgb(255, 255, 255) 0%, rgb(248, 250, 252)"] {
+  background: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+}
+
 /* NEAR-BLACK SAFETY NET.
  *
  * The lists below are generated from the hexes found in the sources, which

@@ -1,9 +1,29 @@
 // src/pages/AdminSupporters.jsx
-// Admin view of "Buy Me a Coffee" supporters: who got the ☕ badge, how much
-// they paid, when, the plan duration, when the badge expires, payment provider,
-// and approve/reject controls. Backed by GET /api/coffee/admin/list.
+// Admin view of ChessNexus supporters: who holds which title, how much they
+// paid, when, the plan duration, when the badge expires, payment provider, and
+// approve/reject controls. Backed by GET /api/coffee/admin/list.
+//
+// The API path and the CoffeeSupporter model still say "coffee" — the feature
+// began as Buy Me a Coffee. Only the user-facing wording has moved on;
+// renaming the route and collection is a migration, not a copy change.
+//
+// TITLES ARE NOT ASSIGNED HERE. They are derived from the tier a supporter
+// bought (espresso -> NS, latte -> NX) by CoffeeSupporter.titleFor. Admin-added
+// records are deliberately written with month-based tiers so that comping
+// someone a badge never hands out a paid title.
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+
+// Tier -> what the admin should read. Mirrors TIER_TITLES in
+// backend/models/CoffeeSupporter.js; anything else confers no title (the
+// month-based tiers written by admin/add, and any older record).
+const TITLE_LABEL = (tier) => {
+  const t = String(tier || "").toLowerCase();
+  if (t === "espresso") return "⚔ NS — Nexus Supporter";
+  if (t === "latte") return "👑 NX — Nexus Expert";
+  return `♞ Knight — no title (${tier || "—"})`;
+};
+
 import api from "../api";
 import { useAuth } from "../contexts/AuthContext";
 import { markIdsSeen } from "../utils/adminCoachSeen";
@@ -80,6 +100,11 @@ export default function AdminSupporters() {
   const [summary, setSummary] = useState([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("all");
+  // Filter by the title a supporter holds. Titles are derived from the tier
+  // they bought (espresso -> NS, latte -> NX); "knight" is everyone with no
+  // title — the Black Coffee tier plus admin-comped records, which are written
+  // with month-based tiers precisely so they never confer a paid title.
+  const [title, setTitle] = useState("all");
   const [q, setQ] = useState("");
   const [search, setSearch] = useState(""); // debounced/committed query
   const [page, setPage] = useState(1);
@@ -101,6 +126,7 @@ export default function AdminSupporters() {
     try {
       const params = { page, limit: 50 };
       if (status !== "all") params.status = status;
+      if (title !== "all") params.title = title;
       if (search.trim()) params.q = search.trim();
       const res = await api.get("/api/coffee/admin/list", { params });
       setRows(Array.isArray(res.data?.supporters) ? res.data.supporters : []);
@@ -117,7 +143,7 @@ export default function AdminSupporters() {
     } finally {
       setLoading(false);
     }
-  }, [page, status, search, nav]);
+  }, [page, status, title, search, nav]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -146,7 +172,9 @@ export default function AdminSupporters() {
   };
 
   // Reset to page 1 whenever the filter or search changes.
-  useEffect(() => { setPage(1); }, [status, search]);
+  // Any filter change returns to page 1 — staying on page 4 of a narrower
+  // result set shows an empty table that looks like "no supporters".
+  useEffect(() => { setPage(1); }, [status, title, search]);
 
   const onSearchSubmit = (e) => {
     e.preventDefault();
@@ -178,9 +206,10 @@ export default function AdminSupporters() {
     <div style={styles.page}>
       <div style={styles.header}>
         <div>
-          <h1 style={styles.title}>☕ Coffee Supporters</h1>
+          <h1 style={styles.title}>🛡️ Supporters</h1>
           <p style={styles.subtitle}>
-            Everyone who supported via Buy Me a Coffee — name, amount paid, payment date, plan duration, badge expiry and provider.
+            Everyone who supports ChessNexus — name, title, amount paid, payment
+            date, plan duration, badge expiry and provider.
           </p>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -228,6 +257,15 @@ export default function AdminSupporters() {
           <option value="active">Active</option>
           <option value="pending">Pending</option>
           <option value="rejected">Rejected</option>
+        </select>
+        {/* Title filter. Names and emoji match the public tier list in
+            BuyMeACoffee.jsx, not the internal tier keys (simple/espresso/latte)
+            which mean nothing outside the code. */}
+        <select style={styles.select} value={title} onChange={(e) => setTitle(e.target.value)}>
+          <option value="all">All titles</option>
+          <option value="knight">♞ Knight (no title)</option>
+          <option value="NS">⚔ NS — Nexus Supporter</option>
+          <option value="NX">👑 NX — Nexus Expert</option>
         </select>
         <span style={styles.muted}>{total} record{total === 1 ? "" : "s"}</span>
         <button
@@ -342,7 +380,11 @@ export default function AdminSupporters() {
                   <td style={styles.td}>{fmt(r.paidAt)}</td>
                   <td style={styles.td}>
                     {r.months} month{r.months === 1 ? "" : "s"}
-                    <div style={styles.muted}>{r.tier}</div>
+                    {/* The TITLE this record confers, not the raw tier key.
+                        "espresso" told an admin nothing; NS/NX is the thing
+                        they and the supporter both see. The raw tier is kept
+                        alongside for support queries. */}
+                    <div style={styles.muted}>{TITLE_LABEL(r.tier)}</div>
                   </td>
                   <td style={styles.td}>
                     {fmtDate(r.expiresAt)}
