@@ -2,230 +2,307 @@
  *
  * Repaints the admin pages for the dark app themes.
  *
- * WHY THIS IS A STYLESHEET AND NOT 24 EDITED FILES
- * ------------------------------------------------
- * The admin pages are styled with INLINE styles — over 1300 hardcoded colour
- * literals across 24 files, no shared CSS, no common layout component. When the
- * app-wide root container moved to var(--color-bg) (dark), those pages kept
- * painting white cards, and admin text that had been darkened for a white card
- * ended up white-on-white.
+ * ── THE BUG THAT MADE THE FIRST TWO ATTEMPTS FAIL ──────────────────────────
  *
- * Rewriting all of them by hand is a large, mechanical, error-prone edit across
- * files that also contain live admin logic. A scoped override fixes every page
- * at once, is reversible by deleting one import, and cannot alter behaviour.
+ * REACT DOES NOT PUT HEX IN THE DOM. The admin pages style everything with
+ * inline objects (`style={{ ...styles.card }}`), and React applies those via
+ * `el.style.background = '#fff'`. The browser NORMALISES that, so the attribute
+ * in the live page reads:
  *
- * THE MISTAKE THIS FILE ONCE MADE — read before adding a rule
- * -----------------------------------------------------------
- * The first version mapped EVERY pale background to one neutral grey. The admin
- * pages use pale tints as a colour LANGUAGE — a green panel for success, red
- * for danger, amber for warnings, blue for information — and flattening them
- * all to the same grey made the pages harder to scan than the broken white
- * version they replaced. Grey is not a neutral choice here; it is the deletion
- * of the page's structure.
+ *     style="background: rgb(255, 255, 255); color: rgb(6, 79, 40);"
  *
- * So tints keep their HUE and only change their LIGHTNESS: a pale green panel
- * becomes a dark green panel, not a dark grey one. Only genuinely NEUTRAL
- * surfaces (white and the slate/grey family) become neutral dark.
+ * The literal `#fff` never appears. Selectors written as [style*="#fff"] —
+ * which is what the first two versions of this file used — therefore matched
+ * NOTHING, and the cards stayed white. They appeared to work only because they
+ * were tested against hand-written HTML, where a literal attribute survives
+ * verbatim. Every selector below is generated from the rgb() form instead.
  *
- * WHY !important
- * --------------
- * Inline `style={{...}}` beats any selector on specificity, so a stylesheet
- * cannot override it without !important. The rules below are scoped to
- * `.admin-dark` and touch only colour — never layout, size, or spacing.
+ * If you add a rule here, match on `rgb(r, g, b)`. Check DevTools, not the JSX.
  *
- * WHAT IS DELIBERATELY NOT TOUCHED
- * --------------------------------
- * SATURATED colours: status pills, chart series, brand buttons, the green or
- * red of a number. Those are already legible on a dark surface and carry
- * meaning of their own.
+ * ── WHY A STYLESHEET AND NOT 24 EDITED FILES ───────────────────────────────
+ *
+ * Over 1300 hardcoded colour literals across 24 admin files, no shared CSS, no
+ * common layout component. Rewriting them by hand is a large, error-prone edit
+ * across files that also hold live admin logic. This is reversible by deleting
+ * one import and cannot change behaviour.
+ *
+ * ── TINTS KEEP THEIR HUE ───────────────────────────────────────────────────
+ *
+ * The pages use pale tints as a LANGUAGE: green for success, red for danger,
+ * amber for warnings, blue for information. An earlier version mapped them all
+ * to one grey and made the pages harder to scan than the broken white version.
+ * So a pale green panel becomes a DARK GREEN panel, and the dark green text on
+ * it becomes LIGHT GREEN — only neutral surfaces go neutral.
+ *
+ * ── HOW THIS FILE WAS BUILT ────────────────────────────────────────────────
+ *
+ * The selectors are generated, not hand-written: every hex in the admin sources
+ * was extracted, converted to rgb(), classified by luminance (is it a light
+ * surface? dark text?) and by hue (which colour family?), then mapped to the
+ * matching theme token. That is why the coverage is complete rather than a
+ * sample of the values someone happened to notice.
+ *
+ * ── WHAT IS DELIBERATELY NOT TOUCHED ───────────────────────────────────────
+ *
+ * Saturated fills and mid-tone text: status pills, chart series, brand buttons.
+ * Those are legible on dark already and carry meaning of their own.
+ *
+ * !important is required because inline styles outrank every selector. Only
+ * colour is touched here — never layout, size or spacing.
  */
 
-/* ══════════════════════════════════════════════════════════════════════
-   NEUTRAL SURFACES — white and the grey/slate family only.
-   ══════════════════════════════════════════════════════════════════════ */
-
-/* Cards: plain white. */
-.admin-dark [style*="background: #fff"],
-.admin-dark [style*="background:#fff"],
-.admin-dark [style*="background: white"],
-.admin-dark [style*="background:white"],
-.admin-dark [style*="background-color: #fff"],
-.admin-dark [style*="background-color:#fff"],
-.admin-dark [style*="background-color: white"],
-.admin-dark [style*="background-color:white"],
+/* NEUTRAL SURFACES (12 values) */
 .admin-dark [style*="background: rgb(255, 255, 255)"],
-.admin-dark [style*="background-color: rgb(255, 255, 255)"] {
+.admin-dark [style*="background: rgb(249, 250, 251)"],
+.admin-dark [style*="background: rgb(248, 250, 252)"],
+.admin-dark [style*="background: rgb(255, 255, 255)"],
+.admin-dark [style*="background: rgb(250, 250, 250)"],
+.admin-dark [style*="background: rgb(251, 253, 251)"],
+.admin-dark [style*="background-color: rgb(255, 255, 255)"],
+.admin-dark [style*="background-color: rgb(249, 250, 251)"],
+.admin-dark [style*="background-color: rgb(248, 250, 252)"],
+.admin-dark [style*="background-color: rgb(255, 255, 255)"],
+.admin-dark [style*="background-color: rgb(250, 250, 250)"],
+.admin-dark [style*="background-color: rgb(251, 253, 251)"] {
   background: var(--color-surface) !important;
   color: var(--color-text) !important;
 }
 
-/* Neutral greys — insets, table stripes, toolbars. One step up from the card so
-   nesting stays visible. Note these are the SLATE greys only; the tinted pales
-   are handled further down and must not be listed here. */
-.admin-dark [style*="#f8fafc"],
-.admin-dark [style*="#f9fafb"],
-.admin-dark [style*="#f1f5f9"],
-.admin-dark [style*="#f3f4f6"],
-.admin-dark [style*="#f5f5f5"],
-.admin-dark [style*="#fafafa"],
-.admin-dark [style*="#eeeeee"] {
+.admin-dark [style*="background: rgb(240, 249, 240)"],
+.admin-dark [style*="background: rgb(241, 245, 249)"],
+.admin-dark [style*="background: rgb(243, 244, 246)"],
+.admin-dark [style*="background: rgb(226, 232, 240)"],
+.admin-dark [style*="background: rgb(238, 247, 238)"],
+.admin-dark [style*="background: rgb(240, 247, 240)"],
+.admin-dark [style*="background-color: rgb(240, 249, 240)"],
+.admin-dark [style*="background-color: rgb(241, 245, 249)"],
+.admin-dark [style*="background-color: rgb(243, 244, 246)"],
+.admin-dark [style*="background-color: rgb(226, 232, 240)"],
+.admin-dark [style*="background-color: rgb(238, 247, 238)"],
+.admin-dark [style*="background-color: rgb(240, 247, 240)"] {
   background: var(--color-surface-2) !important;
   color: var(--color-text) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   TINTED PANELS — keep the hue, drop the lightness.
-
-   Each block is a pale wash of one colour, used to mean something. The dark
-   equivalent is the same hue at low alpha over the card, with a matching
-   border so the panel still reads as a distinct region.
-   ══════════════════════════════════════════════════════════════════════ */
-
-/* GREEN — success, active, approved, positive totals. */
-.admin-dark [style*="#f0f9f0"],
-.admin-dark [style*="#f6fff6"],
-.admin-dark [style*="#f8fff8"],
-.admin-dark [style*="#f8fffa"],
-.admin-dark [style*="#f0fdf4"],
-.admin-dark [style*="#f0f7f0"],
-.admin-dark [style*="#fbfdfb"],
-.admin-dark [style*="#dcfce7"] {
+/* GREEN tinted panels (6) */
+.admin-dark [style*="background: rgb(220, 252, 231)"],
+.admin-dark [style*="background: rgb(246, 255, 246)"],
+.admin-dark [style*="background: rgb(248, 255, 248)"],
+.admin-dark [style*="background: rgb(248, 255, 250)"],
+.admin-dark [style*="background: rgb(240, 253, 244)"],
+.admin-dark [style*="background: rgb(236, 253, 245)"],
+.admin-dark [style*="background-color: rgb(220, 252, 231)"],
+.admin-dark [style*="background-color: rgb(246, 255, 246)"],
+.admin-dark [style*="background-color: rgb(248, 255, 248)"],
+.admin-dark [style*="background-color: rgb(248, 255, 250)"],
+.admin-dark [style*="background-color: rgb(240, 253, 244)"],
+.admin-dark [style*="background-color: rgb(236, 253, 245)"] {
   background: var(--color-success-a12) !important;
   border-color: var(--color-success-a30) !important;
   color: var(--color-text) !important;
 }
 
-/* RED — errors, danger zones, suspended/rejected. */
-.admin-dark [style*="#fef2f2"],
-.admin-dark [style*="#fee2e2"],
-.admin-dark [style*="#fdecea"],
-.admin-dark [style*="#fff1f0"] {
+/* RED tinted panels (3) */
+.admin-dark [style*="background: rgb(254, 226, 226)"],
+.admin-dark [style*="background: rgb(254, 242, 242)"],
+.admin-dark [style*="background: rgb(253, 236, 234)"],
+.admin-dark [style*="background-color: rgb(254, 226, 226)"],
+.admin-dark [style*="background-color: rgb(254, 242, 242)"],
+.admin-dark [style*="background-color: rgb(253, 236, 234)"] {
   background: var(--color-danger-a12) !important;
   border-color: var(--color-danger-a30) !important;
   color: var(--color-text) !important;
 }
 
-/* AMBER — warnings, pending review, "needs attention". */
-.admin-dark [style*="#fffbe6"],
-.admin-dark [style*="#fef3c7"],
-.admin-dark [style*="#ffe58f"],
-.admin-dark [style*="#fffaf0"],
-.admin-dark [style*="#fef9c3"] {
+/* AMBER tinted panels (4) */
+.admin-dark [style*="background: rgb(254, 243, 199)"],
+.admin-dark [style*="background: rgb(255, 251, 230)"],
+.admin-dark [style*="background: rgb(255, 229, 143)"],
+.admin-dark [style*="background: rgb(245, 245, 220)"],
+.admin-dark [style*="background-color: rgb(254, 243, 199)"],
+.admin-dark [style*="background-color: rgb(255, 251, 230)"],
+.admin-dark [style*="background-color: rgb(255, 229, 143)"],
+.admin-dark [style*="background-color: rgb(245, 245, 220)"] {
   background: var(--color-warning-a12) !important;
   border-color: var(--color-warning-a30) !important;
   color: var(--color-text) !important;
 }
 
-/* BLUE / VIOLET — information, links, neutral highlights. Mapped to the
-   theme accent so an "info" panel matches whatever theme is active. */
-.admin-dark [style*="#f0f9ff"],
-.admin-dark [style*="#eff6ff"],
-.admin-dark [style*="#f5f3ff"],
-.admin-dark [style*="#eef2ff"],
-.admin-dark [style*="#e0f2fe"] {
+/* BLUE tinted panels (7) */
+.admin-dark [style*="background: rgb(236, 254, 255)"],
+.admin-dark [style*="background: rgb(240, 249, 255)"],
+.admin-dark [style*="background: rgb(239, 246, 255)"],
+.admin-dark [style*="background: rgb(232, 244, 255)"],
+.admin-dark [style*="background: rgb(224, 231, 255)"],
+.admin-dark [style*="background: rgb(245, 243, 255)"],
+.admin-dark [style*="background: rgb(238, 242, 255)"],
+.admin-dark [style*="background-color: rgb(236, 254, 255)"],
+.admin-dark [style*="background-color: rgb(240, 249, 255)"],
+.admin-dark [style*="background-color: rgb(239, 246, 255)"],
+.admin-dark [style*="background-color: rgb(232, 244, 255)"],
+.admin-dark [style*="background-color: rgb(224, 231, 255)"],
+.admin-dark [style*="background-color: rgb(245, 243, 255)"],
+.admin-dark [style*="background-color: rgb(238, 242, 255)"] {
   background: var(--color-accent-a12) !important;
   border-color: var(--color-accent-a30) !important;
   color: var(--color-text) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   TEXT
-   ══════════════════════════════════════════════════════════════════════ */
-
-/* Near-black, chosen for a white card and now invisible. */
-.admin-dark [style*="color: #000"],
-.admin-dark [style*="color:#000"],
-.admin-dark [style*="color: black"],
-.admin-dark [style*="color:black"],
-.admin-dark [style*="color: #111"],
-.admin-dark [style*="color:#111"],
-.admin-dark [style*="color: #1f2937"],
-.admin-dark [style*="color: #222"],
-.admin-dark [style*="color:#222"],
-.admin-dark [style*="color: #333"],
-.admin-dark [style*="color:#333"] {
+/* VIOLET tinted panels (1) */
+.admin-dark [style*="background: rgb(243, 232, 255)"],
+.admin-dark [style*="background-color: rgb(243, 232, 255)"] {
+  background: var(--color-accent-a12) !important;
+  border-color: var(--color-accent-a30) !important;
   color: var(--color-text) !important;
 }
 
-/* Mid-greys were the SECONDARY level on a white card. Keeping them muted
-   preserves the hierarchy the page was designed with — promoting everything to
-   full white would make every label shout equally. */
-.admin-dark [style*="color: #555"],
-.admin-dark [style*="color: #666"],
-.admin-dark [style*="color:#666"],
-.admin-dark [style*="color: #777"],
-.admin-dark [style*="color: #888"],
-.admin-dark [style*="color: #6b7280"],
-.admin-dark [style*="color: #4b5563"],
-.admin-dark [style*="color: #374151"] {
+/* NEAR-BLACK SAFETY NET.
+ *
+ * The lists below are generated from the hexes found in the sources, which
+ * cannot catch a value written some other way — a shorthand (#111 vs #111111),
+ * a template string, a colour computed at runtime. One such miss leaves
+ * near-black text on a now-dark card at 1:1 contrast, i.e. invisible, which is
+ * exactly the failure this net was added for.
+ *
+ * Every grey from rgb(0,0,0) to rgb(60,60,60) is therefore covered explicitly.
+ * Enumerated rather than expressed as a range because CSS has no numeric
+ * attribute matching — but it is cheap, and it means a missed value degrades to
+ * "readable" instead of "invisible".
+ */
+.admin-dark [style*="color: rgb(0, 0, 0)"],
+.admin-dark [style*="color: rgb(17, 17, 17)"],
+.admin-dark [style*="color: rgb(18, 18, 18)"],
+.admin-dark [style*="color: rgb(19, 19, 19)"],
+.admin-dark [style*="color: rgb(20, 20, 20)"],
+.admin-dark [style*="color: rgb(26, 26, 26)"],
+.admin-dark [style*="color: rgb(30, 30, 30)"],
+.admin-dark [style*="color: rgb(33, 33, 33)"],
+.admin-dark [style*="color: rgb(34, 34, 34)"],
+.admin-dark [style*="color: rgb(35, 35, 35)"],
+.admin-dark [style*="color: rgb(40, 40, 40)"],
+.admin-dark [style*="color: rgb(44, 44, 44)"],
+.admin-dark [style*="color: rgb(50, 50, 50)"],
+.admin-dark [style*="color: rgb(60, 60, 60)"],
+.admin-dark [style*="color: black"] {
+  color: var(--color-text) !important;
+}
+
+/* DARK TEXT — neutral (18) */
+.admin-dark [style*="color: rgb(100, 116, 139)"],
+.admin-dark [style*="color: rgb(102, 102, 102)"],
+.admin-dark [style*="color: rgb(51, 51, 51)"],
+.admin-dark [style*="color: rgb(10, 10, 10)"],
+.admin-dark [style*="color: rgb(31, 41, 55)"],
+.admin-dark [style*="color: rgb(55, 65, 81)"],
+.admin-dark [style*="color: rgb(15, 23, 42)"],
+.admin-dark [style*="color: rgb(107, 114, 128)"],
+.admin-dark [style*="color: rgb(71, 85, 105)"],
+.admin-dark [style*="color: rgb(51, 65, 85)"],
+.admin-dark [style*="color: rgb(75, 112, 75)"],
+.admin-dark [style*="color: rgb(71, 91, 71)"],
+.admin-dark [style*="color: rgb(26, 26, 46)"],
+.admin-dark [style*="color: rgb(17, 24, 39)"],
+.admin-dark [style*="color: rgb(85, 85, 85)"],
+.admin-dark [style*="color: rgb(73, 80, 87)"] {
+  color: var(--color-text) !important;
+}
+
+.admin-dark [style*="color: rgb(136, 136, 136)"],
+.admin-dark [style*="color: rgb(153, 153, 153)"] {
   color: var(--color-text-muted) !important;
 }
 
-/* DARK SATURATED TEXT — the other half of the tinted panels.
- *
- * The pale panels above are paired with a DARK version of the same hue as text:
- * #064f28 dark green on a #f0f9f0 green wash, #b91c1c dark red on #fef2f2, and
- * so on. Once the panel is dark those greens and reds are all but invisible —
- * fixing the background alone would have traded white-on-white for
- * dark-green-on-dark-green.
- *
- * Each is lifted to the LIGHT version of its own hue, so the text still reads
- * as "this is the success one" rather than becoming anonymous white.
- */
-
-/* Dark greens -> light green */
-.admin-dark [style*="color: #064f28"],
-.admin-dark [style*="color:#064f28"],
-.admin-dark [style*="color: #072b05"],
-.admin-dark [style*="color: #0b6623"],
-.admin-dark [style*="color: #166534"],
-.admin-dark [style*="color: #047857"],
-.admin-dark [style*="color: #14532d"],
-.admin-dark [style*="color: #15803d"] {
+/* DARK TEXT — green (8) */
+.admin-dark [style*="color: rgb(22, 101, 52)"],
+.admin-dark [style*="color: rgb(4, 120, 87)"],
+.admin-dark [style*="color: rgb(7, 43, 5)"],
+.admin-dark [style*="color: rgb(6, 79, 40)"],
+.admin-dark [style*="color: rgb(5, 150, 105)"],
+.admin-dark [style*="color: rgb(11, 102, 35)"],
+.admin-dark [style*="color: rgb(21, 128, 61)"],
+.admin-dark [style*="color: rgb(56, 158, 13)"] {
   color: var(--color-success) !important;
 }
 
-/* Dark reds -> light red */
-.admin-dark [style*="color: #b91c1c"],
-.admin-dark [style*="color:#b91c1c"],
-.admin-dark [style*="color: #991b1b"],
-.admin-dark [style*="color: #7f1d1d"],
-.admin-dark [style*="color: #dc2626"] {
+/* DARK TEXT — red (9) */
+.admin-dark [style*="color: rgb(248, 113, 113)"],
+.admin-dark [style*="color: rgb(244, 114, 182)"],
+.admin-dark [style*="color: rgb(153, 27, 27)"],
+.admin-dark [style*="color: rgb(220, 38, 38)"],
+.admin-dark [style*="color: rgb(255, 105, 180)"],
+.admin-dark [style*="color: rgb(185, 28, 28)"],
+.admin-dark [style*="color: rgb(239, 68, 68)"],
+.admin-dark [style*="color: rgb(212, 56, 13)"],
+.admin-dark [style*="color: rgb(198, 40, 40)"] {
   color: var(--color-danger) !important;
 }
 
-/* Dark ambers -> light amber */
-.admin-dark [style*="color: #92400e"],
-.admin-dark [style*="color: #b45309"],
-.admin-dark [style*="color: #78350f"],
-.admin-dark [style*="color: #a16207"] {
+/* DARK TEXT — amber (4) */
+.admin-dark [style*="color: rgb(146, 64, 14)"],
+.admin-dark [style*="color: rgb(180, 83, 9)"],
+.admin-dark [style*="color: rgb(217, 119, 6)"],
+.admin-dark [style*="color: rgb(173, 139, 0)"] {
   color: var(--color-warning) !important;
 }
 
-/* Dark violets/blues -> the theme accent */
-.admin-dark [style*="color: #7c3aed"],
-.admin-dark [style*="color: #5b21b6"],
-.admin-dark [style*="color: #1e40af"],
-.admin-dark [style*="color: #1d4ed8"],
-.admin-dark [style*="color: #1677ff"] {
+/* DARK TEXT — blue (18) */
+.admin-dark [style*="color: rgb(4, 18, 31)"],
+.admin-dark [style*="color: rgb(167, 139, 250)"],
+.admin-dark [style*="color: rgb(2, 132, 199)"],
+.admin-dark [style*="color: rgb(59, 130, 246)"],
+.admin-dark [style*="color: rgb(139, 92, 246)"],
+.admin-dark [style*="color: rgb(14, 116, 144)"],
+.admin-dark [style*="color: rgb(21, 94, 99)"],
+.admin-dark [style*="color: rgb(8, 145, 178)"],
+.admin-dark [style*="color: rgb(3, 105, 161)"],
+.admin-dark [style*="color: rgb(37, 99, 235)"],
+.admin-dark [style*="color: rgb(15, 118, 110)"],
+.admin-dark [style*="color: rgb(29, 78, 216)"],
+.admin-dark [style*="color: rgb(30, 58, 138)"],
+.admin-dark [style*="color: rgb(22, 119, 255)"],
+.admin-dark [style*="color: rgb(4, 32, 31)"],
+.admin-dark [style*="color: rgb(14, 165, 233)"],
+.admin-dark [style*="color: rgb(30, 64, 175)"],
+.admin-dark [style*="color: rgb(67, 56, 202)"] {
   color: var(--color-accent) !important;
 }
 
-/* Very dark slates used as primary text (#0f172a, #334155, #1a1a2e). These are
-   NEUTRAL, not a hue, so they follow the normal text colour. */
-.admin-dark [style*="color: #0f172a"],
-.admin-dark [style*="color: #1a1a2e"],
-.admin-dark [style*="color: #1e293b"] {
-  color: var(--color-text) !important;
+/* DARK TEXT — violet (3) */
+.admin-dark [style*="color: rgb(124, 58, 237)"],
+.admin-dark [style*="color: rgb(91, 33, 182)"],
+.admin-dark [style*="color: rgb(107, 33, 168)"] {
+  color: var(--color-accent) !important;
 }
 
-.admin-dark [style*="color: #334155"],
-.admin-dark [style*="color: #475569"] {
-  color: var(--color-text-muted) !important;
+/* LIGHT BORDERS (23) */
+.admin-dark [style*="rgb(233, 236, 239)"],
+.admin-dark [style*="rgb(214, 240, 214)"],
+.admin-dark [style*="rgb(230, 241, 230)"],
+.admin-dark [style*="rgb(214, 227, 214)"],
+.admin-dark [style*="rgb(229, 231, 235)"],
+.admin-dark [style*="rgb(243, 244, 246)"],
+.admin-dark [style*="rgb(226, 232, 240)"],
+.admin-dark [style*="rgb(165, 243, 252)"],
+.admin-dark [style*="rgb(241, 245, 249)"],
+.admin-dark [style*="rgb(230, 243, 234)"],
+.admin-dark [style*="rgb(186, 230, 253)"],
+.admin-dark [style*="rgb(234, 247, 234)"],
+.admin-dark [style*="rgb(187, 247, 208)"],
+.admin-dark [style*="rgb(209, 250, 229)"],
+.admin-dark [style*="rgb(255, 229, 143)"],
+.admin-dark [style*="rgb(209, 250, 230)"],
+.admin-dark [style*="rgb(219, 234, 254)"],
+.admin-dark [style*="rgb(241, 246, 241)"],
+.admin-dark [style*="rgb(221, 221, 221)"],
+.admin-dark [style*="rgb(240, 240, 240)"],
+.admin-dark [style*="rgb(227, 235, 227)"],
+.admin-dark [style*="rgb(223, 238, 221)"],
+.admin-dark [style*="rgb(233, 239, 233)"] {
+  border-color: var(--color-border) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   FORM CONTROLS
+      FORM CONTROLS
    Browsers paint these white regardless of the page, so they need explicit
    treatment rather than an override of an inline value.
    ══════════════════════════════════════════════════════════════════════ */
@@ -274,7 +351,7 @@
 }
 
 /* ══════════════════════════════════════════════════════════════════════
-   TABLES
+   TABLES — header rows and cell borders were drawn for a white page.
    ══════════════════════════════════════════════════════════════════════ */
 .admin-dark th {
   background: var(--color-surface-2) !important;
@@ -286,17 +363,9 @@
   border-color: var(--color-border) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   HAIRLINES — light greys vanish against a dark card.
-   Listed AFTER the tinted panels so a tinted panel's own coloured border,
-   set above, is not overwritten by the neutral one.
-   ══════════════════════════════════════════════════════════════════════ */
-.admin-dark [style*="border: 1px solid #ddd"],
-.admin-dark [style*="border:1px solid #ddd"],
-.admin-dark [style*="border: 1px solid #e5e7eb"],
-.admin-dark [style*="border: 1px solid #eee"],
-.admin-dark [style*="border: 1px solid #ccc"],
-.admin-dark [style*="border:1px solid #ccc"],
-.admin-dark [style*="border: 1px solid #d1d5db"] {
-  border-color: var(--color-border) !important;
+/* Soft shadows tuned for a white page read as grey haze on dark. */
+.admin-dark [style*="box-shadow: rgba(0, 0, 0, 0.03)"],
+.admin-dark [style*="box-shadow: rgba(0, 0, 0, 0.04)"],
+.admin-dark [style*="box-shadow: rgba(0, 0, 0, 0.05)"] {
+  box-shadow: var(--shadow-soft) !important;
 }
