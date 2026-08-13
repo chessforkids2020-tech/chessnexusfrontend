@@ -44,15 +44,15 @@ const C = {
 // from everyone who bought that tier — change the `name` shown to users, never
 // the id.
 const COFFEE_TIERS_INR = [
-  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 149, blurb: 'Fuels one bug fix.' },
-  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 250, blurb: 'Pays for a feature sprint.' },
-  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 500, blurb: 'Covers a day of server bills.' }
+  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 149 },
+  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 250 },
+  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 500 }
 ];
 
 const COFFEE_TIERS_USD = [
-  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 3,  blurb: 'Fuels one bug fix.' },
-  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 5,  blurb: 'Pays for a feature sprint.' },
-  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 10, blurb: 'Covers a day of server bills.' }
+  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 3 },
+  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 5 },
+  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 10 }
 ];
 
 // Duration options shown as tabs above the tiers. They multiply the price and
@@ -501,37 +501,15 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
                 <div style={styles.tierAmount}>
                   {currency === 'INR' ? `₹${price}` : `$${price}`}
                 </div>
-                <div style={styles.tierBlurb}>{coffee.blurb}</div>
               </button>
             );
           })}
         </div>
 
-        {/* WHY THE TITLE MATTERS — said ONCE, in one place.
-            This block used to repeat what the cards already show: each card
-            said "your title, before your name", then NS and NX each said it
-            again, then a footer said it a fourth time. Four restatements of one
-            fact read as a hard sell, and none of them answered the question a
-            reader actually has — why would I want this?
-
-            So the mechanics (what it looks like, where it appears) are stated
-            in a single sentence, and the rest is the part that gives the title
-            its worth: it is rare, permanent-feeling recognition that everyone
-            else can see, in the same slot chess players already read as status. */}
-        <div style={styles.titleKey}>
-          <p style={styles.titleKeyLead}>
-            In chess, the letters before a name say who someone is —{' '}
-            <span className="chess-title">GM</span>, <span className="chess-title">IM</span>,{' '}
-            <span className="chess-title">FM</span>. A Nexus title sits in that same
-            place, and everyone in every game, chat and leaderboard sees it.
-          </p>
-          <p style={styles.titleKeyFoot}>
-            It is not something anyone can pick up by playing more — it is only for
-            the people who chose to keep this place running. If you hold a FIDE
-            title, yours sits beside it: <span className="chess-title">GM</span>{' '}
-            <span className="nexus-title">NS</span> {previewName}.
-          </p>
-        </div>
+        {/* The explanation block that sat here has been removed — the copy is
+            being rewritten. The styles it used (titleKey, titleKeyLead,
+            titleKeyFoot) are kept below so the replacement text can drop
+            straight back in without rebuilding the panel. */}
 
         {/* What every supporter can do.
             These are the real gates in the code, not aspirations — each one is
@@ -1002,7 +980,6 @@ const styles = {
   },
   tierName: { fontWeight: 700 },
   tierAmount: { fontSize: 22, fontWeight: 800, color: C.amber, marginTop: 10 },
-  tierBlurb: { marginTop: 8, fontSize: 12, color: C.textDim, lineHeight: 1.4 },
 
   /* The title, as the card's headline. Deliberately larger than the price:
      the title is what is being bought. */
