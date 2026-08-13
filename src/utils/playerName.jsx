@@ -31,7 +31,7 @@ export function normalizeTitle(title) {
  * chessTitle these are not stored on the User — they are derived per request
  * from the active supporter record, so they lapse on their own.
  */
-const NEXUS_TITLES = ['NS', 'NX'];
+const NEXUS_TITLES = ['NS', 'NX', 'NC'];
 const NEXUS_SET = new Set(NEXUS_TITLES);
 
 export function normalizeNexusTitle(title) {

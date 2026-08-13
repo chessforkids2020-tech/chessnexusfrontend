@@ -92,9 +92,13 @@ export default function PlayerName({
         <>
           <span
             className="nexus-title"
-            title={nexus === 'NX'
-              ? 'Nexus Expert — supports ChessNexus'
-              : 'Nexus Supporter — supports ChessNexus'}
+            title={
+              nexus === 'NC'
+                ? 'Nexus Coach — helps ChessNexus grow'
+                : nexus === 'NX'
+                  ? 'Nexus Expert — supports ChessNexus'
+                  : 'Nexus Supporter — supports ChessNexus'
+            }
           >
             {nexus}
           </span>{' '}

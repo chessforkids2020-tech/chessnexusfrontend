@@ -14,19 +14,20 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-// Tier -> what the admin should read. Mirrors TIER_TITLES in
-// backend/models/CoffeeSupporter.js; anything else confers no title (the
-// month-based tiers written by admin/add, and any older record).
-const TITLE_LABEL = (tier) => {
-  const t = String(tier || "").toLowerCase();
-  if (t === "espresso") return "⚔ NS — Nexus Supporter";
-  if (t === "latte") return "👑 NX — Nexus Expert";
-  return `♞ Knight — no title (${tier || "—"})`;
-};
-
 import api from "../api";
 import { useAuth } from "../contexts/AuthContext";
 import { markIdsSeen } from "../utils/adminCoachSeen";
+
+// What title a record confers, as the admin should read it. Mirrors titleFor()
+// in backend/models/CoffeeSupporter.js: the nexusCoach FLAG wins over the tier,
+// because NC is granted for helping rather than bought.
+const TITLE_LABEL = (row) => {
+  if (row?.nexusCoach) return "🎓 NC — Nexus Coach";
+  const t = String(row?.tier || "").toLowerCase();
+  if (t === "espresso") return "⚔ NS — Nexus Supporter";
+  if (t === "latte") return "👑 NX — Nexus Expert";
+  return `♞ Knight — no title (${row?.tier || "—"})`;
+};
 
 const fmt = (d) =>
   d ? new Date(d).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "—";
@@ -118,7 +119,7 @@ export default function AdminSupporters() {
   // for the promotion, not a payment. The ☕ badge runs for `months`; the name stays
   // on the public wall permanently. (Handler lives below `load`, which it calls.)
   const [showAdd, setShowAdd] = useState(false);
-  const [addForm, setAddForm] = useState({ username: "", amount: "", currency: "INR", months: 1, note: "" });
+  const [addForm, setAddForm] = useState({ username: "", amount: "", currency: "INR", months: 1, note: "", nexusCoach: false });
   const [adding, setAdding] = useState(false);
 
   const load = useCallback(async () => {
@@ -158,10 +159,11 @@ export default function AdminSupporters() {
         currency: addForm.currency,
         months: Number(addForm.months),
         note: addForm.note.trim(),
+        nexusCoach: !!addForm.nexusCoach,
       });
       const u = res.data?.user;
       alert(`Added ${u?.displayName || u?.username} as a supporter.`);
-      setAddForm({ username: "", amount: "", currency: "INR", months: 1, note: "" });
+      setAddForm({ username: "", amount: "", currency: "INR", months: 1, note: "", nexusCoach: false });
       setShowAdd(false);
       await load();
     } catch (err) {
@@ -266,6 +268,7 @@ export default function AdminSupporters() {
           <option value="knight">♞ Knight (no title)</option>
           <option value="NS">⚔ NS — Nexus Supporter</option>
           <option value="NX">👑 NX — Nexus Expert</option>
+          <option value="NC">🎓 NC — Nexus Coach (granted)</option>
         </select>
         <span style={styles.muted}>{total} record{total === 1 ? "" : "s"}</span>
         <button
@@ -334,6 +337,20 @@ export default function AdminSupporters() {
               value={addForm.note}
               onChange={(e) => setAddForm(f => ({ ...f, note: e.target.value }))}
             />
+            {/* NC. The only place the title can be granted — no tier sells it
+                and no payment path sets it. Permanent until revoked, so it does
+                not lapse with the months chosen above. */}
+            <label
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer" }}
+              title="Nexus Coach — for coaches, streamers and creators who help ChessNexus grow. Cannot be bought."
+            >
+              <input
+                type="checkbox"
+                checked={addForm.nexusCoach}
+                onChange={(e) => setAddForm(f => ({ ...f, nexusCoach: e.target.checked }))}
+              />
+              <span>🎓 Nexus Coach (NC)</span>
+            </label>
             <button type="submit" style={styles.primaryBtn} disabled={adding}>
               {adding ? "Adding…" : "Add supporter"}
             </button>
@@ -384,7 +401,7 @@ export default function AdminSupporters() {
                         "espresso" told an admin nothing; NS/NX is the thing
                         they and the supporter both see. The raw tier is kept
                         alongside for support queries. */}
-                    <div style={styles.muted}>{TITLE_LABEL(r.tier)}</div>
+                    <div style={styles.muted}>{TITLE_LABEL(r)}</div>
                   </td>
                   <td style={styles.td}>
                     {fmtDate(r.expiresAt)}
