@@ -45,13 +45,13 @@ const C = {
 // the id.
 const COFFEE_TIERS_INR = [
   { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 149, blurb: 'A knight beside your name. Fuels one bug fix.' },
-  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 250, blurb: 'The NS title before your name. Pays for a feature sprint.', elite: true },
+  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 250, blurb: 'The NS title before your name. Pays for a feature sprint.' },
   { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 500, blurb: 'The NX title before your name. Covers a day of server bills.' }
 ];
 
 const COFFEE_TIERS_USD = [
   { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 3,  blurb: 'A knight beside your name. Fuels one bug fix.' },
-  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 5,  blurb: 'The NS title before your name. Pays for a feature sprint.', elite: true },
+  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 5,  blurb: 'The NS title before your name. Pays for a feature sprint.' },
   { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 10, blurb: 'The NX title before your name. Covers a day of server bills.' }
 ];
 
@@ -382,7 +382,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
         </div>
 
         {/* Supporter XP perk — shown to EVERYONE, not just people mid-purchase
-            and not only Elite (6+ months). Any active ☕ supporter gets it.
+            Any active supporter gets it.
             Wording is scoped to "locked activities" deliberately: every XP-gated
             FEATURE waives its cost for supporters (books, premium endgames,
             endgame play-out vs Stockfish, opening repertoire — all check
@@ -404,31 +404,6 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
               Save your XP — or never earn it at all.
             </p>
           </div>
-        </div>
-
-        {/* Elite membership — our little gratitude to supporters */}
-        <div style={styles.eliteCard}>
-          <div style={styles.eliteHeader}>
-            <span style={styles.eliteBadge}>✨ ELITE MEMBERSHIP</span>
-            <span style={styles.eliteSubtle}>Our little gratitude towards our supporters 💛</span>
-          </div>
-          <p style={styles.eliteIntro}>
-            Support ChessNexus for <strong style={{ color: 'var(--color-warning)' }}>6 months or more</strong> and become{' '}
-            <strong style={{ color: C.text }}>an Elite member</strong> — creator tools and perks reserved for the
-            people who keep ChessNexus alive.
-          </p>
-          <div style={styles.eliteGrid}>
-            <Eliter icon="🎯" text="Create your own Monthly Focus challenges" />
-            <Eliter icon="🏁" text="Host and run your own Team Races" />
-            <Eliter icon="🏟️" text="Launch 3D Arena Tournaments" />
-            <Eliter icon="🧑‍🏫" text="ChessNexus Coach free for 6 months" />
-            <Eliter icon="☁️" text="Save your opening repertoire to the cloud — free" />
-            <Eliter icon="♟️" text="Study endgames unlimited — full Endgame Mastery access" />
-          </div>
-          <p style={styles.eliteNote}>
-            💛 Once you support for 6 months or more, we'll add your <strong style={{ color: 'var(--color-warning)' }}>Elite badge shortly</strong> —
-            our team reviews and enrolls Elite members personally, so it may take a little while after payment.
-          </p>
         </div>
 
         {/* Currency switch */}
@@ -484,23 +459,17 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
           {coffees.map(coffee => {
             const active = selectedCoffeeId === coffee.id;
             const price = coffee.base * months;
-            const isElite = !!coffee.elite;
             return (
               <button
                 key={coffee.id}
                 type="button"
-                // The Elite tier is the "6 months → Elite" path — picking it also
-                // selects a 6-month duration so it actually grants Elite.
-                onClick={() => { pickCoffee(coffee.id); if (isElite && months < 6) setMonths(6); }}
+                onClick={() => pickCoffee(coffee.id)}
                 style={{
                   ...styles.tierCard,
-                  ...(isElite ? styles.tierCardElite : null),
-                  ...(active ? (isElite ? styles.tierCardEliteActive : styles.tierCardActive) : null),
+                  ...(active ? styles.tierCardActive : null),
                   position: 'relative',
                 }}
               >
-                {isElite && <span style={styles.tierEliteRibbon}>👑 ELITE</span>}
-
                 {/* THE TITLE IS THE HEADLINE.
                     The whole point of supporting is the title, so it is the
                     largest thing on the card — bigger than the price. Showing
@@ -512,7 +481,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
                   <div style={styles.tierTitleBigIcon}>{coffee.emoji}</div>
                 )}
 
-                <div style={{ ...styles.tierName, ...(isElite ? { color: 'var(--color-warning)' } : null) }}>{coffee.name}</div>
+                <div style={styles.tierName}>{coffee.name}</div>
 
                 {/* What the title actually expands to, spelled out. "NS" means
                     nothing until you are told it is Nexus Supporter. */}
@@ -528,15 +497,10 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
                     : <>{previewName} <span style={{ color: 'var(--color-accent)' }}>♞</span></>}
                 </div>
 
-                <div style={{ ...styles.tierAmount, ...(isElite ? { color: '#f5c451' } : null) }}>
+                <div style={styles.tierAmount}>
                   {currency === 'INR' ? `₹${price}` : `$${price}`}
                 </div>
                 <div style={styles.tierBlurb}>{coffee.blurb}</div>
-                {isElite && (
-                  <div style={styles.tierEliteHint}>
-                    ✨ 6 months → become an Elite member
-                  </div>
-                )}
               </button>
             );
           })}
@@ -675,15 +639,6 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
 
 function labelFor(p) {
   return { razorpay: 'Razorpay', paypal: 'PayPal', upi: 'UPI', bank: 'bank transfer' }[p] || p;
-}
-
-function Eliter({ icon, text }) {
-  return (
-    <div style={styles.eliteItem}>
-      <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>{icon}</span>
-      <span style={{ color: C.text, fontSize: 13.5, lineHeight: 1.4, fontWeight: 500 }}>{text}</span>
-    </div>
-  );
 }
 
 function WhyCard({ icon, title, text, accent, border, step }) {
@@ -827,7 +782,7 @@ const styles = {
     fontSize: 13,
     fontWeight: 600
   },
-  // Supporter XP perk band (sits between the hero and the Elite card).
+  // Supporter XP perk band.
   xpPerkCard: {
     marginTop: 22,
     display: 'flex',
@@ -853,64 +808,6 @@ const styles = {
   xpPerkTitle: { color: 'var(--color-success)', fontWeight: 800, fontSize: 15, marginBottom: 6 },
   xpPerkText: { color: 'var(--color-text-muted)', fontSize: 13.5, lineHeight: 1.65, margin: 0 },
 
-  eliteCard: {
-    marginTop: 22,
-    background: 'linear-gradient(135deg, var(--color-warning-a12), rgba(139,92,246,0.08))',
-    border: '1px solid var(--color-warning-a30)',
-    borderRadius: 'var(--radius-2xl)',
-    padding: '22px 24px',
-    backdropFilter: 'blur(14px)',
-    WebkitBackdropFilter: 'blur(14px)'
-  },
-  eliteHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    flexWrap: 'wrap',
-    marginBottom: 12
-  },
-  eliteBadge: {
-    display: 'inline-block',
-    padding: '5px 12px',
-    borderRadius: 'var(--radius-pill)',
-    background: 'var(--color-warning-a20)',
-    border: `1px solid ${C.amberBorder}`,
-    color: 'var(--color-warning)',
-    fontSize: 12,
-    fontWeight: 800,
-    letterSpacing: 0.8
-  },
-  eliteSubtle: {
-    color: C.textDim,
-    fontSize: 13,
-    fontWeight: 500
-  },
-  eliteIntro: {
-    margin: '0 0 16px',
-    color: C.textDim,
-    fontSize: 14.5,
-    lineHeight: 1.6
-  },
-  eliteNote: {
-    margin: '14px 0 0',
-    color: C.textDim,
-    fontSize: 13,
-    lineHeight: 1.55
-  },
-  eliteGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-    gap: 10
-  },
-  eliteItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    background: 'var(--color-white-a04)',
-    border: `1px solid ${C.panelBorder}`,
-    borderRadius: 'var(--radius-lg)',
-    padding: '11px 14px'
-  },
   whyGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -1002,36 +899,6 @@ const styles = {
     borderColor: C.amberBorder,
     boxShadow: '0 8px 28px var(--color-warning-a20)',
     transform: 'translateY(-2px)'
-  },
-  // Elite tier (American Espresso) — distinct gold look to mark the Elite path.
-  tierCardElite: {
-    borderColor: 'rgba(245,196,81,0.45)',
-    background: 'linear-gradient(160deg, rgba(60,48,16,0.55) 0%, rgba(28,22,8,0.8) 100%)',
-    boxShadow: '0 0 0 1px rgba(245,196,81,0.18) inset',
-    paddingTop: 24,
-  },
-  tierCardEliteActive: {
-    borderColor: '#f5c451',
-    boxShadow: '0 10px 32px rgba(245,196,81,0.28), 0 0 0 1px rgba(245,196,81,0.4) inset',
-    transform: 'translateY(-2px)',
-  },
-  tierEliteRibbon: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    fontSize: 10.5,
-    fontWeight: 800,
-    letterSpacing: 0.5,
-    color: '#1a1206',
-    background: 'linear-gradient(135deg, #f5c451, #e0a92e)',
-    padding: '2px 8px',
-    borderRadius: 'var(--radius-pill)',
-  },
-  tierEliteHint: {
-    marginTop: 8,
-    fontSize: 11.5,
-    fontWeight: 700,
-    color: '#f5c451',
   },
   tierName: { fontWeight: 700 },
   tierAmount: { fontSize: 22, fontWeight: 800, color: C.amber, marginTop: 10 },
