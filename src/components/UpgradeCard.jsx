@@ -51,7 +51,7 @@ export default function UpgradeCard() {
             background: 'var(--color-white-a04)', color: 'var(--color-text)',
             border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', padding: '11px 20px',
             fontSize: 14, fontWeight: 600, cursor: 'pointer',
-          }}>☕ Support ChessNexus</button>
+          }}>♞ Support ChessNexus</button>
         </div>
       </section>
 

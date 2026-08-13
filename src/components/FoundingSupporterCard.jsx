@@ -62,7 +62,7 @@ export default function FoundingSupporterCard({ compact = false, style = {} }) {
         </div>
       </div>
       <button type="button" onClick={() => navigate('/nexus-supporter')} style={styles.btn}>
-        Claim ☕
+        Claim
       </button>
     </div>
   );

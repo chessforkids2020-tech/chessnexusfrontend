@@ -268,7 +268,7 @@ export default function BuyMeACoffee() {
 
                 {/* Amount header */}
                 <div style={{ textAlign: 'center', padding: '28px 24px 20px', borderBottom: `1px solid ${C.panelBorder}` }}>
-                  <div style={{ fontSize: 54 }}>{coffeeObj?.emoji || '☕'}</div>
+                  <div style={{ fontSize: 54 }}>{coffeeObj?.emoji || '♞'}</div>
                   <div style={{ color: C.textDim, fontSize: 13, marginTop: 6 }}>
                     {coffeeObj?.name || 'Custom amount'} · {monthsLabel}
                   </div>
@@ -311,7 +311,7 @@ export default function BuyMeACoffee() {
                     onClick={handlePayNow}
                     style={{ ...styles.primaryBtn, width: '100%', fontSize: 15, padding: '14px 20px', borderRadius: 'var(--radius-lg)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, boxSizing: 'border-box', opacity: submitting ? 0.7 : 1 }}
                   >
-                    {submitting ? 'Opening payment…' : 'Confirm & Pay with Razorpay ☕'}
+                    {submitting ? 'Opening payment…' : 'Confirm & Pay with Razorpay'}
                   </button>
                   <div style={{ color: C.textFaint, fontSize: 12, textAlign: 'center', marginTop: 10 }}>
                     Accepts UPI · Credit card · Debit card
@@ -320,8 +320,8 @@ export default function BuyMeACoffee() {
               </div>
             ) : (
               <div style={styles.thankBox}>
-                <div style={{ fontSize: 40, marginBottom: 10 }}>☕✨</div>
-                <div style={{ fontWeight: 700, color: C.text, fontSize: 18 }}>Thank you for the coffee!</div>
+                <div style={{ fontSize: 40, marginBottom: 10 }}>♞✨</div>
+                <div style={{ fontWeight: 700, color: C.text, fontSize: 18 }}>Welcome, supporter!</div>
                 <div style={{ color: C.textDim, fontSize: 14, marginTop: 8, lineHeight: 1.6 }}>
                   Your title is now live next to your name — visible on your dashboard, leaderboards, and everywhere on ChessNexus. You're literally fuelling the next feature.
                 </div>
@@ -356,7 +356,7 @@ export default function BuyMeACoffee() {
       <div style={styles.container}>
         {/* Hero */}
         <div style={styles.hero}>
-          <div style={styles.heroBadge}>☕ Support ChessNexus</div>
+          <div style={styles.heroBadge}>♞ Support ChessNexus</div>
           <h1 style={styles.heroTitle}>
             Your support keeps  <span style={{ color: C.cyan }}>ChessNexus</span> alive
           </h1>
@@ -364,10 +364,10 @@ export default function BuyMeACoffee() {
            People say chess is a lonely game.
 ChessNexus says otherwise.
 
-Every coffee helps build real-time arenas, tournaments, puzzles, and the future of multiplayer chess.
+Every supporter helps build real-time arenas, tournaments, puzzles, and the future of multiplayer chess.
           </p>
           {myStatus.active && (
-            <div style={styles.thankPill}>☕ You're an active supporter — thank you! Your badge is showing next to your name.</div>
+            <div style={styles.thankPill}>♞ You're an active supporter — thank you! Your badge is showing next to your name.</div>
           )}
           {!myStatus.active && myStatus.pendingCount > 0 && (
             <div style={styles.pendingPill}>We've got your message — your badge will appear shortly.</div>
@@ -408,7 +408,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
 
         {/* Currency switch */}
         <div style={styles.sectionTitleRow}>
-          <h2 style={styles.sectionTitle}>Pick a coffee</h2>
+          <h2 style={styles.sectionTitle}>Choose your title</h2>
           <div style={styles.currencyToggle}>
             {['INR', 'USD'].map(c => (
               <button
@@ -454,7 +454,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
           </div>
         </div>
 
-        {/* Coffee tiers — price shown is base × selected months */}
+        {/* Title tiers — price shown is base × selected months */}
         <div style={styles.tierGrid}>
           {coffees.map(coffee => {
             const active = selectedCoffeeId === coffee.id;
@@ -546,7 +546,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
         <div style={{ marginTop: 26 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
             <div style={{ flex: 1, height: 1, background: 'var(--color-white-a07)' }} />
-            <span style={{ color: 'var(--color-warning)', fontSize: 13, fontWeight: 700, letterSpacing: 0.5, whiteSpace: 'nowrap' }}>☕ WHERE YOUR COFFEE GOES</span>
+            <span style={{ color: 'var(--color-warning)', fontSize: 13, fontWeight: 700, letterSpacing: 0.5, whiteSpace: 'nowrap' }}>♞ WHERE YOUR SUPPORT GOES</span>
             <div style={{ flex: 1, height: 1, background: 'var(--color-white-a07)' }} />
           </div>
           <div style={styles.whyGrid}>
@@ -561,7 +561,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             <WhyCard
               icon="🗄️"
               title="Your Progress, Remembered"
-              text="Your games, ratings, streaks, and puzzle history need a home. Coffee keeps our databases healthy so every move you make is recorded and learned from."
+              text="Your games, ratings, streaks, and puzzle history need a home. Your support keeps our databases healthy so every move you make is recorded and learned from."
               accent="var(--color-success-a20)"
               border="var(--color-success-a20)"
               step="02"
@@ -569,7 +569,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             <WhyCard
               icon="👨‍💻"
               title="Full-Time Developers"
-              text="The people who build arenas, 3D rooms, team races, and everything in between work full time for ChessNexus. Your coffee is what keeps them here — building for you."
+              text="The people who build arenas, 3D rooms, team races, and everything in between work full time for ChessNexus. Your support is what keeps them here — building for you."
               accent="var(--color-accent-2-a15)"
               border="var(--color-accent-2-a15)"
               step="03"
@@ -577,7 +577,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
             <WhyCard
               icon="🧑‍🏫"
               title="Live Classroom"
-              text="Real-time video classes where coaches teach on a shared board — the servers, video, and tools that let every lesson happen live keep running on your coffee."
+              text="Real-time video classes where coaches teach on a shared board — the servers, video, and tools that let every lesson happen live keep running on your support."
               accent="var(--color-warning-a20)"
               border="var(--color-warning-a20)"
               step="04"
@@ -594,7 +594,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
           // card. Being first is a draw, not a red flag — and it sells the permanent
           // Founding Supporter badge that early backers get.
           <div style={styles.firstSupporterCard}>
-            <div style={{ fontSize: 40, marginBottom: 6 }}>👑☕</div>
+            <div style={{ fontSize: 40, marginBottom: 6 }}>👑</div>
             <div style={{ fontWeight: 800, color: C.text, fontSize: 19 }}>Be our very first supporter</div>
             <p style={{ color: C.textDim, fontSize: 14, lineHeight: 1.6, margin: '10px auto 0', maxWidth: 460 }}>
               ChessNexus is brand new and built by a tiny team. Our <strong style={{ color: 'var(--color-warning)' }}>first {FOUNDING_LIMIT} supporters</strong> get a
@@ -605,7 +605,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
               onClick={() => { if (!user) { navigate('/login'); return; } window.scrollTo({ top: 0, behavior: 'smooth' }); }}
               style={{ ...styles.primaryBtn, marginTop: 16, padding: '11px 24px', borderRadius: 'var(--radius-lg)', fontSize: 14 }}
             >
-              Claim Founding Supporter ☕
+              Claim Founding Supporter
             </button>
           </div>
         ) : (
@@ -623,7 +623,7 @@ Every coffee helps build real-time arenas, tournaments, puzzles, and the future 
                   {/* Founder status comes from the STORED flag, not list position —
                       the list is newest-first and capped, so an index check would
                       hand out crowns to the wrong people as it grows. */}
-                  <span aria-hidden style={{ marginRight: 6 }}>{s.founding ? '👑' : '☕'}</span>
+                  <span aria-hidden style={{ marginRight: 6 }}>{s.founding ? '👑' : '♞'}</span>
                   <span style={{ color: C.text, fontWeight: 600 }}>{s.displayName}</span>
                 </div>
               ))}
