@@ -44,15 +44,15 @@ const C = {
 // from everyone who bought that tier — change the `name` shown to users, never
 // the id.
 const COFFEE_TIERS_INR = [
-  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 149, blurb: 'A knight beside your name. Fuels one bug fix.' },
-  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 250, blurb: 'The NS title before your name. Pays for a feature sprint.' },
-  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 500, blurb: 'The NX title before your name. Covers a day of server bills.' }
+  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 149, blurb: 'Fuels one bug fix.' },
+  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 250, blurb: 'Pays for a feature sprint.' },
+  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 500, blurb: 'Covers a day of server bills.' }
 ];
 
 const COFFEE_TIERS_USD = [
-  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 3,  blurb: 'A knight beside your name. Fuels one bug fix.' },
-  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 5,  blurb: 'The NS title before your name. Pays for a feature sprint.' },
-  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 10, blurb: 'The NX title before your name. Covers a day of server bills.' }
+  { id: 'simple',   emoji: '♞', name: 'Knight',         title: null, base: 3,  blurb: 'Fuels one bug fix.' },
+  { id: 'espresso', emoji: '⚔', name: 'Nexus Supporter', title: 'NS', base: 5,  blurb: 'Pays for a feature sprint.' },
+  { id: 'latte',    emoji: '👑', name: 'Nexus Expert',   title: 'NX', base: 10, blurb: 'Covers a day of server bills.' }
 ];
 
 // Duration options shown as tabs above the tiers. They multiply the price and
@@ -483,11 +483,12 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
 
                 <div style={styles.tierName}>{coffee.name}</div>
 
-                {/* What the title actually expands to, spelled out. "NS" means
-                    nothing until you are told it is Nexus Supporter. */}
-                <div style={styles.tierTitleMeaning}>
-                  {coffee.title ? 'Your title, before your name' : 'A knight beside your name'}
-                </div>
+                {/* NO EXPLANATORY LINE HERE.
+                    This used to read "Your title, before your name" on every
+                    card, which — with the legend below repeating it twice more
+                    and the footer a fourth time — made the page feel like it
+                    was selling the same idea over and over. The live preview
+                    directly beneath SHOWS it, and showing beats telling. */}
 
                 {/* A worked example, so the value is concrete rather than
                     abstract: this is literally how your name will look. */}
@@ -506,25 +507,28 @@ Every supporter helps build real-time arenas, tournaments, puzzles, and the futu
           })}
         </div>
 
-        {/* What the titles mean — stated once, plainly, under the cards.
-            Without this the letters are just letters. */}
+        {/* WHY THE TITLE MATTERS — said ONCE, in one place.
+            This block used to repeat what the cards already show: each card
+            said "your title, before your name", then NS and NX each said it
+            again, then a footer said it a fourth time. Four restatements of one
+            fact read as a hard sell, and none of them answered the question a
+            reader actually has — why would I want this?
+
+            So the mechanics (what it looks like, where it appears) are stated
+            in a single sentence, and the rest is the part that gives the title
+            its worth: it is rare, permanent-feeling recognition that everyone
+            else can see, in the same slot chess players already read as status. */}
         <div style={styles.titleKey}>
-          <div style={styles.titleKeyRow}>
-            <span className="nexus-title" style={{ fontSize: 15 }}>NS</span>
-            <span style={styles.titleKeyText}>
-              <strong>Nexus Supporter</strong> — shown before your name, like a chess title.
-            </span>
-          </div>
-          <div style={styles.titleKeyRow}>
-            <span className="nexus-title" style={{ fontSize: 15 }}>NX</span>
-            <span style={styles.titleKeyText}>
-              <strong>Nexus Expert</strong> — the senior title, for our strongest supporters.
-            </span>
-          </div>
+          <p style={styles.titleKeyLead}>
+            In chess, the letters before a name say who someone is —{' '}
+            <span className="chess-title">GM</span>, <span className="chess-title">IM</span>,{' '}
+            <span className="chess-title">FM</span>. A Nexus title sits in that same
+            place, and everyone in every game, chat and leaderboard sees it.
+          </p>
           <p style={styles.titleKeyFoot}>
-            Your title appears everywhere your name does — chat, leaderboards, lobbies
-            and your profile — for as long as your support runs. It sits after a FIDE
-            title if you hold one: <span className="chess-title">GM</span>{' '}
+            It is not something anyone can pick up by playing more — it is only for
+            the people who chose to keep this place running. If you hold a FIDE
+            title, yours sits beside it: <span className="chess-title">GM</span>{' '}
             <span className="nexus-title">NS</span> {previewName}.
           </p>
         </div>
@@ -1019,13 +1023,6 @@ const styles = {
     marginBottom: 6,
   },
   /* "NS = Nexus Supporter". The expansion, right under the letters. */
-  tierTitleMeaning: {
-    marginTop: 2,
-    fontSize: 11.5,
-    fontWeight: 600,
-    color: C.textDim,
-    letterSpacing: '0.01em',
-  },
   /* A worked example of the user's own name with the title applied. */
   tierNamePreview: {
     marginTop: 8,
@@ -1052,13 +1049,14 @@ const styles = {
     border: `1px solid ${C.panelBorder}`,
     borderRadius: 'var(--radius-lg)',
   },
-  titleKeyRow: {
-    display: 'flex',
-    alignItems: 'baseline',
-    gap: 10,
-    marginBottom: 8,
+  // The one place the title is explained. Set slightly larger than body copy
+  // because it is the argument for the whole page, not a footnote.
+  titleKeyLead: {
+    margin: 0,
+    color: C.text,
+    fontSize: 15,
+    lineHeight: 1.6,
   },
-  titleKeyText: { color: C.textDim, fontSize: 13.5, lineHeight: 1.5 },
   titleKeyFoot: {
     margin: '10px 0 0',
     paddingTop: 10,
