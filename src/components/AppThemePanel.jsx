@@ -16,7 +16,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import api from '../api';
 import { useUiTheme } from '../contexts/UiThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { hasExplicitBoardChoice } from '../contexts/BoardThemeContext';
+import { hasManualBoardChoice } from '../contexts/BoardThemeContext';
 
 // Mirrors FREE_THEME_IDS in backend/models/ThemeUnlock.js. Only used when the
 // server cannot be reached — the real list comes from GET /api/auth/themes, and
@@ -43,7 +43,7 @@ export default function AppThemePanel() {
   useEffect(() => {
     if (!userId || boardChecked.current) return;
     boardChecked.current = true;
-    setBoardUntouched(!hasExplicitBoardChoice(userId));
+    setBoardUntouched(!hasManualBoardChoice(userId));
   }, [userId]);
 
   const [owned, setOwned] = useState(null);      // Set of ids, null while loading
@@ -204,9 +204,9 @@ export default function AppThemePanel() {
           the pairing no longer applies to them, and the note would be a lie. */}
       {boardUntouched && (
         <p style={S.boardNote}>
-          ♟ Each theme comes with a matching chessboard. You can change the board
-          any time in <strong>Board Colours</strong> — after that it stays yours,
-          whatever theme you pick.
+          ♟ Each theme brings its own chessboard. Pick your own in{' '}
+          <strong>Board Colours</strong> and it stays yours from then on,
+          whatever theme you choose.
         </p>
       )}
 

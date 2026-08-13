@@ -49,6 +49,59 @@ function persistLocal(userId, boardId) {
   try { localStorage.setItem(storageKey(userId), boardId); } catch { /* ignore */ }
 }
 
+// WAS THE CURRENT BOARD CHOSEN BY THE USER, OR APPLIED BY A THEME?
+//
+// Every theme carries a matching board, and picking a theme should bring its
+// board along — every time, not just the first. But a board the user chose
+// themselves must never be overwritten.
+//
+// Those two rules only coexist if we can tell the two apart. The board id alone
+// cannot: applyPairedBoard writes the same key a manual pick does, so after one
+// pairing the user looked like they had chosen a board and every later theme
+// left it alone. "Each theme comes with a matching chessboard" was true exactly
+// once.
+//
+// Hence a marker written ALONGSIDE the board id, holding the id it applies to
+// rather than a bare boolean. Storing the id is what makes it self-correcting:
+// if the board is changed by any path that does not clear the marker, the
+// stored id no longer matches and the board is treated as manual — the safe
+// direction, since the cost is a board that stops following the theme, not one
+// that overwrites a deliberate choice.
+function autoKey(userId) {
+  return userId ? `boardThemeAuto_${userId}` : 'boardThemeAuto_guest';
+}
+
+function markBoardAuto(userId, boardId) {
+  try { localStorage.setItem(autoKey(userId), boardId); } catch { /* ignore */ }
+}
+
+function clearBoardAuto(userId) {
+  try { localStorage.removeItem(autoKey(userId)); } catch { /* ignore */ }
+}
+
+/**
+ * Has the user picked a board THEMSELVES?
+ *
+ * Distinct from hasExplicitBoardChoice, which answers the narrower "is there a
+ * board stored at all" — that is true even for a board a theme applied, and is
+ * what applyPairedBoard needs internally. This is the question the UI asks:
+ * "will themes still change this person's board?"
+ */
+export function hasManualBoardChoice(userId) {
+  return hasExplicitBoardChoice(userId) && !boardIsAutoApplied(userId);
+}
+
+/** True when the board currently in use was applied by a theme, not chosen. */
+function boardIsAutoApplied(userId) {
+  try {
+    const auto = localStorage.getItem(autoKey(userId));
+    if (!auto) return false;
+    return auto === localStorage.getItem(storageKey(userId));
+  } catch {
+    return false;
+  }
+}
+
 // Whether the account's stored board has been fetched yet, per user id.
 //
 // On a NEW DEVICE localStorage is empty, so hasExplicitBoardChoice() answers
@@ -92,23 +145,35 @@ export function applyPairedBoard(userId, boardId) {
   // Not yet known whether the account has a board — see boardLoaded above.
   // Skipping is safe: the pairing is a nicety, overwriting a real choice is not.
   if (!isBoardLoaded(userId)) return false;
-  if (!boardId || hasExplicitBoardChoice(userId)) return false;
+  if (!boardId) return false;
+
+  // Apply when the user has NO board, or when the board they have was itself
+  // applied by a theme. Only a board they picked themselves blocks this.
+  //
+  // The second case is what makes "every theme brings its board" work: without
+  // it the first pairing looked like a manual choice and froze the board
+  // forever, so a user who switched from Gold Sovereign to Royal Violet kept
+  // the wooden board from the theme they had left behind.
+  if (hasExplicitBoardChoice(userId) && !boardIsAutoApplied(userId)) return false;
+
   const found = BOARD_THEMES.find(t => t.id === boardId);
   if (!found) return false;
   try {
-    // Written under the SAME key a manual pick uses. That is intended: from
-    // here on the user counts as having a board, so later theme changes leave
-    // it alone. The pairing applies once, on the first theme they choose.
+    // Written under the SAME key a manual pick uses — every consumer reads one
+    // key, so the board applies everywhere immediately. What separates the two
+    // is the companion marker written below, not a separate storage slot.
     localStorage.setItem(storageKey(userId), boardId);
   } catch {
     return false;
   }
+  // Record that THIS board came from a theme, so the next theme may replace it.
+  markBoardAuto(userId, boardId);
 
   // Persist to the account as well, so the paired board follows the user to
   // another device instead of that device re-deriving it (or not, once its own
   // localStorage has a theme but no board).
   if (userId) {
-    api.post('/api/auth/appearance', { boardTheme: boardId })
+    api.post('/api/auth/appearance', { boardTheme: boardId, boardThemeAuto: true })
       .catch(() => { /* offline — applied locally regardless */ });
   }
   // Tell any mounted provider to re-read, so boards on screen update without a
@@ -175,7 +240,11 @@ export function BoardThemeProvider({ children, userId }) {
         // user regardless of whether this particular effect is still mounted.
         markBoardLoaded(userId);
         if (!alive) return;
-        const { unlocked, light, dark, boardTheme: serverBoard } = res.data || {};
+        const {
+          unlocked, light, dark,
+          boardTheme: serverBoard,
+          boardThemeAuto: serverAuto,
+        } = res.data || {};
         const custom = unlocked && light && dark
           ? { id: CUSTOM_THEME_ID, name: 'My colours', light, dark }
           : null;
@@ -203,15 +272,26 @@ export function BoardThemeProvider({ children, userId }) {
             return;                                       // bought colours missing — leave default
           }
           const found = BOARD_THEMES.find(t => t.id === serverBoard);
-          if (found) { setTheme(found); persistLocal(userId, serverBoard); }
+          if (found) {
+            setTheme(found);
+            persistLocal(userId, serverBoard);
+            // Carry the auto/manual distinction across. Without this a board
+            // that a theme applied on the laptop would look hand-picked on the
+            // phone, and would stop following themes on that device only.
+            if (serverAuto) markBoardAuto(userId, serverBoard);
+            else clearBoardAuto(userId);
+          }
           return;
         }
 
         // Local choice exists but the account has none (a user from before the
-        // board was stored server-side). Push it up so the NEXT device has it.
+        // board was stored server-side). Push it up so the NEXT device has it,
+        // with the auto flag this device holds so the distinction travels too.
         if (!serverBoard) {
-          api.post('/api/auth/appearance', { boardTheme: localChoice })
-            .catch(() => { /* offline — retried next session */ });
+          api.post('/api/auth/appearance', {
+            boardTheme: localChoice,
+            boardThemeAuto: boardIsAutoApplied(userId),
+          }).catch(() => { /* offline — retried next session */ });
         }
       })
       .catch(() => {
@@ -232,15 +312,19 @@ export function BoardThemeProvider({ children, userId }) {
   // device knows the choice and the next one does not.
   const pushBoard = useCallback((boardId) => {
     if (!userId) return;
-    api.post('/api/auth/appearance', { boardTheme: boardId })
+    api.post('/api/auth/appearance', { boardTheme: boardId, boardThemeAuto: false })
       .catch(() => { /* offline — local choice already applied */ });
   }, [userId]);
 
+  // A DELIBERATE board choice. Clears the auto marker, which is what stops
+  // themes from touching the board ever again — the user has now said what they
+  // want and no palette change may override it.
   const setThemeById = useCallback((id) => {
     if (id === CUSTOM_THEME_ID) {
       if (!customTheme) return;              // not bought / not set yet
       setTheme(customTheme);
       persistLocal(userId, CUSTOM_THEME_ID);
+      clearBoardAuto(userId);
       pushBoard(CUSTOM_THEME_ID);
       return;
     }
@@ -248,6 +332,7 @@ export function BoardThemeProvider({ children, userId }) {
     if (!found) return;
     setTheme(found);
     persistLocal(userId, id);
+    clearBoardAuto(userId);
     pushBoard(id);
   }, [userId, customTheme, pushBoard]);
 
@@ -258,6 +343,9 @@ export function BoardThemeProvider({ children, userId }) {
     setCustomThemeState(custom);
     setTheme(custom);
     persistLocal(userId, CUSTOM_THEME_ID);
+    // Someone who paid to pick their own square colours has stated a
+    // preference more emphatically than anyone — a theme must never replace it.
+    clearBoardAuto(userId);
     pushBoard(CUSTOM_THEME_ID);
   }, [userId, pushBoard]);
 
