@@ -2,7 +2,7 @@
 import { useSearchParams } from 'react-router-dom';
 import CustomBoardColors from '../components/CustomBoardColors';
 import { BOARD_THEMES, useBoardTheme } from '../contexts/BoardThemeContext';
-import { useUiTheme } from '../contexts/UiThemeContext';
+import AppThemePanel from '../components/AppThemePanel';
 import { PIECE_THEMES, usePieceTheme } from '../contexts/PieceThemeContext';
 import AvatarStudio from '../components/AvatarStudio';
 import ProfilePanel from '../components/ProfilePanel';
@@ -132,7 +132,7 @@ function OptionCard({ isActive, onClick, defaultBadge, children }) {
 export default function SettingsPage() {
   const { theme: activeTheme, setThemeById } = useBoardTheme();
   const { pieceTheme: activePiece, setPieceThemeById } = usePieceTheme();
-  const { themeId: uiThemeId, themes: uiThemes, setThemeId: setUiThemeId } = useUiTheme();
+  // Theme state now lives in <AppThemePanel>, which also owns unlock status.
   // ?tab=profile opens the Profile tab directly, so anything that needs a user
   // to fill in their Chess.com / Lichess usernames can link straight there
   // instead of dropping them on Board themes to go hunting.
@@ -220,85 +220,7 @@ export default function SettingsPage() {
         )}
 
         {/* ── App Theme Tab ── */}
-        {activeTab === 'app' && (
-          <section style={{
-            background: 'var(--color-surface)',
-            border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-xl)',
-            padding: '28px 24px',
-          }}>
-            <h2 style={{ fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 }}>
-              ✨ App Theme
-            </h2>
-            <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 24 }}>
-              Changes the colours of the whole app. Sizes and layout stay the same —
-              only the palette changes. Your choice is saved to this account.
-            </p>
-
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-              gap: 16,
-            }}>
-              {uiThemes.map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setUiThemeId(t.id)}
-                  aria-pressed={t.id === uiThemeId}
-                  style={{
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    padding: 0,
-                    overflow: 'hidden',
-                    borderRadius: 'var(--radius-lg)',
-                    background: 'var(--color-surface-2)',
-                    border: t.id === uiThemeId
-                      ? '2px solid var(--color-accent)'
-                      : '2px solid var(--color-border)',
-                    boxShadow: t.id === uiThemeId ? 'var(--accent-glow)' : 'none',
-                    transition: 'border-color var(--dur-fast), box-shadow var(--dur-fast)',
-                  }}
-                >
-                  {/* Swatch: a miniature of the theme drawn in its OWN colours,
-                      not the active ones, so all six previews are comparable at
-                      a glance without switching to each in turn. */}
-                  <div style={{
-                    background: t.swatch.bg,
-                    padding: '16px 14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                  }}>
-                    <span style={{
-                      width: 34, height: 34, flex: 'none',
-                      borderRadius: 'var(--radius-md)',
-                      background: t.swatch.surface,
-                      border: `1px solid ${t.swatch.accent}55`,
-                    }} />
-                    <span style={{ display: 'flex', flexDirection: 'column', gap: 5, flex: 1 }}>
-                      <span style={{ height: 7, width: '75%', borderRadius: 'var(--radius-sm)', background: t.swatch.text, opacity: 0.85 }} />
-                      <span style={{ height: 7, width: '45%', borderRadius: 'var(--radius-sm)', background: t.swatch.accent }} />
-                    </span>
-                  </div>
-
-                  <div style={{ padding: '10px 14px 13px' }}>
-                    <div style={{
-                      fontSize: 13.5, fontWeight: 700,
-                      color: t.id === uiThemeId ? 'var(--color-accent)' : 'var(--color-text)',
-                      marginBottom: 2,
-                    }}>
-                      {t.name}{t.id === uiThemeId ? ' ✓' : ''}
-                    </div>
-                    <div style={{ fontSize: 11.5, color: 'var(--color-text-muted)', lineHeight: 1.45 }}>
-                      {t.description}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </section>
-        )}
+        {activeTab === 'app' && <AppThemePanel />}
 
         {/* ── Board Theme Tab ── */}
         {activeTab === 'board' && (
