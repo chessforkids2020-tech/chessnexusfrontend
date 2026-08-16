@@ -7,12 +7,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api';
 import { copyText } from '../../utils/clipboard';
+import CoachRichText from '../../components/CoachRichText';
+import CoachProse from '../../components/CoachProse';
 import './CoachDashboard.css';
 import './CoachOnboarding.css'; // .btn-ghost / .btn-primary live here
 import './CoachProfile.css';
 
 // Only these are editable server-side (routes/coach.js `allowed`). Keep in sync.
-const EDITABLE = ['coachName', 'coachCountry', 'hourlyRate', 'rateCurrency',
+const EDITABLE = ['coachName', 'coachCountry', 'hourlyRate', 'monthlyRate', 'rateCurrency',
   'coachType', 'academyName', 'bio', 'specialization',
   // Public profile — everything below appears on /coach/<code> and in the
   // /coaches directory. All optional; a coach who fills in none of it simply
@@ -104,7 +106,14 @@ export default function CoachProfile() {
   const p = status.coachProfile || {};
   const access = status.access || {};
   const isAcademy = p.coachType === 'academy';
-  const rate = p.hourlyRate ? `${p.rateCurrency === 'USD' ? '$' : '₹'}${p.hourlyRate} / hour` : null;
+  // Either rate, both, or neither. A coach who quotes only a monthly package
+  // used to have nothing to show here, because the display only ever read
+  // hourlyRate.
+  const sym = p.rateCurrency === 'USD' ? '$' : '₹';
+  const rateParts = [];
+  if (p.hourlyRate) rateParts.push(`${sym}${p.hourlyRate} / hour`);
+  if (p.monthlyRate) rateParts.push(`${sym}${p.monthlyRate} / month`);
+  const rate = rateParts.length ? rateParts.join(' · ') : null;
 
   const startEdit = () => {
     const next = {};
@@ -153,6 +162,7 @@ export default function CoachProfile() {
       const body = {
         ...form,
         hourlyRate: Number(form.hourlyRate) || 0,
+        monthlyRate: Number(form.monthlyRate) || 0,
         // The form edits languages as a comma-separated string; the server
         // expects a list (it also accepts the string, but sending the real
         // shape keeps the contract honest).
@@ -332,9 +342,16 @@ export default function CoachProfile() {
                   <input className="cp-input" value={form.academyName} onChange={set('academyName')} />
                 </div>
               )}
+              {/* Two rates, both optional. Many coaches sell a monthly package
+                  and only quote an hourly figure for one-off lessons; others do
+                  the reverse. Leave one blank and only the other is shown. */}
               <div className="cp-field">
-                <label>Hourly rate</label>
+                <label>Hourly rate <span className="cp-optional">optional</span></label>
                 <input className="cp-input" type="number" min="0" value={form.hourlyRate} onChange={set('hourlyRate')} />
+              </div>
+              <div className="cp-field">
+                <label>Monthly rate <span className="cp-optional">optional</span></label>
+                <input className="cp-input" type="number" min="0" value={form.monthlyRate} onChange={set('monthlyRate')} />
               </div>
               <div className="cp-field">
                 <label>Currency</label>
@@ -350,9 +367,13 @@ export default function CoachProfile() {
             </div>
             <div className="cp-field">
               <label>Bio</label>
-              <textarea rows={10}
-                        value={form.bio} onChange={set('bio')}
-                        placeholder="Tell students and parents about your coaching. How long you have taught, how a lesson runs, who you work best with. Write as much as you like — there is no limit." />
+              {/* Rich text so a coach can head sections and list things, rather
+                  than one unbroken wall of prose. No link button — see
+                  components/CoachRichText.jsx. */}
+              <CoachRichText
+                value={form.bio}
+                onChange={(html) => setForm(f => ({ ...f, bio: html }))}
+                placeholder="Tell students and parents about your coaching. How long you have taught, how a lesson runs, who you work best with. Write as much as you like — there is no limit." />
             </div>
 
             {/* ── PUBLIC PROFILE ──────────────────────────────────────────
@@ -453,9 +474,10 @@ export default function CoachProfile() {
 
               <div className="cp-field">
                 <label>Achievements</label>
-                <textarea rows={6}
-                          value={form.coachAchievements} onChange={set('coachAchievements')}
-                          placeholder="Titles, tournament results, students you have coached to norms or national events. One per line reads best." />
+                <CoachRichText
+                  value={form.coachAchievements}
+                  onChange={(html) => setForm(f => ({ ...f, coachAchievements: html }))}
+                  placeholder="Titles, tournament results, students you have coached to norms or national events. A bulleted list reads best." />
               </div>
 
               <div className="cp-toggles">
@@ -492,10 +514,12 @@ export default function CoachProfile() {
             <Row label="Coach type">{isAcademy ? 'Academy' : 'Individual'}</Row>
             {isAcademy && <Row label="Academy">{p.academyName || NOT_SET}</Row>}
             <Row label="Specialization">{p.specialization || NOT_SET}</Row>
-            <Row label="Hourly rate">{rate || NOT_SET}</Row>
+            {/* "Rate", not "Hourly rate" — this line may now show an hourly
+                figure, a monthly one, or both. */}
+            <Row label="Rate">{rate || NOT_SET}</Row>
             <Row label="Bio">
               {p.bio
-                ? <span style={{ whiteSpace: 'pre-wrap' }}>{p.bio}</span>
+                ? <CoachProse html={p.bio} />
                 : NOT_SET}
             </Row>
             {/* User.chessTitle — granted by an approved title claim, never
@@ -525,7 +549,7 @@ export default function CoachProfile() {
             </Row>
             <Row label="Achievements">
               {p.coachAchievements
-                ? <span style={{ whiteSpace: 'pre-wrap' }}>{p.coachAchievements}</span>
+                ? <CoachProse html={p.coachAchievements} />
                 : NOT_SET}
             </Row>
             {/* Where the public page stands. Both gates are shown because a

@@ -1,0 +1,57 @@
+/* components/CoachProse.css
+ *
+ * How a coach's own words look once published.
+ *
+ * Set LARGER and looser than the surrounding UI on purpose. This is the part of
+ * the page a parent actually reads before deciding whether to book — everything
+ * around it is labels and figures. At the same size as a form label it read as
+ * more UI chrome; at 15.5px with a 1.75 line-height it reads as prose.
+ *
+ * `white-space: pre-wrap` is what keeps LEGACY bios intact: everything written
+ * before the editor became rich text is plain text with real newlines, and
+ * without this it would collapse into one paragraph. Quill's own output uses
+ * <p>, which is unaffected.
+ */
+.coach-prose {
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--color-text);
+  white-space: pre-wrap;
+  max-width: 68ch;          /* a comfortable measure — long lines are unread */
+}
+
+.coach-prose > :first-child { margin-top: 0; }
+.coach-prose > :last-child { margin-bottom: 0; }
+
+.coach-prose p { margin: 0 0 12px; }
+
+/* A coach's own headings inside their bio. Accent-coloured so the structure
+   they created is visible at a glance, and clearly subordinate to the section
+   heading above them. */
+.coach-prose h2,
+.coach-prose h3 {
+  color: var(--color-accent);
+  font-weight: 800;
+  margin: 20px 0 8px;
+  letter-spacing: -0.01em;
+}
+.coach-prose h2 { font-size: 18px; }
+.coach-prose h3 { font-size: 16px; }
+
+.coach-prose ul,
+.coach-prose ol { margin: 0 0 12px; padding-left: 1.35em; }
+.coach-prose li { margin: 4px 0; }
+
+/* Bold is how a coach highlights a result or a title — give it real weight and
+   the brighter text colour so it actually stands out from the paragraph. */
+.coach-prose strong,
+.coach-prose b { font-weight: 800; color: var(--color-text); }
+
+.coach-prose em,
+.coach-prose i { font-style: italic; color: var(--color-text-muted); }
+
+.coach-prose u { text-decoration-color: var(--color-accent-a40); }
+
+/* Quill writes empty paragraphs for blank lines; keep them from collapsing so
+   the spacing the coach saw in the editor survives. */
+.coach-prose p:empty::after { content: '\00a0'; }

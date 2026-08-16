@@ -252,6 +252,18 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
   const [savingNotes, setSavingNotes] = useState(false);
   useEffect(() => { setNotes(data?.link?.notes || ''); }, [data]);
 
+  // The note the PARENT reads on the progress report. A different field from
+  // `notes` above and never mixed with it — see the model comment on
+  // CoachStudent.reportNote.
+  const [reportNote, setReportNote] = useState('');
+  const [reportNoteAt, setReportNoteAt] = useState(null);
+  const [reportNoteSaved, setReportNoteSaved] = useState('');
+  const [savingReportNote, setSavingReportNote] = useState(false);
+  useEffect(() => {
+    setReportNote(data?.link?.reportNote || '');
+    setReportNoteAt(data?.link?.reportNoteAt || null);
+  }, [data]);
+
   // Parent progress report sharing (copy the private link / open it in a new tab).
   const [shareMsg, setShareMsg] = useState('');
   const resolveReportUrl = async () => {
@@ -297,6 +309,18 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       setTimeout(() => setNotesSaved(''), 2000);
     } catch { setNotesSaved('Could not save'); }
     finally { setSavingNotes(false); }
+  };
+
+  // Separate endpoint from saveNotes, deliberately — see the route comment.
+  const saveReportNote = async () => {
+    setSavingReportNote(true); setReportNoteSaved('');
+    try {
+      const r = await api.patch(`/api/coach/students/${studentLinkId}/report-note`, { reportNote });
+      setReportNoteAt(r.data?.reportNoteAt || null);
+      setReportNoteSaved('✓ Parents will see this');
+      setTimeout(() => setReportNoteSaved(''), 2600);
+    } catch { setReportNoteSaved('Could not save'); }
+    finally { setSavingReportNote(false); }
   };
 
   // Group / batch tag for this student — editable so a coach can move a student
@@ -513,6 +537,37 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           placeholder="Private notes about this student (only you see these)…"
           style={{ width: '100%', minHeight: 70, resize: 'vertical', boxSizing: 'border-box', padding: 10, borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: '#e7eaf0', fontSize: 14 }}
         />
+      </div>
+
+      {/* ── Note for the parent ──────────────────────────────────────────
+          Sits directly under the private notes on purpose, and is styled
+          differently, because the two are one careless click apart: the box
+          above is only ever seen by the coach, this one is published to
+          anyone holding the report link. The heading, the border colour and
+          the placeholder all say so — a coach must never have to remember
+          which box they are typing in. */}
+      <div className="coach-section coach-parent-note" style={{ marginTop: 12 }}>
+        <div className="coach-section-head">
+          <h2>💬 Note for the parent</h2>
+          <button className="btn-ghost" onClick={saveReportNote} disabled={savingReportNote}>
+            {savingReportNote ? 'Saving…' : 'Save'}{reportNoteSaved && ` · ${reportNoteSaved}`}
+          </button>
+        </div>
+        <p className="coach-parent-note-hint">
+          This appears on the progress report you share with parents. Write it
+          for someone who may not play chess.
+        </p>
+        <textarea
+          value={reportNote}
+          onChange={(e) => setReportNote(e.target.value)}
+          maxLength={1500}
+          placeholder="e.g. Aarav has worked hard this month and his tactics have improved a lot. He needs to slow down in longer games — we are working on that."
+          style={{ width: '100%', minHeight: 90, resize: 'vertical', boxSizing: 'border-box', padding: 10, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-accent-a30)', background: 'var(--color-accent-a06)', color: '#e7eaf0', fontSize: 14 }}
+        />
+        <div className="coach-parent-note-foot">
+          {reportNote.length}/1500
+          {reportNoteAt && ` · last updated ${new Date(reportNoteAt).toLocaleDateString()}`}
+        </div>
       </div>
 
       {/* ── Game ratings (Bullet / Blitz / Rapid / Classical) ─────── */}

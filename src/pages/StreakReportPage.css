@@ -205,6 +205,21 @@
   font-variant-numeric: tabular-nums; line-height: 1.15;
 }
 .sr-stat-l { font-size: 11.5px; color: var(--sr-dim); margin-top: 3px; }
+
+/* Tournament performance is deliberately the one section that looks different.
+   It is the answer to "am I getting stronger?", and on a page of thirty numbers
+   that question deserves to be found without hunting. An accent left edge and a
+   faint accent wash, nothing louder — it should read as emphasis, not alarm. */
+.sr-perf {
+  border-left: 3px solid var(--sr-cyan);
+  background: linear-gradient(90deg, var(--color-accent-a08), transparent 60%);
+  padding-left: 16px;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+.sr-perf .sr-stat-v { color: var(--sr-cyan); }
+/* Second line under a stat whose value is a name rather than a number —
+   "Fork" needs "83% solved" beside it to mean anything. */
+.sr-stat-sub { font-size: 11px; color: var(--sr-dim); opacity: 0.75; margin-top: 2px; }
 .sr-good { color: var(--sr-good); }
 .sr-bad  { color: var(--sr-bad); }
 
@@ -228,6 +243,11 @@
   background: var(--color-black-a20);
 }
 .sr-table th[scope="row"] { text-align: left; font-weight: 600; color: var(--sr-text); white-space: nowrap; }
+/* Body cells had no colour of their own and fell back to whatever the page
+   inherited — near-invisible on this dark panel. Only the row label (th) and
+   the header were ever styled, so any table whose data sits in td rendered
+   unreadable. */
+.sr-table tbody td { color: var(--sr-text); }
 .sr-table tbody tr:hover { background: var(--color-accent-a06); }
 
 /* ── Moment categories ────────────────────────────────────────────── */

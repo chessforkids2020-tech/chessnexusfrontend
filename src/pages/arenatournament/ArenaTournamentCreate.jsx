@@ -148,15 +148,40 @@ export default function ArenaTournamentCreate() {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
           }}>
-            Create Arena Tournament
+            {coachMode ? 'Create Class Tournament' : 'Create Arena Tournament'}
           </h1>
-          <p style={{ 
-            color: 'var(--color-text-muted)', 
-            marginBottom: '30px',
+          <p style={{
+            color: 'var(--color-text-muted)',
+            marginBottom: coachMode ? '16px' : '30px',
             fontStyle: 'italic'
           }}>
-            Set up your tournament and share the code with participants
+            {coachMode
+              ? 'Only your students can see and join this one'
+              : 'Set up your tournament and share the code with participants'}
           </p>
+
+          {/* The form is IDENTICAL in both modes, and the only thing that makes
+              a tournament private is the ?coach=1 flag in the URL. A coach who
+              arrives here from the public page gets a public tournament, which
+              is correct — but they had no way to tell the two apart. Say which
+              one they are about to create. */}
+          {coachMode && (
+            <div style={{
+              display: 'flex', alignItems: 'flex-start', gap: 10,
+              background: 'var(--color-accent-a12)',
+              border: '1px solid var(--color-accent-a30)',
+              borderRadius: 'var(--radius-lg)',
+              padding: '12px 14px',
+              marginBottom: '24px',
+            }}>
+              <span style={{ fontSize: 18, lineHeight: 1 }} aria-hidden="true">🎓</span>
+              <div style={{ fontSize: 13, color: 'var(--color-text)', lineHeight: 1.6 }}>
+                <strong>Private to your class.</strong> This tournament will not
+                appear in the public tournament list. Your students find it in
+                their <em>My Coach → Activities</em> tab — no join code to share.
+              </div>
+            </div>
+          )}
 
           {error && (
             <div style={{

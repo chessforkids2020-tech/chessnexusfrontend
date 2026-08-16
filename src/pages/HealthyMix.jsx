@@ -726,7 +726,16 @@ export default function HealthyMix() {
         const vMoves = variations[activeVar].moves;
         const vAt = varViewIdx === null ? vMoves.length - 1 : varViewIdx;
         baseFen = vMoves[vAt] ? vMoves[vAt].fen : plies[variations[activeVar].startIdx].fen;
-      } else if (viewIdx !== null && viewIdx < plies.length - 1) {
+      } else if (viewIdx !== null && plies[viewIdx]) {
+        // The BROWSED ply, whichever it is — including the last one.
+        //
+        // This used to require `viewIdx < plies.length - 1` and otherwise fall
+        // through to chessRef, on the assumption that being on the last ply
+        // meant the live board was already there. After exploring a variation
+        // it is not: chessRef sits at the end of that sideline. A move played
+        // from the last mainline ply was then applied to the VARIATION's
+        // position, which is the same confusion that made the board disagree
+        // with the highlighted move.
         baseFen = plies[viewIdx].fen;
       } else {
         baseFen = chessRef.current.fen();
@@ -755,7 +764,13 @@ export default function HealthyMix() {
         setVarViewIdx(null);
         setViewIdx(null);
       } else {
+        // Extending the mainline at its end. viewIdx must go back to null
+        // ("follow the live position") or the board would stay pinned to the
+        // ply that was being viewed when the move was played — now that
+        // goToPly sets a real index for the last ply, that index no longer
+        // moves on its own.
         pushPly(node.san, node.fen, node.from, node.to);
+        setViewIdx(null);
       }
       return true;
     }
@@ -954,11 +969,25 @@ export default function HealthyMix() {
       : lastMove;
 
   // Jumping to a MAINLINE ply always leaves whatever variation was active.
+  //
+  // viewIdx is ALWAYS the real index now, including for the last ply.
+  //
+  // It used to collapse the last ply to null, meaning "show the live position",
+  // on the assumption that the live position and the final ply are the same
+  // board. They are not, once the user has explored a variation: the live board
+  // (`fen`) sits at the end of whatever sideline they last played. So clicking
+  // the final mainline move — "Qe6" in the report — said "go live", and live was
+  // the variation's position after Qxf5. The move highlighted and the board
+  // shown disagreed, and only ever for the LAST move, which is why it looked
+  // intermittent.
+  //
+  // Every other ply already set a real index and behaved correctly; this makes
+  // the last one behave the same way.
   const goToPly = useCallback((i) => {
     const clamped = Math.max(0, Math.min(plies.length - 1, i));
     setActiveVar(null);
     setVarViewIdx(null);
-    setViewIdx(clamped >= plies.length - 1 ? null : clamped); // last ply = back to live
+    setViewIdx(clamped);
   }, [plies.length]);
 
   // Jump to a ply inside a specific variation.

@@ -48,7 +48,13 @@ function shortBioOf(bio, max = 170) {
 }
 
 export function CoachCard({ c }) {
-  const rate = c.hourlyRate ? `${c.rateCurrency === 'USD' ? '$' : '₹'}${c.hourlyRate}/hr` : null;
+  // A coach may quote hourly, monthly, or both. Show whichever they gave —
+  // reading only hourlyRate left monthly-only coaches with no price at all.
+  const rateSym = c.rateCurrency === 'USD' ? '$' : '₹';
+  const rate = [
+    c.hourlyRate ? `${rateSym}${c.hourlyRate}/hr` : null,
+    c.monthlyRate ? `${rateSym}${c.monthlyRate}/mo` : null,
+  ].filter(Boolean).join(' · ') || null;
   const best = c.ratings.fide || c.ratings.lichess || c.ratings.chesscom;
   const bestLabel = c.ratings.fide ? 'FIDE' : c.ratings.lichess ? 'Lichess' : 'Chess.com';
   const blurb = shortBioOf(c.bio);

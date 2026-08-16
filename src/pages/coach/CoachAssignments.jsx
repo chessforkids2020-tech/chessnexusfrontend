@@ -1108,7 +1108,12 @@ export default function CoachAssignments() {
                     <button
                       type="button"
                       className="ca-link"
-                      onClick={() => window.open('/arenatournament/create', '_blank')}
+                      /* ?coach=1 — this is the COACH side, so the tournament is
+                         private to their students and must never appear in the
+                         public list on /arenatournament. Without the flag the
+                         backend creates an ordinary public tournament, which is
+                         how coach events were leaking into the open list. */
+                      onClick={() => window.open('/arenatournament/create?coach=1', '_blank')}
                       style={{ background: 'none', border: 'none', color: '#06b6d4', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
                     >
                       create a new tournament

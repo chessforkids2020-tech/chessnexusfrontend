@@ -597,7 +597,10 @@ export default function AdminCoaches() {
                               <DetailLine k="Country" v={c.country} />
                               <DetailLine k="Coach code" v={c.coachCode} />
                               <DetailLine k="Specialization" v={c.specialization} />
-                              <DetailLine k="Rate" v={c.hourlyRate ? `${c.rateCurrency === "USD" ? "$" : "₹"}${c.hourlyRate}/hr` : ""} />
+                              <DetailLine k="Rate" v={[
+                                c.hourlyRate ? `${c.rateCurrency === "USD" ? "$" : "₹"}${c.hourlyRate}/hr` : null,
+                                c.monthlyRate ? `${c.rateCurrency === "USD" ? "$" : "₹"}${c.monthlyRate}/mo` : null,
+                              ].filter(Boolean).join(" · ")} />
                               <DetailLine k="Social" v={c.socialUsername ? `${c.socialPlatform}: ${c.socialUsername}` : ""} />
                               <DetailLine k="Onboarded" v={fmtDate(c.onboardedAt || c.appliedAt)} />
                               <DetailLine k="Verified" v={c.verified ? "Yes" : "No"} />

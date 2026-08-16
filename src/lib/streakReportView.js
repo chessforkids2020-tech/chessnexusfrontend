@@ -114,6 +114,18 @@ export function viewComparison(report) {
     puzzleAccuracy: pt.puzzleAccuracy ?? null,
     bestStreak:     pt.bestStreak     ?? null,
     daysPractised:  pt.daysPractised  ?? null,
+    // Average solve time, from attempts that actually recorded one. Absent
+    // rather than 0 when nothing did — see the builder: a 0 here would read as
+    // "solved instantly", which is the opposite of the truth.
+    avgPuzzleSeconds: pt.avgPuzzleSeconds ?? null,
+    // Simple material-losing tactics missed, per ANALYSED game. Null when no
+    // games were analysed: a rate from zero games is unknown, not 0.0.
+    oneMoveLossesPerGame: p.moments?.oneMoveLossesPerGame ?? null,
+    // Chess Nexus tournament performance rating — the figure that shows
+    // improvement before Elo catches up. Null below the minimum sample.
+    performance:      p.performance?.performance ?? null,
+    performanceBlitz: p.performance?.byCategory?.blitz?.performance ?? null,
+    performanceRapid: p.performance?.byCategory?.rapid?.performance ?? null,
     // Games from bySource — the games actually collected and analysed. NOT
     // StreakDay.externalGames, which is a streak GATE: it stops counting once a
     // day has one external game, so it reported 9 for a student with 26.

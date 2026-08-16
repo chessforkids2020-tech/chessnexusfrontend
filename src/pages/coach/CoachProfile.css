@@ -167,6 +167,17 @@
   color: rgba(226, 232, 240, 0.6);
   margin-bottom: 6px;
 }
+/* "optional" beside a label. Lighter than the label itself so it reads as a
+   note rather than part of the field name — used on the two rate boxes, where
+   a coach fills in one, the other, or both. */
+.cp-optional {
+  font-weight: 500;
+  font-size: 10.5px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: rgba(226, 232, 240, 0.35);
+  margin-left: 5px;
+}
 .cp-input,
 .cp-form textarea,
 .cp-form select {

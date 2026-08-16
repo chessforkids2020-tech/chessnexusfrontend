@@ -17,6 +17,7 @@
 // the coach approves: that flow already exists at /join-coach/<code> and keeps
 // the coach in control of who reaches them.
 import React, { useEffect, useState } from 'react';
+import CoachProse from '../components/CoachProse';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api';
 import SEO from '../components/SEO';
@@ -74,9 +75,13 @@ export default function PublicCoachPage() {
   }
 
   const c = state.coach;
-  const rate = c.hourlyRate
-    ? `${c.rateCurrency === 'USD' ? '$' : '₹'}${c.hourlyRate}`
-    : null;
+  // Hourly, monthly, or both — whichever the coach quoted. The unit travels
+  // WITH the number so the markup never has to assume one.
+  const rateSym = c.rateCurrency === 'USD' ? '$' : '₹';
+  const rate = [
+    c.hourlyRate ? `${rateSym}${c.hourlyRate} / hour` : null,
+    c.monthlyRate ? `${rateSym}${c.monthlyRate} / month` : null,
+  ].filter(Boolean).join(' · ') || null;
   const years = c.coachingSince ? new Date(c.coachingSince).getFullYear() : null;
 
   return (
@@ -137,10 +142,13 @@ export default function PublicCoachPage() {
               </div>
             )}
 
+            {/* The unit is part of `rate` now, not appended here: a monthly
+                figure with "/ hour" hardcoded after it would misprice the
+                coach on their own public page. */}
             {rate && (
               <div className="pc-row">
-                <dt>Hourly rate</dt>
-                <dd>{rate} / hour</dd>
+                <dt>Rate</dt>
+                <dd>{rate}</dd>
               </div>
             )}
 
@@ -173,19 +181,20 @@ export default function PublicCoachPage() {
       </header>
 
       {/* ── The long read ──────────────────────────────────────────────── */}
+      {/* The coach's own words, rendered with THEIR formatting — headings,
+          bold and lists they added in the editor. Sanitised on save (see
+          backend/helpers/coachRichText.js), never at render time. */}
       {c.bio && (
         <section className="pc-section">
           <h2>About {c.name.split(' ')[0]}</h2>
-          {/* pre-wrap, not a markdown renderer: the coach typed plain text with
-              their own line breaks, and those are what they meant. */}
-          <p className="pc-prose">{c.bio}</p>
+          <CoachProse html={c.bio} />
         </section>
       )}
 
       {c.achievements && (
         <section className="pc-section">
           <h2>Achievements</h2>
-          <p className="pc-prose">{c.achievements}</p>
+          <CoachProse html={c.achievements} />
         </section>
       )}
 

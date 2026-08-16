@@ -1,0 +1,75 @@
+/* components/CoachRichText.css
+ *
+ * Quill ships a LIGHT theme (quill.snow.css): white background, black toolbar
+ * icons, grey borders. Dropped into this app unstyled it renders as a white
+ * slab with near-invisible controls, which is what the screenshot of the raw
+ * editor showed. Everything here is re-pointed at the theme tokens so the
+ * editor belongs to whichever palette the coach is using.
+ */
+
+.crt .ql-toolbar.ql-snow,
+.crt .ql-container.ql-snow {
+  border-color: var(--color-border);
+}
+
+.crt .ql-toolbar.ql-snow {
+  background: var(--color-surface-2);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.crt .ql-container.ql-snow {
+  background: var(--color-surface);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.crt .ql-editor {
+  min-height: 180px;
+  color: var(--color-text);
+  line-height: 1.7;
+}
+
+.crt .ql-editor.ql-blank::before {
+  color: var(--color-text-faint);
+  font-style: normal;   /* Quill italicises the placeholder; the rest of the
+                           app does not, and it reads as emphasis rather than
+                           as a hint. */
+}
+
+/* Toolbar icons are SVG strokes and fills, both black by default. */
+.crt .ql-snow .ql-stroke { stroke: var(--color-text-muted); }
+.crt .ql-snow .ql-fill { fill: var(--color-text-muted); }
+.crt .ql-snow .ql-picker { color: var(--color-text-muted); }
+
+.crt .ql-snow .ql-toolbar button:hover .ql-stroke,
+.crt .ql-snow button:hover .ql-stroke,
+.crt .ql-snow button.ql-active .ql-stroke,
+.crt .ql-snow .ql-picker-label:hover .ql-stroke {
+  stroke: var(--color-accent);
+}
+.crt .ql-snow button:hover .ql-fill,
+.crt .ql-snow button.ql-active .ql-fill {
+  fill: var(--color-accent);
+}
+.crt .ql-snow .ql-picker-label:hover,
+.crt .ql-snow .ql-picker-item:hover,
+.crt .ql-snow .ql-picker-label.ql-active {
+  color: var(--color-accent);
+}
+
+/* The heading dropdown opens as a floating panel — light by default, so the
+   options were white-on-white. */
+.crt .ql-snow .ql-picker-options {
+  background: var(--color-surface-2);
+  border-color: var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+/* Headings inside the editor should look like what they will look like on the
+   public page, or the coach cannot judge their own formatting. */
+.crt .ql-editor h2 { font-size: 19px; font-weight: 800; margin: 16px 0 6px; }
+.crt .ql-editor h3 { font-size: 16px; font-weight: 700; margin: 14px 0 5px; }
+.crt .ql-editor ul,
+.crt .ql-editor ol { padding-left: 1.4em; }
+.crt .ql-editor li { margin: 3px 0; }

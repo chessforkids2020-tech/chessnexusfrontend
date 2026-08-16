@@ -317,6 +317,11 @@ export default function StreakReportPage() {
                   rows={[
                     { label: 'Puzzles solved', field: 'puzzles' },
                     { label: 'Puzzle accuracy', field: 'puzzleAccuracy', suffix: '%' },
+                    // Lower is better only up to a point — rushing is not a
+                    // virtue in puzzles — so this is NOT marked lowerIsBetter.
+                    // It is shown so a student can see whether they are
+                    // guessing quickly or thinking.
+                    { label: 'Avg time per puzzle', field: 'avgPuzzleSeconds', suffix: ' sec' },
                     { label: 'Best streak', sub: 'correct in a row', field: 'bestStreak' },
                     { label: 'Days practised', field: 'daysPractised' },
                   ]} />
@@ -328,8 +333,27 @@ export default function StreakReportPage() {
                     { label: 'Middlegame', field: 'middlegame', suffix: '%' },
                     { label: 'Endgame', field: 'endgame', suffix: '%' },
                     { label: 'Blunders per game', field: 'blundersPerGame', lowerIsBetter: true },
+                    // The most actionable line in the table for a beginner:
+                    // not "71% accuracy" but "you drop a piece to a one-move
+                    // shot about once a game".
+                    { label: 'Pieces lost to one-move tactics', sub: 'per game',
+                      field: 'oneMoveLossesPerGame', lowerIsBetter: true },
                     { label: 'Defensive score', field: 'defensiveScore', suffix: '%' },
-                    { label: 'Mistakes found', field: 'momentsFound', lowerIsBetter: true },
+                    // "Mistakes found" removed: it counted the moments the
+                    // analyser extracted, not the student's play, so it moved
+                    // with how many games were analysed rather than with how
+                    // well they played — and "Blunders per game" above already
+                    // answers the question honestly.
+                  ]} />
+
+                {/* The point of tracking performance rather than rating: this
+                    row is where "am I getting stronger?" is actually answered,
+                    report over report. */}
+                <CompareGroup label="Tournament performance — Chess Nexus" cols={comparison.columns}
+                  rows={[
+                    { label: 'Performance rating', sub: 'blitz + rapid', field: 'performance' },
+                    { label: 'Blitz', field: 'performanceBlitz' },
+                    { label: 'Rapid', field: 'performanceRapid' },
                   ]} />
 
                 <CompareGroup label="Games played" cols={comparison.columns}
@@ -419,6 +443,122 @@ export default function StreakReportPage() {
               );
             })}
           </div>
+        </section>
+      )}
+
+      {/* ── Tournament performance ───────────────────────────────────────
+          Set apart from every other number on the page, because it answers a
+          different question. A rating says what the system currently believes
+          about you and moves slowly; a PERFORMANCE rating says what strength
+          you actually played at over these five days. A student improving sees
+          it here first, weeks before their rating catches up.
+
+          Absent entirely below the minimum sample — see helpers/performanceRating.js.
+          A performance figure from three games is noise, and printing it would
+          be the kind of flattering nonsense this report is meant to avoid. */}
+      {p.performance && (
+        <section className="sr-section sr-perf">
+          <h2 className="sr-h2">Tournament performance</h2>
+          <p className="sr-sub">
+            How strongly you actually played in Chess Nexus tournaments over these
+            five days — blitz and rapid only. This is not your rating: it is the
+            level your results were worth, and it moves before your rating does.
+          </p>
+          <div className="sr-stats">
+            <Stat
+              label="Performance"
+              value={p.performance.performance}
+              sub={`${p.performance.score}/${p.performance.games} vs ~${p.performance.avgOpponent}`}
+            />
+            {p.performance.byCategory?.blitz && (
+              <Stat
+                label="Blitz"
+                value={p.performance.byCategory.blitz.performance}
+                sub={`${p.performance.byCategory.blitz.games} games`}
+              />
+            )}
+            {p.performance.byCategory?.rapid && (
+              <Stat
+                label="Rapid"
+                value={p.performance.byCategory.rapid.performance}
+                sub={`${p.performance.byCategory.rapid.games} games`}
+              />
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ── What they practised ──────────────────────────────────────────
+          Puzzle counts alone say how MUCH work was done, never what KIND.
+          This is the "which topics did I do, and where am I strong or weak"
+          answer the counts could not give.
+
+          Grouped by the training surface the student chose — Healthy Mix, a
+          theme, a piece count, a rating band — because that is what they
+          believe they practised. Chess Nexus only, by construction: these come
+          from Score rows, which no Lichess or Chess.com import ever writes. */}
+      {p.practiceTotals?.topics?.length > 0 && (
+        <section className="sr-section">
+          <h2 className="sr-h2">What you practised</h2>
+
+          {(p.practiceTotals.topicStrongest || p.practiceTotals.topicWeakest) && (
+            <div className="sr-stats">
+              {p.practiceTotals.topicMost && (
+                <Stat
+                  label="Most practised"
+                  value={p.practiceTotals.topicMost.topic}
+                  sub={`${p.practiceTotals.topicMost.attempts} puzzles`}
+                />
+              )}
+              {p.practiceTotals.topicStrongest && (
+                <Stat
+                  label="Strongest"
+                  value={p.practiceTotals.topicStrongest.topic}
+                  sub={`${p.practiceTotals.topicStrongest.accuracy}% solved`}
+                />
+              )}
+              {p.practiceTotals.topicWeakest && (
+                <Stat
+                  label="Needs work"
+                  value={p.practiceTotals.topicWeakest.topic}
+                  sub={`${p.practiceTotals.topicWeakest.accuracy}% solved`}
+                />
+              )}
+            </div>
+          )}
+
+          <table className="sr-table">
+            <thead>
+              <tr><th>Topic</th><th>Puzzles</th><th>Solved</th><th>Accuracy</th></tr>
+            </thead>
+            <tbody>
+              {p.practiceTotals.topics.map(t => {
+                // Below the threshold nothing is claimed about the topic — an
+                // accuracy from one or two puzzles is noise, and calling it a
+                // weakness would be wrong.
+                const judged = t.attempts >= (p.practiceTotals.topicsMinToJudge || 5);
+                return (
+                  <tr key={t.topic}>
+                    {/* th[scope=row], not td — that is what carries --sr-text in
+                        .sr-table, and it is how every other table on this page
+                        labels its rows. A plain td has no colour rule and
+                        renders near-invisible on the dark panel. */}
+                    <th scope="row">{t.topic}</th>
+                    <td>{t.attempts}</td>
+                    <td>{t.solved}</td>
+                    <td>{judged ? `${t.accuracy}%` : <span className="sr-muted">too few</span>}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          <p className="sr-sub">
+            Only work done on Chess Nexus is counted here — puzzles solved on
+            Lichess or Chess.com stay there, so we cannot see what they were
+            about. A topic needs at least {p.practiceTotals.topicsMinToJudge || 5}{' '}
+            puzzles before it is called a strength or a weakness.
+          </p>
         </section>
       )}
 
@@ -634,11 +774,15 @@ function CompareRow({ label, sub, cols, field, suffix = '', lowerIsBetter = fals
   );
 }
 
-function Stat({ label, value, good, bad }) {
+// `sub` is an optional second line under the label — used where the value is a
+// NAME rather than a number ("Fork") and the figure behind it still matters
+// ("83% solved"). Omitted everywhere else, so existing call sites are unchanged.
+function Stat({ label, value, good, bad, sub }) {
   return (
     <div className="sr-stat">
       <div className={`sr-stat-v${good ? ' sr-good' : ''}${bad ? ' sr-bad' : ''}`}>{value}</div>
       <div className="sr-stat-l">{label}</div>
+      {sub && <div className="sr-stat-sub">{sub}</div>}
     </div>
   );
 }
