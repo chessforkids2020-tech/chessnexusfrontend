@@ -94,8 +94,12 @@
   .cd-photo { width: 76px; font-size: 26px; }
 }
 
+/* Column flex so the "View profile" link can be pushed to the bottom edge,
+   keeping that affordance on the same line across every card in the row no
+   matter how much bio or how many tags each coach has. */
 .cd-card {
-  display: block;
+  display: flex;
+  flex-direction: column;
   padding: 18px;
   border-radius: var(--radius-xl);
   text-decoration: none;
@@ -235,4 +239,109 @@
   text-decoration: none;
   color: #04211d;
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+}
+
+/* ── Coach card: credibility signals ─────────────────────────────────────────
+   The card already had photo, name, rating and bio, but none of the trust
+   signals the API was already returning (verified, experience, students,
+   academy). Those are what a parent actually scans for, and their absence is
+   what made the card read as plain. */
+
+.cd-photo-wrap { position: relative; flex: none; }
+
+/* Sits on the photo so the tick reads as being about the PERSON, not as one
+   more tag in the row below. */
+.cd-verified {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-circle);
+  background: var(--color-success);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  /* Ring in the card's own background so the badge stays legible over any
+     photo, light or dark. */
+  box-shadow: 0 0 0 3px var(--color-bg), 0 2px 6px var(--color-black-a35);
+}
+
+.cd-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+.cd-meta-line .cd-country { margin-top: 0; }
+
+.cd-academy {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: var(--color-accent-a12, var(--color-white-a08));
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.cd-fact-rate { font-weight: 700; color: var(--color-text); }
+
+/* Experience / students, as figures rather than prose — scannable at a glance
+   across a grid, which a sentence is not. */
+.cd-creds {
+  display: flex;
+  gap: 10px;
+  margin: 0 0 12px;
+}
+
+.cd-cred {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.cd-cred-n {
+  display: block;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-accent);
+}
+
+.cd-cred-l {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* margin-top:auto pins this to the bottom of the flex column, so it lines up
+   across cards of differing content height. */
+.cd-view {
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+.cd-card:hover .cd-view { text-decoration: underline; }
+
+@media (max-width: 430px) {
+  .cd-verified { width: 22px; height: 22px; font-size: 12px; }
+  .cd-creds { gap: 8px; }
+  .cd-cred-n { font-size: 15px; }
 }

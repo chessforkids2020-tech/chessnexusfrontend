@@ -1,3 +1,10 @@
+// FIRST, before any other import: dependencies log while they initialise, so
+// installing this later would let their first lines through. Production only —
+// it no-ops in dev. Our own console.* calls are already dropped at build time
+// (see vite.config.js); this covers pre-minified deps esbuild cannot reach.
+import { silenceConsole } from "./lib/silenceConsole";
+silenceConsole();
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";

@@ -12,6 +12,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api';
 import SEO from '../components/SEO';
+import { htmlToText } from '../utils/htmlToText';
 import './CoachesDirectoryPage.css';
 
 const LEVEL_LABEL = { beginner: 'Beginners', intermediate: 'Intermediate', advanced: 'Advanced' };
@@ -29,7 +30,10 @@ function initials(name) {
 // tags into a person. Cuts on a sentence end rather than a character count,
 // since a bio is free text and a blind slice reads as broken mid-word.
 function shortBioOf(bio, max = 170) {
-  const text = String(bio || '').replace(/\s+/g, ' ').trim();
+  // htmlToText first: bios are stored as sanitised HTML for the coach's public
+  // page, and collapsing whitespace alone printed the markup verbatim on the
+  // card — "<h3>I have been playing <strong>competitive </strong>chess…".
+  const text = htmlToText(bio);
   if (!text) return '';
   if (text.length <= max) return text;
 
@@ -59,11 +63,30 @@ export function CoachCard({ c }) {
   const bestLabel = c.ratings.fide ? 'FIDE' : c.ratings.lichess ? 'Lichess' : 'Chess.com';
   const blurb = shortBioOf(c.bio);
 
+  // Credibility line. The API already returns all of this — the card simply was
+  // not using it, which is what made it read as plain: a parent choosing a coach
+  // wants to know "is this person real, experienced, and already teaching?" and
+  // none of that was on screen.
+  //
+  // Each entry is only rendered when the coach actually supplied it, so a new
+  // coach shows a shorter strip rather than a row of zeroes.
+  const credentials = [
+    c.experienceYears ? { k: 'exp', n: c.experienceYears, l: c.experienceYears === 1 ? 'yr coaching' : 'yrs coaching' } : null,
+    c.studentsCount ? { k: 'stu', n: c.studentsCount, l: c.studentsCount === 1 ? 'student' : 'students' } : null,
+  ].filter(Boolean);
+
   return (
     <Link to={`/coaches/${c.code}`} className="cd-card">
       <div className="cd-card-top">
-        <div className="cd-photo">
-          {c.photo ? <img src={c.photo} alt="" /> : <span>{initials(c.name)}</span>}
+        {/* Photo carries the verified tick, so the badge reads as being about
+            the PERSON rather than floating among the tags below. */}
+        <div className="cd-photo-wrap">
+          <div className="cd-photo">
+            {c.photo ? <img src={c.photo} alt="" /> : <span>{initials(c.name)}</span>}
+          </div>
+          {c.verified && (
+            <span className="cd-verified" title="Verified by ChessNexus" aria-label="Verified coach">✓</span>
+          )}
         </div>
 
         <div className="cd-id">
@@ -71,14 +94,18 @@ export function CoachCard({ c }) {
             {c.title && <span className="cd-title">{c.title}</span>}
             {c.name}
           </div>
-          {c.country && <div className="cd-country">{c.country}</div>}
+
+          <div className="cd-meta-line">
+            {c.country && <span className="cd-country">{c.country}</span>}
+            {c.isAcademy && <span className="cd-academy">🏫 Academy</span>}
+          </div>
 
           {/* The coach's one-liner, then the opening of their bio. */}
           {c.specialization && <p className="cd-spec">{c.specialization}</p>}
 
           <div className="cd-facts">
             {best && <span className="cd-fact"><b>{best}</b> {bestLabel}</span>}
-            {rate && <span className="cd-fact">{rate}</span>}
+            {rate && <span className="cd-fact cd-fact-rate">{rate}</span>}
             {c.languages.length > 0 && (
               <span className="cd-fact cd-fact-lang">{c.languages.slice(0, 3).join(', ')}</span>
             )}
@@ -86,12 +113,26 @@ export function CoachCard({ c }) {
         </div>
       </div>
 
+      {credentials.length > 0 && (
+        <div className="cd-creds">
+          {credentials.map(cr => (
+            <div key={cr.k} className="cd-cred">
+              <span className="cd-cred-n">{cr.n}</span>
+              <span className="cd-cred-l">{cr.l}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {blurb && <p className="cd-bio">{blurb}</p>}
 
       <div className="cd-tags">
         {c.acceptingStudents && <span className="cd-tag cd-tag-open">● Taking students</span>}
         {c.teaches.map(t => <span key={t} className="cd-tag">{LEVEL_LABEL[t] || t}</span>)}
       </div>
+
+      {/* A card that is a link should say where it goes. */}
+      <span className="cd-view">View profile →</span>
     </Link>
   );
 }

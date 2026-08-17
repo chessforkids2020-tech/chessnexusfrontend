@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import FoundingSupporterCard from '../components/FoundingSupporterCard';
 import './PuzzlesHub.css';
 
 /** Pick today's daily-tip image using IST (UTC+5:30) day index */
@@ -37,12 +36,6 @@ export default function PuzzlesHub() {
 
   return (
     <div className="puzzles-hub-container">
-
-      {/* Founding Supporter card — above the Daily Puzzles card (self-hides when
-          the viewer is a supporter or the founding spots are gone). */}
-      <div style={{ marginBottom: 16 }}>
-        <FoundingSupporterCard />
-      </div>
 
       {/* ── ROW 1: Daily Tip (left) + Daily Puzzles hero (right) ── */}
       <div className="hub-top-row">

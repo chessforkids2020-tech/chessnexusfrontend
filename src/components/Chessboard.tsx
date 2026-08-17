@@ -97,6 +97,22 @@ interface ChessboardProps {
   extraLegalMoves?: { from: string; to: string }[];
   /** Called whenever the queued premove changes (or is cleared). Used by parent for instant premove firing. */
   onPremoveChange?: (premove: { from: string; to: string; promotion?: string } | null) => void;
+
+  // ── Square evaluations (analysis boards) ──────────────────────────────────
+  /**
+   * Called when the user selects/deselects a piece, with the square it stands on
+   * and every square it can legally reach. The parent uses this to evaluate each
+   * destination; the board itself stays engine-free.
+   * `null` means the selection was cleared.
+   */
+  onSelectionChange?: (selection: { from: string; targets: string[] } | null) => void;
+  /**
+   * Evaluation to draw on each destination square, keyed by square ("e4").
+   * `text` is what the square shows ("+1.3", "M2"); `score` is pawns from the
+   * MOVER's point of view and drives the colour. `pending` renders a placeholder
+   * so a square that is still being searched reads as "working", not "0.00".
+   */
+  squareEvals?: Record<string, { text?: string; score?: number; pending?: boolean }>;
 }
 
 interface PieceInfo {
@@ -114,6 +130,42 @@ interface MouseDownInfo {
   x: number;
   y: number;
   piece: PieceInfo;
+}
+
+// Fill colour for a destination square, from the evaluation AFTER moving there
+// (pawns, from the mover's point of view).
+//
+// The scale is deliberately non-linear. Engine evals bunch up near zero — most
+// legal moves in a quiet position sit within ±0.5 — so a linear ramp would paint
+// almost every square the same colour and hide the very distinction the feature
+// exists to show. tanh spreads that crowded middle out while still flattening
+// the extremes, where the difference between −8 and −12 does not matter: both
+// are simply losing.
+//
+// Red↔green alone would be invisible to the ~8% of men with red-green colour
+// blindness, so lightness carries the signal too: good squares are light, bad
+// squares are dark, which survives greyscale.
+function evalFill(scorePawns: number, isLightSquare: boolean): string {
+  const t = Math.tanh(scorePawns / 2.2);      // −1 … +1, saturating around ±5
+  const good = { h: 122, s: 46 };             // green
+  const bad = { h: 4, s: 62 };                // red
+  const mid = { h: 45, s: 34 };               // amber, for roughly equal
+
+  let h: number, s: number;
+  if (t >= 0) {
+    const k = t;                              // 0 = level, 1 = winning
+    h = mid.h + (good.h - mid.h) * k;
+    s = mid.s + (good.s - mid.s) * k;
+  } else {
+    const k = -t;
+    h = mid.h + (bad.h - mid.h) * k;
+    s = mid.s + (bad.s - mid.s) * k;
+  }
+  // Light squares stay lighter than dark ones so the board's own checker
+  // pattern is still readable underneath the tint.
+  const base = isLightSquare ? 62 : 47;
+  const l = base + t * 9;
+  return `hsl(${h.toFixed(0)} ${s.toFixed(0)}% ${l.toFixed(0)}%)`;
 }
 
 const Chessboard: React.FC<ChessboardProps> = ({
@@ -144,7 +196,9 @@ const Chessboard: React.FC<ChessboardProps> = ({
   allowPremove = false,
   playerColor,
   extraLegalMoves = [],
-  onPremoveChange
+  onPremoveChange,
+  onSelectionChange,
+  squareEvals
 }) => {
   // Pull active board theme so every board respects the user's colour preference.
   // Props can still override per-board if needed (e.g. a fixed-colour analysis view).
@@ -494,6 +548,26 @@ const Chessboard: React.FC<ChessboardProps> = ({
     }
   }, [fenToUse, extraLegalMoves]);
 
+  // Report the current selection (and its legal destinations) to the parent.
+  //
+  // Driven off the DERIVED state rather than patched into each setSelectedPiece
+  // call: there are seven of them, and the one that got forgotten would be a
+  // selection the parent never hears about. This fires for every path —
+  // click, drag, deselect, and moves that clear the selection.
+  const onSelectionChangeRef = useRef(onSelectionChange);
+  useEffect(() => { onSelectionChangeRef.current = onSelectionChange; }, [onSelectionChange]);
+
+  useEffect(() => {
+    const cb = onSelectionChangeRef.current;
+    if (!cb) return;
+    if (!selectedPiece) { cb(null); return; }
+    const from = String.fromCharCode(97 + selectedPiece.col) + (8 - selectedPiece.row);
+    const targets = possibleMoves.map(
+      (m) => String.fromCharCode(97 + m.col) + (8 - m.row)
+    );
+    cb({ from, targets });
+  }, [selectedPiece, possibleMoves]);
+
   // Convert board pixel coordinates to chess square notation
   const getSquareFromBoardCoords = useCallback((x: number, y: number): string | null => {
     const adjustedX = x - 2;
@@ -545,7 +619,14 @@ const Chessboard: React.FC<ChessboardProps> = ({
     } else if (isLastMoveSquare) {
       background = '#eef078ff';
     } else if (isPossibleMove) {
-      background = color === 'light' ? '#90EE90' : '#228B22';
+      // With square evaluations on, the fill encodes HOW GOOD the square is
+      // rather than merely that it is legal — that is the whole point of the
+      // feature. Falls back to the usual green whenever no eval is supplied
+      // (every other board in the app).
+      const ev = squareEvals?.[squareId];
+      background = ev && !ev.pending && typeof ev.score === 'number'
+        ? evalFill(ev.score, color === 'light')
+        : (color === 'light' ? '#90EE90' : '#228B22');
     } else {
       background = baseColor;
     }
@@ -1162,6 +1243,35 @@ const Chessboard: React.FC<ChessboardProps> = ({
               }}
               draggable={false}
             />
+          </div>
+        )}
+        {/* Evaluation label on a destination square. Drawn above the square fill
+            but below pieces, and never intercepts clicks — the square must still
+            be playable by clicking it. */}
+        {squareEvals?.[squareId] && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
+              zIndex: 5,
+              // Scales with the board so the number stays legible on a small
+              // board and does not overwhelm a large one.
+              fontSize: `${Math.max(9, Math.round(squareSize * 0.26))}px`,
+              fontWeight: 800,
+              fontVariantNumeric: 'tabular-nums',
+              letterSpacing: '-0.02em',
+              // Near-black on the tinted fills, which are mid-to-light by design.
+              color: squareEvals[squareId].pending ? 'rgba(0,0,0,0.45)' : '#10151a',
+              // A light halo keeps the digits readable when a piece sits on the
+              // square (a capture) and the glyph shows through behind them.
+              textShadow: '0 1px 2px rgba(255,255,255,0.65)',
+            }}
+          >
+            {squareEvals[squareId].pending ? '…' : squareEvals[squareId].text}
           </div>
         )}
         {/* Right-click highlight — inset ring so the square colour shows through */}

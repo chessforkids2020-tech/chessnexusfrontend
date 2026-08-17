@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
 import api from "../api";
+import { htmlToText } from "../utils/htmlToText";
 import { useAuth } from "../contexts/AuthContext";
 import { markIdsSeen } from "../utils/adminCoachSeen";
 
@@ -489,7 +490,12 @@ export default function AdminCoaches() {
                           <div style={{ color: "#94a3b8", fontSize: 11, marginTop: 2, maxWidth: 320 }}>
                             {c.specialization ? <b>{c.specialization}</b> : null}
                             {c.specialization && c.bio ? " — " : ""}
-                            {c.bio ? (c.bio.length > 90 ? c.bio.slice(0, 90) + "…" : c.bio) : ""}
+                            {/* htmlToText: bios are stored as HTML, so slicing the
+                                raw string printed tags — and could cut mid-tag. */}
+                            {(() => {
+                              const t = htmlToText(c.bio);
+                              return t ? (t.length > 90 ? t.slice(0, 90) + "…" : t) : "";
+                            })()}
                           </div>
                         )}
                       </td>
@@ -632,7 +638,7 @@ export default function AdminCoaches() {
                           </div>
                           {c.bio && (
                             <div style={{ marginTop: 12, fontSize: 12.5, color: "#475569", maxWidth: 760, lineHeight: 1.5 }}>
-                              <b style={{ color: "#334155" }}>Bio:</b> {c.bio}
+                              <b style={{ color: "#334155" }}>Bio:</b> {htmlToText(c.bio)}
                             </div>
                           )}
                         </td>

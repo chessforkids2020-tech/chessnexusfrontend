@@ -219,3 +219,385 @@ a.pc-hr:hover strong { text-decoration: underline; }
   .pc-row dt { width: auto; font-size: 12px; }
   .pc-rate-line { gap: 14px; }
 }
+
+/* ── Identity line ───────────────────────────────────────────────────────────
+   Replaces six labelled rows (Location / Languages / Academy / Teaching) that
+   all rendered in the same grey at the same size, so nothing led and a visitor
+   had to read every one to learn anything. These are context; the figures that
+   get compared now live in the stat band. */
+.pc-idline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  color: var(--color-text-faint);
+}
+.pc-idline-dot { opacity: 0.4; }
+.pc-academy {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--color-accent);
+  background: var(--color-accent-a12);
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+}
+
+/* ── Primary action, beside the name ── */
+.pc-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.pc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-success);
+}
+.pc-status-full { color: var(--color-warning); }
+
+/* ── At-a-glance stat band ───────────────────────────────────────────────────
+   1px gaps over a border give hairline dividers without separate rules. */
+.pc-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px;
+  margin: 22px 0 0;
+  background: var(--color-white-a07);
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.pc-stat {
+  background: var(--color-bg);
+  padding: 14px 12px 13px;
+  text-align: center;
+}
+.pc-stat-n {
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+.pc-stat-accent { color: var(--color-accent); }
+.pc-stat-k {
+  display: block;
+  margin-top: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+.pc-stat-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+  color: var(--color-text-faint);
+}
+
+/* ── Verifiable ratings ── */
+.pc-verify { margin-top: 18px; }
+.pc-verify-h {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: 8px;
+}
+
+/* ── Gallery ─────────────────────────────────────────────────────────────────
+   Horizontal rail, not a grid: a grid makes four photos look like an empty
+   shelf and twenty look like a contact sheet. Up to 10 images run in one row;
+   11+ wrap into two rows that scroll together. */
+.pc-gal-wrap { position: relative; }
+
+.pc-gal-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 210px;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  padding-bottom: 6px;
+  /* Firefox + WebKit: keep the rail clean, the arrows are the affordance. */
+  scrollbar-width: thin;
+}
+/* 11+ images: two rows. grid-auto-flow: column dense keeps column order so the
+   rail still reads left-to-right rather than filling top-to-bottom oddly. */
+.pc-gal-two-rows {
+  grid-template-rows: repeat(2, auto);
+  grid-auto-flow: column;
+}
+
+.pc-gal-item {
+  margin: 0;
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+.pc-gal-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-white-a04);
+  cursor: pointer;
+  line-height: 0;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.pc-gal-btn:hover { border-color: var(--color-accent-a40); transform: translateY(-2px); }
+.pc-gal-btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+/* Fixed ratio so mixed portrait/landscape uploads form an even rail. */
+.pc-gal-btn img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.pc-gal-item figcaption {
+  margin-top: 6px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--color-text-faint);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pc-gal-nav {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-circle);
+  border: 1px solid var(--color-white-a13);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 14px var(--color-black-a35);
+}
+.pc-gal-nav:hover { border-color: var(--color-accent-a40); }
+.pc-gal-nav-l { left: -10px; }
+.pc-gal-nav-r { right: -10px; }
+
+/* ── Lightbox ── */
+.pc-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgb(0 0 0 / 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+}
+.pc-lightbox-fig {
+  margin: 0;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.pc-lightbox-fig img {
+  max-width: 100%;
+  /* Leaves room for the caption without the image overflowing the viewport. */
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+}
+.pc-lightbox-fig figcaption {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+  text-align: center;
+  max-width: 60ch;
+}
+.pc-lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-circle);
+  border: 1px solid var(--color-white-a13);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc-gal-track { scroll-behavior: auto; }
+  .pc-gal-btn:hover { transform: none; }
+}
+
+@media (max-width: 620px) {
+  .pc-gal-track { grid-auto-columns: 62vw; }
+  .pc-gal-nav { display: none; }   /* touch users swipe the rail directly */
+  .pc-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BODY
+
+   The header reads well already. Everything BELOW it was the weak part: About,
+   Achievements, Teaching and Gallery were bare text separated only by
+   `margin-top: 30px`, with no surface of their own. The one block that looked
+   finished was the CTA — precisely because it was the only one with a
+   background and a border.
+
+   These rules give the body the same containment, and a heading treatment that
+   creates rhythm down the page instead of four identical 17px headings.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.pc-section {
+  margin-top: 16px;
+  padding: 22px 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-xl);
+}
+
+/* Small uppercase eyebrow with a rule running to the right edge. Ties the
+   heading to its card and lets the coach's own words be the largest text in
+   the block, which is the point of the page. */
+.pc-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 14px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+}
+.pc-section h2::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-white-a07);
+}
+
+/* The coach's prose: bigger and looser than the surrounding UI text. This is
+   the content a visitor came to read, and it was set at the same size as the
+   labels around it. */
+.pc-section .coach-prose,
+.pc-prose {
+  font-size: 14.5px;
+  line-height: 1.78;
+  color: var(--color-text-muted);
+}
+.pc-section .coach-prose strong { color: var(--color-text); }
+.pc-section .coach-prose h3 {
+  margin: 16px 0 6px;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+.pc-section .coach-prose ul,
+.pc-section .coach-prose ol { padding-left: 20px; }
+.pc-section .coach-prose li { margin-bottom: 5px; }
+
+/* Teaching facts: were two label/value lines lost in the flow. As bordered
+   cells they become a scannable strip. */
+.pc-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+.pc-fact {
+  padding: 12px 14px;
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg);
+}
+.pc-fact-k {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-faint);
+  margin-bottom: 5px;
+}
+.pc-fact-v {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.pc-cta { margin-top: 16px; }
+
+@media (max-width: 720px) {
+  .pc-section { padding: 18px 16px; }
+}
+
+/* ── Achievements + photos side by side ──────────────────────────────────────
+   Prose wraps at a readable measure (~65ch), so on a wide card the right half
+   was simply empty. The gallery fills it. The photo column is sized to the
+   MEASURED height of the text (see PHOTO_SLOT_PX in the page component), and
+   whatever does not fit continues in the section below — no photo is dropped,
+   and neither column is stretched to match the other. */
+.pc-ach-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 200px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* 65ch keeps the line length readable even when the column is wide. */
+.pc-ach-text { min-width: 0; max-width: 65ch; }
+
+.pc-ach-photos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.pc-ach-photo { margin: 0; }
+
+/* Reuses .pc-gal-btn for the frame and hover, so a photo behaves identically
+   whether it sits beside the text or down in the gallery rail. */
+.pc-ach-photo figcaption {
+  margin-top: 5px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-text-faint);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Matches SIDE_BY_SIDE_MIN_PX in PublicCoachPage.jsx. Below it the component
+   puts every photo in the gallery section, so this is only a safety net for the
+   moment between a resize and the state updating. */
+@media (max-width: 859px) {
+  .pc-ach-split { grid-template-columns: 1fr; }
+  .pc-ach-photos { flex-direction: row; flex-wrap: wrap; }
+  .pc-ach-photo { flex: 1 1 140px; }
+}

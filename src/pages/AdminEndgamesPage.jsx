@@ -29,6 +29,11 @@ import { useAuth } from "../contexts/AuthContext";
 // The bundled WASM is now Stockfish 18 (public/stockfish.js — lite-single build).
 const ENGINE_LABEL = "Stockfish";
 const ENGINE_DEPTH = 18;
+// Depth for the per-square evaluations. Lower than ENGINE_DEPTH because this
+// runs ONE SEARCH PER DESTINATION — an endgame queen can reach ~20 squares, so
+// depth 18 would leave a click thinking for the best part of a minute. Matches
+// the analysis board (GameReplay.jsx) so the numbers agree between the two.
+const SQUARE_EVAL_DEPTH = 12;
 const ENGINE_LINES = 3;
 
 // Score (relative to side-to-move) → White-perspective string: "+1.20", "-M2".
@@ -241,6 +246,37 @@ const RESULT_STYLE = {
 const styles = {
   // Obsidian glass dark theme (matches StudyOverview and other pages).
   shell: { position: "relative", minHeight: "100vh", background: "#0a0a0a", overflow: "hidden" },
+
+  // Square-evaluation toggle. Leads the RIGHT column, beside the board, so the
+  // feature is visible on open — under the board it sat below the fold and went
+  // unnoticed. Stacked rather than a horizontal row so the explanation never
+  // wraps raggedly in a ~320px column. Colours are literals to match the rest
+  // of this file, which predates the theme tokens.
+  sqEvalBar: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: 4,
+    marginBottom: 12,
+    padding: "9px 12px",
+    background: "rgba(6,182,212,0.08)",
+    border: "1px solid rgba(6,182,212,0.28)",
+    borderRadius: 8,
+  },
+  sqEvalToggle: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 7,
+    fontSize: 12.5,
+    fontWeight: 700,
+    color: "#e2e8f0",
+    cursor: "pointer",
+  },
+  sqEvalNote: {
+    fontSize: 11.5,
+    lineHeight: 1.45,
+    color: "rgba(148,163,184,0.75)",
+  },
   bgGlow: {
     position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
     background: `
@@ -334,8 +370,14 @@ const styles = {
   pager: { display: "flex", gap: 10, alignItems: "center", justifyContent: "center", marginTop: 16 },
   // Modal — Obsidian Glass theme (matches src/styles/obsidian-glass.css)
   overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200000, padding: 16 },
-  modal: { background: "rgba(23,23,23,0.95)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 'var(--radius-2xl)', padding: 24, maxWidth: 880, width: "100%", maxHeight: "90vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.8)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" },
-  modalHead: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 16 },
+  // Top padding trimmed to 12 (sides/bottom stay 24): the board is the reason
+  // this modal is open, and 24 all round pushed it further down than it needed
+  // to be. Written as a single `padding` shorthand so it cannot be half-
+  // overridden by a later `padding` declaration.
+  modal: { background: "rgba(23,23,23,0.95)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 'var(--radius-2xl)', padding: "12px 24px 24px", maxWidth: 880, width: "100%", maxHeight: "90vh", overflow: "auto", boxShadow: "0 20px 60px rgba(0,0,0,0.8)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" },
+  // marginBottom 8, not 16: together with the modal's reduced top padding this
+  // lifts the board up so more of it is visible without scrolling.
+  modalHead: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 8 },
   analyzeBtn: { background: "rgba(0,0,0,0.4)", color: "#06b6d4", border: "1px solid rgba(6,182,212,0.4)", borderRadius: 'var(--radius-pill)', padding: "6px 16px", cursor: "pointer", fontWeight: 700, fontSize: 13, alignSelf: "center" },
   analyzeBtnOn: { background: "linear-gradient(135deg,#06b6d4 0%,#10b981 100%)", color: "#fff", border: "1px solid rgba(6,182,212,0.6)", borderRadius: 'var(--radius-pill)', padding: "6px 16px", cursor: "pointer", fontWeight: 700, fontSize: 13, alignSelf: "center", boxShadow: "0 4px 16px rgba(6,182,212,0.4)" },
   // ── Play vs Stockfish panel ───────────────────────────────────────────────
@@ -390,6 +432,35 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
 
   // Engine analysis panel toggle (Analyze button).
   const [analyzing, setAnalyzing] = useState(false);
+
+  // ── Square evaluations ────────────────────────────────────────────────────
+  // Click a piece and every square it can reach shows the eval AFTER moving
+  // there, so a learner can see which squares hold the win and which throw it
+  // away — the single most useful thing to see in an endgame, where one rook
+  // file or one king square decides the result.
+  //
+  // Same approach as the analysis board (see GameReplay.jsx): one short search
+  // per destination rather than MultiPV, which ranks the best moves in the
+  // WHOLE position and would not guarantee a given quiet square appears.
+  //
+  // Deliberately NOT available during a play-out. That mode is the plain
+  // challenge — labelling every square with its eval would hand over the
+  // answer, and it would fight the same shared engine that is picking the
+  // opponent's reply.
+  const [squareEvalsOn, setSquareEvalsOn] = useState(() => {
+    try { return localStorage.getItem("egSquareEvals") === "true"; } catch { return false; }
+  });
+  const toggleSquareEvals = useCallback(() => {
+    setSquareEvalsOn((prev) => {
+      const next = !prev;
+      try { localStorage.setItem("egSquareEvals", String(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+  const [selection, setSelection] = useState(null);   // { from, targets }
+  const [squareEvals, setSquareEvals] = useState({});
+  const [evalBusy, setEvalBusy] = useState(false);
+  const evalRunRef = useRef(0);
 
   // ── Play vs Stockfish (20 XP unlock; free for coaches & supporters) ────────
   // Deliberately NO best-move hints here — this is "play it out", not a lesson.
@@ -595,6 +666,106 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
   const shownFen = current.fen;
   const shownLastMove = current.from && current.to ? { from: current.from, to: current.to } : null;
 
+  // Evaluate every square the selected piece can reach.
+  //
+  // Sequential, not parallel: stockfishService is a shared SINGLETON with one
+  // worker, so concurrent calls would each stop() the previous one and return
+  // nothing. Results are written as they arrive so the numbers fill in
+  // progressively instead of the board sitting blank.
+  useEffect(() => {
+    if (!squareEvalsOn || playing || !selection || selection.targets.length === 0) {
+      setSquareEvals({});
+      setEvalBusy(false);
+      return undefined;
+    }
+
+    const run = ++evalRunRef.current;
+    let cancelled = false;
+
+    // Mark every target pending immediately, so the click visibly does
+    // something rather than nothing happening for a second or two.
+    setSquareEvals(
+      Object.fromEntries(selection.targets.map((sq) => [sq, { pending: true }]))
+    );
+    setEvalBusy(true);
+
+    (async () => {
+      try {
+        if (!stockfishService.isReady()) await stockfishService.init();
+        if (cancelled || run !== evalRunRef.current) return;
+
+        for (const target of selection.targets) {
+          if (cancelled || run !== evalRunRef.current) return;
+
+          let afterFen = null;
+          let mated = false;
+          try {
+            const probe = new Chess(shownFen);
+            // promotion:'q' — a promotion square is otherwise an illegal move
+            // here and would silently get no number. Pawn endgames make this
+            // the common case, not an edge case.
+            const mv = probe.move({ from: selection.from, to: target, promotion: "q" });
+            if (!mv) continue;
+            afterFen = probe.fen();
+            mated = probe.isCheckmate();
+          } catch { continue; }
+
+          if (mated) {
+            if (!cancelled && run === evalRunRef.current) {
+              setSquareEvals((prev) => ({ ...prev, [target]: { text: "#", score: 99 } }));
+            }
+            continue;
+          }
+
+          let res = null;
+          try {
+            res = await stockfishService.analyzePosition(afterFen, {
+              depth: SQUARE_EVAL_DEPTH,
+              multipv: 1,
+            });
+          } catch { /* leave this square unlabelled */ }
+
+          if (cancelled || run !== evalRunRef.current) return;
+
+          const line = res?.lines?.[0];
+          if (!line) {
+            setSquareEvals((prev) => {
+              const next = { ...prev };
+              delete next[target];
+              return next;
+            });
+            continue;
+          }
+
+          // SIGN: the engine scores from the side to move, and after our
+          // candidate move that is the OPPONENT. Negating gives the number from
+          // the mover's point of view — without it, winning squares would be
+          // labelled losing and vice versa.
+          let text;
+          let score;
+          if (line.scoreType === "mate") {
+            const m = -line.score;
+            text = (m > 0 ? "#" : "-#") + Math.abs(m);
+            score = m > 0 ? 99 : -99;
+          } else {
+            score = -line.score / 100;
+            text = (score > 0 ? "+" : "") + score.toFixed(1);
+          }
+
+          setSquareEvals((prev) => ({ ...prev, [target]: { text, score } }));
+        }
+      } finally {
+        if (!cancelled && run === evalRunRef.current) setEvalBusy(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      // Only stop if a newer run has not already claimed the shared engine.
+      if (run === evalRunRef.current) stockfishService.stop();
+    };
+  }, [squareEvalsOn, playing, selection, shownFen]);
+
   // Navigate to any node by id (clicking a move in the tree).
   const goTo = useCallback((id) => { if (nodes[id]) setCurrentId(id); }, [nodes]);
 
@@ -783,7 +954,9 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
   // stacking context (otherwise the sidebar, z-index ~100000, covers it).
   return createPortal(
     <div style={styles.overlay} onClick={onClose}>
-      <div style={compact ? { ...styles.modal, maxWidth: 1100, paddingTop: 8 } : styles.modal} onClick={(e) => e.stopPropagation()}>
+      {/* paddingTop 4 on the student view: its header is just a row of buttons
+          (no title block), so the board can sit close to the top of the modal. */}
+      <div style={compact ? { ...styles.modal, maxWidth: 1100, paddingTop: 4 } : styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={compact ? { ...styles.modalHead, marginBottom: 0, justifyContent: "flex-end" } : styles.modalHead}>
           {!compact && (
             <div>
@@ -897,13 +1070,27 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
               position={playing && playFen ? playFen : shownFen}
               boardWidth={compact ? boardWidth : 440}
               orientation={playing ? (playSide === "b" ? "black" : "white") : orientation}
-              draggable={playing ? !playOver && !playThinking : compact}
+              /* Also draggable when square evaluations are on: the board only
+                 reports a selection for a draggable board, so without this the
+                 feature would silently do nothing on the non-compact (admin)
+                 view. */
+              draggable={playing ? !playOver && !playThinking : (compact || squareEvalsOn)}
+              /* No onDrop on the admin view even when draggable is forced on
+                 above: a dragged piece simply snaps back, which is the right
+                 behaviour there — the selection (and its evals) is the point,
+                 not editing the position. */
               onDrop={playing ? onPlayDrop : (compact ? onUserMove : undefined)}
               /* During a play-out, highlight the move just made — the engine's
                  reply especially, since otherwise a piece simply appears
                  somewhere new with no indication of what moved. */
               lastMove={playing ? playLastMove : shownLastMove}
+              /* Square evaluations: browsing only. During a play-out this is
+                 deliberately off — that mode is the plain challenge, and
+                 labelling every square would hand over the answer. */
+              onSelectionChange={squareEvalsOn && !playing ? setSelection : undefined}
+              squareEvals={squareEvalsOn && !playing ? squareEvals : undefined}
             />
+
             {!compact && (
               <div style={{ display: "flex", gap: 8, alignItems: "center", justifyContent: "center", marginTop: 14 }}>
                 <button style={styles.navBtn} onClick={goStart} disabled={!hasParent} title="Start">«</button>
@@ -931,6 +1118,33 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
 
           {/* RIGHT: move list + all game details */}
           <div style={compact ? styles.rightColCompact : styles.rightCol}>
+            {/* Square-evaluation toggle, FIRST in this column rather than tucked
+                under the board — down there it sat below the fold and most
+                people never discovered the feature existed.
+                Hidden during a play-out, where it is deliberately unavailable.
+                Off by default: each click takes the shared engine for a couple
+                of seconds, which should be the user's choice. */}
+            {!playing && (
+              <div style={styles.sqEvalBar}>
+                <label style={styles.sqEvalToggle}>
+                  <input
+                    type="checkbox"
+                    checked={squareEvalsOn}
+                    onChange={toggleSquareEvals}
+                    style={{ cursor: "pointer", flex: "none" }}
+                  />
+                  <span>🎯 Show evaluation on each square</span>
+                </label>
+                <span style={styles.sqEvalNote}>
+                  {squareEvalsOn
+                    ? (evalBusy
+                        ? "Checking each square…"
+                        : "Click a piece to see how good each of its squares is.")
+                    : "Click a piece and every square it can reach shows the eval after moving there."}
+                </span>
+              </div>
+            )}
+
             {/* PLAY-OUT panel. No engine eval and no best-move hints on purpose:
                 this is a challenge, not a lesson. Analyze stays available for
                 the replay when you're not playing. */}
@@ -972,7 +1186,11 @@ function EndgameModal({ game, onClose, compact = false, isAdmin = false }) {
             {playMsg && !playing && (
               <div style={styles.playNote}>{playMsg}</div>
             )}
-            {analyzing && !playing && <EnginePanel fen={shownFen} />}
+            {/* Unmounted while square evaluations are running: stockfishService
+                is a single shared worker, so if this panel kept its own search
+                going the two would call stop() on each other and BOTH would
+                return nothing. It remounts the moment the squares finish. */}
+            {analyzing && !playing && !evalBusy && <EnginePanel fen={shownFen} />}
             {/* The game's own moves are the ANSWER: they show how the position
                 was actually won. Hiding them while playing keeps the play-out an
                 honest test — otherwise the student can just copy the winning

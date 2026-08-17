@@ -10,6 +10,12 @@ import {
 
 const ENGINE_LABEL = 'Stockfish 18';
 const ENGINE_DEPTH = 18;
+// Depth for the per-square evaluations. Lower than ENGINE_DEPTH on purpose:
+// this runs ONE SEARCH PER DESTINATION, so a queen with 20 moves is 20 searches.
+// At 12 that is roughly two seconds for a rook and four for a queen, which still
+// ranks squares correctly and catches a piece that simply hangs. Depth 18 here
+// would be accurate but leave a queen thinking for the best part of a minute.
+const SQUARE_EVAL_DEPTH = 12;
 const ENGINE_LINES = 3;
 
 // Convert an engine line (score relative to side-to-move) to a White-perspective
@@ -337,6 +343,31 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
       return next;
     });
   }, []);
+  // ── Square evaluations ────────────────────────────────────────────────────
+  // Click a piece and every square it can reach shows the eval AFTER moving
+  // there, so a learner can see which squares are good and which hang material
+  // instead of only which are legal.
+  //
+  // Each destination is a separate short search (the resulting position, at
+  // SQUARE_EVAL_DEPTH). MultiPV was the obvious alternative and is wrong here:
+  // it ranks the best moves in the WHOLE position, so covering one rook's ten
+  // squares would need MultiPV ≈ every legal move — far more work, and still no
+  // guarantee a particular quiet square is included.
+  const [squareEvalsOn, setSquareEvalsOn] = useState(() => {
+    try { return localStorage.getItem('gaSquareEvals') === 'true'; } catch { return false; }
+  });
+  const toggleSquareEvals = useCallback(() => {
+    setSquareEvalsOn(prev => {
+      const next = !prev;
+      try { localStorage.setItem('gaSquareEvals', String(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+  const [selection, setSelection] = useState(null);   // { from, targets }
+  const [squareEvals, setSquareEvals] = useState({});
+  const [evalBusy, setEvalBusy] = useState(false);
+  const evalRunRef = useRef(0);
+
   const activeTab = 'moves'; // single view (Stockfish + moves); tabs removed
   const timerRef = useRef(null);
   const commentRef = useRef(null);
@@ -379,9 +410,17 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
   // Jump to an arbitrary node by its full path (clicking a move in the list).
   const goToPath = useCallback((p) => setPath(p), []);
 
-  // Board size + drag-to-resize now come from the shared hook, so the size is the
-  // same on every page and the grip behaves identically everywhere.
-  const [boardSize, setBoardSize] = useState(380);
+  // Analysis board size.
+  //
+  // 520, not 380: inside the 900px .ga-page there is 860px of usable width, and
+  // 520 + the 8px grid gap still leaves 332px for the move list and engine
+  // lines beside it. Going further starves that column — at 560 it drops under
+  // 300px and the Stockfish lines start wrapping.
+  //
+  // Deliberately a fixed number rather than a container-measuring hook: the
+  // board sits in a `grid-template-columns: auto 1fr` track, so a hook that
+  // measures the column and a column that sizes to the board feed each other.
+  const [boardSize, setBoardSize] = useState(520);
 
   // Auto-play — steps forward along the current line.
   useEffect(() => {
@@ -424,6 +463,107 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
 
   // Current board position from the tree path.
   const currentFen  = curNode.fen || 'start';
+
+  // Evaluate every square the selected piece can reach.
+  //
+  // Runs one search per destination, sequentially. Sequential is deliberate:
+  // stockfishService is a shared SINGLETON with one worker, so firing these in
+  // parallel would have each call `stop()` the previous one and return garbage.
+  // Results are written as they arrive, so numbers fill in progressively rather
+  // than the board sitting blank until the last square finishes.
+  useEffect(() => {
+    if (!squareEvalsOn || !selection || selection.targets.length === 0) {
+      setSquareEvals({});
+      setEvalBusy(false);
+      return undefined;
+    }
+
+    const run = ++evalRunRef.current;
+    let cancelled = false;
+
+    // Show every target as pending immediately, so the user sees the board
+    // respond to the click instead of nothing happening for a second.
+    setSquareEvals(
+      Object.fromEntries(selection.targets.map((sq) => [sq, { pending: true }]))
+    );
+    setEvalBusy(true);
+
+    (async () => {
+      try {
+        if (!stockfishService.isReady()) await stockfishService.init();
+        if (cancelled || run !== evalRunRef.current) return;
+
+        for (const target of selection.targets) {
+          if (cancelled || run !== evalRunRef.current) return;
+
+          // Play the candidate move to get the position to evaluate.
+          let afterFen = null;
+          let mated = false;
+          try {
+            const probe = new Chess(currentFen === 'start' ? undefined : currentFen);
+            // promotion: 'q' — a promotion square would otherwise be illegal
+            // here and the square would silently get no number.
+            const mv = probe.move({ from: selection.from, to: target, promotion: 'q' });
+            if (!mv) continue;
+            afterFen = probe.fen();
+            mated = probe.isCheckmate();
+          } catch { continue; }
+
+          // Mate needs no search, and the engine would report it oddly anyway.
+          if (mated) {
+            if (!cancelled && run === evalRunRef.current) {
+              setSquareEvals((prev) => ({ ...prev, [target]: { text: '#', score: 99 } }));
+            }
+            continue;
+          }
+
+          let res = null;
+          try {
+            res = await stockfishService.analyzePosition(afterFen, {
+              depth: SQUARE_EVAL_DEPTH,
+              multipv: 1,
+            });
+          } catch { /* leave this square unlabelled */ }
+
+          if (cancelled || run !== evalRunRef.current) return;
+
+          const line = res?.lines?.[0];
+          if (!line) {
+            setSquareEvals((prev) => {
+              const next = { ...prev };
+              delete next[target];
+              return next;
+            });
+            continue;
+          }
+
+          // SIGN: the engine scores the position from the side to move, and
+          // after our candidate move that is the OPPONENT. Negating gives the
+          // number from the mover's point of view — without this, good squares
+          // would be labelled bad and vice versa.
+          let text, score;
+          if (line.scoreType === 'mate') {
+            const m = -line.score;
+            text = (m > 0 ? '#' : '-#') + Math.abs(m);
+            score = m > 0 ? 99 : -99;
+          } else {
+            score = -line.score / 100;
+            text = (score > 0 ? '+' : '') + score.toFixed(1);
+          }
+
+          setSquareEvals((prev) => ({ ...prev, [target]: { text, score } }));
+        }
+      } finally {
+        if (!cancelled && run === evalRunRef.current) setEvalBusy(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      // Only stop if a newer run has not already taken over the shared engine.
+      if (run === evalRunRef.current) stockfishService.stop();
+    };
+  }, [squareEvalsOn, selection, currentFen]);
   const currentMove = curNode.from ? { from: curNode.from, to: curNode.to } : null;
 
   // Drag-to-study: play any legal move from the current board. Adds it to the
@@ -539,6 +679,8 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
               lastMove={currentMove}
               arrows={exploring ? [] : arrows}
               boardWidth={boardSize}
+              onSelectionChange={squareEvalsOn ? setSelection : undefined}
+              squareEvals={squareEvalsOn ? squareEvals : undefined}
             />
             {/* Shared grip — positions itself from the board's exported geometry. */}
           </div>
@@ -551,12 +693,15 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
                 {hasVars && <button className="gr-study-return" onClick={clearVariations} title="Remove every variation and return to the game line">🧹 Delete all</button>}
               </span>
             </div>
-          ) : (
+          ) : hasVars ? (
+            /* The instructional sentence was removed — it repeated under every
+               game and the behaviour is self-evident. "Delete all variations"
+               was nested INSIDE that line, so this row still renders whenever
+               there are variations to clear; with none, nothing shows at all. */
             <div className="gr-study-hint">
-              💡 Drag a piece to try your own moves · they're saved here · drag ⤡ to resize
-              {hasVars && <> · <button className="gr-link-btn" onClick={clearVariations} title="Remove every variation and return to the game line">🧹 Delete all variations</button></>}
+              <button className="gr-link-btn" onClick={clearVariations} title="Remove every variation and return to the game line">🧹 Delete all variations</button>
             </div>
-          )}
+          ) : null}
 
           {/* Win Chance Bar */}
           <div className="gr-winbar-wrap" style={{ maxWidth: boardSize }}>
@@ -588,11 +733,39 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
         <div className="gr-info-col">
           {/* ── MOVES TAB ── */}
           {activeTab === 'moves' && (<>
+          {/* Square evaluations toggle. Sits BESIDE the board rather than under
+              it: it belongs with the other engine controls, and below the board
+              it pushed the win bar and playback controls further down.
+              Off by default — it takes over the shared engine for a second or
+              two per click, which should be the user's choice. */}
+          <div className="gr-sqeval-bar">
+            <label className="gr-sqeval-toggle">
+              <input
+                type="checkbox"
+                checked={squareEvalsOn}
+                onChange={toggleSquareEvals}
+              />
+              <span>🎯 Show evaluation on each square</span>
+            </label>
+            <span className="gr-sqeval-note">
+              {squareEvalsOn
+                ? (evalBusy
+                    ? 'Checking each square…'
+                    : 'Click a piece to see how good each of its squares is.')
+                : 'Click a piece and every square it can reach shows the eval after moving there.'}
+            </span>
+          </div>
+
           {/* Live Stockfish engine lines for the current position */}
+          {/* `enabled` also goes false while the square evaluations are running.
+              stockfishService is a single shared worker: if the panel kept its
+              own search going, the two would call stop() on each other and both
+              would return nothing. The panel resumes automatically the moment
+              the squares finish. */}
           <EnginePanel
             fen={currentFen}
             numLines={quick ? 4 : 3}
-            enabled={engineOn}
+            enabled={engineOn && !evalBusy}
             onToggle={toggleEngine}
           />
 

@@ -33,6 +33,11 @@ const LEVELS = [
 
 const NOT_SET = <span className="cp-not-set">Not set</span>;
 
+// Gallery limits. Mirrored from routes/coach.js — the server enforces both;
+// these exist so a coach is told before a doomed upload, not after it.
+const GALLERY_MAX = 20;
+const GALLERY_MAX_BYTES = 2 * 1024 * 1024;
+
 // Pretty label for the verification-handle platform (stored as a short enum).
 const SOCIAL_LABEL = { facebook: 'Facebook', instagram: 'Instagram', chesscom: 'Chess.com', lichess: 'Lichess' };
 
@@ -68,6 +73,12 @@ export default function CoachProfile() {
   const [joinCopied, setJoinCopied] = useState(false);
   const [walletHelp, setWalletHelp] = useState(false); // wallet "?" explainer popup
   const [academyInfo, setAcademyInfo] = useState(null); // { academy, role } if a member
+  // Gallery photos. Kept in their own state, not in `form`: they are files on
+  // the server, saved the moment they are picked, so folding them into the
+  // profile form would imply they need "Save changes" to take effect.
+  const [gallery, setGallery] = useState([]);
+  const [galleryBusy, setGalleryBusy] = useState(false);
+  const [galleryError, setGalleryError] = useState('');
 
   const load = async () => {
     try {
@@ -83,8 +94,85 @@ export default function CoachProfile() {
       setWallet(w.data || null);
       setAcademyInfo(am.data?.academy ? am.data : null);
       setMyTitle(t.data?.chessTitle || '');
+      // Newest first, matching the order the public page renders.
+      const g = Array.isArray(s.data?.coachProfile?.coachGallery)
+        ? s.data.coachProfile.coachGallery
+        : [];
+      setGallery(
+        g.slice()
+         .sort((a, b) => new Date(b.uploadedAt || 0) - new Date(a.uploadedAt || 0))
+         .map(x => ({ id: String(x._id), url: x.url, caption: x.caption || '' }))
+      );
     } catch {
       setError('Could not load your profile.');
+    }
+  };
+
+  // ── Gallery actions ───────────────────────────────────────────────────────
+  const onGalleryFile = async (e) => {
+    const file = e.target.files?.[0];
+    // Reset the input immediately so picking the SAME file twice still fires
+    // onChange (the browser suppresses it otherwise).
+    e.target.value = '';
+    if (!file) return;
+
+    setGalleryError('');
+    // Checked client-side too so a coach on a slow connection is told straight
+    // away rather than after a 2 MB upload the server will reject.
+    if (file.size > GALLERY_MAX_BYTES) {
+      setGalleryError('That image is over 2 MB. Please choose a smaller one.');
+      return;
+    }
+    if (gallery.length >= GALLERY_MAX) {
+      setGalleryError(`You can have at most ${GALLERY_MAX} photos.`);
+      return;
+    }
+
+    setGalleryBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append('image', file);
+      const res = await api.post('/api/coach/gallery', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const img = res.data?.image;
+      if (img) {
+        setGallery(prev => [{ id: String(img._id || img.id || img.url), url: img.url, caption: img.caption || '' }, ...prev]);
+        // Re-read so the id is the real one Mongo assigned, which delete and
+        // caption edits need.
+        load();
+      }
+    } catch (err) {
+      setGalleryError(err.response?.data?.message || 'Could not upload that image.');
+    } finally {
+      setGalleryBusy(false);
+    }
+  };
+
+  const removeGalleryImage = async (id) => {
+    if (!id) return;
+    setGalleryError('');
+    setGalleryBusy(true);
+    try {
+      await api.delete(`/api/coach/gallery/${id}`);
+      setGallery(prev => prev.filter(g => g.id !== id));
+    } catch (err) {
+      setGalleryError(err.response?.data?.message || 'Could not remove that image.');
+    } finally {
+      setGalleryBusy(false);
+    }
+  };
+
+  const saveGalleryCaption = async (id, caption) => {
+    if (!id) return;
+    const trimmed = String(caption || '').trim().slice(0, 120);
+    const current = gallery.find(g => g.id === id);
+    if (!current || current.caption === trimmed) return;   // nothing changed
+    try {
+      await api.patch(`/api/coach/gallery/${id}`, { caption: trimmed });
+      setGallery(prev => prev.map(g => (g.id === id ? { ...g, caption: trimmed } : g)));
+    } catch (err) {
+      setGalleryError(err.response?.data?.message || 'Could not save that caption.');
     }
   };
   useEffect(() => { load(); }, []);
@@ -478,6 +566,64 @@ export default function CoachProfile() {
                   value={form.coachAchievements}
                   onChange={(html) => setForm(f => ({ ...f, coachAchievements: html }))}
                   placeholder="Titles, tournament results, students you have coached to norms or national events. A bulleted list reads best." />
+              </div>
+
+              {/* ── Gallery ─────────────────────────────────────────────────
+                  Photos for the public page: medals, class pictures, event
+                  shots. Uploaded one at a time and saved immediately — they are
+                  files on the server, not part of the profile form, so making
+                  them wait for "Save changes" would be misleading. */}
+              <div className="cp-field">
+                <label>Gallery</label>
+                <div className="cp-hint">
+                  Up to {GALLERY_MAX} photos, each under 2 MB. Shown on your
+                  public page — medals, classes, tournaments.
+                </div>
+
+                <div className="cp-gal-grid">
+                  {gallery.map((img) => (
+                    <div key={img.id || img.url} className="cp-gal-cell">
+                      <img src={img.url} alt={img.caption || ''} loading="lazy" />
+                      <button
+                        type="button"
+                        className="cp-gal-del"
+                        onClick={() => removeGalleryImage(img.id)}
+                        disabled={galleryBusy}
+                        aria-label="Remove this photo"
+                        title="Remove"
+                      >✕</button>
+                      <input
+                        type="text"
+                        className="cp-gal-caption"
+                        placeholder="Add a caption…"
+                        defaultValue={img.caption || ''}
+                        maxLength={120}
+                        onBlur={(e) => saveGalleryCaption(img.id, e.target.value)}
+                      />
+                    </div>
+                  ))}
+
+                  {gallery.length < GALLERY_MAX && (
+                    <label className={`cp-gal-add${galleryBusy ? ' is-busy' : ''}`}>
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/gif"
+                        onChange={onGalleryFile}
+                        disabled={galleryBusy}
+                        hidden
+                      />
+                      <span className="cp-gal-add-ic">{galleryBusy ? '…' : '+'}</span>
+                      <span className="cp-gal-add-tx">
+                        {galleryBusy ? 'Uploading…' : 'Add photo'}
+                      </span>
+                    </label>
+                  )}
+                </div>
+
+                <div className="cp-gal-foot">
+                  <span>{gallery.length} / {GALLERY_MAX} photos</span>
+                  {galleryError && <span className="cp-gal-err">{galleryError}</span>}
+                </div>
               </div>
 
               <div className="cp-toggles">

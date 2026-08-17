@@ -3787,3 +3787,44 @@
     width: 100%;
   }
 }
+
+/* ── Square evaluations toggle ───────────────────────────────────────────────
+   Off by default: each click takes the shared engine for a second or two, so
+   turning it on is the user's decision rather than something that happens to
+   them. */
+/* Stacked, not a horizontal row: this now lives in the ~330px right column
+   beside the board, where a label and its explanation side by side would leave
+   the note wrapping to two or three ragged lines. */
+.gr-sqeval-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-md);
+}
+
+.gr-sqeval-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-text);
+  cursor: pointer;
+  /* No `white-space: nowrap` here any more: in the narrow right column that
+     would push the label past the panel edge rather than wrapping. */
+}
+/* Keep the checkbox from being squashed when the label does wrap. */
+.gr-sqeval-toggle input { flex: none; }
+.gr-sqeval-toggle input { cursor: pointer; }
+
+.gr-sqeval-note {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--color-text-faint);
+  min-width: 0;
+}

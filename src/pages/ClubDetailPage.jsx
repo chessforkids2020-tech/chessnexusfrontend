@@ -6,6 +6,11 @@ import socket from '../socket-jwt';
 import api from '../api';
 import UserAvatar from '../components/UserAvatar';
 import PlayerName from '../components/PlayerName';
+// Same rich-text pair the coach profile uses: CoachRichText to author, CoachProse
+// to render. Reused rather than duplicated so the club "about" gets the identical
+// link-stripping treatment (see backend/helpers/coachRichText.js).
+import CoachRichText from '../components/CoachRichText';
+import CoachProse from '../components/CoachProse';
 import { linkify } from '../utils/linkify';
 import './SocialHubPage.css';
 
@@ -229,6 +234,19 @@ export default function ClubDetailPage() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [memberPage, setMemberPage] = useState(1);
+  // Members moved out of the left column into a strip above Featured Events,
+  // with the full list behind a searchable modal (Facebook-group style).
+  const [showMembers, setShowMembers] = useState(false);
+  const [memberSearch, setMemberSearch] = useState('');
+  // Owner's club-page editor.
+  const [editing, setEditing] = useState(false);
+  const [editForm, setEditForm] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState('');
+  // Club picture upload. Separate from the edit form's save button: the picture
+  // is a file on the server and takes effect the moment it is chosen.
+  const [picBusy, setPicBusy] = useState(false);
+  const [picError, setPicError] = useState('');
 
   const fetchClub = useCallback(async () => {
     setLoading(true);
@@ -314,9 +332,105 @@ export default function ClubDetailPage() {
   const isOwner  = club?.members?.some(m => m.userId?.toString() === myId && m.role === 'owner');
   const members = Array.isArray(club?.members) ? club.members : [];
   const membersPerPage = 10;
-  const totalMemberPages = Math.max(1, Math.ceil(members.length / membersPerPage));
+
+  // The strip shows a row of faces; the rest live behind "Show all".
+  const STRIP_LIMIT = 18;
+  const stripMembers = members.slice(0, STRIP_LIMIT);
+
+  // Search inside the modal — matches display name OR username, so a member is
+  // findable by whichever one the viewer knows them by.
+  const filteredMembers = (() => {
+    const q = memberSearch.trim().toLowerCase();
+    if (!q) return members;
+    return members.filter((m) =>
+      (m.displayName || '').toLowerCase().includes(q) ||
+      (m.username || '').toLowerCase().includes(q));
+  })();
+  const totalMemberPages = Math.max(1, Math.ceil(filteredMembers.length / membersPerPage));
   const currentMemberPage = Math.min(memberPage, totalMemberPages);
-  const pagedMembers = members.slice((currentMemberPage - 1) * membersPerPage, currentMemberPage * membersPerPage);
+  const pagedMembers = filteredMembers.slice(
+    (currentMemberPage - 1) * membersPerPage, currentMemberPage * membersPerPage);
+
+  const openEdit = () => {
+    setEditForm({
+      name: club?.name || '',
+      description: club?.description || '',
+      about: club?.about || '',
+      imageUrl: club?.imageUrl || '',
+      isPrivate: !!club?.isPrivate,
+    });
+    setEditError('');
+    setEditing(true);
+  };
+
+  const CLUB_PIC_MAX_BYTES = 2 * 1024 * 1024;   // mirrors the server's limit
+
+  const onPictureFile = async (e) => {
+    const file = e.target.files?.[0];
+    // Reset immediately so picking the SAME file twice still fires onChange.
+    e.target.value = '';
+    if (!file) return;
+
+    setPicError('');
+    // Checked here too, so an owner on a slow connection is told straight away
+    // rather than after uploading a file the server will reject.
+    if (file.size > CLUB_PIC_MAX_BYTES) {
+      setPicError('That picture is over 2 MB. Please choose a smaller one.');
+      return;
+    }
+
+    setPicBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append('picture', file);
+      const res = await api.post(`/api/clubs/${clubId}/picture`, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const url = res.data?.imageUrl || '';
+      setEditForm((f) => ({ ...f, imageUrl: url }));
+      // Update the club too, so the page behind the modal shows it at once.
+      setClub((prev) => ({ ...prev, imageUrl: url }));
+    } catch (err) {
+      setPicError(err.response?.data?.message || 'Could not upload that picture.');
+    } finally {
+      setPicBusy(false);
+    }
+  };
+
+  const removePicture = async () => {
+    setPicError('');
+    setPicBusy(true);
+    try {
+      await api.delete(`/api/clubs/${clubId}/picture`);
+      setEditForm((f) => ({ ...f, imageUrl: '' }));
+      setClub((prev) => ({ ...prev, imageUrl: '' }));
+    } catch (err) {
+      setPicError(err.response?.data?.message || 'Could not remove the picture.');
+    } finally {
+      setPicBusy(false);
+    }
+  };
+
+  const saveEdit = async () => {
+    if (!editForm) return;
+    setSavingEdit(true);
+    setEditError('');
+    try {
+      // imageUrl is deliberately NOT sent: the picture is uploaded separately
+      // and the server ignores it here. Sending it anyway would imply this save
+      // controls the picture, which it does not.
+      const { imageUrl: _ignored, ...payload } = editForm;
+      const res = await api.patch(`/api/clubs/${clubId}`, payload);
+      // Merge rather than replace: the PATCH response deliberately returns only
+      // the club's own fields, not the enriched member list this page renders.
+      setClub((prev) => ({ ...prev, ...(res.data?.club || {}) }));
+      setEditing(false);
+    } catch (err) {
+      setEditError(err.response?.data?.message || 'Could not save. Please try again.');
+    } finally {
+      setSavingEdit(false);
+    }
+  };
 
   const joinByCode = async (overrideCode) => {
     const code = overrideCode || club?.joinCode;
@@ -397,6 +511,50 @@ export default function ClubDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Members strip — a row of faces above the events, Facebook-group style.
+          The full, searchable list is behind "Show all" so a large club does not
+          push the club's own content off the screen. */}
+      {members.length > 0 && (
+        <div className="sh-card sh-club-members-strip">
+          <div className="sh-club-members-strip-head">
+            <div className="sh-section-title" style={{ margin: 0 }}>
+              Members ({club.memberCount})
+            </div>
+            <button
+              type="button"
+              className="sh-btn-secondary sh-club-members-showall"
+              onClick={() => { setMemberSearch(''); setMemberPage(1); setShowMembers(true); }}
+            >
+              Show all
+            </button>
+          </div>
+
+          <div className="sh-club-members-faces">
+            {stripMembers.map((m) => (
+              <button
+                key={m.userId}
+                type="button"
+                className="sh-club-face"
+                title={m.displayName || m.username}
+                onClick={() => { setMemberSearch(''); setMemberPage(1); setShowMembers(true); }}
+              >
+                <UserAvatar user={m} size={40} />
+              </button>
+            ))}
+            {members.length > STRIP_LIMIT && (
+              <button
+                type="button"
+                className="sh-club-face sh-club-face-more"
+                onClick={() => { setMemberSearch(''); setMemberPage(1); setShowMembers(true); }}
+                title="Show all members"
+              >
+                +{members.length - STRIP_LIMIT}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {isMember && (
         <div className="sh-card sh-featured-activities-card sh-featured-activities-fullwidth">
@@ -548,54 +706,49 @@ export default function ClubDetailPage() {
             </div>
           )}
 
-          <div className="sh-card">
-            <div className="sh-section-title">Members ({club.memberCount})</div>
-            {pagedMembers.map(m => (
-              <div key={m.userId} className="sh-member-row">
-                <div className="sh-avatar">
-                  <UserAvatar user={m} size={42} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)' }}>
-                    <PlayerName linkToProfile displayName={m.displayName} username={m.username} userId={m.userId} />
-                  </div>
-                </div>
-                {m.role === 'owner' && <span className="sh-owner-badge">Owner</span>}
-                <span style={{ fontSize: 11, color: 'var(--color-white-a20)' }}>
-                  {m.joinedAt ? new Date(m.joinedAt).toLocaleDateString() : ''}
-                </span>
+          {/* About this club — the owner's own write-up, which replaced the
+              members list here. Rendered as sanitised HTML: the server strips
+              links and scripts, so this cannot inject anything. */}
+          {(club.about || club.imageUrl || isOwner) && (
+            <div className="sh-card sh-club-about-card">
+              <div className="sh-club-about-head">
+                <div className="sh-section-title" style={{ margin: 0 }}>About This Club</div>
+                {isOwner && (
+                  <button type="button" className="sh-btn-secondary" onClick={openEdit}>
+                    ✏️ Edit
+                  </button>
+                )}
               </div>
-            ))}
 
-            {totalMemberPages > 1 && (
-              <div className="sh-members-pagination">
-                <button
-                  type="button"
-                  className="sh-members-page-btn"
-                  disabled={currentMemberPage === 1}
-                  onClick={() => setMemberPage((p) => Math.max(1, p - 1))}
-                >
-                  Prev
-                </button>
-                <span className="sh-members-page-indicator">Page {currentMemberPage} / {totalMemberPages}</span>
-                <button
-                  type="button"
-                  className="sh-members-page-btn"
-                  disabled={currentMemberPage === totalMemberPages}
-                  onClick={() => setMemberPage((p) => Math.min(totalMemberPages, p + 1))}
-                >
-                  Next
-                </button>
-              </div>
-            )}
-          </div>
+              {club.imageUrl && (
+                <img
+                  src={club.imageUrl}
+                  alt={`${club.name} banner`}
+                  className="sh-club-about-image"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+              )}
 
-        </div>
+              {club.about ? (
+                /* CoachProse, not raw HTML: the content is sanitised on the way
+                   in by the same helper coach bios use, and this component
+                   carries the matching prose styling. */
+                <CoachProse html={club.about} className="sh-club-about-body" />
+              ) : (
+                <div className="sh-club-activity-empty" style={{ marginTop: 4 }}>
+                  {isOwner
+                    ? 'Tell people what your club is about — add a picture, your meeting times, and who should join.'
+                    : 'The club owner has not written anything yet.'}
+                </div>
+              )}
+            </div>
+          )}
 
-        {/* Right: chat */}
-        <div className="sh-club-detail-right">
+          {/* Moved here from the right column so the chat can use that column's
+              full height. It is a small static card, so it reads just as well
+              beside the club's other information. */}
           {isMember && (
-            <div className="sh-card" style={{ marginBottom: 14 }}>
+            <div className="sh-card">
               <div className="sh-section-title" style={{ marginBottom: 14 }}>⚡ Create Club Activity</div>
 
               <div className="sh-club-activity-actions">
@@ -613,6 +766,15 @@ export default function ClubDetailPage() {
             </div>
           )}
 
+        </div>
+
+        {/* Right: chat ONLY.
+            "Create Club Activity" used to sit above the chat here and took ~300px
+            of a column capped at the viewport height, so the chat could never be
+            more than the remainder — which is why raising its height did nothing.
+            It is a small static card, so it now lives with the other club info on
+            the left and the chat gets the whole column. */}
+        <div className="sh-club-detail-right">
           {isMember && club.chatId ? (
             <ClubChat chatId={club.chatId} currentUser={user} />
           ) : !isMember && club.isPrivate ? (
@@ -661,6 +823,234 @@ export default function ClubDetailPage() {
         </div>
 
       </div>
+
+      {/* ── All members, searchable ─────────────────────────────────────────
+          Opened from the strip above the events. Scrolls internally so a club
+          with hundreds of members never stretches the page. */}
+      {showMembers && (
+        <div
+          className="sh-club-modal-backdrop"
+          onClick={() => setShowMembers(false)}
+          role="presentation"
+        >
+          <div
+            className="sh-club-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Club members"
+          >
+            <div className="sh-club-modal-head">
+              <div className="sh-section-title" style={{ margin: 0 }}>
+                Members ({club.memberCount})
+              </div>
+              <button
+                type="button"
+                className="sh-club-modal-close"
+                onClick={() => setShowMembers(false)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            <input
+              type="text"
+              className="sh-club-modal-search"
+              placeholder="Search members…"
+              value={memberSearch}
+              onChange={(e) => { setMemberSearch(e.target.value); setMemberPage(1); }}
+              autoFocus
+            />
+
+            <div className="sh-club-modal-body">
+              {filteredMembers.length === 0 ? (
+                <div className="sh-club-activity-empty" style={{ marginTop: 8 }}>
+                  No members match “{memberSearch}”.
+                </div>
+              ) : pagedMembers.map((m) => (
+                <div key={m.userId} className="sh-member-row">
+                  <div className="sh-avatar">
+                    <UserAvatar user={m} size={42} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)' }}>
+                      <PlayerName linkToProfile displayName={m.displayName} username={m.username} userId={m.userId} />
+                    </div>
+                  </div>
+                  {m.role === 'owner' && <span className="sh-owner-badge">Owner</span>}
+                  <span style={{ fontSize: 11, color: 'var(--color-white-a20)' }}>
+                    {m.joinedAt ? new Date(m.joinedAt).toLocaleDateString() : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {totalMemberPages > 1 && (
+              <div className="sh-members-pagination">
+                <button
+                  type="button"
+                  className="sh-members-page-btn"
+                  disabled={currentMemberPage === 1}
+                  onClick={() => setMemberPage((p) => Math.max(1, p - 1))}
+                >
+                  Prev
+                </button>
+                <span className="sh-members-page-indicator">
+                  Page {currentMemberPage} / {totalMemberPages}
+                </span>
+                <button
+                  type="button"
+                  className="sh-members-page-btn"
+                  disabled={currentMemberPage === totalMemberPages}
+                  onClick={() => setMemberPage((p) => Math.min(totalMemberPages, p + 1))}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Owner edits the club page ───────────────────────────────────── */}
+      {editing && editForm && (
+        <div
+          className="sh-club-modal-backdrop"
+          onClick={() => !savingEdit && setEditing(false)}
+          role="presentation"
+        >
+          <div
+            className="sh-club-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Edit club"
+          >
+            <div className="sh-club-modal-head">
+              <div className="sh-section-title" style={{ margin: 0 }}>Edit Club</div>
+              <button
+                type="button"
+                className="sh-club-modal-close"
+                onClick={() => setEditing(false)}
+                disabled={savingEdit}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="sh-club-modal-body sh-club-edit-body">
+              <label className="sh-club-edit-label">Club name</label>
+              <input
+                type="text"
+                className="sh-club-edit-input"
+                value={editForm.name}
+                maxLength={50}
+                onChange={(e) => setEditForm(f => ({ ...f, name: e.target.value }))}
+              />
+
+              <label className="sh-club-edit-label">Short description</label>
+              <div className="sh-club-edit-hint">Shown on the club card when people browse clubs.</div>
+              <textarea
+                className="sh-club-edit-input"
+                rows={2}
+                maxLength={300}
+                value={editForm.description}
+                onChange={(e) => setEditForm(f => ({ ...f, description: e.target.value }))}
+              />
+
+              {/* Upload, not a URL box: asking a club owner to host an image
+                  somewhere and paste a link is not a realistic ask. Saved
+                  immediately on pick — it is a file on the server, so making it
+                  wait for "Save changes" would be misleading. */}
+              <label className="sh-club-edit-label">Club picture</label>
+              <div className="sh-club-edit-hint">
+                A banner or logo shown at the top of your club page. PNG, JPG,
+                WEBP or GIF, under 2 MB.
+              </div>
+
+              <div className="sh-club-pic-row">
+                {editForm.imageUrl ? (
+                  <img
+                    src={editForm.imageUrl}
+                    alt="Club picture"
+                    className="sh-club-pic-preview"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                ) : (
+                  <div className="sh-club-pic-empty">No picture yet</div>
+                )}
+
+                <div className="sh-club-pic-actions">
+                  <label className={`sh-btn-secondary sh-club-pic-btn${picBusy ? ' is-busy' : ''}`}>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/gif"
+                      onChange={onPictureFile}
+                      disabled={picBusy}
+                      hidden
+                    />
+                    {picBusy
+                      ? 'Uploading…'
+                      : (editForm.imageUrl ? 'Change picture' : 'Upload picture')}
+                  </label>
+                  {editForm.imageUrl && !picBusy && (
+                    <button
+                      type="button"
+                      className="sh-club-pic-remove"
+                      onClick={removePicture}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+              {picError && <div className="sh-club-edit-error">{picError}</div>}
+
+              <label className="sh-club-edit-label">About this club</label>
+              <div className="sh-club-edit-hint">
+                Formatting is kept. Links are removed automatically — club pages are open to kids.
+              </div>
+              <CoachRichText
+                value={editForm.about}
+                onChange={(html) => setEditForm(f => ({ ...f, about: html }))}
+                placeholder="Who is this club for? When do you play? Any rules?"
+              />
+
+              <label className="sh-club-edit-checkbox">
+                <input
+                  type="checkbox"
+                  checked={editForm.isPrivate}
+                  onChange={(e) => setEditForm(f => ({ ...f, isPrivate: e.target.checked }))}
+                />
+                <span>Private club — only people with the invite link can join</span>
+              </label>
+
+              {editError && <div className="sh-club-edit-error">{editError}</div>}
+            </div>
+
+            <div className="sh-club-edit-actions">
+              <button
+                type="button"
+                className="sh-btn-secondary"
+                onClick={() => setEditing(false)}
+                disabled={savingEdit}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="sh-btn-primary"
+                onClick={saveEdit}
+                disabled={savingEdit || !editForm.name.trim()}
+              >
+                {savingEdit ? 'Saving…' : 'Save changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

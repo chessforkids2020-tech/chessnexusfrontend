@@ -391,12 +391,22 @@ export default function AdminUsersPage() {
     }
   };
 
-  const isGuestUser = (u) => u.role === 'guest';
+  // Bots are stored with role 'user' and isBot: true, so without this check
+  // they sat in the Registered tab and were counted as real signups — the
+  // 200-strong tournament bot pool made "Total Users" meaningless as a measure
+  // of how many people actually registered.
+  const isBotUser = (u) => u.isBot === true;
+  const isGuestUser = (u) => !isBotUser(u) && u.role === 'guest';
+  const isRealUser = (u) => !isBotUser(u) && !isGuestUser(u);
 
-  const onlineCount = users.filter(u => u.isCurrentlyOnline).length;
-  const adminCount = users.filter(u => u.role === 'admin').length;
-  const eliteCount = users.filter(u => u.role === 'elite').length;
+  const botCount = users.filter(isBotUser).length;
   const guestCount = users.filter(isGuestUser).length;
+  const realCount = users.filter(isRealUser).length;
+  // Every remaining stat describes real people, not the bot pool.
+  const realUsers = users.filter(isRealUser);
+  const onlineCount = realUsers.filter(u => u.isCurrentlyOnline).length;
+  const adminCount = realUsers.filter(u => u.role === 'admin').length;
+  const eliteCount = realUsers.filter(u => u.role === 'elite').length;
 
   // ── Sorting ────────────────────────────────────────────────────────────────
   const requestSort = (key) => {
@@ -629,8 +639,9 @@ export default function AdminUsersPage() {
     )
   );
 
-  const registeredUsers = sortUsers(filteredUsers.filter(u => !isGuestUser(u)));
+  const registeredUsers = sortUsers(filteredUsers.filter(isRealUser));
   const guestUsers = sortUsers(filteredUsers.filter(isGuestUser));
+  const botUsers = sortUsers(filteredUsers.filter(isBotUser));
 
   return (
     <div style={styles.page}>
@@ -645,9 +656,11 @@ export default function AdminUsersPage() {
       </div>
 
       <div style={styles.statCard}>
+        {/* Real signups only. This used to be users.length, which included the
+            200-account bot pool and so overstated registrations badly. */}
         <div style={styles.stat}>
-          <div style={styles.statNumber}>{users.length}</div>
-          <div style={styles.statLabel}>Total Users</div>
+          <div style={styles.statNumber}>{realCount}</div>
+          <div style={styles.statLabel}>Registered Users</div>
         </div>
         <div style={styles.stat}>
           <div style={styles.statNumber}>{onlineCount}</div>
@@ -664,6 +677,10 @@ export default function AdminUsersPage() {
         <div style={styles.stat}>
           <div style={{ ...styles.statNumber, color: '#7c3aed' }}>{guestCount}</div>
           <div style={styles.statLabel}>Guests</div>
+        </div>
+        <div style={styles.stat}>
+          <div style={{ ...styles.statNumber, color: '#64748b' }}>{botCount}</div>
+          <div style={styles.statLabel}>Workers</div>
         </div>
       </div>
 
@@ -762,7 +779,7 @@ export default function AdminUsersPage() {
         </div>
       ) : (
       <>
-      {/* Tabs: Registered Users | Guest Users */}
+      {/* Tabs: Registered Users | Guest Users | Workers (bots) */}
       <div style={styles.tabBar}>
         <button
           type="button"
@@ -777,6 +794,13 @@ export default function AdminUsersPage() {
           style={userTab === 'guest' ? { ...styles.tab, ...styles.tabActive } : styles.tab}
         >
           Guest Users <span style={styles.tabCount}>({guestUsers.length})</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setUserTab('worker')}
+          style={userTab === 'worker' ? { ...styles.tab, ...styles.tabActive } : styles.tab}
+        >
+          Workers <span style={styles.tabCount}>({botUsers.length})</span>
         </button>
       </div>
 
@@ -959,6 +983,15 @@ export default function AdminUsersPage() {
       {userTab === 'guest' && (
       <div style={styles.tableContainer}>
         {renderTable(guestUsers, searchTerm ? 'No guest users match your search' : 'No guest users found')}
+      </div>
+      )}
+
+      {/* Workers — the bot accounts that fill out tournaments and arcade rooms.
+          Kept out of the other two tabs so the registered count means real
+          signups. Same table, so the usual row controls still work. */}
+      {userTab === 'worker' && (
+      <div style={styles.tableContainer}>
+        {renderTable(botUsers, searchTerm ? 'No workers match your search' : 'No workers found')}
       </div>
       )}
       </>
