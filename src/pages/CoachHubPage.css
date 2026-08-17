@@ -260,3 +260,32 @@
   .chub-title { font-size: 26px; }
   .chub-cta { width: 100%; }
 }
+
+/* ── Offer-closed hero: compact ──────────────────────────────────────────────
+   With the founding offer running, this card is the pitch and earns its height.
+   Once it closes it is just a "start coaching here" invitation, and at full size
+   it pushed the coach directory below the fold — students landing here saw a
+   sales card instead of the coaches. */
+.chub-hero-plain {
+  padding: 22px 26px 20px;
+}
+.chub-hero-plain .chub-title {
+  font-size: clamp(22px, 3.4vw, 30px);
+  margin-bottom: 8px;
+}
+.chub-hero-plain .chub-lead {
+  font-size: 14px;
+  margin-bottom: 14px;
+  max-width: 560px;
+}
+.chub-hero-plain .chub-cta { margin-top: 2px; }
+.chub-hero-plain .chub-fineprint { margin-top: 10px; }
+
+/* The five-item feature list collapses to one line when the offer is closed. */
+.chub-gets-line {
+  margin: 0 auto 16px;
+  max-width: 560px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-text-faint);
+}

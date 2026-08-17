@@ -86,7 +86,11 @@ export default function CoachHubPage() {
 
   const isCoach = !!user?.isCoach;
   const claimTo = !user ? '/signup-request' : isCoach ? '/coach/dashboard' : '/coach/onboarding';
-  const claimLabel = isCoach ? '🎓 Go to your coach dashboard' : '🏆 Claim my spot — start as a coach';
+  // "Claim my spot" only makes sense while the founding offer is running —
+  // there is no spot to claim once it has closed.
+  const claimLabel = isCoach
+    ? '🎓 Go to your coach dashboard'
+    : (offerOpen ? '🏆 Claim my spot — start as a coach' : '🎓 Start coaching free');
 
   return (
     <div className="chub-page">
@@ -121,15 +125,25 @@ export default function CoachHubPage() {
                 students, with no card required.</>}
         </p>
 
-        <ul className="chub-gets">
-          {/* Kept for both states: this is what the paid Pro plan gives, whether
-              it is being given away or bought. */}
-          <li><span aria-hidden="true">👥</span> Up to <strong>70 students</strong></li>
-          <li><span aria-hidden="true">🔴</span> <strong>Unlimited live classes</strong> — unlimited students in the room</li>
-          <li><span aria-hidden="true">⏱️</span> Classes up to 120 minutes, or with <strong>no time limit</strong></li>
-          <li><span aria-hidden="true">📚</span> Courses, assignments, attendance, parent reports</li>
-          <li><span aria-hidden="true">⭐</span> Unlimited Team Race &amp; Monthly Focus</li>
-        </ul>
+        {/* The feature list belongs to the FOUNDING OFFER — it describes what the
+            free Pro year gives. With the offer closed it was still listing Pro
+            limits ("up to 70 students", "unlimited live classes") beside a "free
+            account" message, which reads as a contradiction and made the card
+            tall enough to push the coach directory below the fold. The closed
+            state gets a single compact line instead. */}
+        {offerOpen ? (
+          <ul className="chub-gets">
+            <li><span aria-hidden="true">👥</span> Up to <strong>70 students</strong></li>
+            <li><span aria-hidden="true">🔴</span> <strong>Unlimited live classes</strong> — unlimited students in the room</li>
+            <li><span aria-hidden="true">⏱️</span> Classes up to 120 minutes, or with <strong>no time limit</strong></li>
+            <li><span aria-hidden="true">📚</span> Courses, assignments, attendance, parent reports</li>
+            <li><span aria-hidden="true">⭐</span> Unlimited Team Race &amp; Monthly Focus</li>
+          </ul>
+        ) : (
+          <p className="chub-gets-line">
+            Live classroom · courses · assignments · attendance · parent reports
+          </p>
+        )}
 
         {/* The counter. Only rendered once the number has actually loaded —
             "0 spots left" while fetching would kill the offer stone dead. */}
@@ -148,9 +162,12 @@ export default function CoachHubPage() {
           </div>
         )}
 
-        {offerOpen
-          ? <div className="chub-worth">Worth <strong>$228</strong> over the year · yours free</div>
-          : <div className="chub-worth">Pro is <strong>$19/month</strong> · free forever up to 30 students</div>}
+        {/* No price in the closed state. Leading with "$19/month" when the pitch
+            is a free account buries the actual offer, and pricing already has its
+            own page for anyone who wants it. */}
+        {offerOpen && (
+          <div className="chub-worth">Worth <strong>$228</strong> over the year · yours free</div>
+        )}
 
         <Link to={claimTo} className="chub-cta">{claimLabel}</Link>
         {/* Full written terms of the offer, as a crawlable page — this hero
@@ -160,10 +177,17 @@ export default function CoachHubPage() {
             <Link to="/founding-chess-coaches">What the founding year includes →</Link>
           </div>
         )}
+        {/* Fine print follows the offer state too: the founding-year wording
+            ("first 50", "your first year costs nothing") is untrue once the offer
+            has closed. */}
         <p className="chub-fineprint">
           {isCoach
-            ? 'You are already set up as a coach. If you are one of the first 50, your Pro year is applied to your account — nothing else to do.'
-            : 'Takes a few minutes: tell us about your coaching, and we verify you (usually within 12 hours). Already coaching elsewhere? Bring your students across — your first year costs nothing.'}
+            ? (offerOpen
+                ? 'You are already set up as a coach. If you are one of the first 50, your Pro year is applied to your account — nothing else to do.'
+                : 'You are already set up as a coach — nothing else to do.')
+            : (offerOpen
+                ? 'Takes a few minutes: tell us about your coaching, and we verify you (usually within 12 hours). Already coaching elsewhere? Bring your students across — your first year costs nothing.'
+                : 'Takes a few minutes: tell us about your coaching, and we verify you (usually within 12 hours).')}
         </p>
       </section>
 
