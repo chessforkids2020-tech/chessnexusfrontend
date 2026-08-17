@@ -10,8 +10,10 @@ const CANONICAL = "/privacy-policy";
 //   • EFFECTIVE_DATE: keep updated whenever this policy materially changes.
 // This document is a good-faith template, not legal advice. Have it reviewed by a
 // lawyer for GDPR/UK GDPR (EU/UK) and the DPDP Act 2023 (India) compliance.
-// Chess Nexus is a general-audience service and does not knowingly collect data
-// from children under 13 (or the minimum age in your jurisdiction).
+// Chess Nexus IS used by children — coaches enrol young students, and the app is
+// built around a coach-led academy. Do not reintroduce "not directed to children
+// under 13": it contradicts how the product actually works and would be a false
+// statement in a privacy policy. Children's data is addressed in §4 instead.
 const LEGAL_ENTITY = "Chess Nexus";
 const EFFECTIVE_DATE = "June 12, 2026";
 
@@ -138,18 +140,24 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2>4. Children’s privacy</h2>
             <p>
-              Chess Nexus is a general-audience service intended for chess players
-              of all levels. It is <strong>not directed to children under 13</strong>{" "}
-              (or the minimum age required in your country), and we do not knowingly
-              collect personal information from such children. We do not ask for a
-              user’s age, date of birth, or parent/guardian contact details at
-              sign-up.
+              Chess Nexus is used by players of all ages, and many of our users are
+              children learning through a coach or academy. Where a child uses the
+              Service, we expect a parent, guardian, or their coach to be involved
+              in setting up and supervising that account.
             </p>
             <p>
-              If you are a parent or guardian and believe a child under the
-              applicable minimum age has provided us with personal information,
-              please <Link to="/contact">contact us</Link> and we will
-              delete it promptly.
+              We deliberately collect as little as possible about any user, and
+              nothing extra because they are young: we do{" "}
+              <strong>not</strong> ask for a date of birth, a home address, or a
+              phone number at sign-up. A child’s account holds the same basic
+              information as any other — a username, a display name, and their
+              activity on the site.
+            </p>
+            <p>
+              If you are a parent or guardian and want to see what we hold about
+              your child, have it corrected, or have the account and its data
+              deleted, please <Link to="/contact">contact us</Link> and we will
+              action it promptly.
             </p>
           </section>
 

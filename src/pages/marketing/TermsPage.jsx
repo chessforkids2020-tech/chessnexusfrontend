@@ -65,20 +65,14 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section>
-            <h2>2. Eligibility</h2>
-            <p>
-              The Service is a general-audience platform and is not directed to
-              children under 13 (or the minimum age required in your country). By
-              using the Service you confirm that you meet the minimum age and are
-              able to enter into these Terms. If you use the Service on behalf of an
-              organisation, you confirm you are authorised to bind it to these
-              Terms.
-            </p>
-          </section>
+          {/* The "Eligibility" section was removed deliberately. It stated the
+              Service is "not directed to children under 13", which is untrue of a
+              coach-led academy where coaches enrol young students — a false claim
+              in a legal document is worse than no claim. Do not reinstate it
+              without wording that matches how the product actually works. */}
 
           <section>
-            <h2>3. Your account</h2>
+            <h2>2. Your account</h2>
             <ul>
               <li>
                 You must provide accurate information when you register and keep it
@@ -101,7 +95,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>4. Acceptable use</h2>
+            <h2>3. Acceptable use</h2>
             <p>You agree not to:</p>
             <ul>
               <li>
@@ -126,7 +120,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>5. The Service is free for players</h2>
+            <h2>4. The Service is free for players</h2>
             <p>
               The core Chess Nexus experience — puzzles, tactics races, online games,
               analysis, tournaments, study tools and the community — is provided to
@@ -137,7 +131,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>6. Coaches and subscriptions</h2>
+            <h2>5. Coaches and subscriptions</h2>
             <ul>
               <li>
                 Coaching tools are offered on a paid subscription, with tiers based
@@ -166,7 +160,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>7. Payments, donations and refunds</h2>
+            <h2>6. Payments, donations and refunds</h2>
             <ul>
               <li>
                 Payments (coach subscriptions and any optional “Buy Me a Coffee”
@@ -195,7 +189,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>8. User content</h2>
+            <h2>7. User content</h2>
             <ul>
               <li>
                 “User content” means anything you submit — studies, positions,
@@ -220,7 +214,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>9. Our intellectual property</h2>
+            <h2>8. Our intellectual property</h2>
             <p>
               The Service, including its software, design, logos, text and graphics
               (excluding your user content and third-party materials), belongs to us
@@ -232,7 +226,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>10. Third-party services</h2>
+            <h2>9. Third-party services</h2>
             <p>
               The Service may link to or integrate third-party services (for example
               Chess.com, Lichess, or payment providers). We are not responsible for
@@ -242,7 +236,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>11. Suspension and termination</h2>
+            <h2>10. Suspension and termination</h2>
             <p>
               We may suspend or terminate your access to the Service, with or without
               notice, if you breach these Terms, if your use harms other users or the
@@ -254,7 +248,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>12. Disclaimers</h2>
+            <h2>11. Disclaimers</h2>
             <p>
               The Service is provided “as is” and “as available”, without warranties
               of any kind, whether express or implied, to the maximum extent
@@ -265,7 +259,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>13. Limitation of liability</h2>
+            <h2>12. Limitation of liability</h2>
             <p>
               To the maximum extent permitted by law, we will not be liable for any
               indirect, incidental, special, consequential or punitive damages, or
@@ -276,7 +270,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>14. Changes to the Service and these Terms</h2>
+            <h2>13. Changes to the Service and these Terms</h2>
             <p>
               We may update these Terms from time to time. When we make material
               changes, we will update the effective date above and, where
@@ -287,7 +281,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>15. Governing law</h2>
+            <h2>14. Governing law</h2>
             <p>
               These Terms are governed by the laws of {GOVERNING_LAW}, without regard
               to conflict-of-law rules, and the courts located in {GOVERNING_LAW}{" "}
@@ -297,7 +291,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2>16. Contact us</h2>
+            <h2>15. Contact us</h2>
             <p>
               Questions about these Terms? Reach us through our{" "}
               <Link to="/contact">Contact Us</Link> page.
