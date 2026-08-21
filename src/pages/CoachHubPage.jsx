@@ -180,15 +180,21 @@ export default function CoachHubPage() {
         {/* Fine print follows the offer state too: the founding-year wording
             ("first 50", "your first year costs nothing") is untrue once the offer
             has closed. */}
-        <p className="chub-fineprint">
-          {isCoach
-            ? (offerOpen
-                ? 'You are already set up as a coach. If you are one of the first 50, your Pro year is applied to your account — nothing else to do.'
-                : 'You are already set up as a coach — nothing else to do.')
-            : (offerOpen
-                ? 'Takes a few minutes: tell us about your coaching, and we verify you (usually within 12 hours). Already coaching elsewhere? Bring your students across — your first year costs nothing.'
-                : 'Takes a few minutes: tell us about your coaching, and we verify you (usually within 12 hours).')}
-        </p>
+        {/* Fine print only while the founding offer is running. With the offer
+            closed there is nothing left worth saying here — the sign-up detail
+            ("takes a few minutes… we verify you") belongs on the onboarding
+            page the button leads to, not on the hub, where it was one more line
+            pushing the coach directory down. Rendered conditionally rather than
+            left empty so the paragraph's margin goes too. */}
+        {(offerOpen || isCoach) && (
+          <p className="chub-fineprint">
+            {isCoach
+              ? (offerOpen
+                  ? 'You are already set up as a coach. If you are one of the first 50, your Pro year is applied to your account — nothing else to do.'
+                  : 'You are already set up as a coach — nothing else to do.')
+              : 'Takes a few minutes: tell us about your coaching, and we verify you (usually within 12 hours). Already coaching elsewhere? Bring your students across — your first year costs nothing.'}
+          </p>
+        )}
       </section>
 
       {/* ── COACHES ON CHESS NEXUS ───────────────────────────────────── */}

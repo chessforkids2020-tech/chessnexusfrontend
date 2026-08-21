@@ -33,6 +33,9 @@ export default function GameInsightsPanel() {
   const pollRef = useRef(null);
 
   const [active, setActive] = useState(null);
+  // Frozen copy of the list taken when a moment is opened, so Next walks a
+  // stable order even as solving changes what the panel would refetch.
+  const [session, setSession] = useState([]);
   const [fen, setFen] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [playedMove, setPlayedMove] = useState(null); // the correct move the user found
@@ -98,14 +101,47 @@ export default function GameInsightsPanel() {
     else navigate(`/training/healthy-mix?theme=${encodeURIComponent(key)}`);
   };
 
-  const openPuzzle = (p) => {
+  // Reset every scrap of solving state — shared by "open from the grid" and
+  // "step to the next moment" so a revealed answer never bleeds across.
+  const showPuzzle = (p) => {
     setActive(p); setFen(p.fen); setFeedback(null); setPlayedMove(null); setRevealed(false);
     setExplainText(p.explanation || ''); setExplainAI(!!p.explanationIsAI); setExplaining(false);
   };
-  const closePuzzle = () => {
-    setActive(null); setFen(null); setFeedback(null); setPlayedMove(null); setRevealed(false);
-    setExplainText(''); setExplainAI(false); setExplaining(false);
+  const openPuzzle = (p) => {
+    setSession(puzzles);
+    showPuzzle(p);
   };
+  const closePuzzle = () => {
+    // Bring the panel back in line with the server now the student is done.
+    const solvedAny = session.some(p => p.solved) || revealed;
+    setActive(null); setSession([]); setFen(null); setFeedback(null); setPlayedMove(null); setRevealed(false);
+    setExplainText(''); setExplainAI(false); setExplaining(false);
+    if (solvedAny) loadAll();
+  };
+
+  // Where the open moment sits in the frozen list, and its neighbours.
+  const sessionIndex = active && session.length
+    ? session.findIndex(p => p._id === active._id) : -1;
+  const prevPuzzle = sessionIndex > 0 ? session[sessionIndex - 1] : null;
+  const nextPuzzle = sessionIndex >= 0 && sessionIndex < session.length - 1
+    ? session[sessionIndex + 1] : null;
+  const goToPuzzle = (p) => { if (p) showPuzzle(p); };
+
+  // Arrow keys and Escape while a moment is open, so a student can work through
+  // a set without reaching for the mouse.
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') { closePuzzle(); return; }
+      const tag = e.target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return;
+      if (e.key === 'ArrowRight' && nextPuzzle) { e.preventDefault(); goToPuzzle(nextPuzzle); }
+      if (e.key === 'ArrowLeft' && prevPuzzle) { e.preventDefault(); goToPuzzle(prevPuzzle); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    /* eslint-disable-next-line */
+  }, [active, nextPuzzle, prevPuzzle]);
 
   // Lazily fetch a richer AI explanation (quota-guarded server-side, cached).
   const explainMore = async () => {
@@ -143,7 +179,16 @@ export default function GameInsightsPanel() {
     if (correct) setPlayedMove(move.san);
     api.post(`/api/game-insights/${active._id}/solve`, { solved: correct }).catch(() => {});
 
-    if (correct) { setRevealed(true); setTimeout(loadAll, 1200); }
+    // Mark solved IN PLACE. loadAll() refetches with solved=false, which pulled
+    // the just-solved card straight out of the grid while the student was still
+    // looking at it. The panel now re-syncs when the modal closes instead, so
+    // the list only changes between sessions.
+    if (correct) {
+      setRevealed(true);
+      setPuzzles(list => list.map(x => x._id === active._id ? { ...x, solved: true } : x));
+      setSession(list => list.map(x => x._id === active._id ? { ...x, solved: true } : x));
+      setCounts(c => ({ ...c, unsolved: Math.max(0, (c.unsolved || 0) - 1) }));
+    }
     else { setTimeout(() => setFen(active.fen), 700); }
     return true;
   };
@@ -390,10 +435,31 @@ export default function GameInsightsPanel() {
                     <p className="gip-swing">
                       Your move lost about <strong>{Math.abs(active.evalSwing)}</strong> points of advantage.
                     </p>
-                    <button className="gip-next" onClick={closePuzzle}>Done</button>
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Navigation sits on the MODAL, not inside the right-hand column:
+                as a last child of .gip-modal-side it landed below the
+                explanation and solution line and fell past the bottom of the
+                panel, so students never found it. Always rendered — with a
+                single moment the arrows are simply disabled. */}
+            <div className="gip-nav">
+              <button
+                className="gip-nav-btn"
+                onClick={() => goToPuzzle(prevPuzzle)}
+                disabled={!prevPuzzle}
+                aria-label="Previous moment"
+              >← Prev</button>
+              <span className="gip-nav-count">
+                {sessionIndex >= 0 ? `${sessionIndex + 1} of ${session.length}` : ''}
+              </span>
+              <button
+                className="gip-nav-btn gip-nav-next"
+                onClick={() => nextPuzzle ? goToPuzzle(nextPuzzle) : closePuzzle()}
+                aria-label={nextPuzzle ? 'Next moment' : 'Finish'}
+              >{nextPuzzle ? 'Next moment →' : 'Done'}</button>
             </div>
           </div>
         </div>

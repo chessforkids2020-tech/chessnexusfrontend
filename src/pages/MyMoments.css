@@ -81,20 +81,41 @@
 .mm-card-cta { font-size: 12px; font-weight: 700; color: var(--color-accent); margin-top: 2px; }
 
 /* Solving modal */
+/* The overlay SCROLLS rather than centring a taller-than-viewport modal.
+   align-items:center on a flex item bigger than the viewport overflows equally
+   in BOTH directions, and the half above the top edge cannot be scrolled to —
+   students with a long moment (420px board + explanation + solution line) saw
+   only the bottom of the panel and read it as "the popup opened somewhere down
+   the page". flex-start + overflow-y keeps the top always reachable. */
 .mm-modal-overlay {
   position: fixed; inset: 0; background: var(--color-black-a65); z-index: 1000;
-  display: flex; align-items: center; justify-content: center; padding: 20px;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 20px; overflow-y: auto; overscroll-behavior: contain;
 }
 .mm-modal {
   position: relative; background: #111827; border: 1px solid var(--color-white-a07);
   border-radius: var(--radius-xl); padding: 22px; max-width: 900px; width: 100%;
   box-shadow: 0 20px 60px var(--color-black-a65);
+  /* Sit just below the top edge on tall screens, but never push the panel
+     off-screen on short ones: auto margins centre it only when it fits. */
+  margin: auto;
+  /* Column so the position + explanation can scroll INSIDE the panel while the
+     navigation footer stays pinned and always reachable. */
+  display: flex; flex-direction: column;
+  max-height: calc(100dvh - 40px);
 }
+
 .mm-modal-close {
   position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--color-text-muted);
   font-size: 20px; cursor: pointer;
 }
-.mm-modal-body { display: flex; gap: 24px; flex-wrap: wrap; }
+/* The scrolling region: board + side column side by side, and this is the part
+   that scrolls so the nav footer below it stays pinned. min-height:0 is what
+   actually lets a flex child shrink enough to scroll. */
+.mm-modal-body {
+  display: flex; gap: 24px; flex-wrap: wrap;
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+}
 .mm-modal-board { flex: 0 0 auto; }
 .mm-modal-side { flex: 1; min-width: 240px; }
 .mm-modal-side h3 { margin: 0 0 4px; }
@@ -123,3 +144,26 @@
 .mm-move { background: var(--color-white-a07); border-radius: var(--radius-sm); padding: 3px 8px; font-weight: 700; font-size: 13px; }
 .mm-move-best { background: var(--color-success-a20); color: var(--color-success); }
 .mm-swing { color: var(--color-text-muted); font-size: 13px; }
+
+/* MOMENT-TO-MOMENT NAVIGATION
+   A 5-day streak can leave a student with 50+ moments, and reopening the grid
+   between every one made working through them a chore. These walk the frozen
+   session list so the order never shifts under the student's hand. */
+.mm-nav {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--color-white-a07);
+  flex: 0 0 auto;   /* pinned: never shrinks, never scrolls out of view */
+}
+.mm-nav-btn {
+  padding: 8px 14px; border-radius: var(--radius-md); cursor: pointer; font-weight: 800; font-size: 13px;
+  background: var(--color-white-a07); border: 1px solid var(--color-white-a07); color: var(--color-text);
+}
+.mm-nav-btn:hover:not(:disabled) { border-color: var(--color-accent-a40); color: var(--color-accent); }
+.mm-nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+/* The forward button is the one we want the eye to land on after solving. */
+.mm-nav-next {
+  margin-left: auto; border: none; color: #04121a;
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
+}
+.mm-nav-next:hover:not(:disabled) { color: #04121a; filter: brightness(1.08); }
+.mm-nav-count { font-size: 12px; color: var(--color-text-muted); font-weight: 700; }

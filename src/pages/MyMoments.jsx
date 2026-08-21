@@ -60,6 +60,12 @@ export default function MyMoments() {
   const [loading, setLoading] = useState(true);
 
   const [active, setActive] = useState(null);
+  // A FROZEN copy of the list taken when the student opens their first moment.
+  // Solving reloads the grid (a solved moment leaves the "To practise" tab), so
+  // walking `puzzles` directly would make Next skip the neighbour of whatever
+  // just vanished. The session list keeps the running order stable until the
+  // student closes the modal.
+  const [session, setSession] = useState([]);
   const [fen, setFen] = useState(null);
   const [feedback, setFeedback] = useState(null);
   const [playedMove, setPlayedMove] = useState(null);
@@ -99,14 +105,60 @@ export default function MyMoments() {
   useEffect(() => { load(filter, category); /* eslint-disable-next-line */ }, [filter, category]);
   useEffect(() => () => clearTimeout(reloadRef.current), []);
 
-  const openPuzzle = (p) => {
+  // Reset every scrap of solving state. Shared by "open from the grid" and
+  // "step to the next moment" so a revealed answer or a wrong-move flash can
+  // never bleed from one position into the next.
+  const showPuzzle = (p) => {
     setActive(p); setFen(p.fen); setFeedback(null); setPlayedMove(null); setRevealed(false);
     setExplainText(p.explanation || ''); setExplainAI(!!p.explanationIsAI); setExplaining(false);
   };
-  const closePuzzle = () => {
-    setActive(null); setFen(null); setFeedback(null); setPlayedMove(null); setRevealed(false);
-    setExplainText(''); setExplainAI(false); setExplaining(false);
+  const openPuzzle = (p) => {
+    // Freeze the order the student sees at the moment they start solving.
+    setSession(puzzles);
+    showPuzzle(p);
   };
+  const closePuzzle = () => {
+    // Anything solved during the session was only marked in place, so bring the
+    // grid back in line with the server now that the student is done with it.
+    const solvedAny = session.some(p => p.solved) || revealed;
+    setActive(null); setSession([]); setFen(null); setFeedback(null); setPlayedMove(null); setRevealed(false);
+    setExplainText(''); setExplainAI(false); setExplaining(false);
+    if (solvedAny) load(filter, category);
+  };
+
+  // Where the open moment sits in the frozen list, and its neighbours.
+  const sessionIndex = active && session.length
+    ? session.findIndex(p => p._id === active._id) : -1;
+  const prevPuzzle = sessionIndex > 0 ? session[sessionIndex - 1] : null;
+  const nextPuzzle = sessionIndex >= 0 && sessionIndex < session.length - 1
+    ? session[sessionIndex + 1] : null;
+
+  // Stepping away cancels the pending grid reload from a solve: letting it fire
+  // mid-session would swap the list out from under the student while they are
+  // still working, which is the very thing the frozen session prevents.
+  const goToPuzzle = (p) => {
+    if (!p) return;
+    clearTimeout(reloadRef.current);
+    showPuzzle(p);
+  };
+
+  // Arrow keys and Escape. A student working through 50 moments should be able
+  // to keep both hands where they are; Escape is the expected way out of a
+  // modal. Bound only while one is open so the grid keeps normal key handling.
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') { closePuzzle(); return; }
+      // Never steal the arrows from a text field or a native control.
+      const tag = e.target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return;
+      if (e.key === 'ArrowRight' && nextPuzzle) { e.preventDefault(); goToPuzzle(nextPuzzle); }
+      if (e.key === 'ArrowLeft' && prevPuzzle) { e.preventDefault(); goToPuzzle(prevPuzzle); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    /* eslint-disable-next-line */
+  }, [active, nextPuzzle, prevPuzzle]);
 
   const explainMore = async () => {
     if (!active || explaining || explainAI) return;
@@ -141,7 +193,18 @@ export default function MyMoments() {
     // Rating-neutral solve — this endpoint never changes liveRating.
     api.post(`/api/game-insights/${active._id}/solve`, { solved: correct }).catch(() => {});
 
-    if (correct) { setRevealed(true); reloadRef.current = setTimeout(() => load(filter), 1200); }
+    // Mark it solved IN PLACE rather than refetching. Reloading with the
+    // default solved=false filter deleted the card the student had just solved
+    // — the grid visibly lost a tile under their hand, and the frozen session
+    // was the only reason Next still worked at all. The grid now refreshes when
+    // the modal closes (see closePuzzle), so the list only changes between
+    // sessions, never during one.
+    if (correct) {
+      setRevealed(true);
+      setPuzzles(list => list.map(x => x._id === active._id ? { ...x, solved: true } : x));
+      setSession(list => list.map(x => x._id === active._id ? { ...x, solved: true } : x));
+      setCounts(c => ({ ...c, unsolved: Math.max(0, (c.unsolved || 0) - 1) }));
+    }
     else { setTimeout(() => setFen(active.fen), 700); }
     return true;
   };
@@ -335,10 +398,34 @@ export default function MyMoments() {
                     <p className="mm-swing">
                       Your move lost about <strong>{Math.abs(active.evalSwing)}</strong> points of advantage.
                     </p>
-                    <button className="mm-next" onClick={closePuzzle}>Done</button>
                   </div>
                 )}
+
+
               </div>
+            </div>
+
+            {/* Navigation lives on the MODAL, not inside the right-hand column.
+                As a last child of .mm-modal-side it sat below the explanation
+                and the solution line, so on a revealed moment it fell past the
+                bottom of the panel and students never found it. As a footer it
+                is pinned under the board and stays on screen however long the
+                explanation runs. */}
+            <div className="mm-nav">
+              <button
+                className="mm-nav-btn"
+                onClick={() => goToPuzzle(prevPuzzle)}
+                disabled={!prevPuzzle}
+                aria-label="Previous moment"
+              >← Prev</button>
+              <span className="mm-nav-count">
+                {sessionIndex >= 0 ? `${sessionIndex + 1} of ${session.length}` : ''}
+              </span>
+              <button
+                className="mm-nav-btn mm-nav-next"
+                onClick={() => nextPuzzle ? goToPuzzle(nextPuzzle) : closePuzzle()}
+                aria-label={nextPuzzle ? 'Next moment' : 'Finish'}
+              >{nextPuzzle ? 'Next moment →' : 'Done'}</button>
             </div>
           </div>
         </div>

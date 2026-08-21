@@ -167,9 +167,14 @@
 .gip-card-cta { font-size: 12px; color: var(--gip-accent); font-weight: 600; margin-top: 2px; }
 
 /* ── Solving modal: board LEFT, info RIGHT ── */
+/* Scrolls rather than centring a taller-than-viewport modal: a centred flex
+   item bigger than the screen overflows equally in BOTH directions and the top
+   half becomes unreachable, which is why the panel looked like it opened
+   "somewhere down the page". */
 .gip-modal-overlay {
   position: fixed; inset: 0; background: var(--color-black-a65); z-index: 1100;
-  display: flex; align-items: center; justify-content: center; padding: 20px;
+  display: flex; align-items: flex-start; justify-content: center; padding: 20px;
+  overflow-y: auto; overscroll-behavior: contain;
   -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
 }
 .gip-modal {
@@ -179,13 +184,23 @@
   border-radius: var(--radius-xl); max-width: 820px; width: 100%; padding: 24px; position: relative;
   box-shadow: var(--obsidian-shadow, 0 8px 32px var(--color-black-a65));
   color: var(--obsidian-text, #fff);
+  margin: auto;
+  /* Column so the position + explanation scroll INSIDE the panel while the
+     navigation footer stays pinned and always visible. */
+  display: flex; flex-direction: column;
+  max-height: calc(100dvh - 40px);
 }
 .gip-modal-close {
   position: absolute; top: 12px; right: 14px; background: none; border: none;
   font-size: 20px; cursor: pointer; color: var(--obsidian-text-muted, #9ca3af);
 }
 .gip-modal-close:hover { color: var(--color-text); }
-.gip-modal-body { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+/* The scrolling region; min-height:0 is what lets a flex child shrink enough
+   to actually scroll instead of growing the panel. */
+.gip-modal-body {
+  display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+}
 .gip-modal-board { flex: 0 0 auto; }                 /* LEFT */
 .gip-modal-side { flex: 1; min-width: 240px; }       /* RIGHT */
 .gip-modal-side h3 { margin: 0 0 4px; font-size: 18px; color: var(--obsidian-text, #fff); }
@@ -235,3 +250,27 @@
 @media (max-width: 600px) {
   .gip-modal-body { flex-direction: column; align-items: center; }
 }
+
+/* MOMENT-TO-MOMENT NAVIGATION
+   Reopening the grid between every position made a set of moments a chore, so
+   the modal walks the frozen session list. Pinned below the scrolling body. */
+.gip-nav {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid var(--obsidian-border, var(--color-white-a07));
+  flex: 0 0 auto;   /* never shrinks, never scrolls out of view */
+}
+.gip-nav-btn {
+  padding: 8px 14px; border-radius: var(--radius-md); cursor: pointer; font-weight: 800; font-size: 13px;
+  background: var(--color-white-a07); border: 1px solid var(--color-white-a07);
+  color: var(--obsidian-text, var(--color-text));
+}
+.gip-nav-btn:hover:not(:disabled) { border-color: var(--color-accent-a40); color: var(--color-accent); }
+.gip-nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+/* The forward button is where the eye should land after solving. */
+.gip-nav-next {
+  margin-left: auto; border: none; color: #04121a;
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
+}
+.gip-nav-next:hover:not(:disabled) { color: #04121a; filter: brightness(1.08); }
+.gip-nav-count { font-size: 12px; color: var(--color-text-muted); font-weight: 700; }
