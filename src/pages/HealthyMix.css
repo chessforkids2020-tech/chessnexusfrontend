@@ -537,7 +537,7 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
 /* Also moved into the right column. Its old 18px top margin was spacing it off
    the board; here the column's own gap does that. */
 .hm-history {
-  margin-top: 0;
+  margin-top: 10px;
   padding: 10px 12px;
   border-radius: var(--hm-radius-sm);
   flex: 0 0 auto;
@@ -918,10 +918,18 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
      grid narrows in the SAME frame the board grows, so the board can never
      overlap the moves card mid-drag. minmax keeps the floor as a safety net for
      genuinely narrow windows. */
+  /* FIXED SIDES, FLEXIBLE MIDDLE.
+     The side cards keep their width no matter what the board does. Anything the
+     board cannot use stays in the middle column rather than resizing a card —
+     a card that moves while you drag the board is far more distracting than a
+     little space beside it.
+     The JS-set --hm-left-col / --hm-right-col are only touched by an explicit
+     drag past the point where the board would overlap the moves card. */
   grid-template-columns:
-    minmax(232px, var(--hm-left-col, 300px))
+    minmax(232px, var(--hm-left-col, 272px))
     minmax(0, 1fr)
-    minmax(248px, var(--hm-right-col, 330px)) !important;
+    minmax(248px, var(--hm-right-col, 300px)) !important;
+  justify-content: start;
   gap: 22px !important;
   align-items: start;
 }
@@ -930,6 +938,11 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
    Left-aligned rather than centred: when the board is narrower than its column
    (capped by MAX_BOARD or by viewport height) the slack all sits on the RIGHT,
    so the board sits closer to the left card instead of floating mid-column. */
+/* Left-aligned, and the COLUMN is sized to the board (see the grid above), so
+   there is no spare width inside it to distribute. Centring was tried and moves
+   the board's left edge every time it resizes; left-aligning a column that is
+   wider than the board puts all the slack on one side. Sizing the column to the
+   board removes the slack instead of choosing where to put it. */
 .hm-board-col {
   display: flex;
   flex-direction: column;
@@ -1166,14 +1179,24 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
 /* Now lives in the RIGHT column, not under the board — that is what freed the
    board's height. In a ~330px column three buttons across would be cramped, so
    they wrap. */
+/* Back under the board, width-matched to it.
+   NO WRAPPING. The board's height budget subtracts this row's height, so a row
+   whose height depends on its width would form a loop: a narrower board wraps
+   the buttons to two lines, which shrinks the board, which wraps them further.
+   Three buttons on one line keeps the height constant at any board size. */
 .hm-boardtools {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 6px;
-  margin-top: 0;
+  margin-top: 10px;
   flex: 0 0 auto;
 }
-.hm-boardtools .hm-boardtool { flex: 1 1 96px; }
+.hm-boardtools .hm-boardtool {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .hm-boardtool {
   flex: 1;

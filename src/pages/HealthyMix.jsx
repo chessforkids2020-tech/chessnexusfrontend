@@ -452,11 +452,16 @@ export default function HealthyMix() {
   // pixel not used below the board goes to the board.
   // Side-card widths. The cards sit at COMFORTABLE by default and only give up
   // width when the user drags the board bigger than the space already free.
-  const LEFT_COMFORT = 300,  LEFT_MIN = 232;
-  const RIGHT_COMFORT = 330, RIGHT_MIN = 248;
+  // Trimmed from 300/330 to give the board more width. Both still hold their
+  // content: the left card's mode buttons need ~92px of text each, and the
+  // right column's moves list reads fine at 300.
+  const LEFT_COMFORT = 272,  LEFT_MIN = 232;
+  const RIGHT_COMFORT = 300, RIGHT_MIN = 248;
   const COL_GAP = 22, PAGE_PAD = 32;
 
-  const VERT_FALLBACK = 48;
+  // Just the page's bottom padding. Was 48; the page scrolls vertically, so a
+  // generous reserve only cost the board height.
+  const VERT_FALLBACK = 24;
   const refitRef = useRef(null);       // set by the sizing effect below
   // Board auto-sizes to the screen. The old code hard-capped the board at `preferred`
   // (480px) on ANY desktop, so a 32" monitor showed the same tiny board as a laptop.
@@ -580,15 +585,42 @@ export default function HealthyMix() {
     // it grows rightwards into the space, which is what "make the board bigger"
     // should look like.
     const rightGive = Math.min(sideSqueeze, RIGHT_COMFORT - RIGHT_MIN);
-    const leftGive = 0;
     const root = document.documentElement;
-    root.style.setProperty('--hm-left-col', `${LEFT_COMFORT - leftGive}px`);
-    root.style.setProperty('--hm-right-col', `${RIGHT_COMFORT - rightGive}px`);
+
+    // SIZE THE CARDS TO THE SPACE THE BOARD CANNOT USE.
+    //
+    // A chessboard is SQUARE, so on a wide window it is capped by HEIGHT and
+    // physically cannot fill its column. Every previous attempt just chose where
+    // to put the leftover width — beside the board (a corridor), split around it
+    // (the board slid), or into a board-hugging column (the right card slid).
+    //
+    // There is no fourth place to put it, so instead the cards ABSORB it: make
+    // them exactly wide enough that board + cards + gaps fill the row. Then
+    // there is no leftover width at all, and nothing has to move to hide it.
+    //
+    // Clamped so the cards stay usable, and floored at their normal widths so a
+    // tall window (where the board can nearly fill the row) never squeezes them.
+    const grid = boardColRef.current?.parentElement;
+    let leftW = LEFT_COMFORT;
+    let rightW = RIGHT_COMFORT - rightGive;
+    if (grid && window.innerWidth > 960) {
+      const gridW = grid.clientWidth;
+      const forCards = gridW - boardSize - COL_GAP * 2;
+      if (forCards > LEFT_COMFORT + RIGHT_COMFORT) {
+        // Roughly 46/54 — the moves list benefits from the extra more than the
+        // rating card does.
+        leftW = Math.max(LEFT_COMFORT, Math.min(460, Math.floor(forCards * 0.46)));
+        rightW = Math.max(RIGHT_COMFORT - rightGive, Math.min(520, forCards - leftW));
+      }
+    }
+    root.style.setProperty('--hm-left-col', `${leftW}px`);
+    root.style.setProperty('--hm-right-col', `${rightW}px`);
     return () => {
       root.style.removeProperty('--hm-left-col');
       root.style.removeProperty('--hm-right-col');
     };
-  }, [sideSqueeze]);
+  }, [sideSqueeze, boardSize]);
+
   // Expose the board height to CSS so the moves card can match it exactly (they line
   // up bottom-to-bottom).
   useEffect(() => {
@@ -633,13 +665,29 @@ export default function HealthyMix() {
         // the moves card. Math.floor because a fractional width rounds up when
         // painted, which is the sub-pixel that produced the overlap.
         //
-        // The height budget uses the MEASURED height of everything below the
-        // board (tools row + session strip), so a fresh puzzle with neither
-        // rendered gets a bigger board than one with both.
-        // Nothing sits below the board any more — the tools row and session
-        // strip moved into the right column — so this is just the page's own
-        // bottom padding.
-        const below = VERT_FALLBACK;
+        // The tools row and the session strip sit BELOW the board, so the board
+        // only gets the height left after them. Measured rather than guessed:
+        // a fresh puzzle shows neither and can use the full window, while one
+        // mid-session must leave room for both — a fixed number would be wrong
+        // in one direction or the other, and getting it wrong pushes the strips
+        // off the bottom of the screen.
+        // Reserve the TOOLS ROW only, not the session strip.
+        //
+        // The page scrolls vertically (.hm-page restricts overflow-x alone), so
+        // not everything below the board has to fit without scrolling. Retry /
+        // Copy FEN / Square evals are ACTIONS and must be reachable, so their
+        // row is reserved. "This session" is a log you read after the fact —
+        // reserving it as well cost the board ~76px of height for something the
+        // student can simply scroll to.
+        const toolsEl = el.querySelector('.hm-boardtools');
+        let measured = 0;
+        if (toolsEl) {
+          const cs = window.getComputedStyle(toolsEl);
+          measured = toolsEl.offsetHeight
+            + parseFloat(cs.marginTop || 0)
+            + parseFloat(cs.marginBottom || 0);
+        }
+        const below = VERT_FALLBACK + measured;
         const top = el.getBoundingClientRect().top;   // page chrome above the board
 
         // Measure the LAYOUT GRID, not the window.
@@ -703,14 +751,62 @@ export default function HealthyMix() {
     // the next incidental layout change.
     window.addEventListener('resize', resetAndFit);
     document.addEventListener('fullscreenchange', resetAndFit);
+
+    // FIT MORE THAN ONCE ON MOUNT.
+    //
+    // A single fit() at mount measures a page that has not settled: web fonts
+    // are still loading, the sidebar and left card have not reached their final
+    // width, and the board column's top offset is not yet where it will end up.
+    // The board was therefore sized from wrong numbers and never corrected —
+    // which is why merely OPENING AND CLOSING DEVTOOLS fixed it. That fires a
+    // resize, and the resize handler produced the right size immediately.
+    //
+    // Three passes: now, next frame, and after fonts finish. Each is cheap
+    // (one measurement plus a possible setState with the same value, which
+    // React drops), and together they cover every way a first paint can be
+    // mid-settle.
     fit();
+    const raf1 = requestAnimationFrame(() => {
+      fit();
+      requestAnimationFrame(fit);
+    });
+    const settleTimer = setTimeout(fit, 300);
+    // Web fonts change text metrics, which moves the board column's top.
+    if (document.fonts?.ready) document.fonts.ready.then(() => fit()).catch(() => {});
+
     return () => {
+      cancelAnimationFrame(raf1);
+      clearTimeout(settleTimer);
       ro.disconnect();
       window.removeEventListener('resize', resetAndFit);
       document.removeEventListener('fullscreenchange', resetAndFit);
       refitRef.current = null;
     };
   }, [computeMaxBoard]);
+
+  // RE-FIT WHEN THE ROWS BELOW THE BOARD APPEAR OR CHANGE.
+  //
+  // fit() subtracts the measured height of the tools row and the session strip,
+  // but on first paint neither exists — the puzzle is unsolved and the session
+  // is empty — so the board was sized as if it had the whole window, then those
+  // rows rendered underneath and pushed it out of shape. A reload "fixed" it
+  // only because by then the session already had an entry, so the very first
+  // measurement happened to be right.
+  //
+  // requestAnimationFrame so the measurement runs AFTER the browser has laid the
+  // new rows out; measuring in the same tick reads a height of 0.
+  useEffect(() => {
+    const id = requestAnimationFrame(() => refitRef.current?.());
+    return () => cancelAnimationFrame(id);
+    // Depends on `status`, NOT the derived `puzzleOver` — that const is declared
+    // far below this effect, and referencing it here threw "Cannot access
+    // 'puzzleOver' before initialization" and blanked the page. `status` is
+    // state declared at the top, and the tools row appears on exactly the two
+    // values puzzleOver is derived from.
+    //
+    // Session length is NOT a dependency: the strip's height is no longer part
+    // of the board's budget, so a new result must not resize the board.
+  }, [status]);
 
   // ── Load current rating once ──
   useEffect(() => {
@@ -1670,78 +1766,79 @@ export default function HealthyMix() {
             </div>
           </div>
 
+          {/* Board tools — Retry · Copy FEN · Square evals, in one row directly
+              under the board and above the session strip. They were split
+              across two columns (the pill in the left sidebar, Retry/Copy FEN
+              in the right controls); grouped here they read as one set of
+              actions on the position you are looking at, and neither side
+              column pays for them. Width-matched to the board so the rows line up
+              with its edges.
+              Width-matched to the board so the row lines up with it exactly. */}
+          {puzzleOver && (
+            <div className="hm-boardtools" style={{ width: boardSize }}>
+              <button className="hm-boardtool" onClick={retry}>↻ Retry</button>
+              <button className="hm-boardtool" onClick={copyFen}>
+                {fenCopied ? '✓ Copied' : '📋 Copy FEN'}
+              </button>
+              <button
+                type="button"
+                className={`hm-boardtool hm-boardtool--eval${squareEvalsOn ? ' on' : ''}`}
+                onClick={toggleSquareEvals}
+                aria-pressed={squareEvalsOn}
+                title="Click a piece and every square it can reach shows the eval after moving there."
+              >
+                🎯 Square evals
+                <span className="hm-boardtool-state">
+                  {squareEvalsOn ? (evalBusy ? '…' : 'On') : 'Off'}
+                </span>
+              </button>
+            </div>
+          )}
+
+          {/* Session result strip */}
+          {sessionHistory.length > 0 && (
+            <div className="hm-history" style={{ width: boardSize }}>
+              <div className="hm-history-head">
+                <span className="hm-history-title">This session</span>
+                <span className="hm-history-count">
+                  <span className="hm-green">{sessionCorrect} ✓</span>
+                  {' · '}
+                  <span className="hm-red">{sessionWrong} ✗</span>
+                </span>
+              </div>
+              <div className="hm-history-marks">
+                {sessionHistory.map((h, i) => {
+                  // Show the RATING CHANGE where there was one, and fall back to
+                  // a plain tick/cross where there wasn't — a too-easy solve and
+                  // an already-failed retry both score 0, and "+0" would read as
+                  // a bug rather than as "no points this time".
+                  //   points > 0  → +12   (green)
+                  //   points < 0  → −12   (red)
+                  //   points === 0 or not yet known → ✓ / ✗
+                  const pts = h.points;
+                  const scored = typeof pts === 'number' && pts !== 0;
+                  const label = scored ? (pts > 0 ? `+${pts}` : `${pts}`) : (h.correct ? '✓' : '✗');
+                  const outcome = h.correct ? 'solved' : 'failed';
+                  const ptsNote = scored
+                    ? ` · ${pts > 0 ? '+' : ''}${pts} rating`
+                    : (pts === 0 ? ' · no rating change' : '');
+                  return (
+                    <span
+                      key={i}
+                      className={`hm-mark ${h.correct ? 'hm-mark-ok' : 'hm-mark-bad'}${scored ? ' hm-mark-pts' : ''}`}
+                      title={`Puzzle ${i + 1}${h.rating ? ` · ${h.rating}` : ''}${h.topic && h.topic !== 'mixed' ? ` · ${h.topic}` : ''} — ${outcome}${ptsNote}`}
+                    >
+                      {label}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </main>
 
         {/* ── RIGHT: moves card + controls ── */}
         <div className="hm-right-col">
-            {/* Board tools — Retry · Copy FEN · Square evals, in one row directly
-                under the board and above the session strip. They were split
-                across two columns (the pill in the left sidebar, Retry/Copy FEN
-                in the right controls); grouped here they read as one set of
-                actions on the position you are looking at, and neither side
-                column pays for them.
-                Width-matched to the board so the row lines up with it exactly. */}
-            {puzzleOver && (
-              <div className="hm-boardtools">
-                <button className="hm-boardtool" onClick={retry}>↻ Retry</button>
-                <button className="hm-boardtool" onClick={copyFen}>
-                  {fenCopied ? '✓ Copied' : '📋 Copy FEN'}
-                </button>
-                <button
-                  type="button"
-                  className={`hm-boardtool hm-boardtool--eval${squareEvalsOn ? ' on' : ''}`}
-                  onClick={toggleSquareEvals}
-                  aria-pressed={squareEvalsOn}
-                  title="Click a piece and every square it can reach shows the eval after moving there."
-                >
-                  🎯 Square evals
-                  <span className="hm-boardtool-state">
-                    {squareEvalsOn ? (evalBusy ? '…' : 'On') : 'Off'}
-                  </span>
-                </button>
-              </div>
-            )}
-
-            {/* Session result strip */}
-            {sessionHistory.length > 0 && (
-              <div className="hm-history">
-                <div className="hm-history-head">
-                  <span className="hm-history-title">This session</span>
-                  <span className="hm-history-count">
-                    <span className="hm-green">{sessionCorrect} ✓</span>
-                    {' · '}
-                    <span className="hm-red">{sessionWrong} ✗</span>
-                  </span>
-                </div>
-                <div className="hm-history-marks">
-                  {sessionHistory.map((h, i) => {
-                    // Show the RATING CHANGE where there was one, and fall back to
-                    // a plain tick/cross where there wasn't — a too-easy solve and
-                    // an already-failed retry both score 0, and "+0" would read as
-                    // a bug rather than as "no points this time".
-                    //   points > 0  → +12   (green)
-                    //   points < 0  → −12   (red)
-                    //   points === 0 or not yet known → ✓ / ✗
-                    const pts = h.points;
-                    const scored = typeof pts === 'number' && pts !== 0;
-                    const label = scored ? (pts > 0 ? `+${pts}` : `${pts}`) : (h.correct ? '✓' : '✗');
-                    const outcome = h.correct ? 'solved' : 'failed';
-                    const ptsNote = scored
-                      ? ` · ${pts > 0 ? '+' : ''}${pts} rating`
-                      : (pts === 0 ? ' · no rating change' : '');
-                    return (
-                      <span
-                        key={i}
-                        className={`hm-mark ${h.correct ? 'hm-mark-ok' : 'hm-mark-bad'}${scored ? ' hm-mark-pts' : ''}`}
-                        title={`Puzzle ${i + 1}${h.rating ? ` · ${h.rating}` : ''}${h.topic && h.topic !== 'mixed' ? ` · ${h.topic}` : ''} — ${outcome}${ptsNote}`}
-                      >
-                        {label}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
           {/* Stockfish (top 3 lines) — only AFTER the puzzle is over, so it can't be
               used as a hint while solving. Default off; the panel's own switch turns
               it on. It follows `displayFen`, so browsing the line or a variation
