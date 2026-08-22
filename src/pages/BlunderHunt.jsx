@@ -343,9 +343,24 @@ export default function BlunderHunt() {
 
             {!graded ? (
               <div className="bh-answers">
+                {/* Naming the side is the point of the side migration: every
+                    game now records ONE player's blunders, so asking the
+                    student to scan both was asking for work with no answer.
+                    `side` is absent only on legacy rows, where the old wording
+                    still applies. */}
                 <div className="bh-answers-label">
-                  Find {game.blunderCount} blunder{game.blunderCount === 1 ? '' : 's'} —
-                  type the move{game.blunderCount === 1 ? '' : 's'} that threw the game away.
+                  {game.side ? (
+                    <>
+                      Find <strong>{game.side === 'w' ? "White's" : "Black's"}</strong>{' '}
+                      {game.blunderCount} blunder{game.blunderCount === 1 ? '' : 's'} —
+                      type the move{game.blunderCount === 1 ? '' : 's'} that threw the game away.
+                    </>
+                  ) : (
+                    <>
+                      Find {game.blunderCount} blunder{game.blunderCount === 1 ? '' : 's'} —
+                      type the move{game.blunderCount === 1 ? '' : 's'} that threw the game away.
+                    </>
+                  )}
                 </div>
                 {/* Grid, not a stack. A move is 3-5 characters, so a full-width
                     box per answer wasted most of the row on desktop. The grid

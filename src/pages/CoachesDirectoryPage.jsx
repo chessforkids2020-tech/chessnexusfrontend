@@ -91,7 +91,12 @@ export function CoachCard({ c }) {
 
         <div className="cd-id">
           <div className="cd-name">
+            {/* FIDE title first, then the Nexus title — "GM NC Sara". The earned
+                title always leads; see helpers/playerName.js. The directory
+                showed only the FIDE one, so a Nexus Coach appeared here as a
+                bare name even though their own dashboard said "NC". */}
             {c.title && <span className="cd-title">{c.title}</span>}
+            {c.nexusTitle && <span className="cd-nexus-title">{c.nexusTitle}</span>}
             {c.name}
           </div>
 

@@ -71,6 +71,15 @@ function MiniBoard({ fen }) {
   );
 }
 
+// Attempts are kept indefinitely (no TTL on Score), so these are display
+// windows over history that is already stored, not a retention policy.
+const RANGES = [
+  { key: '24h', label: '24 hrs' },
+  { key: '7d',  label: 'Last 7 days' },
+  { key: '30d', label: 'Last 30 days' },
+  { key: '90d', label: 'Last 90 days' },
+];
+
 export default function PuzzleDashboard() {
   const navigate = useNavigate();
   // When viewing from a public profile (/player/:displayName/puzzle-dashboard)
@@ -130,10 +139,10 @@ export default function PuzzleDashboard() {
         <div className="pd-head-row">
           <h2 className="pd-h2">📊 {isSpectator ? `${displayName}'s Puzzle Stats` : 'Your Puzzle Stats'}</h2>
           <div className="pd-toggle">
-            {['24h', '7d'].map(r => (
-              <button key={r} onClick={() => setRange(r)}
-                className={`pd-toggle-btn${range === r ? ' active' : ''}`}>
-                {r === '24h' ? '24 hrs' : 'Last 7 days'}
+            {RANGES.map(({ key, label }) => (
+              <button key={key} onClick={() => setRange(key)}
+                className={`pd-toggle-btn${range === key ? ' active' : ''}`}>
+                {label}
               </button>
             ))}
           </div>

@@ -28,19 +28,22 @@
 }
 
 /* ── Global page ── */
+/* NO OUTER WRAPPER — Lichess-style.
+   This page renders inside UserLayout, which already paints the app background
+   and supplies a 16px gutter. .hm-page used to paint a SECOND background over
+   it (an opaque #05060a plus a gradient and three radial glows) and add another
+   24px of padding, so the cards sat 40px in from the window behind two stacked
+   backgrounds. Both are gone: the wrapper is now a transparent pass-through and
+   the CARDS carry the design, which is what keeps Lichess tight.
+
+   Kept: `color` and the font stack, because the page's type is set here rather
+   than on each card; and overflow-x, which is a genuine guard. */
 .hm-page {
-  min-height: 100vh;
-  background: var(--hm-bg);
-  background-image:
-    radial-gradient(1200px 700px at 12% -10%, var(--color-accent-2-a15), transparent 60%),
-    radial-gradient(900px 600px at 100% 10%, rgba(34, 211, 238, 0.05), transparent 55%),
-    radial-gradient(700px 500px at 50% 110%, rgba(167, 139, 250, 0.06), transparent 60%),
-    linear-gradient(180deg, #06070c 0%, #04050a 100%);
   color: var(--hm-text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-feature-settings: 'ss01', 'cv11';
   -webkit-font-smoothing: antialiased;
-  padding: 0 24px 96px;
+  padding: 0 0 32px;
   box-sizing: border-box;
   overflow-x: hidden;   /* nothing may spill sideways out of the page */
 }
@@ -113,15 +116,15 @@
 .hm-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 20px 20px 18px;
+  gap: 10px;
+  padding: 16px 8px 14px;
   border-bottom: 1px solid var(--hm-stroke);
   position: relative;
 }
 .hm-brand::after {
   content: '';
   position: absolute;
-  inset: auto 20px 0 20px;
+  inset: auto 8px 0 8px;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--color-accent-2-a30), transparent);
 }
@@ -156,7 +159,7 @@
   color: var(--color-accent-2);
   font-size: 11px;
   font-weight: 700;
-  padding: 11px 20px;
+  padding: 11px 8px;
   text-align: center;
   letter-spacing: 0.6px;
   text-transform: uppercase;
@@ -164,7 +167,7 @@
 
 /* ── Rating card ── */
 .hm-rating-card {
-  padding: 26px 20px 22px;
+  padding: 20px 8px 18px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -327,8 +330,10 @@
 }
 
 /* ── Mode switcher ── */
+/* Side padding trimmed with the narrower left column: at 20px each side the
+   two mode buttons had ~85px of text space and "🧩 Healthy Mix" truncated. */
 .hm-modes-wrap {
-  padding: 4px 20px 20px;
+  padding: 4px 8px 16px;
   border-top: 1px solid var(--hm-stroke);
 }
 
@@ -341,6 +346,10 @@
   margin: 14px 0 12px;
 }
 
+/* A 2x2 block. The card's floor (216px) leaves ~92px of text per button, which
+   holds "🧩 Healthy Mix" — auto-fit was only needed for the 200px minimum the
+   fluid experiment introduced, and it made the buttons stack into a single
+   column at normal widths. */
 .hm-modes {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -348,7 +357,7 @@
 }
 
 .hm-mode-btn {
-  padding: 11px 8px;
+  padding: 10px 6px;
   border-radius: var(--hm-radius-sm);
   border: 1px solid var(--hm-stroke);
   background: var(--color-white-a04);
@@ -414,31 +423,6 @@
   background: var(--hm-panel-hi);
   border-color: var(--hm-stroke-hi);
 }
-
-.hm-split-btn {
-  display: flex;
-  width: 100%;
-  border-radius: var(--hm-radius-sm);
-  overflow: hidden;
-  border: 1px solid var(--hm-stroke);
-  background: var(--color-white-a04);
-}
-.hm-split-seg {
-  flex: 1;
-  padding: 13px 10px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--hm-text);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  white-space: nowrap;
-  transition: background 0.2s;
-  letter-spacing: 0.3px;
-}
-.hm-split-seg:hover { background: var(--hm-panel-hi); }
-.hm-split-divider { width: 1px; align-self: stretch; background: var(--hm-stroke); }
 
 /* ── Moves card ── */
 .hm-moves {
@@ -550,10 +534,13 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
   background: var(--color-black-a20);
 }
 /* ── History strip ── */
+/* Also moved into the right column. Its old 18px top margin was spacing it off
+   the board; here the column's own gap does that. */
 .hm-history {
-  margin-top: 18px;
-  padding: 14px 18px;
+  margin-top: 0;
+  padding: 10px 12px;
   border-radius: var(--hm-radius-sm);
+  flex: 0 0 auto;
 }
 .hm-history-head {
   display: flex;
@@ -580,7 +567,10 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
   gap: 6px;
 }
 .hm-mark {
-  width: 24px;
+  /* min-width, not a fixed width: a tick fits the 24px square, but a score like
+     "+12" or "−100" needs to grow. box-sizing keeps the padding inside. */
+  min-width: 24px;
+  box-sizing: border-box;
   height: 24px;
   border-radius: var(--radius-md);
   display: inline-flex;
@@ -604,6 +594,15 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
   border: 1px solid var(--color-danger-a30);
   box-shadow: 0 0 12px var(--color-danger-a12);
 }
+/* Marks that show a rating change rather than a tick/cross. Slightly smaller,
+   tabular type so a row of numbers lines up and does not jitter as it fills in. */
+.hm-mark-pts {
+  padding: 0 6px;
+  font-size: 11px;
+  letter-spacing: -0.2px;
+  font-variant-numeric: tabular-nums;
+}
+
 @keyframes hmMarkPop {
   from { opacity: 0; transform: scale(0.5); }
   to { opacity: 1; transform: scale(1); }
@@ -843,7 +842,7 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
 /* Must match the grid-collapse breakpoint at the end of this file (960px), otherwise
    between 860–960px the grid is single-column while these stacking styles are off. */
 @media (max-width: 960px) {
-  .hm-page { padding: 0 16px 60px; }
+  .hm-page { padding: 0 0 40px; }   /* UserLayout supplies the gutter */
   .hm-layout { grid-template-columns: 1fr; gap: 16px; padding-top: 16px; }
 
   .hm-side { display: contents; }
@@ -880,7 +879,7 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
 }
 
 @media (max-width: 480px) {
-  .hm-page { padding: 0 12px 50px; }
+  .hm-page { padding: 0 0 32px; }   /* UserLayout supplies the gutter */
   .hm-rating-value { font-size: 40px; }
 }
 
@@ -895,8 +894,34 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
    minmax(0, …) on every track lets the columns shrink instead of overflowing the
    page when the viewport is narrow. The fixed track widths here are mirrored in
    fitToViewport() in HealthyMix.jsx — change both together. */
+/* SIDE COLUMNS SHRINK SO THE BOARD CAN GROW — the Lichess behaviour.
+   clamp(min, preferred, max) lets each side card give width back when the
+   viewport is short: the board is bounded by viewport HEIGHT (a square can only
+   be as tall as the screen), so on a short-but-wide window the middle column
+   has width to spare, and on a tall one — fullscreen, or a zoomed-out browser —
+   the board wants more width than the fixed tracks allowed. Fixed 300/330px
+   tracks meant the board hit its height limit and then overflowed sideways into
+   the moves card instead of the sides yielding. */
+/* SIDE COLUMNS: comfortable by default, shrinkable only under pressure.
+   The tracks are FIXED at 300/330px — at normal window sizes the cards sit at
+   their proper width and nothing is cramped. minmax() gives them a floor rather
+   than a formula: the grid only takes width off them when the row genuinely
+   cannot fit otherwise (a narrow window, or heavy browser zoom).
+
+   A vw/vh formula was wrong here. It shrank the cards at EVERY size, so the
+   normal windowed view had a wrapped brand title and stacked mode buttons even
+   though there was 300px of unused width beside the board. Fixed-with-a-floor
+   means the cards only give way when giving way is the only option. */
 .hm-layout {
-  grid-template-columns: minmax(0, 300px) minmax(0, 1fr) minmax(0, 290px) !important;
+  /* Widths come from JS while the board is being dragged (--hm-left-col /
+     --hm-right-col), falling back to the comfortable sizes when it isn't. The
+     grid narrows in the SAME frame the board grows, so the board can never
+     overlap the moves card mid-drag. minmax keeps the floor as a safety net for
+     genuinely narrow windows. */
+  grid-template-columns:
+    minmax(232px, var(--hm-left-col, 300px))
+    minmax(0, 1fr)
+    minmax(248px, var(--hm-right-col, 330px)) !important;
   gap: 22px !important;
   align-items: start;
 }
@@ -924,10 +949,15 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
   border: 0;
   box-shadow: none;
 }
-.hm-board-stack { position: relative; }
+.hm-board-stack { position: relative; max-width: 100%; }
 
-/* Bare board — no background, border or rounding of its own. */
+/* Bare board — no background, border or rounding of its own.
+   max-width is a BACKSTOP: the width is set inline in px from a measurement, so
+   between a fullscreen change and the ResizeObserver firing it can briefly be
+   wider than the column. Without this the board painted over the moves card
+   (an inline px width is not bounded by an ancestor's max-width on its own). */
 .hm-board-wrap {
+  max-width: 100%;
   position: relative;
   background: transparent !important;
   border: 0 !important;
@@ -944,7 +974,11 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
 .hm-right-col {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  /* 8px, not 14px. The column is a FIXED height and .hm-moves is its only
+     flexible child, so gap is spent straight out of the move list. With the
+     square-eval pill, the engine panel, MOVES and the controls stacked here
+     that was 42px of gap alone. */
+  gap: 8px;
   min-width: 0;
   height: min(calc(var(--hm-board-h) + 190px), calc(100vh - 60px));
 }
@@ -1098,7 +1132,7 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
   .hm-side .hm-stats        { order: 6; }   /* Solved · Failed · Streak */
   .hm-right-col .gr-engine  { order: 7; }
   .hm-moves                 { order: 8; }
-  .hm-side .hm-modes-wrap   { order: 9; }
+  .hm-side .hm-modes-wrap   { order: 10; }
 }
 
 /* ---------- Wide screens: extend the layout ----------
@@ -1106,7 +1140,7 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
    their normal width so the surplus goes to the BOARD, which is measured from its
    own column and grows automatically. */
 @media (min-width: 1600px) {
-  .hm-page { padding-left: 20px; padding-right: 24px; }
+  /* No extra page inset — the cards run to UserLayout's gutter. */
   .hm-layout {
     gap: 24px !important;
     /* Anchor the grid to the LEFT edge instead of centring it, so the left card sits
@@ -1115,3 +1149,103 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
     margin-right: auto;
   }
 }
+
+/* Redo-complete actions: back to the dashboard to watch the mistake count
+   drop, or carry straight on with ordinary training. Stacked so neither
+   button is cramped inside the 340px card. */
+.hm-exhausted-actions {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-top: 14px;
+}
+.hm-exhausted-actions .hm-btn { width: 100%; }
+
+/* ── Board tools row ───────────────────────────────────────────────────────
+   Retry · Copy FEN · Square evals, directly under the board and above the
+   session strip. Width is set inline to match the board exactly, so the row
+   lines up with the board's edges rather than its column's. */
+/* Now lives in the RIGHT column, not under the board — that is what freed the
+   board's height. In a ~330px column three buttons across would be cramped, so
+   they wrap. */
+.hm-boardtools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 0;
+  flex: 0 0 auto;
+}
+.hm-boardtools .hm-boardtool { flex: 1 1 96px; }
+
+.hm-boardtool {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: var(--hm-radius-sm);
+  border: 1px solid var(--hm-stroke);
+  background: var(--color-white-a04);
+  color: var(--hm-text-dim);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.hm-boardtool:hover { border-color: var(--color-accent-a30); color: var(--hm-text); }
+
+/* Square evals carries an On/Off chip, so it needs a little more room than the
+   two plain actions beside it. */
+.hm-boardtool--eval { flex: 1.35; }
+.hm-boardtool--eval.on {
+  color: var(--hm-text);
+  border-color: var(--color-accent-a40);
+  background: var(--color-accent-a08);
+}
+
+.hm-boardtool-state {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-white-a07);
+  color: var(--hm-text-dim);
+}
+.hm-boardtool--eval.on .hm-boardtool-state {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+
+/* Collapse the engine panel to just its header while it is switched off.
+   In this column the panel is competing with the move list for a fixed height,
+   and "Engine off — turn it on to see Stockfish lines." is a whole line
+   explaining a switch that is already visible right beside it. Scoped to
+   .hm-right-col so Analyse my games, which has room to spare, keeps its
+   explanatory copy. */
+/* Tighter engine panel in this column. The shared .gr-engine padding (10px
+   12px) is tuned for the analysis page, which has vertical room to spare; here
+   it is competing with the move list for a fixed height.
+   These come BEFORE the .gr-engine-off rules below: same specificity, so the
+   off-state collapse must be the later one to win. */
+.hm-right-col .gr-engine { padding: 7px 10px; }
+.hm-right-col .gr-engine-head { margin-bottom: 6px; }
+
+/* (.hm-right-col .gr-engine already sets flex: 0 0 auto above.) */
+.hm-right-col .gr-engine-off .gr-engine-empty { display: none; }
+/* With the message hidden the header's bottom margin is the only thing left
+   holding the panel open — drop it so "off" really is one row. */
+.hm-right-col .gr-engine-off .gr-engine-head { margin-bottom: 0; }
+
+/* ── Fullscreen (in-app, via the ⛶ button) ────────────────────────────────
+   requestFullscreen lifts .hm-page out of UserLayout, so it no longer inherits
+   the app background or gutter and must supply its own — otherwise the page
+   renders on the browser's default white. */
+.hm-page--full {
+  background: var(--color-bg);
+  min-height: 100vh;
+  padding: 12px 16px;
+  overflow-y: auto;
+}
+/* Reclaim the vertical space UserLayout's chrome used to occupy. */
+.hm-page--full .hm-layout { padding-top: 0; }

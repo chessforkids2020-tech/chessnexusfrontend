@@ -38,7 +38,9 @@ export default function PositionEditor({ initialFen = START_FEN }) {
     try { return new Chess(initialFen, { skipValidation: true }); } catch { return new Chess(START_FEN); }
   });
   const [selectedPiece, setSelectedPiece] = useState(undefined); // undefined = drag-only; null = eraser; string = piece
-  const [orientation] = useState('white');
+  // The setter was missing here, so this "state" could never change and the
+  // board was permanently White-side-up despite EditableBoard supporting both.
+  const [orientation, setOrientation] = useState('white');
   const [boardWidth, setBoardWidth] = useState(440);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
@@ -294,6 +296,9 @@ export default function PositionEditor({ initialFen = START_FEN }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: '0 0 auto', minWidth: 320 }}>
         {/* Toolbar */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button onClick={() => setOrientation(o => (o === 'white' ? 'black' : 'white'))} title="Flip the board" style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 8, color: '#e6e8ee', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
+            ⇅ Flip Board
+          </button>
           <button onClick={handleClear} style={{ padding: '8px 16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, color: '#f87171', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
             🗑 Clear Board
           </button>

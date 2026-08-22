@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Chess } from 'chess.js';
 import EditableBoard from './EditableBoard';
 import SetupControls from './SetupControls';
@@ -53,6 +53,26 @@ export default function InlineBoardEditor({ initialFen, onApply, onCancel }) {
     catch { return new Chess(START_FEN); }
   });
   const [selectedPiece, setSelectedPiece] = useState(undefined); // undefined = drag, null = eraser, string = piece
+  // Which way the board faces. EditableBoard already reversed its ranks and
+  // files for this, but the value was hardcoded to 'white' — so building a
+  // Black-to-move position meant placing every piece mentally inverted.
+  const [orientation, setOrientation] = useState('white');
+  // Once the user flips manually, stop auto-following the side to move — their
+  // choice should not be undone the next time they touch the turn toggle.
+  const orientationPinned = useRef(false);
+  const flipBoard = useCallback(() => {
+    orientationPinned.current = true;
+    setOrientation(o => (o === 'white' ? 'black' : 'white'));
+  }, []);
+
+  // Face the side to move. Setting up a Black-to-move puzzle from White's view
+  // means placing everything upside down, so the board follows the turn toggle
+  // until the user overrides it with the Flip button.
+  const turn = chess.fen().split(' ')[1] || 'w';
+  useEffect(() => {
+    if (orientationPinned.current) return;
+    setOrientation(turn === 'b' ? 'black' : 'white');
+  }, [turn]);
 
   const handleFenChange = useCallback((newFen) => {
     try { setChess(new Chess(newFen, { skipValidation: true })); } catch { /* ignore malformed intermediate FEN */ }
@@ -121,7 +141,7 @@ export default function InlineBoardEditor({ initialFen, onApply, onCancel }) {
             chess={chess}
             selectedPiece={selectedPiece}
             onFenChange={handleFenChange}
-            orientation="white"
+            orientation={orientation}
             boardWidth={BOARD_WIDTH}
           />
         </div>
@@ -149,6 +169,7 @@ export default function InlineBoardEditor({ initialFen, onApply, onCancel }) {
       {/* MIDDLE: Setup panel, directly to the right of the board */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: '0 0 auto', minWidth: 190 }}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button type="button" onClick={flipBoard} title="Flip the board" style={{ padding: '7px 14px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: 8, color: '#e6e8ee', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 }}>⇅ Flip</button>
           <button type="button" onClick={handleClear} style={{ padding: '7px 14px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, color: '#f87171', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 }}>🗑 Clear</button>
           <button type="button" onClick={handleReset} style={{ padding: '7px 14px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, color: '#34d399', cursor: 'pointer', fontSize: 12.5, fontWeight: 600 }}>♟ Start Pos</button>
         </div>

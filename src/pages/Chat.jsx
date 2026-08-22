@@ -616,7 +616,26 @@ const Chat = () => {
               {selectedChat && isOnline(getOtherParticipant(selectedChat)) && (
                 <span className="chat-online-dot" title="Online" />
               )}
-              <div className="chat-header-name">{selectedChat ? getChatName(selectedChat) : 'Select a chat'}</div>
+              {/* The person's name opens their profile, the way clicking a
+                  username does on Lichess. Groups and the ChessNexus admin
+                  account are NOT linked: a group has no single profile, and the
+                  system account is not a player anyone can visit.
+                  PlayerName also brings the titles (GM / NC …) with it, so the
+                  chat header stops being one of the surfaces that shows a bare
+                  name. */}
+              {(() => {
+                if (!selectedChat) return <div className="chat-header-name">Select a chat</div>;
+                const other = getOtherParticipant(selectedChat);
+                const linkable = selectedChat.type !== 'group' && other && other.role !== 'admin';
+                if (!linkable) {
+                  return <div className="chat-header-name">{getChatName(selectedChat)}</div>;
+                }
+                return (
+                  <div className="chat-header-name">
+                    <PlayerName user={other} userId={other._id} linkToProfile />
+                  </div>
+                );
+              })()}
             </div>
             {selectedChat && selectedChat.type === 'group' && (
               <div style={{ display: 'flex', gap: '5px' }}>
@@ -651,7 +670,16 @@ const Chat = () => {
               // Standard chat order: oldest at top, newest at the bottom.
               messages.map((msg, index) => (
                 <div key={msg._id || index} className={`message ${isSender(msg) ? 'sent' : 'received'}`}>
-                  <div className="message-sender">{!isSender(msg) && getSenderName(msg.sender)}</div>
+                  {/* Sender name opens their profile — most useful in a group,
+                      where you may not know who someone is. The admin account
+                      stays plain text: it is not a player with a profile. */}
+                  <div className="message-sender">
+                    {!isSender(msg) && (
+                      msg.sender?.role === 'admin' || !msg.sender?._id
+                        ? getSenderName(msg.sender)
+                        : <PlayerName user={msg.sender} userId={msg.sender._id} linkToProfile />
+                    )}
+                  </div>
                   <div className="message-content">{linkify(msg.content)}</div>
                   <div className="message-time">{fmtMsgTime(msg.createdAt)}</div>
                 </div>

@@ -18,10 +18,14 @@
 // `modules` is defined at module scope, NOT inline. A new object identity on
 // every render makes ReactQuill tear down and rebuild the editor, which loses
 // the cursor mid-sentence — the classic ReactQuill bug.
-import React from 'react';
-import ReactQuill from 'react-quill';
+import React, { Suspense, lazy } from 'react';
 import 'react-quill/dist/quill.snow.css';
 import './CoachRichText.css';
+
+// react-quill is ~370KB and only two pages use it (coach profile, club detail),
+// but a static import put it in the FIRST load of every page. Lazy keeps it out
+// until an editor is actually rendered.
+const ReactQuill = lazy(() => import('react-quill'));
 
 const MODULES = {
   toolbar: [
@@ -44,14 +48,18 @@ const FORMATS = ['header', 'bold', 'italic', 'underline', 'list', 'bullet'];
 export default function CoachRichText({ value, onChange, placeholder }) {
   return (
     <div className="crt">
-      <ReactQuill
-        theme="snow"
-        value={value || ''}
-        onChange={onChange}
-        modules={MODULES}
-        formats={FORMATS}
-        placeholder={placeholder}
-      />
+      {/* The fallback matches the editor's own height so the form does not jump
+          while the chunk loads. */}
+      <Suspense fallback={<div className="crt-loading" style={{ minHeight: 140 }} />}>
+        <ReactQuill
+          theme="snow"
+          value={value || ''}
+          onChange={onChange}
+          modules={MODULES}
+          formats={FORMATS}
+          placeholder={placeholder}
+        />
+      </Suspense>
     </div>
   );
 }

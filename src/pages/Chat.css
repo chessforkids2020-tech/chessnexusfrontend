@@ -609,3 +609,19 @@
     gap: 8px;
   }
 }
+
+/* The chat header name is a profile link (PlayerName with linkToProfile).
+   PlayerName renders inline-flex, which does not truncate, so the ellipsis
+   rules above need it to shrink inside the header instead of pushing the
+   layout wide. */
+.chat-header-name a {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chat-header-name a:hover { text-decoration: underline; }
+
+/* Same for a sender name inside a message bubble. */
+.message-sender a:hover { text-decoration: underline; }

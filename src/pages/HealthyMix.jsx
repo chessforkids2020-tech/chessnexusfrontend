@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
-import Chessboard from '../components/Chessboard';
+import Chessboard, { coordinateGutter } from '../components/Chessboard';
 import EnginePanel from '../components/EnginePanel';
+import stockfishService from '../services/stockfishService';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
 import { trackEvent } from '../lib/analytics';
 import './HealthyMix.css';
+
+// Depth for the per-square evaluations. Matches GameReplay: one search per
+// candidate square, so this is deliberately shallower than the engine panel's.
+const SQUARE_EVAL_DEPTH = 12;
 
 // Small WebAudio blips (same feel as the daily puzzles page)
 const playSound = (type) => {
@@ -212,6 +217,28 @@ export default function HealthyMix() {
   // engine costs nothing unless the user opts in.
   const [engineOn, setEngineOn] = useState(false);
 
+  // ── Per-square evaluations (same feature as Analyse my games) ──────────────
+  // Click a piece and every square it can reach is labelled with the eval AFTER
+  // moving there. One search per target square at SQUARE_EVAL_DEPTH, run
+  // SEQUENTIALLY: stockfishService is a shared singleton with one worker, so
+  // parallel calls would stop() each other and return nothing.
+  // Shares the 'gaSquareEvals' key with GameReplay, so a student who turns the
+  // feature on while reviewing a game finds it already on here.
+  const [squareEvalsOn, setSquareEvalsOn] = useState(() => {
+    try { return localStorage.getItem('gaSquareEvals') === 'true'; } catch { return false; }
+  });
+  const toggleSquareEvals = useCallback(() => {
+    setSquareEvalsOn(prev => {
+      const next = !prev;
+      try { localStorage.setItem('gaSquareEvals', String(next)); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+  const [selection, setSelection] = useState(null);   // { from, targets }
+  const [squareEvals, setSquareEvals] = useState({});
+  const [evalBusy, setEvalBusy] = useState(false);
+  const evalRunRef = useRef(0);
+
   // Rating + session stats
   // Session counters persist across page reloads via sessionStorage, and reset
   // when the tab/window closes — i.e. they last only while the user is here.
@@ -252,9 +279,26 @@ export default function HealthyMix() {
   };
   // Record one attempt result. Kept tiny (id + correctness + rating) so the strip
   // can show a tooltip without holding whole puzzle objects.
+  // Points are NOT known when a result is pushed: pushHistory runs synchronously
+  // the moment the puzzle ends, while the score comes back from
+  // /healthymix/submit a moment later. So the entry is added with points
+  // undefined and patched in by submitResult when the server answers. The mark
+  // shows a tick/cross until then and becomes +N / −N on arrival.
+  const historyIdxRef = useRef(-1);
   const pushHistory = useCallback((correct) => {
     const p = puzzleRef.current;
-    setSessionHistory(h => [...h, { correct, rating: p?.rating || null, topic: p?.topic || null }]);
+    setSessionHistory(h => {
+      historyIdxRef.current = h.length;
+      return [...h, { correct, rating: p?.rating || null, topic: p?.topic || null, points: undefined }];
+    });
+  }, []);
+
+  // Fill in the score for the entry pushed most recently.
+  const setHistoryPoints = useCallback((points) => {
+    const idx = historyIdxRef.current;
+    if (idx < 0) return;
+    setSessionHistory(h => (idx >= h.length ? h
+      : h.map((e, i) => (i === idx ? { ...e, points } : e))));
   }, []);
 
   // Coach-assignment tracking (only when ?assignment=<id> is present).
@@ -392,10 +436,28 @@ export default function HealthyMix() {
   // Ceiling for big monitors. The board is still bounded by its measured column
   // (can't overflow the moves card) AND by viewport height below, so this is only
   // the upper cap, not the usual limit.
-  const MAX_BOARD = 1100;
-  // Vertical space reserved for chrome above/below the board (trimmed page padding
-  // + the session strip). Kept small so tall screens actually get a tall board.
-  const VERT_RESERVE = 74;
+  // Only a sanity ceiling now. The real limits are the free width (which the
+  // side cards yield to, down to their minimums) and the viewport height, so
+  // 1100 was cutting fullscreen short on a wide monitor before either bound hit.
+  const MAX_BOARD = 1400;
+  // Vertical space reserved for whatever sits BELOW the board (the board-tools
+  // row and the session strip) plus the page's bottom padding.
+  //
+  // This is the constraint that actually governs board size on a normal laptop:
+  // the board is SQUARE, so it can never be taller than the window, and the
+  // window is far shorter than the middle column is wide. A fixed guess was
+  // wrong in both directions — too small once the tools row and session strip
+  // appeared (the page scrolled), too large on a fresh puzzle when neither is
+  // rendered (the board was needlessly shrunk). It is now MEASURED, so every
+  // pixel not used below the board goes to the board.
+  // Side-card widths. The cards sit at COMFORTABLE by default and only give up
+  // width when the user drags the board bigger than the space already free.
+  const LEFT_COMFORT = 300,  LEFT_MIN = 232;
+  const RIGHT_COMFORT = 330, RIGHT_MIN = 248;
+  const COL_GAP = 22, PAGE_PAD = 32;
+
+  const VERT_FALLBACK = 48;
+  const refitRef = useRef(null);       // set by the sizing effect below
   // Board auto-sizes to the screen. The old code hard-capped the board at `preferred`
   // (480px) on ANY desktop, so a 32" monitor showed the same tiny board as a laptop.
   // Now the board GROWS with the viewport (a share of the available width beside the
@@ -411,13 +473,122 @@ export default function HealthyMix() {
       const inset = w <= 480 ? 16 : 48;
       return Math.max(MIN_BOARD, Math.min(preferred, w - inset - FRAME_CHROME));
     }
-    // Desktop 3-column layout. These MUST match the grid track widths and gap in
-    // .hm-layout (HealthyMix.css) or the board will overflow into the moves card.
-    const leftCol = 300, rightCol = 290, gaps = 22 * 2, pagePad = 24 * 2;
-    const midColWidth = w - leftCol - rightCol - gaps - pagePad;
-    return Math.max(MIN_BOARD, Math.min(MAX_BOARD, midColWidth - FRAME_CHROME));
+    // Desktop 3-column layout. The side tracks are clamp()ed in .hm-layout so
+    // they SHRINK on short/wide screens to give the board room; mirror the same
+    // clamps here. This is only the first-paint estimate — the ResizeObserver
+    // below measures the real column straight after and is authoritative.
+    // Mirrors .hm-layout's fixed tracks. Only the first-paint estimate — the
+    // ResizeObserver measures the real column immediately after and is
+    // authoritative, so if the grid did squeeze the sides on a narrow window
+    // the board picks up that extra width on the very next frame.
+    const leftCol = 300, rightCol = 330, gap = 22;
+    const pagePad = 16 * 2;   // UserLayout's gutter; .hm-page adds none
+    const midColWidth = w - leftCol - rightCol - gap * 2 - pagePad;
+    // Height matters as much as width: the board is square, so on a typical
+    // laptop the WINDOW HEIGHT is what caps it, not the column.
+    const byHeight = window.innerHeight - VERT_FALLBACK;
+    return Math.max(MIN_BOARD, Math.min(MAX_BOARD, midColWidth - FRAME_CHROME, byHeight));
   };
   const [boardSize, setBoardSize] = useState(() => fitToViewport(480));
+  // How much the side cards have given up, in px, so the board can be bigger.
+  // 0 = both cards at their comfortable width (the normal state).
+  const [sideSqueeze, setSideSqueeze] = useState(0);
+  // Set when the user drags the grip, so auto-fit stops overwriting their size.
+  // CLEARED whenever the viewport itself changes size (entering or leaving
+  // fullscreen, resizing the window): the layout the drag was made for no longer
+  // exists, and keeping the old size is what left a fullscreen-sized board — and
+  // squeezed side cards — behind after exiting fullscreen. A reload appeared to
+  // "fix" it only because the ref started false again.
+  const userSizedRef = useRef(false);
+
+
+  // Ceiling for the drag grip: the board may grow until BOTH cards are at their
+  // minimum, and no further. Computed FRESH on every call rather than held in a
+  // render-scoped const — the const version read window.innerWidth once and did
+  // not recompute on entering fullscreen (nothing re-rendered the page), so the
+  // grip kept the old, smaller window's ceiling and the board could be dragged
+  // past what the new layout allowed. That is the overlap.
+  // NORMAL view: the board may grow only into space that is genuinely free —
+  // the cards keep their comfortable width. Shrinking them here bought nothing,
+  // because the board is already capped by window HEIGHT long before width runs
+  // out; it just made the cards smaller for no gain.
+  //
+  // FULLSCREEN: the point is the biggest possible board, so the cards may give
+  // way down to their minimums.
+  // Ceiling for the drag grip: the free width plus everything the cards can give
+  // up. Measured from the GRID, so UserLayout's 170px sidebar is already
+  // accounted for — sizing this from window.innerWidth is what let the board be
+  // dragged past the row and over the moves card.
+  const computeMaxBoard = useCallback(() => {
+    const grid = boardColRef.current?.parentElement;
+    const gridW = grid
+      ? grid.clientWidth
+      : (typeof window !== 'undefined' ? window.innerWidth : 1920) - PAGE_PAD;
+    // Only the right card yields (see the squeeze effect), so only its room
+    // counts toward how far the board may be dragged.
+    const room = RIGHT_COMFORT - RIGHT_MIN;
+    const free = gridW - LEFT_COMFORT - RIGHT_COMFORT - COL_GAP * 2;
+    // Deliberately NOT capped by height here. Chessboard clamps its own render
+    // to viewport.h * 0.92, and capping the grip there too stopped the drag
+    // below the width at which the board even meets the right card — the grip
+    // then did nothing at all. The squeeze follows the rendered size instead
+    // (see onBoardResize), so an over-long drag is simply ignored.
+    return Math.max(MIN_BOARD, Math.min(MAX_BOARD, free + room));
+  }, []);
+  const [maxBoardWidth, setMaxBoardWidth] = useState(computeMaxBoard);
+
+  // Drag handler. Works out how much the sides must yield for the requested
+  // board width and applies exactly that. Both cards give way together (see the
+  // effect below), so the layout stays balanced as the board grows.
+  const onBoardResize = useCallback((next) => {
+    userSizedRef.current = true;
+    // Measure the grid, for the same reason fit() does: window.innerWidth does
+    // not know about UserLayout's 170px sidebar, so sizing from it let the board
+    // grow ~170px past what the row could hold.
+    const grid = boardColRef.current?.parentElement;
+    const gridW = grid ? grid.clientWidth : window.innerWidth - PAGE_PAD;
+    const room = RIGHT_COMFORT - RIGHT_MIN;   // only the right card yields
+    const freeAtComfort = gridW - LEFT_COMFORT - RIGHT_COMFORT - COL_GAP * 2;
+
+    // The board renders at min(requested, viewport.h * 0.92) — Chessboard caps
+    // itself by height. The SQUEEZE has to follow the RENDERED size, not the
+    // requested one: driving it from the request kept shrinking the right card
+    // after the board had already stopped growing, which slid the card
+    // rightwards and opened a widening gap. Capping the DRAG at that height
+    // instead was worse — it stopped the grip below the width where the board
+    // even meets the card, so resizing appeared dead.
+    const heightCap = Math.floor(window.innerHeight * 0.92);
+    const cap = Math.max(MIN_BOARD, Math.min(MAX_BOARD, freeAtComfort + room));
+    const want = Math.min(next, cap);
+    const rendered = Math.min(want, heightCap);   // what will actually be drawn
+
+    // Shrink the right card ONLY when the drawn board would genuinely reach it.
+    setSideSqueeze(rendered > freeAtComfort
+      ? Math.min(rendered - freeAtComfort, room)
+      : 0);
+    setBoardSize(Math.floor(Math.max(MIN_BOARD, want)));
+  }, []);
+
+  // Publish the squeeze to CSS. The grid reads these, so the columns narrow in
+  // the same frame the board grows — no overlap at any point in the drag.
+  useEffect(() => {
+    // ONLY THE RIGHT CARD YIELDS. Shrinking the left card moves the board's
+    // LEFT EDGE, because the board sits immediately after it in the grid — so
+    // once the board was capped (by height, or by MAX_BOARD) dragging further
+    // did not grow it at all, it just slid the whole board leftwards. Taking the
+    // width from the right card only means the board's left edge never moves and
+    // it grows rightwards into the space, which is what "make the board bigger"
+    // should look like.
+    const rightGive = Math.min(sideSqueeze, RIGHT_COMFORT - RIGHT_MIN);
+    const leftGive = 0;
+    const root = document.documentElement;
+    root.style.setProperty('--hm-left-col', `${LEFT_COMFORT - leftGive}px`);
+    root.style.setProperty('--hm-right-col', `${RIGHT_COMFORT - rightGive}px`);
+    return () => {
+      root.style.removeProperty('--hm-left-col');
+      root.style.removeProperty('--hm-right-col');
+    };
+  }, [sideSqueeze]);
   // Expose the board height to CSS so the moves card can match it exactly (they line
   // up bottom-to-bottom).
   useEffect(() => {
@@ -442,6 +613,9 @@ export default function HealthyMix() {
       return () => window.removeEventListener('resize', onResize);
     }
     const fit = () => {
+      // Once the user has dragged the grip their size wins; auto-fit would
+      // otherwise recompute from the column and undo the drag immediately.
+      if (userSizedRef.current) return;
       // The frame's padding/border live INSIDE the column, so the board gets whatever
       // is left after the chrome. This is exact — no percentage fudge factor.
       const avail = el.clientWidth - FRAME_CHROME;
@@ -454,19 +628,89 @@ export default function HealthyMix() {
         const byViewport = window.innerWidth - inset - FRAME_CHROME;
         setBoardSize(Math.max(MIN_BOARD, Math.min(Math.max(avail, byViewport), byViewport)));
       } else {
-        // Desktop: capped by the column AND by viewport height (leaving room for the
-        // page chrome + session strip below) so a tall board never scrolls off.
-        const byHeight = window.innerHeight - VERT_RESERVE - FRAME_CHROME;
-        setBoardSize(Math.max(MIN_BOARD, Math.min(MAX_BOARD, avail, byHeight)));
+        // Desktop: capped by the column AND by viewport height so a tall board
+        // never scrolls off — and never wider than the column, or it draws over
+        // the moves card. Math.floor because a fractional width rounds up when
+        // painted, which is the sub-pixel that produced the overlap.
+        //
+        // The height budget uses the MEASURED height of everything below the
+        // board (tools row + session strip), so a fresh puzzle with neither
+        // rendered gets a bigger board than one with both.
+        // Nothing sits below the board any more — the tools row and session
+        // strip moved into the right column — so this is just the page's own
+        // bottom padding.
+        const below = VERT_FALLBACK;
+        const top = el.getBoundingClientRect().top;   // page chrome above the board
+
+        // Measure the LAYOUT GRID, not the window.
+        //
+        // window.innerWidth ignores everything between it and the grid — most
+        // importantly UserLayout's 170px sidebar — so the board came out ~170px
+        // wider than the row could hold and drew over the moves card. The grid
+        // element's own width already has the sidebar, the page gutter and any
+        // scrollbar taken off it.
+        //
+        // Reading the GRID is safe where reading the board COLUMN was not: the
+        // squeeze changes how the grid divides its width, never the grid's own
+        // width, so this cannot feed back the way the column did.
+        const grid = el.parentElement;   // .hm-layout
+        const gridW = grid ? grid.clientWidth : window.innerWidth - PAGE_PAD;
+        const availComfort = gridW - LEFT_COMFORT - RIGHT_COMFORT - COL_GAP * 2;
+        const gutter = coordinateGutter(Math.max(MIN_BOARD, availComfort));
+        const byHeight = window.innerHeight - top - below - FRAME_CHROME - gutter;
+
+        // AUTO-FIT NEVER TOUCHES THE CARDS. It used to take width off them
+        // whenever the height budget allowed a bigger board — so the cards
+        // shrank on their own, with the board still fitting comfortably and
+        // nothing overlapping. That is width taken for no reason. The board now
+        // simply uses the space that is free, and the cards keep their full
+        // width. Only a deliberate drag past the free width may shrink them
+        // (see onBoardResize).
+        setSideSqueeze(0);
+        setBoardSize(Math.floor(Math.max(MIN_BOARD, Math.min(MAX_BOARD, availComfort, byHeight))));
       }
     };
-    const ro = new ResizeObserver(fit);
+    refitRef.current = fit;
+
+    // A viewport change (fullscreen in/out, window resize) invalidates any
+    // manual drag: the space available is different now, so the board re-fits
+    // itself to the new layout and the side cards go back to comfortable. The
+    // user can drag again from there if they want it bigger still.
+    const resetAndFit = () => {
+      userSizedRef.current = false;
+      setSideSqueeze(0);
+      setMaxBoardWidth(computeMaxBoard());   // new viewport → new drag ceiling
+      fit();
+      // fullscreenchange fires BEFORE the viewport has finished resizing, so the
+      // first fit() can measure the old dimensions. Re-fit on the next frame
+      // once the browser has settled — this is what left the board at its
+      // fullscreen size after exiting.
+      requestAnimationFrame(() => { fit(); });
+    };
+
+    // The observer watches the board column — the SAME element the desktop
+    // branch resizes via the squeeze. Letting it re-enter fit() there is what
+    // made the page shake, so it is now mobile-only: that branch reads the
+    // column but never changes its width, so it cannot feed back. Desktop is
+    // driven entirely by the window listeners below.
+    const ro = new ResizeObserver(() => {
+      if (window.innerWidth <= 960) fit();
+    });
     ro.observe(el);
-    // Height-only window changes don't resize the column, so also refit on resize.
-    window.addEventListener('resize', fit);
+    // Height-only window changes don't resize the column, so also refit on
+    // resize. Fullscreen fires both resize and fullscreenchange; listening to
+    // both means the board re-fits the moment the window grows rather than on
+    // the next incidental layout change.
+    window.addEventListener('resize', resetAndFit);
+    document.addEventListener('fullscreenchange', resetAndFit);
     fit();
-    return () => { ro.disconnect(); window.removeEventListener('resize', fit); };
-  }, []);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', resetAndFit);
+      document.removeEventListener('fullscreenchange', resetAndFit);
+      refitRef.current = null;
+    };
+  }, [computeMaxBoard]);
 
   // ── Load current rating once ──
   useEffect(() => {
@@ -505,6 +749,10 @@ export default function HealthyMix() {
     clearVariations();
     // Engine always starts off on a fresh puzzle / retry — the user opts in each time.
     setEngineOn(false);
+    // Drop any square labels from the previous position — the selection they
+    // described no longer exists on this board.
+    setSelection(null);
+    setSquareEvals({});
     setOrientation(game.turn() === 'w' ? 'white' : 'black');
     setStatusSynced('solving');
     setMessage('Your turn — find the best move.');
@@ -672,16 +920,19 @@ export default function HealthyMix() {
       });
       setRating(res.data.newRating);
       setRatingDelta(res.data.pointsChange);
+      // Stamp the score onto this attempt's session mark (Number(), not ||0, so
+      // a genuine 0 stays 0 and is not mistaken for "not answered yet").
+      setHistoryPoints(Number(res.data.pointsChange) || 0);
       tooEasyRef.current = !!res.data.tooEasy;
       // A correct-but-too-easy solve earns nothing (anti-farm). Tell the user
       // why, so a flat 0 doesn't look like a bug.
       if (solved && res.data.tooEasy) {
-        setMessage('Correct — but too easy for your rating, so no points. Try harder puzzles to gain rating.');
+        setMessage('Correct — too easy for your level. Try harder.');
       }
       // If this is a coach assignment, count this attempt toward it.
       reportAssignmentAttempt(solved);
     } catch (_) { /* ignore network errors for UX */ }
-  }, [puzzle, reportAssignmentAttempt, trainingMode, hasTheme, theme, hasPieces, piecesParam, hasBand, bandMin, bandMax, user]);
+  }, [puzzle, reportAssignmentAttempt, trainingMode, hasTheme, theme, hasPieces, piecesParam, hasBand, bandMin, bandMax, user, setHistoryPoints]);
 
   // ── Play the opponent's reply move from the solution ──
   const playBotMove = useCallback((idx) => {
@@ -816,7 +1067,7 @@ export default function HealthyMix() {
           setMessage('Correct line. (No points — puzzle was failed.) Free play enabled.');
           playSound('complete');
         } else {
-          setMessage('Success! Well played. Free play enabled.');
+          setMessage('Success! Well played.');
           playSound('correct');
           setSessionCorrect(c => c + 1);
           setStreak(s => s + 1);
@@ -928,6 +1179,8 @@ export default function HealthyMix() {
     setViewIdx(null);
     clearVariations();
     setEngineOn(false);   // back to solving → engine hidden and off again
+    setSelection(null);   // …and the square labels go with it
+    setSquareEvals({});
     setStatusSynced('solving');
     setMessage(failedRef.current ? 'Retry — find the right line (no points).' : 'Your turn — find the best move.');
   }, [puzzle, setStatusSynced, clearVariations]);
@@ -1058,12 +1311,113 @@ export default function HealthyMix() {
 
   const toMoveLabel = orientation === 'white' ? 'White to move' : 'Black to move';
 
+  // Run one search per selected-piece target square, sequentially. Results are
+  // written as they arrive so numbers fill in progressively rather than the
+  // board sitting blank until the last square finishes. Gated on puzzleOver:
+  // while the puzzle is still being solved this would be an engine hint.
+  useEffect(() => {
+    if (!squareEvalsOn || !puzzleOver || !selection || selection.targets.length === 0) {
+      setSquareEvals({});
+      setEvalBusy(false);
+      return undefined;
+    }
+
+    const run = ++evalRunRef.current;
+    let cancelled = false;
+
+    // Mark every target pending immediately, so the click visibly does something.
+    setSquareEvals(
+      Object.fromEntries(selection.targets.map((sq) => [sq, { pending: true }]))
+    );
+    setEvalBusy(true);
+
+    (async () => {
+      try {
+        if (!stockfishService.isReady()) await stockfishService.init();
+        if (cancelled || run !== evalRunRef.current) return;
+
+        for (const target of selection.targets) {
+          if (cancelled || run !== evalRunRef.current) return;
+
+          let afterFen = null;
+          let mated = false;
+          try {
+            const probe = new Chess(displayFen);
+            // promotion:'q' — a promotion square would otherwise be an illegal
+            // move here and the square would silently get no number.
+            const mv = probe.move({ from: selection.from, to: target, promotion: 'q' });
+            if (!mv) continue;
+            afterFen = probe.fen();
+            mated = probe.isCheckmate();
+          } catch { continue; }
+
+          // Mate needs no search, and the engine reports it oddly anyway.
+          if (mated) {
+            if (!cancelled && run === evalRunRef.current) {
+              setSquareEvals((prev) => ({ ...prev, [target]: { text: '#', score: 99 } }));
+            }
+            continue;
+          }
+
+          let res = null;
+          try {
+            res = await stockfishService.analyzePosition(afterFen, {
+              depth: SQUARE_EVAL_DEPTH,
+              multipv: 1,
+            });
+          } catch { /* leave this square unlabelled */ }
+
+          if (cancelled || run !== evalRunRef.current) return;
+
+          const line = res?.lines?.[0];
+          if (!line) {
+            setSquareEvals((prev) => {
+              const next = { ...prev };
+              delete next[target];
+              return next;
+            });
+            continue;
+          }
+
+          // SIGN: the engine scores from the side to move, which after our
+          // candidate move is the OPPONENT. Negating puts the number back into
+          // the mover's point of view — without this, good squares read as bad.
+          let text, score;
+          if (line.scoreType === 'mate') {
+            const m = -line.score;
+            text = (m > 0 ? '#' : '-#') + Math.abs(m);
+            score = m > 0 ? 99 : -99;
+          } else {
+            score = -line.score / 100;
+            text = (score > 0 ? '+' : '') + score.toFixed(1);
+          }
+
+          setSquareEvals((prev) => ({ ...prev, [target]: { text, score } }));
+        }
+      } finally {
+        if (!cancelled && run === evalRunRef.current) setEvalBusy(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      // Only stop if a newer run has not already taken over the shared engine.
+      // Reading .current AT CLEANUP TIME is the intent here, not a bug: a later
+      // run bumping the counter is exactly the case we must not stop.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      if (run === evalRunRef.current) stockfishService.stop();
+    };
+  }, [squareEvalsOn, puzzleOver, selection, displayFen]);
+
   return (
     <div className="hm-page">
       {/* Coach assignment progress banner - enhanced glass style */}
       {hasAssignment && (
         <div style={{
-          maxWidth: 1100, margin: '0 auto 16px', padding: '12px 20px',
+          // Follows the grid, not its own centred 1100px: with the outer
+          // wrapper gone the cards run to the layout's full width, and a
+          // centred banner floated visibly out of line above them.
+          maxWidth: 2400, margin: '0 0 12px', padding: '10px 16px',
           background: 'rgba(139,92,246,0.08)',
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
@@ -1231,6 +1585,15 @@ export default function HealthyMix() {
               onDrop={(from, to, promotion) =>
                 handleMove({ from, to, promotion: promotion || 'q' })
               }
+              onSelectionChange={squareEvalsOn && puzzleOver ? setSelection : undefined}
+              squareEvals={squareEvalsOn && puzzleOver ? squareEvals : undefined}
+              // Take ownership of the drag. Left to itself the board clamps the
+              // grip only to a fixed maxBoardWidth (900) and to viewport HEIGHT
+              // — never to the column it sits in — so dragging it wider simply
+              // drew over the moves card. Owning the value lets the page shrink
+              // the side cards first and cap the board at what is actually free.
+              onResize={onBoardResize}
+              maxBoardWidth={maxBoardWidth}
             />
             {/* Exhausted overlay */}
             {exhausted && (
@@ -1266,16 +1629,39 @@ export default function HealthyMix() {
                       Redo complete — {redoSolved}/{redoTotal} solved ({pct}%)
                     </h3>
                     <p className="hm-exhausted-text">
-                      {good
-                        ? 'Great improvement! You handled most of your earlier mistakes.'
-                        : 'Some of these still need work — keep practicing these themes.'}
+                      {redoSolved === redoTotal
+                        ? 'You have finished all your mistakes — every one solved. Nothing left to redo.'
+                        : good
+                          ? 'Great improvement! You handled most of your earlier mistakes.'
+                          : 'Some of these still need work — keep practicing these themes.'}
                     </p>
-                    <button
-                      className="hm-btn hm-btn-primary"
-                      onClick={() => navigate('/puzzle-dashboard')}
-                    >
-                      Back to Puzzle Dashboard →
-                    </button>
+                    {/* Two ways on: back to the dashboard to see the mistake
+                        count fall, or straight into ordinary training without
+                        the round trip. Continue leaves redo mode by dropping
+                        the ?redo=1 flag, and clears the queue so a later redo
+                        starts fresh rather than replaying this finished set. */}
+                    <div className="hm-exhausted-actions">
+                      <button
+                        className="hm-btn hm-btn-primary"
+                        onClick={() => navigate('/puzzle-dashboard')}
+                      >
+                        Back to Puzzle Dashboard →
+                      </button>
+                      <button
+                        className="hm-btn"
+                        onClick={() => {
+                          sessionStorage.removeItem('redoPuzzleIds');
+                          redoQueueRef.current = null;
+                          redoIdxRef.current = 0;
+                          setRedoDone(false);
+                          setRedoTotal(0);
+                          setRedoSolved(0);
+                          navigate('/training/healthy-mix', { replace: true });
+                        }}
+                      >
+                        Continue training →
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -1284,42 +1670,90 @@ export default function HealthyMix() {
             </div>
           </div>
 
-          {/* Session result strip */}
-          {sessionHistory.length > 0 && (
-            <div className="hm-history" style={{ width: boardSize }}>
-              <div className="hm-history-head">
-                <span className="hm-history-title">This session</span>
-                <span className="hm-history-count">
-                  <span className="hm-green">{sessionCorrect} ✓</span>
-                  {' · '}
-                  <span className="hm-red">{sessionWrong} ✗</span>
-                </span>
-              </div>
-              <div className="hm-history-marks">
-                {sessionHistory.map((h, i) => (
-                  <span
-                    key={i}
-                    className={`hm-mark ${h.correct ? 'hm-mark-ok' : 'hm-mark-bad'}`}
-                    title={`Puzzle ${i + 1}${h.rating ? ` · ${h.rating}` : ''}${h.topic && h.topic !== 'mixed' ? ` · ${h.topic}` : ''} — ${h.correct ? 'solved' : 'failed'}`}
-                  >
-                    {h.correct ? '✓' : '✗'}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </main>
 
         {/* ── RIGHT: moves card + controls ── */}
         <div className="hm-right-col">
+            {/* Board tools — Retry · Copy FEN · Square evals, in one row directly
+                under the board and above the session strip. They were split
+                across two columns (the pill in the left sidebar, Retry/Copy FEN
+                in the right controls); grouped here they read as one set of
+                actions on the position you are looking at, and neither side
+                column pays for them.
+                Width-matched to the board so the row lines up with it exactly. */}
+            {puzzleOver && (
+              <div className="hm-boardtools">
+                <button className="hm-boardtool" onClick={retry}>↻ Retry</button>
+                <button className="hm-boardtool" onClick={copyFen}>
+                  {fenCopied ? '✓ Copied' : '📋 Copy FEN'}
+                </button>
+                <button
+                  type="button"
+                  className={`hm-boardtool hm-boardtool--eval${squareEvalsOn ? ' on' : ''}`}
+                  onClick={toggleSquareEvals}
+                  aria-pressed={squareEvalsOn}
+                  title="Click a piece and every square it can reach shows the eval after moving there."
+                >
+                  🎯 Square evals
+                  <span className="hm-boardtool-state">
+                    {squareEvalsOn ? (evalBusy ? '…' : 'On') : 'Off'}
+                  </span>
+                </button>
+              </div>
+            )}
+
+            {/* Session result strip */}
+            {sessionHistory.length > 0 && (
+              <div className="hm-history">
+                <div className="hm-history-head">
+                  <span className="hm-history-title">This session</span>
+                  <span className="hm-history-count">
+                    <span className="hm-green">{sessionCorrect} ✓</span>
+                    {' · '}
+                    <span className="hm-red">{sessionWrong} ✗</span>
+                  </span>
+                </div>
+                <div className="hm-history-marks">
+                  {sessionHistory.map((h, i) => {
+                    // Show the RATING CHANGE where there was one, and fall back to
+                    // a plain tick/cross where there wasn't — a too-easy solve and
+                    // an already-failed retry both score 0, and "+0" would read as
+                    // a bug rather than as "no points this time".
+                    //   points > 0  → +12   (green)
+                    //   points < 0  → −12   (red)
+                    //   points === 0 or not yet known → ✓ / ✗
+                    const pts = h.points;
+                    const scored = typeof pts === 'number' && pts !== 0;
+                    const label = scored ? (pts > 0 ? `+${pts}` : `${pts}`) : (h.correct ? '✓' : '✗');
+                    const outcome = h.correct ? 'solved' : 'failed';
+                    const ptsNote = scored
+                      ? ` · ${pts > 0 ? '+' : ''}${pts} rating`
+                      : (pts === 0 ? ' · no rating change' : '');
+                    return (
+                      <span
+                        key={i}
+                        className={`hm-mark ${h.correct ? 'hm-mark-ok' : 'hm-mark-bad'}${scored ? ' hm-mark-pts' : ''}`}
+                        title={`Puzzle ${i + 1}${h.rating ? ` · ${h.rating}` : ''}${h.topic && h.topic !== 'mixed' ? ` · ${h.topic}` : ''} — ${outcome}${ptsNote}`}
+                      >
+                        {label}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           {/* Stockfish (top 3 lines) — only AFTER the puzzle is over, so it can't be
               used as a hint while solving. Default off; the panel's own switch turns
               it on. It follows `displayFen`, so browsing the line or a variation
               re-analyses that exact position. */}
+          {/* `enabled` also goes false while the square evaluations are running:
+              stockfishService is ONE shared worker, so if the panel kept its own
+              search going the two would stop() each other and both return
+              nothing. The panel resumes the moment the squares finish. */}
           {puzzleOver && (
             <EnginePanel
               fen={displayFen}
-              enabled={engineOn}
+              enabled={engineOn && !evalBusy}
               onToggle={() => setEngineOn(v => !v)}
             />
           )}
@@ -1346,13 +1780,6 @@ export default function HealthyMix() {
                 <button className="hm-btn hm-btn-primary" onClick={next}>
                   Next puzzle →
                 </button>
-                <div className="hm-split-btn">
-                  <button className="hm-split-seg" onClick={retry}>↻ Retry</button>
-                  <span className="hm-split-divider" />
-                  <button className="hm-split-seg" onClick={copyFen}>
-                    {fenCopied ? '✓ Copied' : '📋 Copy FEN'}
-                  </button>
-                </div>
               </>
             )}
           </div>

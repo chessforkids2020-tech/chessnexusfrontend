@@ -342,6 +342,16 @@ function FocusCard({ focus, index, isAdmin = false }) {
         <h2 className="mfl-card-title">{focus.title}</h2>
         {focus.theme && <p className="mfl-card-theme">{focus.theme}</p>}
 
+        {/* A private challenge stays VISIBLE, as a locked card naming the
+            academy running it. The restriction doubles as a showcase: visitors
+            see that real academies run programmes here, and the coach gets
+            their name in front of the whole platform. */}
+        {focus.locked && (
+          <div className="mfl-locked-note">
+            🔒 Closed activity — for <strong>{focus.runBy}</strong> students
+          </div>
+        )}
+
         {/* Day progress bar */}
         <div className="mfl-card-progress">
           <div className="mfl-progress-row">
@@ -384,9 +394,17 @@ function FocusCard({ focus, index, isAdmin = false }) {
       </div>
 
       <div className="mfl-card-footer">
-        <Link to={`/monthly-focus/${focus._id}`} className="mfl-enter-btn">
-          View Challenge →
-        </Link>
+        {focus.locked ? (
+          // No link: the by-id routes reject this user anyway, so offering a way
+          // in would only lead to a 403.
+          <span className="mfl-enter-btn mfl-enter-btn-locked">
+            🔒 {focus.runBy} students only
+          </span>
+        ) : (
+          <Link to={`/monthly-focus/${focus._id}`} className="mfl-enter-btn">
+            View Challenge →
+          </Link>
+        )}
       </div>
     </motion.div>
   );

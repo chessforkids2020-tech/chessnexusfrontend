@@ -2,29 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './PuzzlesHub.css';
 
-/** Pick today's daily-tip image using IST (UTC+5:30) day index */
-function getDailyTipImage(images) {
-  if (!images || images.length === 0) return null;
-  const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000; // UTC+5:30
-  const istNow = new Date(Date.now() + IST_OFFSET_MS);
-  const daysSinceEpoch = Math.floor(istNow.getTime() / (24 * 60 * 60 * 1000));
-  return images[daysSinceEpoch % images.length];
-}
-
 export default function PuzzlesHub() {
   const [showRulesModal, setShowRulesModal] = useState(false);
-  const [dailyTipImage, setDailyTipImage] = useState(null);
-
-  // Fetch manifest and pick today's image (changes every 24 hrs IST)
-  React.useEffect(() => {
-    fetch('/dailytips/manifest.json')
-      .then(r => r.json())
-      .then(images => {
-        const filename = getDailyTipImage(images);
-        if (filename) setDailyTipImage(`/dailytips/${filename}`);
-      })
-      .catch(() => {}); // silently fall back to placeholder
-  }, []);
 
   const rulesContent = [
     "Kids should not turn off video or mute during the contest.",
@@ -37,22 +16,16 @@ export default function PuzzlesHub() {
   return (
     <div className="puzzles-hub-container">
 
-      {/* ── ROW 1: Daily Tip (left) + Daily Puzzles hero (right) ── */}
-      <div className="hub-top-row">
+      {/* ── ROW 1: the two destinations, side by side ──
+          The daily-tip picture card used to fill the left 300px of this row.
+          Rather than letting the Puzzles hero stretch alone across the full
+          width — a 280px-tall card holding three lines of text — Monthly Focus
+          moves up beside it. Both are "start something" cards, so they belong
+          on the same tier, and the page now opens with a balanced pair instead
+          of four stacked full-width bands. */}
+      <div className="hub-hero-row">
 
-        {/* LEFT: Daily-tip picture card */}
-        <div className="hub-picture-card">
-          {dailyTipImage && (
-            <img
-              src={dailyTipImage}
-              alt="Daily Chess Tip"
-              className="hub-picture-img"
-              onError={e => { e.currentTarget.style.display = 'none'; }}
-            />
-          )}
-        </div>
-
-        {/* RIGHT: Puzzles hero.
+        {/* Puzzles hero.
             Daily Puzzles used to live here as a second, separate card, which
             meant "Puzzles" and "Daily Puzzles" looked like rival destinations
             and a user had to guess which one they wanted. Daily Puzzles is now
@@ -73,6 +46,37 @@ export default function PuzzlesHub() {
             </div>
           </div>
           <Link to="/training" className="hub-daily-cta">Start Solving →</Link>
+        </div>
+
+        {/* Monthly Focus — promoted from its own full-width band to sit beside
+            the Puzzles hero, so the row offers two clear ways to start.
+
+            A DIV, not a Link: only "Start Challenge" navigates. The whole card
+            used to be one big anchor, so any click anywhere — including on the
+            text you were reading — jumped you to the challenge. The progress
+            bar and the "+350 XP Available" badge are gone: both were hardcoded
+            placeholders (the bar was a literal width:0%), so they reported the
+            same numbers to every user whatever their real progress. */}
+        <div className="hub-focus-card">
+          <div className="hub-focus-left-glow" />
+
+          <div className="hub-focus-icon-wrap">
+            <span className="hub-focus-big-icon">🎯</span>
+            <span className="hub-focus-active-badge">Active Now</span>
+          </div>
+
+          <div className="hub-focus-info">
+            <p className="hub-focus-eyebrow">Monthly Challenge</p>
+            <h3 className="hub-focus-title">Monthly Focus Challenge</h3>
+            <p className="hub-focus-desc">7-day tactical training program • Earn XP & unlock achievements</p>
+          </div>
+
+          {/* Direct child of the card, exactly like Start Solving in the
+              Puzzles hero. It used to sit inside a .hub-focus-right flex
+              wrapper, which inherited align-items:flex-start from the card and
+              so shrank to the text width — that is why this button was narrower
+              than its twin despite identical type and padding. */}
+          <Link to="/monthly-focus" className="hub-focus-cta">Start Challenge →</Link>
         </div>
 
       </div>
@@ -116,41 +120,6 @@ export default function PuzzlesHub() {
         </Link>
 
       </div>
-
-      {/* ── MONTHLY FOCUS — Full-width redesigned card ── */}
-      <Link to="/monthly-focus" className="hub-focus-card">
-        <div className="hub-focus-left-glow" />
-
-        <div className="hub-focus-icon-wrap">
-          <span className="hub-focus-big-icon">🎯</span>
-          <span className="hub-focus-active-badge">Active Now</span>
-        </div>
-
-        <div className="hub-focus-info">
-          <p className="hub-focus-eyebrow">Monthly Challenge</p>
-          <h3 className="hub-focus-title">Monthly Focus Challenge</h3>
-          <p className="hub-focus-desc">7-day tactical training program • Earn XP & unlock achievements</p>
-          <div className="hub-focus-meta">
-            <div className="hub-focus-progress-wrap">
-              <div className="hub-focus-progress-labels">
-                <span>Progress</span>
-                <span>0 / 7 days</span>
-              </div>
-              <div className="hub-focus-bar">
-                <div className="hub-focus-bar-fill" style={{ width: '0%' }} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="hub-focus-right">
-          <div className="hub-focus-xp-badge">
-            <span className="hub-focus-xp-number">+350</span>
-            <span className="hub-focus-xp-label">XP Available</span>
-          </div>
-          <div className="hub-focus-cta">Start Challenge →</div>
-        </div>
-      </Link>
 
       {/* ── ACTION BAR ── */}
       <div className="action-bar">

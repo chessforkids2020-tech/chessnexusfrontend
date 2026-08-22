@@ -81,7 +81,16 @@ export default function CoachHubPage() {
     return () => { alive = false; };
   }, []);
 
-  const offerOpen = spots?.enabled !== false;
+  // OPT-IN, not opt-out. `spots` is null until /founding-coaches answers, and
+  // `null?.enabled !== false` is TRUE — so the founding hero rendered during
+  // every page load and then swapped to the plain one once the server said the
+  // offer had closed. Visitors saw a "first 50 coaches" promo that no longer
+  // exists, flashing on every reload.
+  //
+  // The offer is now shown only when the server EXPLICITLY says it is on, which
+  // also makes it fail safe: a slow or failed request shows the plain hero
+  // rather than advertising something that is over.
+  const offerOpen = spots?.enabled === true;
   const pct = spots && spots.total ? Math.min(100, Math.round((spots.claimed / spots.total) * 100)) : 0;
 
   const isCoach = !!user?.isCoach;
@@ -94,9 +103,18 @@ export default function CoachHubPage() {
 
   return (
     <div className="chub-page">
+      {/* The title and description follow the offer too. Hardcoding the
+          founding promo meant search results and the browser tab advertised
+          "free for the first 50 coaches" long after the offer had closed — and
+          the prerendered snapshot baked that wording into the served HTML,
+          where no client-side check could correct it. */}
       <SEO
-        title="Coaching on Chess Nexus — free for the first 50 coaches"
-        description="Run your whole coaching practice on Chess Nexus: a live classroom, courses, assignments, attendance and parent reports. The first 50 coaches get the Pro plan free for a year."
+        title={offerOpen
+          ? 'Coaching on Chess Nexus — free for the first 50 coaches'
+          : 'Coaching on Chess Nexus — the complete coaching workspace'}
+        description={offerOpen
+          ? 'Run your whole coaching practice on Chess Nexus: a live classroom, courses, assignments, attendance and parent reports. The first 50 coaches get the Pro plan free for a year.'
+          : 'Run your whole coaching practice on Chess Nexus: a live classroom, courses, assignments, attendance and parent reports. Free for up to 30 students, with no card required.'}
         canonical="/coach-hub"
       />
 

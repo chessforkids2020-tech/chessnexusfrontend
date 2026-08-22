@@ -131,8 +131,16 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
             </div>
 
             <div className="bap-finds">
+              {/* Name the side, matching the public Find the Blunder page.
+                  Every library game records ONE player's blunders, so without
+                  this the student searches both sides for answers that can only
+                  be on one. `side` is null on legacy assignments built before
+                  the side migration, which keep the old wording. */}
               <div className="bap-finds-label">
                 Game {gi + 1}: find {gameTarget} blunder{gameTarget > 1 ? 's' : ''}
+                {games[gi]?.side
+                  ? <> by <strong>{games[gi].side === 'w' ? 'White' : 'Black'}</strong></>
+                  : null}
               </div>
               {found.map((v, i) => (
                 <input

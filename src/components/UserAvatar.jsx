@@ -16,8 +16,18 @@
 import React, { useState } from 'react';
 import { resolveApiAssetUrl } from '../api';
 
-// Importing the package registers the <model-viewer> custom element globally.
-import '@google/model-viewer';
+// LOADED ON DEMAND, not at module scope.
+//
+// @google/model-viewer is ~1MB and only registers a custom element. Importing
+// it here pulled that megabyte into the FIRST load of every page, because
+// avatars appear in the header, sidebar, chat and coach cards — even though a
+// 3D avatar is rare. It is now fetched only when a user actually has one, which
+// keeps it out of the initial download for everyone else.
+let modelViewerLoad = null;
+const ensureModelViewer = () => {
+  if (!modelViewerLoad) modelViewerLoad = import('@google/model-viewer').catch(() => {});
+  return modelViewerLoad;
+};
 
 const initialOf = (name) => (name || '?').toString().trim()[0]?.toUpperCase() || '?';
 
@@ -74,6 +84,10 @@ export default function UserAvatar({
 
   // 3: 3D model (live = auto-rotate; frozen = still). Falls back to emoji on error.
   if (model3d && !model3dFailed) {
+    // Start fetching the custom-element definition. Until it resolves the tag
+    // renders as an inert unknown element, which is exactly the placeholder we
+    // want — no layout shift, and the emoji fallback still covers failure.
+    ensureModelViewer();
     const src = model3dUrl(model3d);
     return (
       <div className={className} style={box}>

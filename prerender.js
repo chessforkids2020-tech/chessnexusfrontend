@@ -70,6 +70,12 @@ const ROUTES = [
   '/3d-chess-arena-tournament',
   '/chess-study',
   '/chess-community',
+  // The coach landing page. Not prerendered before, so a visitor got an empty
+  // <div id="root"> and waited for the whole bundle to download, parse and boot
+  // before ANY content appeared — the "5-10 seconds before coaches show up".
+  // The static copy (headline, feature list, CTA) now paints immediately; the
+  // live coach cards fill in when the API answers, as they already did.
+  '/coach-hub',
   // Public, content-stable app pages. Verified logged-out: each renders real
   // standalone content (2.6k–3.7k chars) rather than redirecting to /login or
   // rendering an empty data-driven shell — unlike /clubs, /public-studies,

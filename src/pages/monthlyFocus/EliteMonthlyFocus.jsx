@@ -2,16 +2,17 @@
 import React, { useEffect, useState, useCallback } from "react";
 import api from "../../api";
 import { useNavigate } from "react-router-dom";
+import InlineBoardEditor from "../../components/PositionEditor/InlineBoardEditor";
 
 const styles = {
   page: { padding: '20px', maxWidth: '1400px', margin: '0 auto', fontFamily: 'Inter, sans-serif' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid var(--color-text)', paddingBottom: '15px' },
-  title: { fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: 0 },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid var(--color-white-a13)', paddingBottom: '15px' },
+  title: { fontSize: '24px', fontWeight: 'bold', color: 'var(--color-text)', margin: 0 },
   grid: { display: 'grid', gridTemplateColumns: '300px 1fr', gap: '20px' },
   sidebar: { background: 'var(--color-surface)', padding: '15px', borderRadius: 'var(--radius-lg)', height: 'fit-content' },
   main: { background: 'var(--color-surface)', padding: '20px', borderRadius: 'var(--radius-lg)', boxShadow: '0 2px 8px var(--color-black-a20)' },
-  focusItem: { padding: '12px', borderRadius: 'var(--radius-md)', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.2s', background: 'var(--color-surface)', border: '1px solid var(--color-text)' },
-  focusItemSelected: { background: '#ede9fe', border: '2px solid var(--color-accent-2)' },
+  focusItem: { padding: '12px', borderRadius: 'var(--radius-md)', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.2s', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)' },
+  focusItemSelected: { background: 'var(--color-accent-2-a15)', border: '2px solid var(--color-accent-2)', color: 'var(--color-text)' },
   focusItemActive: { background: 'var(--color-accent-2)', color: 'var(--color-text)', border: '1px solid var(--color-accent-2)' },
   btn: { padding: '10px 20px', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: '500', fontSize: '14px', transition: 'opacity 0.2s' },
   btnPrimary: { background: 'var(--color-accent-2)', color: 'var(--color-text)' },
@@ -26,15 +27,15 @@ const styles = {
   label: { display: 'block', marginBottom: '5px', fontWeight: '500', color: 'var(--color-text-faint)', fontSize: '14px' },
   modal: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--color-black-a50)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 },
   modalContent: { background: 'var(--color-surface)', padding: '24px', borderRadius: 'var(--radius-lg)', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' },
-  dayCard: { padding: '15px', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-md)', marginBottom: '10px' },
+  dayCard: { padding: '15px', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-md)', marginBottom: '10px' },
   badge: { display: 'inline-block', padding: '4px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '500' },
-  badgeActive: { background: '#dcfce7', color: '#166534' },
-  badgeDraft: { background: 'var(--color-warning)', color: '#92400e' },
-  badgeCompleted: { background: 'var(--color-surface)', color: 'var(--color-text-faint)' },
+  badgeActive: { background: 'var(--color-success-a20)', color: 'var(--color-success)' },
+  badgeDraft: { background: 'var(--color-warning-a20)', color: 'var(--color-warning)' },
+  badgeCompleted: { background: 'var(--color-white-a07)', color: 'var(--color-text-muted)' },
   row: { display: 'flex', gap: '10px', marginBottom: '10px' },
   fieldGroup: { background: 'var(--color-surface)', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '15px' },
-  canCreateBanner: { background: '#f5f3ff', border: '1px solid var(--color-accent-2)', borderRadius: 'var(--radius-md)', padding: '12px 15px', marginBottom: '15px', fontSize: '14px', color: '#5b21b6' },
-  cannotCreateBanner: { background: 'var(--color-warning)', border: '1px solid var(--color-warning)', borderRadius: 'var(--radius-md)', padding: '12px 15px', marginBottom: '15px', fontSize: '14px', color: '#92400e' },
+  canCreateBanner: { background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)', borderRadius: 'var(--radius-md)', padding: '12px 15px', marginBottom: '15px', fontSize: '14px', color: 'var(--color-text)' },
+  cannotCreateBanner: { background: 'var(--color-warning-a20)', border: '1px solid var(--color-warning-a30)', borderRadius: 'var(--radius-md)', padding: '12px 15px', marginBottom: '15px', fontSize: '14px', color: 'var(--color-text)' },
 };
 
 const EMPTY_DAY_FORM = {
@@ -78,6 +79,38 @@ export default function EliteMonthlyFocus() {
   const [nextAllowedDate, setNextAllowedDate] = useState(null);
 
   // Modals
+  // Which board editor is open, as `${kind}:${index}` — e.g. "puzzle:0".
+  // Building a position by hand is the normal case; pasting a FEN is the
+  // shortcut. A single key means only one editor can be open at a time, so the
+  // form never turns into a wall of boards.
+  const [boardEditor, setBoardEditor] = useState(null);
+
+  // Auto-start schedule. Minutes past midnight IST, so 18:00 is 1080.
+  const [savingSchedule, setSavingSchedule] = useState(false);
+  const minuteToTime = (m) => `${String(Math.floor((m ?? 0) / 60)).padStart(2, '0')}:${String((m ?? 0) % 60).padStart(2, '0')}`;
+  const timeToMinute = (t) => {
+    const [h, m] = String(t || '').split(':').map(Number);
+    return (Number.isFinite(h) && Number.isFinite(m)) ? h * 60 + m : 0;
+  };
+  const saveSchedule = async (patch) => {
+    if (!selectedFocus) return;
+    setSavingSchedule(true);
+    try {
+      const body = {
+        autoStart: patch.autoStart ?? selectedFocus.autoStart ?? false,
+        dailyStartMinute: patch.dailyStartMinute ?? selectedFocus.dailyStartMinute ?? 1080,
+        dailyEndMinute: patch.dailyEndMinute ?? selectedFocus.dailyEndMinute ?? 1320,
+      };
+      const res = await api.post(`/api/elite/monthly-focus/${selectedFocus._id}/schedule`, body);
+      setSelectedFocus(res.data.focus);
+      setError('');
+    } catch (e) {
+      setError(e.response?.data?.message || 'Could not save the schedule');
+    } finally {
+      setSavingSchedule(false);
+    }
+  };
+
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDayForm, setShowDayForm] = useState(false);
   const [editingDay, setEditingDay] = useState(null);
@@ -91,7 +124,12 @@ export default function EliteMonthlyFocus() {
   // Create focus form
   const [focusForm, setFocusForm] = useState({
     title: '', theme: 'tactics',
-    startDate: '', endDate: ''
+    startDate: '', endDate: '',
+    // 'public' is the safe default. The form switches it to 'private' for a
+    // coach who has students, since that is what they usually mean — but for
+    // anyone else private is not a valid choice, and defaulting to it would
+    // create a challenge nobody could open.
+    visibility: 'public',
   });
 
   // Day form
@@ -425,7 +463,7 @@ export default function EliteMonthlyFocus() {
       </div>
 
       {error && (
-        <div style={{ background: '#fef2f2', color: '#b91c1c', padding: '12px', borderRadius: 'var(--radius-md)', marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ background: 'var(--color-danger-a12)', color: 'var(--color-danger)', padding: '12px', borderRadius: 'var(--radius-md)', marginBottom: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {error}
           <button onClick={() => setError('')} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}>×</button>
         </div>
@@ -461,7 +499,17 @@ export default function EliteMonthlyFocus() {
 
           <button
             style={{ ...styles.btn, ...styles.btnPrimary, width: '100%', marginBottom: '15px', ...(canCreate ? {} : styles.btnDisabled) }}
-            onClick={() => canCreate && setShowCreateModal(true)}
+            onClick={() => {
+              if (!canCreate) return;
+              // Pre-select private for a coach who has students — that is almost
+              // always what they mean — while leaving it public for everyone
+              // else, for whom private is not a workable choice.
+              setFocusForm(f => ({
+                ...f,
+                visibility: (createInfo?.isCoach && createInfo?.studentCount > 0) ? 'private' : 'public',
+              }));
+              setShowCreateModal(true);
+            }}
             disabled={!canCreate}
           >
             + Create Challenge
@@ -508,7 +556,15 @@ export default function EliteMonthlyFocus() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div>
                   <h2 style={{ margin: '0 0 5px 0' }}>{selectedFocus.title}</h2>
-                  <p style={{ margin: 0, color: 'var(--color-text-faint)' }}>{selectedFocus.month} • Theme: {selectedFocus.theme}</p>
+                  <p style={{ margin: 0, color: 'var(--color-text-faint)' }}>
+                    {selectedFocus.month} • Theme: {selectedFocus.theme}
+                    {/* Say who can join. A coach needs to see at a glance whether
+                        a challenge is going out to the whole platform. */}
+                    {' • '}
+                    <span style={{ color: selectedFocus.visibility === 'private' ? 'var(--color-accent-2)' : 'var(--color-accent)' }}>
+                      {selectedFocus.visibility === 'private' ? '🔒 My students only' : '🌍 Public'}
+                    </span>
+                  </p>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {selectedFocus.status === 'draft' && (
@@ -526,15 +582,65 @@ export default function EliteMonthlyFocus() {
 
               {/* Info */}
               {selectedFocus.status === 'draft' && (
-                <div style={{ background: 'var(--color-warning)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '15px', fontSize: '14px', color: '#92400e' }}>
+                <div style={{ background: 'var(--color-warning-a20)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '15px', fontSize: '14px', color: 'var(--color-warning)' }}>
                   📝 Draft — Add at least 1 day, then activate to make it live for all users.
                 </div>
               )}
               {selectedFocus.status === 'active' && (
-                <div style={{ background: '#dcfce7', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '15px', fontSize: '14px', color: '#166534' }}>
+                <div style={{ background: 'var(--color-success-a20)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '15px', fontSize: '14px', color: 'var(--color-success)' }}>
                   🟢 Active — This challenge is live. Press <strong>▶️ Start Day</strong> on a day below to open it for 24 hours (one day runs at a time).
                 </div>
               )}
+
+              {/* AUTO-START — only once all 7 days exist. A partial challenge is
+                  still being built, and opening its days automatically would
+                  push unfinished content to students, so 1-6 days stay manual. */}
+              <div style={{
+                background: focusDays.length >= 7 ? 'var(--color-success-a12)' : 'var(--color-white-a04)',
+                border: `1px solid ${focusDays.length >= 7 ? 'var(--color-success-a30)' : 'var(--color-white-a13)'}`,
+                borderRadius: 'var(--radius-md)', padding: '12px 14px', marginBottom: '15px',
+              }}>
+                {focusDays.length >= 7 ? (
+                  <>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                      <input
+                        type="checkbox"
+                        checked={!!selectedFocus.autoStart}
+                        disabled={savingSchedule}
+                        onChange={e => saveSchedule({ autoStart: e.target.checked })}
+                      />
+                      ⏰ Start each day automatically
+                    </label>
+                    <p style={{ margin: '6px 0 0 24px', fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
+                      {selectedFocus.autoStart
+                        ? 'Day 1 opens on the start date, day 2 the next day, and so on — you do not have to be here.'
+                        : 'You start each day yourself. Turn this on and the days open on schedule.'}
+                    </p>
+                    {selectedFocus.autoStart && (
+                      <div style={{ ...styles.row, marginTop: '10px', marginLeft: '24px', alignItems: 'flex-end' }}>
+                        <div style={{ flex: 1 }}>
+                          <label style={styles.label}>Opens at (IST)</label>
+                          <input style={styles.input} type="time" disabled={savingSchedule}
+                            value={minuteToTime(selectedFocus.dailyStartMinute ?? 1080)}
+                            onChange={e => saveSchedule({ dailyStartMinute: timeToMinute(e.target.value) })} />
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <label style={styles.label}>Closes at (IST)</label>
+                          <input style={styles.input} type="time" disabled={savingSchedule}
+                            value={minuteToTime(selectedFocus.dailyEndMinute ?? 1320)}
+                            onChange={e => saveSchedule({ dailyEndMinute: timeToMinute(e.target.value) })} />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
+                    ⏰ <strong>Auto-start needs all 7 days.</strong> You have {focusDays.length} —
+                    add {7 - focusDays.length} more and you can have the days open themselves.
+                    Until then you start each day yourself.
+                  </p>
+                )}
+              </div>
 
               {/* Days section */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
@@ -557,7 +663,18 @@ export default function EliteMonthlyFocus() {
                   {[1, 2, 3, 4, 5, 6, 7].map(dayNum => {
                     const day = focusDays.find(d => d.dayNumber === dayNum);
                     return (
-                      <div key={dayNum} style={{ ...styles.dayCard, background: day ? 'var(--color-text)' : 'var(--color-text)', opacity: day ? 1 : 0.5 }}>
+                      // --color-text is the near-WHITE type colour; using it as a
+                      // background painted every day row as a white slab on the
+                      // dark page (both ternary branches were identical, so the
+                      // condition did nothing, and opacity:0.5 just greyed the
+                      // empty ones). A created day now reads as a real surface;
+                      // an empty one is a dashed placeholder rather than a
+                      // half-transparent block.
+                      <div key={dayNum} style={{
+                        ...styles.dayCard,
+                        background: day ? 'var(--color-white-a04)' : 'transparent',
+                        border: day ? '1px solid var(--color-white-a13)' : '1px dashed var(--color-white-a13)',
+                      }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                           <div>
                             <strong>Day {dayNum}</strong>
@@ -566,8 +683,8 @@ export default function EliteMonthlyFocus() {
                                 <span style={{ marginLeft: '10px', color: 'var(--color-text-faint)' }}>{day.title}</span>
                                 <span style={{
                                   ...styles.badge, marginLeft: '10px',
-                                  background: day.taskType === 'puzzles' ? '#dbeafe' : day.taskType === 'find_mistakes' ? 'var(--color-warning)' : '#dcfce7',
-                                  color: day.taskType === 'puzzles' ? '#1e40af' : day.taskType === 'find_mistakes' ? '#92400e' : '#166534'
+                                  background: day.taskType === 'puzzles' ? 'var(--color-accent-a15)' : day.taskType === 'find_mistakes' ? 'var(--color-warning-a20)' : 'var(--color-success-a20)',
+                                  color: day.taskType === 'puzzles' ? 'var(--color-accent)' : day.taskType === 'find_mistakes' ? 'var(--color-warning)' : 'var(--color-success)'
                                 }}>
                                   {day.taskType.replace(/_/g, ' ')}
                                 </span>
@@ -577,13 +694,17 @@ export default function EliteMonthlyFocus() {
                                 {/* Day status badge */}
                                 {day.isStarted ? (
                                   <span style={{
-                                    ...styles.badge, marginLeft: '10px', color: 'var(--color-text)',
-                                    background: isDayRunning(day) ? 'var(--color-success)' : 'var(--color-text-faint)'
+                                    ...styles.badge, marginLeft: '10px',
+                                    // Tinted chips, not solid fills — and never a
+                                    // TEXT token as a background (--color-text-faint
+                                    // was painting the ENDED pill as a pale slab).
+                                    color: isDayRunning(day) ? 'var(--color-success)' : 'var(--color-text-muted)',
+                                    background: isDayRunning(day) ? 'var(--color-success-a20)' : 'var(--color-white-a07)',
                                   }}>
                                     {isDayRunning(day) ? `LIVE — ${formatTimeRemaining(day.endTime)}` : 'ENDED'}
                                   </span>
                                 ) : (
-                                  <span style={{ ...styles.badge, marginLeft: '10px', background: 'var(--color-warning)', color: 'var(--color-text)' }}>
+                                  <span style={{ ...styles.badge, marginLeft: '10px', background: 'var(--color-warning-a20)', color: 'var(--color-warning)' }}>
                                     NOT STARTED
                                   </span>
                                 )}
@@ -678,6 +799,33 @@ export default function EliteMonthlyFocus() {
               </div>
             </div>
 
+            {/* "My students only" is a COACH concept. An elite member or
+                supporter has no students, so offering it would be a choice that
+                cannot work — their challenges are always public. A coach with no
+                accepted students yet is told why the option is unavailable. */}
+            {createInfo?.isCoach && createInfo?.studentCount > 0 ? (
+              <>
+                <label style={styles.label}>Who can join?</label>
+                <select style={styles.select} value={focusForm.visibility}
+                  onChange={e => setFocusForm({ ...focusForm, visibility: e.target.value })}>
+                  <option value="private">My students only (private)</option>
+                  <option value="public">Anyone on Chess Nexus (public)</option>
+                </select>
+                <p style={{ margin: '-4px 0 12px', fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
+                  {focusForm.visibility === 'private'
+                    ? `Only your ${createInfo.studentCount} accepted student${createInfo.studentCount === 1 ? '' : 's'} can join. Everyone else sees it listed as a closed activity under your name. The student list is fixed when you create it.`
+                    : 'Every player on Chess Nexus can find and join this challenge.'}
+                </p>
+              </>
+            ) : (
+              <p style={{ margin: '0 0 12px', fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
+                🌍 This challenge will be <strong>open to everyone</strong> on Chess Nexus.
+                {createInfo?.isCoach && createInfo?.studentCount === 0
+                  ? ' Enrol students to be able to run a private, students-only challenge.'
+                  : ''}
+              </p>
+            )}
+
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
               <button style={{ ...styles.btn, ...styles.btnPrimary }} onClick={createFocus}>
                 Create Challenge
@@ -767,13 +915,13 @@ export default function EliteMonthlyFocus() {
             {dayForm.taskType === 'puzzles' && (
               <div style={styles.fieldGroup}>
                 {/* Engine-judged toggle */}
-                <div style={{ background: '#f5f3ff', border: '1px solid var(--color-accent-2)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '12px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: '#5b21b6' }}>
+                <div style={{ background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2-a30)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '12px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: 'var(--color-text)' }}>
                     <input type="checkbox" checked={dayForm.engineJudged}
                       onChange={e => setDayForm({ ...dayForm, engineJudged: e.target.checked })} />
                     🤖 Stockfish-judged (accept any strong move, not just one saved line)
                   </label>
-                  <p style={{ margin: '8px 0 0 24px', fontSize: '12.5px', color: '#6b21a8' }}>
+                  <p style={{ margin: '8px 0 0 24px', fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
                     The user plays, Stockfish replies in their browser. A move counts if it's within the tolerance of the engine's best.
                     You don't enter a solution line — just how many moves the user must play.
                   </p>
@@ -807,9 +955,27 @@ export default function EliteMonthlyFocus() {
                         <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removePuzzle(i)}>Remove</button>
                       )}
                     </div>
-                    <label style={styles.label}>FEN *</label>
-                    <input style={styles.input} placeholder="FEN string" value={p.fen}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                      <label style={{ ...styles.label, marginBottom: 0 }}>FEN *</label>
+                      <button
+                        type="button"
+                        style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall }}
+                        onClick={() => setBoardEditor(boardEditor === 'puzzle:' + i ? null : 'puzzle:' + i)}
+                      >
+                        {boardEditor === 'puzzle:' + i ? '✕ Close board' : '♟ Set up on board'}
+                      </button>
+                    </div>
+                    <input style={styles.input} placeholder="Paste a FEN, or build the position on the board" value={p.fen}
                       onChange={e => updatePuzzle(i, 'fen', e.target.value)} />
+                    {boardEditor === 'puzzle:' + i && (
+                      <div style={{ marginBottom: '10px' }}>
+                        <InlineBoardEditor
+                          initialFen={p.fen}
+                          onApply={fen => { updatePuzzle(i, 'fen', fen); setBoardEditor(null); }}
+                          onCancel={() => setBoardEditor(null)}
+                        />
+                      </div>
+                    )}
                     {dayForm.engineJudged ? (
                       <>
                         <label style={styles.label}>User moves required *</label>
@@ -931,9 +1097,27 @@ export default function EliteMonthlyFocus() {
                         <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removeTactics(i)}>Remove</button>
                       )}
                     </div>
-                    <label style={styles.label}>FEN *</label>
-                    <input style={styles.input} placeholder="FEN string" value={t.fen}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                      <label style={{ ...styles.label, marginBottom: 0 }}>FEN *</label>
+                      <button
+                        type="button"
+                        style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall }}
+                        onClick={() => setBoardEditor(boardEditor === 'tactics:' + i ? null : 'tactics:' + i)}
+                      >
+                        {boardEditor === 'tactics:' + i ? '✕ Close board' : '♟ Set up on board'}
+                      </button>
+                    </div>
+                    <input style={styles.input} placeholder="Paste a FEN, or build the position on the board" value={t.fen}
                       onChange={e => updateTactics(i, 'fen', e.target.value)} />
+                    {boardEditor === 'tactics:' + i && (
+                      <div style={{ marginBottom: '10px' }}>
+                        <InlineBoardEditor
+                          initialFen={t.fen}
+                          onApply={fen => { updateTactics(i, 'fen', fen); setBoardEditor(null); }}
+                          onCancel={() => setBoardEditor(null)}
+                        />
+                      </div>
+                    )}
                     <label style={styles.label}>Tactics Name *</label>
                     <input style={styles.input} placeholder="e.g., Fork, Pin, Skewer" value={t.tacticsName}
                       onChange={e => updateTactics(i, 'tacticsName', e.target.value)} />
@@ -957,9 +1141,27 @@ export default function EliteMonthlyFocus() {
                         <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-danger)' }} onClick={() => removeMC(mi)}>Remove</button>
                       )}
                     </div>
-                    <label style={styles.label}>FEN *</label>
-                    <input style={styles.input} placeholder="FEN string" value={item.fen}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                      <label style={{ ...styles.label, marginBottom: 0 }}>FEN *</label>
+                      <button
+                        type="button"
+                        style={{ ...styles.btn, ...styles.btnSecondary, ...styles.btnSmall }}
+                        onClick={() => setBoardEditor(boardEditor === 'mc:' + mi ? null : 'mc:' + mi)}
+                      >
+                        {boardEditor === 'mc:' + mi ? '✕ Close board' : '♟ Set up on board'}
+                      </button>
+                    </div>
+                    <input style={styles.input} placeholder="Paste a FEN, or build the position on the board" value={item.fen}
                       onChange={e => updateMC(mi, 'fen', e.target.value)} />
+                    {boardEditor === 'mc:' + mi && (
+                      <div style={{ marginBottom: '10px' }}>
+                        <InlineBoardEditor
+                          initialFen={item.fen}
+                          onApply={fen => { updateMC(mi, 'fen', fen); setBoardEditor(null); }}
+                          onCancel={() => setBoardEditor(null)}
+                        />
+                      </div>
+                    )}
                     <label style={styles.label}>Question *</label>
                     <input style={styles.input} placeholder="What is the best move?" value={item.question}
                       onChange={e => updateMC(mi, 'question', e.target.value)} />
@@ -1046,7 +1248,7 @@ export default function EliteMonthlyFocus() {
               </div>
             ) : (
               <div>
-                <div style={{ background: '#f0fdf4', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
+                <div style={{ background: 'var(--color-success-a12)', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
                   <strong>{dayResults.length}</strong> user{dayResults.length !== 1 ? 's' : ''} completed this day
                 </div>
 
@@ -1125,10 +1327,10 @@ export default function EliteMonthlyFocus() {
                 viewingAnswers.answers.map((ans, idx) => (
                   <div key={idx} style={{
                     padding: '15px',
-                    background: ans.isCorrect ? '#f0fdf4' : '#fef2f2',
+                    background: ans.isCorrect ? 'var(--color-success-a12)' : 'var(--color-danger-a12)',
                     borderRadius: 'var(--radius-md)',
                     marginBottom: '15px',
-                    border: `1px solid ${ans.isCorrect ? '#bbf7d0' : '#fecaca'}`
+                    border: `1px solid ${ans.isCorrect ? 'var(--color-success-a30)' : 'var(--color-danger-a30)'}`
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                       <strong style={{ color: 'var(--color-text-faint)' }}>Question #{idx + 1}</strong>
@@ -1150,7 +1352,7 @@ export default function EliteMonthlyFocus() {
                       <div>
                         <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>USER ANSWER</div>
                         <div style={{
-                          fontWeight: '500', color: ans.isCorrect ? '#065f46' : '#991b1b',
+                          fontWeight: '500', color: ans.isCorrect ? 'var(--color-success)' : 'var(--color-danger)',
                           background: 'var(--color-surface)', padding: '8px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-text)'
                         }}>
                           {ans.userAnswer || ans.userTag || '(No answer)'}
