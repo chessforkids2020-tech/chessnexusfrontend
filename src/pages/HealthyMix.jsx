@@ -201,6 +201,15 @@ export default function HealthyMix() {
   const seenIdsRef = useRef([]);
   const [exhausted, setExhausted] = useState(null); // { pieces, total } | null
 
+  // Clear the seen list when the FILTER changes. The ids are only meaningful
+  // within one theme / piece count: carrying them into another mode would
+  // exclude puzzles the user has not seen there, shrinking the pool for no
+  // reason. (It was never reset before, because only Pieces used it and a
+  // change of count reloaded the page.)
+  useEffect(() => {
+    seenIdsRef.current = [];
+  }, [theme, piecesParam, bandMin, bandMax]);
+
   const [puzzle, setPuzzle] = useState(null);
   const puzzleRef = useRef(null);         // mirror of `puzzle` for stable callbacks
   const [loading, setLoading] = useState(true);
@@ -463,6 +472,10 @@ export default function HealthyMix() {
   // generous reserve only cost the board height.
   const VERT_FALLBACK = 24;
   const refitRef = useRef(null);       // set by the sizing effect below
+  // Bumped by each settle pass on mount. Anything that MEASURES the laid-out
+  // page must depend on this, or it keeps first-paint numbers taken before the
+  // fonts and the sidebar reached their final size.
+  const [settleTick, setSettleTick] = useState(0);
   // Board auto-sizes to the screen. The old code hard-capped the board at `preferred`
   // (480px) on ANY desktop, so a 32" monitor showed the same tiny board as a laptop.
   // Now the board GROWS with the viewport (a share of the available width beside the
@@ -571,7 +584,15 @@ export default function HealthyMix() {
     setSideSqueeze(rendered > freeAtComfort
       ? Math.min(rendered - freeAtComfort, room)
       : 0);
-    setBoardSize(Math.floor(Math.max(MIN_BOARD, want)));
+    // Store what will actually be DRAWN, not what was asked for.
+    //
+    // The board caps itself at viewport.h * 0.92, so past that point `want`
+    // keeps climbing while the board stands still. boardSize is what the card
+    // widths are derived from, so storing the request meant a drag past the cap
+    // kept widening the right card for a board that had stopped growing — the
+    // card slid on its own. Storing `rendered` makes an over-long drag a no-op,
+    // which is what it looks like on screen.
+    setBoardSize(Math.floor(Math.max(MIN_BOARD, rendered)));
   }, []);
 
   // Publish the squeeze to CSS. The grid reads these, so the columns narrow in
@@ -600,12 +621,27 @@ export default function HealthyMix() {
     //
     // Clamped so the cards stay usable, and floored at their normal widths so a
     // tall window (where the board can nearly fill the row) never squeezes them.
+    // The card widths come from the WINDOW, never from boardSize.
+    //
+    // Deriving them from the board meant the cards resized on every drag frame:
+    // the left card sets the board's LEFT EDGE, so the board slid left, and the
+    // right card slid right — the two things happening at once. Basing them on
+    // the height the board can reach (a fixed property of the window) keeps them
+    // still while the board is dragged, and still lets them absorb the space a
+    // short-but-wide window leaves over.
     const grid = boardColRef.current?.parentElement;
     let leftW = LEFT_COMFORT;
     let rightW = RIGHT_COMFORT - rightGive;
     if (grid && window.innerWidth > 960) {
       const gridW = grid.clientWidth;
-      const forCards = gridW - boardSize - COL_GAP * 2;
+      // The largest board this WINDOW can show — height-capped, independent of
+      // whatever the user has dragged the board to.
+      const top = boardColRef.current?.getBoundingClientRect().top ?? 0;
+      const maxBoardHere = Math.min(
+        Math.floor(window.innerHeight * 0.92),
+        window.innerHeight - top - VERT_FALLBACK - FRAME_CHROME,
+      );
+      const forCards = gridW - maxBoardHere - COL_GAP * 2;
       if (forCards > LEFT_COMFORT + RIGHT_COMFORT) {
         // Roughly 46/54 — the moves list benefits from the extra more than the
         // rating card does.
@@ -619,7 +655,16 @@ export default function HealthyMix() {
       root.style.removeProperty('--hm-left-col');
       root.style.removeProperty('--hm-right-col');
     };
-  }, [sideSqueeze, boardSize]);
+    // NOT dependent on boardSize — that is the whole point: dragging the board
+    // must not move a card.
+    //
+    // `settleTick` IS a dependency: this reads getBoundingClientRect().top, and
+    // on first paint the page has not settled — fonts still loading, the
+    // sidebar not at final width — so the card widths came out wrong and were
+    // never recomputed. That is why the page looked different before and after
+    // a reload. fit() already re-runs across several frames; this now follows
+    // the same ticks.
+  }, [sideSqueeze, settleTick]);
 
   // Expose the board height to CSS so the moves card can match it exactly (they line
   // up bottom-to-bottom).
@@ -765,14 +810,15 @@ export default function HealthyMix() {
     // (one measurement plus a possible setState with the same value, which
     // React drops), and together they cover every way a first paint can be
     // mid-settle.
-    fit();
+    const settle = () => { fit(); setSettleTick(t => t + 1); };
+    settle();
     const raf1 = requestAnimationFrame(() => {
-      fit();
-      requestAnimationFrame(fit);
+      settle();
+      requestAnimationFrame(settle);
     });
-    const settleTimer = setTimeout(fit, 300);
+    const settleTimer = setTimeout(settle, 300);
     // Web fonts change text metrics, which moves the board column's top.
-    if (document.fonts?.ready) document.fonts.ready.then(() => fit()).catch(() => {});
+    if (document.fonts?.ready) document.fonts.ready.then(settle).catch(() => {});
 
     return () => {
       cancelAnimationFrame(raf1);
@@ -896,11 +942,15 @@ export default function HealthyMix() {
       if (excludeId) params.exclude = excludeId;
       if (hasBand) { params.min = bandMin; params.max = bandMax; }
       if (hasTheme) { params.theme = theme; }
-      if (hasPieces) {
-        params.pieces = piecesParam;
-        // Send the puzzles we've already seen so the backend skips them and can
-        // detect when this (possibly sparse) piece count is fully exhausted.
-        if (seenIdsRef.current.length) params.seen = seenIdsRef.current.join(',');
+      if (hasPieces) params.pieces = piecesParam;
+      // Send the puzzles already seen this session so the backend skips them.
+      // This used to be Pieces-only, which is why a THEME re-served the same
+      // positions: the server was never told what had already been shown, so
+      // its random pick could return them again. Capped at the most recent 300
+      // — enough to stop repeats in any realistic session, and short enough to
+      // keep the query string sane.
+      if ((hasPieces || hasTheme) && seenIdsRef.current.length) {
+        params.seen = seenIdsRef.current.slice(-300).join(',');
       }
       const res = await api.get('/api/public/healthymix/next', { params });
       if (res.data.userRating != null) setRating(res.data.userRating);
@@ -915,8 +965,8 @@ export default function HealthyMix() {
       }
 
       const p = res.data.puzzle;
-      // Track this puzzle as seen (Pieces mode) so we don't show it again.
-      if (hasPieces && p && (p._id || p.id)) {
+      // Track this puzzle as seen (Pieces and Themes) so we don't show it again.
+      if ((hasPieces || hasTheme) && p && (p._id || p.id)) {
         const id = p._id || p.id;
         if (!seenIdsRef.current.includes(id)) seenIdsRef.current.push(id);
       }

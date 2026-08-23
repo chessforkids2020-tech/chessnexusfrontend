@@ -560,7 +560,9 @@ const UserStudyPuzzleView = () => {
     solutionContainer: { background: 'var(--color-black-a35)', border: `1px solid ${currentColor.color}40`, borderRadius: 'var(--radius-lg)', padding: 20, marginBottom: 20 },
     solutionText: { fontFamily: 'monospace', fontSize: 15, lineHeight: '1.8', color: currentColor.color, fontWeight: 600, whiteSpace: 'pre-wrap', wordBreak: 'break-word' },
     descContainer: { background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', padding: 20 },
-    descText: { fontSize: 15, lineHeight: 1.6, color: 'var(--color-text-muted)' },
+    // pre-wrap: an imported Lichess chapter puts one note per LINE ("Nf3: …"),
+    // and without this they collapse into a single run-on paragraph.
+    descText: { fontSize: 15, lineHeight: 1.6, color: 'var(--color-text-muted)', whiteSpace: 'pre-wrap' },
     mobileOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--color-black-a65)', zIndex: 999, display: isMobile && showPuzzleList ? 'block' : 'none' },
     loading: { textAlign: 'center', color: 'var(--color-text-muted)', fontSize: 18, padding: 60, fontStyle: 'italic', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)' },
     error: { textAlign: 'center', color: 'var(--color-danger)', fontSize: 18, padding: 60, fontWeight: 500, background: 'var(--color-surface)', border: '1px solid var(--color-danger-a20)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)' },

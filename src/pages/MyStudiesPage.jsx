@@ -20,6 +20,10 @@ export default function MyStudiesPage() {
   const [importOpen, setImportOpen] = useState(false);
   const [importUrl, setImportUrl] = useState('');
   const [importName, setImportName] = useState('');
+  // Lichess has two levels (study → chapter); we have three. A Lichess chapter
+  // is one board with one line — a POSITION here — so the whole Lichess study
+  // lands as ONE chapter and the coach names both.
+  const [importChapter, setImportChapter] = useState('');
   const [importBusy, setImportBusy] = useState(false);
   const [importErr, setImportErr] = useState('');
   const [importOk, setImportOk] = useState('');
@@ -33,10 +37,12 @@ export default function MyStudiesPage() {
     setImportErr(''); setImportOk(''); setImportBusy(true);
     try {
       const r = await api.post('/api/user-studies/import/lichess', {
-        url: importUrl.trim(), name: importName.trim() || undefined,
+        url: importUrl.trim(),
+        name: importName.trim() || undefined,
+        chapterName: importChapter.trim() || undefined,
       });
-      setImportOk(`✓ Imported “${r.data.name}” — ${r.data.chapters} chapter(s).`);
-      setImportUrl(''); setImportName('');
+      setImportOk(`✓ Imported “${r.data.name}” — chapter “${r.data.chapter}” with ${r.data.positions} position(s).`);
+      setImportUrl(''); setImportName(''); setImportChapter('');
       await loadStudies();
       // Jump into the freshly imported study after a beat so they see it.
       setTimeout(() => { setImportOpen(false); setImportOk(''); }, 1400);
@@ -105,7 +111,7 @@ export default function MyStudiesPage() {
             <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 460, background: '#0f1520', border: '1px solid rgba(45,212,191,0.3)', borderRadius: 'var(--radius-xl)', padding: 22 }}>
               <div style={{ fontSize: 18, fontWeight: 800, color: '#5eead4', marginBottom: 6 }}>♞ Import a Lichess study</div>
               <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: 16 }}>
-                Paste a <b>public</b> (or unlisted) Lichess study link. Each Lichess chapter becomes a chapter here, ready to teach in the live classroom. Private studies won’t import — make it public/unlisted on Lichess first.
+                Paste a <b>public</b> (or unlisted) Lichess study link. It becomes <b>one study with one chapter</b> here, and each Lichess chapter becomes a <b>position</b> inside it — ready to teach in the live classroom. Private studies won’t import — make it public/unlisted on Lichess first.
               </div>
               <input
                 autoFocus
@@ -118,6 +124,12 @@ export default function MyStudiesPage() {
                 value={importName}
                 onChange={e => setImportName(e.target.value)}
                 placeholder="Name for this study (optional)"
+                style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, marginBottom: 10 }}
+              />
+              <input
+                value={importChapter}
+                onChange={e => setImportChapter(e.target.value)}
+                placeholder="Name for the chapter (optional)"
                 style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, marginBottom: 12 }}
               />
               {importErr && <div style={{ color: 'var(--color-danger)', fontSize: 13, marginBottom: 10 }}>{importErr}</div>}

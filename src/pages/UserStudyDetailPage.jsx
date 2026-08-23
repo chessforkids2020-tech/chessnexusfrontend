@@ -30,6 +30,38 @@ const UserStudyDetailPage = () => {
   const [chapterSaving, setChapterSaving] = useState(false);
   const [chapterError, setChapterError] = useState('');
 
+  // Import a Lichess study AS A CHAPTER here.
+  //
+  // Lichess has two levels (study → chapter); we have three (study → chapter →
+  // position). A Lichess chapter is one board with one line, which is a POSITION
+  // here. So a whole Lichess study maps to ONE chapter of ours, with its
+  // chapters becoming the positions inside it.
+  const [importOpen, setImportOpen] = useState(false);
+  const [importUrl, setImportUrl] = useState('');
+  const [importName, setImportName] = useState('');
+  const [importBusy, setImportBusy] = useState(false);
+  const [importErr, setImportErr] = useState('');
+
+  const runChapterImport = async () => {
+    setImportErr(''); setImportBusy(true);
+    try {
+      const r = await api.post(`/api/user-studies/${id}/import/lichess`, {
+        url: importUrl.trim(),
+        name: importName.trim() || undefined,
+      });
+      setImportOpen(false);
+      setImportUrl(''); setImportName('');
+      // Re-fetch so the new chapter (and its positions) appear.
+      const fresh = await api.get(`/api/user-studies/${id}`);
+      setStudy(fresh.data);
+      // Brief confirmation in the same place chapter errors appear.
+      setChapterError(`✓ Imported “${r.data.chapter}” — ${r.data.positions} position(s).`);
+      setTimeout(() => setChapterError(''), 4000);
+    } catch (e) {
+      setImportErr(e.response?.data?.error || 'Could not import that study.');
+    } finally { setImportBusy(false); }
+  };
+
   const isOwner = user && study && (user.id === study.userId || user._id === study.userId);
   const tc = typeColors[study?.studyType] || typeColors.basics;
 
@@ -188,11 +220,18 @@ const UserStudyDetailPage = () => {
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text-faint)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
             Select a Chapter
           </div>
-          {isOwner && !addingChapter && (
-            <button
-              onClick={() => { setAddingChapter(true); setChapterError(''); }}
-              style={{ ...btnBase, background: tc.bg, border: `1px solid ${tc.color}`, color: tc.color, fontWeight: 600 }}
-            >➕ Add Chapter</button>
+          {isOwner && !addingChapter && !importOpen && (
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={() => { setImportOpen(true); setImportErr(''); }}
+                title="Import a Lichess study — its chapters become positions here"
+                style={{ ...btnBase, fontWeight: 600 }}
+              >♞ Import from Lichess</button>
+              <button
+                onClick={() => { setAddingChapter(true); setChapterError(''); }}
+                style={{ ...btnBase, background: tc.bg, border: `1px solid ${tc.color}`, color: tc.color, fontWeight: 600 }}
+              >➕ Add Chapter</button>
+            </div>
           )}
         </div>
 
@@ -209,6 +248,44 @@ const UserStudyDetailPage = () => {
             <button onClick={handleAddChapter} disabled={chapterSaving} style={{ background: 'var(--color-accent-2)', border: 'none', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '8px 14px', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: chapterSaving ? 0.6 : 1 }}>{chapterSaving ? '...' : 'Add'}</button>
             <button onClick={() => { setAddingChapter(false); setChapterName(''); setChapterError(''); }} style={{ ...btnBase }}>Cancel</button>
             {chapterError && <span style={{ fontSize: 12, color: 'var(--color-danger)', width: '100%' }}>{chapterError}</span>}
+          </div>
+        )}
+
+        {/* IMPORT A LICHESS STUDY AS ONE CHAPTER.
+            Sits with the chapter controls, not the study list, because that is
+            what it produces: a Lichess study is a set of positions on one
+            topic — a chapter here — and its chapters become the positions. */}
+        {isOwner && importOpen && (
+          <div style={{ marginBottom: 20, padding: 14, background: 'var(--color-white-a04)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>Import a Lichess study as a chapter</div>
+            <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 10, lineHeight: 1.5 }}>
+              Each Lichess chapter becomes a <strong>position</strong> in this chapter.
+              Private studies won’t import — make it public or unlisted on Lichess first.
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <input
+                value={importUrl}
+                onChange={e => { setImportUrl(e.target.value); setImportErr(''); }}
+                placeholder="https://lichess.org/study/AbCdEfGh"
+                autoFocus
+                style={{ flex: 2, minWidth: 240, background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a20)', borderRadius: 'var(--radius-md)', padding: '8px 12px', color: 'var(--color-text)', fontSize: 14, outline: 'none' }}
+              />
+              <input
+                value={importName}
+                onChange={e => setImportName(e.target.value)}
+                placeholder="Chapter name (optional)"
+                style={{ flex: 1, minWidth: 180, background: 'var(--color-white-a07)', border: '1px solid var(--color-white-a20)', borderRadius: 'var(--radius-md)', padding: '8px 12px', color: 'var(--color-text)', fontSize: 14, outline: 'none' }}
+              />
+              <button
+                onClick={runChapterImport}
+                disabled={importBusy || !importUrl.trim()}
+                style={{ background: 'var(--color-accent-2)', border: 'none', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '8px 14px', cursor: 'pointer', fontSize: 13, fontWeight: 600, opacity: (importBusy || !importUrl.trim()) ? 0.6 : 1 }}
+              >
+                {importBusy ? 'Importing…' : 'Import'}
+              </button>
+              <button onClick={() => { setImportOpen(false); setImportErr(''); }} style={{ ...btnBase }}>Cancel</button>
+            </div>
+            {importErr && <div style={{ fontSize: 12, color: 'var(--color-danger)', marginTop: 8 }}>{importErr}</div>}
           </div>
         )}
 
