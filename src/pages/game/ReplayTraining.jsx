@@ -677,9 +677,18 @@ export default function ReplayTraining() {
     cancelRef.current = true;
     clearSaved();
     stockfishService.stop?.();
+    // Leaving mid-game still BANKS the points earned so far — the questions
+    // were answered, so they count.
+    //
+    // `finished` guards against double-saving what finishSession already sent,
+    // and the counters are cleared here so pressing Exit twice (or exiting and
+    // leaving the page) cannot post the same points again.
     if (sessionPoints > 0 && !finished) {
       api.post('/api/replay-training/score', { points: sessionPoints }).catch(() => {});
     }
+    setSessionPoints(0);
+    setAsked(0);
+    setFeedback(null);
     setPhase('list');
     setGame(null);
     setFinished(false);
