@@ -602,19 +602,19 @@ const AdminMonthlyFocus = () => {
   const styles = {
     page: { padding: '20px', maxWidth: '1400px', margin: '0 auto', fontFamily: 'Inter, sans-serif' },
     smallTag: { fontSize: '12px', color: 'var(--color-text-faint)' },
-    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid var(--color-text)', paddingBottom: '15px' },
+    header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid var(--color-border)', paddingBottom: '15px' },
     title: { fontSize: '24px', fontWeight: 'bold', color: '#1f2937', margin: 0 },
     grid: { display: 'grid', gridTemplateColumns: '300px 1fr', gap: '20px' },
     sidebar: { background: 'var(--color-surface)', padding: '15px', borderRadius: 'var(--radius-lg)', height: 'fit-content' },
     main: { background: 'var(--color-surface)', padding: '20px', borderRadius: 'var(--radius-lg)', boxShadow: '0 2px 8px var(--color-black-a20)' },
-    focusItem: { padding: '12px', borderRadius: 'var(--radius-md)', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.2s', background: 'var(--color-surface)', border: '1px solid var(--color-text)' },
-    focusItemActive: { background: 'var(--color-accent-2)', color: 'var(--color-text)', border: '1px solid var(--color-accent-2)' },
+    focusItem: { padding: '12px', borderRadius: 'var(--radius-md)', marginBottom: '8px', cursor: 'pointer', transition: 'all 0.2s', background: 'var(--color-surface)', border: '1px solid var(--color-border)' },
+    focusItemActive: { background: 'var(--color-accent-2)', color: 'var(--color-bg)', border: '1px solid var(--color-accent-2)' },
     focusItemSelected: { background: '#e0e7ff', border: '2px solid var(--color-accent-2)' },
     btn: { padding: '10px 20px', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontWeight: '500', fontSize: '14px' },
-    btnPrimary: { background: 'var(--color-accent-2)', color: 'var(--color-text)' },
+    btnPrimary: { background: 'var(--color-accent-2)', color: 'var(--color-bg)' },
     btnSecondary: { background: 'var(--color-surface)', color: 'var(--color-text-faint)', border: '1px solid var(--color-text-muted)' },
-    btnDanger: { background: 'var(--color-danger)', color: 'var(--color-text)' },
-    btnSuccess: { background: 'var(--color-success)', color: 'var(--color-text)' },
+    btnDanger: { background: 'var(--color-danger)', color: 'var(--color-bg)' },
+    btnSuccess: { background: 'var(--color-success)', color: 'var(--color-bg)' },
     btnSmall: { padding: '6px 12px', fontSize: '12px' },
     input: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: 'var(--radius-sm)', fontSize: '14px', marginBottom: '10px' },
     textarea: { width: '100%', padding: '10px 12px', border: '1px solid var(--color-text-muted)', borderRadius: 'var(--radius-sm)', fontSize: '14px', minHeight: '100px', marginBottom: '10px', fontFamily: 'monospace' },
@@ -622,14 +622,14 @@ const AdminMonthlyFocus = () => {
     label: { display: 'block', marginBottom: '5px', fontWeight: '500', color: 'var(--color-text-faint)', fontSize: '14px' },
     modal: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'var(--color-black-a50)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 },
     modalContent: { background: 'var(--color-surface)', padding: '24px', borderRadius: 'var(--radius-lg)', maxWidth: '800px', width: '90%', maxHeight: '90vh', overflowY: 'auto' },
-    dayCard: { padding: '15px', border: '1px solid var(--color-text)', borderRadius: 'var(--radius-md)', marginBottom: '10px' },
+    dayCard: { padding: '15px', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', marginBottom: '10px' },
     badge: { display: 'inline-block', padding: '4px 10px', borderRadius: 'var(--radius-2xl)', fontSize: '12px', fontWeight: '500' },
     badgeActive: { background: '#dcfce7', color: '#166534' },
-    badgeDraft: { background: 'var(--color-warning)', color: '#92400e' },
+    badgeDraft: { background: '#fef3c7', color: '#92400e' },
     badgeCompleted: { background: 'var(--color-surface)', color: 'var(--color-text-faint)' },
     fieldGroup: { background: 'var(--color-surface)', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '15px' },
     row: { display: 'flex', gap: '10px', marginBottom: '10px' },
-    resultRow: { display: 'flex', justifyContent: 'space-between', padding: '10px', borderBottom: '1px solid var(--color-text)' }
+    resultRow: { display: 'flex', justifyContent: 'space-between', padding: '10px', borderBottom: '1px solid var(--color-border)' }
   };
 
   if (loading) return <div style={styles.page}>Loading...</div>;
@@ -644,10 +644,13 @@ const AdminMonthlyFocus = () => {
     ...styles.btn,
     padding: '8px 18px',
     borderRadius: '8px 8px 0 0',
-    border: '1px solid var(--color-text)',
-    borderBottom: activeTab === id ? '2px solid var(--color-text)' : '1px solid var(--color-text)',
-    background: activeTab === id ? 'var(--color-text)' : 'var(--color-text)',
-    color: activeTab === id ? '#111827' : 'var(--color-text-faint)',
+    border: '1px solid var(--color-border)',
+    borderBottom: activeTab === id ? '2px solid var(--color-border)' : '1px solid var(--color-border)',
+    // Both branches used to be the same value, so the active tab was
+    // indistinguishable (and white-on-dark besides). The selected tab now
+    // lifts to the raised surface with full-strength text.
+    background: activeTab === id ? 'var(--color-surface-2)' : 'transparent',
+    color: activeTab === id ? 'var(--color-text)' : 'var(--color-text-faint)',
     fontWeight: activeTab === id ? 700 : 500,
     position: 'relative',
     top: '1px',
@@ -672,7 +675,7 @@ const AdminMonthlyFocus = () => {
       )}
 
       {/* Tabs: Admin-created vs Elite-created focuses */}
-      <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--color-text)', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', gap: '4px', borderBottom: '1px solid var(--color-border)', marginBottom: '20px' }}>
         <button style={tabStyle('admin')} onClick={() => setActiveTab('admin')}>
           🛠️ Admin Focuses ({adminCount})
         </button>
@@ -762,8 +765,8 @@ const AdminMonthlyFocus = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {notifications.map(n => (
                   <div key={n._id} style={{
-                    border: '1px solid var(--color-text)', borderRadius: 'var(--radius-md)', padding: '14px',
-                    background: n.published ? '#f0fdf4' : 'var(--color-text)'
+                    border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '14px',
+                    background: n.published ? 'var(--color-success-a12)' : 'var(--color-surface)'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
                       <div style={{ flex: 1 }}>
@@ -778,7 +781,7 @@ const AdminMonthlyFocus = () => {
                       </div>
                       <span style={{
                         fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: 'var(--radius-pill)',
-                        background: n.published ? '#dcfce7' : 'var(--color-text)',
+                        background: n.published ? 'var(--color-success-a20)' : 'var(--color-surface-2)',
                         color: n.published ? 'var(--color-success)' : 'var(--color-text-faint)', whiteSpace: 'nowrap'
                       }}>
                         {n.published ? '● Published' : '○ Draft'}
@@ -860,8 +863,8 @@ const AdminMonthlyFocus = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {liveNotes.map(n => (
                   <div key={n._id} style={{
-                    border: '1px solid var(--color-text)', borderRadius: 'var(--radius-md)', padding: '14px',
-                    background: n.active ? '#f0fdf4' : 'var(--color-text)'
+                    border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', padding: '14px',
+                    background: n.active ? 'var(--color-success-a12)' : 'var(--color-surface)'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
                       <div style={{ flex: 1 }}>
@@ -875,7 +878,7 @@ const AdminMonthlyFocus = () => {
                       </div>
                       <span style={{
                         fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: 'var(--radius-pill)',
-                        background: n.active ? '#dcfce7' : 'var(--color-text)',
+                        background: n.active ? 'var(--color-success-a20)' : 'var(--color-surface-2)',
                         color: n.active ? 'var(--color-success)' : 'var(--color-text-faint)', whiteSpace: 'nowrap'
                       }}>
                         {n.active ? '● Active' : '○ Draft'}
@@ -1034,9 +1037,9 @@ const AdminMonthlyFocus = () => {
                       return (
                         <div key={dayNum} style={{
                           ...styles.dayCard,
-                          background: running ? '#ecfdf5' : day ? 'var(--color-text)' : 'var(--color-text)',
+                          background: running ? 'var(--color-success-a12)' : 'var(--color-surface)',
                           opacity: day ? 1 : 0.5,
-                          border: running ? '2px solid var(--color-success)' : '1px solid var(--color-text)'
+                          border: running ? '2px solid var(--color-success)' : '1px solid var(--color-border)'
                         }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                             <div>
@@ -1049,9 +1052,15 @@ const AdminMonthlyFocus = () => {
                                   <span style={{
                                     ...styles.badge,
                                     marginLeft: '10px',
-                                    background: day.taskType === 'puzzles' ? '#dbeafe' : 
-                                               day.taskType === 'find_mistakes' ? 'var(--color-warning)' : '#dcfce7',
-                                    color: day.taskType === 'puzzles' ? '#1e40af' : 
+                                    // Pale fill + dark ink of the SAME hue. The
+                                    // find_mistakes case used a saturated
+                                    // --color-warning behind dark brown text,
+                                    // which left the label unreadable on the
+                                    // yellow pill; the other two already paired
+                                    // a pastel fill with matching dark ink.
+                                    background: day.taskType === 'puzzles' ? '#dbeafe' :
+                                               day.taskType === 'find_mistakes' ? '#fef3c7' : '#dcfce7',
+                                    color: day.taskType === 'puzzles' ? '#1e40af' :
                                            day.taskType === 'find_mistakes' ? '#92400e' : '#166534'
                                   }}>
                                     {day.taskType.replace('_', ' ')}
@@ -1068,7 +1077,7 @@ const AdminMonthlyFocus = () => {
                                       ...styles.badge,
                                       marginLeft: '10px',
                                       background: running ? 'var(--color-success)' : 'var(--color-text-faint)',
-                                      color: 'var(--color-text)'
+                                      color: 'var(--color-bg)'
                                     }}>
                                       {running ? `LIVE - ${formatTimeRemaining(day.endTime)}` : 'ENDED'}
                                     </span>
@@ -1078,7 +1087,7 @@ const AdminMonthlyFocus = () => {
                                       ...styles.badge,
                                       marginLeft: '10px',
                                       background: 'var(--color-warning)',
-                                      color: 'var(--color-text)'
+                                      color: 'var(--color-bg)'
                                     }}>
                                       NOT STARTED
                                     </span>
@@ -1093,7 +1102,7 @@ const AdminMonthlyFocus = () => {
                                 {/* Start/Stop/Reset Controls */}
                                 {!day.isStarted && (
                                   <button 
-                                    style={{...styles.btn, background: 'var(--color-success)', color: 'var(--color-text)', ...styles.btnSmall}}
+                                    style={{...styles.btn, background: 'var(--color-success)', color: 'var(--color-bg)', ...styles.btnSmall}}
                                     onClick={() => startDay(dayNum)}
                                   >
                                     ▶️ Start Day
@@ -1101,7 +1110,7 @@ const AdminMonthlyFocus = () => {
                                 )}
                                 {running && (
                                   <button 
-                                    style={{...styles.btn, background: 'var(--color-danger)', color: 'var(--color-text)', ...styles.btnSmall}}
+                                    style={{...styles.btn, background: 'var(--color-danger)', color: 'var(--color-bg)', ...styles.btnSmall}}
                                     onClick={() => stopDay(dayNum)}
                                   >
                                     ⏹️ Stop
@@ -1109,7 +1118,7 @@ const AdminMonthlyFocus = () => {
                                 )}
                                 {day.isStarted && !running && (
                                   <button 
-                                    style={{...styles.btn, background: 'var(--color-warning)', color: 'var(--color-text)', ...styles.btnSmall}}
+                                    style={{...styles.btn, background: 'var(--color-warning)', color: 'var(--color-bg)', ...styles.btnSmall}}
                                     onClick={() => resetDay(dayNum)}
                                   >
                                     🔄 Reset
@@ -1421,13 +1430,13 @@ const AdminMonthlyFocus = () => {
                 <h4 style={{ margin: '0 0 15px 0' }}>🧩 Puzzles (Max 20)</h4>
 
                 {/* Engine-judged toggle */}
-                <div style={{ background: '#f5f3ff', border: '1px solid var(--color-accent-2)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '15px' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: '#5b21b6' }}>
+                <div style={{ background: 'var(--color-accent-2-a15)', border: '1px solid var(--color-accent-2)', borderRadius: 'var(--radius-md)', padding: '12px', marginBottom: '15px' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, color: 'var(--color-accent-2)' }}>
                     <input type="checkbox" checked={dayForm.engineJudged}
                       onChange={e => setDayForm({ ...dayForm, engineJudged: e.target.checked })} />
                     🤖 Stockfish-judged (accept any strong move, not just one saved line)
                   </label>
-                  <p style={{ margin: '8px 0 0 24px', fontSize: '12.5px', color: '#6b21a8' }}>
+                  <p style={{ margin: '8px 0 0 24px', fontSize: '12.5px', color: 'var(--color-text-muted)' }}>
                     The user plays, Stockfish replies in their browser. A move counts if it's within the tolerance of the engine's best.
                     You don't enter a solution line — just how many moves the user must play.
                   </p>
@@ -1458,7 +1467,7 @@ const AdminMonthlyFocus = () => {
                 </p>
 
                 {dayForm.puzzles.map((puzzle, index) => (
-                  <div key={index} style={{ marginBottom: '15px', padding: '12px', background: 'var(--color-surface)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-text)' }}>
+                  <div key={index} style={{ marginBottom: '15px', padding: '12px', background: 'var(--color-surface)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <strong>Puzzle {index + 1}</strong>
                       <button
@@ -1684,7 +1693,7 @@ const AdminMonthlyFocus = () => {
                 </p>
                 
                 {dayForm.tacticsItems.map((item, index) => (
-                  <div key={index} style={{ marginBottom: '15px', padding: '12px', background: 'var(--color-surface)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-text)' }}>
+                  <div key={index} style={{ marginBottom: '15px', padding: '12px', background: 'var(--color-surface)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                       <strong>Position {index + 1}</strong>
                       <button 
@@ -1757,7 +1766,7 @@ const AdminMonthlyFocus = () => {
                   };
                   
                   return (
-                    <div key={index} style={{ marginBottom: '20px', padding: '15px', background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-text)' }}>
+                    <div key={index} style={{ marginBottom: '20px', padding: '15px', background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                         <strong>Question {index + 1}</strong>
                         <button 
@@ -1916,7 +1925,7 @@ const AdminMonthlyFocus = () => {
                   </div>
                 </div>
                 
-                <div style={{ marginTop: '15px', padding: '12px', background: 'var(--color-warning)', borderRadius: 'var(--radius-sm)', fontSize: '13px', color: '#92400e' }}>
+                <div style={{ marginTop: '15px', padding: '12px', background: 'var(--color-warning-a20)', borderRadius: 'var(--radius-sm)', fontSize: '13px', color: 'var(--color-text)' }}>
                   ⚠️ <strong>Note:</strong> Analysis will take 60-120 seconds per game when users submit
                 </div>
               </div>
@@ -1946,13 +1955,13 @@ const AdminMonthlyFocus = () => {
               </div>
             ) : (
               <div>
-                <div style={{ background: '#f0fdf4', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
+                <div style={{ background: 'var(--color-success-a12)', padding: '15px', borderRadius: 'var(--radius-md)', marginBottom: '20px' }}>
                   <strong>{dayResults.length}</strong> users completed this day
                 </div>
                 
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ background: 'var(--color-surface)', borderBottom: '2px solid var(--color-text)' }}>
+                    <tr style={{ background: 'var(--color-surface)', borderBottom: '2px solid var(--color-border)' }}>
                       <th style={{ padding: '12px', textAlign: 'left' }}>User</th>
                       <th style={{ padding: '12px', textAlign: 'center' }}>Score</th>
                       <th style={{ padding: '12px', textAlign: 'center' }}>Time</th>
@@ -1963,7 +1972,7 @@ const AdminMonthlyFocus = () => {
                   </thead>
                   <tbody>
                     {dayResults.map((result, index) => (
-                      <tr key={index} style={{ borderBottom: '1px solid var(--color-text)' }}>
+                      <tr key={index} style={{ borderBottom: '1px solid var(--color-border)' }}>
                         <td style={{ padding: '12px' }}>
                           {result.userId?.displayName || result.userId?.username || 'Unknown'}
                         </td>
@@ -2024,7 +2033,7 @@ const AdminMonthlyFocus = () => {
                 viewingAnswers.answers.map((ans, idx) => (
                   <div key={idx} style={{ 
                     padding: '15px', 
-                    background: ans.isCorrect ? '#f0fdf4' : '#fef2f2', 
+                    background: ans.isCorrect ? 'var(--color-success-a12)' : 'var(--color-danger-a12)', 
                     borderRadius: 'var(--radius-md)', 
                     marginBottom: '15px',
                     border: `1px solid ${ans.isCorrect ? '#bbf7d0' : '#fecaca'}`
@@ -2037,7 +2046,7 @@ const AdminMonthlyFocus = () => {
                         fontSize: '12px', 
                         fontWeight: 'bold',
                         background: ans.isCorrect ? 'var(--color-success)' : 'var(--color-danger)',
-                        color: 'var(--color-text)'
+                        color: 'var(--color-bg)'
                       }}>
                         {ans.isCorrect ? 'CORRECT' : 'INCORRECT'}
                       </span>
@@ -2054,11 +2063,11 @@ const AdminMonthlyFocus = () => {
                         <div style={{ fontSize: '12px', color: 'var(--color-text-faint)', marginBottom: '4px' }}>USER ANSWER</div>
                         <div style={{ 
                           fontWeight: '500', 
-                          color: ans.isCorrect ? '#065f46' : '#991b1b',
+                          color: ans.isCorrect ? 'var(--color-success)' : 'var(--color-danger)',
                           background: 'var(--color-surface)',
                           padding: '8px',
                           borderRadius: 'var(--radius-sm)',
-                          border: '1px solid var(--color-text)'
+                          border: '1px solid var(--color-border)'
                         }}>
                           {ans.userAnswer || ans.userTag || '(No answer)'}
                         </div>
@@ -2071,7 +2080,7 @@ const AdminMonthlyFocus = () => {
                           background: 'var(--color-surface)',
                           padding: '8px',
                           borderRadius: 'var(--radius-sm)',
-                          border: '1px solid var(--color-text)'
+                          border: '1px solid var(--color-border)'
                         }}>
                           {ans.correctAnswer || ans.correctTag || '(No answer)'}
                         </div>

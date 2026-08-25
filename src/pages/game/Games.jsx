@@ -125,15 +125,29 @@ export default function Games() {
     {
       id: 'friend',
       title: "Play with a Friend",
-      subtitle: "Private game by code • Even as a guest",
       icon: "🤝",
       color: "var(--color-success)",
       action: () => setShowFriendSetup(true)
     },
     {
+      // Play vs the engine, entirely in the browser (Stockfish WASM) — no
+      // server game, no opponent needed, so it always has something to offer.
+      id: 'stockfish',
+      title: "Play vs Stockfish",
+      icon: "🤖",
+      color: "var(--color-accent)",
+      action: () => navigate('/play/ai')
+    },
+    {
+      id: 'replay',
+      title: "Replay Training",
+      icon: "🎬",
+      color: "var(--color-accent-2)",
+      action: () => navigate('/replay-training')
+    },
+    {
       id: 3,
       title: "Arena Tournament",
-      subtitle: "Competitive tournaments • Win places",
       icon: "🏆",
       color: "#FFD166",
       action: () => navigate('/arenatournament')
@@ -144,7 +158,6 @@ export default function Games() {
       // navigation, where it competed with Puzzles, Study and Race.
       id: '3darena',
       title: "3D Arena",
-      subtitle: "Play on an immersive 3D board • Opens in a new tab",
       icon: "🎮",
       color: "var(--color-accent-2)",
       action: open3DArena
@@ -343,8 +356,9 @@ export default function Games() {
                 {option.icon}
               </div>
               <div className="play-option-content">
+                {/* Title only: the subtitles made these cards several lines
+                    tall, which pushed the rest of the page below the fold. */}
                 <h3 className="play-option-title">{option.title}</h3>
-                <p className="play-option-subtitle">{option.subtitle}</p>
               </div>
             </div>
             {option.disabled ? (

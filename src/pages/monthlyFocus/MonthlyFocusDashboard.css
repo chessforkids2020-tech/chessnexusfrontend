@@ -12,7 +12,10 @@
   background: var(--color-bg);
   color: var(--color-text);
   font-family: 'Poppins', sans-serif;
-  padding: 40px 20px;
+  /* Less headroom at the top: 40px above the back-link left a large empty band
+     before any content, especially since the link sits on its own row. The
+     sides and bottom keep their original spacing. */
+  padding: 16px 20px 40px;
   position: relative;
   overflow: hidden;
 }
@@ -329,7 +332,9 @@
 }
 
 .focus-title h1 {
-  margin: 0 0 12px 0;
+  /* Tighter gap: the theme below is now a small tag, so 12px left it floating
+     away from the name it belongs to. */
+  margin: 0 0 6px 0;
   font-family: 'Orbitron', sans-serif;
   font-size: 2.4em;
   font-weight: 900;
@@ -341,12 +346,16 @@
   filter: drop-shadow(0 2px 8px var(--color-accent-a40));
 }
 
+/* The theme is a CATEGORY LABEL, not a second title. At 1.3em against a 2.4em
+   heading it read as a subtitle competing with the name; small caps with wide
+   tracking makes it read as the tag it is. */
 .focus-theme {
   margin: 0;
-  font-size: 1.3em;
-  color: var(--color-text-muted);
-  font-weight: 500;
-  letter-spacing: 0.5px;
+  font-size: 0.78em;
+  color: var(--color-text-faint);
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
 }
 
 .focus-stats {
@@ -927,7 +936,7 @@
   }
   
   .focus-theme {
-    font-size: 1.1em;
+    font-size: 0.72em;
   }
   
   .focus-stats {

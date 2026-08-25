@@ -37,6 +37,18 @@ const RUSH_TIME_OPTIONS = [
   { value: 10, label: '10 minutes' },
 ];
 
+// Difficulty bands a coach can pick for a puzzle assignment. Chosen so a coach
+// never has to reason about Elo numbers: a beginner gets 400-800 regardless of
+// what the student's own rating happens to be.
+const RATING_BANDS = [
+  { min: 400,  max: 800,  label: '400 – 800 · Beginner' },
+  { min: 801,  max: 1200, label: '801 – 1200 · Improving' },
+  { min: 1201, max: 1600, label: '1201 – 1600 · Intermediate' },
+  { min: 1601, max: 2000, label: '1601 – 2000 · Advanced' },
+  { min: 2001, max: 2400, label: '2001 – 2400 · Strong' },
+  { min: 2401, max: 3000, label: '2401+ · Expert' },
+];
+
 export default function CoachAssignments() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -414,9 +426,13 @@ export default function CoachAssignments() {
       const topicName = form.assignmentType !== 'puzzle_topic' ? form.topicName
         : form.puzzleMode === 'theme'
           ? (themes.find(t => t.key === form.puzzleTheme)?.label || form.puzzleTheme)
-          : form.puzzleMode === 'rating'
-            ? `Rating ${form.puzzleMinRating}–${form.puzzleMaxRating}`
-            : 'Healthy Mix';
+          : form.puzzleMode === 'theme_rating'
+            // Name both parts, so the student sees what they were set and the
+            // coach can tell two similar assignments apart in the list.
+            ? `${themes.find(t => t.key === form.puzzleTheme)?.label || form.puzzleTheme} · ${form.puzzleMinRating}–${form.puzzleMaxRating}`
+            : form.puzzleMode === 'rating'
+              ? `Rating ${form.puzzleMinRating}–${form.puzzleMaxRating}`
+              : 'Healthy Mix';
 
       await api.post('/api/coach/assignments', {
         ...form,
@@ -937,6 +953,7 @@ export default function CoachAssignments() {
                         <option value="mix">Healthy Mix — a bit of everything</option>
                         <option value="theme">A specific theme</option>
                         <option value="rating">A rating range</option>
+                        <option value="theme_rating">A theme at a set difficulty</option>
                       </select>
                     </label>
                     <label className="field" style={{ maxWidth: 140 }}>
@@ -950,7 +967,7 @@ export default function CoachAssignments() {
                     </label>
                   </div>
 
-                  {form.puzzleMode === 'theme' && (
+                  {(form.puzzleMode === 'theme' || form.puzzleMode === 'theme_rating') && (
                     <label className="field">
                       <span>Theme</span>
                       <select
@@ -965,6 +982,28 @@ export default function CoachAssignments() {
                           </option>
                         ))}
                       </select>
+                    </label>
+                  )}
+
+                  {form.puzzleMode === 'theme_rating' && (
+                    <label className="field">
+                      <span>Difficulty</span>
+                      <select
+                        value={`${form.puzzleMinRating}-${form.puzzleMaxRating}`}
+                        onChange={e => {
+                          const [mn, mx] = e.target.value.split('-');
+                          update('puzzleMinRating', mn);
+                          update('puzzleMaxRating', mx);
+                        }}
+                      >
+                        {RATING_BANDS.map(b => (
+                          <option key={b.min} value={`${b.min}-${b.max}`}>{b.label}</option>
+                        ))}
+                      </select>
+                      <small style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>
+                        Puzzles come from this range, not from the student's own rating —
+                        so a beginner gets easy puzzles on the theme you are teaching.
+                      </small>
                     </label>
                   )}
 

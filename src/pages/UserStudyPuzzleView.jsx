@@ -14,6 +14,20 @@ import { useAnalysisTree } from '../hooks/useAnalysisTree';
 import AnalysisMoveTree from '../components/AnalysisMoveTree';
 import SolutionText from '../components/SolutionText';
 
+// ── Full-screen board layout budget ────────────────────────────────────────
+// These pages render OUTSIDE UserLayout (see App.jsx), so there is no sidebar
+// to subtract — the whole viewport belongs to the study. The board is sized by
+// arithmetic over these numbers rather than by measuring the DOM, so it is
+// correct on the very first paint with no resize flash.
+const SHELL_W = 0;             // no persistent sidebar on this route
+const PAGE_PAD_X = 16;         // st.page horizontal padding, per side
+const PAGE_PAD_TOP = 8;        // st.page padding-top
+const PAGE_PAD_BOTTOM = 8;     // st.page padding-bottom
+const LEFT_W = 260;            // positions list column
+const RIGHT_W = 340;           // analysis / solution column
+const COL_GAP = 12;            // gap between the three columns
+const BOARD_CARD_CHROME = 20;  // board card's own padding (top 0 + bottom 10 + border)
+
 // Shared look for the inline "annotate this position" editor (creator only).
 const metaInputStyle = {
   width: '100%',
@@ -70,6 +84,7 @@ const UserStudyPuzzleView = () => {
   const [showPuzzleList, setShowPuzzleList] = useState(false);
   const [boardOrientation, setBoardOrientation] = useState('white');
   const [boardWidth, setBoardWidth] = useState(380);
+
 
   // Study owner + create position modal state
   const [studyOwnerId, setStudyOwnerId] = useState(null);
@@ -144,14 +159,36 @@ const UserStudyPuzzleView = () => {
       if (w <= 480)       setBoardWidth(Math.min(340, w - 40));
       else if (w <= 768)  setBoardWidth(Math.min(420, w - 60));
       else if (w <= 1024) setBoardWidth(Math.min(460, Math.floor(w * 0.36)));
-      // Desktop: was capped at 560px, so the board never grew on big monitors.
-      // Raised to 720 so a wide screen gets a big board; laptops are unchanged
-      // because w*0.36 (≈520 at 1440px) is the binding value below the cap.
-      else                setBoardWidth(Math.min(720, Math.floor(w * 0.36)));
+      else {
+        // FULL-SCREEN BOARD (chess.com style).
+        //
+        // The page no longer scrolls: it is exactly one viewport tall, so the
+        // board should take every pixel of height the layout is not already
+        // using. Previously the board was capped at 900 and sized from a `top`
+        // measured on a scrolling page, which left a wide empty band under the
+        // board on tall screens and a small board on short ones.
+        //
+        // Width budget: the shell sidebar + page gutters + the two side panels.
+        // No 1600px container cap any more — on a wide monitor that cap was
+        // throwing away centre width for nothing.
+        const centre = w - SHELL_W - PAGE_PAD_X * 2 - LEFT_W - RIGHT_W - COL_GAP * 2;
+        // Height budget: viewport minus the page's own vertical padding and the
+        // board card's padding. Everything else in the centre column (FEN bar,
+        // control buttons) scrolls inside that column, so it does not reserve
+        // height from the board.
+        const byHeight = window.innerHeight - PAGE_PAD_TOP - PAGE_PAD_BOTTOM - BOARD_CARD_CHROME;
+        setBoardWidth(Math.max(360, Math.floor(Math.min(centre, byHeight))));
+      }
     };
     update();
+    // Nothing is measured from the DOM any more — the budget is pure arithmetic
+    // over the layout constants — so a single pass plus resize is enough.
     window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
+    window.addEventListener('orientationchange', update);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('orientationchange', update);
+    };
   }, []);
 
   /* ── fetch ───────────────────────────────────── */
@@ -528,30 +565,45 @@ const UserStudyPuzzleView = () => {
 
   /* ── styles (identical structure to StudyPuzzleView) ── */
   const st = {
-    page: { fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", background: 'var(--color-bg)', minHeight: '100vh', padding: '8px 20px 20px 20px', position: 'relative', overflow: 'hidden' },
+    // FULL-SCREEN: the page is exactly one viewport tall and never scrolls.
+    // Each column scrolls inside itself instead, so the board can own the
+    // full height without the controls below it pushing the page taller.
+    page: { fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif", background: 'var(--color-bg)', height: isMobile ? 'auto' : '100dvh', minHeight: isMobile ? '100vh' : 0, padding: isMobile ? '8px 20px 20px 20px' : `${PAGE_PAD_TOP}px ${PAGE_PAD_X}px ${PAGE_PAD_BOTTOM}px ${PAGE_PAD_X}px`, position: 'relative', overflow: 'hidden', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' },
     bg: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: `radial-gradient(circle at 30% 20%, ${currentColor.bgColor} 0%, transparent 50%), radial-gradient(circle at 70% 60%, rgba(99,102,241,0.08) 0%, transparent 50%)`, pointerEvents: 'none', zIndex: 0 },
     grid: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundImage: `linear-gradient(${currentColor.accentColor} 1px, transparent 1px), linear-gradient(90deg, ${currentColor.accentColor} 1px, transparent 1px)`, backgroundSize: '50px 50px', pointerEvents: 'none', zIndex: 0, opacity: 0.5 },
-    container: { maxWidth: '1600px', margin: '0 auto', position: 'relative', zIndex: 1 },
-    header: { textAlign: 'center', marginBottom: 10, position: 'relative' },
-    backButton: { position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, zIndex: 2 },
+    // No 1600px cap on desktop: on a wide monitor that cap threw away centre
+    // width and shrank the board for nothing.
+    container: { maxWidth: isMobile ? '1600px' : 'none', width: '100%', margin: '0 auto', position: 'relative', zIndex: 1, flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' },
+    // The header holds only absolutely-positioned buttons, so its height is
+    // whatever the tallest one is (~45px). Pinning it keeps the row from
+    // reserving more than the button needs — the board is height-limited here,
+    // so every pixel above it comes straight off the board.
+    // On desktop the header collapses to nothing: its only desktop control
+    // (Back to Chapters) moves into the left column, so no horizontal band sits
+    // above the board stealing height from it. On mobile it still holds the
+    // list toggle, so it keeps its row there.
+    header: { textAlign: 'center', marginBottom: isMobile ? 6 : 0, position: 'relative', minHeight: isMobile ? 46 : 0, display: isMobile ? 'block' : 'none' },
+    backButton: { position: isMobile ? 'absolute' : 'static', left: 0, top: isMobile ? '50%' : 'auto', transform: isMobile ? 'translateY(-50%)' : 'none', width: isMobile ? 'auto' : '100%', justifyContent: isMobile ? 'flex-start' : 'center', marginBottom: isMobile ? 0 : 12, flexShrink: 0, padding: isMobile ? '12px 24px' : '9px 14px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, zIndex: 2 },
     toggleButton: { position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', padding: '12px 24px', background: 'var(--color-surface)', backdropFilter: 'blur(20px)', color: 'var(--color-text)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-xl)', cursor: 'pointer', fontSize: 14, fontWeight: 600, display: isMobile ? 'flex' : 'none', alignItems: 'center', gap: 8, zIndex: 2 },
-    mainContent: { display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 0, minHeight: 600 },
-    leftPanel: { flex: isMobile ? 'none' : '0 0 300px', display: isMobile && !showPuzzleList ? 'none' : 'flex', flexDirection: 'column', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: 16, overflowY: 'auto', maxHeight: isMobile ? 400 : 700, position: isMobile ? 'absolute' : 'static', top: isMobile ? 100 : 'auto', left: isMobile ? 20 : 'auto', right: isMobile ? 20 : 'auto', zIndex: isMobile ? 1000 : 'auto', boxShadow: isMobile ? '0 20px 60px var(--color-black-a50)' : 'none' },
+    mainContent: { display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? 0 : COL_GAP, minHeight: isMobile ? 600 : 0, flex: 1, alignItems: isMobile ? 'stretch' : 'stretch' },
+    leftPanel: { flex: isMobile ? 'none' : `0 0 ${LEFT_W}px`, display: isMobile && !showPuzzleList ? 'none' : 'flex', flexDirection: 'column', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: 16, overflowY: 'auto', maxHeight: isMobile ? 400 : 'none', height: isMobile ? 'auto' : '100%', minHeight: 0, boxSizing: 'border-box', position: isMobile ? 'absolute' : 'static', top: isMobile ? 100 : 'auto', left: isMobile ? 20 : 'auto', right: isMobile ? 20 : 'auto', zIndex: isMobile ? 1000 : 'auto', boxShadow: isMobile ? '0 20px 60px var(--color-black-a50)' : 'none' },
     tableHeaderRow: { borderBottom: `2px solid ${currentColor.color}40` },
     tableHeader: { padding: '5px 8px', textAlign: 'center', fontSize: 12, fontWeight: 700, color: currentColor.color, letterSpacing: '0.5px', textTransform: 'uppercase' },
     tableRow: { borderBottom: '1px solid var(--color-white-a04)', cursor: 'pointer', transition: 'all 0.3s' },
     tableRowActive: { background: currentColor.accentColor, boxShadow: `0 4px 12px ${currentColor.accentColor}` },
     tableCell: { padding: '5px 8px', textAlign: 'center', fontSize: 13, fontWeight: 600, color: 'var(--color-text-muted)' },
     tableCellName: { padding: '5px 8px', textAlign: 'left', fontSize: 13, fontWeight: 600, color: 'var(--color-text)' },
-    centerPanel: { flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: isMobile ? 0 : '0 0 0 8px', order: isMobile ? -1 : 0 },
-    chessboardContainer: { marginBottom: 24, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: '0px 10px 10px 10px' },
+    // justifyContent flex-start (not centre): the board already fills the
+    // height, and centring made a tall centre column drift the board down.
+    centerPanel: { flex: isMobile ? 'none' : 1, width: isMobile ? '100%' : 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: 0, order: isMobile ? -1 : 0, minWidth: 0, minHeight: 0, overflowY: isMobile ? 'visible' : 'auto' },
+    chessboardContainer: { marginBottom: isMobile ? 24 : 10, flexShrink: 0, background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: '0px 10px 10px 10px' },
     controlButtons: { display: 'flex', gap: 8, marginTop: 20, flexWrap: 'wrap', justifyContent: 'center' },
     btn: { padding: '12px 24px', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', cursor: 'pointer', fontSize: 15, fontWeight: 600, transition: 'all 0.3s', background: 'var(--color-surface)', backdropFilter: 'blur(10px)', color: 'var(--color-text)', display: 'flex', alignItems: 'center', gap: 8 },
     navBtn: { borderColor: currentColor.color + '40', color: currentColor.color },
     navBtnDisabled: { background: 'rgba(23,23,23,0.8)', borderColor: 'var(--color-white-a04)', color: 'var(--color-text-faint)', cursor: 'not-allowed' },
     resetBtn: { borderColor: 'var(--color-text-muted)', color: 'var(--color-text-muted)' },
     solBtn: { background: currentColor.accentColor, borderColor: currentColor.color + '60', color: 'var(--color-text)' },
-    rightPanel: { flex: isMobile ? 'none' : '0 0 350px', width: isMobile ? '100%' : 'auto', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: 24, overflowY: 'auto', maxHeight: isMobile ? 'none' : 700, order: isMobile ? 1 : 0 },
+    rightPanel: { flex: isMobile ? 'none' : `0 0 ${RIGHT_W}px`, width: isMobile ? '100%' : 'auto', background: 'var(--color-surface)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-2xl)', backdropFilter: 'blur(20px)', padding: isMobile ? 24 : 18, overflowY: 'auto', maxHeight: 'none', height: isMobile ? 'auto' : '100%', minHeight: 0, boxSizing: 'border-box', order: isMobile ? 1 : 0 },
     turnIndicator: { display: 'flex', alignItems: 'center', gap: 12, padding: 16, background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', marginBottom: 20 },
     movesContainer: { background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a07)', borderRadius: 'var(--radius-lg)', padding: 20, marginBottom: 20, minHeight: 180 },
     sectionTitle: { fontSize: 16, fontWeight: 700, color: currentColor.color, marginBottom: 16, letterSpacing: '-0.5px' },
@@ -711,12 +763,14 @@ const UserStudyPuzzleView = () => {
       <div style={st.container}>
         {/* Header */}
         <div style={st.header}>
-          <motion.button
-            style={st.backButton}
-            onClick={() => navigate(`/public-studies/${id}`)}
-            initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.4 }}
-            whileHover={{ x: -4, background: currentColor.accentColor, borderColor: currentColor.color + '40', boxShadow: `0 8px 32px ${currentColor.accentColor}` }}
-          >← Back to Chapters</motion.button>
+          {isMobile && (
+            <motion.button
+              style={st.backButton}
+              onClick={() => navigate(`/public-studies/${id}`)}
+              initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.4 }}
+              whileHover={{ x: -4, background: currentColor.accentColor, borderColor: currentColor.color + '40', boxShadow: `0 8px 32px ${currentColor.accentColor}` }}
+            >← Back to Chapters</motion.button>
+          )}
 
           {isMobile && (
             <motion.button
@@ -737,8 +791,16 @@ const UserStudyPuzzleView = () => {
           {/* Left Panel – puzzle list */}
           {(!isMobile || showPuzzleList) && (
             <motion.div style={st.leftPanel} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
+              {!isMobile && (
+                <button
+                  style={{ ...st.backButton, ...st.navBtn }}
+                  onClick={() => navigate(`/public-studies/${id}`)}
+                >← Back to Chapters</button>
+              )}
               <div style={{ fontSize: 13, fontWeight: 700, color: currentColor.color, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 14, flexShrink: 0 }}>Positions</div>
-              <div style={{ overflowX: 'auto' }}>
+              {/* The list is the flexible, scrolling part of the column so the
+                  Back button and the "Positions" heading stay pinned. */}
+              <div style={{ overflowX: 'auto', overflowY: 'auto', flex: isMobile ? 'none' : 1, minHeight: 0 }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={st.tableHeaderRow}>

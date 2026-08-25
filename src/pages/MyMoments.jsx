@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
+import EnginePanel from '../components/EnginePanel';
 import api from '../api';
 import './MyMoments.css';
 
@@ -73,6 +74,17 @@ export default function MyMoments() {
   const [explainText, setExplainText] = useState('');
   const [explainAI, setExplainAI] = useState(false);
   const [explaining, setExplaining] = useState(false);
+  // ── Free play ("explore") after the moment is answered ────────────────────
+  // Once the student has solved or revealed, the board stops being a quiz and
+  // becomes a study board: they can play on from the position to see WHY the
+  // move works — the question every student asks next ("what if I play it?").
+  // exploreLine is the SAN list played since the puzzle position, so the moves
+  // can be listed and taken back one at a time.
+  const [exploring, setExploring] = useState(false);
+  const [exploreLine, setExploreLine] = useState([]);
+  // Engine is OFF by default and only ever offered AFTER the answer is known,
+  // so it can never be used as a hint on the student's own blunder.
+  const [engineOn, setEngineOn] = useState(false);
   const reloadRef = useRef(null);
 
   const load = async (which = filter, cat = category) => {
@@ -111,6 +123,8 @@ export default function MyMoments() {
   const showPuzzle = (p) => {
     setActive(p); setFen(p.fen); setFeedback(null); setPlayedMove(null); setRevealed(false);
     setExplainText(p.explanation || ''); setExplainAI(!!p.explanationIsAI); setExplaining(false);
+    // Explore mode never survives a move to another position.
+    setExploring(false); setExploreLine([]); setEngineOn(false);
   };
   const openPuzzle = (p) => {
     // Freeze the order the student sees at the moment they start solving.
@@ -123,6 +137,7 @@ export default function MyMoments() {
     const solvedAny = session.some(p => p.solved) || revealed;
     setActive(null); setSession([]); setFen(null); setFeedback(null); setPlayedMove(null); setRevealed(false);
     setExplainText(''); setExplainAI(false); setExplaining(false);
+    setExploring(false); setExploreLine([]); setEngineOn(false);
     if (solvedAny) load(filter, category);
   };
 
@@ -173,7 +188,61 @@ export default function MyMoments() {
     finally { setExplaining(false); }
   };
 
+  // The position the student is exploring FROM: the puzzle position itself.
+  // Rebuilt from active.fen + exploreLine so takeback is just a shorter list.
+  const exploreChessFrom = (line) => {
+    const chess = new Chess(active.fen);
+    for (const san of line) {
+      try { if (!chess.move(san, { sloppy: true })) break; } catch (e) { break; }
+    }
+    return chess;
+  };
+
+  // Free-play move. Accepts ANY legal move for EITHER side so the student can
+  // play out both sides of the line and see what the opponent's best reply is.
+  const handleExploreDrop = (from, to) => {
+    if (!active) return false;
+    const chess = exploreChessFrom(exploreLine);
+    let move;
+    try {
+      const piece = chess.get(from);
+      const promotion = piece && piece.type === 'p' && (to[1] === '8' || to[1] === '1') ? 'q' : undefined;
+      move = chess.move({ from, to, promotion });
+    } catch (e) { return false; }
+    if (!move) return false;
+    setExploreLine(line => [...line, move.san]);
+    setFen(chess.fen());
+    return true;
+  };
+
+  // Start exploring from the puzzle position (not from wherever the board sits,
+  // which after a solve is one move deep — the student wants to try the move
+  // themselves, so hand them the original position back).
+  const startExploring = () => {
+    if (!active) return;
+    setExploring(true);
+    setExploreLine([]);
+    setFen(active.fen);
+  };
+
+  // Back to the puzzle position, keeping explore mode on.
+  const resetExplore = () => {
+    if (!active) return;
+    setExploreLine([]);
+    setFen(active.fen);
+  };
+
+  // Take back a single move.
+  const undoExplore = () => {
+    if (!active || !exploreLine.length) return;
+    const line = exploreLine.slice(0, -1);
+    setExploreLine(line);
+    setFen(exploreChessFrom(line).fen());
+  };
+
   const handleDrop = (from, to) => {
+    // After the answer is known the board is a study board, not a quiz.
+    if (exploring) return handleExploreDrop(from, to);
     if (!active || feedback === 'correct') return false;
     const chess = new Chess(active.fen);
     let move;
@@ -347,8 +416,51 @@ export default function MyMoments() {
             <button className="mm-modal-close" onClick={closePuzzle}>✕</button>
             <div className="mm-modal-body">
               <div className="mm-modal-board">
-                <Chessboard position={fen} boardWidth={420} draggable={feedback !== 'correct'}
+                <Chessboard position={fen} boardWidth={420}
+                  draggable={exploring || feedback !== 'correct'}
                   onDrop={handleDrop} orientation={active.sideToMove} />
+
+                {/* ── Study board: only ever AFTER the answer is known ──────
+                    The engine is deliberately unavailable until the moment is
+                    solved or revealed, so it cannot be used as a hint on the
+                    student's own blunder (same rule as Blunder Hunt). */}
+                {(feedback === 'correct' || revealed) && (
+                  exploring ? (
+                    <div className="mm-explore">
+                      <div className="mm-explore-bar">
+                        <span className="mm-explore-hint">
+                          Free play — move for either side to see what happens.
+                        </span>
+                        <div className="mm-explore-actions">
+                          <button className="mm-explore-btn" onClick={undoExplore}
+                            disabled={!exploreLine.length}>↶ Take back</button>
+                          <button className="mm-explore-btn" onClick={resetExplore}
+                            disabled={!exploreLine.length}>⟲ Start position</button>
+                          <button className="mm-explore-btn" onClick={() => { setExploring(false); setExploreLine([]); setFen(active.fen); setEngineOn(false); }}>✕ Exit</button>
+                        </div>
+                      </div>
+
+                      {exploreLine.length > 0 && (
+                        <div className="mm-explore-line">
+                          {exploreLine.map((san, i) => (
+                            <span key={i} className="mm-explore-move">{san}</span>
+                          ))}
+                        </div>
+                      )}
+
+                      <EnginePanel
+                        fen={fen}
+                        enabled={engineOn}
+                        onToggle={() => setEngineOn(v => !v)}
+                        numLines={3}
+                      />
+                    </div>
+                  ) : (
+                    <button className="mm-explore-start" onClick={startExploring}>
+                      ♟ Play it out — free board + engine
+                    </button>
+                  )
+                )}
               </div>
               <div className="mm-modal-side">
                 <h3>{themeLabel(active.theme)}</h3>

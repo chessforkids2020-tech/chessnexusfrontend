@@ -116,9 +116,31 @@ class StockfishService {
       // Store multipv lines: { [k]: { move, score, type } }
       const lines = {}; 
 
-      const messageId = `bestmove_${this.messageId++}`;
+      // GENERATION GUARD — same rule analyzePosition already uses.
+      //
+      // The worker is SHARED. Without this, a second getBestMove starting while
+      // a first was still running left BOTH callbacks registered, and the single
+      // `bestmove` the engine emitted resolved both promises. The next search
+      // then waited for a message that had already been consumed, so the board
+      // sat on "Computer is thinking…" until the page was reloaded (a reload
+      // gives a fresh worker and an empty callback map, which is exactly why
+      // reloading "fixed" it).
+      //
+      // Bump a counter, drop every older bestmove handler, and ignore anything
+      // that arrives for a superseded generation.
+      this._bestMoveGen = (this._bestMoveGen || 0) + 1;
+      const gen = this._bestMoveGen;
+      for (const key of [...this.callbacks.keys()]) {
+        if (String(key).startsWith('bestmove_')) this.callbacks.delete(key);
+      }
+
+      const messageId = `bestmove_${gen}`;
+      let settled = false;
       
       const messageHandler = (message) => {
+        // A superseded search must never resolve this promise, and must never
+        // consume a `bestmove` that belongs to the current one.
+        if (gen !== this._bestMoveGen) return;
         // Parse info lines for MultiPV
         if (message.startsWith('info') && message.includes('score') && message.includes('pv')) {
            // Parse multipv index (default to 1 if not present)
@@ -173,6 +195,8 @@ class StockfishService {
           }
           
           this.callbacks.delete(messageId);
+          if (settled) return;
+          settled = true;
           resolve({
             bestMove,
             ponderMove,
@@ -197,8 +221,12 @@ class StockfishService {
       this.sendCommand(`position fen ${fen}`);
       this.sendCommand(`go depth ${depth} movetime ${moveTime}`);
 
-      // Timeout fallback
+      // Timeout fallback. Only fires for a search that is still the current one
+      // and has not already settled — otherwise a superseded search's timeout
+      // would reject a promise the caller already resolved.
       setTimeout(() => {
+        if (settled) return;
+        settled = true;
         this.callbacks.delete(messageId);
         reject(new Error('Analysis timeout'));
       }, moveTime + 5000);

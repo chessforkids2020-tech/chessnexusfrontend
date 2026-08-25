@@ -55,15 +55,32 @@ export default function useClassEngineGame({ socket, sessionId, myBoard, skillLe
     setThinking(true);
 
     (async () => {
+      // ONE RETRY. A single failed search used to leave the board waiting for a
+      // move that would never come, and the only way out was a page reload —
+      // which is what students were doing. A transient failure (a timeout while
+      // the shared worker was busy) now heals itself.
+      const search = async () => stockfishService.getBestMove(myBoard.fen, {
+        // Short think time: this is a classroom, not a serious game, and a
+        // 2s pause per move on 12 laptops feels like the app has hung.
+        moveTime: 600,
+        depth: 12,
+        skill: skillLevel,
+      });
+
       try {
         await stockfishService.init?.();
-        const res = await stockfishService.getBestMove(myBoard.fen, {
-          // Short think time: this is a classroom, not a serious game, and a
-          // 2s pause per move on 12 laptops feels like the app has hung.
-          moveTime: 600,
-          depth: 12,
-          skill: skillLevel,
-        });
+        let res;
+        try {
+          res = await search();
+        } catch (firstErr) {
+          if (cancelled) return;
+          // Reset the engine before trying again: the previous search may have
+          // left it mid-think.
+          try { stockfishService.stop?.(); } catch { /* ignore */ }
+          await new Promise(r => setTimeout(r, 250));
+          if (cancelled) return;
+          res = await search();
+        }
         const uci = res?.bestMove;
         if (cancelled || !uci) return;
         socket.emit('engine:move', {
@@ -77,11 +94,26 @@ export default function useClassEngineGame({ socket, sessionId, myBoard, skillLe
         // Engine unavailable (old device, WASM blocked). The board simply waits
         // rather than breaking the whole class — the coach can end the activity.
       } finally {
-        if (!cancelled) { busyRef.current = false; setThinking(false); }
+        // ALWAYS release the lock, even when this run was superseded.
+        //
+        // This used to be guarded by `if (!cancelled)`, so a run that was
+        // cancelled mid-search left `thinking` true forever — the board showed
+        // "Computer is thinking…" with nothing left to finish it. The engine
+        // service now ignores superseded searches on its own, so releasing here
+        // is safe and is what lets the next move start.
+        busyRef.current = false;
+        if (!cancelled) setThinking(false);
       }
     })();
 
-    return () => { cancelled = true; busyRef.current = false; };
+    return () => {
+      cancelled = true;
+      busyRef.current = false;
+      // Stop the in-flight search at the engine too. Leaving it running meant
+      // its late `bestmove` could still arrive and be mistaken for the next
+      // search's answer.
+      stockfishService.stop?.();
+    };
   }, [socket, sessionId, myBoard?.id, myBoard?.fen, myBoard?.status, myTurn, skillLevel]);
 
   return { playMove, thinking, isMyTurn: myTurn() };

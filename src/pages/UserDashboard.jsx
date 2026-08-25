@@ -417,12 +417,12 @@ function XpWallet({ wallet }) {
   const [showHelp, setShowHelp] = React.useState(false);
 
   const helpRows = [
-    { icon: '🧩', text: 'Every puzzle (daily, healthy mix, theme, rating, pieces)', xp: '+2 XP' },
+    { icon: '🧩', text: 'Every puzzle (daily, healthy mix, theme, rating, pieces)', xp: '+5 XP' },
     { icon: '🎮', text: 'Every game (Tic-Tac-Toe, Bingo)', xp: '+2 XP' },
     { icon: '🏁', text: 'Every race in the Race Hub (5–30 min races)', xp: '+5 XP' },
     { icon: '🔍', text: 'Every game analysis you run', xp: '+3 XP' },
-    { icon: '⚔️', text: 'Every Arena Tournament game you play', xp: '+3 XP' },
-    { icon: '🤝', text: 'Inviting a friend who joins', xp: '+10 XP' },
+    { icon: '⚔️', text: 'Every Arena Tournament game you play', xp: '+5 XP' },
+    { icon: '🤝', text: 'Inviting a friend who joins', xp: '+30 XP' },
     { icon: '💜', text: 'Accepting a friend (both of you earn it)', xp: '+2 XP' },
   ];
 
@@ -506,8 +506,8 @@ function XpWallet({ wallet }) {
 // ─── Game Ratings card ───────────────────────────────────────────────────────
 // ─── Stats Bar ───────────────────────────────────────────────────────────────
 // One horizontal card right below the welcome card.
-// 4 sections: bullet / blitz / rapid / classical Elo ratings.
-// Last (5th) slot: reserved for chess960 — added later.
+// 5 sections: bullet / blitz / rapid / classical Elo ratings, then the
+// Replay Training points total (an accumulating score, not an Elo).
 function StatsBar({ ratings }) {
   const [ratingDeltas, setRatingDeltas] = React.useState({});
 
@@ -579,9 +579,36 @@ function StatsBar({ ratings }) {
               </div>
             );
           })()}
-          {i < ratingCats.length - 1 && divider}
+          {divider}
         </React.Fragment>
       ))}
+
+      {/* Section 5: Replay Training points.
+          Not an Elo — it only accumulates — so it has no delta and starts at 0
+          rather than 1200, and it links straight into the trainer. */}
+      <div
+        onClick={() => { window.location.href = '/replay-training'; }}
+        style={{
+          flex: '1 1 0', minWidth: 0,
+          padding: '14px 12px',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          gap: 3, cursor: 'pointer',
+          transition: 'background 0.15s',
+        }}
+        onMouseEnter={e => e.currentTarget.style.background = 'var(--color-white-a04)'}
+        onMouseLeave={e => e.currentTarget.style.background = ''}
+      >
+        <span style={{ fontSize: 20 }}>🎬</span>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 5 }}>
+          <span style={{ fontSize: 22, fontWeight: 800, lineHeight: 1, color: 'var(--color-text)' }}>
+            {ratings?.replay ?? 0}
+          </span>
+        </div>
+        <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          Replay
+        </span>
+      </div>
 
     </div>
   );

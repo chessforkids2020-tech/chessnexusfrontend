@@ -1421,16 +1421,42 @@ export default function ArenaTournamentLive() {
                       {crown && <span title={`${crown.label}`} style={{ fontSize: '13px', flexShrink: 0, filter: `drop-shadow(${crown.glow})` }}>{crown.emoji}</span>}
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0, color: crown?.color || 'var(--color-text)', fontWeight: crown ? '700' : '600', textShadow: crown ? `0 0 8px ${crown.color}88` : 'none' }}><PlayerName displayName={p.displayName} username={p.username} userId={p.userId} /></span>
                       {/* Chess960 has no rating — show only display name + points. */}
-                      {tournament?.tournamentType !== 'chess960' && (
-                        <span title="Tournament rating" style={{ fontSize: '10px', fontWeight: '700', color: 'var(--color-text-muted)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}>
-                          {p.tournamentRating ?? 1200}
-                          {p.tournamentRatingChange ? (
-                            <span style={{ marginLeft: '2px', color: p.tournamentRatingChange > 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
-                              {p.tournamentRatingChange > 0 ? `+${p.tournamentRatingChange}` : p.tournamentRatingChange}
+                      {tournament?.tournamentType !== 'chess960' && (() => {
+                        // SHOW THE PLAYER'S REAL RATING, like the lobby does.
+                        //
+                        // This used to print `tournamentRating`, which by design
+                        // starts at 1200 for EVERY player and only drifts as
+                        // games are played. So the lobby showed real, varied bot
+                        // ratings and the live page showed a wall of 1200s — the
+                        // ratings looked like they collapsed the moment the
+                        // tournament started. `ratingAtJoin` is the frozen real
+                        // rating (marathons keep one per phase) and is already
+                        // sent by /details, so we match the lobby exactly.
+                        const isMarathon = tournament?.tournamentType === 'bullet_blitz_marathon';
+                        const inBlitzPhase = isMarathon && (tournament?.currentPhase ?? 0) >= 1;
+                        const real = isMarathon
+                          ? (inBlitzPhase ? p.blitzRatingAtJoin : p.bulletRatingAtJoin)
+                          : p.ratingAtJoin;
+                        const realLabel = isMarathon
+                          ? (inBlitzPhase ? 'Blitz rating when joined' : 'Bullet rating when joined')
+                          : 'Rating when joined';
+                        return (
+                          <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--color-text-muted)', flexShrink: 0, fontVariantNumeric: 'tabular-nums', display: 'inline-flex', gap: '4px' }}>
+                            {real != null && <span title={realLabel}>{real}</span>}
+                            {/* The per-tournament Elo still matters (it is what the
+                                arena pairs and ranks on), so keep it — but as the
+                                secondary number, in brackets, never alone. */}
+                            <span title="Tournament rating" style={{ opacity: 0.75 }}>
+                              {real != null ? '(' : ''}{p.tournamentRating ?? 1200}
+                              {p.tournamentRatingChange ? (
+                                <span style={{ marginLeft: '2px', color: p.tournamentRatingChange > 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
+                                  {p.tournamentRatingChange > 0 ? `+${p.tournamentRatingChange}` : p.tournamentRatingChange}
+                                </span>
+                              ) : null}{real != null ? ')' : ''}
                             </span>
-                          ) : null}
-                        </span>
-                      )}
+                          </span>
+                        );
+                      })()}
                       {p.earlyBirdBonus && <span title="Early Bird: +3 pts" style={{ fontSize: '11px', flexShrink: 0 }}>🐦</span>}
                       {p.carryBonusApplied > 0 && <span title={`Carry Bonus: +${p.carryBonusApplied} pts`} style={{ fontSize: '11px', flexShrink: 0 }}>🎁</span>}
                       {p.comebackSurgeActive && <span title="Comeback Surge ready!" style={{ fontSize: '11px', flexShrink: 0 }}>⚡</span>}

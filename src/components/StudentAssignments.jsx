@@ -104,6 +104,11 @@ export default function StudentAssignments({ onLoaded, only }) {
       navigate(`/training/healthy-mix?${q}`);
       return;
     }
+    // Theme AND a fixed difficulty band — the backend applies both filters.
+    if (a.puzzleMode === 'theme_rating' && a.puzzleTheme && a.puzzleMinRating && a.puzzleMaxRating) {
+      navigate(`/training/healthy-mix?theme=${encodeURIComponent(a.puzzleTheme)}&min=${a.puzzleMinRating}&max=${a.puzzleMaxRating}&${q}`);
+      return;
+    }
     if (a.puzzleMode === 'theme' && a.puzzleTheme) {
       navigate(`/training/healthy-mix?theme=${encodeURIComponent(a.puzzleTheme)}&${q}`);
       return;

@@ -10,6 +10,7 @@ const AuthContext = createContext({
   loginAsGuest: () => {},
   logout: () => {},
   refreshUser: () => {},
+  applyUserPatch: () => {},
   loading: true,
   isAuthenticated: false,
   isAdmin: false,
@@ -172,6 +173,19 @@ export function AuthProvider({ children }) {
     socket.disconnect();
   };
 
+  // Merge known-good fields straight into the cached user.
+  //
+  // Save endpoints already return the updated user, so a save can show the new
+  // value WITHOUT waiting on a refetch. Used alongside refreshUser (not instead
+  // of it): this makes the UI correct immediately, the refetch then reconciles
+  // anything the server computed. Without it the panel depended entirely on the
+  // refetch, which is what made a saved Lichess / Chess.com username appear
+  // only after a reload.
+  const applyUserPatch = (patch) => {
+    if (!patch) return;
+    setUser(prev => (prev ? { ...prev, ...patch } : prev));
+  };
+
   // Expose a safe refreshUser that runs silently by default (no spinner)
   const refreshUser = async () => {
     try {
@@ -186,6 +200,7 @@ export function AuthProvider({ children }) {
     loginAsGuest,
     logout,
     refreshUser,
+    applyUserPatch,
     loading,
     isAuthenticated: !!user && user.role !== 'guest',
     isAdmin: user?.role === 'admin',

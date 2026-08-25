@@ -3169,7 +3169,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const engineJoin  = () => { if (session) socket.emit('engine:join',  { sessionId: session.id }); };
   const engineStart = () => { if (session) socket.emit('engine:start', { sessionId: session.id }); };
   const engineFocus = (boardId) => { if (session) socket.emit('engine:focus', { sessionId: session.id, boardId }); };
-  const engineEnd   = () => { if (session) socket.emit('engine:end',   { sessionId: session.id }); setEngineGame(null); };
+  // End play but KEEP the boards on screen for review. Clearing the state here
+  // was why a coach could review games while they ran, then had nothing left the
+  // moment they ended the activity. The server keeps them too (engine:end no
+  // longer deletes the session's games), so a reconnect still gets them.
+  const engineEnd   = () => { if (session) socket.emit('engine:end',   { sessionId: session.id }); };
+  // Explicitly clear the finished activity once the coach is done reviewing.
+  const engineClear = () => setEngineGame(null);
 
   const simulCreate = (coachColor) => { if (session) socket.emit('simul:create', { sessionId: session.id, coachColor }); };
   const simulJoin = () => { if (session) socket.emit('simul:join', { sessionId: session.id }); setSimulJoinRequest(false); };
@@ -3973,7 +3979,12 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // same way a simul does — the coach watches every board, a student plays their
   // own. Sits beside simul in precedence; both yield to a screen share.
   const engineActive = engineGame?.status === 'active';
-  const engineOnStage = engineActive && !remoteScreen && !simulOnStage;
+  // Once the coach ends the activity the games are FINISHED but still on screen,
+  // so the coach can walk through each student's game. Previously `ended` hid
+  // the whole grid, which is why only the game that happened to be open could be
+  // reviewed. Students drop back to normal class view (see engineOnStage below).
+  const engineEnded = engineGame?.status === 'ended' && (engineGame?.boards?.length > 0);
+  const engineOnStage = (engineActive || (engineEnded && isHost)) && !remoteScreen && !simulOnStage;
   // My own board, when I am a student in an engine game.
   const myEngineBoard = (engineGame?.boards || []).find(
     b => String(b.studentId) === String(myIdRef.current)) || null;
@@ -4550,6 +4561,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
             <EngineCoachStage
               game={engineGame}
               onReview={reviewEngineBoard}
+              onClear={engineClear}
               // The engine grid owns the whole stage, so size it from the STAGE,
               // not from `boardWidth`. That is the teaching board's own
               // (user-resizable, 420-720) width, and clamping to it kept every

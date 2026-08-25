@@ -7,6 +7,21 @@ import FenCopyBar from '../../components/FenCopyBar';
 import { Chess } from 'chess.js';
 import { motion } from 'framer-motion';
 
+// ── Full-screen board layout budget ────────────────────────────────────────
+// This route renders OUTSIDE UserLayout (see App.jsx), so there is no sidebar
+// to subtract — the whole viewport belongs to the study. Sized by arithmetic
+// over these constants rather than by measuring the DOM, so the board is right
+// on the first paint with no resize flash.
+const SHELL_W = 0;             // no persistent sidebar on this route
+const PAGE_PAD_X = 16;         // page horizontal padding, per side
+const PAGE_PAD_TOP = 8;
+const PAGE_PAD_BOTTOM = 8;
+const LEFT_W = 220;            // positions list column
+const RIGHT_W = 340;           // solution / moves column
+const COL_GAP = 12;
+const BOARD_CARD_CHROME = 20;  // board card padding + border
+
+
 const StudyPuzzleView = () => {
   const { studyId, chapterId } = useParams();
   const navigate = useNavigate();
@@ -113,13 +128,28 @@ const StudyPuzzleView = () => {
       } else if (width <= 1024) {
         setBoardWidth(Math.min(520, Math.floor(width * 0.40)));
       } else {
-        setBoardWidth(Math.min(600, Math.floor(width * 0.40)));
+        // FULL-SCREEN BOARD (chess.com style).
+        //
+        // The page is now exactly one viewport tall and does not scroll, so the
+        // board takes every pixel of height the layout is not already using.
+        // The old version capped the board at 900, subtracted a 170px sidebar
+        // that this route does not render, and measured `top` on a scrolling
+        // page — all of which shrank the board for no reason.
+        const centre = width - SHELL_W - PAGE_PAD_X * 2 - LEFT_W - RIGHT_W - COL_GAP * 2;
+        const byHeight = window.innerHeight - PAGE_PAD_TOP - PAGE_PAD_BOTTOM - BOARD_CARD_CHROME;
+        setBoardWidth(Math.max(360, Math.floor(Math.min(centre, byHeight))));
       }
     };
     
     updateBoardSize();
+    // Nothing is measured from the DOM any more — the budget is pure arithmetic
+    // over the layout constants — so one pass plus resize is enough.
     window.addEventListener('resize', updateBoardSize);
-    return () => window.removeEventListener('resize', updateBoardSize);
+    window.addEventListener('orientationchange', updateBoardSize);
+    return () => {
+      window.removeEventListener('resize', updateBoardSize);
+      window.removeEventListener('orientationchange', updateBoardSize);
+    };
   }, []);
 
   const fetchData = async () => {
@@ -447,13 +477,19 @@ const StudyPuzzleView = () => {
   };
 
   const styles = {
+    // FULL-SCREEN: exactly one viewport tall, never scrolls. Each column
+    // scrolls inside itself so the board can own the full height.
     page: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       background: 'var(--color-bg)',
-      minHeight: '100vh',
-      padding: '8px 20px 20px 20px',
+      height: isMobile ? 'auto' : '100dvh',
+      minHeight: isMobile ? '100vh' : 0,
+      padding: isMobile ? '8px 20px 20px 20px' : `${PAGE_PAD_TOP}px ${PAGE_PAD_X}px ${PAGE_PAD_BOTTOM}px ${PAGE_PAD_X}px`,
       position: 'relative',
       overflow: 'hidden',
+      boxSizing: 'border-box',
+      display: 'flex',
+      flexDirection: 'column',
     },
     background: {
       position: 'fixed',
@@ -484,23 +520,36 @@ const StudyPuzzleView = () => {
       zIndex: 0,
       opacity: 0.5,
     },
+    // No 1600px cap on desktop: it threw away centre width on wide monitors.
     container: {
-      maxWidth: '1600px',
+      maxWidth: isMobile ? '1600px' : 'none',
+      width: '100%',
       margin: '0 auto',
       position: 'relative',
       zIndex: 1,
+      flex: 1,
+      minHeight: 0,
+      display: 'flex',
+      flexDirection: 'column',
     },
+    // Collapses to nothing on desktop: its Back button moves into the left
+    // column so no band above the board steals height from it.
     header: {
       textAlign: 'center',
-      marginBottom: '10px',
+      marginBottom: isMobile ? '10px' : 0,
       position: 'relative',
+      display: isMobile ? 'block' : 'none',
     },
     backButton: {
-      position: 'absolute',
+      position: isMobile ? 'absolute' : 'static',
       left: 0,
-      top: '50%',
-      transform: 'translateY(-50%)',
-      padding: '12px 24px',
+      top: isMobile ? '50%' : 'auto',
+      transform: isMobile ? 'translateY(-50%)' : 'none',
+      width: isMobile ? 'auto' : '100%',
+      justifyContent: 'center',
+      marginBottom: isMobile ? 0 : '12px',
+      flexShrink: 0,
+      padding: isMobile ? '12px 24px' : '9px 14px',
       background: 'var(--color-surface)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
@@ -541,19 +590,25 @@ const StudyPuzzleView = () => {
     mainContent: {
       display: 'flex',
       flexDirection: isMobile ? 'column' : 'row',
-      gap: '0px',
-      minHeight: '600px',
+      gap: isMobile ? '0px' : `${COL_GAP}px`,
+      minHeight: isMobile ? '600px' : 0,
+      flex: 1,
+      alignItems: 'stretch',
     },
     leftPanel: {
-      flex: isMobile ? 'none' : '0 0 220px',
-      display: isMobile && !showPuzzleList ? 'none' : 'block',
+      flex: isMobile ? 'none' : `0 0 ${LEFT_W}px`,
+      display: isMobile && !showPuzzleList ? 'none' : 'flex',
+      flexDirection: 'column',
+      boxSizing: 'border-box',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a07)',
       borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(20px)',
-      padding: '24px',
+      padding: isMobile ? '24px' : '16px',
       overflowY: 'auto',
-      maxHeight: isMobile ? '400px' : '700px',
+      maxHeight: isMobile ? '400px' : 'none',
+      height: isMobile ? 'auto' : '100%',
+      minHeight: 0,
       position: isMobile ? 'absolute' : 'static',
       top: isMobile ? '100px' : 'auto',
       left: isMobile ? '20px' : 'auto',
@@ -568,10 +623,15 @@ const StudyPuzzleView = () => {
       marginBottom: '20px',
       letterSpacing: '-0.5px',
     },
+    // The list is the flexible, scrolling part of the left column so the
+    // Back button above it stays pinned.
     puzzleTable: {
       width: '100%',
       overflowX: 'auto',
-      marginTop: '16px',
+      overflowY: 'auto',
+      marginTop: isMobile ? '16px' : 0,
+      flex: isMobile ? 'none' : 1,
+      minHeight: 0,
     },
     table: {
       width: '100%',
@@ -619,11 +679,15 @@ const StudyPuzzleView = () => {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'flex-start',
-      padding: isMobile ? '0' : '0 0 0 20px',
+      padding: 0,
       order: isMobile ? -1 : 0,
+      minWidth: 0,
+      minHeight: 0,
+      overflowY: isMobile ? 'visible' : 'auto',
     },
     chessboardContainer: {
-      marginBottom: '24px',
+      marginBottom: isMobile ? '24px' : '10px',
+      flexShrink: 0,
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a07)',
       borderRadius: 'var(--radius-2xl)',
@@ -673,15 +737,18 @@ const StudyPuzzleView = () => {
       color: 'var(--color-text)',
     },
     rightPanel: {
-      flex: isMobile ? 'none' : '0 0 350px',
+      flex: isMobile ? 'none' : `0 0 ${RIGHT_W}px`,
       width: isMobile ? '100%' : 'auto',
       background: 'var(--color-surface)',
       border: '1px solid var(--color-white-a07)',
       borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(20px)',
-      padding: '24px',
+      padding: isMobile ? '24px' : '18px',
       overflowY: 'auto',
-      maxHeight: isMobile ? 'none' : '700px',
+      maxHeight: 'none',
+      height: isMobile ? 'auto' : '100%',
+      minHeight: 0,
+      boxSizing: 'border-box',
       order: isMobile ? 1 : 0,
     },
     turnIndicator: {
@@ -849,21 +916,23 @@ const StudyPuzzleView = () => {
       <div style={styles.gridPattern}></div>
       <div style={styles.container}>
         <div style={styles.header}>
-          <motion.button
-            style={styles.backButton}
-            onClick={() => navigate(`/study/learn/${studyId}`)}
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            whileHover={{ 
-              x: -4,
-              background: currentColor.accentColor,
-              borderColor: `${currentColor.color}40`,
-              boxShadow: `0 8px 32px ${currentColor.accentColor}`,
-            }}
-          >
-            <span>←</span> Back to Chapters
-          </motion.button>
+          {isMobile && (
+            <motion.button
+              style={styles.backButton}
+              onClick={() => navigate(`/study/learn/${studyId}`)}
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.4 }}
+              whileHover={{ 
+                x: -4,
+                background: currentColor.accentColor,
+                borderColor: `${currentColor.color}40`,
+                boxShadow: `0 8px 32px ${currentColor.accentColor}`,
+              }}
+            >
+              <span>←</span> Back to Chapters
+            </motion.button>
+          )}
 
           {isMobile && (
             <motion.button
@@ -902,6 +971,14 @@ const StudyPuzzleView = () => {
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
+              {!isMobile && (
+                <button
+                  style={{ ...styles.backButton, ...styles.navigationButton }}
+                  onClick={() => navigate(`/study/learn/${studyId}`)}
+                >
+                  <span>←</span> Back to Chapters
+                </button>
+              )}
               <div style={styles.puzzleTable}>
                 <table style={styles.table}>
                   <thead>

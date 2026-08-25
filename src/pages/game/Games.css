@@ -524,13 +524,7 @@
   font-size: 18px;
   font-weight: 600;
   color: var(--color-text);
-  margin: 0 0 4px 0;
-}
-
-.play-option-subtitle {
-  color: var(--color-text-muted);
-  font-size: 13px;
-  line-height: 1.4;
+  /* No bottom margin: nothing follows it any more (the subtitle is gone). */
   margin: 0;
 }
 
@@ -546,21 +540,40 @@
   transform: translateX(4px);
 }
 
-/* Horizontal play-options row below the hero banner */
+/* Play-options grid below the hero banner — THREE PER ROW.
+   As a 4-across flex row the cards were narrow enough that titles wrapped onto
+   two lines ("Play vs / Stockfish"); three wider columns let each title sit on
+   one line, and the 4th card wraps onto a second row. */
 .games-play-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
   position: relative;
   z-index: 2;
-  flex-wrap: wrap;
 }
 
 .play-option-card--row {
-  flex: 1 1 0;
-  min-width: 240px;
+  min-width: 0;
+  /* Single-line cards: less padding and a smaller icon, so the row stays short
+     and the content below it is not pushed off the screen. */
+  padding: 14px 16px;
+}
+.play-option-card--row .play-option-icon {
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+}
+.play-option-card--row .play-option-title {
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+/* Two per row on mid-width screens, before the single column kicks in. */
+@media (max-width: 1024px) {
+  .games-play-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* On hover the row cards lift rather than slide sideways */
@@ -569,13 +582,9 @@
 }
 
 @media (max-width: 640px) {
-  .games-play-row { flex-direction: column; }
-  /* Stacked (column) cards must NOT flex-shrink — `flex: 1 1 0` squeezed each
-     card to ~34px and clipped its subtitle. Let each card take its content height. */
-  .play-option-card--row {
-    flex: 0 0 auto;
-    min-height: 64px;
-  }
+  /* Single column on phones. */
+  .games-play-row { grid-template-columns: minmax(0, 1fr); }
+  .play-option-card--row { min-height: 64px; }
 }
 
 /* Info Card */

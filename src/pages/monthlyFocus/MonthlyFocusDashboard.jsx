@@ -551,8 +551,12 @@ export default function MonthlyFocusDashboard() {
         </motion.div>
       )}
 
-      {/* ← Back to challenges */}
-      <div style={{ marginBottom: '16px' }}>
+      {/* ← Back to challenges.
+          Constrained to the same 1400px column as the hero card below it and
+          given a small margin: as a full-width row with 16px under it, this one
+          small link was reserving a whole band of empty space above the page's
+          real content. */}
+      <div style={{ maxWidth: '1400px', margin: '0 auto 10px' }}>
         <Link
           to="/monthly-focus"
           style={{

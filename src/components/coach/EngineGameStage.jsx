@@ -12,9 +12,10 @@ import Chessboard, { gutterFor } from '../Chessboard';
 import useClassEngineGame from '../../hooks/useClassEngineGame';
 
 // ── COACH: every student's board at once, click one to spotlight it ──────────
-export function EngineCoachStage({ game, boardWidth, onFocus, onEnd, onReview }) {
+export function EngineCoachStage({ game, boardWidth, onFocus, onEnd, onReview, onClear }) {
   const boards = game?.boards || [];
   const done = boards.filter(b => b.status === 'finished').length;
+  const ended = game?.status === 'ended';
 
   // How wide each board may be.
   //
@@ -46,13 +47,28 @@ export function EngineCoachStage({ game, boardWidth, onFocus, onEnd, onReview })
 
   return (
     <div style={S.wrap}>
+      {/* After the coach ends play the boards STAY so every student's game can
+          be walked through — the activity is over, the games are not. */}
       <div style={S.head}>
-        <span style={S.title}>♟️ Class vs Computer</span>
-        <span style={S.meta}>
-          {boards.length} playing · {done} finished · {game?.skill || 'medium'}
+        <span style={S.title}>
+          {ended ? '♟️ Games to review' : '♟️ Class vs Computer'}
         </span>
-        <button type="button" style={S.endBtn} onClick={onEnd}>End activity</button>
+        <span style={S.meta}>
+          {ended
+            ? `${boards.length} game${boards.length === 1 ? '' : 's'} · ${game?.skill || 'medium'}`
+            : `${boards.length} playing · ${done} finished · ${game?.skill || 'medium'}`}
+        </span>
+        {ended
+          ? <button type="button" style={S.endBtn} onClick={onClear}>Close review</button>
+          : <button type="button" style={S.endBtn} onClick={onEnd}>End activity</button>}
       </div>
+
+      {ended && (
+        <div style={S.reviewHint}>
+          Play is over. Hit <b>🔎 Review</b> on any game to load it on the teaching
+          board — the whole class follows along.
+        </div>
+      )}
 
       {/* Every board live. The coach is watching, not playing, so these are
           small and read-only — the point is spotting who is stuck. */}
@@ -205,6 +221,10 @@ const S = {
   head: { display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', justifyContent: 'center' },
   title: { fontSize: 16, fontWeight: 800, color: '#f8fafc' },
   meta: { fontSize: 12.5, color: '#9ca3af' },
+  reviewHint: {
+    fontSize: 12.5, color: '#9ca3af', textAlign: 'center',
+    margin: '2px 0 6px', lineHeight: 1.5,
+  },
   endBtn: {
     background: 'rgba(248,113,113,0.15)', border: '1px solid rgba(248,113,113,0.4)',
     color: '#fca5a5', borderRadius: 'var(--radius-md)', padding: '5px 12px', fontSize: 12,

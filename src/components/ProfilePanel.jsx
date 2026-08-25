@@ -133,7 +133,7 @@ const styles = {
 };
 
 export default function ProfilePanel() {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, applyUserPatch } = useAuth();
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState('');
@@ -192,7 +192,15 @@ export default function ProfilePanel() {
   const handleStartEditLichess = () => { setEditLichessValue(user.lichessUsername || ''); setIsEditingLichess(true); };
   const handleSaveLichess = async () => {
     setIsSavingLichess(true);
-    try { await api.put('/api/auth/profile', { lichessUsername: editLichessValue }); await refreshUser(); setIsEditingLichess(false); }
+    try {
+      // Apply the value the SERVER stored (normalised/trimmed), not the raw
+      // input, so the panel shows the new name immediately instead of waiting
+      // on the refetch — the reason a saved name used to appear only on reload.
+      const res = await api.put('/api/auth/profile', { lichessUsername: editLichessValue });
+      applyUserPatch({ lichessUsername: res?.data?.user?.lichessUsername ?? editLichessValue.trim().toLowerCase() });
+      setIsEditingLichess(false);
+      await refreshUser();
+    }
     catch (e) { alert(e.response?.data?.message || 'Failed to update Lichess username'); }
     finally { setIsSavingLichess(false); }
   };
@@ -200,7 +208,12 @@ export default function ProfilePanel() {
   const handleStartEditChessCom = () => { setEditChessComValue(user.chessComUsername || ''); setIsEditingChessCom(true); };
   const handleSaveChessCom = async () => {
     setIsSavingChessCom(true);
-    try { await api.put('/api/auth/profile', { chessComUsername: editChessComValue }); await refreshUser(); setIsEditingChessCom(false); }
+    try {
+      const res = await api.put('/api/auth/profile', { chessComUsername: editChessComValue });
+      applyUserPatch({ chessComUsername: res?.data?.user?.chessComUsername ?? editChessComValue.trim().toLowerCase() });
+      setIsEditingChessCom(false);
+      await refreshUser();
+    }
     catch (e) { alert(e.response?.data?.message || 'Failed to update Chess.com username'); }
     finally { setIsSavingChessCom(false); }
   };

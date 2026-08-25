@@ -167,3 +167,42 @@
 }
 .mm-nav-next:hover:not(:disabled) { color: #04121a; filter: brightness(1.08); }
 .mm-nav-count { font-size: 12px; color: var(--color-text-muted); font-weight: 700; }
+
+/* ── Study board: free play + engine, after the moment is answered ─────────
+   Constrained to the board's width so the engine readout sits under the board
+   instead of stretching the modal's flex row. */
+.mm-explore-start {
+  margin-top: 12px; width: 420px; max-width: 100%;
+  padding: 10px 16px; border-radius: var(--radius-md); cursor: pointer;
+  font-weight: 800; font-size: 13.5px;
+  background: var(--color-white-a04); color: var(--color-accent);
+  border: 1px solid var(--color-accent-a40);
+}
+.mm-explore-start:hover { background: var(--color-accent-a12); }
+
+.mm-explore { width: 420px; max-width: 100%; margin-top: 12px; }
+.mm-explore-bar {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  justify-content: space-between; margin-bottom: 8px;
+}
+.mm-explore-hint { font-size: 12px; color: var(--color-text-muted); }
+.mm-explore-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.mm-explore-btn {
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a13);
+  color: var(--color-text); padding: 5px 10px; border-radius: var(--radius-md);
+  font-size: 12px; font-weight: 700; cursor: pointer;
+}
+.mm-explore-btn:hover:not(:disabled) { background: var(--color-white-a07); }
+.mm-explore-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.mm-explore-line {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;
+  background: var(--color-black-a35); border-radius: var(--radius-md); padding: 8px;
+}
+.mm-explore-move {
+  background: var(--color-white-a07); border-radius: var(--radius-sm);
+  padding: 2px 7px; font-size: 12.5px; font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .mm-explore, .mm-explore-start { width: 100%; }
+}

@@ -1,0 +1,291 @@
+/* Play vs Stockfish — setup screen + game screen.
+   Theme tokens only, so it follows light/dark like the rest of the app. */
+
+.pvs-page {
+  /* Renders inside UserLayout (sidebar + its own scroll container), so fill the
+     available height rather than forcing a full viewport, which would overflow. */
+  min-height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: 20px 16px 40px;
+  box-sizing: border-box;
+}
+
+/* ── Setup ─────────────────────────────────────────────────────────────── */
+.pvs-setup { max-width: 860px; margin: 0 auto; }
+
+.pvs-head { text-align: center; margin-bottom: 26px; }
+.pvs-head h1 { margin: 0 0 6px; font-size: 30px; font-weight: 800; }
+.pvs-head p { margin: 0; color: var(--color-text-muted); font-size: 14px; }
+
+.pvs-section { margin-bottom: 26px; }
+.pvs-section h2 {
+  margin: 0 0 10px; font-size: 13px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.6px; color: var(--color-text-muted);
+}
+
+.pvs-grid {
+  display: grid; gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+.pvs-grid--levels { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.pvs-grid--side   { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+
+.pvs-chip {
+  display: flex; flex-direction: column; gap: 3px; align-items: flex-start;
+  padding: 12px 14px; cursor: pointer; text-align: left;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-text);
+  transition: border-color 0.15s, background 0.15s;
+}
+.pvs-chip:hover { background: var(--color-surface-2); }
+.pvs-chip.is-on {
+  border-color: var(--color-accent);
+  background: var(--color-accent-a15);
+}
+.pvs-chip--wide { grid-column: 1 / -1; }
+.pvs-chip-label { font-size: 15px; font-weight: 700; }
+.pvs-chip-sub { font-size: 11.5px; color: var(--color-text-muted); }
+
+.pvs-posrow { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.pvs-fen {
+  flex: 1; min-width: 0; font-size: 11px; color: var(--color-text-muted);
+  background: var(--color-black-a35); padding: 7px 10px; border-radius: var(--radius-md);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.pvs-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 30px; }
+
+.pvs-btn {
+  padding: 10px 18px; border-radius: var(--radius-md); cursor: pointer;
+  font-size: 14px; font-weight: 700; border: 1px solid var(--color-border);
+  background: var(--color-surface); color: var(--color-text);
+}
+.pvs-btn:hover { background: var(--color-surface-2); }
+.pvs-btn--primary {
+  background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg);
+}
+.pvs-btn--primary:hover { filter: brightness(1.08); }
+.pvs-btn--ghost { background: transparent; }
+
+/* ── Modal (position editor) ───────────────────────────────────────────── */
+.pvs-modal-overlay {
+  position: fixed; inset: 0; z-index: 5000;
+  background: var(--color-black-a65);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 24px; overflow-y: auto;
+}
+.pvs-modal {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl); padding: 18px;
+  width: 100%; max-width: 980px; margin: auto;
+}
+
+/* ── Game ──────────────────────────────────────────────────────────────── */
+/* Two columns like the Play-with-a-Friend room: board takes all remaining
+   width on the left, a fixed 320px card on the right. */
+/* Almost no headroom: UserLayout's .user-main-content already contributes
+   16px of padding above this page, so any top padding here stacks on top of it
+   and pushes the board down. Keep the sides/bottom, drop the top. */
+.pvs-page--game { padding: 0 16px 12px; overflow: hidden; }
+
+/* Board column sized to the BOARD, not to the leftover width.
+   The board is usually limited by HEIGHT, so a `1fr` column stayed full width
+   while the board inside it shrank — dumping all the slack between the board
+   and the move card (~200px on a windowed browser, ~20px only when the width
+   happened to be the limit). `max-content` collapses the column onto the board
+   itself, and `justify-content: center` keeps the pair centred on the page. */
+.pvs-game {
+  max-width: 1400px; margin: 0 auto;
+  display: grid; grid-template-columns: max-content 320px;
+  justify-content: center;
+  gap: 16px; align-items: start;
+}
+/* Board only — no padding, so it fills the column edge to edge. */
+.pvs-board-col { display: block; line-height: 0; min-width: 0; }
+/* Positioning context for the game-over popup. */
+.pvs-board-wrap { position: relative; }
+
+/* Game-over popup, laid over the board like the friend room's result overlay. */
+.pvs-result-overlay {
+  position: absolute; inset: 0; z-index: 5;
+  background: var(--color-black-a65);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; text-align: center; line-height: 1.4;
+  border-radius: var(--radius-lg); border: 1px solid var(--color-border);
+}
+.pvs-result-overlay h3 { margin: 0; font-size: 28px; color: var(--color-accent); }
+.pvs-result-overlay p { margin: 0; font-size: 15px; color: var(--color-text); }
+.pvs-result-overlay .pvs-result-line { font-size: 13px; color: var(--color-text-muted); }
+.pvs-result-overlay .pvs-side-actions { margin-top: 14px; }
+.pvs-result-dismiss {
+  margin-top: 4px; background: none; border: none; cursor: pointer;
+  color: var(--color-text-muted); font-size: 13px; font-weight: 600;
+  text-decoration: underline; padding: 6px;
+}
+.pvs-result-dismiss:hover { color: var(--color-text); }
+
+/* Player strip: name left, clock right. Lives in the RIGHT card, above and
+   below the move list. */
+.pvs-player {
+  width: 100%; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-md);
+  background: var(--color-black-a35);
+  border: 1px solid var(--color-border);
+}
+.pvs-player.is-active {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent-a30);
+}
+.pvs-player-name {
+  font-size: 14px; font-weight: 700; color: var(--color-text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pvs-player-name em { font-style: normal; font-weight: 500; color: var(--color-text-faint); font-size: 12px; }
+.pvs-player-clock {
+  font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums;
+  color: var(--color-accent); flex-shrink: 0;
+}
+
+.pvs-side {
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl); padding: 16px; box-sizing: border-box;
+}
+
+.pvs-alert {
+  padding: 8px 12px; border-radius: var(--radius-md); font-size: 12.5px;
+  background: var(--color-black-a35); color: var(--color-text-muted);
+}
+.pvs-alert--bad { background: var(--color-danger-a12); color: var(--color-danger); }
+
+.pvs-turn {
+  padding: 10px 12px; border-radius: var(--radius-md); font-weight: 700; font-size: 14px;
+  background: var(--color-black-a35);
+}
+/* Fixed-height scroll area, like the friend room's move list: the card keeps a
+   constant height so adding moves never reflows the column. */
+.pvs-moves {
+  flex: 0 0 auto; height: 300px; overflow-y: auto;
+  background: var(--color-black-a35);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  padding: 6px;
+}
+.pvs-moves::-webkit-scrollbar { width: 8px; }
+.pvs-moves::-webkit-scrollbar-track { background: var(--color-black-a35); border-radius: var(--radius-sm); }
+.pvs-moves::-webkit-scrollbar-thumb { background: var(--color-accent-a40); border-radius: var(--radius-sm); }
+.pvs-moves-empty { color: var(--color-text-faint); font-size: 13px; text-align: center; padding: 16px 0; }
+
+.pvs-move-row {
+  display: grid; grid-template-columns: 32px 1fr 1fr; align-items: center;
+  padding: 2px 4px; border-radius: var(--radius-sm); font-size: 14px;
+}
+.pvs-move-row:nth-child(odd) { background: var(--color-white-a04); }
+.pvs-move-no { color: var(--color-text-faint); font-size: 12px; }
+.pvs-move-san {
+  text-align: left; background: none; border: none; cursor: pointer;
+  color: var(--color-text); font-weight: 600; font-variant-numeric: tabular-nums;
+  padding: 3px 6px; border-radius: var(--radius-sm); transition: background .1s;
+}
+button.pvs-move-san:hover { background: var(--color-accent-a15); }
+button.pvs-move-san.active { background: var(--color-accent-a30); }
+
+/* Nav strip, attached flush under the move list. */
+.pvs-nav {
+  display: flex; margin-top: -10px;   /* cancel the card gap so it sits flush */
+  background: var(--color-black-a35);
+  border: 1px solid var(--color-border); border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md); overflow: hidden;
+}
+.pvs-nav-btn {
+  flex: 1; height: 38px; cursor: pointer; font-size: 15px;
+  background: none; color: var(--color-text); border: none;
+  border-right: 1px solid var(--color-border); transition: background .12s;
+}
+.pvs-nav-btn:last-child { border-right: none; }
+.pvs-nav-btn:hover:not(:disabled) { background: var(--color-accent-a20); }
+.pvs-nav-btn:disabled { opacity: .35; cursor: default; }
+
+/* Player strip: name left, clock right. Lives in the RIGHT card, above and
+   below the move list. */
+.pvs-player {
+  width: 100%; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-md);
+  background: var(--color-black-a35);
+  border: 1px solid var(--color-border);
+}
+.pvs-player.is-active {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent-a30);
+}
+.pvs-player-name {
+  font-size: 14px; font-weight: 700; color: var(--color-text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pvs-player-name em { font-style: normal; font-weight: 500; color: var(--color-text-faint); font-size: 12px; }
+.pvs-player-clock {
+  font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums;
+  color: var(--color-accent); flex-shrink: 0;
+}
+
+.pvs-side {
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl); padding: 16px; box-sizing: border-box;
+}
+
+.pvs-alert {
+  padding: 8px 12px; border-radius: var(--radius-md); font-size: 12.5px;
+  background: var(--color-black-a35); color: var(--color-text-muted);
+}
+.pvs-alert--bad { background: var(--color-danger-a12); color: var(--color-danger); }
+
+.pvs-turn {
+  padding: 10px 12px; border-radius: var(--radius-md); font-weight: 700; font-size: 14px;
+  background: var(--color-black-a35);
+}
+/* Fixed-height scroll area, like the friend room's move list: the card keeps a
+   constant height so adding moves never reflows the column. */
+.pvs-moves {
+  flex: 0 0 auto; height: 300px; overflow-y: auto;
+  background: var(--color-black-a35); border-radius: var(--radius-md);
+  padding: 10px; font-size: 13px; line-height: 1.9;
+}
+.pvs-moves-empty { color: var(--color-text-faint); font-size: 12.5px; }
+.pvs-move { margin-right: 8px; font-variant-numeric: tabular-nums; }
+.pvs-move b { color: var(--color-text-faint); font-weight: 700; margin-right: 2px; }
+
+/* Icon-only controls: one compact row. */
+.pvs-side-actions { display: flex; gap: 6px; }
+.pvs-icon-btn {
+  /* Fixed short height, NOT aspect-ratio: with `flex: 1 1 0` and only three
+     buttons sharing the card, a 1:1 ratio made each one as tall as it was wide
+     (~95px), which is why they dominated the column. */
+  flex: 1 1 0; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; line-height: 1; cursor: pointer;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.pvs-icon-btn:hover { background: var(--color-white-a10); border-color: var(--color-border-strong); }
+.pvs-icon-btn:active { transform: scale(0.94); }
+.pvs-icon-btn--primary {
+  background: var(--color-accent); border-color: var(--color-accent); color: var(--color-bg);
+}
+.pvs-icon-btn--primary:hover { filter: brightness(1.08); background: var(--color-accent); }
+
+@media (max-width: 900px) {
+  .pvs-page--game { overflow: visible; }
+  /* Single column: board first, then the card. */
+  .pvs-game { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .pvs-side { width: 100%; max-width: 560px; }
+}

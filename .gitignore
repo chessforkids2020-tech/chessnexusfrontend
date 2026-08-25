@@ -43,3 +43,10 @@ public/part1.csv
 
 # Stray Windows reserved-name file
 nul.css
+
+# Raw PGN archives — source data for scripts/buildReplayGames.js.
+# Multi-hundred-MB files must never be committed or shipped to the browser:
+# anything under public/ is bundled into dist/ and served to every visitor.
+public/replay-traning/
+public/replay-games-raw/
+*.pgn

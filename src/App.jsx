@@ -202,6 +202,7 @@ import ImmortalGames from './pages/masterGames/ImmortalGames';
 import AllPlayers from './pages/masterGames/AllPlayers';
 import Play from './pages/game/Play';
 import PlayWithStockfish from './pages/game/PlayWithStockfish';
+import ReplayTraining from './pages/game/ReplayTraining';
 import GameAnalysis from './pages/GameAnalysis';
 import ArcadeHome from './pages/arcade/ArcadeHome';
 import ArcadeLobby from './pages/arcade/ArcadeLobby';
@@ -1580,6 +1581,13 @@ export default function App() {
         <Route path="/play/ai" element={
           <UserLayout>
             <PlayWithStockfish />
+          </UserLayout>
+        } />
+        <Route path="/replay-training" element={
+          <UserLayout>
+            <ProtectedRoute>
+              <ReplayTraining />
+            </ProtectedRoute>
           </UserLayout>
         } />
         <Route path="/game/live/:gameId" element={

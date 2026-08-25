@@ -242,13 +242,21 @@ export default function CoachArenaTournamentLive() {
                       <td className="cst-player">{i + 1}</td>
                       <td className="cst-player">{p.displayName || p.username}</td>
                       <td className="cst-num"><strong>{p.score || 0}</strong></td>
+                      {/* Real rating first (the coach wants to know how strong
+                          the player actually is); the per-tournament Elo — which
+                          starts at 1200 for everyone — follows in brackets. */}
                       <td className="cst-num">
-                        {p.tournamentRating ?? '—'}
-                        {chg !== 0 && (
-                          <span style={{ color: chg > 0 ? '#6ee7b7' : '#f87171', fontSize: 11, marginLeft: 3 }}>
-                            {chg > 0 ? `+${chg}` : chg}
-                          </span>
+                        {p.ratingAtJoin != null && (
+                          <span title="Rating when joined">{p.ratingAtJoin} </span>
                         )}
+                        <span title="Tournament rating" style={{ opacity: 0.75 }}>
+                          {p.ratingAtJoin != null ? '(' : ''}{p.tournamentRating ?? '—'}
+                          {chg !== 0 && (
+                            <span style={{ color: chg > 0 ? '#6ee7b7' : '#f87171', fontSize: 11, marginLeft: 3 }}>
+                              {chg > 0 ? `+${chg}` : chg}
+                            </span>
+                          )}{p.ratingAtJoin != null ? ')' : ''}
+                        </span>
                       </td>
                       <td className="cst-num" style={{ color: '#6ee7b7' }}>{p.wins || 0}</td>
                       <td className="cst-num" style={{ color: '#f87171' }}>{p.losses || 0}</td>
