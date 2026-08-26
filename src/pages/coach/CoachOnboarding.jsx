@@ -19,7 +19,7 @@ const MAX_DISCOUNT_PCT = 50;
 export default function CoachOnboarding() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, isGuest } = useAuth();
 
   const [step, setStep] = useState('prompt'); // 'prompt' | 'form'
   const [form, setForm] = useState({
@@ -99,6 +99,34 @@ export default function CoachOnboarding() {
       setSubmitting(false);
     }
   };
+
+  // A guest cannot become a coach: the account is ephemeral and unverified, and
+  // coaches appear in a public directory parents choose from. Blocked here as
+  // well as on the server so a guest is told BEFORE filling in the whole form
+  // rather than after submitting it.
+  if (isGuest) {
+    return (
+      <div className="coach-onboard-wrap">
+        <div className="coach-onboard-card">
+          <div className="coach-onboard-emoji">🎓</div>
+          <h1 className="coach-onboard-title">Create an account to coach</h1>
+          <p className="coach-onboard-sub">
+            You are signed in as a guest. Coaching needs a real account — your
+            students, classes and directory profile are all tied to it, and a
+            guest account is temporary.
+          </p>
+          <div className="coach-onboard-actions">
+            <button className="btn-primary" onClick={() => navigate('/signup-request')}>
+              Create a free account
+            </button>
+            <button className="btn-ghost" onClick={() => navigate('/dashboard')}>
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="coach-onboard-wrap">

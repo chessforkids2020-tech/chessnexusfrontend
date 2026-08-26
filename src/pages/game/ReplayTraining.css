@@ -289,8 +289,70 @@ button.rt-move-san.active { background: var(--color-accent-a30); }
   .rt-session { --rt-side-w: 400px; }
 }
 
+/* ── Phones and tablets ─────────────────────────────────────────────────
+   One column, and REORDERED: players and year first, then the board at full
+   width, then score, buttons, and the move list last.
+
+   The reorder is done with flex `order` rather than by moving the JSX, so the
+   desktop two-column layout is untouched and there is only one copy of the
+   markup to keep correct. */
 @media (max-width: 900px) {
-  .rt-page--game { overflow: visible; }
-  .rt-session { grid-template-columns: minmax(0, 1fr); justify-items: center; }
-  .rt-side { width: 100%; max-width: 560px; }
+  /* EDGE TO EDGE.
+     Zero side padding here, and a negative margin to cancel the padding
+     UserLayout puts around every page (--space-sm, 8px each side). Without
+     that second part the board could never exceed ~91% of the screen no
+     matter what this page did. */
+  .rt-page--game {
+    overflow: visible;
+    padding: 0 0 16px;
+    margin-left: calc(-1 * var(--space-sm));
+    margin-right: calc(-1 * var(--space-sm));
+  }
+
+  .rt-session {
+    display: flex; flex-direction: column;
+    max-width: none; gap: 10px;
+  }
+
+  /* The board column keeps its natural position (order 2) between the game
+     info and the score. */
+  /* Full width so the measured element IS the screen width — the board sizes
+     itself from this box. */
+  .rt-board-col { order: 2; width: 100%; align-self: stretch; }
+  .rt-results   { order: 3; width: 100%; box-sizing: border-box; margin-top: 0; }
+
+  /* The side card stops being a card: its children become siblings of the
+     board so each can be placed independently. */
+  .rt-side {
+    order: 4; width: 100%; max-width: none;
+    display: contents;               /* children participate in the column */
+  }
+
+  /* Everything EXCEPT the board keeps a small inset, so text is not jammed
+     against the screen edge. */
+  .rt-results, .rt-verdict-wrap, .rt-analysis, .rt-actions,
+  .rt-moves, .rt-nav, .rt-back-live, .rt-gameinfo {
+    margin-left: var(--space-sm);
+    margin-right: var(--space-sm);
+    width: calc(100% - var(--space-sm) * 2);
+  }
+
+  .rt-gameinfo {
+    order: 1;                        /* ABOVE the board */
+    box-sizing: border-box;
+    padding: 10px 12px; text-align: center;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+  .rt-gameinfo strong { white-space: normal; }
+
+  .rt-verdict-wrap { order: 5; width: 100%; }
+  .rt-analysis     { order: 6; width: 100%; box-sizing: border-box; }
+  .rt-actions      { order: 7; width: 100%; }
+
+  /* Moves last, as asked. */
+  .rt-moves    { order: 8; width: 100%; box-sizing: border-box; }
+  .rt-nav      { order: 9; width: 100%; box-sizing: border-box; margin-top: -10px; }
+  .rt-back-live{ order: 10; width: 100%; }
 }

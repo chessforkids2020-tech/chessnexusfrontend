@@ -5,7 +5,17 @@
 
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* TYPE SCALE.
+     --font-body    Poppins  — everything you read: paragraphs, labels, buttons.
+     --font-display Orbitron — titles only. A distinct display face is what makes
+                    a heading read as a heading; when both used the same system
+                    font, titles were only "bigger text".
+     Both fall back to the system stack, so nothing breaks if the webfont is
+     blocked or slow. */
+  --font-body: 'Poppins', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-display: 'Orbitron', 'Poppins', system-ui, Helvetica, Arial, sans-serif;
+
+  font-family: var(--font-body);
   line-height: 1.5;
   font-weight: 400;
 

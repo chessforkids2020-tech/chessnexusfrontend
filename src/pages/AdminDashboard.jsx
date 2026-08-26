@@ -371,7 +371,7 @@ function AvatarXpPrices() {
   const inputStyle = { width: 90, padding: 6, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)' };
 
   return (
-    <div style={{ ...styles.card, padding: 16, marginTop: 20, background: '#ffffff', border: '1px solid #e2e8f0' }}>
+    <div style={{ ...styles.card, padding: 16, background: '#ffffff', border: '1px solid #e2e8f0' }}>
       <h3 style={{ marginTop: 0, marginBottom: 4, color: '#0f172a' }}>👛 XP Prices</h3>
       <div style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
         Wallet XP a user spends to unlock these features (avatar tiers still unlock free via invite milestones).
@@ -473,7 +473,7 @@ function FoundingCoaches() {
   const inputStyle = { width: 90, padding: 6, border: '1px solid #cbd5e1', borderRadius: 'var(--radius-sm)' };
 
   return (
-    <div style={{ ...styles.card, padding: 16, marginTop: 20, background: '#ffffff', border: '1px solid #e2e8f0' }}>
+    <div style={{ ...styles.card, padding: 16, background: '#ffffff', border: '1px solid #e2e8f0' }}>
       <h3 style={{ marginTop: 0, marginBottom: 4, color: '#0f172a' }}>🏅 Founding coaches (first 50)</h3>
       <div style={{ fontSize: 13, color: '#64748b', marginBottom: 12 }}>
         Controls the “N spots left” counter on the public Coach page. Grant the free
@@ -588,7 +588,7 @@ function AdminDashboard() {
   // "Needs attention" counts for the top nav badges (like chat unread pips):
   // open reports, pending supporters, unverified coaches. Polled for a
   // near-real-time feel.
-  const [badgeCounts, setBadgeCounts] = useState({ reports: 0, supporters: 0, coaches: 0, titleClaims: 0, eventSubmissions: 0, feedback: 0 });
+  const [badgeCounts, setBadgeCounts] = useState({ reports: 0, supporters: 0, coaches: 0, titleClaims: 0, eventSubmissions: 0, feedback: 0, testimonials: 0, helpCenter: 0 });
   // Ids of items that "need attention" from the server; the coaches/supporters
   // pips count only the ones this admin hasn't dismissed by viewing the list.
   const [unverifiedCoachIds, setUnverifiedCoachIds] = useState([]);
@@ -606,6 +606,8 @@ function AdminDashboard() {
             titleClaims: r.data.titleClaims || 0,
             eventSubmissions: r.data.eventSubmissions || 0,
             feedback: r.data.feedback || 0,
+            testimonials: r.data.testimonials || 0,
+            helpCenter: r.data.helpCenter || 0,
           });
           setUnverifiedCoachIds(Array.isArray(r.data.coachIds) ? r.data.coachIds : []);
           setPendingSupporterIds(Array.isArray(r.data.supporterIds) ? r.data.supporterIds : []);
@@ -1343,15 +1345,6 @@ function AdminDashboard() {
           <button style={styles.secondaryBtn} onClick={openArenaCreateModal}>🏆 New Arena Tournament</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/monthly-focus')}>🎯 Monthly Focus</button>
           <button style={styles.secondaryBtn} onClick={() => nav('/admin/team-race')}>👥 Team Race</button>
-          <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/reports')}>
-            🚩 Reports{renderNavBadge(badgeCounts.reports)}
-          </button>
-          <button style={styles.secondaryBtn} onClick={() => nav('/admin/testimonials')}>
-            💬 Testimonials
-          </button>
-          <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/feedback')}>
-            💡 User Feedback{renderNavBadge(badgeCounts.feedback)}
-          </button>
           <button style={{ ...styles.secondaryBtn, position: 'relative' }} onClick={() => nav('/admin/supporters')}>
             ☕ Supporters{renderNavBadge(supporterBadge)}
           </button>
@@ -1366,9 +1359,52 @@ function AdminDashboard() {
         </div>
       </div>
 
-      <AvatarXpPrices />
+      {/* Side by side: two small, unrelated settings panels that each wasted a
+          full row on their own. auto-fit collapses them to one column under
+          ~700px. alignItems:start keeps the shorter card from stretching. */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+        gap: 16,
+        marginTop: 20,
+        alignItems: 'start',
+      }}>
+        <AvatarXpPrices />
+        <FoundingCoaches />
+      </div>
 
-      <FoundingCoaches />
+      {/* Inbox row — the four places where users are waiting on a reply.
+          Pulled out of the top toolbar (where they sat among navigation) and
+          given real counts, because "3 people are waiting" is the thing an
+          admin needs to see on arrival, not another button. Counts refresh
+          every 30s with the rest of the badges. */}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
+        {[
+          { to: '/admin/reports',      label: '🚩 Reports',      count: badgeCounts.reports },
+          { to: '/admin/testimonials', label: '💬 Testimonials', count: badgeCounts.testimonials },
+          { to: '/admin/feedback',     label: '💡 User Feedback', count: badgeCounts.feedback },
+          { to: '/admin/help-center',  label: '❓ Help Center',  count: badgeCounts.helpCenter },
+        ].map(item => {
+          const waiting = item.count > 0;
+          return (
+            <button
+              key={item.to}
+              onClick={() => nav(item.to)}
+              style={{
+                ...styles.secondaryBtn,
+                position: 'relative',
+                flex: '1 1 180px',
+                // Anything waiting gets a red edge and bold label, so a full
+                // inbox is visible without reading any of the numbers.
+                borderColor: waiting ? '#ef4444' : undefined,
+                fontWeight: waiting ? 700 : undefined,
+              }}
+            >
+              {item.label}{renderNavBadge(item.count)}
+            </button>
+          );
+        })}
+      </div>
 
       <div style={{
         ...styles.card,

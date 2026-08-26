@@ -214,7 +214,7 @@ export default function Footer() {
           </nav>
           <div className="footer-social">
             <a
-              href="https://www.instagram.com/chessnexus.in/"
+              href="https://www.instagram.com/chessnexus.in_official/"
               target="_blank"
               rel="noopener noreferrer me"
               aria-label="Chess Nexus on Instagram"

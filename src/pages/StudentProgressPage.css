@@ -479,3 +479,26 @@
   .sp-coachnote { padding: 16px; }
   .sp-coachnote-body { font-size: 14.5px; }
 }
+
+/* ── What they are learning ─────────────────────────────────────────────────
+   Sits between the verdict and the coach note. Deliberately typeset like prose
+   rather than like a stat card: it is the one part of the report a parent reads
+   as a sentence, not as a number. */
+.sp-learning-head {
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+.sp-learning-line {
+  margin: 0 0 10px;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: var(--color-text);
+  /* Same measure as the verdict detail — comfortable for reading aloud. */
+  max-width: 62ch;
+}
+.sp-learning-line:last-child { margin-bottom: 0; }

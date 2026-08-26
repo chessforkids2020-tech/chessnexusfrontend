@@ -81,6 +81,7 @@ import CoachRequests from "./pages/CoachRequests";
 import AdminReports from "./pages/AdminReports";
 import AdminTestimonials from "./pages/AdminTestimonials";
 import AdminFeedback from "./pages/AdminFeedback";
+import AdminHelpCenter from "./pages/AdminHelpCenter";
 
 import ArenaTournamentDashboard from "./pages/ArenaTournamentDashboard";
 
@@ -203,6 +204,7 @@ import AllPlayers from './pages/masterGames/AllPlayers';
 import Play from './pages/game/Play';
 import PlayWithStockfish from './pages/game/PlayWithStockfish';
 import ReplayTraining from './pages/game/ReplayTraining';
+import HelpCenter from './pages/HelpCenter';
 import GameAnalysis from './pages/GameAnalysis';
 import ArcadeHome from './pages/arcade/ArcadeHome';
 import ArcadeLobby from './pages/arcade/ArcadeLobby';
@@ -832,6 +834,16 @@ export default function App() {
             <div style={styles.content}>
               <ProtectedRoute requiredRole="admin">
                 <AdminFeedback />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
+        <Route path="/admin/help-center" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminHelpCenter />
               </ProtectedRoute>
             </div>
             <Footer />
@@ -1581,6 +1593,13 @@ export default function App() {
         <Route path="/play/ai" element={
           <UserLayout>
             <PlayWithStockfish />
+          </UserLayout>
+        } />
+        {/* Help Center — open to everyone, including logged-out visitors, since
+            "how does this work" is exactly what a prospective user asks. */}
+        <Route path="/help" element={
+          <UserLayout>
+            <HelpCenter />
           </UserLayout>
         } />
         <Route path="/replay-training" element={

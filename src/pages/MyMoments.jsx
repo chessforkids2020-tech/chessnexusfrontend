@@ -14,6 +14,10 @@ const MOMENT_CATEGORIES = [
   { key: 'tactics',     icon: '⚔',  label: 'Tactics' },
   { key: 'defence',     icon: '🛡', label: 'Defence' },
   { key: 'calculation', icon: '🧠', label: 'Calculation' },
+  // Phase buckets. 'middlegame' must be listed here or the weekly report's
+  // "Review your middlegame mistakes" link filters correctly but shows no
+  // matching chip, so the student cannot tell what they are looking at.
+  { key: 'middlegame',  icon: '🧩', label: 'Middlegame' },
   { key: 'endgames',    icon: '♟',  label: 'Endgames' },
   { key: 'opening',     icon: '📖', label: 'Opening' },
 ];

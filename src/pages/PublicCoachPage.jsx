@@ -193,7 +193,22 @@ export default function PublicCoachPage() {
 
         <div className="pc-head-tx">
           <h1 className="pc-name">
+            {/* FIDE title first, then the Nexus title (NC / NS / NX), then the
+                name — the same order <PlayerName> uses everywhere else, so a
+                coach reads as "NC Sara" here too. */}
             {c.title && <span className="pc-title">{c.title}</span>}
+            {c.nexusTitle && (
+              // Reuses the global .nexus-title style so the badge looks the same
+              // here as it does in every list rendered by <PlayerName>.
+              <span
+                className="nexus-title"
+                title={c.nexusTitle === 'NC'
+                  ? 'Nexus Coach — helps ChessNexus grow'
+                  : c.nexusTitle === 'NX'
+                    ? 'Nexus Expert — supports ChessNexus'
+                    : 'Nexus Supporter — supports ChessNexus'}
+              >{c.nexusTitle}</span>
+            )}
             {c.name}
             {c.verified && <span className="pc-verified" title="Verified by the Nexus team">✓</span>}
           </h1>

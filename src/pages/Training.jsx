@@ -104,7 +104,19 @@ export default function Training() {
           <p className="pz-subtitle">Choose a mode to practice and improve your chess.</p>
         </div>
 
-        {/* Compact "My Moments" card — your own mistakes, top-right. */}
+        {/* Two compact cards, top-right.
+            Daily Puzzles used to be a full-width band above the grid. It is one
+            destination among several, so it now sits beside My Moments at the
+            same size rather than taking a whole row to say the same thing. */}
+        <div className="pz-header-cards">
+        <Link to="/puzzles" className="pz-moments-card pz-daily-card">
+          <span className="pz-moments-icon">🧩</span>
+          <span className="pz-moments-text">
+            <span className="pz-moments-title">Daily Puzzles</span>
+            <span className="pz-moments-sub">New five every day</span>
+          </span>
+        </Link>
+
         <Link to="/training/my-moments" className="pz-moments-card">
           <span className="pz-moments-icon">🎯</span>
           <span className="pz-moments-text">
@@ -115,29 +127,7 @@ export default function Training() {
           </span>
           {momentsCount > 0 && <span className="pz-moments-badge">{momentsCount}</span>}
         </Link>
-      </div>
-
-      {/* ── Daily Puzzles banner ──
-          Full-width and above the grid, not one of the mode cards. Daily
-          Puzzles is the only mode that changes every day, so it gets its own
-          band rather than competing for attention beside Healthy Mix, Themes,
-          Pieces and Rating. It used to be a separate hero on the Puzzles Hub,
-          which made "Puzzles" and "Daily Puzzles" look like rival destinations. */}
-      {/* The banner itself is a plain <div>, NOT a link: only the Solve Now
-          button navigates. Wrapping the whole band in a <Link> made every
-          click — including on the text — jump to the puzzles, which is easy
-          to trigger by accident. */}
-      <div className="pz-daily-banner">
-        <span className="pz-daily-icon">🧩</span>
-        <span className="pz-daily-text">
-          <span className="pz-daily-badge">🔥 New every day</span>
-          <span className="pz-daily-title">Daily Puzzles</span>
-          <span className="pz-daily-desc">
-            Five positions handpicked from <strong>World Champion games</strong> —
-            learn tactics the way the masters played them.
-          </span>
-        </span>
-        <Link to="/puzzles" className="pz-daily-cta">Solve Now →</Link>
+        </div>
       </div>
 
       {/* ── Cards Grid ── */}

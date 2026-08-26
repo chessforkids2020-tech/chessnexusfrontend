@@ -15,6 +15,9 @@ import './ReplayTraining.css';
 const SIDE_CARD_W = 340;
 const SIDE_CARD_W_WIDE = 400;
 const WIDE_SCREEN_PX = 1600;
+// Must match the @media rule in ReplayTraining.css: below this the layout is
+// a single column and the board takes the full width.
+const MOBILE_BP = 900;
 const sideCardWidth = () =>
   (typeof window !== 'undefined' && window.innerWidth >= WIDE_SCREEN_PX)
     ? SIDE_CARD_W_WIDE : SIDE_CARD_W;
@@ -291,6 +294,21 @@ export default function ReplayTraining() {
     const measure = () => {
       const el = boardRef.current;
       if (!el) return;
+
+      // ── Phones and tablets: FULL WIDTH ──────────────────────────────────
+      // One column, so there is no side card to subtract and no reason to cap
+      // by leftover height — the page scrolls, and everything else (score,
+      // buttons, moves) sits BELOW the board rather than competing with it.
+      // Capping by height here would shrink the board to a fraction of the
+      // screen now that the players/year strip sits above it.
+      if (window.innerWidth <= MOBILE_BP) {
+        const w = Math.round(el.getBoundingClientRect().width) || window.innerWidth;
+        const g = gutterFor(w);
+        const next = Math.max(240, Math.floor(w - g.left - g.right));
+        setBoardSize(prev => (Math.abs(prev - next) > 1 ? next : prev));
+        return;
+      }
+
       const grid = el.parentElement;
       const gridW = grid ? Math.round(grid.getBoundingClientRect().width) : 0;
       const avail = Math.max(240, gridW - sideCardWidth() - COL_GAP);
@@ -806,6 +824,8 @@ export default function ReplayTraining() {
             boardWidth={boardSize}
             /* Analysis: a fully free board. During the session: only when a
                question is open and we are on the live position. */
+            /* Edge-to-edge on phones/tablets: this board IS the screen there. */
+            fullBleed
             draggable={analysing ? true : (awaiting && !finished && isLive)}
             playerColor={orientation}
             onSelectionChange={analysing && squareEvalsOn ? setSelection : undefined}

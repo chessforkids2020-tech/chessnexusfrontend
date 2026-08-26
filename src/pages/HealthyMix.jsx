@@ -769,16 +769,39 @@ export default function HealthyMix() {
     // manual drag: the space available is different now, so the board re-fits
     // itself to the new layout and the side cards go back to comfortable. The
     // user can drag again from there if they want it bigger still.
+    const fsTimers = [];
     const resetAndFit = () => {
       userSizedRef.current = false;
       setSideSqueeze(0);
       setMaxBoardWidth(computeMaxBoard());   // new viewport → new drag ceiling
       fit();
-      // fullscreenchange fires BEFORE the viewport has finished resizing, so the
-      // first fit() can measure the old dimensions. Re-fit on the next frame
-      // once the browser has settled — this is what left the board at its
-      // fullscreen size after exiting.
-      requestAnimationFrame(() => { fit(); });
+      // ENTERING OR LEAVING FULLSCREEN IS NOT ONE FRAME.
+      //
+      // fullscreenchange fires BEFORE the viewport has finished resizing, and
+      // the browser then animates to the new size over several frames. Two
+      // fit() passes both measured mid-transition, so the board kept a size
+      // from the OLD viewport — too big for the new one, which is what pushed
+      // it over the Moves card. Reloading looked like "the fix" only because
+      // the mount path below settles four times plus a timer.
+      //
+      // Same treatment here: a few frames, then a couple of timers to catch the
+      // end of the transition. Each pass is one measurement and a setState React
+      // drops when the value has not changed.
+      // AND BUMP settleTick.
+      //
+      // fit() only resizes the BOARD. The card column widths are set by a
+      // separate effect keyed on [sideSqueeze, settleTick] — so calling fit()
+      // alone left the cards at their pre-fullscreen widths while the board
+      // changed size underneath them. That is the overlap on entering and the
+      // gap on exiting. Reload "fixed" it because mount runs settle(), which
+      // bumps the tick; nothing on the fullscreen path ever did.
+      const settleNow = () => { fit(); setSettleTick(t => t + 1); };
+      requestAnimationFrame(() => {
+        settleNow();
+        requestAnimationFrame(settleNow);
+      });
+      fsTimers.push(setTimeout(settleNow, 120));
+      fsTimers.push(setTimeout(settleNow, 350));
     };
 
     // The observer watches the board column — the SAME element the desktop
@@ -823,6 +846,7 @@ export default function HealthyMix() {
     return () => {
       cancelAnimationFrame(raf1);
       clearTimeout(settleTimer);
+      fsTimers.forEach(clearTimeout);
       ro.disconnect();
       window.removeEventListener('resize', resetAndFit);
       document.removeEventListener('fullscreenchange', resetAndFit);

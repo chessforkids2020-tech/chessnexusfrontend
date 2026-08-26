@@ -627,7 +627,6 @@ function StatsBar({ ratings }) {
 function TodayStrip() {
   const [streak, setStreak] = React.useState(null);   // { current, today, daysToNextReport }
   const [report, setReport] = React.useState(null);   // latest generated report, or null
-  const [focus, setFocus] = React.useState(null);
   const [hasAdminCoach, setHasAdminCoach] = React.useState(false);
   const [hasPrivateCoach, setHasPrivateCoach] = React.useState(false);
   const [showHow, setShowHow] = React.useState(false);
@@ -757,27 +756,6 @@ function TodayStrip() {
       .then(res => { if (alive) setJobRunning(!!res.data?.job); })
       .catch(() => {});
 
-    api.get('/api/public/monthly-focus/current')
-      .then(async res => {
-        if (!alive) return;
-        const f = res.data?.focus;
-        if (!f?._id) { setFocus(null); return; }
-        try {
-          const pr = await api.get(`/api/public/monthly-focus/my-progress?focusId=${f._id}`);
-          const progress = pr.data?.progress || pr.data || {};
-          const completedDays = progress.completedDays
-            ?? (Array.isArray(progress.days) ? progress.days.filter(d => d.completed).length : 0);
-          const runningDay = res.data?.currentDay?.dayNumber || res.data?.runningDay || null;
-          const doneToday = runningDay
-            ? (Array.isArray(progress.days) ? progress.days.some(d => d.dayNumber === runningDay && d.completed) : false)
-            : false;
-          if (alive) setFocus(runningDay ? { dayNumber: runningDay, done: doneToday } : { completed: completedDays });
-        } catch {
-          if (alive) setFocus({ active: true });
-        }
-      })
-      .catch(() => {});
-
     return () => { alive = false; };
   }, []);
 
@@ -883,19 +861,18 @@ function TodayStrip() {
     )
   );
 
-  if (focus) {
-    let label, done = false;
-    if (focus.dayNumber) { label = `Focus Day ${focus.dayNumber}`; done = focus.done; }
-    else if (typeof focus.completed === 'number') { label = `Focus: ${focus.completed}/7 days`; done = focus.completed >= 7; }
-    else { label = 'Monthly Focus'; }
-    chips.push(
-      <Link key="focus" to="/monthly-focus" className={`today-chip ${done ? 'today-chip--done' : 'today-chip--todo'}`}>
-        <span className="today-chip-emoji">&#9823;</span>
-        <span className="today-chip-text">{label}{done ? ' ✓' : ''}</span>
-        {!done && <span className="today-chip-go">&rarr;</span>}
-      </Link>
-    );
-  }
+  // Help sits directly after the weekly report: it moved off the sidebar, and
+  // the dashboard is where people already are when they get stuck.
+  chips.push(
+    <Link key="help" to="/help" className="today-chip today-chip--todo">
+      <span className="today-chip-emoji">&#128161;</span>
+      <span className="today-chip-text">Help</span>
+      <span className="today-chip-go">&rarr;</span>
+    </Link>
+  );
+
+  // Monthly Focus chip removed from this strip — it still has its own page and
+  // sidebar entry, and the strip is meant to be short.
 
   if (hasAdminCoach) {
     chips.push(

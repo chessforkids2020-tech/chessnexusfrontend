@@ -6,7 +6,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import CoffeeCta from '../../components/CoffeeCta';
 import AboutFeatureCTA from '../../components/marketing/AboutFeatureCTA';
 import FriendGameSetup from './FriendGameSetup';
-import MasterMoveBoard from '../../components/MasterMoveBoard';
 import './Games.css';
 
 export default function Games() {
@@ -125,6 +124,7 @@ export default function Games() {
     {
       id: 'friend',
       title: "Play with a Friend",
+      blurb: "Share a code and play — they don't even need an account.",
       icon: "🤝",
       color: "var(--color-success)",
       action: () => setShowFriendSetup(true)
@@ -134,6 +134,7 @@ export default function Games() {
       // server game, no opponent needed, so it always has something to offer.
       id: 'stockfish',
       title: "Play vs Stockfish",
+      blurb: "Six strength levels, any time control, from any position.",
       icon: "🤖",
       color: "var(--color-accent)",
       action: () => navigate('/play/ai')
@@ -141,6 +142,7 @@ export default function Games() {
     {
       id: 'replay',
       title: "Replay Training",
+      blurb: "Replay a real game and find the winning side's moves yourself.",
       icon: "🎬",
       color: "var(--color-accent-2)",
       action: () => navigate('/replay-training')
@@ -148,6 +150,7 @@ export default function Games() {
     {
       id: 3,
       title: "Arena Tournament",
+      blurb: "Back-to-back games against new opponents. Climb the board.",
       icon: "🏆",
       color: "#FFD166",
       action: () => navigate('/arenatournament')
@@ -158,9 +161,21 @@ export default function Games() {
       // navigation, where it competed with Puzzles, Study and Race.
       id: '3darena',
       title: "3D Arena",
+      blurb: "The same chess on an immersive 3D board. Opens in a new tab.",
       icon: "🎮",
       color: "var(--color-accent-2)",
       action: open3DArena
+    },
+    {
+      // Not built yet. `disabled` blocks the click, dims the card and swaps the
+      // CTA for a Coming Soon pill — no separate placeholder handling needed.
+      id: 'broadcast',
+      title: "Live Broadcasting",
+      blurb: "Follow Indian FIDE-rated tournaments live, board by board.",
+      icon: "📡",
+      color: "var(--color-danger)",
+      disabled: true,
+      action: () => {}
     }
   ];
 
@@ -348,176 +363,38 @@ export default function Games() {
             style={{
               opacity: option.disabled ? 0.5 : 1,
               cursor: option.disabled ? 'not-allowed' : 'pointer',
-              position: 'relative'
+              position: 'relative',
+              // Each card carries its own accent as a variable, so the CSS can
+              // tint the icon, the hover border and the arrow from one source
+              // instead of hard-coding five colours in the stylesheet.
+              '--card-accent': option.color,
             }}
           >
-            <div className="play-option-left">
-              <div className="play-option-icon" style={{ color: option.color }}>
-                {option.icon}
-              </div>
-              <div className="play-option-content">
-                {/* Title only: the subtitles made these cards several lines
-                    tall, which pushed the rest of the page below the fold. */}
-                <h3 className="play-option-title">{option.title}</h3>
-              </div>
+            {/* Centred, vertical card: ringed icon, title, divider, blurb,
+                then a pill CTA. Everything is drawn from the theme's accent
+                tokens, so this renders gold under goldSovereign and follows
+                whatever theme the user has picked. */}
+            <div className="po-glow" aria-hidden="true" />
+
+            <div className="po-ring">
+              <span className="po-emoji">{option.icon}</span>
             </div>
+
+            <h3 className="play-option-title">{option.title}</h3>
+
+            <div className="po-divider" aria-hidden="true">
+              <span className="po-divider-mark">♛</span>
+            </div>
+
+            {option.blurb && <p className="play-option-blurb">{option.blurb}</p>}
+
             {option.disabled ? (
-              <div style={{
-                background: 'rgba(255, 215, 0, 0.9)', color: 'var(--color-bg)',
-                padding: '6px 16px', borderRadius: 'var(--radius-lg)', fontSize: '12px',
-                fontWeight: '700', boxShadow: '0 2px 8px var(--color-black-a20)', whiteSpace: 'nowrap'
-              }}>
-                🔜 Coming Soon
-              </div>
+              <div className="po-soon">🔜 Coming Soon</div>
             ) : (
-              <div className="arrow-icon">→</div>
+              <div className="po-cta"><span>→</span></div>
             )}
           </div>
         ))}
-      </div>
-
-      <div className="games-layout">
-        
-        {/* LEFT COLUMN - 60% */}
-        <div className="left-column">
-          
-          {/* Today's Tournament Section */}
-          <div className="glass-card">
-            <div className="section-header">
-              <div className="section-icon">🏆</div>
-              <h2 className="section-title">Today's Tournament</h2>
-            </div>
-            <div style={{ color: 'var(--color-text-muted)', fontSize: '12px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-
-              <span>🕔</span> To view tournament times and days, click <strong style={{ color: 'var(--color-warning)' }}>SCHEDULE</strong>
-
-            </div>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {tournamentsLoading ? (
-                <div style={{ color: 'var(--color-text-muted)', fontSize: 13, padding: '12px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div className="loading-spinner" style={{ display: 'inline-block' }} />
-                  Loading...
-                </div>
-              ) : tournaments.length === 0 ? (
-                <div style={{ color: 'var(--color-text-faint)', fontSize: 13, padding: '12px 0' }}>No active tournaments right now.</div>
-              ) : (
-                tournaments.slice(0, 4).map((tournament) => {
-                  const startTime = new Date(tournament.scheduledStartTime);
-                  const now = new Date();
-                  const timeDiff = startTime - now;
-                  let timeDisplay = '';
-                  let statusColor = '#4ECDC4';
-                  let statusText = tournament.status;
-                  let joinLabel = 'Join →';
-                  if (tournament.status === 'scheduled') {
-                    if (timeDiff > 0) {
-                      const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-                      const mins = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-                      timeDisplay = `Starts in ${hours}:${mins.toString().padStart(2, '0')}`;
-                      statusText = 'upcoming';
-                    } else {
-                      timeDisplay = 'Starting soon';
-                      statusColor = '#FFD166';
-                    }
-                  } else if (tournament.status === 'lobby') {
-                    timeDisplay = 'Join now!';
-                    statusColor = '#FFD166';
-                    statusText = 'open';
-                    joinLabel = 'Join now →';
-                  } else if (tournament.status === 'active') {
-                    timeDisplay = 'In progress';
-                    statusColor = '#FF6B6B';
-                    statusText = 'live';
-                    joinLabel = 'Watch →';
-                  }
-                  const timeControl = `${tournament.timeControl.minutes}+${tournament.timeControl.seconds}`;
-                  let icon = '🏆';
-                  if (timeControl.includes('1+') || timeControl.includes('2+')) icon = '💨';
-                  else if (timeControl.includes('3+') || timeControl.includes('5+')) icon = '⚡';
-                  return (
-                    <div
-                      key={tournament._id}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 14,
-                        background: 'var(--color-white-a04)',
-                        border: `1px solid ${statusColor}44`,
-                        borderRadius: 'var(--radius-lg)', padding: '12px 16px',
-                      }}
-                    >
-                      <span style={{ fontSize: 24, lineHeight: 1, flexShrink: 0 }}>{icon}</span>
-
-                      {/* Name + details */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                          <span style={{ color: 'var(--color-text)', fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 220 }} title={tournament.name}>
-                            {(tournament.name || '').replace(/\s*[–-]\s*\d{1,2}\s+\w+\s+\d{4}\s*$/, '').trim()}
-                          </span>
-                          <span style={{
-                            background: `${statusColor}15`, color: statusColor,
-                            border: `1px solid ${statusColor}55`,
-                            borderRadius: 'var(--radius-pill)', padding: '2px 9px',
-                            fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-                          }}>{statusText}</span>
-                        </div>
-                        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 4 }}>
-                          <span style={{ color: statusColor, fontSize: 12, fontWeight: 600 }}>{timeDisplay}</span>
-                          <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>⏱ {timeControl}</span>
-                          <span style={{ color: 'var(--color-text-muted)', fontSize: 12 }}>👥 {tournament.participantCount}</span>
-                        </div>
-                      </div>
-
-                      {/* Join button */}
-                      <button
-                        onClick={() => joinTournament(tournament._id)}
-                        style={{
-                          flexShrink: 0,
-                          background: `${statusColor}1f`, color: statusColor,
-                          border: `1px solid ${statusColor}88`,
-                          borderRadius: 'var(--radius-md)', padding: '9px 18px',
-                          fontSize: 13, fontWeight: 700, cursor: 'pointer',
-                          whiteSpace: 'nowrap', transition: 'all 0.15s',
-                        }}
-                        onMouseEnter={e => { e.currentTarget.style.background = `${statusColor}33`; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = `${statusColor}1f`; }}
-                      >
-                        {joinLabel}
-                      </button>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 14 }}>
-              <button
-                onClick={() => navigate('/arenatournament')}
-                style={{
-                  background: 'rgba(99,102,241,0.12)',
-                  border: '1px solid rgba(99,102,241,0.35)',
-                  color: 'var(--color-accent-2)', borderRadius: 'var(--radius-2xl)',
-                  padding: '7px 24px', fontSize: 13, fontWeight: 700,
-                  cursor: 'pointer', transition: 'all 0.15s', letterSpacing: '0.02em',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.22)'; e.currentTarget.style.color = 'var(--color-accent-2)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(99,102,241,0.12)'; e.currentTarget.style.color = 'var(--color-accent-2)'; }}
-              >
-                View All Tournaments →
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN - 40% */}
-        <div className="right-column">
-
-          {/* Guess the Master's Move — daily widget. Board fills its column width
-              but is height-clamped (see MasterMoveBoard) so it never runs below
-              the fold; on desktop it's limited by the 40% right-column width. */}
-          <MasterMoveBoard maxBoard={440} />
-
-          {/* CoffeeCta temporarily hidden — Razorpay verification in progress (re-enable ~June 2, 2026) */}
-
-        </div>
       </div>
 
       {/* Recently Finished Tournaments */}

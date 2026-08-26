@@ -40,6 +40,22 @@
 }
 
 /* Compact "My Moments" card — top-right of the Training header. */
+/* The two compact cards sit side by side at the top-right, wrapping onto their
+   own line together on narrow screens. */
+.pz-header-cards {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+/* Daily Puzzles: same size and shape as My Moments, different accent so the
+   two read as separate destinations rather than a matched pair. */
+.pz-daily-card {
+  background: linear-gradient(135deg, var(--color-warning-a20), var(--color-accent-a15)) !important;
+  border-color: var(--color-warning-a30) !important;
+}
+
 .pz-moments-card {
   position: relative;
   display: flex;
@@ -105,88 +121,8 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-}
-
-/* ── Daily Puzzles banner ──
-   Full-width band above the mode grid. Uses the same var(--color-surface) surface and
-   18px radius as .pz-card so it reads as part of the page, with a purple
-   wash to mark it as the featured, changes-daily mode. */
-.pz-daily-banner {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  background: linear-gradient(135deg, var(--color-accent-2-a15), var(--color-surface) 55%);
-  border: 1px solid var(--color-accent-2-a30);
-  border-radius: var(--radius-xl);
-  padding: 20px 24px;
-  margin-bottom: 20px;
-  color: inherit;
-}
-.pz-daily-icon {
-  font-size: 44px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-.pz-daily-text {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;      /* let the description wrap instead of stretching the row */
-  flex: 1;
-}
-.pz-daily-badge {
-  align-self: flex-start;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--color-accent-2);
-  background: var(--color-accent-2-a30);
-  border: 1px solid var(--color-accent-2-a30);
-  border-radius: var(--radius-pill);
-  padding: 3px 10px;
-}
-.pz-daily-title {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--color-text);
-}
-.pz-daily-desc {
-  font-size: 14px;
-  color: var(--color-text-muted);
-  line-height: 1.5;
-}
-.pz-daily-desc strong { color: var(--color-text); }
-.pz-daily-cta {
-  flex-shrink: 0;
-  background: var(--color-accent-2);
-  color: var(--color-text);
-  font-weight: 700;
-  font-size: 15px;
-  border-radius: var(--radius-lg);
-  padding: 12px 22px;
-  box-shadow: 0 6px 20px var(--color-accent-2-a30);
-  white-space: nowrap;
-  text-decoration: none;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-.pz-daily-cta:hover {
-  background: var(--color-accent-2);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px var(--color-accent-2-a30);
-}
-
-/* Stack on phones so the CTA never squeezes the text to a sliver. */
-@media (max-width: 640px) {
-  .pz-daily-banner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 18px;
-  }
-  .pz-daily-cta { width: 100%; text-align: center; }
-}
+}/* Stack on phones so the CTA never squeezes the text to a sliver. */
+@media (max-width: 640px) {}
 
 /* ── Card ── */
 .pz-card {

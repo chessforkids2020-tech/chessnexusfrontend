@@ -59,6 +59,12 @@ interface ChessboardProps {
   boardStyle?: React.CSSProperties;
   boardWidth?: number;
   /**
+   * Let the board run to the very edge of the screen on phones/tablets.
+   * Off by default: most pages want the small margin, and turning it on
+   * globally would change all 55 boards in the app.
+   */
+  fullBleed?: boolean;
+  /**
    * Drag-to-resize is ON by default and fully self-contained: the board renders its
    * own grip and tracks its own size. Pages need to wire nothing. Set false to hide
    * the grip (e.g. tiny preview boards, or a mobile layout that must stay fixed).
@@ -175,6 +181,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
   orientation = 'white',
   boardStyle = {},
   boardWidth: boardWidthProp = 440,
+  fullBleed = false,
   resizable = true,
   onResize,
   minBoardWidth = 280,
@@ -252,7 +259,10 @@ const Chessboard: React.FC<ChessboardProps> = ({
   }, []);
   const MOBILE_BP = 1024;    // phones + tablets/iPads
   const MOBILE_VH = 0.72;    // board may use at most this share of the screen height
-  const MOBILE_VW = 0.96;    // small side margin so it never touches the very edge
+  // Small side margin so a board never touches the very edge — except where a
+  // page deliberately wants edge-to-edge (fullBleed), such as Replay Training
+  // on a phone, where the board IS the screen.
+  const MOBILE_VW = fullBleed ? 1 : 0.96;
 
   // Drag-to-resize is OWNED BY THE BOARD. Pages don't wire anything up: the grip
   // appears on every board and this state remembers the user's drag. `null` means

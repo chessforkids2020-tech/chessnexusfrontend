@@ -1625,7 +1625,7 @@ export default function Sidebar({ user, onNavigate }) {
                         onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-2-a30)'; e.currentTarget.style.background = 'var(--color-accent-2-a15)'; }}
                       >
                         <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-accent-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {n.type === 'academy_invite' ? '🏛️ ' : '🔔 '}{n.title}
+                          {n.type === 'academy_invite' ? '🏛️ ' : n.type === 'coaching_reply' ? '💡 ' : '🔔 '}{n.title}
                         </div>
                         {n.body && (
                           <div style={{ fontSize: '11.5px', color: 'var(--color-text-muted)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>

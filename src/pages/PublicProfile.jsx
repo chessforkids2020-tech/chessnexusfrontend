@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import UserAvatar from '../components/UserAvatar';
+import PlayerName from '../components/PlayerName';
 
 const API = import.meta.env.VITE_API_URL || window.location.origin;
 
@@ -153,7 +154,17 @@ export default function PublicProfile() {
             <UserAvatar user={profile} size={90} live />
           </div>
           <div style={s.heroText}>
-            <h1 style={s.heroName}>{profile.displayName || profile.username}</h1>
+            {/* PlayerName, not the raw name: a title (GM / NS / NX / NC) is part
+                of a player's identity and must show wherever their name does.
+                Rendering the bare field here is why /player/:name showed no NC
+                while the same user's dashboard did. */}
+            <h1 style={s.heroName}>
+              <PlayerName
+                displayName={profile.displayName}
+                username={profile.username}
+                userId={profile._id || profile.userId}
+              />
+            </h1>
             {profile.country && <div style={s.heroBadge}>🌍 {profile.country}</div>}
             {crownLabel && <div style={{ ...s.heroBadge, background: 'var(--color-warning)', color: '#92400e' }}>{crownLabel}</div>}
             {profile.chessExperience && <div style={s.heroBadge}>♟️ {profile.chessExperience}</div>}

@@ -70,6 +70,20 @@
     <meta name="msapplication-TileColor" content="#06b6d4" />
 
     <!-- Performance hints -->
+    <!-- FONTS.
+         Orbitron (display) and Poppins (body) were referenced in ~37 places
+         across the CSS but never actually LOADED, so every one of them silently
+         fell back to the system font — which is why titles and body text looked
+         identical everywhere. Loading them makes the existing font-family rules
+         do what they always said they did.
+         `display=swap` so text paints immediately in the fallback rather than
+         holding the page blank while the font downloads. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="preconnect" href="https://www.chessnexus.in" />
     <link rel="dns-prefetch" href="https://www.chessnexus.in" />
 
@@ -116,7 +130,7 @@
       "url": "https://www.chessnexus.in/",
       "logo": "https://www.chessnexus.in/logo.png",
       "sameAs": [
-        "https://www.instagram.com/chessnexus.in/",
+        "https://www.instagram.com/chessnexus.in_official/",
         "https://www.facebook.com/profile.php?id=100064068341481"
       ],
       "description": "Chess Nexus is a free online chess training and competition platform offering puzzles, tactics, live races, and leaderboards."

@@ -250,11 +250,26 @@
 .stat-value {
   font-size: 1.8em;
   font-weight: 800;
+  line-height: 1.2;
+  /* Painted colour FIRST, so the number is always visible. The gradient below
+     is a progressive enhancement layered on top of it. */
+  color: var(--color-accent);
+  /* This is a <span> inside a flex column. background-clip:text on an inline
+     box is unreliable — the gradient never paints and, combined with
+     transparent fill, the text renders invisible (only a selection highlight
+     revealed it). display:block gives it a box to paint into. */
+  display: block;
   background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
-  line-height: 1.2;
+}
+
+/* Only make the fill transparent where the clipped gradient is known to work,
+   so a browser that cannot do it keeps the solid colour above. */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .stat-value {
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 .stat-badge {
@@ -607,10 +622,16 @@
 .xp-value {
   font-weight: 800;
   font-size: 1.1em;
+  /* Solid colour first; the clipped gradient is layered on top. Also needs a
+     block box — background-clip:text on a bare inline span does not paint. */
+  color: var(--color-accent);
+  display: inline-block;
   background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .xp-value { -webkit-text-fill-color: transparent; }
 }
 
 .col-score {
@@ -622,14 +643,17 @@
 .score-value {
   font-weight: 600 !important;
   font-size: 20px !important;
+  color: var(--color-warning);
   background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-danger) 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
   position: relative;
   z-index: 2;
   display: inline-block;
   max-width: 100%;
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .score-value { -webkit-text-fill-color: transparent; }
 }
 
 /* make sure progress decorations don't overlay the score */

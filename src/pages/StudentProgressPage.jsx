@@ -171,6 +171,9 @@ export default function StudentProgressPage() {
   const summary = data.summary || null;
   // Six-month progress line. Absent on older responses — the section hides.
   const progress = data.progress || null;
+  // What the child actually LEARNED, in plain words (helpers/learningNarrative.js).
+  // null whenever there is not enough data to say anything honest.
+  const learning = data.learning || null;
   // The coach message, if they wrote one. Plain text, never HTML.
   const coachNote = data.coachNote || "";
   const coachNoteAt = data.coachNoteAt || null;
@@ -244,6 +247,25 @@ export default function StudentProgressPage() {
             {summary.effort && (
               <p className="sp-verdict-effort">This month: {summary.effort}.</p>
             )}
+          </section>
+        )}
+
+        {/* ── WHAT THEY ARE LEARNING ────────────────────────────────────────
+            The verdict above says whether they are improving, in ratings. This
+            says WHAT changed, which is the thing a parent who does not play
+            chess can actually understand and act on.
+
+            Directly under the verdict and above the coach note: it answers the
+            second question a parent asks, and the coach note is often empty. */}
+        {learning?.sentences?.length > 0 && (
+          <section className="sp-card sp-learning">
+            <h2 className="sp-learning-head">
+              <span aria-hidden="true">🎯</span>
+              {learning.source === 'puzzles' ? 'Their practice this month' : 'What they are learning'}
+            </h2>
+            {learning.sentences.map((line, i) => (
+              <p key={i} className="sp-learning-line">{line}</p>
+            ))}
           </section>
         )}
 
