@@ -482,14 +482,23 @@ export default function HealthyMix() {
   // 320px sidebar), clamped to a sensible range — big screen → big board.
   const fitToViewport = (preferred) => {
     if (typeof window === 'undefined') return preferred;
-    const w = window.innerWidth;
+    // clientWidth, not innerWidth: innerWidth INCLUDES a classic scrollbar, so an
+    // edge-to-edge board sized from it comes out ~15px wider than the visible
+    // page and overhangs one side.
+    const w = document.documentElement.clientWidth || window.innerWidth;
     if (w <= 960) {
-      // Single-column layout: board fills the width. On a phone we use the SAME
-      // 16px total inset as the Daily Puzzles board (Puzzles.jsx) so both pages
-      // show an identically sized board; wider single-column screens keep a
-      // slightly roomier 48px gutter.
-      const inset = w <= 480 ? 16 : 48;
-      return Math.max(MIN_BOARD, Math.min(preferred, w - inset - FRAME_CHROME));
+      // Single-column layout (phones AND tablets/iPad): the board goes edge to
+      // edge — inset 0, and `preferred` deliberately NOT applied. It capped the
+      // board at 480px, which is why an iPad showed a small board floating in a
+      // wide column. .hm-board-col cancels the page gutters (see HealthyMix.css)
+      // so the board spans the full viewport, not the padded content box.
+      //
+      // Height still matters: the board is square, so on a short landscape
+      // tablet the WINDOW HEIGHT is the real limit, not the width. Without this
+      // a 1024x768 iPad would ask for a 1024px board and get a page that
+      // scrolls past the tools.
+      const byHeightSingle = window.innerHeight - VERT_FALLBACK;
+      return Math.max(MIN_BOARD, Math.min(w - FRAME_CHROME, byHeightSingle));
     }
     // Desktop 3-column layout. The side tracks are clamp()ed in .hm-layout so
     // they SHRINK on short/wide screens to give the board room; mirror the same
@@ -508,6 +517,19 @@ export default function HealthyMix() {
     return Math.max(MIN_BOARD, Math.min(MAX_BOARD, midColWidth - FRAME_CHROME, byHeight));
   };
   const [boardSize, setBoardSize] = useState(() => fitToViewport(480));
+  // Phone-width flag, used for the smaller coordinate labels. Kept in state
+  // (not read inline) so a rotate/resize re-renders the board with the right
+  // label size instead of keeping first-paint's. Only PHONES get the smaller
+  // labels — on a tablet-sized board the default size is already fine.
+  const [isPhoneBoard, setIsPhoneBoard] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth <= 480
+  );
+  useEffect(() => {
+    const onResize = () => setIsPhoneBoard(window.innerWidth <= 480);
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
   // How much the side cards have given up, in px, so the board can be bigger.
   // 0 = both cards at their comfortable width (the normal state).
   const [sideSqueeze, setSideSqueeze] = useState(0);
@@ -1764,6 +1786,11 @@ export default function HealthyMix() {
               // the side cards first and cap the board at what is actually free.
               onResize={onBoardResize}
               maxBoardWidth={maxBoardWidth}
+              // Smaller a-h / 1-8 labels on phones. The board draws them INSIDE
+              // the squares at small sizes (squareSize * 0.3), which at a
+              // full-width phone board is ~14px — large enough to crowd the
+              // pieces. 0.72 brings that back to ~10px.
+              coordinateScale={isPhoneBoard ? 0.72 : 1}
             />
             {/* Exhausted overlay */}
             {exhausted && (

@@ -181,7 +181,9 @@ const Chessboard: React.FC<ChessboardProps> = ({
   orientation = 'white',
   boardStyle = {},
   boardWidth: boardWidthProp = 440,
-  fullBleed = false,
+  // undefined = edge-to-edge on mobile (the default). Pass fullBleed={false} to
+  // keep the small side margin.
+  fullBleed,
   resizable = true,
   onResize,
   minBoardWidth = 280,
@@ -258,11 +260,18 @@ const Chessboard: React.FC<ChessboardProps> = ({
     };
   }, []);
   const MOBILE_BP = 1024;    // phones + tablets/iPads
-  const MOBILE_VH = 0.72;    // board may use at most this share of the screen height
-  // Small side margin so a board never touches the very edge — except where a
-  // page deliberately wants edge-to-edge (fullBleed), such as Replay Training
-  // on a phone, where the board IS the screen.
-  const MOBILE_VW = fullBleed ? 1 : 0.96;
+  // Height share the board may use. 0.85, not 0.72: on an iPad portrait the
+  // HEIGHT cap was the binding one (768 * 0.72 = 553 < the 768 width), so the
+  // board stopped short of the screen edges no matter what the width cap said.
+  // Pages still lay their own controls out around it, and the width cap below
+  // is what actually governs on a phone.
+  const MOBILE_VH = 0.85;
+  // Boards go EDGE TO EDGE on phones/tablets, the way lichess and chess.com
+  // render them. This used to default to 0.96 — a 2% side margin — which is
+  // exactly the thin strip that survived every page-level full-bleed fix, since
+  // no page ever passed fullBleed. A caller that genuinely wants the inset can
+  // still ask for it with fullBleed={false}.
+  const MOBILE_VW = fullBleed === false ? 0.96 : 1;
 
   // Drag-to-resize is OWNED BY THE BOARD. Pages don't wire anything up: the grip
   // appears on every board and this state remembers the user's drag. `null` means
@@ -275,7 +284,13 @@ const Chessboard: React.FC<ChessboardProps> = ({
   // size continuously from a ResizeObserver, and resetting on that would wipe the
   // drag on the very next frame — which is why this used to need per-page wiring.
   // The size is still clamped to the viewport below, so it can never overflow.
-  const effectiveWidth = draggedWidth ?? boardWidthProp;
+  // On phones/tablets/iPads the board is locked to the screen — there is no
+  // resize grip there (see the grip's render condition), and any width the user
+  // dragged earlier on a desktop is IGNORED rather than carried over. Without
+  // this, a stored drag survived into a narrow viewport (or a rotate) and beat
+  // the screen-fit size the page computed.
+  const canResize = viewport.w > MOBILE_BP;
+  const effectiveWidth = (canResize ? draggedWidth : null) ?? boardWidthProp;
   // Clamp DOWN to the viewport, but never UP: a caller asking for a small board
   // (thumbnails, previews) means it, and forcing a minimum made those overflow
   // their fixed-size containers and get clipped.
@@ -327,7 +342,6 @@ const Chessboard: React.FC<ChessboardProps> = ({
   const isFlippedRef = useRef(false);
 
   // Calculate square size early (needed for useEffect)
-  const squareSize = (boardWidth - 4) / 8;
   const isSmallScreen = boardWidth < 400;
   const coordinateSize = coordinateGutter(boardWidth);
 
@@ -338,6 +352,18 @@ const Chessboard: React.FC<ChessboardProps> = ({
     typeof window !== 'undefined' && window.matchMedia
       ? window.matchMedia('(max-width: 1024px)').matches
       : boardWidth < 400;
+
+  // FRAME. On phones/tablets the board is edge to edge, so a 2px brown border
+  // and 8px rounded corners read as a picture frame around something that
+  // should meet the screen edges — lichess and chess.com draw no frame at all
+  // there. Desktop keeps it: the board floats in a page there, and the frame is
+  // what separates it from the background.
+  const frameWidth = isTouchViewport ? 0 : 2;
+  const frameRadius = isTouchViewport ? 0 : 8;
+  // The grid is inset by the frame on both sides, so the square size has to be
+  // derived from it — hardcoding `- 4` left an 8th of a square of dead space
+  // once the frame went away.
+  const squareSize = (boardWidth - frameWidth * 2) / 8;
 
   // Coordinate placement. On mobile/tablet we overlay the a-h/1-8 labels INSIDE
   // the board — Lichess/chess.com style — so the board fills the full width
@@ -582,7 +608,8 @@ const Chessboard: React.FC<ChessboardProps> = ({
   const getSquareFromBoardCoords = useCallback((x: number, y: number): string | null => {
     const adjustedX = x - 2;
     const adjustedY = y - 2;
-    if (adjustedX < 0 || adjustedX >= boardWidth - 4 || adjustedY < 0 || adjustedY >= boardWidth - 4) return null;
+    const drawn = boardWidth - frameWidth * 2;
+    if (adjustedX < 0 || adjustedX >= drawn || adjustedY < 0 || adjustedY >= drawn) return null;
     const col = Math.floor(adjustedX / squareSize);
     const row = Math.floor(adjustedY / squareSize);
     const flipped = isFlippedRef.current;
@@ -1201,8 +1228,15 @@ const Chessboard: React.FC<ChessboardProps> = ({
               else delete pieceRefs.current[squareId];
             }}
             style={{
-              width: `${squareSize * 0.8}px`,
-              height: `${squareSize * 0.8}px`,
+              // Pieces FILL the square, the way lichess and chess.com render
+              // them. The sprites already carry their own margin — the default
+              // mpchess artwork's ink fills ~76% of its viewBox — so an extra
+              // 0.8 box multiplied the two and left the piece at only ~60% of
+              // the square, which is what made them look small inside it.
+              // objectFit: 'contain' on the img keeps the aspect ratio, so a
+              // full-size box never distorts a piece.
+              width: `${squareSize}px`,
+              height: `${squareSize}px`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1245,8 +1279,10 @@ const Chessboard: React.FC<ChessboardProps> = ({
               src={getPieceSrc(pieceToCode(premoveGhostPiece))}
               alt="premove"
               style={{
-                width: `${squareSize * 0.8}px`,
-                height: `${squareSize * 0.8}px`,
+                // Matches the board piece (full square) — a smaller ghost made
+                // the piece appear to shrink on its way to the destination.
+                width: `${squareSize}px`,
+                height: `${squareSize}px`,
                 objectFit: 'contain',
                 pointerEvents: 'none',
                 userSelect: 'none'
@@ -1658,7 +1694,7 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
         boxSizing: 'border-box',
         // Matches the inner board's radius. Keep these in step — a larger radius
         // here would clip the board's own corners.
-        borderRadius: '8px',
+        borderRadius: `${frameRadius}px`,
         overflow: 'hidden',
         outline: 'none'
       }}
@@ -1669,12 +1705,12 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
           display: 'grid',
           gridTemplateColumns: `repeat(8, ${squareSize}px)`,
           gridTemplateRows: `repeat(8, ${squareSize}px)`,
-          border: '2px solid #8B4513',
-          borderRadius: '8px',
+          border: frameWidth ? `${frameWidth}px solid #8B4513` : 'none',
+          borderRadius: `${frameRadius}px`,
           overflow: 'hidden',
           position: 'relative',
-          width: `${boardWidth - 4}px`,
-          height: `${boardWidth - 4}px`,
+          width: `${boardWidth - frameWidth * 2}px`,
+          height: `${boardWidth - frameWidth * 2}px`,
           touchAction: 'none',
           ...boardStyle
         }}
@@ -1727,8 +1763,10 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
               src={getPieceSrc(pieceToCode(draggedPiece.piece))}
               alt={`${draggedPiece.piece} piece`}
               style={{
-                width: '80%',
-                height: '80%',
+                // 100% of the squareSize wrapper, so the piece does not visibly
+                // shrink the moment it is picked up.
+                width: '100%',
+                height: '100%',
                 objectFit: 'contain',
                 pointerEvents: 'none',
                 userSelect: 'none'
@@ -1746,7 +1784,7 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
           Anchored to the board's own edge (not the container's, which would push it
           out past the coordinate gutter), and kept small so it never competes with
           the piece standing on that corner square. */}
-      {resizable && (
+      {resizable && canResize && (
         <div
           role="separator"
           aria-label="Resize board"
@@ -1755,10 +1793,10 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
           onTouchStart={onResizeGripDown}
           style={{
             position: 'absolute',
-            // The board's drawn surface is `boardWidth - 4` (2px border each side),
+            // The board's drawn surface is `boardWidth - frameWidth * 2`,
             // starting at padLeft/padTop. Inset the grip a couple of px from that.
-            left: padLeft + (boardWidth - 4) - gripSize - 3,
-            top: padTop + (boardWidth - 4) - gripSize - 3,
+            left: padLeft + (boardWidth - frameWidth * 2) - gripSize - 3,
+            top: padTop + (boardWidth - frameWidth * 2) - gripSize - 3,
             width: gripSize,
             height: gripSize,
             cursor: 'nwse-resize',
@@ -1877,8 +1915,8 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
           position: 'absolute',
           top: padTop,
           left: padLeft,
-          width: boardWidth - 4,
-          height: boardWidth - 4,
+          width: boardWidth - frameWidth * 2,
+          height: boardWidth - frameWidth * 2,
           pointerEvents: 'none',
           zIndex: 20
         }}

@@ -106,24 +106,23 @@ export default function Puzzles() {
   // on every screen size and Windows DPI scaling level.
   useEffect(() => {
     const updateBoardSize = () => {
-      const width = window.innerWidth;
+      // clientWidth, not innerWidth: innerWidth INCLUDES a classic scrollbar, so
+      // sizing an edge-to-edge board from it made the board ~15px wider than the
+      // visible page — it overhung one side and left a gap on the other.
+      const width = document.documentElement.clientWidth || window.innerWidth;
       // A board is SQUARE, so height matters as much as width. Sizing by width
       // alone (the old behaviour) overflowed short/wide windows — the top rank was
       // cut off and the board ran past the viewport. 78% of the viewport height
       // leaves room for the page header and the controls under the board.
       const byHeight = Math.floor(window.innerHeight * 0.78);
       let byWidth;
-      if (width <= 480) {
-        // Phone: the board IS the page — give it the full screen width. It was
-        // capped at 320px, which left ~70px of dead space either side on a 390px
-        // phone and made the pieces needlessly small. 8px each side keeps it off
-        // the very edge without wasting room.
-        byWidth = width - 16;
-      } else if (width <= 768) {
-        byWidth = Math.min(450, width - 60);
-      } else if (width <= 1024) {
-        // ~50 % of viewport, capped at 490
-        byWidth = Math.min(490, Math.floor(width * 0.50));
+      if (width <= 1024) {
+        // Phone AND tablet/iPad: the board IS the page — full screen width,
+        // edge to edge, the way lichess renders it at every size. The old rules
+        // left 16px of gutter on phones and capped tablets at 450px, so an iPad
+        // showed a small board floating in a wide empty column. The page CSS
+        // cancels its gutters to match (see the full-bleed rule).
+        byWidth = width;
       } else {
         // ~50 % of viewport on large/wide screens, capped at 510
         byWidth = Math.min(510, Math.floor(width * 0.50));
@@ -1470,7 +1469,9 @@ export default function Puzzles() {
               </div>
             )}
             
-            <div style={{
+            {/* board-fullbleed: on phones/tablets this cancels the page gutters
+                so the board meets the screen edges (see index.css). */}
+            <div className="board-fullbleed" style={{
               position: 'relative',
               display: 'flex',
               justifyContent: 'center',

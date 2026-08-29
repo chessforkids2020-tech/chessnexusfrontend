@@ -160,3 +160,49 @@ option {
   color: #d4a72c;                    /* tokenize-ignore — a title is gold in every theme */
   letter-spacing: 0.02em;
 }
+
+/* ── Edge-to-edge board on phones and tablets ────────────────────────────
+   Add `className="board-fullbleed"` to a board's wrapper and it breaks out of
+   whatever page gutters sit around it, so the board meets the screen edges the
+   way lichess and chess.com render it. Above 1024px it does nothing — the board
+   floats in a page layout there and should keep its margins.
+
+   100dvw, not 100vw: vw INCLUDES a classic scrollbar's width, so on any browser
+   that reserves one the column is ~15px wider than the visible page and the
+   board lands off-centre. vw stays as the fallback for older engines. */
+@media (max-width: 1024px) {
+  /* !important because these wrappers commonly carry an inline
+     `max-width: 100%` (and sometimes a width) from the page's own styles, which
+     clamps the element to its PADDED parent before the negative margins can
+     take effect — the board then renders one gutter narrower than the screen
+     and sits off-centre. The class only ever widens a board to the viewport, so
+     overriding the inline value here is safe. */
+  .board-fullbleed {
+    /* The vw fallback can exceed the visible width when a classic scrollbar is
+       present (vw includes it), which pushes the board past both edges and adds
+       a horizontal scrollbar. Clamp to the parent's own box as a floor so the
+       fallback can never overflow; the dvw block below is the accurate path. */
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(50% - 50vw) !important;
+    margin-right: calc(50% - 50vw) !important;
+  }
+}
+@supports (width: 100dvw) {
+  @media (max-width: 1024px) {
+    .board-fullbleed {
+      width: 100dvw !important;
+      max-width: 100dvw !important;
+      margin-left: calc(50% - 50dvw) !important;
+      margin-right: calc(50% - 50dvw) !important;
+    }
+  }
+}
+
+/* A full-bleed board must never make the PAGE scroll sideways. With a classic
+   scrollbar, 100vw is wider than the visible area, so the breakout overshoots by
+   the scrollbar's width. Browsers that support dvw use it above and are exact;
+   this is the safety net for the rest. */
+@media (max-width: 1024px) {
+  html, body { overflow-x: hidden; }
+}

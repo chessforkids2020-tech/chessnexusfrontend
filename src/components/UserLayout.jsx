@@ -24,6 +24,41 @@ export default function UserLayout({ children, showFooter = true }) {
   const [isMobile, setIsMobile] = useState(false);
   const [isLandscape, setIsLandscape] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // Hide the floating hamburger while scrolling DOWN, bring it back on the first
+  // scroll UP. It is the only control that opens the sidebar on mobile, so it
+  // cannot simply scroll away for good — but pinned at all times it sat on top
+  // of the page content the user is trying to read.
+  const [menuHidden, setMenuHidden] = useState(false);
+
+  useEffect(() => {
+    // Only meaningful where the button exists; the listener is cheap and
+    // passive, and the state simply stays false on desktop.
+    let last = window.scrollY;
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;                       // coalesce to one check per frame
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const y = window.scrollY;
+        const delta = y - last;
+        // Ignore sub-pixel jitter and rubber-band bounce at the very top.
+        if (Math.abs(delta) < 6) return;
+        if (y < 60) setMenuHidden(false);      // near the top: always visible
+        else setMenuHidden(delta > 0);         // down = hide, up = show
+        last = y;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  // Never leave the button hidden behind an open sidebar overlay.
+  useEffect(() => {
+    if (isSidebarOpen) setMenuHidden(false);
+  }, [isSidebarOpen]);
 
   // Inside the coaching workspace, show the dedicated coach sidebar instead of
   // the main one. Onboarding is excluded — you're not a coach yet there.
@@ -104,7 +139,11 @@ export default function UserLayout({ children, showFooter = true }) {
 
               {/* Floating Hamburger Button - Only show when sidebar is closed */}
               {isMobile && !isLandscape && !isSidebarOpen && (
-                <button className="floating-menu-btn" onClick={() => setIsSidebarOpen(true)}>
+                <button
+                  className={`floating-menu-btn${menuHidden ? ' is-hidden' : ''}`}
+                  onClick={() => setIsSidebarOpen(true)}
+                  aria-label="Open menu"
+                >
                   ☰
                 </button>
               )}

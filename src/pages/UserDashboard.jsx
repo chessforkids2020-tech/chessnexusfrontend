@@ -128,15 +128,16 @@ function BadgeUnlockPopup({ badgeInfo, onClose, remaining }) {
 // Gold/teal so it reads distinctly from the purple "enrolled-with-a-coach" chip.
 function CoachBadge() {
   return (
+    // Sizing (font-size/padding/gap) lives in CSS as .welcome-coach-badge so the
+    // mobile rules can shrink it — an inline font-size cannot be beaten by a
+    // media query. Colours stay inline; nothing needs to override those.
     <span
       title="Verified coach on Chess Nexus"
+      className="welcome-coach-badge"
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '5px',
-        padding: '3px 11px',
         borderRadius: 'var(--radius-md)',
-        fontSize: '11px',
         fontWeight: 700,
         color: 'var(--color-text)',
         background: 'var(--color-white-a07)',
@@ -147,23 +148,21 @@ function CoachBadge() {
         textTransform: 'uppercase',
       }}
     >
-      <span style={{ fontSize: '12px' }}>🎓</span>
+      <span className="welcome-coach-badge-cap">🎓</span>
       Coach
       <span
         aria-hidden
         title="Verified"
+        className="welcome-coach-badge-tick"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          width: '13px',
-          height: '13px',
           borderRadius: 'var(--radius-circle)',
           // Near-opaque success fill; the glyph on top uses the page background
           // so it stays legible whichever theme is active.
           background: 'var(--color-success)',
           color: 'var(--color-bg)',
-          fontSize: '9px',
           fontWeight: 900,
           lineHeight: 1,
         }}
@@ -1246,6 +1245,17 @@ export default function UserDashboard() {
   // Founding Supporter → permanent 👑 instead of the ☕. Hook must run unconditionally
   // (rules of hooks), so it takes undefined while `user` is still loading.
   const isFounder = useIsFoundingSupporter(user?.username, user?.displayName, user?._id || user?.id);
+
+  // Name length → size bucket for the welcome heading. CSS cannot measure text,
+  // so the length picks the class and the stylesheet holds the actual sizes
+  // (per breakpoint). Short names get to look big; long ones step down instead
+  // of wrapping into an ugly stack or overflowing the card on a phone.
+  const nameLen = (user?.displayName || user?.username || '').length;
+  const nameSizeClass =
+    nameLen <= 8  ? 'welcome-title--short' :
+    nameLen <= 14 ? 'welcome-title--mid'   :
+    nameLen <= 22 ? 'welcome-title--long'  :
+                    'welcome-title--xlong';
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
@@ -1690,65 +1700,42 @@ export default function UserDashboard() {
                   <UserAvatar user={user} size={120} live />
                 )}
               </div>
-              {/* Share Profile — sits directly under the avatar */}
-              <button
-                className="welcome-share-btn"
-                onClick={() => {
-                  const link = `${window.location.origin}/player/${encodeURIComponent(user.displayName || user.username)}`;
-                  navigator.clipboard.writeText(link);
-                  setProfileLinkCopied(true);
-                  setTimeout(() => setProfileLinkCopied(false), 2500);
-                }}
-                style={{
-                  background: profileLinkCopied ? '#0f766e' : 'var(--obsidian-pill)',
-                  color: profileLinkCopied ? 'var(--color-accent)' : 'var(--obsidian-accent)',
-                  border: profileLinkCopied ? '1px solid rgba(45, 212, 191, 0.35)' : '1px solid var(--obsidian-border)',
-                }}
-              >
-                {profileLinkCopied ? '✓ Copied!' : '🔗 Share Profile'}
-              </button>
             </div>
             <div className="welcome-text">
-              <h1 className="welcome-title">
-                {/* The title belongs before the NAME, not before the greeting.
-                    Rendering it ahead of the whole string produced
-                    "NC Welcome, bb!" — the title attached to the word "Welcome"
-                    instead of the person. Split so the greeting stays a
-                    greeting and the title sits where it does everywhere else:
-                    "Welcome, NC bb!" */}
-                {isPublicView ? (
-                  <>
-                    <NexusTitle title={user.nexusTitle} />
-                    {user.displayName}
-                  </>
-                ) : (
-                  <>
-                    Welcome, <NexusTitle title={user.nexusTitle} />{user.displayName}!
-                  </>
-                )}
+              <h1 className={`welcome-title ${nameSizeClass}`}>
+                {/* Just the name, own view and public view alike — no
+                    "Welcome,". The greeting ate a line of the card and said
+                    nothing; the name is the content. Phones already dropped it;
+                    this is that everywhere. NexusTitle sits before the name, so
+                    it reads "NC bb" the way a title does everywhere else. */}
+                <NexusTitle title={user.nexusTitle} />{user.displayName}
                 {/* A Founding Supporter's permanent 👑 wins. Otherwise the entry
                     tier gets the ♞ — but a titled supporter already has letters,
                     so they never also carry an icon. */}
                 {isFounder
                   ? <FoundingBadge size={26} />
                   : (user.coffeeSupporter && !user.nexusTitle && <KnightBadge size={26} />)}
+                {/* Styling lives in CSS (.welcome-elite), not inline: on phones
+                    the pill is stripped back to a bare 💎 beside the name, and a
+                    media query cannot override an inline style. */}
                 {user.role === 'elite' && (
-                  <span style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    marginLeft: '10px',
-                    background: 'linear-gradient(135deg, var(--color-warning-a20), var(--color-warning-a12))',
-                    border: '1px solid rgba(251,191,36,0.55)',
-                    color: 'var(--color-warning)',
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    padding: '3px 10px',
-                    borderRadius: 'var(--radius-md)',
-                    verticalAlign: 'middle',
-                    textShadow: '0 0 8px var(--color-warning-a30)',
-                    boxShadow: '0 0 12px var(--color-warning-a12)',
-                  }}>
-                    💎 Elite
+                  <span className="welcome-elite" title="Elite">
+                    💎<span className="welcome-elite-text"> Elite</span>
+                  </span>
+                )}
+                {/* Flag beside the NAME on phones only. It is rendered twice —
+                    here and in the pill row below — and CSS shows exactly one:
+                    a single node cannot occupy both places, and moving it with
+                    JS would need a resize listener that could flicker. The pill
+                    row is tight on a phone, so freeing that slot keeps the
+                    identity pills on one line. */}
+                {user.country && (
+                  <span
+                    className="welcome-title-flag"
+                    title={user.country}
+                    aria-hidden="true"
+                  >
+                    <CountryFlag country={user.country} height={20} />
                   </span>
                 )}
               </h1>
@@ -1766,6 +1753,23 @@ export default function UserDashboard() {
                 </p>
               ) : (
                 <p className="welcome-quote welcome-meta-row">
+                  {/* Share leads the row as a bare 🔗 — the label was redundant
+                      next to the icon and pushed the identity pills along. The
+                      tooltip and aria-label carry the meaning for anyone who
+                      needs it; a tick replaces the icon once the link is copied. */}
+                  <button
+                    className={`welcome-meta-pill welcome-share-btn${profileLinkCopied ? ' is-copied' : ''}`}
+                    onClick={() => {
+                      const link = `${window.location.origin}/player/${encodeURIComponent(user.displayName || user.username)}`;
+                      navigator.clipboard.writeText(link);
+                      setProfileLinkCopied(true);
+                      setTimeout(() => setProfileLinkCopied(false), 2500);
+                    }}
+                    title={profileLinkCopied ? 'Profile link copied' : 'Copy a link to your public profile'}
+                    aria-label={profileLinkCopied ? 'Profile link copied' : 'Share profile'}
+                  >
+                    {profileLinkCopied ? '✓' : '🔗'}
+                  </button>
                   {user.memberSince && (
                     <span className="welcome-meta-pill">📅 Joined {new Date(user.memberSince).getFullYear()}</span>
                   )}
@@ -1777,29 +1781,13 @@ export default function UserDashboard() {
                   )}
                 </p>
               )}
-              {user.biography && (
-                <div style={{
-                  margin: '12px 0 0',
-                  maxWidth: '620px',
-                  padding: '12px 16px',
-                  background: 'var(--obsidian-pill, var(--color-white-a04))',
-                  border: '1px solid var(--obsidian-border, var(--color-white-a07))',
-                  borderLeft: '3px solid var(--obsidian-accent, #06b6d4)',
-                  borderRadius: 'var(--radius-lg)',
-                }}>
-                  <p style={{
-                    margin: 0,
-                    fontSize: '14px',
-                    lineHeight: 1.65,
-                    color: 'var(--obsidian-text-soft, #94a3b8)',
-                    whiteSpace: 'pre-wrap',
-                    fontStyle: 'italic',
-                  }}>
-                    “{user.biography}”
-                  </p>
-                </div>
-              )}
             </div>
+
+            {user.biography && (
+              <div className="welcome-bio">
+                <p>“{user.biography}”</p>
+              </div>
+            )}
 
             {/* Right-side trophies: Focus Champion + Marathon + Team Battle + Arena Crown */}
             {(() => {
@@ -1837,7 +1825,7 @@ export default function UserDashboard() {
                 {hasMarathon && (
                   <>
                     {user.isFocusChampion && (
-                      <div style={{ width: '1px', height: '54px', background: 'var(--color-white-a10)', flexShrink: 0 }} />
+                      <div className="welcome-trophy-divider" />
                     )}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '0 3px' }}>
                       {[
@@ -1853,7 +1841,8 @@ export default function UserDashboard() {
                           <img
                             src={`/arenadashboardcrowns/${m.img}.png`}
                             alt={m.label}
-                            style={{ width: '86px', height: '86px', objectFit: 'contain', display: 'block' }}
+                            className="welcome-trophy-img"
+                            style={{ objectFit: 'contain', display: 'block' }}
                           />
                           {m.count > 1 && (
                             <span style={{
@@ -1874,7 +1863,7 @@ export default function UserDashboard() {
                 {hasTeamBattle && (
                   <>
                     {(user.isFocusChampion || hasMarathon) && (
-                      <div style={{ width: '1px', height: '54px', background: 'var(--color-white-a10)', flexShrink: 0 }} />
+                      <div className="welcome-trophy-divider" />
                     )}
                     <div style={{ display: 'flex', alignItems: 'center', padding: '0 3px' }}>
                       <span
@@ -1884,7 +1873,8 @@ export default function UserDashboard() {
                         <img
                           src="/arenadashboardcrowns/teambattle.png"
                           alt="Team Battle Champion"
-                          style={{ width: '86px', height: '86px', objectFit: 'contain', display: 'block' }}
+                          className="welcome-trophy-img"
+                          style={{ objectFit: 'contain', display: 'block' }}
                         />
                         {teamBattleTrophies > 1 && (
                           <span style={{
@@ -1915,7 +1905,7 @@ export default function UserDashboard() {
                   return (
                     <>
                       {(user.isFocusChampion || hasMarathon || hasTeamBattle) && (
-                        <div style={{ width: '1px', height: '54px', background: 'var(--color-white-a10)', flexShrink: 0 }} />
+                        <div className="welcome-trophy-divider" />
                       )}
                       <div className="arena-crown-widget" style={{ padding: '0 3px' }}>
                         <span className={`arena-crown-trophy tier-${tier}`}>👑</span>

@@ -347,7 +347,11 @@ button[style*="closeButton"]:hover {
    Below 640px we drop every OUTER gutter to 0 and keep exactly ONE 10px pad on
    the card itself, so content width = screen − 20px on any phone. */
 @media (max-width: 640px) {
-  .main-content { padding: 0; }
+  /* Clears the floating ☰ (fixed, top:8px, bottom edge ~44px) and no more.
+     Measured: at 26px the avatar's top just clears the button; below that they
+     overlap, which is what this padding exists to prevent. The old 44px pushed
+     the whole page down into a visible empty band. Side gutters stay 0. */
+  .main-content { padding: 26px 0 0; }
   .dashboard-container { padding-left: 0; padding-right: 0; }
 }
 
@@ -534,12 +538,20 @@ button[style*="closeButton"]:hover {
 
 /* Welcome Section */
 .welcome-section {
-  display: flex;
-  align-items: flex-start;      /* top-align so a tall bio doesn't vertically shove the trophies */
+  /* GRID, not flex. The card is two rows — [avatar | name+pills | trophies] and
+     [bio] — and the avatar spans both. As a flex row the bio could only wrap to
+     a line BELOW the avatar (the tallest item), which opened ~80px of dead space
+     beside the name. Grid lets the bio start directly under the text while the
+     avatar simply spans down beside it. */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: start;
   justify-content: flex-start;
-  gap: 28px;
+  gap: 10px 24px;
+  /* Tighter top/bottom than the sides: the card is wide, so vertical padding is
+     what makes it feel empty. Horizontal stays generous. */
   background: var(--obsidian-surface-elevated);
-  padding: 26px 32px;
+  padding: 18px 32px 20px;
   border-radius: var(--radius-2xl);
   box-shadow: var(--obsidian-shadow);
   margin-bottom: 40px;
@@ -554,28 +566,81 @@ button[style*="closeButton"]:hover {
 
 /* Avatar column: the profile picture with the Share Profile button beneath it. */
 .welcome-avatar-col {
+  /* Spans both rows so the bio can sit beside it, not below it. */
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: start;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+
+  /* Holds the avatar alone now — Share Profile moved to the meta pill row, so
+     the column no longer needs a gap for a second child. */
   margin-top: 2px;
 }
+/* Share Profile is a pill in the meta row (Joined / Coach / flag), so it takes
+   .welcome-meta-pill's shape and only overrides what a button needs: the accent
+   text colour, a pointer, and the copied state. Colours were inline on the
+   element; as a class the :hover and .is-copied states can actually apply. */
 .welcome-share-btn {
-  border-radius: var(--radius-pill);
-  padding: 5px 14px;
-  font-size: 12px;
+  color: var(--obsidian-accent);
+  font-family: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  /* Icon only, so the pill is square rather than the wide text shape. The fixed
+     width keeps it from resizing when 🔗 swaps to ✓ on copy, which would shunt
+     the rest of the identity row sideways. */
+  padding: 4px 0;
+  width: 34px;
+  justify-content: center;
+  font-size: 14px;
 }
-.welcome-share-btn:hover { filter: brightness(1.12); }
+.welcome-share-btn:hover {
+  background: var(--color-white-a07);
+  border-color: var(--color-accent-a40);
+}
+.welcome-share-btn.is-copied {
+  background: #0f766e;
+  color: var(--color-accent);
+  border-color: rgba(45, 212, 191, 0.35);
+}
 
 /* The text column grows to fill the space between avatar and trophies. A firm
    min-width guarantees the bio always keeps a readable width even when a user has
    MANY trophies (the trophy panel can't squeeze the bio into a thin column). */
-.welcome-section .welcome-text { flex: 1 1 auto; min-width: 320px; }
+.welcome-section .welcome-text { grid-column: 2; grid-row: 1; min-width: 0; }
+
+
+/* The bio is a direct flex child of the card on its own full-width row
+   (`order: 3` + 100% basis), which is what keeps it readable on a phone — nested
+   in the text column it would be a narrow strip beside the avatar.
+
+   That row begins below the tallest item in row one, which is the 120px avatar
+   — the name + pills are only ~60px, so ~80px of dead space opened up beside
+   the name. `align-items: flex-start` plus a capped avatar column height means
+   the avatar no longer inflates the row; see .welcome-avatar-col below. */
+.welcome-bio {
+  grid-column: 2 / -1;
+  grid-row: 2;
+  margin: 0;
+  max-width: 620px;
+  /* Was inline on the element; moved here so the mobile rules can shrink it. */
+  padding: 12px 16px;
+  background: var(--obsidian-pill, var(--color-white-a04));
+  border: 1px solid var(--obsidian-border, var(--color-white-a07));
+  border-left: 3px solid var(--obsidian-accent, #06b6d4);
+  border-radius: var(--radius-lg);
+}
+.welcome-bio p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--obsidian-text-soft, #94a3b8);
+  white-space: pre-wrap;
+  font-style: italic;
+}
 
 /* Group the right-side trophies/crown into a subtle panel so they read as one
    "achievements" section instead of floating loose. Pinned to the TOP of the card
@@ -586,7 +651,8 @@ button[style*="closeButton"]:hover {
    stacks them onto a second line inside the panel instead of stealing unlimited
    horizontal space from the bio. */
 .welcome-trophies-panel {
-  margin-left: auto;
+  grid-column: 3;
+  grid-row: 1;
   flex-shrink: 0;
   display: flex;
   flex-wrap: wrap;
@@ -606,11 +672,39 @@ button[style*="closeButton"]:hover {
    would look odd on a new row — hide dividers that land at a row start is hard in
    pure CSS, so we simply let them sit; the small gap keeps it readable. */
 
-/* Small screens: stack the whole card vertically so nothing competes for width. */
+/* Small screens: the avatar and the NAME stay side by side on row 1 — there is
+   plenty of room next to a 96px picture. The wide things (bio, trophies) each
+   take a full-width row underneath, spanning BOTH columns so the bio gets the
+   card's whole width instead of a ~250px strip beside the avatar. */
 @media (max-width: 720px) {
-  .welcome-section { flex-wrap: wrap; }
-  .welcome-section .welcome-text { min-width: 0; flex-basis: 100%; }
-  .welcome-trophies-panel { margin-left: 0; max-width: none; }
+  .welcome-section {
+    /* Two columns here: the trophy panel drops to its own row. */
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px 16px;
+    padding: 20px 18px;
+  }
+  /* Avatar no longer spans rows — the bio goes full width beneath it. */
+  .welcome-avatar-col { grid-row: 1; }
+  .welcome-section .welcome-text { grid-column: 2; grid-row: 1; min-width: 0; }
+  .welcome-section .welcome-bio {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    max-width: none;
+  }
+  .welcome-trophies-panel {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    max-width: none;
+    justify-content: flex-start;
+    margin-top: 0;
+  }
+}
+
+/* Phones: the name has to fit a ~180px column, so drop the type again and let
+   long display names wrap rather than overflow the card. */
+@media (max-width: 480px) {
+  .welcome-section { gap: 14px; padding: 18px 14px; }
+
 }
 
 .welcome-section::before {
@@ -683,6 +777,20 @@ button[style*="closeButton"]:hover {
   text-transform: uppercase;
   text-align: center;
   white-space: nowrap;
+}
+
+/* Marathon / Team Battle trophy images and the dividers between them. These
+   were inline width/height + a 54px divider; moved to classes so the mobile
+   rules can shrink them (a media query cannot beat an inline style). */
+.welcome-trophy-img {
+  width: 86px;
+  height: 86px;
+}
+.welcome-trophy-divider {
+  width: 1px;
+  height: 54px;
+  background: var(--color-white-a10);
+  flex-shrink: 0;
 }
 
 /* ── Monthly Focus Champion Trophy ── */
@@ -803,6 +911,15 @@ button[style*="closeButton"]:hover {
   font-size: 3rem;
 }
 
+/* UserAvatar renders with an INLINE width/height from its size={120} prop, so no
+   stylesheet rule can resize it. Force its direct child to fill the wrapper
+   instead — then resizing .welcome-avatar-wrap alone resizes the avatar too. */
+.welcome-avatar-wrap > * {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+
 /* Chess Image */
 .chess-image {
   width: 80px;
@@ -814,7 +931,7 @@ button[style*="closeButton"]:hover {
 
 /* Welcome Title */
 .welcome-title {
-  font-size: 28px;
+  font-size: 34px;
   color: var(--color-text);
   font-weight: 700;
   background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
@@ -823,7 +940,80 @@ button[style*="closeButton"]:hover {
   background-clip: text;
   position: relative;
   z-index: 2;
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
+}
+
+/* Elite badge — desktop keeps the full "💎 Elite" pill. These were inline styles
+   on the element; they moved here so the mobile rules below can override them. */
+.welcome-elite {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 10px;
+  background: linear-gradient(135deg, var(--color-warning-a20), var(--color-warning-a12));
+  border: 1px solid rgba(251, 191, 36, 0.55);
+  color: var(--color-warning);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-md);
+  vertical-align: middle;
+  text-shadow: 0 0 8px var(--color-warning-a30);
+  box-shadow: 0 0 12px var(--color-warning-a12);
+  /* The h1 paints its text with a clipped gradient; without this the badge
+     would inherit the transparent fill and the 💎 would disappear. */
+  -webkit-text-fill-color: var(--color-warning);
+}
+
+/* Mobile avatar/title sizing.
+
+   These MUST live after the base .welcome-avatar-wrap / .welcome-title rules
+   above: the media queries earlier in this file have the same specificity, so
+   the later base rule was overriding them and the avatar stayed 120px. */
+@media (max-width: 720px) {
+  /* A smaller picture buys the name more room without losing presence. */
+  .welcome-avatar-wrap { width: 96px; height: 96px; }
+  .welcome-avatar-initials { font-size: 2rem; }
+  .welcome-avatar-emoji { font-size: 2.4rem; }
+  /* No font-size here — the per-length buckets below own it, and a blanket
+     rule at equal specificity would override them. */
+  .welcome-title { margin-bottom: 10px; }
+
+
+  /* Elite on phones = just the 💎 next to the name. The word and the pill box
+     ate room the name needed; the diamond alone still reads as the badge. */
+  .welcome-elite-text { display: none; }
+
+  .welcome-elite {
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin-left: 7px;
+    font-size: 0.7em;   /* scales with the name's bucket size */
+  }
+
+  /* Length-based sizing. Short names stay large and confident; long ones step
+     down so they still fit the column beside the avatar. */
+  .welcome-title--short { font-size: 30px; }
+  .welcome-title--mid   { font-size: 25px; }
+  .welcome-title--long  { font-size: 21px; }
+  .welcome-title--xlong { font-size: 18px; }
+}
+
+@media (max-width: 480px) {
+  .welcome-avatar-wrap { width: 68px; height: 68px; }
+  .welcome-avatar-initials { font-size: 1.6rem; }
+  .welcome-avatar-emoji { font-size: 1.9rem; }
+  .welcome-title {
+    line-height: 1.25;
+    margin-bottom: 8px;
+    overflow-wrap: anywhere;
+  }
+  /* Narrower column here (~76px avatar + gap), so each bucket steps down again. */
+  .welcome-title--short { font-size: 26px; }
+  .welcome-title--mid   { font-size: 22px; }
+  .welcome-title--long  { font-size: 18px; }
+  .welcome-title--xlong { font-size: 15px; }
 }
 
 /* Welcome Quote */
@@ -2529,6 +2719,187 @@ button.today-chip:hover {
     display: inline;
     font-size: 12.5px;
   }
-  .today-strip { gap: 8px; }
-  .today-chip { font-size: 12.5px; padding: 8px 12px; }
+}
+
+/* ── Mobile: keep the welcome card compact ────────────────────────────────
+   The trophy row and the bio were sized for a desktop card; at phone width
+   they dominated the screen. Scale both down so the card stays short without
+   losing anything. Placed at the end of the file so these win over the base
+   rules above regardless of where those sit. */
+@media (max-width: 720px) {
+  /* About / biography text */
+  .welcome-bio { padding: 10px 12px; }
+  .welcome-bio p { font-size: 12.5px; line-height: 1.5; }
+
+  /* Trophies */
+  .welcome-trophy-img { width: 54px; height: 54px; }
+  .champion-trophy-img { width: 54px; height: 54px; }
+  .arena-crown-trophy { font-size: 28px; }
+  .arena-crown-label { font-size: 9px; }
+  .welcome-trophy-divider { height: 34px; }
+  .welcome-trophies-panel { padding: 2px 8px 4px; gap: 2px 0; }
+}
+
+@media (max-width: 480px) {
+  .welcome-bio { padding: 9px 11px; }
+  .welcome-bio p { font-size: 11.5px; line-height: 1.45; }
+
+  .welcome-trophy-img { width: 44px; height: 44px; }
+  .champion-trophy-img { width: 44px; height: 44px; }
+  .arena-crown-trophy { font-size: 23px; }
+  .arena-crown-label { font-size: 8px; }
+  .welcome-trophy-divider { height: 28px; }
+}
+
+/* Share Profile shows on every size now that it is a bare 🔗 icon — it was
+   hidden on phones only while it was a wide labelled button that wrapped the
+   identity row onto a second line. Shrink it in step with the other pills.
+
+   MUST live at the end of the file: .welcome-share-btn also carries
+   .welcome-meta-pill, whose sizing is declared further down at equal
+   specificity, so a rule placed with the other mobile trims loses the cascade. */
+@media (max-width: 720px) {
+  .welcome-share-btn { width: 30px; font-size: 12.5px; padding: 3px 0; }
+}
+@media (max-width: 480px) {
+  .welcome-share-btn { width: 27px; font-size: 11.5px; padding: 2px 0; }
+}
+
+/* ── Identity pill row: base size + mobile scale ──────────────────────────
+   Joined / Coach / flag are metadata, not headline content — they should read
+   noticeably smaller than the display name. CoachBadge carried its sizing
+   inline (font-size, padding, gap), so it could not be shrunk from a media
+   query at all; those values now live here.
+
+   Like the Share Profile rule above, these MUST sit at the end of the file:
+   .welcome-meta-pill's base `font-size: 13px` is declared further down than the
+   mobile block that used to hold these, so at equal specificity the base rule
+   won and the pills stayed desktop-sized on phones. */
+.welcome-coach-badge {
+  gap: 5px;
+  padding: 3px 11px;
+  font-size: 11px;
+}
+.welcome-coach-badge-cap { font-size: 12px; }
+.welcome-coach-badge-tick { width: 13px; height: 13px; font-size: 9px; }
+
+@media (max-width: 760px) {
+  .welcome-meta-row { gap: 6px; }
+  .welcome-meta-pill { padding: 3px 9px; font-size: 11.5px; }
+  .welcome-meta-flag { padding: 3px 7px; }
+  .welcome-meta-flag img { height: 14px; }
+  .welcome-coach-badge { gap: 4px; padding: 2px 8px; font-size: 10px; }
+  .welcome-coach-badge-cap { font-size: 10px; }
+  .welcome-coach-badge-tick { width: 11px; height: 11px; font-size: 8px; }
+}
+
+@media (max-width: 480px) {
+  .welcome-meta-row { gap: 5px; }
+  .welcome-meta-pill { padding: 2px 8px; font-size: 10.5px; }
+  .welcome-meta-flag { padding: 2px 6px; }
+  .welcome-meta-flag img { height: 12px; }
+  .welcome-coach-badge { gap: 3px; padding: 2px 7px; font-size: 9.5px; }
+  .welcome-coach-badge-cap { font-size: 9px; }
+  .welcome-coach-badge-tick { width: 10px; height: 10px; font-size: 7px; }
+}
+
+/* ── Phones: keep the identity pills on ONE line ──────────────────────────
+   The avatar takes ~96px of a ~390px card, leaving the text column around
+   260px — narrower than Joined + Coach + flag + link laid end to end, so the
+   row wrapped to two (at 360px, three) lines and made the card tall and messy.
+   Trimming the horizontal padding and the row gap fits them on one line down
+   to ~360px; below that they wrap, which is the right outcome at that size. */
+@media (max-width: 480px) {
+  .welcome-meta-row { gap: 4px; }
+  .welcome-meta-pill { padding: 2px 6px; font-size: 10px; gap: 4px; }
+  .welcome-meta-flag { padding: 2px 5px; }
+  .welcome-meta-flag img { height: 11px; }
+  .welcome-coach-badge { gap: 3px; padding: 2px 6px; font-size: 9px; }
+  .welcome-share-btn { width: 24px; font-size: 11px; padding: 2px 0; }
+}
+
+/* ── Country flag: beside the NAME on phones, in the pill row on desktop ──
+   Two nodes, one visible at a time (see the JSX comment). On a phone the pill
+   row is tight, so the flag moves up next to the display name where there is
+   free space beside a short name; on desktop it stays with the other identity
+   pills, which is where it reads as metadata.
+
+   At the end of the file so these beat .welcome-meta-flag's own display rule,
+   which is declared later than the mobile blocks above. */
+.welcome-title-flag { display: none; }
+
+@media (max-width: 760px) {
+  .welcome-title-flag {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin-left: 9px;
+    line-height: 0;
+    /* The h1 clips its gradient to the text; without this the flag inherits the
+       transparent fill and disappears. */
+    -webkit-text-fill-color: initial;
+  }
+  .welcome-title-flag img { border-radius: var(--radius-sm); }
+  .welcome-meta-flag { display: none; }
+}
+
+@media (max-width: 480px) {
+  .welcome-title-flag { margin-left: 7px; }
+  .welcome-title-flag img { height: 15px; }
+}
+
+/* Tablet/narrow desktop (721-900px): the text column is squeezed between the
+   120px avatar and the trophy panel, leaving ~260px for pills that need ~300px
+   at full size — so the identity row wrapped to two lines just above the phone
+   breakpoint. Step the pills down a little; the flag is still in the row here. */
+@media (max-width: 900px) and (min-width: 761px) {
+  .welcome-meta-row { gap: 6px; }
+  .welcome-meta-pill { padding: 3px 9px; font-size: 12px; }
+  .welcome-meta-flag { padding: 3px 7px; }
+  .welcome-meta-flag img { height: 14px; }
+  .welcome-coach-badge { gap: 4px; padding: 2px 8px; font-size: 10px; }
+  .welcome-share-btn { width: 30px; font-size: 12.5px; padding: 3px 0; }
+}
+
+/* ── Phones: compact streak / report / help chips ────────────────────────
+   These are secondary actions but were rendering at nearly full desktop size
+   (38px tall, 13.5px text) and eating a whole band of a small screen. The old
+   shrink only fired below 600px and trimmed 4px, so on most phones in landscape
+   and on narrow windows nothing happened at all — 720px matches the breakpoint
+   the rest of the dashboard's mobile layout uses. */
+@media (max-width: 720px) {
+  .today-strip { gap: 6px; margin: 2px 0 12px; }
+  .today-chip {
+    font-size: 11.5px;
+    padding: 5px 10px;
+    gap: 5px;
+  }
+  .today-chip-emoji { font-size: 12.5px; }
+}
+
+@media (max-width: 480px) {
+  .today-strip { gap: 5px; margin: 2px 0 10px; }
+  .today-chip {
+    font-size: 10.5px;
+    padding: 4px 9px;
+    gap: 4px;
+  }
+  .today-chip-emoji { font-size: 11.5px; }
+}
+
+/* The compact chips are ~24px tall, below the ~44px touch-target guideline, so
+   each one gets an invisible overlay that extends its TAPPABLE area vertically
+   without changing how big it looks or shifting the layout. `position` is set
+   on the chip only inside the media query so the desktop chip is untouched. */
+@media (max-width: 720px) {
+  .today-chip { position: relative; }
+  .today-chip::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    /* Grows the hit box to ~40px around a 24-27px chip. */
+    top: -8px;
+    bottom: -8px;
+  }
 }

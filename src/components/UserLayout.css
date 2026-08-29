@@ -234,34 +234,58 @@
   }
 }
 
-/* Floating Menu Button for Mobile */
+/* Floating Menu Button for Mobile.
+
+   A bare glyph, not a boxed button: the old 36px block with a border, solid
+   background, blur and drop-shadow read as a heavy chrome element sitting on
+   top of the page. Just the ☰ in the accent colour is unmistakable and takes a
+   fraction of the space.
+
+   It still needs `position: fixed` — this is the ONLY control that opens the
+   sidebar on mobile (there is no swipe gesture), so it must not become
+   unreachable mid-page. Instead it HIDES while scrolling down and slides back
+   the instant the user scrolls up (.is-hidden, toggled in UserLayout.jsx), so
+   it never sits on top of content while reading. */
 .floating-menu-btn {
   position: fixed;
-  top: 12px;
-  left: 12px;
+  top: 8px;
+  left: 10px;
   z-index: 1001;
-  background: var(--color-bg);
+  background: none;
   color: var(--color-accent);
-  border: 1px solid var(--color-accent-a30);
+  border: none;
   border-radius: var(--radius-md);
-  /* 36px keeps the button comfortably tappable while taking far less of a small
-     screen than the old 44px block, which visually dominated the top-left corner. */
-  width: 36px;
-  height: 36px;
-  font-size: 1.05rem;
+  /* Visually ~26px; the padding grows the TAP target back to ~40px without
+     drawing anything, so the small glyph is still comfortably tappable. */
+  width: auto;
+  height: auto;
+  padding: 7px 9px;
+  font-size: 1.35rem;
   line-height: 1;
   cursor: pointer;
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 12px var(--color-black-a35);
-  transition: all 0.3s ease;
+  box-shadow: none;
+  /* Keeps the glyph legible over a light card without painting a box. */
+  text-shadow: 0 1px 6px var(--color-black-a35);
+  transition: transform 0.25s ease, opacity 0.25s ease;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Scrolled down: slide up and out of the way. Kept in the DOM (not
+   display:none) so it can animate back and stays focusable-on-return. */
+.floating-menu-btn.is-hidden {
+  transform: translateY(-140%);
+  opacity: 0;
+  pointer-events: none;
+}
+
 .floating-menu-btn:hover {
-  background: var(--color-accent-a15);
-  transform: scale(1.1);
-  border-color: var(--color-accent-a40);
+  color: var(--color-accent-2, var(--color-accent));
+  transform: scale(1.08);
+}
+
+/* Users who prefer reduced motion get an instant swap, not a slide. */
+@media (prefers-reduced-motion: reduce) {
+  .floating-menu-btn { transition: none; }
 }
