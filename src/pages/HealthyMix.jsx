@@ -720,13 +720,19 @@ export default function HealthyMix() {
       // is left after the chrome. This is exact — no percentage fudge factor.
       const avail = el.clientWidth - FRAME_CHROME;
       if (window.innerWidth <= 960) {
-        // Single-column layout: fill the column, bounded by the viewport. Phones
-        // use the same 16px inset as Daily Puzzles (see fitToViewport above), and
-        // we take the LARGER of column/viewport-derived width so a narrow parent
-        // column can't hold the board below full width.
-        const inset = window.innerWidth <= 480 ? 16 : 48;
-        const byViewport = window.innerWidth - inset - FRAME_CHROME;
-        setBoardSize(Math.max(MIN_BOARD, Math.min(Math.max(avail, byViewport), byViewport)));
+        // Single-column layout: the board spans the FULL viewport width, edge to
+        // edge, exactly like fitToViewport above and like the full-bleed cards
+        // beside it.
+        //
+        // This used to subtract a 16px (phone) / 48px (tablet) inset. THIS is the
+        // function that actually governs the board — it runs from a
+        // ResizeObserver and overwrites whatever fitToViewport computed at first
+        // paint — so that inset survived every other full-bleed fix and was the
+        // visible strip either side of the board. Height still bounds it, since
+        // a square board cannot exceed the screen height.
+        const byViewport = window.innerWidth - FRAME_CHROME;
+        const byHeight = window.innerHeight - VERT_FALLBACK;
+        setBoardSize(Math.max(MIN_BOARD, Math.min(byViewport, byHeight)));
       } else {
         // Desktop: capped by the column AND by viewport height so a tall board
         // never scrolls off — and never wider than the column, or it draws over
