@@ -245,8 +245,14 @@ const Chessboard: React.FC<ChessboardProps> = ({
   // device with ZERO overflow — we clamp the requested width on viewports
   // <= 1024px by BOTH the viewport width and a fraction of the viewport height.
   // Desktop (> 1024px) uses exactly the width the page asked for, unchanged.
+  // clientWidth, not innerWidth: innerWidth INCLUDES a classic scrollbar, so the
+  // cap below could exceed the VISIBLE width and the board would either overhang
+  // or, once a page clamped it, sit a few px narrow. Pages size themselves from
+  // clientWidth too, so both sides now agree on what "full width" means.
   const readViewport = () => ({
-    w: typeof window !== 'undefined' ? window.innerWidth : 1280,
+    w: typeof document !== 'undefined'
+      ? (document.documentElement.clientWidth || window.innerWidth)
+      : 1280,
     h: typeof window !== 'undefined' ? window.innerHeight : 800,
   });
   const [viewport, setViewport] = useState(readViewport);
@@ -1703,8 +1709,13 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
         ref={boardRef}
         style={{
           display: 'grid',
-          gridTemplateColumns: `repeat(8, ${squareSize}px)`,
-          gridTemplateRows: `repeat(8, ${squareSize}px)`,
+          // 1fr, not a fixed px square: squareSize is usually fractional
+          // (390 / 8 = 48.75), and eight independently-rounded px columns do not
+          // add up to the board's width — the remainder showed as a hairline
+          // strip down one edge. Fractions tile the container exactly, and the
+          // browser distributes the sub-pixel remainder across the columns.
+          gridTemplateColumns: 'repeat(8, 1fr)',
+          gridTemplateRows: 'repeat(8, 1fr)',
           border: frameWidth ? `${frameWidth}px solid #8B4513` : 'none',
           borderRadius: `${frameRadius}px`,
           overflow: 'hidden',
