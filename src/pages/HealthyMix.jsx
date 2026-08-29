@@ -482,10 +482,11 @@ export default function HealthyMix() {
   // 320px sidebar), clamped to a sensible range — big screen → big board.
   const fitToViewport = (preferred) => {
     if (typeof window === 'undefined') return preferred;
-    // clientWidth, not innerWidth: innerWidth INCLUDES a classic scrollbar, so an
-    // edge-to-edge board sized from it comes out ~15px wider than the visible
-    // page and overhangs one side.
-    const w = document.documentElement.clientWidth || window.innerWidth;
+    // innerWidth (full device width), matching .hm-board-col's 100dvw breakout:
+    // the board should span the device exactly like the rating/moves cards do
+    // and let the page scroll over it. clientWidth subtracts a classic
+    // scrollbar and left the board one scrollbar narrower than those cards.
+    const w = window.innerWidth;
     if (w <= 960) {
       // Single-column layout (phones AND tablets/iPad): the board goes edge to
       // edge — inset 0, and `preferred` deliberately NOT applied. It capped the

@@ -106,10 +106,11 @@ export default function Puzzles() {
   // on every screen size and Windows DPI scaling level.
   useEffect(() => {
     const updateBoardSize = () => {
-      // clientWidth, not innerWidth: innerWidth INCLUDES a classic scrollbar, so
-      // sizing an edge-to-edge board from it made the board ~15px wider than the
-      // visible page — it overhung one side and left a gap on the other.
-      const width = document.documentElement.clientWidth || window.innerWidth;
+      // innerWidth (full device width), matching .board-fullbleed's 100dvw:
+      // the board spans the device and the page scrolls over it, exactly like
+      // the other full-bleed cards. clientWidth subtracts a classic scrollbar
+      // and left the board a hairline narrower than them.
+      const width = window.innerWidth;
       // A board is SQUARE, so height matters as much as width. Sizing by width
       // alone (the old behaviour) overflowed short/wide windows — the top rank was
       // cut off and the board ran past the viewport. 78% of the viewport height

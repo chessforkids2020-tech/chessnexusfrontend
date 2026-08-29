@@ -245,14 +245,15 @@ const Chessboard: React.FC<ChessboardProps> = ({
   // device with ZERO overflow — we clamp the requested width on viewports
   // <= 1024px by BOTH the viewport width and a fraction of the viewport height.
   // Desktop (> 1024px) uses exactly the width the page asked for, unchanged.
-  // clientWidth, not innerWidth: innerWidth INCLUDES a classic scrollbar, so the
-  // cap below could exceed the VISIBLE width and the board would either overhang
-  // or, once a page clamped it, sit a few px narrow. Pages size themselves from
-  // clientWidth too, so both sides now agree on what "full width" means.
+  // innerWidth (the FULL device width, scrollbar area included), not
+  // clientWidth. A full-bleed card is laid out with 100dvw, so it spans the
+  // whole device and the page simply scrolls over it. Measuring the board with
+  // clientWidth instead made it exactly one scrollbar narrower than those cards
+  // — the hairline strip beside the board while every other card sat flush.
+  // Overflow is not a risk: the page hides overflow-x on mobile, and the board
+  // is additionally clamped to its own container below.
   const readViewport = () => ({
-    w: typeof document !== 'undefined'
-      ? (document.documentElement.clientWidth || window.innerWidth)
-      : 1280,
+    w: typeof window !== 'undefined' ? window.innerWidth : 1280,
     h: typeof window !== 'undefined' ? window.innerHeight : 800,
   });
   const [viewport, setViewport] = useState(readViewport);
