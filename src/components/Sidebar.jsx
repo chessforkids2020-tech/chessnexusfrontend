@@ -668,10 +668,17 @@ export default function Sidebar({ user, onNavigate }) {
         zIndex: (isMobile || isLandscape) && isExpanded ? 1001 : 100,
       }}>
         <div style={styles.sidebarContent}>
-          {/* Close button for mobile expanded view */}
+          {/* Close button for mobile expanded view.
+              MUST also call onNavigate(): on mobile portrait UserLayout wraps
+              this sidebar in a 60px-wide .sidebar-mobile panel and only unmounts
+              it when ITS own isSidebarOpen goes false. Collapsing just this
+              component left that empty 60px strip on screen — a dark bar down
+              the left edge with no icons or text, which is what users saw after
+              pressing X. Navigation already closed the parent (see the nav
+              handler's onNavigate call); the X did not. */}
           {(isMobile || isLandscape) && isExpanded && (
             <button
-              onClick={() => setIsExpanded(false)}
+              onClick={() => { setIsExpanded(false); if (onNavigate) onNavigate(); }}
               style={{
                 position: 'absolute',
                 top: '90px',

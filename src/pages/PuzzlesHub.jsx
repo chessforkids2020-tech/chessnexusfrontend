@@ -60,13 +60,19 @@ export default function PuzzlesHub() {
         <div className="hub-focus-card">
           <div className="hub-focus-left-glow" />
 
+          {/* "Active Now" is pinned to the card's top-right corner (see
+              .hub-focus-active-badge), so it reads as a status flag on the card
+              rather than a caption under the icon — the same place the Puzzles
+              hero puts its FEATURED badge. */}
+          <span className="hub-focus-active-badge">Active Now</span>
+
           <div className="hub-focus-icon-wrap">
             <span className="hub-focus-big-icon">🎯</span>
-            <span className="hub-focus-active-badge">Active Now</span>
           </div>
 
           <div className="hub-focus-info">
-            <p className="hub-focus-eyebrow">Monthly Challenge</p>
+            {/* The "Monthly Challenge" eyebrow was removed: it repeated the
+                title directly beneath it. */}
             <h3 className="hub-focus-title">Monthly Focus Challenge</h3>
             <p className="hub-focus-desc">7-day tactical training program • Earn XP & unlock achievements</p>
           </div>

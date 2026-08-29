@@ -150,6 +150,14 @@ function MovesPanel({ plies, shownPlyIdx, atLive, navFirst, navPrev, navNext, na
   );
 }
 
+// "White to move — find the best move." / "Black to move — …".
+// Reads the side straight off the position rather than the `orientation` state:
+// every caller sets that with setOrientation() in the same tick, so the state
+// still holds the PREVIOUS puzzle's side when the message is built.
+function turnPrompt(game) {
+  return `${game.turn() === 'w' ? 'White' : 'Black'} to move — find the best move.`;
+}
+
 export default function HealthyMix() {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
@@ -188,6 +196,10 @@ export default function HealthyMix() {
   const redoIdxRef = useRef(0);
   const [redoTotal, setRedoTotal] = useState(0);
   const [redoSolved, setRedoSolved] = useState(0);
+  // Mobile-only "more" sheet: training modes, rating + dashboard, and the
+  // session strip. Opened from the burger beside the move buttons under the
+  // board, so those never take a row of their own on a phone.
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [redoDone, setRedoDone] = useState(false);
 
   // Which training mode this session is — used to tag analytics so the admin
@@ -950,7 +962,7 @@ export default function HealthyMix() {
     setSquareEvals({});
     setOrientation(game.turn() === 'w' ? 'white' : 'black');
     setStatusSynced('solving');
-    setMessage('Your turn — find the best move.');
+    setMessage(turnPrompt(game));
     setLoading(false);
   }, [setStatusSynced, clearVariations]);
 
@@ -1060,7 +1072,7 @@ export default function HealthyMix() {
       clearVariations();
       setOrientation(game.turn() === 'w' ? 'white' : 'black');
       setStatusSynced('solving');
-      setMessage('Your turn — find the best move.');
+      setMessage(turnPrompt(game));
       setLoading(false);
     } catch (err) {
       setStatusSynced('loading');
@@ -1381,7 +1393,7 @@ export default function HealthyMix() {
     setSelection(null);   // …and the square labels go with it
     setSquareEvals({});
     setStatusSynced('solving');
-    setMessage(failedRef.current ? 'Retry — find the right line (no points).' : 'Your turn — find the best move.');
+    setMessage(failedRef.current ? 'Retry — find the right line (no points).' : turnPrompt(game));
   }, [puzzle, setStatusSynced, clearVariations]);
 
   // Copy the puzzle's STARTING fen (puzzle.fen is the position at the beginning,
@@ -1874,6 +1886,51 @@ export default function HealthyMix() {
             </div>
           </div>
 
+          {/* ── MOBILE TOOLBAR (phones/tablets only; CSS hides it on desktop) ──
+              Directly under the board:
+                move buttons  |  Stockfish on/off  |  burger
+              The move buttons are DISABLED until the puzzle is over, so the
+              line cannot be stepped through as a hint while solving. The
+              Stockfish toggle only appears once the puzzle is over, for the
+              same reason. The burger is ALWAYS enabled — it holds navigation,
+              not puzzle information. */}
+          <div className="hm-mobilebar" style={{ width: boardSize }}>
+            {/* Identical gating to the Moves card's own arrows — atStart /
+                atLive, nothing else. Back enables as soon as there is a move to
+                step back to, and forward enables once you have stepped back.
+                An earlier `!puzzleOver` gate here was wrong: it kept the arrows
+                dead while solving even after moves had been played, which is
+                not how the moves card behaves. */}
+            <span className="hm-mobilebar-nav">
+              <button className="hm-nav-btn" onClick={navFirst} disabled={atStart} title="Start">⏮</button>
+              <button className="hm-nav-btn" onClick={navPrev}  disabled={atStart} title="Previous move">◀</button>
+              <button className="hm-nav-btn" onClick={navNext}  disabled={atLive}  title="Next move">▶</button>
+              <button className="hm-nav-btn" onClick={navLast}  disabled={atLive}  title="Latest">⏭</button>
+            </span>
+
+            {puzzleOver && (
+              <button
+                type="button"
+                className={`hm-mobilebar-engine${engineOn ? ' on' : ''}`}
+                onClick={() => setEngineOn(v => !v)}
+                aria-pressed={engineOn}
+                title="Stockfish analysis"
+              >
+                🐟 <span className="hm-mobilebar-engine-state">{engineOn ? 'On' : 'Off'}</span>
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="hm-mobilebar-burger"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Training modes, rating and session"
+              title="More"
+            >
+              ☰
+            </button>
+          </div>
+
           {/* Board tools — Retry · Copy FEN · Square evals, in one row directly
               under the board and above the session strip. They were split
               across two columns (the pill in the left sidebar, Retry/Copy FEN
@@ -1895,7 +1952,10 @@ export default function HealthyMix() {
                 aria-pressed={squareEvalsOn}
                 title="Click a piece and every square it can reach shows the eval after moving there."
               >
-                🎯 Square evals
+                {/* Labelled just "Eval" on the narrow mobile row — "Square
+                    evals" is the long form kept for wider screens. */}
+                🎯 <span className="hm-boardtool-longlabel">Square evals</span>
+                <span className="hm-boardtool-shortlabel">Eval</span>
                 <span className="hm-boardtool-state">
                   {squareEvalsOn ? (evalBusy ? '…' : 'On') : 'Off'}
                 </span>
@@ -1991,6 +2051,76 @@ export default function HealthyMix() {
         </div>
 
       </div>
+
+      {/* ── MOBILE "more" SHEET ──────────────────────────────────────────────
+          Everything the phone layout takes off the main column: the four
+          training modes, the player's rating with the Puzzle Dashboard button,
+          and this session's result strip. Opened from the burger beside the
+          move buttons. */}
+      {mobileMenuOpen && (
+        <div className="hm-sheet-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="hm-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Training menu">
+            <div className="hm-sheet-head">
+              <span className="hm-sheet-title">Training</span>
+              <button className="hm-sheet-close" onClick={() => setMobileMenuOpen(false)} aria-label="Close">×</button>
+            </div>
+
+            {/* Rating + dashboard */}
+            <div className="hm-sheet-rating">
+              <div className="hm-sheet-rating-label">Your Puzzle Rating</div>
+              <div className="hm-sheet-rating-value">
+                {rating}
+                {ratingDelta !== 0 && (
+                  <span className={`hm-rating-delta ${ratingDelta > 0 ? 'up' : 'down'}`}>
+                    {ratingDelta > 0 ? `+${ratingDelta}` : ratingDelta}
+                  </span>
+                )}
+              </div>
+              <button
+                className="hm-dash-btn"
+                onClick={() => { setMobileMenuOpen(false); navigate('/puzzle-dashboard'); }}
+              >
+                📊 My Puzzle Dashboard
+              </button>
+            </div>
+
+            {/* Training modes — all four */}
+            <div className="hm-sheet-section">
+              <div className="hm-modes-label">Training mode</div>
+              <div className="hm-modes">
+                <button className={`hm-mode-btn ${trainingMode === 'healthymix' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); navigate('/training/healthy-mix'); }}>🧩 Healthy Mix</button>
+                <button className={`hm-mode-btn ${trainingMode === 'themes' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); navigate('/puzzles/themes'); }}>🎯 Themes</button>
+                <button className={`hm-mode-btn ${trainingMode === 'pieces' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); navigate('/puzzles/pieces'); }}>♟️ Pieces</button>
+                <button className={`hm-mode-btn ${trainingMode === 'rating' ? 'hm-mode-on' : ''}`} onClick={() => { setMobileMenuOpen(false); setShowRatingModal(true); }}>📊 Rating</button>
+              </div>
+            </div>
+
+            {/* This session */}
+            {sessionHistory.length > 0 && (
+              <div className="hm-sheet-section">
+                <div className="hm-modes-label">This session</div>
+                <div className="hm-history-count">
+                  <span className="hm-green">{sessionCorrect} ✓</span>
+                  {' · '}
+                  <span className="hm-red">{sessionWrong} ✗</span>
+                </div>
+                <div className="hm-history-marks">
+                  {sessionHistory.map((h, i) => {
+                    const pts = h.points;
+                    const scored = typeof pts === 'number' && pts !== 0;
+                    const label = scored ? (pts > 0 ? `+${pts}` : `${pts}`) : (h.correct ? '✓' : '✗');
+                    return (
+                      <span key={i} className={`hm-mark ${h.correct ? 'hm-mark-ok' : 'hm-mark-bad'}${scored ? ' hm-mark-pts' : ''}`}>
+                        {label}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Rating band picker */}
       {showRatingModal && (

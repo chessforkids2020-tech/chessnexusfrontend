@@ -12,11 +12,18 @@
 }
 
 .bap-modal {
+  /* border-box so max-width INCLUDES the padding — with content-box the modal
+     rendered 48px wider than its max-width, and the surplus showed as space
+     beside the board. */
+  box-sizing: border-box;
   background: rgba(20, 20, 22, 0.98);
   border: 1px solid var(--color-accent-2-a30);
   border-radius: var(--radius-2xl);
   width: 100%;
-  max-width: 760px;
+  /* Sized to its content exactly: 680 board + 16 gap + 300 side + 2x24 padding
+     = 1044. Any surplus here shows up as an empty band beside the board,
+     because the side column absorbs it. */
+  max-width: 1044px;
   max-height: 92vh;
   overflow-y: auto;
   padding: 22px 24px;
@@ -158,4 +165,35 @@
   font-size: 12px;
   color: var(--color-text-muted);
   text-align: center;
+}
+
+/* ── Phones/tablets: the assignment player is a FULL-SCREEN sheet ─────────
+   As a centred modal it was unusable on a phone: 16px overlay padding + 24px
+   modal padding took 80px of width before the board started, so the board was
+   clipped on both sides, and the rounded card floating over a blurred page
+   left the host page's sticky header showing through around it.
+
+   Full screen removes both problems — the board gets the whole width, and
+   nothing of the page behind is visible. Desktop keeps the centred card. */
+@media (max-width: 1024px) {
+  .bap-overlay {
+    padding: 0;
+    align-items: stretch;
+    /* Above any page chrome (My Coach's sticky bar sits at z-index 30). */
+    z-index: 3000;
+  }
+  .bap-modal {
+    max-width: none;
+    max-height: none;
+    height: 100%;
+    border: none;
+    border-radius: 0;
+    padding: 12px 10px calc(14px + env(safe-area-inset-bottom, 0px));
+    background: var(--color-bg, #0a0a0c);
+  }
+  .bap-head { margin-bottom: 12px; }
+  .bap-title { font-size: 16px; }
+  .bap-sub { font-size: 11.5px; line-height: 1.35; }
+  /* The board fills the sheet's content width. */
+  .bap-board { width: 100%; display: flex; justify-content: center; }
 }

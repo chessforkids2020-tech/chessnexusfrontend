@@ -1135,17 +1135,46 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
      the box no longer generates a frame. */
   .hm-right-col { display: contents; }
 
-  .hm-side .hm-brand        { order: 1; }
-  .hm-side .hm-band-badge   { order: 2; }
-  .hm-side .hm-rating-card  { order: 3; }
-  .hm-board-col             { order: 4; }
-  /* Controls carry the primary "Next puzzle → " action: directly under the
-     board, where the thumb already is. */
+  /* Phone/tablet running order, top to bottom:
+       1 title
+       2 board (the mobile toolbar — moves | Stockfish | burger — renders
+         inside this column, immediately under the board)
+       3 Stockfish lines, when it is switched on
+       4 View solution / Next puzzle
+       5 Retry · Copy FEN · Eval
+       6 Solved · Failed · Streak
+       7 Moves
+     Rating, the four training modes and the session strip move into the
+     burger sheet, so they are not in this column at all. */
+  .hm-side .hm-brand         { order: 1; }
+  .hm-side .hm-band-badge    { order: 2; }
+  .hm-board-col              { order: 3; }
+  /* Stockfish lines sit ABOVE "Next puzzle" when the engine is on: the lines
+     are what you read after solving, and the button is the thing you press to
+     leave — so the button belongs after what it interrupts. When the engine is
+     off the panel renders nothing here, and the controls simply move up. */
+  .hm-right-col .gr-engine   { order: 4; }
   .hm-right-col .hm-controls { order: 5; }
-  .hm-side .hm-stats        { order: 6; }   /* Solved · Failed · Streak */
-  .hm-right-col .gr-engine  { order: 7; }
-  .hm-moves                 { order: 8; }
-  .hm-side .hm-modes-wrap   { order: 10; }
+  .hm-side .hm-stats         { order: 7; }
+  .hm-moves                  { order: 8; }
+
+  /* .hm-boardtools and .hm-history are CHILDREN of .hm-board-col, so a page
+     level `order` cannot separate them from the board. Promote the column to
+     `display: contents` on mobile so the board, the toolbar, the tools row and
+     the session strip each become items of the page grid and can be ordered
+     independently — the board and its toolbar stay together at 3, the tools
+     row drops below the engine lines, and the session strip moves into the
+     burger sheet. */
+  .hm-board-col { display: contents; }
+  .hm-board-col .hm-board-outer { order: 3; }
+  .hm-board-col .hm-mobilebar   { order: 3; }
+  .hm-board-col .hm-boardtools  { order: 6; }
+  /* The session strip lives in the burger sheet on mobile. */
+  .hm-board-col .hm-history     { display: none; }
+
+  /* Moved into the burger sheet on phones. */
+  .hm-side .hm-rating-card,
+  .hm-side .hm-modes-wrap { display: none; }
 }
 
 /* ---------- Wide screens: extend the layout ----------
@@ -1292,10 +1321,13 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
      other inset (or a scrollbar) left the board off-centre — it overhung the
      left edge and still showed a gap on the right. Anchoring to 50vw centres it
      on the viewport regardless of how much padding sits between. */
-  .hm-board-col {
+  /* The breakout is on .hm-board-outer, NOT .hm-board-col: the column is
+     display:contents on mobile (so the toolbar and tools row can be ordered
+     independently), and a contents box generates no frame to size. */
+  .hm-board-outer {
     /* 100dvw where supported: 100vw INCLUDES a classic scrollbar's width, so on
        any browser that reserves one (desktop dev tools, some Android setups)
-       the column is ~15px wider than the visible page and the breakout shifts
+       the box is ~15px wider than the visible page and the breakout shifts
        the board off-centre. dvw tracks the actual viewport. The 100vw line
        stays first as the fallback for older engines. */
     width: 100vw;
@@ -1305,7 +1337,7 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
     align-items: center;
   }
   @supports (width: 100dvw) {
-    .hm-board-col {
+    .hm-board-outer {
       width: 100dvw;
       max-width: 100dvw;
       margin-left: calc(50% - 50dvw);
@@ -1315,7 +1347,6 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
   /* The wrappers fill the full-bleed column and centre their contents. When the
      board is capped by HEIGHT (short landscape, small tablet) it is narrower
      than the column, and without this it sat flush against the left edge. */
-  .hm-board-outer,
   .hm-board-stack,
   .hm-board-wrap {
     width: 100% !important;
@@ -1338,5 +1369,207 @@ button.hm-mv:hover { background: var(--hm-panel-hi); }
     margin-left: auto !important;
     margin-right: auto !important;
     box-sizing: border-box;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE / TABLET ONLY — phones and iPads (<= 960px).
+   DESKTOP AND LAPTOP ARE DELIBERATELY UNTOUCHED: the toolbar and the sheet
+   below are display:none by default and only turn on inside the media query,
+   so nothing here can reach a wide screen.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Hidden on desktop — the desktop layout keeps its own moves card, engine
+   panel and left sidebar exactly as they were. */
+.hm-mobilebar { display: none; }
+.hm-boardtool-shortlabel { display: none; }
+.hm-sheet-overlay { display: none; }
+
+@media (max-width: 960px) {
+  /* ── Toolbar directly under the board ── */
+  .hm-mobilebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px auto 0;
+    max-width: calc(100% - 16px);
+  }
+  .hm-mobilebar-nav {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+  }
+  .hm-mobilebar-nav .hm-nav-btn {
+    flex: 1;
+    min-width: 0;
+    padding: 8px 0;
+    font-size: 13px;
+  }
+  /* Disabled = still visible, clearly inert. The row keeps its shape at all
+     times; individual arrows enable/disable exactly as the Moves card's own
+     arrows do (atStart / atLive). */
+  .hm-mobilebar-nav .hm-nav-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .hm-mobilebar-engine,
+  .hm-mobilebar-burger {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 10px;
+    border-radius: var(--radius-md, 8px);
+    background: var(--color-white-a07, rgba(255,255,255,.07));
+    border: 1px solid var(--hm-stroke, rgba(255,255,255,.12));
+    color: var(--color-text, #e8e8ea);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .hm-mobilebar-engine.on {
+    background: var(--color-accent-a15, rgba(34,211,238,.15));
+    border-color: var(--color-accent-a30, rgba(34,211,238,.3));
+    color: var(--color-accent, #22d3ee);
+  }
+  .hm-mobilebar-burger { font-size: 15px; padding: 7px 11px; }
+
+  /* The long "Square evals" label does not fit the narrow row. */
+  .hm-boardtool-longlabel { display: none; }
+  .hm-boardtool-shortlabel { display: inline; }
+
+  /* ── Burger sheet ── */
+  .hm-sheet-overlay {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    align-items: flex-end;
+  }
+  .hm-sheet {
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: var(--color-surface, #141418);
+    border-top: 1px solid var(--hm-stroke, rgba(255,255,255,.12));
+    border-radius: 18px 18px 0 0;
+    padding: 14px 16px calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+  .hm-sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .hm-sheet-title { font-size: 15px; font-weight: 800; }
+  .hm-sheet-close {
+    background: none;
+    border: none;
+    color: var(--color-text-muted, #9aa0a6);
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+  }
+  .hm-sheet-rating {
+    text-align: center;
+    padding: 12px;
+    margin-bottom: 14px;
+    border-radius: var(--hm-radius-sm, 12px);
+    background: var(--color-white-a04, rgba(255,255,255,.04));
+    border: 1px solid var(--hm-stroke, rgba(255,255,255,.12));
+  }
+  .hm-sheet-rating-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--color-text-muted, #9aa0a6);
+  }
+  .hm-sheet-rating-value {
+    font-size: 32px;
+    font-weight: 900;
+    line-height: 1.1;
+    margin: 2px 0 8px;
+  }
+  .hm-sheet-section { margin-bottom: 14px; }
+  /* The modes stack as a 2x2 grid in the sheet — four full-width rows would
+     make it scroll for no reason. */
+  .hm-sheet-section .hm-modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .hm-sheet-section .hm-mode-btn { width: 100%; }
+}
+
+/* ── Phones/tablets: tighten the header stack above the board ────────────
+   The title card, the "Filtered: 400-599 rated puzzles" badge and the grid's
+   own 16px gaps between them were together taking a large band of the screen
+   before the board even started. Desktop keeps its original spacing — every
+   rule here is inside the mobile media query. */
+@media (max-width: 960px) {
+  /* The gap between every stacked block — the space ABOVE the title card and
+     the bands either side of the "Filtered:" badge.
+     `!important` is required, not stylistic: the desktop rule at ~line 933
+     sets `gap: 22px !important` in the BASE scope, which outranks a plain
+     declaration in a media query however late it appears. Scoped here it only
+     ever applies below 960px; desktop keeps its 22px. */
+  .hm-layout {
+    gap: 6px !important;
+    padding-top: 6px !important;
+  }
+
+  .hm-brand { padding: 10px 10px 9px; gap: 8px; }
+  .hm-brand-title { font-size: 17px; }
+  .hm-brand-sub   { font-size: 11px; }
+
+  /* The band badge is REDUNDANT on a phone: the title card directly above it
+     already states the same thing in every mode —
+       theme   "Mate In2" / "Themed training (±100 your rating)"
+               vs badge "Theme: Mate In2 only — near your rating"
+       pieces  "5 Pieces" / "Pieces training (±400 your rating)"
+               vs badge "5 pieces on the board — near your rating"
+       band    "Healthy Mix" / "Rating 400–599"
+               vs badge "Filtered: 400–599 rated puzzles"
+     Saying it twice cost a whole strip above the board for no information.
+     Desktop keeps the badge — there is room for it there. */
+  .hm-side .hm-band-badge { display: none; }
+}
+
+@media (max-width: 480px) {
+  .hm-layout { gap: 5px !important; padding-top: 5px !important; }
+  .hm-brand { padding: 9px 10px 8px; }
+  .hm-brand-title { font-size: 16px; }
+  .hm-brand-sub   { font-size: 10.5px; }
+
+}
+
+/* ── Phones/tablets: the engine panel shows LINES ONLY ───────────────────
+   The panel's own header ("🐟 Stockfish 18" + On/Off switch) duplicates the
+   🐟 button already in the toolbar under the board, so on a phone it was a
+   second control for the same thing plus a title taking a row.
+
+   Scoped to `.hm-right-col` deliberately: EnginePanel is shared with
+   BlunderHunt, MyMoments, EndgameTrainer and AdminEndgames, which still need
+   their own header and toggle. Desktop HealthyMix keeps it too — this is
+   inside the mobile media query. */
+@media (max-width: 960px) {
+  .hm-right-col .gr-engine-head { display: none; }
+
+  /* With the header gone there is nothing left to show when the engine is off,
+     and the "Engine off — turn it on…" line would be a stray sentence under
+     the board. The toolbar button already says On/Off. */
+  .hm-right-col .gr-engine-off { display: none; }
+
+  /* Trim the panel to just the lines. */
+  .hm-right-col .gr-engine {
+    padding: 6px 8px;
+    background: var(--color-white-a04, rgba(255,255,255,.04));
+    border-radius: var(--hm-radius-sm, 12px);
   }
 }

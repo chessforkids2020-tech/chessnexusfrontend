@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
 import stockfishService from '../services/stockfishService';
@@ -61,6 +62,48 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
   // userMoveCount === 0 means PLAY TO THE END: keep playing vs Stockfish until
   // checkmate/stalemate/draw. Used for endgames, where "N good moves" is
   // meaningless — the coach wants the position converted, not counted.
+  // Board size from the CONTAINER, not `window.innerWidth - 48`: that guessed
+  // the modal's padding (it is different on mobile, where the player is a
+  // full-screen sheet), so the board was clipped either side. It was also read
+  // once at render, so it never updated on rotate.
+  const boardBoxRef = useRef(null);
+  const [boardPx, setBoardPx] = useState(420);
+  useEffect(() => {
+    const el = boardBoxRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const fit = () => {
+      // Compute from the VIEWPORT on desktop, never from a DOM box: the modal
+      // is width:fit-content and the board's container hugs the board, so
+      // measuring either would feed the board's own width back into itself.
+      //   overlay padding 16*2 + modal padding 24*2 + side 300 + gap 16
+      const wide = window.innerWidth > 1024;
+      const CHROME = 16 * 2 + 24 * 2 + 300 + 16;
+      // Mobile: the board is full-bleed (see .bap-board's 100dvw breakout), so
+      // ask for the whole viewport rather than the padded container width.
+      const w = wide
+        ? Math.min(window.innerWidth - CHROME, 680)
+        : (document.documentElement.clientWidth || window.innerWidth);
+      if (w > 0) {
+        // Square board: also bound by height so it never overflows the sheet.
+        // Desktop gets a genuinely large board (the modal is 760px wide and the
+        // board only had 420 of it); mobile is bounded by the sheet's width.
+        const wide = window.innerWidth > 1024;
+        // Desktop: the board owns the whole left column, so let it grow. Height
+        // still bounds it — the modal is capped at 92vh.
+        const byHeight = Math.floor(window.innerHeight * (wide ? 0.86 : 0.66));
+        // No width cap on mobile: the board is full-bleed there, so 420 held it
+        // short of the screen edges on anything wider than a small phone.
+        const cap = wide ? 680 : Infinity;
+        setBoardPx(Math.max(240, Math.min(w, byHeight, cap)));
+      }
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    window.addEventListener('resize', fit);
+    return () => { ro.disconnect(); window.removeEventListener('resize', fit); };
+  }, []);
+
   const playToEnd = cur?.userMoveCount === 0;
   const requiredMoves = playToEnd ? Infinity : (cur?.userMoveCount || 1);
   const done = verdicts[idx] != null;
@@ -228,15 +271,21 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
   const solvedCount = verdicts.filter(v => v === 'pass').length;
   const attempted = verdicts.filter(v => v != null).length;
 
-  return (
+  // Rendered into document.body. The player is mounted deep inside the page
+  // (My Coach -> StudentAssignments), and both .mcp-page and the sticky mobile
+  // bar (backdrop-filter) create STACKING CONTEXTS — so the overlay's z-index
+  // only competed inside that subtree. That is why the "Menu / Assignments" bar
+  // drew on top of the board and the footer sat above the card, despite
+  // z-index: 3000. A portal takes it out of every page context.
+  return createPortal((
     <div className="bap-overlay">
       <div className="bap-modal">
         <div className="bap-head">
           <div>
+            {/* The "Play vs Stockfish · N positions · …" line was removed: the
+                assignment card the student opened this from already says it,
+                and on a phone it cost two lines above the board. */}
             <div className="bap-title">♟️ {assignment.title}</div>
-            <div className="bap-sub">
-              Play vs Stockfish · {positions.length} position{positions.length > 1 ? 's' : ''} · Stockfish scores your moves
-            </div>
           </div>
           <button className="bap-x" onClick={onClose}>✕</button>
         </div>
@@ -250,10 +299,10 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
           </div>
         ) : (
           <div className="bap-body">
-            <div className="bap-board">
+            <div className="bap-board" ref={boardBoxRef}>
               <Chessboard
                 position={fen}
-                boardWidth={Math.min(window.innerWidth - 48, 420)}
+                boardWidth={boardPx}
                 draggable={engineReady && !thinking && !done}
                 orientation={orientation}
                 onDrop={onDrop}
@@ -274,6 +323,12 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
             </div>
 
             <div className="fap-side">
+              {/* Desktop shows the title HERE, at the top of the right column,
+                  so the whole left column belongs to the board. On mobile this
+                  copy is hidden and the header one shows instead (see the
+                  .fap-side-title / .bap-head rules) — the same text, positioned
+                  for each layout rather than duplicated on screen. */}
+              <div className="fap-side-title">♟️ {assignment.title}</div>
               <div className="fap-progress-label">Positions</div>
               <div className="fap-dots">
                 {positions.map((_, i) => (
@@ -305,5 +360,5 @@ export default function FenAssignmentPlayer({ assignment, onClose, onGraded }) {
         )}
       </div>
     </div>
-  );
+  ), document.body);
 }

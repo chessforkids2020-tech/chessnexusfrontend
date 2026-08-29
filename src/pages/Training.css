@@ -492,8 +492,15 @@
     font-size: 26px;
   }
 
+  /* Two per row on phones, not one. Four full-width cards each with a 4:3
+     image made the page a long scroll to see four options; paired, the whole
+     set is visible at once. Sizing for the half-width tiles is at the end of
+     the file. */
   .pz-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    /* row gap / column gap — the columns sit closer so each card gets the
+       width instead, while the rows keep their separation. */
+    gap: 12px 8px;
   }
 
   .pz-stats-grid {
@@ -511,4 +518,64 @@
   .pz-tagline-box {
     max-width: 100%;
   }
+}
+
+/* ── Phones/tablets: Daily Puzzles + My Moments share one row ────────────
+   .pz-header-cards wraps and the cards are flex-shrink: 0, so at phone width
+   the two fixed-size cards could not both fit a line and My Moments dropped
+   underneath — two full-width bands where two compact tiles were intended
+   (the JSX comment says they should "sit beside" each other).
+
+   Let them shrink and split the row instead. */
+@media (max-width: 1024px) {
+  .pz-header-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+  .pz-moments-card {
+    flex-shrink: 1;
+    min-width: 0;          /* a grid child must be allowed to shrink */
+    padding: 9px 12px;
+    gap: 8px;
+  }
+  .pz-moments-icon  { font-size: 19px; flex-shrink: 0; }
+  .pz-moments-text  { min-width: 0; }
+  .pz-moments-title { font-size: 12.5px; }
+  .pz-moments-sub   { font-size: 10px; }
+  /* The badge duplicates the count already in the subtitle ("4 to practise")
+     and costs width the text needs in a half-row tile. */
+  .pz-moments-badge { display: none; }
+}
+
+@media (max-width: 380px) {
+  .pz-header-cards { gap: 6px; }
+  .pz-moments-card { padding: 8px 10px; gap: 6px; }
+  .pz-moments-icon  { font-size: 17px; }
+  .pz-moments-title { font-size: 11.5px; }
+  .pz-moments-sub   { font-size: 9.5px; }
+}
+
+/* ── Phones: the four mode cards sit two per row ─────────────────────────
+   Each card is now half the width it was designed for, so the image, type and
+   button step down together — otherwise a 22px title and 18px padding leave
+   almost no room for the words inside a ~170px tile. */
+@media (max-width: 640px) {
+  .pz-card-img-wrap { aspect-ratio: 16 / 10; }
+  .pz-card-body     { padding: 12px 12px 14px; gap: 7px; }
+  .pz-card-title    { font-size: 15px; letter-spacing: 0; }
+  .pz-card-desc     { font-size: 10px; line-height: 1.4; }
+  .pz-btn           { font-size: 11.5px; padding: 8px 10px; margin-top: 4px; }
+  .pz-badge         { font-size: 9px; padding: 3px 7px; }
+  .pz-tags          { gap: 4px; }
+  .pz-tag           { font-size: 9px; padding: 2px 6px; }
+}
+
+@media (max-width: 380px) {
+  .pz-grid       { gap: 10px 6px; }
+  .pz-card-body  { padding: 10px 10px 12px; gap: 6px; }
+  .pz-card-title { font-size: 13.5px; }
+  .pz-card-desc  { font-size: 9.5px; }
+  .pz-btn        { font-size: 11px; padding: 7px 8px; }
 }

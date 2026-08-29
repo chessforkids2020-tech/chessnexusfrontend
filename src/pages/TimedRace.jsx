@@ -51,8 +51,13 @@ export default function TimedRace() {
   //
   // 78% of viewport height matches Daily Puzzles too, and keeps the timer and
   // score above the board visible instead of pushing them off screen.
-  const phoneBoardWidth = viewport.w > 0 && viewport.w <= 480
-    ? Math.max(260, Math.min(viewport.w - 16, Math.floor(viewport.h * 0.78)))
+  // Edge to edge on phones AND tablets/iPads: the board spans the full viewport
+  // width, like lichess and like the Healthy Mix board. `- 16` left an 8px gap
+  // either side, and capping at 480px sent every tablet down the
+  // container-measured path, which inherited each wrapper's padding.
+  // The .board-fullbleed class on the wrapper cancels the page gutters to match.
+  const phoneBoardWidth = viewport.w > 0 && viewport.w <= 1024
+    ? Math.max(260, Math.min(viewport.w, Math.floor(viewport.h * 0.85)))
     : null;
 
   const effectiveMobileWidth = phoneBoardWidth ?? (mobileBoardWidth >= 440
@@ -695,7 +700,7 @@ export default function TimedRace() {
             </div>
 
             {/* Chessboard */}
-            <div ref={mobileBoardRef} style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
+            <div ref={mobileBoardRef} className="board-fullbleed" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
               {loading ? (
                   <div style={{ textAlign: 'center' }}>
                     <div style={styles.placeholderIcon}>⏳</div>

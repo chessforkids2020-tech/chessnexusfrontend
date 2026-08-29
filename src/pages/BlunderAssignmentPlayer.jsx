@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../components/Chessboard';
 import api from '../api';
@@ -78,7 +79,10 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
     }
   };
 
-  return (
+  // Portalled to document.body for the same reason as FenAssignmentPlayer: the
+  // page's own stacking contexts otherwise trap the overlay beneath the sticky
+  // bar and the footer.
+  return createPortal((
     <div className="bap-overlay">
       <div className="bap-modal">
         <div className="bap-head">
@@ -189,5 +193,5 @@ export default function BlunderAssignmentPlayer({ assignment, onClose, onGraded 
         )}
       </div>
     </div>
-  );
+  ), document.body);
 }

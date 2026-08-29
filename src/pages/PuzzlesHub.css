@@ -167,7 +167,7 @@
 }
 
 .hub-daily-title {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Fontdiner Swanky', 'Algerian', serif;
   font-size: 30px;
   font-weight: 900;
   margin: 0 0 10px;
@@ -179,6 +179,10 @@
 }
 
 .hub-daily-desc {
+  /* Jost Light stands in for Dubai Light — same clean humanist feel, and it
+     actually loads on every device (Dubai is a licensed Microsoft font). */
+  font-family: 'Jost', 'Dubai Light', sans-serif;
+  font-weight: 300;
   font-size: 14px;
   color: var(--color-text-muted);
   margin: 0 0 16px;
@@ -486,7 +490,7 @@
 }
 
 .hub-focus-title {
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Fontdiner Swanky', 'Algerian', serif;
   /* Matches .hub-daily-title — the two cards share a row, so a 24px title
      beside a 30px one made them look like different tiers. */
   font-size: 30px;
@@ -502,6 +506,8 @@
 /* Matches .hub-daily-desc exactly — same size, same line-height, so the two
    paragraphs set at the same rhythm rather than one running visibly tighter. */
 .hub-focus-desc {
+  font-family: 'Jost', 'Dubai Light', sans-serif;
+  font-weight: 300;
   font-size: 14px;
   color: var(--color-text-muted);
   margin: 0 0 16px;
@@ -845,12 +851,36 @@
 }
 
 @media (max-width: 540px) {
+  /* TTT and Bingo stay SIDE BY SIDE on phones — they are a matched pair of
+     small arcade cards, and stacking them turned two compact tiles into two
+     full-width banners that pushed everything below off the screen. Find the
+     Blunder keeps its own full-width row above them. */
   .hub-bottom-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
   .hub-mini--wide {
-    grid-column: span 1;
+    grid-column: span 2;
   }
+  /* Narrower tiles, so trim the padding and type to match. */
+  .hub-bottom-row .hub-mini-card {
+    padding: 14px 12px;
+    gap: 8px;
+  }
+  .hub-bottom-row .hub-mini-card:not(.hub-mini--wide) {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .hub-bottom-row .hub-mini-card:not(.hub-mini--wide) .hub-mini-icon { font-size: 26px; }
+  .hub-bottom-row .hub-mini-card:not(.hub-mini--wide) .hub-mini-title { font-size: 16px; }
+  .hub-bottom-row .hub-mini-card:not(.hub-mini--wide) .hub-mini-tag { font-size: 10px; }
+  .hub-bottom-row .hub-mini-card:not(.hub-mini--wide) .hub-mini-desc {
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
+  /* The arrow costs width the title needs in a half-width tile. */
+  .hub-bottom-row .hub-mini-card:not(.hub-mini--wide) .hub-mini-arrow { display: none; }
 }
 
 @media (max-width: 640px) {
@@ -871,12 +901,6 @@
   }
   .hub-arcade-row {
     grid-template-columns: 1fr;
-  }
-  .action-bar {
-    flex-direction: column;
-  }
-  .action-button {
-    width: 100%;
   }
 }
 
@@ -2136,3 +2160,201 @@
 }
 /* Push the CTA to the bottom of its card in both. */
 .hub-hero-row > .hub-daily-hero .hub-daily-cta { margin-top: auto; }
+
+/* ── Phones/tablets: compact secondary action bar ────────────────────────
+   Scoreboard / Contest 2025 / Quick Rules are secondary — they were three
+   stacked full-width buttons that took over the screen. Keep them as one
+   compact row instead.
+
+   MUST live at the end of the file: .action-bar and .action-button are each
+   declared TWICE (around lines 570 and 1260), and the later copy sits after
+   the media queries above, so the same rules placed there lost the cascade. */
+@media (max-width: 640px) {
+  .action-bar {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 12px 12px;
+  }
+  .action-button {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 9px 6px;
+    font-size: 11.5px;
+    gap: 5px;
+    justify-content: center;
+  }
+  .action-button .btn-icon { font-size: 14px; }
+  /* Let the label wrap to two short lines rather than truncate: "Scorebo…" /
+     "Quick Ru…" reads as broken, and these are the only labels the buttons
+     have. Two 10px lines still keep the bar shorter than one stacked button
+     was. */
+  .action-button .btn-text {
+    white-space: normal;
+    line-height: 1.2;
+    text-align: center;
+  }
+}
+
+@media (max-width: 380px) {
+  .action-bar { gap: 6px; padding: 10px 8px; }
+  .action-button { padding: 8px 4px; font-size: 10px; gap: 3px; flex-direction: column; }
+  .action-button .btn-icon { font-size: 15px; }
+}
+
+/* ── Phones/tablets: smaller hero type and controls ──────────────────────
+   The Puzzles hero was sized for a desktop card: a 30px title, a 14px
+   three-line paragraph, 12px chips and a 14px-tall button filled most of a
+   phone screen before any puzzle was visible.
+
+   At the end of the file because .hub-daily-* are redeclared further down
+   (see the hero-matching block), which beats the same rules placed inline. */
+@media (max-width: 1024px) {
+  .hub-daily-title { font-size: 26px; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .hub-daily-desc  { font-size: 12.5px; line-height: 1.5; margin-bottom: 12px; }
+  .hub-daily-stats { gap: 8px; }
+  .hub-daily-stat  { font-size: 11px; padding: 3px 10px; }
+  .hub-daily-cta   { font-size: 13.5px; padding: 11px 16px; margin-top: 8px; }
+}
+
+@media (max-width: 640px) {
+  .hub-daily-title { font-size: 23px; }
+  .hub-daily-desc  { font-size: 11.5px; line-height: 1.45; margin-bottom: 10px; }
+  .hub-daily-stat  { font-size: 10px; padding: 3px 9px; }
+  .hub-daily-cta   { font-size: 12.5px; padding: 10px 14px; }
+}
+
+@media (max-width: 380px) {
+  .hub-daily-title { font-size: 20px; }
+  .hub-daily-desc  { font-size: 11px; }
+  .hub-daily-stat  { font-size: 9.5px; padding: 2px 8px; }
+  .hub-daily-cta   { font-size: 12px; padding: 9px 12px; }
+}
+
+/* Monthly Focus shares the hero row with Puzzles and is deliberately styled to
+   match it (see the "Matching the two hero cards" block), so it steps down with
+   the same numbers — otherwise shrinking only one made them look like different
+   tiers on a phone. */
+@media (max-width: 1024px) {
+  .hub-focus-title { font-size: 26px; margin-bottom: 8px; }
+  .hub-focus-desc  { font-size: 12.5px; line-height: 1.5; margin-bottom: 12px; }
+  .hub-focus-cta   { font-size: 13.5px; padding: 11px 16px; margin-top: 8px; }
+}
+
+@media (max-width: 640px) {
+  .hub-focus-title { font-size: 23px; }
+  .hub-focus-desc  { font-size: 11.5px; line-height: 1.45; margin-bottom: 10px; }
+  .hub-focus-cta   { font-size: 12.5px; padding: 10px 14px; }
+}
+
+@media (max-width: 380px) {
+  .hub-focus-title { font-size: 20px; }
+  .hub-focus-desc  { font-size: 11px; }
+  .hub-focus-cta   { font-size: 12px; padding: 9px 12px; }
+}
+
+/* ── Body copy: one voice across the hub ─────────────────────────────────
+   The Puzzles hero paragraph reads well, so every other piece of PROSE on
+   the page uses the same face, weight and rhythm: Jost Light. Titles keep
+   their display font, and the small uppercase eyebrow labels (.hub-mini-tag)
+   keep Poppins — they are labels, not sentences, and a light face at 10px
+   uppercase reads washed out.
+
+   At the end of the file because several of these (.rule-text especially)
+   are declared twice, the later copy winning over anything placed inline. */
+.hub-mini-desc,
+.hub-focus-desc,
+.hub-daily-stat,
+.rule-text,
+.modal-subtitle {
+  font-family: 'Jost', 'Dubai Light', sans-serif;
+  font-weight: 300;
+}
+
+/* The chips sit ON a coloured pill, where 300 goes too faint — 400 keeps the
+   same face without losing them against the fill. */
+.hub-daily-stat {
+  font-weight: 400;
+}
+
+/* Match the hero paragraph's rhythm, scaled to each element's own size. */
+.hub-mini-desc { line-height: 1.5; }
+.hub-focus-desc { line-height: 1.6; }
+
+@media (max-width: 1024px) {
+  .hub-mini-desc { font-size: 11.5px; }
+  .rule-text     { font-size: 13.5px; line-height: 1.6; }
+}
+
+@media (max-width: 640px) {
+  .rule-text { font-size: 12.5px; }
+}
+
+/* ── Monthly Focus: "Active Now" as a corner status flag ─────────────────
+   It used to sit under the 🎯 icon as a caption. Pinned to the card's
+   top-right it matches .hub-daily-badge ("⭐ Featured") on the Puzzles hero
+   beside it — same corner, same offsets — so the two cards read as a pair.
+
+   The card is already position:relative, so this anchors to the card itself.
+   At the end of the file: .hub-focus-active-badge is declared above without
+   positioning, and inline rules would be overridden by the later copy. */
+.hub-focus-active-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+}
+
+/* The icon block no longer holds the badge, so it is just the 🎯 now. */
+.hub-focus-icon-wrap {
+  flex-direction: column;
+  align-items: center;
+}
+
+/* The badge sits where the title would otherwise run, so keep the text clear
+   of it on the narrow cards. */
+.hub-focus-info { padding-right: 92px; }
+
+@media (max-width: 1024px) {
+  .hub-focus-active-badge { top: 14px; right: 14px; font-size: 9px; padding: 3px 8px; }
+  .hub-focus-info { padding-right: 78px; }
+}
+
+@media (max-width: 640px) {
+  .hub-focus-active-badge { top: 12px; right: 12px; }
+  /* Stacked layout here: the card centres its text, so a right pad would
+     push it visibly off-centre. The title sits below the badge instead. */
+  .hub-focus-info { padding-right: 0; }
+}
+
+/* ── Puzzles Hub: one display face for every title ───────────────────────
+   Fontdiner Swanky on all four title classes, so the hero cards, the mini
+   cards and the rules modal share a voice instead of the heroes using a
+   display face and everything else falling back to Poppins.
+
+   font-weight: 400 is DELIBERATE and required: Fontdiner Swanky ships a single
+   weight. Leaving the old 800/900 on these made the browser synthesise a bold
+   by smearing the outline, which on a decorative face reads as a blurry
+   double-strike rather than a heavier cut.
+
+   At the end of the file because .modal-title is declared twice (719 and
+   1499) — the later copy would win over anything placed inline. */
+.hub-daily-title,
+.hub-focus-title,
+.hub-mini-title,
+.modal-title {
+  font-family: 'Fontdiner Swanky', 'Algerian', serif;
+  font-weight: 400;
+}
+
+/* The face is wide and set with generous built-in spacing, so the extra
+   letter-spacing those titles carried pushes them past their cards. */
+.hub-daily-title,
+.hub-focus-title {
+  letter-spacing: 0;
+}
+
+/* Mini-card titles are short labels (TTT, Bingo) in a narrow tile — a display
+   face needs a touch more room than the sans it replaces. */
+.hub-mini-title { line-height: 1.2; }

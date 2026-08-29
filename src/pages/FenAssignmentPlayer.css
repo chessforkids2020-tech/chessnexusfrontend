@@ -99,9 +99,115 @@
   text-align: center;
 }
 
-/* Two-column layout on wider screens: board left, controls right. */
-@media (min-width: 640px) {
-  .bap-modal .bap-body { flex-direction: row; align-items: flex-start; gap: 22px; }
-  .bap-modal .bap-body .bap-board { flex: 0 0 auto; }
-  .bap-modal .bap-body .fap-side { flex: 1; margin: 0; }
+/* Two-column layout: board left, controls right.
+   1025px, NOT 640px — at 640 a phone in landscape and every tablet got the
+   desktop two-column row inside a full-screen sheet, which squeezed the board
+   into a narrow strip (a few files wide) with the side panel beside it. */
+@media (min-width: 1025px) {
+  .bap-modal .bap-body { flex-direction: row; align-items: flex-start; gap: 16px; }
+  /* An explicit basis, not `0 0 auto`: the board sizes itself by MEASURING this
+     container, and an auto-width flex item shrinks to its content — so the
+     measurement came back tiny and the board never grew to fill the modal. */
+  /* The board is often HEIGHT-capped (0.86 * viewport height), so on a short
+     window it draws much narrower than 680 — e.g. 497px on a 578px-tall
+     viewport. A fixed 680 basis then left the difference as dead space between
+     the board and the side column. `fit-content` makes the container track the
+     board's real width, so the gap stays 16px whatever the height allows. */
+  .bap-modal .bap-body .bap-board {
+    flex: 0 1 auto;
+    width: fit-content;
+    max-width: 680px;
+  }
+
+  /* The title moves into the right column, so the left column is all board. */
+  .bap-modal .bap-head .bap-title { display: none; }
+  .fap-side-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--color-text);
+    margin-bottom: 14px;
+    word-break: break-word;
+  }
+  /* The header holds ONLY the ✕ on desktop, so take it out of the flow and pin
+     it to the corner — as a block it still reserved a full row above the board.
+     The modal is position:relative already (it is the overlay's flex child), so
+     this anchors to the modal. */
+  .bap-modal {
+    position: relative;
+    padding-top: 10px;
+    /* Shrink to the CONTENT, don't stretch to max-width. The board is often
+       height-capped (a short window gives ~496px, not 680), and a fixed
+       1044px modal then left ~180px of empty page to the right of the text.
+       fit-content sizes the card to board + gap + side column, whatever the
+       board actually came out at; max-width still caps it on tall screens. */
+    width: fit-content;
+    margin: 0 auto;
+  }
+  .bap-modal .bap-head {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    margin: 0;
+    z-index: 2;
+  }
+  /* The body starts at the top of the modal; the side column is inset so its
+     title never runs under the floating ✕. */
+  .bap-modal .bap-body { margin-top: 0; }
+  .fap-side-title { padding-right: 34px; }
+  /* Cap the side column: its content (Positions, Prev/Next, Submit) needs about
+     300px, and `flex: 1` let it absorb every spare pixel of the modal — which
+     read as a wide empty band between the board and the text. */
+  /* `width: 100%` + `margin: 0 auto` on the base .fap-side centred the content
+     in whatever width flex handed it, which is what read as a wide empty band
+     beside the board. Pin the column instead. */
+  .bap-modal .bap-body .fap-side {
+    flex: 0 0 300px;
+    width: 300px;
+    max-width: 300px;
+    margin: 0;
+  }
+}
+
+/* ── Phones/tablets: single column, board first ──────────────────────────
+   These live HERE rather than in BlunderAssignmentPlayer.css because this file
+   is imported second and would otherwise override them. */
+@media (max-width: 1024px) {
+  /* Mobile keeps the title in the header (the side panel sits BELOW the board
+     here, so a title there would appear halfway down the sheet). */
+  .fap-side-title { display: none; }
+
+  .bap-modal .bap-body {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  /* Board goes EDGE TO EDGE, like the Healthy Mix board: the sheet keeps its
+     10px side padding for the text, and the board breaks out of it with a
+     negative margin so it spans the full viewport width. */
+  .bap-modal .bap-body .bap-board {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  @supports (width: 100dvw) {
+    .bap-modal .bap-body .bap-board {
+      width: 100dvw;
+      max-width: 100dvw;
+      margin-left: calc(50% - 50dvw);
+      margin-right: calc(50% - 50dvw);
+    }
+  }
+  /* The caption under the board keeps a readable inset. */
+  .bap-modal .bap-body .bap-board .fap-status,
+  .bap-modal .bap-body .bap-board .fap-feedback,
+  .bap-modal .bap-body .bap-board .fap-retry {
+    max-width: calc(100vw - 24px);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .bap-modal .bap-body .fap-side { width: 100%; margin: 0; }
 }

@@ -213,7 +213,9 @@ export default function CoachAssignments() {
     if (form.assignmentType === 'fen_solution') {
       const positions = (form.fenPositions || []).map(p => ({
         fen: (p.fen || '').trim(), solution: (p.solution || '').trim(),
-        userMoveCount: Math.max(1, Number(p.userMoveCount) || 1), tag: (p.tag || '').trim()
+        // 0 = play to the end; clamp only the positive counts.
+        userMoveCount: Number(p.userMoveCount) === 0 ? 0 : Math.max(1, Number(p.userMoveCount) || 1),
+        tag: (p.tag || '').trim()
       })).filter(p => p.fen);
       if (positions.length === 0) return { error: 'Add at least one position first.' };
       return { fenTask: { engineToleranceCp: Number(form.fenTolerance) || 80, engineDepth: 12, positions } };
@@ -275,7 +277,8 @@ export default function CoachAssignments() {
         description: tpl.description || '',
         fenTolerance: tpl.fenTask?.engineToleranceCp || 80,
         fenPositions: (tpl.fenTask?.positions || []).map(p => ({
-          fen: p.fen || '', solution: p.solution || '', userMoveCount: p.userMoveCount || 1, tag: p.tag || ''
+          fen: p.fen || '', solution: p.solution || '',
+          userMoveCount: p.userMoveCount === 0 ? 0 : (p.userMoveCount || 1), tag: p.tag || ''
         }))
       }));
     }
@@ -309,7 +312,8 @@ export default function CoachAssignments() {
       assignmentType: 'fen_solution',
       title: item.title || prev.title,
       fenTolerance: 80,
-      fenPositions: [{ fen: item.fen, solution: item.solution || '', userMoveCount: item.userMoveCount || 1, tag: item.tag || '' }],
+      fenPositions: [{ fen: item.fen, solution: item.solution || '',
+        userMoveCount: item.userMoveCount === 0 ? 0 : (item.userMoveCount || 1), tag: item.tag || '' }],
     }));
     setCreateErr('');
   };
@@ -392,7 +396,8 @@ export default function CoachAssignments() {
         .map(p => ({
           fen: (p.fen || '').trim(),
           solution: (p.solution || '').trim(),
-          userMoveCount: Math.max(1, Number(p.userMoveCount) || 1),
+          // 0 = play to the end; clamp only the positive counts.
+          userMoveCount: Number(p.userMoveCount) === 0 ? 0 : Math.max(1, Number(p.userMoveCount) || 1),
           tag: (p.tag || '').trim()
         }))
         .filter(p => p.fen);
@@ -1367,14 +1372,34 @@ export default function CoachAssignments() {
                         />
                       )}
                       <div className="ca-blunder-row">
+                        {/* userMoveCount 0 === play to the end (checkmate /
+                            stalemate / draw). The model has supported this all
+                            along — see CoachAssignment.fenTask.positions — but
+                            the form clamped every value to >= 1, so a coach had
+                            no way to ask for "play out this rook endgame",
+                            where a fixed move count is meaningless. */}
                         <label className="field" style={{ flex: 1 }}>
-                          <span>Good moves the student must play</span>
-                          <input
-                            type="number" min="1" max="12"
-                            value={p.userMoveCount}
-                            onChange={e => updateFenPosition(i, 'userMoveCount', e.target.value)}
-                          />
+                          <span>How far the student must play</span>
+                          <select
+                            value={Number(p.userMoveCount) === 0 ? 'end' : 'count'}
+                            onChange={e => updateFenPosition(
+                              i, 'userMoveCount', e.target.value === 'end' ? 0 : 1
+                            )}
+                          >
+                            <option value="count">A set number of moves</option>
+                            <option value="end">Play to the end (checkmate)</option>
+                          </select>
                         </label>
+                        {Number(p.userMoveCount) !== 0 && (
+                          <label className="field" style={{ flex: 1 }}>
+                            <span>Good moves required</span>
+                            <input
+                              type="number" min="1" max="12"
+                              value={p.userMoveCount}
+                              onChange={e => updateFenPosition(i, 'userMoveCount', e.target.value)}
+                            />
+                          </label>
+                        )}
                         <label className="field" style={{ flex: 2 }}>
                           <span>Label (optional)</span>
                           <input

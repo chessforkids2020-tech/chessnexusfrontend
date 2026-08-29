@@ -13,9 +13,28 @@ const MONTHS = ['January','February','March','April','May','June','July','August
 function curSym(c) { return c === 'USD' ? '$' : c === 'EUR' ? '€' : '₹'; }
 
 
+// Single source of truth for the page's sections. The desktop tab strip and the
+// mobile ☰ menu both render from this, so a tab can never exist in one and be
+// missing from the other.
+const MCP_TABS = [
+  { id: 'overview',    icon: '📊', text: 'Overview' },
+  { id: 'schedule',    icon: '📅', text: 'Schedule' },
+  { id: 'activities',  icon: '🎯', text: 'Activities' },
+  { id: 'messages',    icon: '💬', text: 'Messages' },
+  { id: 'courses',     icon: '📚', text: 'My Syllabus' },
+  { id: 'assignments', icon: '📋', text: 'Assignments' },
+  { id: 'player',      icon: '👤', text: 'Player' },
+  { id: 'attendance',  icon: '📝', text: 'Attendance' },
+  { id: 'payments',    icon: '💰', text: 'Payments' },
+];
+
 export default function MyCoachPortal() {
   const navigate = useNavigate();
   const [tab, setTab] = useState('overview');
+  // Mobile tab menu (the ☰ beside the page title). The app rail's generic
+  // burger is suppressed on this route — see StudyPuzzleSidebar's
+  // hideMobileBurger — so this is the only ☰ on the page.
+  const [tabMenuOpen, setTabMenuOpen] = useState(false);
   const [coaches, setCoaches] = useState([]);
   const [attendance, setAttendance] = useState({ records: [], stats: null });
   const [payments, setPayments] = useState([]);
@@ -172,6 +191,12 @@ export default function MyCoachPortal() {
     timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric',
   });
 
+  // Day + month only: the year is redundant here because the month navigator
+  // directly above this table already reads "August 2026".
+  const fmtDayMonth = (s) => new Date(s).toLocaleDateString('en-IN', {
+    timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric',
+  });
+
   // When the coach actually recorded this entry — mirrors the coach's own
   // "Marked entries" table. `updatedAt` wins so an edited status shows the edit
   // time. Records predate `slot`/timestamps in a few cases, hence the guards.
@@ -180,10 +205,21 @@ export default function MyCoachPortal() {
     // from a live class; otherwise fall back to when the coach marked it.
     const t = r.joinedAt || r.updatedAt || r.createdAt;
     if (!t) return '—';
-    return new Date(t).toLocaleString('en-IN', {
-      timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short',
-      hour: 'numeric', minute: '2-digit',
+    const d = new Date(t);
+    const time = d.toLocaleTimeString('en-IN', {
+      timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit',
     });
+    // Same day as the class? Show the TIME only — repeating "30 Aug" beside a
+    // Date column already reading "30 Aug" looks like a duplicated cell. The
+    // date is added back only when the coach marked it on a DIFFERENT day,
+    // which is the case actually worth seeing (a late or edited entry).
+    const dayOf = (x) => new Date(x).toLocaleDateString('en-IN', {
+      timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric',
+    });
+    if (r.date && dayOf(r.date) === dayOf(t)) return time;
+    return `${d.toLocaleDateString('en-IN', {
+      timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short',
+    })}, ${time}`;
   };
 
   // Soonest upcoming class, skipping any that land on a holiday date.
@@ -240,6 +276,10 @@ export default function MyCoachPortal() {
     <div className="mcp-page">
       <div className="mcp-bg" />
 
+      {/* The app menu is UserLayout's standard floating ☰ (top-left), the same
+          one the dashboard uses — on mobile this page drops the slim rail so it
+          gets that sidebar. The page's own tab menu (Overview / Schedule / …)
+          is the separate ☰ below. */}
       <div className="mcp-header">
         <h1 className="mcp-title">🎓 My Coach</h1>
         <p className="mcp-subtitle">Attendance & payments recorded by your coach</p>
@@ -247,18 +287,75 @@ export default function MyCoachPortal() {
 
       {error && <div className="mcp-error">{error}</div>}
 
+      {/* ── MOBILE: ☰ tab menu ──────────────────────────────────────────
+          Replaces the app rail's generic burger on this page. It lists every
+          tab below, so the nine-tab strip does not have to be scrolled
+          sideways on a phone. Hidden on desktop, where the strip fits. */}
+      <div className="mcp-mobilebar">
+        {/* Two DIFFERENT menus, so neither is a bare ☰: the left one is the
+            site nav (labelled "Menu"), the right one is this page's sections
+            and shows which you are in. UserLayout's floating ☰ is suppressed on
+            this route — see SELF_MENU_PATHS — so there is no third icon. */}
+        <button
+          type="button"
+          className="mcp-appmenu-btn"
+          onClick={() => window.dispatchEvent(new Event('open-app-sidebar'))}
+          aria-label="Open site menu"
+        >
+          ☰ <span className="mcp-appmenu-text">Menu</span>
+        </button>
+
+        <span className="mcp-mobilebar-sep" aria-hidden="true" />
+
+        <button
+          type="button"
+          className="mcp-mobilebar-burger"
+          onClick={() => setTabMenuOpen(true)}
+          aria-label="Open coach sections"
+        >
+          <span className="mcp-mobilebar-current">
+            {(MCP_TABS.find(t => t.id === tab) || MCP_TABS[0]).icon}{' '}
+            {(MCP_TABS.find(t => t.id === tab) || MCP_TABS[0]).text}
+          </span>
+          <span className="mcp-mobilebar-caret" aria-hidden="true">▾</span>
+        </button>
+
+        {(msgUnread > 0 || activityUnseen > 0) && (
+          <span className="mcp-mobilebar-dot" aria-label="Unread items" />
+        )}
+      </div>
+
+      {tabMenuOpen && (
+        <div className="mcp-sheet-overlay" onClick={() => setTabMenuOpen(false)}>
+          <div className="mcp-sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Coach sections">
+            <div className="mcp-sheet-head">
+              <span className="mcp-sheet-title">My Coach</span>
+              <button className="mcp-sheet-close" onClick={() => setTabMenuOpen(false)} aria-label="Close">×</button>
+            </div>
+            <div className="mcp-sheet-grid">
+              {MCP_TABS.map(t => (
+                <button
+                  key={t.id}
+                  className={`mcp-sheet-item ${tab === t.id ? 'is-active' : ''}`}
+                  onClick={() => { setTab(t.id); setTabMenuOpen(false); }}
+                >
+                  <span className="mcp-sheet-item-icon">{t.icon}</span>
+                  <span className="mcp-sheet-item-text">{t.text}</span>
+                  {t.id === 'messages' && msgUnread > 0 && (
+                    <span className="mcp-tab-badge">{msgUnread > 99 ? '99+' : msgUnread}</span>
+                  )}
+                  {t.id === 'activities' && activityUnseen > 0 && (
+                    <span className="mcp-tab-badge">{activityUnseen > 99 ? '99+' : activityUnseen}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mcp-tabs">
-        {[
-          { id: 'overview',    icon: '📊', text: 'Overview' },
-          { id: 'schedule',    icon: '📅', text: 'Schedule' },
-          { id: 'activities',  icon: '🎯', text: 'Activities' },
-          { id: 'messages',    icon: '💬', text: 'Messages' },
-          { id: 'courses',     icon: '📚', text: 'My Syllabus' },
-          { id: 'assignments', icon: '📋', text: 'Assignments' },
-          { id: 'player',      icon: '👤', text: 'Player' },
-          { id: 'attendance',  icon: '📝', text: 'Attendance' },
-          { id: 'payments',    icon: '💰', text: 'Payments' },
-        ].map(t => (
+        {MCP_TABS.map(t => (
           <button
             key={t.id}
             className={`mcp-tab ${tab === t.id ? 'mcp-tab-active' : ''}`}
@@ -615,20 +712,64 @@ export default function MyCoachPortal() {
               ? Math.round(withAcc.reduce((s, a) => s + (a.accuracy || 0), 0) / withAcc.length)
               : 0;
             return (
+              <>
+              {/* The month is stated once here rather than repeated in three
+                  card labels — "(August)" on each made the labels long enough
+                  to wrap in a half-width mobile tile. */}
+              <div className="mcp-stats-month">{MONTHS[cursor.getMonth()]} {cursor.getFullYear()}</div>
               <div className="mcp-stat-row" style={{ marginBottom: 20 }}>
                 <div className="mcp-stat">
                   <span className="mcp-stat-num">📋 {finishedThisMonth}</span>
-                  <span className="mcp-stat-label">Assignments finished ({MONTHS[cursor.getMonth()]})</span>
+                  <span className="mcp-stat-label">Assignments finished</span>
                 </div>
                 <div className="mcp-stat">
                   <span className="mcp-stat-num">⏳ {pending}</span>
                   <span className="mcp-stat-label">Pending assignments</span>
                 </div>
-                <div className="mcp-stat">
+                {/* Hidden on mobile (see .mcp-stat--accuracy): five tiles in a
+                    two-column grid left a single tile alone on the last row.
+                    Dropping this one gives an even 2x2; desktop still shows all
+                    five in one line. Accuracy is the most derived of the five —
+                    the other four are direct facts about the month. */}
+                <div className="mcp-stat mcp-stat--accuracy">
                   <span className="mcp-stat-num">🎯 {avgAccuracy}%</span>
                   <span className="mcp-stat-label">Accuracy</span>
                 </div>
+                {/* Classes + Fees used to sit in a SECOND .mcp-stat-row below the
+                    assignments list, which put five equivalent stats on two
+                    rows. They are all overview numbers, so they belong in one
+                    row — the grid wraps them on narrow screens. */}
+                <div className="mcp-stat">
+                  <span className="mcp-stat-num">
+                    ✅ {attendance.stats ? attendance.stats.present + attendance.stats.catchUp : 0}
+                  </span>
+                  <span className="mcp-stat-label">Classes attended</span>
+                </div>
+                {/* Fees STATUS for the month being viewed, not a lifetime count of
+                    records. A CoachPaymentRecord has no status field — the record
+                    existing IS the payment, and fromDate..untilDate is the period
+                    it covers — so the month is Paid when some record's period
+                    overlaps it, Pending otherwise. */}
+                {(() => {
+                  const mStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+                  const mEnd   = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0, 23, 59, 59);
+                  const covering = payments.find(p => {
+                    const from = p.fromDate ? new Date(p.fromDate) : null;
+                    const until = p.untilDate ? new Date(p.untilDate) : null;
+                    if (!from || !until) return false;
+                    return from <= mEnd && until >= mStart;
+                  });
+                  return (
+                    <div className="mcp-stat">
+                      <span className={`mcp-stat-num ${covering ? 'mcp-paid' : 'mcp-pending'}`}>
+                        {covering ? '✅ Paid' : '⏳ Pending'}
+                      </span>
+                      <span className="mcp-stat-label">Fees</span>
+                    </div>
+                  );
+                })()}
               </div>
+              </>
             );
           })()}
 
@@ -690,18 +831,6 @@ export default function MyCoachPortal() {
             );
           })()}
 
-          <div className="mcp-stat-row">
-            <div className="mcp-stat">
-              <span className="mcp-stat-num">
-                ✅ {attendance.stats ? attendance.stats.present + attendance.stats.catchUp : 0}
-              </span>
-              <span className="mcp-stat-label">Classes attended ({MONTHS[cursor.getMonth()]})</span>
-            </div>
-            <div className="mcp-stat">
-              <span className="mcp-stat-num">💰 {payments.length}</span>
-              <span className="mcp-stat-label">Payment records</span>
-            </div>
-          </div>
         </div>
       )}
 
@@ -717,20 +846,22 @@ export default function MyCoachPortal() {
           <div className="mcp-table-wrap">
             <table className="mcp-table">
               <thead>
-                <tr><th>Date</th><th>Coach</th><th>Class</th><th>Status</th><th>Marked</th></tr>
+                {/* Class column removed (it was always "Class 1" for most
+                    students and told them nothing). Order per request:
+                    Date · Marked · Coach · Status. */}
+                <tr><th>Date</th><th>Marked</th><th>Coach</th><th>Status</th></tr>
               </thead>
               <tbody>
                 {attendance.records.map((r, i) => (
                   <tr key={r._id || i}>
-                    <td>{fmtDate(r.date)}</td>
-                    <td>{r.coachName}</td>
-                    <td>Class {r.slot || 1}</td>
-                    <td><span className={statusClass(r.status)}>{r.status}</span></td>
+                    <td>{fmtDayMonth(r.date)}</td>
                     <td className="mcp-muted">{fmtEntryTime(r)}</td>
+                    <td>{r.coachName}</td>
+                    <td><span className={statusClass(r.status)}>{r.status}</span></td>
                   </tr>
                 ))}
                 {attendance.records.length === 0 && (
-                  <tr><td colSpan="5" className="mcp-empty-row">No attendance recorded for this month</td></tr>
+                  <tr><td colSpan="4" className="mcp-empty-row">No attendance recorded for this month</td></tr>
                 )}
               </tbody>
             </table>

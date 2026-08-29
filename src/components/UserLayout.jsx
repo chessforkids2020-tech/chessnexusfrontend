@@ -18,6 +18,10 @@ const NARROW_SIDEBAR_PATHS = ['/my-coach'];
 // hamburger still works, so the sidebar stays reachable at every size.
 const HIDDEN_SIDEBAR_PATHS = ['/training/healthy-mix'];
 
+// Pages that place the app menu in their own fixed bar rather than using the
+// floating ☰. They open the sidebar with an 'open-app-sidebar' event.
+const SELF_MENU_PATHS = ['/my-coach'];
+
 export default function UserLayout({ children, showFooter = true }) {
   const { user } = useAuth();
   const location = useLocation();
@@ -74,11 +78,17 @@ export default function UserLayout({ children, showFooter = true }) {
 
   // Slim icon rail on cramped pages. It renders its own fixed 60px bar (and its
   // own hamburger on mobile portrait), so it needs no onNavigate.
-  const useNarrowSidebar = NARROW_SIDEBAR_PATHS.includes(location.pathname);
+  // The slim rail exists to give My Coach's nine tabs horizontal room on a
+  // DESKTOP. On mobile there is no rail beside the content anyway — it is an
+  // overlay — so the page should use the SAME sidebar and floating ☰ as the
+  // dashboard, rather than the rail's own top-right burger.
+  const useNarrowSidebar =
+    NARROW_SIDEBAR_PATHS.includes(location.pathname) && !(isMobile && !isLandscape);
 
   // Hide the persistent sidebar on these pages (desktop + landscape). On mobile
   // portrait the hamburger + overlay below still render, so it stays accessible.
   const hideSidebar = HIDDEN_SIDEBAR_PATHS.includes(location.pathname);
+  const selfMenu = SELF_MENU_PATHS.includes(location.pathname);
 
   const renderSidebar = (onNavigate) =>
     useNarrowSidebar
@@ -88,6 +98,15 @@ export default function UserLayout({ children, showFooter = true }) {
         : inCoachArea
           ? <CoachSidebar onNavigate={onNavigate} />
           : <Sidebar user={user} onNavigate={onNavigate} />;
+
+  // A page can render the app menu in its OWN fixed bar instead of relying on
+  // the floating ☰ — My Coach does this, because a floating burger plus the
+  // page's own tab burger meant two identical icons with different jobs.
+  useEffect(() => {
+    const open = () => setIsSidebarOpen(true);
+    window.addEventListener('open-app-sidebar', open);
+    return () => window.removeEventListener('open-app-sidebar', open);
+  }, []);
 
   // Detect screen size changes
   useEffect(() => {
@@ -137,8 +156,10 @@ export default function UserLayout({ children, showFooter = true }) {
                 </>
               )}
 
-              {/* Floating Hamburger Button - Only show when sidebar is closed */}
-              {isMobile && !isLandscape && !isSidebarOpen && (
+              {/* Floating Hamburger Button - Only show when sidebar is closed.
+                  Pages in SELF_MENU_PATHS render the app menu inside their own
+                  fixed header instead, so it is not shown there. */}
+              {isMobile && !isLandscape && !isSidebarOpen && !selfMenu && (
                 <button
                   className={`floating-menu-btn${menuHidden ? ' is-hidden' : ''}`}
                   onClick={() => setIsSidebarOpen(true)}
