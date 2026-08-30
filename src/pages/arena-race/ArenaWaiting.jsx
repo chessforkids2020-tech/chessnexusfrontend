@@ -319,12 +319,33 @@ export default function ArenaWaiting() {
     }
   };
 
+  // This page is styled entirely with inline objects and had NO media queries,
+  // so nothing responded to screen size: a hardcoded `400px 1fr` grid is wider
+  // than any phone, which is why the cards ran off the right edge and the text
+  // was cut off. Track the viewport and branch the few size-critical values.
+  const [vw, setVw] = useState(
+    typeof document !== 'undefined'
+      ? (document.documentElement.clientWidth || window.innerWidth)
+      : 1280
+  );
+  useEffect(() => {
+    const onResize = () => setVw(document.documentElement.clientWidth || window.innerWidth);
+    onResize();
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, []);
+  const isNarrow = vw <= 1024;
+
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
       background: 'var(--color-bg)',
       minHeight: '100vh',
-      padding: '20px',
+      padding: isNarrow ? '12px 10px' : '20px',
       position: 'relative',
       overflow: 'hidden',
     },
@@ -356,7 +377,7 @@ export default function ArenaWaiting() {
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     title: {
-      fontSize: '42px',
+      fontSize: isNarrow ? '24px' : '42px',
       fontWeight: '700',
       margin: '0 0 8px 0',
       background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
@@ -365,18 +386,20 @@ export default function ArenaWaiting() {
       backgroundClip: 'text',
     },
     roomCode: {
-      fontSize: '36px',
+      fontSize: isNarrow ? '20px' : '36px',
       fontWeight: '900',
       color: 'var(--color-accent)',
       fontFamily: 'monospace',
-      letterSpacing: '6px',
+      letterSpacing: isNarrow ? '2px' : '6px',
       textShadow: '0 0 30px var(--color-accent-a40)',
     },
     twoColumnGrid: {
       display: 'grid',
-      gridTemplateColumns: '400px 1fr',
-      gap: '24px',
+      // One column on a phone/tablet — `400px 1fr` needs ~840px before it fits.
+      gridTemplateColumns: isNarrow ? '1fr' : '400px 1fr',
+      gap: isNarrow ? '12px' : '24px',
       alignItems: 'start',
+      minWidth: 0,
     },
     leftColumn: {
       display: 'flex',
@@ -393,11 +416,18 @@ export default function ArenaWaiting() {
       border: '1px solid var(--color-white-a04)',
       borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
-      padding: '32px',
+      padding: isNarrow ? '14px' : '32px',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
+    statsGrid: {
+      display: 'grid',
+      // Two per row on a phone; the desktop stack is unchanged.
+      gridTemplateColumns: isNarrow ? '1fr 1fr' : '1fr',
+      gap: isNarrow ? '8px' : '0',
+    },
     statItem: {
-      padding: '20px',
+      padding: isNarrow ? '10px 12px' : '20px',
+      minWidth: 0,
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
       borderRadius: 'var(--radius-lg)',
@@ -405,7 +435,7 @@ export default function ArenaWaiting() {
       transition: 'all 0.3s ease',
     },
     statLabel: {
-      fontSize: '14px',
+      fontSize: isNarrow ? '11px' : '14px',
       color: 'var(--color-text-muted)',
       fontWeight: '600',
       marginBottom: '8px',
@@ -414,7 +444,8 @@ export default function ArenaWaiting() {
       gap: '8px',
     },
     statValue: {
-      fontSize: '28px',
+      fontSize: isNarrow ? '17px' : '28px',
+      overflowWrap: 'anywhere',
       fontWeight: '700',
       color: 'var(--color-text)',
     },
@@ -428,7 +459,7 @@ export default function ArenaWaiting() {
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     statusIcon: {
-      fontSize: '56px',
+      fontSize: isNarrow ? '30px' : '56px',
       marginBottom: '16px',
       filter: 'drop-shadow(0 4px 12px currentColor)',
     },
@@ -447,7 +478,7 @@ export default function ArenaWaiting() {
       border: '1px solid var(--color-white-a04)',
       borderRadius: 'var(--radius-2xl)',
       backdropFilter: 'blur(10px)',
-      padding: '32px',
+      padding: isNarrow ? '14px' : '32px',
       boxShadow: '0 8px 32px var(--color-black-a50)',
     },
     playersHeader: {
@@ -813,6 +844,9 @@ export default function ArenaWaiting() {
             transition={{ duration: 0.5, delay: 0.1 }}
           >
             <div style={styles.card}>
+              {/* 2x2 on a phone: five full-width stat bands filled the screen
+                  before the player list was reachable. */}
+              <div style={styles.statsGrid}>
               <motion.div 
                 style={styles.statItem}
                 whileHover={{ 
@@ -870,7 +904,7 @@ export default function ArenaWaiting() {
               </motion.div>
 
               <motion.div 
-                style={styles.statItem}
+                style={{ ...styles.statItem, gridColumn: isNarrow ? '1 / -1' : 'auto' }}
                 whileHover={{ 
                   y: -2,
                   boxShadow: '0 4px 16px var(--color-accent-a20)',
@@ -889,6 +923,7 @@ export default function ArenaWaiting() {
                   </div>
                 )}
               </motion.div>
+              </div>
             </div>
           </motion.div>
 

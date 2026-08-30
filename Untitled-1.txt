@@ -1,0 +1,1239 @@
+~/backend$ pm2 logs chessnexus-api
+[TAILING] Tailing last 15 lines for [chessnexus-api] process (change the value with --lines option)
+/home/ubuntu/.pm2/logs/chessnexus-api-error.log last 15 lines:
+/home/ubuntu/.pm2/logs/chessnexus-api-out.log last 15 lines:
+0|chessnex | POST /internal/arena-rate 200 23.892 ms - 157
+0|chessnex | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 41.290 ms - 14320
+0|chessnex | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 32.324 ms - 14320
+0|chessnex | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.477 ms - -
+0|chessnex | POST /api/analytics/batch 204 0.404 ms - -
+0|chessnex | [internal/arena-rate] game 6a7dc9de77ea57f7e023e19a (black_won) -> {"category":"blitz","white":{"oldRating":1216,"newRating":1187,"change":-29},"black":{"oldRating":847,"newRating":876,"change":29}}
+0|chessnex | POST /internal/arena-rate 200 31.348 ms - 159
+0|chessnex | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 59.967 ms - 14320
+0|chessnex | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 39.265 ms - 14320
+0|chessnex | GET /api/coach/students/online 200 33.844 ms - 358
+0|chessnex | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 31.553 ms - -
+0|chessnex | GET /api/chat/coach/unread-count 304 19.160 ms - -
+0|chessnex | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 21.797 ms - -
+0|chessnex | GET /api/coffee/active-usernames 304 18.961 ms - -
+0|chessnex | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.205 ms - -
+
+0|chessnexus-api  | GET /api/chat/friend-unread 304 73.369 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 157.452 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 14.000 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 23.229 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 22.162 ms - -
+0|chessnexus-api  | GET /api/game-invites/incoming 304 17.427 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 21.839 ms - 482
+0|chessnexus-api  | POST /api/analytics/batch 204 11.049 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.478 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dca2477ea57f7e023e6ba (draw) -> {"category":"blitz","white":{"oldRating":1348,"newRating":1357,"change":9},"black":{"oldRating":1559,"newRating":1550,"change":-9}}
+0|chessnexus-api  | POST /internal/arena-rate 200 21.248 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 30.304 ms - 14317
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 34.373 ms - 14317
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.840 ms - -
+0|chessnexus-api  | OPTIONS /api/auth/register 200 0.234 ms - 0
+0|chessnexus-api  | POST /api/auth/register 201 151.147 ms - 60
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 21.722 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 0.510 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dc8a877ea57f7e023cb0a (draw) -> {"category":"blitz","white":{"oldRating":879,"newRating":879,"change":0},"black":{"oldRating":889,"newRating":889,"change":0}}
+0|chessnexus-api  | POST /internal/arena-rate 200 20.073 ms - 154
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 45.494 ms - 14313
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 33.256 ms - 14313
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 18.704 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 28.418 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 16.993 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 26.743 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 16.539 ms - -
+0|chessnexus-api  | GET /api/game-invites/incoming 304 16.515 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 23.439 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 27.069 ms - 262
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 41.139 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dca3c77ea57f7e023e8f1 (draw) -> {"category":"blitz","white":{"oldRating":814,"newRating":815,"change":1},"black":{"oldRating":840,"newRating":839,"change":-1}}
+0|chessnexus-api  | POST /internal/arena-rate 200 15.917 ms - 155
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.330 ms - 14313
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 30.183 ms - 14313
+0|chessnexus-api  | GET /api/coach/students/online 200 21.639 ms - 358
+0|chessnexus-api  | OPTIONS /api/auth/login 200 0.152 ms - 0
+0|chessnexus-api  | POST /api/auth/login 401 4.412 ms - 33
+0|chessnexus-api  | POST /api/auth/login 401 3.410 ms - 33
+0|chessnexus-api  | POST /api/analytics/batch 204 0.445 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.190 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.014 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dc9ac77ea57f7e023dcf9 (white_won) -> {"category":"blitz","white":{"oldRating":1730,"newRating":1735,"change":5},"black":{"oldRating":1431,"newRating":1426,"change":-5}}
+0|chessnexus-api  | POST /internal/arena-rate 200 36.094 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 40.914 ms - 14315
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.901 ms - 14315
+0|chessnexus-api  | POST /api/auth/login 401 3.385 ms - 33
+0|chessnexus-api  | POST /api/auth/login 401 3.318 ms - 33
+0|chessnexus-api  | POST /api/analytics/batch 204 0.360 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 19.829 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.292 ms - -
+0|chessnexus-api  | POST /api/auth/login 401 3.263 ms - 33
+0|chessnexus-api  | POST /api/analytics/batch 204 0.571 ms - -
+0|chessnexus-api  | POST /api/auth/login 401 3.466 ms - 33
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 19.300 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.099 ms - -
+0|chessnexus-api  | POST /api/auth/login 401 3.913 ms - 33
+0|chessnexus-api  | POST /api/analytics/batch 204 0.315 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.896 ms - -
+0|chessnexus-api  | POST /api/auth/login 401 3.400 ms - 33
+0|chessnexus-api  | [internal/arena-rate] game 6a7dca2477ea57f7e023e6c6 (black_won) -> {"category":"blitz","white":{"oldRating":1325,"newRating":1318,"change":-7},"black":{"oldRating":1541,"newRating":1548,"change":7}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.852 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.562 ms - 14316
+0|chessnexus-api  | POST /api/auth/login 401 3.823 ms - 33
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 30.171 ms - 14316
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.719 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 304 16.728 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 0.327 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 18.699 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.200 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 0.281 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 17.672 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.573 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.429 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 0.314 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.334 ms - -
+0|chessnexus-api  | POST /api/auth/register 400 5.090 ms - 36
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 18.015 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 0.318 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.460 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 18.755 ms - 358
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 6.318 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.440 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 20.451 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 57.638 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 20.954 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 17.328 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 124.605 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 21.741 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 17.818 ms - 482
+0|chessnexus-api  | GET /api/game-invites/incoming 304 13.963 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.799 ms - -
+0|chessnexus-api  | POST /api/auth/register 400 7.463 ms - 34
+0|chessnexus-api  | POST /api/analytics/batch 204 0.326 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.461 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 0.331 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 16.997 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 26.483 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 17.520 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 32.215 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 24.243 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 26.904 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 26.744 ms - 262
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.132 ms - -
+0|chessnexus-api  | POST /api/auth/login 401 3.411 ms - 33
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.925 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 0.297 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 21.895 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.947 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.709 ms - -
+0|chessnexus-api  | POST /api/auth/login 401 3.280 ms - 33
+0|chessnexus-api  | POST /api/auth/login 401 3.362 ms - 33
+0|chessnexus-api  | POST /api/analytics/batch 204 0.288 ms - -
+0|chessnexus-api  | POST /api/auth/login 401 3.993 ms - 33
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.357 ms - -
+0|chessnexus-api  | OPTIONS /api/analytics/batch 200 0.148 ms - 0
+0|chessnexus-api  | GET /api/coach/students/online 200 16.316 ms - 358
+0|chessnexus-api  | POST /api/analytics/batch 204 0.305 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dca6d77ea57f7e023ed8b (white_won) -> {"category":"blitz","white":{"oldRating":1383,"newRating":1384,"change":1},"black":{"oldRating":851,"newRating":850,"change":-1}}
+0|chessnexus-api  | POST /internal/arena-rate 200 19.988 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 35.371 ms - 14316
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 29.544 ms - 14316
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.316 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.663 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.827 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.937 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 21.782 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.486 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 18.212 ms - -
+0|chessnexus-api  | ⏰ [ArenaTournament] Game 6a7dca656ba19f66afcfdbce ended by timeout - white ran out of time, black wins
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 29.968 ms - 14317
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.290 ms - 14317
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 304 29.404 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 18.099 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.437 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcae477ea57f7e023f769 (black_won) -> {"category":"blitz","white":{"oldRating":839,"newRating":825,"change":-14},"black":{"oldRating":879,"newRating":893,"change":14}}
+0|chessnexus-api  | POST /internal/arena-rate 200 14.991 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.399 ms - 14321
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.993 ms - 14321
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.947 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.774 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 17.071 ms - 358
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.121 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcad277ea57f7e023f623 (white_won) -> {"category":"blitz","white":{"oldRating":1550,"newRating":1558,"change":8},"black":{"oldRating":1357,"newRating":1349,"change":-8}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.662 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.073 ms - 14325
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.645 ms - 14325
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 18.092 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcaba77ea57f7e023f419 (white_won) -> {"category":"blitz","white":{"oldRating":1187,"newRating":1192,"change":5},"black":{"oldRating":876,"newRating":871,"change":-5}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.975 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.674 ms - 14325
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.170 ms - 14325
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.144 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcab277ea57f7e023f36f (black_won) -> {"category":"blitz","white":{"oldRating":849,"newRating":846,"change":-3},"black":{"oldRating":1254,"newRating":1257,"change":3}}
+0|chessnexus-api  | POST /internal/arena-rate 200 15.388 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 40.524 ms - 14325
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 33.438 ms - 14325
+0|chessnexus-api  | [internal/arena-rate] game 6a7dca6d77ea57f7e023ed85 (white_won) -> {"category":"blitz","white":{"oldRating":1336,"newRating":1356,"change":20},"black":{"oldRating":1421,"newRating":1401,"change":-20}}
+0|chessnexus-api  | POST /internal/arena-rate 200 17.057 ms - 161
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 30.097 ms - 14325
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.428 ms - 14325
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 15.987 ms - -
+0|chessnexus-api  | GET /api/auth/me 304 29.946 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.274 ms - -
+0|chessnexus-api  | GET /api/admin/settings 304 22.307 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 28.299 ms - -
+0|chessnexus-api  | GET /api/admin/users 200 97.095 ms - 621532
+0|chessnexus-api  | GET /api/admin/puzzles 304 31.640 ms - -
+0|chessnexus-api  | GET /api/admin/rounds 304 62.207 ms - -
+0|chessnexus-api  | GET /api/admin/activity 304 81.381 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/trends 200 107.906 ms - 2623
+0|chessnexus-api  | GET /api/admin/signup-requests/count 304 17.083 ms - -
+0|chessnexus-api  | GET /api/admin/attendance/payment-requests/count 304 14.856 ms - -
+0|chessnexus-api  | GET /api/arenatournament/admin/all 304 37.080 ms - -
+0|chessnexus-api  | POST /api/auth/appearance 200 15.177 ms - 34
+0|chessnexus-api  | GET /api/public/contact 304 15.396 ms - -
+0|chessnexus-api  | GET /api/auth/board-colors 304 18.208 ms - -
+0|chessnexus-api  | GET /api/auth/themes 304 17.958 ms - -
+0|chessnexus-api  | ✅ Socket connected: ChessNexus (-e0jgkOXHt209EY_AAAV)
+0|chessnexus-api  | GET /api/chat/unread-count 304 22.876 ms - -
+0|chessnexus-api  | GET /api/admin/settings 304 14.066 ms - -
+0|chessnexus-api  | GET /api/admin/users 200 77.653 ms - 621532
+0|chessnexus-api  | POST /api/analytics/batch 204 11.322 ms - -
+0|chessnexus-api  | GET /api/admin/users 200 52.535 ms - 621532
+0|chessnexus-api  | GET /api/admin/settings 304 56.151 ms - -
+0|chessnexus-api  | GET /api/admin/puzzles 304 70.013 ms - -
+0|chessnexus-api  | GET /api/admin/rounds 304 82.874 ms - -
+0|chessnexus-api  | GET /api/admin/activity 304 61.491 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 96.682 ms - -
+0|chessnexus-api  | GET /api/admin/attendance/payment-requests/count 304 18.792 ms - -
+0|chessnexus-api  | GET /api/admin/signup-requests/count 304 18.403 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/trends 304 58.304 ms - -
+0|chessnexus-api  | GET /api/public/contact 304 18.361 ms - -
+0|chessnexus-api  | GET /api/arenatournament/admin/all 304 30.730 ms - -
+0|chessnexus-api  | GET /api/admin/settings 304 13.439 ms - -
+0|chessnexus-api  | OPTIONS /api/public/healthymix/submit 200 0.204 ms - 0
+0|chessnexus-api  | POST /api/public/healthymix/submit 200 42.486 ms - 111
+0|chessnexus-api  | GET /api/reports/mine/unread 304 61.120 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 61.837 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 60.977 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 114.040 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 176.351 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 19.376 ms - 482
+0|chessnexus-api  | GET /api/game-invites/incoming 304 14.373 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.555 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/pages?range=7d 200 62.913 ms - 1650
+0|chessnexus-api  | GET /api/admin/analytics/overview?range=7d 200 101.740 ms - 104
+0|chessnexus-api  | GET /api/admin/analytics/puzzles?range=7d 200 95.744 ms - 1036
+0|chessnexus-api  | GET /api/admin/analytics/games?range=7d 200 101.393 ms - 463
+0|chessnexus-api  | GET /api/admin/analytics/behavior?range=7d 200 92.285 ms - 820
+0|chessnexus-api  | GET /api/admin/analytics/traffic 200 26.947 ms - 321
+0|chessnexus-api  | GET /api/admin/analytics/retention 200 45.245 ms - 1570
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 59.840 ms - 4772
+0|chessnexus-api  | GET /api/admin/analytics/funnel?range=7d 200 90.169 ms - 366
+0|chessnexus-api  | GET /api/admin/analytics/realtime 200 151.055 ms - 3674
+0|chessnexus-api  | POST /api/analytics/batch 204 11.522 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/users?range=7d 200 349.324 ms - 146
+0|chessnexus-api  | POST /api/analytics/batch 204 0.327 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 17.249 ms - 358
+0|chessnexus-api  | GET /api/admin/analytics/realtime 200 19.258 ms - 3690
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.800 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 19.011 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 17.829 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.453 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 20.350 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 27.829 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 15.792 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 30.480 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 21.950 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 25.509 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 24.807 ms - 262
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.889 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.708 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.284 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.204 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcae477ea57f7e023f773 (draw) -> {"category":"blitz","white":{"oldRating":889,"newRating":886,"change":-3},"black":{"oldRating":815,"newRating":818,"change":3}}
+0|chessnexus-api  | POST /internal/arena-rate 200 19.535 ms - 155
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.988 ms - 14324
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 27.667 ms - 14324
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcb7477ea57f7e02401ff (white_won) -> {"category":"blitz","white":{"oldRating":1384,"newRating":1385,"change":1},"black":{"oldRating":850,"newRating":849,"change":-1}}
+0|chessnexus-api  | POST /internal/arena-rate 200 17.801 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.954 ms - 14325
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.293 ms - 14325
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 18.768 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dca6677ea57f7e023ecdd (draw) -> {"category":"blitz","white":{"oldRating":844,"newRating":846,"change":2},"black":{"oldRating":883,"newRating":881,"change":-2}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.076 ms - 155
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.686 ms - 14326
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.007 ms - 14326
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.192 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.523 ms - -
+0|chessnexus-api  | OPTIONS /api/public/healthymix/next?exclude=6a2beb5bbe6c675a89aced60&min=400&max=599 200 0.132 ms - 0
+0|chessnexus-api  | GET /api/public/healthymix/next?exclude=6a2beb5bbe6c675a89aced60&min=400&max=599 200 17.005 ms - 567
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 22.355 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 30.542 ms - 4776
+0|chessnexus-api  | POST /api/analytics/batch 204 13.544 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.271 ms - -
+0|chessnexus-api  | POST /api/public/healthymix/submit 200 27.905 ms - 111
+0|chessnexus-api  | OPTIONS /api/public/healthymix/next?exclude=6a2bf124be6c675a89c1ad9b&min=400&max=599 200 0.134 ms - 0
+0|chessnexus-api  | GET /api/public/healthymix/next?exclude=6a2bf124be6c675a89c1ad9b&min=400&max=599 200 16.804 ms - 559
+0|chessnexus-api  | GET /api/admin/analytics/realtime 200 18.289 ms - 3699
+0|chessnexus-api  | POST /api/analytics/batch 204 11.678 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 17.792 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.323 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 200 19.170 ms - 3720
+0|chessnexus-api  | [internal/arena-rate] game 6a7dc97a77ea57f7e023d916 (draw) -> {"category":"blitz","white":{"oldRating":1191,"newRating":1201,"change":10},"black":{"oldRating":1441,"newRating":1431,"change":-10}}
+0|chessnexus-api  | POST /internal/arena-rate 200 13.786 ms - 161
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 30.984 ms - 14324
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.107 ms - 14324
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 22.534 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.668 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.988 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 17.082 ms - 358
+0|chessnexus-api  | [camera-report] session=6a7dc78c2f9a7db0b45eee58 user=691f438037b2562538f25cfc role=coach camOn=true pubMuted=false readyState=live fps=7 videoWidth=null black=false svMounts=0 svAttaches=0 svTrackSwaps=0 device=ZDfe9tCoM344FQ2HvSRoOyYPIL2RSMXKPk7rn9VK ua=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+0|chessnexus-api  | POST /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/camera-report 200 17.898 ms - 11
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.750 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.727 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.858 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 32.189 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 27.753 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 38.026 ms - 4956
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.887 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcb9d77ea57f7e02406f1 (white_won) -> {"category":"blitz","white":{"oldRating":1588,"newRating":1588,"change":0},"black":{"oldRating":825,"newRating":825,"change":0}}
+0|chessnexus-api  | POST /internal/arena-rate 200 15.652 ms - 156
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.932 ms - 14323
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 27.562 ms - 14323
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 18.331 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.460 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 15.864 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 18.672 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.029 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.682 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 29.139 ms - 4966
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 26.417 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 386.986 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 17.128 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.200 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 35.299 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 82.250 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 139.874 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 13.637 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 15.651 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 26.598 ms - 273
+0|chessnexus-api  | GET /api/game-invites/incoming 304 20.562 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.270 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 21.661 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 29.305 ms - 4792
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcaf677ea57f7e023f8cb (white_won) -> {"category":"blitz","white":{"oldRating":1735,"newRating":1740,"change":5},"black":{"oldRating":1426,"newRating":1421,"change":-5}}
+0|chessnexus-api  | POST /internal/arena-rate 200 14.866 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 48.704 ms - 14323
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 29.601 ms - 14323
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.459 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 18.730 ms - 199
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 19.525 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 16.452 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 68.119 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 24.440 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 26.363 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 53.429 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 41.510 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 39.273 ms - 262
+0|chessnexus-api  | GET /api/game-invites/incoming 304 16.262 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.242 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 20.446 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.997 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcb0f77ea57f7e023fa67 (white_won) -> {"category":"blitz","white":{"oldRating":1548,"newRating":1555,"change":7},"black":{"oldRating":1318,"newRating":1311,"change":-7}}
+0|chessnexus-api  | POST /internal/arena-rate 200 17.252 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 29.123 ms - 14323
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 28.663 ms - 4966
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.448 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcbb577ea57f7e024097b (black_won) -> {"category":"blitz","white":{"oldRating":871,"newRating":870,"change":-1},"black":{"oldRating":1401,"newRating":1402,"change":1}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.596 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.157 ms - 14324
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.382 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.324 ms - -
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.296 ms - 14324
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 304 29.404 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.526 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.037 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 33.298 ms - 4787
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 28.397 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.566 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 20.499 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 19.512 ms - 199
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 20.485 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 21.722 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcc0977ea57f7e024116e (black_won) -> {"category":"blitz","white":{"oldRating":825,"newRating":825,"change":0},"black":{"oldRating":1588,"newRating":1588,"change":0}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.295 ms - 156
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.848 ms - 14325
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.950 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.011 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.881 ms - -
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 29.301 ms - 14325
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcbd677ea57f7e0240d4c (black_won) -> {"category":"blitz","white":{"oldRating":893,"newRating":877,"change":-16},"black":{"oldRating":886,"newRating":902,"change":16}}
+0|chessnexus-api  | POST /internal/arena-rate 200 14.387 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.959 ms - 14327
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 29.046 ms - 14327
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.792 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcbd577ea57f7e0240d46 (white_won) -> {"category":"blitz","white":{"oldRating":818,"newRating":835,"change":17},"black":{"oldRating":846,"newRating":829,"change":-17}}
+0|chessnexus-api  | POST /internal/arena-rate 200 19.428 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 32.022 ms - 14331
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 38.956 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.254 ms - -
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 29.710 ms - 14331
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcbb577ea57f7e024096f (white_won) -> {"category":"blitz","white":{"oldRating":1356,"newRating":1368,"change":12},"black":{"oldRating":1257,"newRating":1245,"change":-12}}
+0|chessnexus-api  | POST /internal/arena-rate 200 14.942 ms - 161
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 27.919 ms - 14333
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 21.085 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 14.941 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 20.741 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 71.022 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 20.764 ms - -
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 35.702 ms - 14333
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 153.480 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 13.818 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 16.243 ms - 273
+0|chessnexus-api  | GET /api/game-invites/incoming 304 17.301 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.468 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 17.360 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcbad77ea57f7e0240882 (white_won) -> {"category":"blitz","white":{"oldRating":1558,"newRating":1565,"change":7},"black":{"oldRating":1349,"newRating":1342,"change":-7}}
+0|chessnexus-api  | POST /internal/arena-rate 200 19.743 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 30.399 ms - 14333
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.352 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 20.047 ms - 199
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 19.562 ms - -
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 26.642 ms - 14333
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 16.835 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 27.240 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 17.467 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 26.367 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 23.296 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 30.952 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 17.054 ms - 262
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.551 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.696 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 23.621 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 30.407 ms - 4874
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 26.164 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.192 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.842 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcc5c77ea57f7e02416e3 (black_won) -> {"category":"blitz","white":{"oldRating":1555,"newRating":1529,"change":-26},"black":{"oldRating":1311,"newRating":1337,"change":26}}
+0|chessnexus-api  | POST /internal/arena-rate 200 38.790 ms - 161
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.758 ms - 14333
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 29.359 ms - 14333
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.391 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 0.265 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcc8677ea57f7e0241bb1 (white_won) -> {"category":"blitz","white":{"oldRating":1588,"newRating":1588,"change":0},"black":{"oldRating":825,"newRating":825,"change":0}}
+0|chessnexus-api  | POST /internal/arena-rate 200 20.838 ms - 156
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 27.928 ms - 14333
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 27.331 ms - 14333
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 15.833 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 17.118 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.375 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 17.314 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.776 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 17.108 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.067 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 22.459 ms - 199
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 23.741 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 21.423 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 15.958 ms - -
+0|chessnexus-api  | ⏰ [ArenaTournament] Game 6a7dcb946ba19f66afcfe0ab ended by timeout - black ran out of time, white wins
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 27.365 ms - 14332
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 304 28.853 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 200 23.351 ms - 3844
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 29.552 ms - 4791
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.695 ms - 14332
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.730 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 15.942 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.294 ms - -
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 13.013 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 12.103 ms - 33
+0|chessnexus-api  | POST /api/analytics/batch 204 10.802 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 22.542 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 15.169 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 16.658 ms - 199
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 17.264 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 34.245 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 37.421 ms - 4791
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.364 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.312 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 24.034 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 56.724 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 125.335 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 12.853 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 20.618 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 16.650 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 17.747 ms - 273
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.852 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.211 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 21.291 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 29.124 ms - 4792
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.371 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 304 15.655 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 18.670 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcc8e77ea57f7e0241cb7 (draw) -> {"category":"blitz","white":{"oldRating":877,"newRating":878,"change":1},"black":{"oldRating":902,"newRating":901,"change":-1}}
+0|chessnexus-api  | POST /internal/arena-rate 200 15.325 ms - 155
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 27.974 ms - 14330
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.603 ms - -
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 27.048 ms - 14330
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 16.554 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 18.241 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 18.490 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 28.749 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 18.429 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 20.189 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 26.514 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 20.402 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 18.987 ms - 262
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.700 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 17.922 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.298 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 18.558 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.712 ms - -
+0|chessnexus-api  | GET /api/auth/me 304 22.904 ms - -
+0|chessnexus-api  | GET /api/admin/puzzles 304 37.399 ms - -
+0|chessnexus-api  | GET /api/admin/rounds 304 60.145 ms - -
+0|chessnexus-api  | GET /api/admin/users 200 71.799 ms - 621533
+0|chessnexus-api  | GET /api/admin/activity 304 39.767 ms - -
+0|chessnexus-api  | GET /api/admin/signup-requests/count 304 11.088 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/trends 304 59.893 ms - -
+0|chessnexus-api  | GET /api/admin/attendance/payment-requests/count 304 14.681 ms - -
+0|chessnexus-api  | GET /api/arenatournament/admin/all 304 31.017 ms - -
+0|chessnexus-api  | POST /api/auth/appearance 200 23.802 ms - 34
+0|chessnexus-api  | GET /api/public/contact 304 13.552 ms - -
+0|chessnexus-api  | GET /api/auth/board-colors 304 16.633 ms - -
+0|chessnexus-api  | GET /api/auth/themes 304 15.830 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 17.622 ms - -
+0|chessnexus-api  | GET /api/chat/unread-count 304 18.538 ms - -
+0|chessnexus-api  | ✅ Socket connected: ChessNexus (wQtoZvlZ9jC9oA2oAAAX)
+0|chessnexus-api  | GET /api/admin/settings 304 12.406 ms - -
+0|chessnexus-api  | GET /api/admin/settings 304 11.977 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 0.299 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.009 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 200 18.014 ms - 3845
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 20.101 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 28.485 ms - 4770
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcc9677ea57f7e0241daf (black_won) -> {"category":"blitz","white":{"oldRating":829,"newRating":813,"change":-16},"black":{"oldRating":835,"newRating":851,"change":16}}
+0|chessnexus-api  | POST /internal/arena-rate 200 14.309 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.986 ms - 14330
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 26.914 ms - 14330
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcbd677ea57f7e0240d52 (draw) -> {"category":"blitz","white":{"oldRating":849,"newRating":850,"change":1},"black":{"oldRating":881,"newRating":880,"change":-1}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.944 ms - 155
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 28.511 ms - 14328
+0|chessnexus-api  | GET /api/admin/users 200 53.976 ms - 621533
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.128 ms - -
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 27.330 ms - 14328
+0|chessnexus-api  | POST /api/analytics/batch 204 10.904 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 23.351 ms - -
+^C
+ubuntu@ip-172-31-29-195:~/backend$ pm2 restart chessnexus-api
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [chessnexus-api](ids: [ 0 ])
+[PM2] [chessnexus-api](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ chessnexus-api     │ fork     │ 217  │ online    │ 0%       │ 7.5mb    │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+ubuntu@ip-172-31-29-195:~/backend$ pm2 logs chessnexus-api
+[TAILING] Tailing last 15 lines for [chessnexus-api] process (change the value with --lines option)
+/home/ubuntu/.pm2/logs/chessnexus-api-error.log last 15 lines:
+/home/ubuntu/.pm2/logs/chessnexus-api-out.log last 15 lines:
+0|chessnex | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 25.024 ms - -
+0|chessnex | GET /api/admin/analytics/realtime 304 23.016 ms - -
+0|chessnex | GET /api/admin/badge-counts 304 20.246 ms - -
+0|chessnex | GET /api/admin/analytics/realtime 304 19.432 ms - -
+0|chessnex | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.649 ms - -
+0|chessnex | GET /api/coffee/active-usernames 304 18.527 ms - -
+0|chessnex | GET /api/admin/analytics/realtime 304 22.534 ms - -
+0|chessnex | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.596 ms - -
+0|chessnex | GET /api/admin/analytics/traffic 200 21.229 ms - 320
+0|chessnex | GET /api/admin/analytics/realtime 304 28.602 ms - -
+0|chessnex | GET /api/admin/analytics/performance?range=7d 200 35.681 ms - 4381
+0|chessnex | GET /api/admin/analytics/realtime 304 29.408 ms - -
+0|chessnex | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.869 ms - -
+0|chessnex | GET /api/coffee/active-usernames 304 22.333 ms - -
+0|chessnex | GET /api/admin/analytics/realtime 304 26.670 ms - -
+
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 16.980 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 29.302 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 18.575 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 32.569 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 29.786 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 35.663 ms - 262
+0|chessnexus-api  | GET /api/public/notifications 304 44.841 ms - -
+0|chessnexus-api  | GET /api/game-invites/incoming 304 22.459 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.725 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.927 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 28.024 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 33.038 ms - 199
+0|chessnexus-api  | GET /api/reports/mine/unread 304 22.754 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 78.250 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 141.683 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 18.861 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 13.324 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 20.633 ms - 273
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.822 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 17.043 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.956 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcbb577ea57f7e0240975 (draw) -> {"category":"blitz","white":{"oldRating":1192,"newRating":1180,"change":-12},"black":{"oldRating":846,"newRating":858,"change":12}}
+0|chessnexus-api  | POST /internal/arena-rate 200 17.264 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/details/6a7cc2b0b63bee93402a8e95 200 31.059 ms - 14334
+0|chessnexus-api  | OPTIONS /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 0.311 ms - 0
+0|chessnexus-api  | OPTIONS /api/arenatournament/6a7cc2b0b63bee93402a8e95/my-summary 200 0.192 ms - 0
+0|chessnexus-api  | GET /api/arenatournament/6a7cc2b0b63bee93402a8e95/chat 304 15.305 ms - -
+0|chessnexus-api  | GET /api/arenatournament/6a7cc2b0b63bee93402a8e95/my-summary 403 14.920 ms - 36
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 35.234 ms - 10407
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcd4a77ea57f7e0242f61 (white_won) -> {"category":"blitz","white":{"oldRating":851,"newRating":867,"change":16},"black":{"oldRating":850,"newRating":834,"change":-16}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.608 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 30.035 ms - 10409
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.269 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.507 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 10.277 ms - -
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 12.572 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 11.718 ms - 33
+0|chessnexus-api  | GET /api/admin/analytics/realtime 200 27.990 ms - 4021
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 30.539 ms - 4783
+0|chessnexus-api  | POST /api/analytics/batch 204 10.632 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.403 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 28.434 ms - -
+0|chessnexus-api  | POST /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/request-camera 200 18.905 ms - 11
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcd5b77ea57f7e0243128 (black_won) -> {"category":"blitz","white":{"oldRating":1194,"newRating":1187,"change":-7},"black":{"oldRating":1417,"newRating":1424,"change":7}}
+0|chessnexus-api  | POST /internal/arena-rate 200 15.926 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 31.740 ms - 10409
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.655 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcd7477ea57f7e02433f4 (black_won) -> {"category":"blitz","white":{"oldRating":869,"newRating":868,"change":-1},"black":{"oldRating":1403,"newRating":1404,"change":1}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.130 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 29.709 ms - 10408
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 20.912 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 20.419 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 17.278 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.514 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 15.916 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 18.954 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcd8e77ea57f7e0243617 (black_won) -> {"category":"blitz","white":{"oldRating":825,"newRating":825,"change":0},"black":{"oldRating":1588,"newRating":1588,"change":0}}
+0|chessnexus-api  | POST /internal/arena-rate 200 21.998 ms - 156
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 26.917 ms - 10408
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 19.404 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.019 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/traffic 200 20.877 ms - 320
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 27.667 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 37.366 ms - 4876
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcd5b77ea57f7e0243132 (white_won) -> {"category":"blitz","white":{"oldRating":1744,"newRating":1749,"change":5},"black":{"oldRating":1438,"newRating":1433,"change":-5}}
+0|chessnexus-api  | POST /internal/arena-rate 200 14.910 ms - 159
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.724 ms - -
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 35.015 ms - 10409
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 20.600 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.765 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 17.075 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 24.908 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 32.965 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 30.612 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.574 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.534 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcca777ea57f7e0241f5e (black_won) -> {"category":"blitz","white":{"oldRating":1368,"newRating":1347,"change":-21},"black":{"oldRating":1245,"newRating":1266,"change":21}}
+0|chessnexus-api  | POST /internal/arena-rate 200 15.398 ms - 161
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.035 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcd4a77ea57f7e0242f5b (draw) -> {"category":"blitz","white":{"oldRating":880,"newRating":877,"change":-3},"black":{"oldRating":813,"newRating":816,"change":3}}
+0|chessnexus-api  | POST /internal/arena-rate 200 13.835 ms - 155
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 26.640 ms - 10408
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 304 66.008 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 23.998 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 23.813 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.962 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 15.213 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 15.751 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcd7377ea57f7e02433eb (draw) -> {"category":"blitz","white":{"oldRating":900,"newRating":899,"change":-1},"black":{"oldRating":879,"newRating":880,"change":1}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.882 ms - 155
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 29.232 ms - 10408
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.281 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.213 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 16.669 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 26.568 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 20.345 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 31.587 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 27.563 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 29.446 ms - 262
+0|chessnexus-api  | GET /api/public/notifications 304 38.673 ms - -
+0|chessnexus-api  | GET /api/game-invites/incoming 304 19.196 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.781 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 21.143 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 27.727 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 60.492 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 20.540 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 31.338 ms - 4980
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 23.243 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 18.056 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 15.921 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 12.566 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 133.068 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 15.613 ms - 273
+0|chessnexus-api  | GET /api/game-invites/incoming 304 11.224 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 21.152 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dce3577ea57f7e0244403 (white_won) -> {"category":"blitz","white":{"oldRating":834,"newRating":851,"change":17},"black":{"oldRating":858,"newRating":841,"change":-17}}
+0|chessnexus-api  | POST /internal/arena-rate 200 13.936 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 27.221 ms - 10409
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.300 ms - -
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 12.050 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 12.380 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 11.781 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 12.148 ms - 33
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.368 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 11.473 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.929 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dce4577ea57f7e02445e1 (white_won) -> {"category":"blitz","white":{"oldRating":1424,"newRating":1425,"change":1},"black":{"oldRating":867,"newRating":866,"change":-1}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.520 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 60.161 ms - 10410
+0|chessnexus-api  | GET /api/coach-arena/races 403 13.486 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 12.197 ms - 33
+0|chessnexus-api  | GET /api/admin/badge-counts 304 16.270 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 11.432 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcdeb77ea57f7e0243c31 (black_won) -> {"category":"blitz","white":{"oldRating":1367,"newRating":1358,"change":-9},"black":{"oldRating":1540,"newRating":1549,"change":9}}
+0|chessnexus-api  | POST /internal/arena-rate 200 15.751 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 28.021 ms - 10410
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.718 ms - -
+0|chessnexus-api  | GET /api/coach-arena/races 403 22.643 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 21.964 ms - 33
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 20.715 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 12.812 ms - -
+0|chessnexus-api  | OPTIONS /api/master-games/explorer?moves=d4&limit=12 200 0.178 ms - 0
+0|chessnexus-api  | GET /api/coach-arena/races 403 12.312 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 12.717 ms - 33
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.349 ms - -
+0|chessnexus-api  | GET /api/master-games/explorer?moves=d4&limit=12 200 4667.760 ms - 3577
+0|chessnexus-api  | [internal/arena-rate] game 6a7dce2d77ea57f7e0244302 (black_won) -> {"category":"blitz","white":{"oldRating":1180,"newRating":1176,"change":-4},"black":{"oldRating":1537,"newRating":1541,"change":4}}
+0|chessnexus-api  | POST /internal/arena-rate 200 18.894 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 31.963 ms - 10411
+0|chessnexus-api  | POST /api/analytics/batch 204 14.269 ms - -
+0|chessnexus-api  | GET /api/coach-arena/races 403 15.228 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 15.355 ms - 33
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 17.617 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 15.985 ms - -
+0|chessnexus-api  | GET /api/coach-arena/races 403 12.708 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 13.156 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 12.682 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 10.828 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 13.052 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 13.906 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 11.416 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 10.743 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 12.345 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 12.141 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 12.001 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 15.312 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 11.389 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 10.373 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 10.991 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 10.903 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 10.587 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 10.239 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 11.140 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 10.268 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 10.709 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 11.876 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 18.484 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 15.116 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 13.120 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 11.793 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 11.621 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 11.693 ms - 33
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 22.826 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 37.418 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 33.362 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 53.998 ms - 4966
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 41.805 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 13.874 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 26.357 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 23.338 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.614 ms - -
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 12.744 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 13.330 ms - 33
+0|chessnexus-api  | POST /api/analytics/batch 204 10.917 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 27.316 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dce7677ea57f7e0244b20 (black_won) -> {"category":"blitz","white":{"oldRating":816,"newRating":814,"change":-2},"black":{"oldRating":1266,"newRating":1268,"change":2}}
+0|chessnexus-api  | POST /internal/arena-rate 200 19.252 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 30.668 ms - 10412
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 20.156 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.645 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 16.450 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 15.622 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.399 ms - -
+0|chessnexus-api  | [camera-report] session=6a7dc78c2f9a7db0b45eee58 user=691f438037b2562538f25cfc role=coach camOn=true pubMuted=false readyState=live fps=6 videoWidth=1280 black=false svMounts=0 svAttaches=0 svTrackSwaps=0 device=ZDfe9tCoM344FQ2HvSRoOyYPIL2RSMXKPk7rn9VK ua=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+0|chessnexus-api  | POST /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/camera-report 200 12.315 ms - 11
+0|chessnexus-api  | POST /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/grant-screenshare 200 20.737 ms - 11
+0|chessnexus-api  | POST /api/coach-live/join/wtykggh9ts/token 200 114.220 ms - 1037
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 20.970 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 22.448 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 29.268 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 22.435 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 14.208 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 17.419 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 24.363 ms - 262
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 27.587 ms - -
+0|chessnexus-api  | GET /api/game-invites/incoming 304 23.982 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.212 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 25.454 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 32.036 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 58.206 ms - 4884
+0|chessnexus-api  | GET /api/chat/friend-unread 304 98.008 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 17.725 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 12.286 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 176.667 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 25.818 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 25.090 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 13.241 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 19.111 ms - 273
+0|chessnexus-api  | GET /api/game-invites/incoming 304 14.395 ms - -
+0|chessnexus-api  | GET /api/coach-arena/races 403 12.935 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 12.876 ms - 33
+0|chessnexus-api  | POST /api/analytics/batch 204 12.400 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.548 ms - -
+0|chessnexus-api  | GET /api/coach-arena/races 403 11.587 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 12.340 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 12.830 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 12.918 ms - 33
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.431 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 10.541 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 15.858 ms - -
+0|chessnexus-api  | GET /api/coach-arena/races 403 11.844 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 20.837 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/races 403 18.406 ms - 33
+0|chessnexus-api  | GET /api/coach-arena/tournaments 403 22.150 ms - 33
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 21.151 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 12.069 ms - -
+0|chessnexus-api  | [camera-report] session=6a7dc78c2f9a7db0b45eee58 user=6a185ec35daa7ccc74aaaabe role=student camOn=true pubMuted=false readyState=live fps=29 videoWidth=null black=false svMounts=0 svAttaches=0 svTrackSwaps=0 device=TOSHIBA Web Camera - HD (04f2:b446) ua=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+0|chessnexus-api  | POST /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/camera-report 200 11.003 ms - 11
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.299 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dce4577ea57f7e02445db (black_won) -> {"category":"blitz","white":{"oldRating":1404,"newRating":1379,"change":-25},"black":{"oldRating":1187,"newRating":1212,"change":25}}
+0|chessnexus-api  | POST /internal/arena-rate 200 17.709 ms - 161
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 32.726 ms - 10414
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.969 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 17.460 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 26.311 ms - -
+0|chessnexus-api  | [camera-report] session=6a7dc78c2f9a7db0b45eee58 user=6a185ec35daa7ccc74aaaabe role=student camOn=true pubMuted=false readyState=live fps=15 videoWidth=1280 black=false svMounts=0 svAttaches=0 svTrackSwaps=0 device=TOSHIBA Web Camera - HD (04f2:b446) ua=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+0|chessnexus-api  | POST /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/camera-report 200 10.453 ms - 11
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 22.136 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dceb177ea57f7e0245094 (black_won) -> {"category":"blitz","white":{"oldRating":841,"newRating":828,"change":-13},"black":{"oldRating":899,"newRating":912,"change":13}}
+0|chessnexus-api  | POST /internal/arena-rate 200 17.919 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 32.795 ms - 10415
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.062 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 19.868 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 24.841 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 31.811 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 32.084 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 28.314 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 43.175 ms - 4973
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.960 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.200 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.723 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 20.679 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.402 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 17.897 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dce9177ea57f7e0244d77 (white_won) -> {"category":"blitz","white":{"oldRating":880,"newRating":896,"change":16},"black":{"oldRating":877,"newRating":861,"change":-16}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.331 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 33.748 ms - 10417
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.080 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 17.270 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcdda77ea57f7e0243b23 (white_won) -> {"category":"blitz","white":{"oldRating":1329,"newRating":1348,"change":19},"black":{"oldRating":1385,"newRating":1366,"change":-19}}
+0|chessnexus-api  | POST /internal/arena-rate 200 14.768 ms - 161
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 28.328 ms - 10418
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.985 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.036 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcefe77ea57f7e0245664 (black_won) -> {"category":"blitz","white":{"oldRating":814,"newRating":812,"change":-2},"black":{"oldRating":1268,"newRating":1270,"change":2}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.536 ms - 157
+0|chessnexus-api  | [internal/arena-rate] game 6a7dce7677ea57f7e0244b1a (black_won) -> {"category":"blitz","white":{"oldRating":1347,"newRating":1344,"change":-3},"black":{"oldRating":1749,"newRating":1752,"change":3}}
+0|chessnexus-api  | POST /internal/arena-rate 200 14.398 ms - 159
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 17.132 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 29.044 ms - -
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 28.467 ms - 10418
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 19.655 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 13.901 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 14.811 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 12.576 ms - -
+0|chessnexus-api  | GET /api/game-invites/incoming 304 14.308 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 15.967 ms - 262
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 304 28.434 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.075 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 26.374 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 34.394 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 33.389 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 52.389 ms - 4889
+0|chessnexus-api  | GET /api/chat/friend-unread 304 77.253 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 30.901 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 26.398 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 26.837 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 20.547 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 128.268 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 17.049 ms - 273
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.323 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 16.556 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.406 ms - -
+0|chessnexus-api  | POST /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/raise-hand 200 16.100 ms - 65
+0|chessnexus-api  | POST /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/raise-hand 200 13.849 ms - 64
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.202 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dce5677ea57f7e02447f3 (draw) -> {"category":"blitz","white":{"oldRating":825,"newRating":827,"change":2},"black":{"oldRating":868,"newRating":866,"change":-2}}
+0|chessnexus-api  | POST /internal/arena-rate 200 19.743 ms - 155
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 33.290 ms - 10418
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.320 ms - -
+0|chessnexus-api  | POST /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/raise-hand 200 13.516 ms - 65
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.134 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 16.306 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.120 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 15.374 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.004 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 18.304 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 25.495 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 28.367 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 43.684 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 34.501 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 34.304 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 56.577 ms - 4974
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.130 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.428 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 51.909 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.172 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.897 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 16.664 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.258 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dce5e77ea57f7e02448de (black_won) -> {"category":"blitz","white":{"oldRating":1433,"newRating":1424,"change":-9},"black":{"oldRating":1588,"newRating":1597,"change":9}}
+0|chessnexus-api  | POST /internal/arena-rate 200 17.992 ms - 159
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 28.122 ms - 10419
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.567 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 15.864 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 15.863 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 42.832 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 38.100 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 31.757 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 37.187 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 30.271 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 28.588 ms - 262
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.820 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 15.946 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 17.288 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 18.623 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 19.149 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 30.167 ms - 4974
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 14.999 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcf5377ea57f7e0245c95 (white_won) -> {"category":"blitz","white":{"oldRating":1212,"newRating":1215,"change":3},"black":{"oldRating":828,"newRating":825,"change":-3}}
+0|chessnexus-api  | POST /internal/arena-rate 200 19.338 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 29.138 ms - 10419
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 18.815 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 60.955 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 118.003 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 14.873 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 18.277 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 18.355 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 23.671 ms - 273
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.226 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 15.932 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcec277ea57f7e0245201 (white_won) -> {"category":"blitz","white":{"oldRating":866,"newRating":881,"change":15},"black":{"oldRating":851,"newRating":836,"change":-15}}
+0|chessnexus-api  | POST /internal/arena-rate 200 17.912 ms - 157
+0|chessnexus-api  | GET /api/admin/badge-counts 304 15.142 ms - -
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 25.953 ms - 10419
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.890 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcedc77ea57f7e0245410 (white_won) -> {"category":"blitz","white":{"oldRating":1541,"newRating":1552,"change":11},"black":{"oldRating":1425,"newRating":1414,"change":-11}}
+0|chessnexus-api  | POST /internal/arena-rate 200 13.858 ms - 161
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 27.849 ms - 10420
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.287 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.103 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 15.896 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.186 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 14.676 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.010 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.079 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 17.878 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 33.084 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 28.286 ms - -
+0|chessnexus-api  | GET /api/coach/students/online 200 29.579 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 39.901 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 41.838 ms - 4978
+0|chessnexus-api  | GET /api/admin/badge-counts 304 16.055 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 15.531 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 18.062 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcf8b77ea57f7e02461d6 (white_won) -> {"category":"blitz","white":{"oldRating":1752,"newRating":1752,"change":0},"black":{"oldRating":912,"newRating":912,"change":0}}
+0|chessnexus-api  | POST /internal/arena-rate 200 13.823 ms - 156
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 15.558 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 44.854 ms - -
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 42.639 ms - 10419
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 20.855 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.234 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 15.806 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 10.454 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.009 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcf7b77ea57f7e0246085 (black_won) -> {"category":"blitz","white":{"oldRating":896,"newRating":894,"change":-2},"black":{"oldRating":1366,"newRating":1368,"change":2}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.131 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 31.456 ms - 10421
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 26.510 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 16.554 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 23.932 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 15.299 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 20.820 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 14.087 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 21.138 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 25.527 ms - 262
+0|chessnexus-api  | GET /api/game-invites/incoming 304 15.168 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcf8b77ea57f7e02461dc (black_won) -> {"category":"blitz","white":{"oldRating":812,"newRating":811,"change":-1},"black":{"oldRating":1344,"newRating":1345,"change":1}}
+0|chessnexus-api  | POST /internal/arena-rate 200 15.219 ms - 157
+0|chessnexus-api  | GET /api/arenatournament/leaderboard/6a7cc2b0b63bee93402a8e95 200 28.226 ms - 10419
+0|chessnexus-api  | GET /api/admin/badge-counts 200 20.511 ms - 122
+0|chessnexus-api  | GET /api/coach/students/online 200 27.029 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/realtime 304 30.537 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 56.220 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 22.273 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 30.961 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 45.325 ms - 5074
+0|chessnexus-api  | GET /api/admin/analytics/traffic 304 18.851 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 13.678 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 142.902 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 14.902 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 14.706 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 18.070 ms - 273
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 14.985 ms - -
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.126 ms - -
+0|chessnexus-api  | OPTIONS /api/auth/me 200 0.292 ms - 0
+0|chessnexus-api  | Auto-finished tournament: Evening Arena – 13 Aug 2026 (6a7cc2b0b63bee93402a8e95)
+0|chessnexus-api  | [Carry] puzzle_priya qualifying progress: 1/3
+0|chessnexus-api  | [Carry] climb_nora2 earned +2 carry pts → 4
+0|chessnexus-api  | [Carry] clearance_clay earned +2 carry pts → 4
+0|chessnexus-api  | [Carry] interplay_iris qualifying progress: 1/3
+0|chessnexus-api  | [Carry] zoe_mitchell qualifying progress: 1/3
+0|chessnexus-api  | [Carry] learn_aanya qualifying progress: 2/3
+0|chessnexus-api  | [Carry] learn_kiara qualifying progress: 1/3
+0|chessnexus-api  | [Carry] learn_riya qualifying progress: 1/3
+0|chessnexus-api  | [Carry] chess_arjun qualifying progress: 1/3
+0|chessnexus-api  | [Carry] skewer_sam earned +2 carry pts → 4
+0|chessnexus-api  | [Carry] learn_tara2 qualifying progress: 1/3
+0|chessnexus-api  | [Carry] learn_ryker qualifying progress: 2/3
+0|chessnexus-api  | [Carry] battery_bela qualifying progress: 2/3
+0|chessnexus-api  | [Carry] fork_felix qualifying progress: 1/3
+0|chessnexus-api  | [Carry] learn_leo qualifying progress: 2/3
+0|chessnexus-api  | [Carry] climb_jack qualifying progress: 2/3
+0|chessnexus-api  | [Carry] king_krish qualifying progress: 1/3
+0|chessnexus-api  | [Carry] zugzwang_zuri earned +2 carry pts → 4
+0|chessnexus-api  | [Carry] climb_avni qualifying progress: 2/3
+0|chessnexus-api  | [Carry] simplify_siya qualifying progress: 1/3
+0|chessnexus-api  | [Carry] rapid_reva earned +2 carry pts → 4
+0|chessnexus-api  | [Carry] learn_myra qualifying progress: 2/3
+0|chessnexus-api  | [Carry] pawn_pooja earned +2 carry pts → 4
+0|chessnexus-api  | [Carry] file_faiz qualifying progress: 2/3
+0|chessnexus-api  | [Carry] aarav_stone earned +2 carry pts → 4
+0|chessnexus-api  | [Carry] rookie_emily qualifying progress: 1/3
+0|chessnexus-api  | [Carry] climb_eshan earned +2 carry pts → 4
+0|chessnexus-api  | [Carry] rookie_hazel earned +2 carry pts → 4
+0|chessnexus-api  | [Carry] lucifer qualifying progress: 1/3
+0|chessnexus-api  | GET /api/arenatournament/list 200 247.990 ms - 1183
+0|chessnexus-api  | GET /api/arenatournament/recent-finished 200 17.645 ms - 3885
+0|chessnexus-api  | GET /api/auth/me 200 38.134 ms - 1373
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.288 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 11.515 ms - -
+0|chessnexus-api  | POST /api/auth/login 200 152.088 ms - 570
+0|chessnexus-api  | OPTIONS /api/admin/settings 200 0.146 ms - 0
+0|chessnexus-api  | OPTIONS /api/admin/users 200 0.146 ms - 0
+0|chessnexus-api  | OPTIONS /api/admin/badge-counts 200 0.143 ms - 0
+0|chessnexus-api  | OPTIONS /api/admin/settings 200 0.146 ms - 0
+0|chessnexus-api  | OPTIONS /api/admin/puzzles 200 0.149 ms - 0
+0|chessnexus-api  | OPTIONS /api/admin/rounds 200 0.119 ms - 0
+0|chessnexus-api  | OPTIONS /api/admin/analytics/trends 200 0.198 ms - 0
+0|chessnexus-api  | OPTIONS /api/admin/activity 200 0.167 ms - 0
+0|chessnexus-api  | OPTIONS /api/admin/attendance/payment-requests/count 200 0.201 ms - 0
+0|chessnexus-api  | OPTIONS /api/admin/signup-requests/count 200 0.177 ms - 0
+0|chessnexus-api  | POST /api/auth/appearance 200 15.518 ms - 34
+0|chessnexus-api  | OPTIONS /api/public/contact 200 0.165 ms - 0
+0|chessnexus-api  | OPTIONS /api/auth/board-colors 200 0.128 ms - 0
+0|chessnexus-api  | OPTIONS /api/arenatournament/admin/all 200 0.139 ms - 0
+0|chessnexus-api  | OPTIONS /api/chat/unread-count 200 0.131 ms - 0
+0|chessnexus-api  | GET /api/auth/themes 200 27.437 ms - 246
+0|chessnexus-api  | GET /api/admin/settings 304 21.580 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 28.601 ms - -
+0|chessnexus-api  | GET /api/notifications/mine 304 24.973 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 67.080 ms - -
+0|chessnexus-api  | 🔌 Socket disconnected: guest82865
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 141.583 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 15.143 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 16.350 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 15.003 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 16.162 ms - 273
+0|chessnexus-api  | GET /api/game-invites/incoming 304 11.932 ms - -
+0|chessnexus-api  | GET /api/coach/status 200 11.685 ms - 1417
+0|chessnexus-api  | GET /api/chat 200 114.006 ms - 77642
+0|chessnexus-api  | GET /api/clubs/mine 304 109.595 ms - -
+0|chessnexus-api  | GET /api/admin/puzzles 304 20.031 ms - -
+0|chessnexus-api  | GET /api/admin/rounds 304 36.607 ms - -
+0|chessnexus-api  | GET /api/admin/users 200 87.890 ms - 622639
+0|chessnexus-api  | GET /api/admin/activity 200 91.829 ms - 69000
+0|chessnexus-api  | GET /api/admin/analytics/trends 200 224.097 ms - 2623
+0|chessnexus-api  | GET /api/admin/attendance/payment-requests/count 304 13.748 ms - -
+0|chessnexus-api  | GET /api/admin/signup-requests/count 304 22.916 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 10.575 ms - -
+0|chessnexus-api  | GET /api/auth/board-colors 200 15.459 ms - 122
+0|chessnexus-api  | GET /api/public/contact 304 13.768 ms - -
+0|chessnexus-api  | GET /api/arenatournament/admin/all 200 28.560 ms - 169637
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.474 ms - -
+0|chessnexus-api  | GET /api/chat/unread-count 304 21.187 ms - -
+0|chessnexus-api  | GET /api/social/most-active 200 56.937 ms - 4970
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 19.367 ms - -
+0|chessnexus-api  | GET /api/public/leaderboard/daily-puzzle 304 17.043 ms - -
+0|chessnexus-api  | GET /api/social/arena-weekly-leaders 200 42.805 ms - 10560
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 16.173 ms - -
+0|chessnexus-api  | GET /api/admin/settings 304 13.448 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 10.666 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 304 16.225 ms - -
+0|chessnexus-api  | GET /api/clubs/mine 304 24.186 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 15.258 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 15.872 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 66.754 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 15.787 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.686 ms - -
+0|chessnexus-api  | [internal/arena-rate] game 6a7dcfa577ea57f7e02463bd (white_won) -> {"category":"blitz","white":{"oldRating":1270,"newRating":1272,"change":2},"black":{"oldRating":827,"newRating":825,"change":-2}}
+0|chessnexus-api  | POST /internal/arena-rate 200 16.153 ms - 157
+0|chessnexus-api  | GET /api/public/notifications 304 14.777 ms - -
+0|chessnexus-api  | GET /api/game-invites/incoming 304 13.055 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 119.253 ms - -
+0|chessnexus-api  | GET /api/public/founding-coaches 304 17.003 ms - -
+0|chessnexus-api  | GET /api/public/coaches 304 31.785 ms - -
+0|chessnexus-api  | GET /api/social/most-active 200 52.562 ms - 4970
+0|chessnexus-api  | GET /api/public/leaderboard/daily-puzzle 304 16.787 ms - -
+0|chessnexus-api  | GET /api/social/arena-weekly-leaders 200 38.302 ms - 10564
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 11.859 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 200 14.849 ms - 273
+0|chessnexus-api  | GET /api/reports/mine/unread 304 12.357 ms - -
+0|chessnexus-api  | GET /api/clubs/mine 304 22.107 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 13.114 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 53.135 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 12.715 ms - -
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.863 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 304 15.142 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 115.824 ms - -
+0|chessnexus-api  | OPTIONS /api/auth/top-racers?timeLimit=5&topic=checkmate 200 0.191 ms - 0
+0|chessnexus-api  | OPTIONS /api/public/racer/topics 200 0.141 ms - 0
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 12.933 ms - -
+0|chessnexus-api  | ✅ Socket connected: ChessNexus (c5Xck6qbhMbfQUUqAAAZ)
+0|chessnexus-api  | OPTIONS /api/public/monthly-focus/leaderboard?filter=current 200 0.147 ms - 0
+0|chessnexus-api  | GET /api/auth/top-racers?timeLimit=5&topic=checkmate 200 460.754 ms - 1859
+0|chessnexus-api  | Leaderboard request received. userId: 691f438037b2562538f25cfc
+0|chessnexus-api  | GET /api/public/monthly-focus/leaderboard?filter=current 304 24.768 ms - -
+0|chessnexus-api  | GET /api/public/racer/topics 304 916.122 ms - -
+0|chessnexus-api  | OPTIONS /api/auth/top-racers?timeLimit=10&topic=checkmate 200 0.167 ms - 0
+0|chessnexus-api  | GET /api/public/avatars/basic-01.png 304 1.808 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-17.png 304 0.672 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-02.png 304 0.492 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-11.png 304 0.373 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-12.png 304 0.429 ms - -
+0|chessnexus-api  | GET /api/auth/top-racers?timeLimit=10&topic=checkmate 200 136.231 ms - 1505
+0|chessnexus-api  | GET /api/public/avatars/basic-08.png 304 0.413 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-15.png 304 0.405 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-18.png 304 0.336 ms - -
+0|chessnexus-api  | OPTIONS /api/auth/top-racers?topic=checkmate 200 0.161 ms - 0
+0|chessnexus-api  | POST /api/analytics/batch 204 0.317 ms - -
+0|chessnexus-api  | GET /api/auth/top-racers?topic=checkmate 200 108.416 ms - 1301
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.965 ms - -
+0|chessnexus-api  | 🔌 Socket disconnected: guest82865
+0|chessnexus-api  | POST /api/analytics/batch 204 0.346 ms - -
+0|chessnexus-api  | 🔌 Socket disconnected: ChessNexus
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 16.773 ms - -
+0|chessnexus-api  | GET /api/coffee/active-usernames 304 18.754 ms - -
+0|chessnexus-api  | GET /api/auth/me 200 25.326 ms - 1655
+0|chessnexus-api  | GET /api/notifications/mine 304 27.417 ms - -
+0|chessnexus-api  | GET /api/chat/friend-unread 304 77.193 ms - -
+0|chessnexus-api  | GET /api/reports/mine/unread 304 14.654 ms - -
+0|chessnexus-api  | GET /api/coach/requests/incoming 304 13.837 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-items 304 155.960 ms - -
+0|chessnexus-api  | GET /api/public/notifications 304 14.803 ms - -
+0|chessnexus-api  | GET /api/social/online-friends 304 15.373 ms - -
+0|chessnexus-api  | GET /api/game-invites/incoming 304 12.826 ms - -
+0|chessnexus-api  | GET /api/coach/status 304 10.789 ms - -
+0|chessnexus-api  | GET /api/public/leaderboard/daily-puzzle 304 17.793 ms - -
+0|chessnexus-api  | GET /api/social/most-active 200 45.481 ms - 4970
+0|chessnexus-api  | POST /api/auth/appearance 200 12.404 ms - 34
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 15.510 ms - -
+0|chessnexus-api  | GET /api/social/arena-weekly-leaders 200 47.180 ms - 10554
+0|chessnexus-api  | GET /api/clubs/mine 304 39.202 ms - -
+0|chessnexus-api  | GET /api/auth/board-colors 304 17.046 ms - -
+0|chessnexus-api  | GET /api/auth/themes 304 14.181 ms - -
+0|chessnexus-api  | GET /api/chat/unread-count 304 17.943 ms - -
+0|chessnexus-api  | ✅ Socket connected: ChessNexus (v8ZcIf35NS7t_MM-AAAb)
+0|chessnexus-api  | GET /api/public/avatars/basic-02.png 304 1.025 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-15.png 304 0.449 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-01.png 304 0.325 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-17.png 304 0.372 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-12.png 304 0.382 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-11.png 304 1.173 ms - -
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 12.844 ms - -
+0|chessnexus-api  | GET /api/auth/top-racers?timeLimit=5&topic=checkmate 200 79.162 ms - 1865
+0|chessnexus-api  | 🔌 Socket disconnected: ChessNexus
+0|chessnexus-api  | GET /api/public/avatars/basic-18.png 304 0.405 ms - -
+0|chessnexus-api  | GET /api/public/avatars/basic-08.png 304 0.321 ms - -
+0|chessnexus-api  | Leaderboard request received. userId: 691f438037b2562538f25cfc
+0|chessnexus-api  | GET /api/public/monthly-focus/leaderboard?filter=current 304 19.467 ms - -
+0|chessnexus-api  | GET /api/auth/top-racers?timeLimit=10&topic=checkmate 200 51.491 ms - 1511
+0|chessnexus-api  | GET /api/auth/top-racers?topic=checkmate 200 141.946 ms - 1307
+0|chessnexus-api  | GET /api/public/racer/topics 304 646.602 ms - -
+0|chessnexus-api  | GET /api/schedule 200 4.784 ms - 12455
+0|chessnexus-api  | GET /api/public/live-note 304 4.478 ms - -
+0|chessnexus-api  | GET /api/coach/my-coaches 304 18.708 ms - -
+0|chessnexus-api  | GET /api/auth/me 200 40.277 ms - 1655
+0|chessnexus-api  | ✅ Socket connected: ChessNexus (iyaaQIF3xO0h28wcAAAd)
+0|chessnexus-api  | GET /api/public/3d-models/model3d-01.glb 304 0.413 ms - -
+0|chessnexus-api  | GET /api/user/rating-changes 200 15.197 ms - 58
+0|chessnexus-api  | GET /api/coach-attendance/my/coaches 304 15.291 ms - -
+0|chessnexus-api  | GET /api/streak-report/latest 304 33.063 ms - -
+0|chessnexus-api  | GET /api/streak-report/price 200 10.392 ms - 54
+0|chessnexus-api  | GET /api/streak-report/status 304 13.388 ms - -
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 11.802 ms - -
+0|chessnexus-api  | GET /api/user/activity-history 200 18.800 ms - 474
+0|chessnexus-api  | GET /api/public/training/state 200 13.147 ms - 116
+0|chessnexus-api  | GET /api/public/puzzle-stats/range?range=24h 200 25.396 ms - 480
+0|chessnexus-api  | GET /api/arenatournament/my-tournaments 200 37.804 ms - 2689
+0|chessnexus-api  | GET /api/coach/my-pending-requests 304 14.722 ms - -
+0|chessnexus-api  | GET /api/public/puzzle-stats/range?range=7d 200 19.105 ms - 263
+0|chessnexus-api  | POST /api/analytics/batch 204 9.547 ms - -
+0|chessnexus-api  | GET /api/public/profile/ChessNexus 304 38.531 ms - -
+0|chessnexus-api  | GET /api/coach-attendance/my/coaches 304 12.583 ms - -
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 13.868 ms - -
+0|chessnexus-api  | GET /api/public/puzzle-stats/range?range=24h 304 18.861 ms - -
+0|chessnexus-api  | GET /api/user/streak 200 531.027 ms - 471
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 11.836 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 17.679 ms - -
+0|chessnexus-api  | GET /api/coach-live/sessions/6a7dc78c2f9a7db0b45eee58/waiting 304 17.543 ms - -
+0|chessnexus-api  | GET /api/social/most-active 304 50.080 ms - -
+0|chessnexus-api  | GET /api/public/leaderboard/daily-puzzle 304 25.640 ms - -
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 29.116 ms - -
+0|chessnexus-api  | GET /api/clubs/mine 304 38.861 ms - -
+0|chessnexus-api  | GET /api/social/arena-weekly-leaders 200 64.278 ms - 10560
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 16.136 ms - -
+0|chessnexus-api  | GET /api/coach/my-coaches 304 17.351 ms - -
+0|chessnexus-api  | GET /api/auth/me 200 27.137 ms - 1496
+0|chessnexus-api  | GET /api/auth/top-racers?timeLimit=5&topic=checkmate 200 134.380 ms - 1859
+0|chessnexus-api  | Leaderboard request received. userId: 691f438037b2562538f25cfc
+0|chessnexus-api  | GET /api/public/monthly-focus/leaderboard?filter=current 304 20.083 ms - -
+0|chessnexus-api  | GET /api/public/racer/topics 304 572.548 ms - -
+0|chessnexus-api  | GET /api/auth/top-racers?timeLimit=10&topic=checkmate 200 109.196 ms - 1505
+0|chessnexus-api  | GET /api/auth/top-racers?topic=checkmate 200 69.909 ms - 1307
+0|chessnexus-api  | GET /api/user/rating-changes 304 27.608 ms - -
+0|chessnexus-api  | GET /api/streak-report/latest 304 30.151 ms - -
+0|chessnexus-api  | GET /api/coach-attendance/my/coaches 304 41.020 ms - -
+0|chessnexus-api  | GET /api/streak-report/status 304 33.259 ms - -
+0|chessnexus-api  | GET /api/user/streak 200 48.690 ms - 470
+0|chessnexus-api  | GET /api/streak-report/price 200 35.140 ms - 58
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 15.524 ms - -
+0|chessnexus-api  | GET /api/user/activity-history 200 21.425 ms - 246
+0|chessnexus-api  | GET /api/public/training/state 304 25.714 ms - -
+0|chessnexus-api  | GET /api/public/puzzle-stats/range?range=24h 200 24.277 ms - 484
+0|chessnexus-api  | GET /api/game-insights/guide 304 22.483 ms - -
+0|chessnexus-api  | GET /api/arenatournament/my-tournaments 304 43.087 ms - -
+0|chessnexus-api  | GET /api/game-insights/puzzles?solved=false 304 15.056 ms - -
+0|chessnexus-api  | GET /api/game-insights/monthly-report 304 16.619 ms - -
+0|chessnexus-api  | GET /api/public/puzzle-stats/range?range=7d 200 16.190 ms - 264
+0|chessnexus-api  | GET /api/public/profile/Aahan 200 32.101 ms - 2037
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 13.474 ms - -
+0|chessnexus-api  | GET /api/public/puzzle-stats/range?range=24h 304 15.147 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 9.895 ms - -
+0|chessnexus-api  | GET /api/public/monthly-focus/current 304 15.553 ms - -
+0|chessnexus-api  | POST /api/analytics/batch 204 10.573 ms - -
+0|chessnexus-api  | GET /api/chat/coach/unread-count 304 28.583 ms - -
+0|chessnexus-api  | GET /api/admin/badge-counts 304 26.266 ms - -
+0|chessnexus-api  | GET /api/admin/analytics/realtime 200 42.817 ms - 3996
+0|chessnexus-api  | GET /api/coach/students/online 200 32.283 ms - 199
+0|chessnexus-api  | GET /api/admin/analytics/traffic 200 40.536 ms - 320
+0|chessnexus-api  | GET /api/admin/analytics/performance?range=7d 200 51.150 ms - 4954

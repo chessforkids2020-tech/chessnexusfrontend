@@ -49,6 +49,8 @@
   cursor: pointer;
 }
 .pd-toggle-btn.active { background: var(--color-accent-a20); color: var(--color-accent); }
+/* Desktop shows the full label; phones use the short form (see the media query). */
+.pd-toggle-short { display: none; }
 
 /* Summary cards — 5 across on desktop, wraps down on smaller screens */
 .pd-summary-grid {
@@ -63,6 +65,7 @@
   padding: 16px 10px;
   text-align: center;
 }
+.pd-summary-icon { font-size: 26px; line-height: 1; }
 .pd-summary-value { font-size: 26px; font-weight: 800; margin: 6px 0 2px; }
 .pd-summary-label { font-size: 12px; color: var(--color-text-muted); }
 
@@ -161,17 +164,47 @@
   .pd-card { padding: 16px 14px; border-radius: var(--radius-lg); }
   .pd-h2 { font-size: 17px; }
   .pd-h3 { font-size: 15px; }
-  .pd-summary-grid { grid-template-columns: repeat(2, 1fr); }
-  .pd-summary-value { font-size: 22px; }
-  .pd-weak-grid   { grid-template-columns: 1fr; }
-  .pd-strong-grid { grid-template-columns: 1fr; }
+  /* Compact range pills: the full labels wrapped to two lines each, so the
+     selector was as tall as a stat tile. */
+  .pd-toggle { gap: 2px; padding: 3px; }
+  .pd-toggle-btn { font-size: 11.5px; padding: 5px 10px; white-space: nowrap; }
+  .pd-toggle-long  { display: none; }
+  .pd-toggle-short { display: inline; }
+
+  /* Three per row: at two the tiles were large and the fifth sat alone. */
+  .pd-summary-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .pd-summary-item { padding: 10px 6px; }
+  .pd-summary-icon { font-size: 18px; }
+  .pd-summary-value { font-size: 17px; margin: 3px 0 1px; }
+  .pd-summary-label { font-size: 10px; line-height: 1.25; }
+  /* Two per row, not one: a single column made each list a long scroll for
+     items that are only a label and a percentage. */
+  .pd-weak-grid   { grid-template-columns: repeat(2, 1fr); }
+  .pd-strong-grid { grid-template-columns: repeat(2, 1fr); }
   .pd-hist-grid   { grid-template-columns: repeat(2, 1fr); }
-  .pd-weak-item   { padding: 12px; gap: 12px; }
+  .pd-weak-item   { padding: 10px; gap: 8px; }
+
+  /* Half-width tiles, so the label and the score need to sit closer. */
+  .pd-strong-item  { padding: 10px 12px; gap: 6px; }
+  .pd-strong-name  { font-size: 13px; }
+  .pd-strong-count { font-size: 11px; }
+  .pd-strong-pct   { font-size: 13px; }
+  .pd-weak-title   { font-size: 12.5px; }
+  .pd-weak-sub     { font-size: 11px; }
 }
 
 @media (max-width: 380px) {
-  .pd-summary-grid { grid-template-columns: repeat(2, 1fr); }
-  .pd-hist-grid    { grid-template-columns: 1fr; }
+  .pd-summary-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .pd-summary-item { padding: 8px 4px; }
+  .pd-summary-icon { font-size: 16px; }
+  .pd-summary-value { font-size: 15px; }
+  .pd-summary-label { font-size: 9px; }
+  /* Still two per row on the smallest phones — one per row turned four recent
+     puzzles into a very long scroll. */
+  .pd-hist-grid    { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .pd-strong-item  { padding: 8px 10px; }
+  .pd-strong-name  { font-size: 12px; }
+  .pd-strong-pct   { font-size: 12px; }
 }
 
 /* ── Attempt review ─────────────────────────────────────────────────────────

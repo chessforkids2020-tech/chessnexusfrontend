@@ -73,11 +73,14 @@ function MiniBoard({ fen }) {
 
 // Attempts are kept indefinitely (no TTL on Score), so these are display
 // windows over history that is already stored, not a retention policy.
+// `short` is used on phones: "Last 30 days" wrapped onto two lines in a pill,
+// which made the row twice as tall as it needed to be. The long form stays on
+// desktop, where there is room for it.
 const RANGES = [
-  { key: '24h', label: '24 hrs' },
-  { key: '7d',  label: 'Last 7 days' },
-  { key: '30d', label: 'Last 30 days' },
-  { key: '90d', label: 'Last 90 days' },
+  { key: '24h', label: '24 hrs',       short: '24h' },
+  { key: '7d',  label: 'Last 7 days',  short: '7d'  },
+  { key: '30d', label: 'Last 30 days', short: '30d' },
+  { key: '90d', label: 'Last 90 days', short: '90d' },
 ];
 
 export default function PuzzleDashboard() {
@@ -139,10 +142,11 @@ export default function PuzzleDashboard() {
         <div className="pd-head-row">
           <h2 className="pd-h2">📊 {isSpectator ? `${displayName}'s Puzzle Stats` : 'Your Puzzle Stats'}</h2>
           <div className="pd-toggle">
-            {RANGES.map(({ key, label }) => (
+            {RANGES.map(({ key, label, short }) => (
               <button key={key} onClick={() => setRange(key)}
                 className={`pd-toggle-btn${range === key ? ' active' : ''}`}>
-                {label}
+                <span className="pd-toggle-long">{label}</span>
+                <span className="pd-toggle-short">{short}</span>
               </button>
             ))}
           </div>
@@ -150,7 +154,10 @@ export default function PuzzleDashboard() {
         <div className="pd-summary-grid">
           {SUMMARY.map(item => (
             <div key={item.label} className="pd-summary-item">
-              <div style={{ fontSize: 26 }}>{item.icon}</div>
+              {/* Class, not an inline font-size: the mobile rules shrink this
+                  with the rest of the tile, and a media query cannot beat an
+                  inline style. */}
+              <div className="pd-summary-icon">{item.icon}</div>
               <div className="pd-summary-value" style={{ color: item.color }}>{loading ? '…' : item.value}</div>
               <div className="pd-summary-label">{item.label}</div>
             </div>

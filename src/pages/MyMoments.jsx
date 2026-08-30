@@ -60,6 +60,31 @@ export default function MyMoments() {
   // buckets are defined in one place (services/momentCategories.js) so the tab
   // labels and the report's counts can never disagree.
   const [catInfo, setCatInfo] = useState(null);
+  // The solving board was hardcoded at 420px, which is wider than a phone —
+  // so it was clipped mid-board (files a-f visible, the rest cut off). Size it
+  // to the viewport instead, still capped at 420 on desktop.
+  const [modalBoard, setModalBoard] = useState(420);
+  useEffect(() => {
+    const fit = () => {
+      const vw = document.documentElement.clientWidth || window.innerWidth;
+      const vh = window.innerHeight;
+      const mobile = vw <= 1024;
+      // Mobile: full-screen sheet with an edge-to-edge board (see
+      // .mm-modal-board's 100dvw breakout), so take the WHOLE viewport width.
+      // Desktop: the panel's own padding is the limit, capped at 420.
+      const byWidth = mobile ? vw : vw - 48;
+      const byHeight = Math.floor(vh * (mobile ? 0.6 : 0.62));
+      const cap = mobile ? Infinity : 420;
+      setModalBoard(Math.max(240, Math.min(byWidth, byHeight, cap)));
+    };
+    fit();
+    window.addEventListener('resize', fit);
+    window.addEventListener('orientationchange', fit);
+    return () => {
+      window.removeEventListener('resize', fit);
+      window.removeEventListener('orientationchange', fit);
+    };
+  }, []);
   const [puzzles, setPuzzles] = useState([]);
   const [counts, setCounts] = useState({ total: 0, unsolved: 0, totalAllKinds: 0 });
   const [loading, setLoading] = useState(true);
@@ -307,6 +332,30 @@ export default function MyMoments() {
         </div>
       </div>
 
+      {/* MOBILE: the same choices as a native <select>. Eight chips wrapped to
+          three rows on a phone and pushed the actual moments off screen; a
+          dropdown is one row. CSS shows exactly one of these two controls, so
+          the desktop chip row is untouched. */}
+      <div className="mm-cats-select">
+        <label className="mm-cats-select-label" htmlFor="mm-kind">Kind</label>
+        <select
+          id="mm-kind"
+          value={category || ''}
+          onChange={(e) => {
+            const v = e.target.value;
+            setCategory(v);
+            const next = new URLSearchParams(searchParams);
+            if (v) next.set('category', v); else next.delete('category');
+            setSearchParams(next, { replace: true });
+          }}
+        >
+          <option value="">All kinds</option>
+          {MOMENT_CATEGORIES.map(c => (
+            <option key={c.key} value={c.key}>{c.icon} {c.label}</option>
+          ))}
+        </select>
+      </div>
+
       {/* Category chips. Kept ABOVE the solved/unsolved tabs because they answer
           a different question — "which kind of mistake" vs "have I done it yet". */}
       <div className="mm-cats">
@@ -420,7 +469,7 @@ export default function MyMoments() {
             <button className="mm-modal-close" onClick={closePuzzle}>✕</button>
             <div className="mm-modal-body">
               <div className="mm-modal-board">
-                <Chessboard position={fen} boardWidth={420}
+                <Chessboard position={fen} boardWidth={modalBoard}
                   draggable={exploring || feedback !== 'correct'}
                   onDrop={handleDrop} orientation={active.sideToMove} />
 

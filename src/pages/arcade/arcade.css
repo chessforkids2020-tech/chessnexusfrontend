@@ -143,13 +143,16 @@
     display: none;
   }
 
-  /* TTT: stack vertically — TTT board on top, chessboard below */
+  /* TTT: stack vertically — CHESSBOARD on top, TTT board below.
+     You solve the chess puzzle first and the TTT square is the reward, so the
+     board you are actually looking at belongs at the top of the screen. */
   .arc-game-ttt {
     flex-direction: column;
     gap: 16px;
+    align-items: center;
   }
-  .arc-ttt-board { order: 1; width: 100%; min-width: unset !important; }
-  .arc-ttt-chess { order: 2; width: 100%; }
+  .arc-ttt-chess { order: 1; width: 100%; }
+  .arc-ttt-board { order: 2; width: 100%; min-width: unset !important; }
 
   /* Bingo: stack cards vertically */
   .arc-game-bingo {
@@ -192,19 +195,30 @@
     display: none;
   }
 
-  /* Board size selection: one per row on mobile */
+  /* Board size selection: THREE per row. One per row made each option a
+     full-screen card with a large empty middle, so picking a size meant
+     scrolling. The card contents are inline-styled in TTTChoose.jsx, so these
+     need !important to win. */
   .arc-ttt-size-grid {
-    grid-template-columns: 1fr !important;
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
   }
+  .arc-size-card    { padding: 12px 6px !important; }
+  .arc-size-label   { font-size: 16px !important; margin-bottom: 4px !important; }
+  .arc-size-tag     { padding: 2px 6px !important; font-size: 8px !important;
+                      letter-spacing: 0 !important; }
+  .arc-size-preview { margin-top: 10px !important; padding: 0 !important; gap: 2px !important; }
+  .arc-size-btn     { padding: 7px 6px !important; font-size: 11px !important; }
 
   /* TTT: full column stack — TTT board on top, chessboard below */
   .arc-game-ttt {
     flex-direction: column;
     gap: 12px;
   }
-  .arc-ttt-board { order: 1; width: 100%; min-width: unset !important; }
-  .arc-ttt-chess { order: 2; width: 100%; }
+  /* Chessboard first here too — this ≤480 block comes AFTER the ≤1024 one, so
+     leaving the old order here silently undid the swap on phones. */
+  .arc-ttt-chess { order: 1; width: 100%; }
+  .arc-ttt-board { order: 2; width: 100%; min-width: unset !important; }
 
   /* Bingo stacks tightly */
   .arc-game-bingo {
@@ -216,5 +230,148 @@
   .arc-board-scale {
     transform: scale(0.85);
     transform-origin: top center;
+  }
+}
+
+/* ── Phones/tablets: compact lobby cards ─────────────────────────────────
+   These elements carry INLINE styles from ArcadeLobby.jsx (fontSize 56 on the
+   icon, 14px 28px on the button, and so on). An inline style beats a media
+   query, which is why the existing mobile rules above never took effect and
+   the cards kept their desktop size — overflowing the screen, wrapping "Play
+   with Friend" onto three lines and pushing the buttons off the right edge.
+   `!important` is what lets these win; it is not decoration. */
+@media (max-width: 1024px) {
+  .arc-lobby-option {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 14px !important;
+  }
+  .arc-lobby-option-icon {
+    font-size: 30px !important;
+    line-height: 1 !important;
+  }
+  .arc-lobby-option-title {
+    font-size: 15px !important;
+    margin: 0 0 3px !important;
+  }
+  .arc-lobby-desc {
+    font-size: 11.5px !important;
+    line-height: 1.4 !important;
+  }
+  .arc-lobby-cta {
+    width: 100% !important;
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+    justify-content: center !important;
+  }
+  /* Nothing may spill sideways out of the card. */
+  .arc-lobby-option,
+  .arc-lobby-option-text { min-width: 0 !important; }
+}
+
+@media (max-width: 380px) {
+  .arc-lobby-option { padding: 12px !important; gap: 8px !important; }
+  .arc-lobby-option-icon { font-size: 26px !important; }
+  .arc-lobby-option-title { font-size: 14px !important; }
+  .arc-lobby-desc { font-size: 11px !important; }
+  .arc-lobby-cta { padding: 9px 12px !important; font-size: 12.5px !important; }
+}
+
+/* ── Phones/tablets: arcade chessboard goes edge to edge ─────────────────
+   The board sat inside a GlassCard with 16px padding, so it could never reach
+   the screen edges the way the Healthy Mix board does. The card keeps its own
+   padding for the text under the board; the BOARD breaks out of it.
+   Both cards are centred and capped to the viewport so nothing sits off to one
+   side on a phone. */
+@media (max-width: 1024px) {
+  .arc-ttt-chess,
+  .arc-ttt-board {
+    /* The TTT card carries an inline minWidth:420, which overflows any phone. */
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box;
+  }
+  /* Kill the card's side padding so the board can span the full width. */
+  .arc-ttt-chess { padding: 10px 0 12px !important; }
+
+  /* The board itself is the card's first child. */
+  /* Break the board out of BOTH the card's padding and the page gutter, so it
+     reaches the screen edges like the Healthy Mix board. calc(50% - 50vw) is
+     measured against the parent, which is what makes it viewport-relative
+     however many padded boxes sit in between. */
+  .arc-ttt-chess > div:first-child {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    display: flex;
+    justify-content: center;
+  }
+  @supports (width: 100dvw) {
+    .arc-ttt-chess > div:first-child {
+      width: 100dvw;
+      max-width: 100dvw;
+      margin-left: calc(50% - 50dvw);
+      margin-right: calc(50% - 50dvw);
+    }
+  }
+  /* The board element itself must never exceed the card. */
+  .arc-ttt-chess > div:first-child > * {
+    max-width: 100% !important;
+  }
+  /* Status text under the board keeps a readable inset. */
+  .arc-ttt-chess > div:not(:first-child) {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+@media (max-width: 1024px) {
+  /* Safety net for the 100vw fallback, which includes a classic scrollbar. */
+  html, body { overflow-x: hidden; }
+}
+
+/* ── Phones/tablets: clear the floating ☰ and fill the width ─────────────
+   The sidebar's ☰ is now the app-standard .floating-menu-btn — a small glyph
+   pinned top-LEFT (8px/10px, ~40px tap target) instead of a 44px bordered box
+   at top-right that sat on the board's corner. It only overlaps the very top
+   of the page, so a much smaller reserve is enough. */
+@media (max-width: 1024px) {
+  .arc-game-ttt,
+  .arc-game-bingo {
+    padding-top: 34px;
+  }
+
+  /* The card wrapping the board adds its own side padding; zero it so the
+     board can use the entire device width. The text under the board keeps its
+     inset via the rule above. */
+  .arc-ttt-chess {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+/* ── Arcade: compact top-left ☰ ──────────────────────────────────────────
+   The game page renders <Sidebar /> directly (so the ☰ opens the REAL app
+   menu — Dashboard, Puzzles Hub, Race Hub … — not the icon-only rail). That
+   standalone button is a 44px bordered box by default; scoped here it becomes
+   the same small borderless glyph the dashboard uses. Scoped to .arc-shell so
+   no other page that renders Sidebar directly is affected. */
+@media (max-width: 1024px) {
+  .arc-shell .sb-standalone-burger {
+    top: 8px !important;
+    left: 10px !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 7px 9px !important;
+    font-size: 1.35rem !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    text-shadow: 0 1px 6px var(--color-black-a35);
   }
 }

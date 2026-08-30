@@ -13,7 +13,10 @@ import {
 import Chessboard from "../../components/Chessboard";
 import { Chess } from "chess.js";
 import { useAuth } from "../../contexts/AuthContext";
-import StudyPuzzleSidebar from "../../components/StudyPuzzleSidebar";
+// The app's real menu (Dashboard, Puzzles Hub, Race Hub, …) — the same one the
+// homepage and every other page uses, and the same one ArcadeLobby/TTTChoose
+// already render. This page was the odd one out with the icon-only rail.
+import Sidebar from "../../components/Sidebar";
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function shuffle(arr) {
@@ -103,10 +106,32 @@ export default function ArcadeGame() {
 
   const playerColors  = { 1: T.p1, 2: T.p2 };
   const playerSymbols = { 1: "✕", 2: "○" };
-  const isMobileView = typeof window !== "undefined" && window.innerWidth <= 480;
-  const chessBoardWidth = isMobileView ? 320 : 450;
+  // Viewport in STATE, not read once at render: the old const never updated on
+  // rotate, so a phone turned landscape kept the portrait board size.
+  const [vw, setVw] = useState(
+    typeof window !== "undefined" ? (document.documentElement.clientWidth || window.innerWidth) : 1280
+  );
+  useEffect(() => {
+    const onResize = () => setVw(document.documentElement.clientWidth || window.innerWidth);
+    onResize();
+    window.addEventListener("resize", onResize);
+    window.addEventListener("orientationchange", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("orientationchange", onResize);
+    };
+  }, []);
+  const isMobileView = vw <= 1024;
+  // Full device width on mobile (the card's padding is cancelled in arcade.css
+  // so the board can go edge to edge, like the Healthy Mix board). It was a
+  // hardcoded 320, which left it small inside its card.
+  // clientWidth (already in `vw`) is the VISIBLE width — innerWidth would
+  // include a classic scrollbar and push the board past the right edge.
+  const chessBoardWidth = isMobileView
+    ? Math.max(240, Math.min(vw, Math.floor(window.innerHeight * 0.62)))
+    : 450;
   const cellSize = isMobileView
-    ? Math.floor(260 / size)
+    ? Math.floor(Math.min(300, vw - 60) / size)
     : (size === 3 ? 82 : size === 4 ? 68 : 56);
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -554,8 +579,8 @@ export default function ArcadeGame() {
   }, [roomCode, userId, username, user]);
 
   if (!puzzle && phase !== "ended") return (
-    <div style={{ display: "flex", minHeight: "100vh", background: T.bg }}>
-      <StudyPuzzleSidebar />
+    <div className="arc-shell" style={{ display: "flex", minHeight: "100vh", background: T.bg }}>
+      <Sidebar />
       <div style={{ flex: 1 }}>
         <PageWrap maxWidth={500}>
           {error && <ErrorBanner message={error} onClose={() => setError("")} />}
@@ -580,8 +605,8 @@ export default function ArcadeGame() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: T.bg }}>
-      <StudyPuzzleSidebar />
+    <div className="arc-shell" style={{ display: "flex", minHeight: "100vh", background: T.bg }}>
+      <Sidebar />
       <div style={{ flex: 1 }}>
         <div style={{ minHeight:"100vh", background:T.bg, fontFamily:T.font, padding: gameType === "bingo" ? "6px 12px 14px" : "14px 12px", position:"relative", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center" }}>
           {error && <ErrorBanner message={error} onClose={() => setError("")} />}
@@ -692,7 +717,7 @@ export default function ArcadeGame() {
             <BingoCard label="You" card={myCard} marked={myMarked} color={playerColors[playerNum]} isActive={isMyTurn} size={size} turnText={isMyTurn ? "▶ Your turn" : "Waiting..."} />
 
             {/* Center: board + turn banner + theme buttons */}
-            <GlassCard style={{ padding:"8px 2px 18px 6px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, flex:"1 1 auto", minWidth:0, maxWidth:520 }}>
+            <GlassCard className="arc-ttt-chess" style={{ padding:"8px 2px 18px 6px", display:"flex", flexDirection:"column", alignItems:"center", gap:12, flex:"1 1 auto", minWidth:0, maxWidth:520 }}>
 
               {/* Game title */}
               <div style={{ fontSize:18, fontWeight:800, background:T.accentGrad, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", marginBottom:-10 }}>
@@ -706,7 +731,10 @@ export default function ArcadeGame() {
                 lastMove={makeLastMoveObj(lastMove)}
                 draggable={isMyTurn && phase === "solving"}
                 allowMovePiece={() => isMyTurn && phase === "solving"}
-                boardWidth={typeof window !== "undefined" ? (window.innerWidth <= 480 ? Math.min(320, window.innerWidth - 32) : Math.min(420, window.innerWidth - 500)) : 420}
+                // Same rule as the TTT board: full device width on mobile
+                // (was capped at 320 with a 32px inset), height-bounded so a
+                // square board never runs off a short screen.
+                boardWidth={isMobileView ? chessBoardWidth : (typeof window !== "undefined" ? Math.min(420, window.innerWidth - 500) : 420)}
               />
               {feedback && (
                 <div style={{ fontSize:13, fontWeight:600, color: feedback.startsWith("❌") ? T.wrong : T.correct, textAlign:"center" }}>

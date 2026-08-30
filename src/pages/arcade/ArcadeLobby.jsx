@@ -302,7 +302,7 @@ export default function ArcadeLobby() {
                   )}
 
                   {/* Icon */}
-                  <div style={{
+                  <div className="arc-lobby-option-icon" style={{
                     fontSize: 56,
                     flexShrink: 0,
                     filter: hoveredOption === "quick" ? `drop-shadow(0 0 15px ${meta.color})` : "none",
@@ -312,8 +312,8 @@ export default function ArcadeLobby() {
                   </div>
 
                   {/* Content */}
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{
+                  <div className="arc-lobby-option-text" style={{ flex: 1 }}>
+                    <h3 className="arc-lobby-option-title" style={{
                       color: "var(--color-text)",
                       fontSize: 20,
                       fontWeight: 700,
@@ -321,7 +321,7 @@ export default function ArcadeLobby() {
                     }}>
                       Quick Match
                     </h3>
-                    <p style={{
+                    <p className="arc-lobby-desc" style={{
                       color: "var(--color-text-muted)",
                       fontSize: 14,
                       margin: 0,
@@ -333,6 +333,7 @@ export default function ArcadeLobby() {
 
                   {/* Play button - ONLY CLICKABLE ELEMENT */}
                   <button
+                    className="arc-lobby-cta"
                     onClick={(e) => goToSizePicker("matchmaking", e)}
                     style={{
                       background: `linear-gradient(135deg, ${meta.color} 0%, ${
@@ -377,7 +378,10 @@ export default function ArcadeLobby() {
                   transform: hoveredOption === "create" ? "translateY(-2px)" : "none"
                 }}
               >
-                <div style={{
+                {/* The class was missing here, so this card alone kept the
+                    desktop row layout on mobile — its title wrapped to three
+                    lines and the button overflowed. */}
+                <div className="arc-lobby-option" style={{
                   background: "rgba(20, 25, 35, 0.6)",
                   backdropFilter: "blur(20px)",
                   border: hoveredOption === "create" 
@@ -407,7 +411,7 @@ export default function ArcadeLobby() {
                   )}
 
                   {/* Icon */}
-                  <div style={{
+                  <div className="arc-lobby-option-icon" style={{
                     fontSize: 56,
                     flexShrink: 0,
                     filter: hoveredOption === "create" ? `drop-shadow(0 0 15px ${meta.color})` : "none",
@@ -417,8 +421,8 @@ export default function ArcadeLobby() {
                   </div>
 
                   {/* Content */}
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{
+                  <div className="arc-lobby-option-text" style={{ flex: 1 }}>
+                    <h3 className="arc-lobby-option-title" style={{
                       color: "var(--color-text)",
                       fontSize: 20,
                       fontWeight: 700,
@@ -438,6 +442,7 @@ export default function ArcadeLobby() {
 
                   {/* Create button - ONLY CLICKABLE ELEMENT */}
                   <button
+                    className="arc-lobby-cta"
                     onClick={(e) => goToSizePicker("create", e)}
                     style={{
                       background: "var(--color-white-a04)",
@@ -507,7 +512,7 @@ export default function ArcadeLobby() {
                   )}
 
                   {/* Icon */}
-                  <div style={{
+                  <div className="arc-lobby-option-icon" style={{
                     fontSize: 56,
                     flexShrink: 0,
                     filter: hoveredOption === "join" ? `drop-shadow(0 0 15px ${meta.color})` : "none",
@@ -517,8 +522,8 @@ export default function ArcadeLobby() {
                   </div>
 
                   {/* Content */}
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{
+                  <div className="arc-lobby-option-text" style={{ flex: 1 }}>
+                    <h3 className="arc-lobby-option-title" style={{
                       color: "var(--color-text)",
                       fontSize: 20,
                       fontWeight: 700,
@@ -538,6 +543,7 @@ export default function ArcadeLobby() {
 
                   {/* Join button - ONLY CLICKABLE ELEMENT */}
                   <button
+                    className="arc-lobby-cta"
                     onClick={() => setScreen("join")}
                     style={{
                       background: "var(--color-white-a04)",

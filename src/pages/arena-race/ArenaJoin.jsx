@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import api from '../../api';
@@ -219,6 +219,26 @@ export default function ArenaJoin() {
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Styles here are inline objects with no media queries, so nothing responded
+  // to screen size: the room grid's `minmax(280px, 1fr)` fits ONE column on a
+  // phone, turning each stat into a full-width band.
+  const [vw, setVw] = useState(
+    typeof document !== 'undefined'
+      ? (document.documentElement.clientWidth || window.innerWidth)
+      : 1280
+  );
+  useEffect(() => {
+    const onResize = () => setVw(document.documentElement.clientWidth || window.innerWidth);
+    onResize();
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, []);
+  const isNarrow = vw <= 1024;
+
   const styles = {
     container: {
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -279,7 +299,7 @@ export default function ArenaJoin() {
       marginBottom: '16px',
     },
     sectionTitle: {
-      fontSize: '24px',
+      fontSize: isNarrow ? '17px' : '24px',
       fontWeight: '600',
       color: 'var(--color-text)',
       marginBottom: '2px',
@@ -292,7 +312,7 @@ export default function ArenaJoin() {
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
       borderRadius: 'var(--radius-xl)',
-      padding: '24px',
+      padding: isNarrow ? '12px' : '24px',
       marginBottom: '20px',
       transition: 'all 0.3s ease',
     },
@@ -305,26 +325,28 @@ export default function ArenaJoin() {
       borderBottom: '1px solid var(--color-white-a04)',
     },
     roomCode: {
-      fontSize: '28px',
+      fontSize: isNarrow ? '19px' : '28px',
       fontWeight: '700',
       color: 'var(--color-accent)',
       fontFamily: 'monospace',
-      letterSpacing: '3px',
+      letterSpacing: isNarrow ? '1.5px' : '3px',
     },
     roomGrid: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-      gap: '20px',
+      // Two per row on a phone; auto-fit keeps the desktop behaviour.
+      gridTemplateColumns: isNarrow ? '1fr 1fr' : 'repeat(auto-fit, minmax(280px, 1fr))',
+      gap: isNarrow ? '8px' : '20px',
       marginBottom: '24px',
     },
     statBox: {
       background: 'var(--color-black-a35)',
       border: '1px solid var(--color-white-a04)',
       borderRadius: 'var(--radius-lg)',
-      padding: '16px',
+      padding: isNarrow ? '9px 10px' : '16px',
+      minWidth: 0,
     },
     statLabel: {
-      fontSize: '11px',
+      fontSize: isNarrow ? '9.5px' : '11px',
       color: 'var(--color-text-muted)',
       fontWeight: '600',
       textTransform: 'uppercase',
@@ -332,7 +354,8 @@ export default function ArenaJoin() {
       marginBottom: '8px',
     },
     statValue: {
-      fontSize: '18px',
+      fontSize: isNarrow ? '14px' : '18px',
+      overflowWrap: 'anywhere',
       color: 'var(--color-text)',
       fontWeight: '600',
     },

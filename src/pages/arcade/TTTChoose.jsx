@@ -14,6 +14,12 @@ import {
 import { useAuth } from "../../contexts/AuthContext";
 import Sidebar from "../../components/Sidebar";
 
+// The board-size colours are CSS VARIABLES (var(--color-danger), …), not hex.
+// `${color}40` therefore produced "var(--color-danger)40" — invalid CSS that the
+// browser discards, which is why the selected card's grid preview rendered with
+// no background at all. color-mix() applies transparency to any colour value.
+const alpha = (c, pct) => `color-mix(in srgb, ${c} ${pct}%, transparent)`;
+
 export default function TTTChoose() {
   const navigate  = useNavigate();
   const { state } = useLocation();
@@ -278,15 +284,16 @@ export default function TTTChoose() {
                     >
                       {/* This div is for visual only - not clickable */}
                       <div
+                        className="arc-size-card"
                         style={{
                           padding: "24px 16px",
                           borderRadius: 'var(--radius-2xl)',
                           textAlign: "center",
                           background: boardSize === s 
-                            ? `linear-gradient(145deg, ${color}15, ${color}05)`
+                            ? `linear-gradient(145deg, ${alpha(color, 8)}, ${alpha(color, 3)})`
                             : "var(--color-white-a04)",
                           border: boardSize === s 
-                            ? `1px solid ${color}40`
+                            ? `1px solid ${alpha(color, 25)}`
                             : "1px solid var(--color-white-a04)",
                           backdropFilter: "blur(10px)",
                           transition: "all 0.2s ease",
@@ -296,7 +303,7 @@ export default function TTTChoose() {
                             : "none"
                         }}
                       >
-                        <div style={{ 
+                        <div className="arc-size-label" style={{ 
                           color: boardSize === s ? color : "var(--color-text-muted)", 
                           fontWeight: 700, 
                           fontSize: 26, 
@@ -305,23 +312,23 @@ export default function TTTChoose() {
                           {label}
                         </div>
                         
-                        <span style={{ 
+                        <span className="arc-size-tag" style={{ 
                           display: "inline-block",
                           padding: "4px 12px", 
                           borderRadius: 'var(--radius-2xl)', 
                           fontSize: 10, 
                           fontWeight: 600, 
                           textTransform: "uppercase", 
-                          background: `${color}15`, 
+                          background: alpha(color, 8), 
                           color: color, 
-                          border: `1px solid ${color}30`,
+                          border: `1px solid ${alpha(color, 19)}`,
                           letterSpacing: "0.5px"
                         }}>
                           {tag}
                         </span>
 
                         {/* Mini grid preview */}
-                        <div style={{ 
+                        <div className="arc-size-preview" style={{ 
                           display: "grid", 
                           gridTemplateColumns: `repeat(${s},1fr)`, 
                           gap: 4, 
@@ -333,7 +340,7 @@ export default function TTTChoose() {
                               key={i} 
                               style={{ 
                                 aspectRatio: "1", 
-                                background: boardSize === s ? `${color}40` : "var(--color-white-a10)", 
+                                background: boardSize === s ? alpha(color, 45) : "var(--color-white-a10)", 
                                 borderRadius: 'var(--radius-sm)',
                                 transition: "all 0.2s ease"
                               }} 
@@ -343,6 +350,7 @@ export default function TTTChoose() {
 
                         {/* Select button - ONLY CLICKABLE ELEMENT */}
                         <button
+                          className="arc-size-btn"
                           onClick={() => setBoardSize(s)}
                           style={{
                             marginTop: 20,

@@ -171,6 +171,17 @@
 }
 .hc-open-inline:hover { text-decoration: underline; }
 
+/* Same look as the inline links, but on a <button> — it triggers a retry
+   rather than navigating, so it must not be an anchor. */
+.hc-retry {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 /* Secondary, not primary: messaging a human is the fallback, so it should not
    outshine the answers above it. */
 .hc-ask-open {

@@ -1241,26 +1241,30 @@ export default function Puzzles() {
           </button>
         </div>
 
+        {/* Who to move — a SIBLING of the hero, not a child of it.
+            On mobile the rating sits at the bottom while this stays above the
+            board, and `order` only works on direct children of the flex
+            container, so these two cannot share a wrapper. On desktop the CSS
+            puts it back directly under the rating, exactly as before. */}
+        {dailyStatus === 'active' && puzzle && (
+          <div className="lp-who-to-move">
+            <div className={`lp-simple-circle ${gameOver ? 'done' : orientation}`} />
+            <span className={`lp-who-label ${
+              gameOver ? 'done'
+              : message.toLowerCase().includes('wrong') ? 'wrong'
+              : message.toLowerCase().includes('correct') || message.toLowerCase().includes('perfect') || message.toLowerCase().includes('best') ? 'good'
+              : ''
+            }`}>
+              {gameOver ? 'Puzzle Complete!' : `${orientation === 'white' ? 'White' : 'Black'} to move`}
+            </span>
+          </div>
+        )}
+
         {/* ── Hero rating block ── */}
         <div className="lp-hero">
           <div className="lp-hero-label">Your Rating</div>
           <div className="lp-hero-rating">{totalPoints || '—'}</div>
           <div className="lp-hero-tag">Puzzle Rating</div>
-
-          {/* Who to move — inside hero, below rating */}
-          {dailyStatus === 'active' && puzzle && (
-            <div className="lp-who-to-move">
-              <div className={`lp-simple-circle ${gameOver ? 'done' : orientation}`} />
-              <span className={`lp-who-label ${
-                gameOver ? 'done'
-                : message.toLowerCase().includes('wrong') ? 'wrong'
-                : message.toLowerCase().includes('correct') || message.toLowerCase().includes('perfect') || message.toLowerCase().includes('best') ? 'good'
-                : ''
-              }`}>
-                {gameOver ? 'Puzzle Complete!' : `${orientation === 'white' ? 'White' : 'Black'} to move`}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* ── From the game ── */}

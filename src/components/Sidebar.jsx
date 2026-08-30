@@ -398,9 +398,20 @@ export default function Sidebar({ user, onNavigate }) {
 
   // Check for in-progress analysis job in localStorage
   useEffect(() => {
+    // Remembers the exact string last seen, so the comparison is byte-for-byte
+    // rather than a re-serialisation of the parsed object (key order and
+    // whitespace would not survive that round trip).
+    let lastRaw = null;
     const checkAnalysisJob = () => {
+      const raw = localStorage.getItem('analysisJob');
+      // Bail out when the stored value has not changed. JSON.parse() returns a
+      // NEW object every tick, so calling setAnalysingJob with it re-rendered
+      // the whole layout — and every page inside it — once a second even when
+      // no analysis was running. On the chat page that was the visible flicker
+      // while typing.
+      if (raw === lastRaw) return;
+      lastRaw = raw;
       try {
-        const raw = localStorage.getItem('analysisJob');
         setAnalysingJob(raw ? JSON.parse(raw) : null);
       } catch { setAnalysingJob(null); }
     };
@@ -620,9 +631,13 @@ export default function Sidebar({ user, onNavigate }) {
       </style>
       )}
 
-      {/* Mobile Hamburger Menu Button - Only show if not controlled by parent */}
+      {/* Mobile Hamburger Menu Button - Only show if not controlled by parent.
+          Carries .sb-standalone-burger so pages that render this sidebar
+          directly (the arcade game) can restyle it without touching the inline
+          defaults every other caller relies on. */}
       {!onNavigate && (isMobile && !isLandscape) && !isExpanded && (
         <button
+          className="sb-standalone-burger"
           onClick={() => setIsExpanded(true)}
           style={{
             position: 'fixed',

@@ -130,10 +130,15 @@ export default function HelpCenter() {
   const [input, setInput] = useState('');
   const [audience, setAudience] = useState(null);
 
-  // Coaching-ask state. `elig` stays null for signed-out visitors and on any
-  // error, which hides the panel entirely — better than showing a box that
-  // fails on submit.
+  // Coaching-ask state.
+  //
+  // `elig` alone is not enough to decide what to render: it is null while the
+  // request is still in flight, null when it failed, AND null when signed out.
+  // Rendering the form on `elig` alone meant all three showed NOTHING — the bot
+  // said "fill in the form below" and no form ever appeared. `eligState` tells
+  // those cases apart so each one gets an honest message.
   const [elig, setElig]       = useState(null);
+  const [eligState, setEligState] = useState('loading'); // loading | ready | error | anon
   const [ask, setAsk]         = useState('');
   const [askUser, setAskUser]     = useState('');
   const [askRating, setAskRating] = useState('');
@@ -158,9 +163,14 @@ export default function HelpCenter() {
   }, []);
 
   useEffect(() => {
+    if (!uid) { setElig(null); setEligState('anon'); return; }
+    setEligState('loading');
     api.get('/api/coaching-requests/eligibility')
-      .then(r => setElig(r.data || null))
-      .catch(() => setElig(null));   // signed out, or endpoint unavailable
+      .then(r => {
+        if (r.data) { setElig(r.data); setEligState('ready'); }
+        else { setElig(null); setEligState('error'); }
+      })
+      .catch(() => { setElig(null); setEligState('error'); });
 
     // Past questions and any moderator replies. Replies live HERE, in the app —
     // this is where the answer is read, so opening the page clears the unread
@@ -174,7 +184,23 @@ export default function HelpCenter() {
         }
       })
       .catch(() => setMine([]));
-  }, []);
+    // Depends on `uid`: auth often resolves AFTER this component mounts, so an
+    // empty dep array ran once while signed-out and never retried — leaving a
+    // signed-in player permanently stuck on "sign in to message a moderator".
+  }, [uid]);
+
+  // Retry after a failed eligibility check, so a blip is recoverable without a
+  // page reload.
+  const retryElig = () => {
+    if (!uid) { setEligState('anon'); return; }
+    setEligState('loading');
+    api.get('/api/coaching-requests/eligibility')
+      .then(r => {
+        if (r.data) { setElig(r.data); setEligState('ready'); }
+        else { setElig(null); setEligState('error'); }
+      })
+      .catch(() => { setElig(null); setEligState('error'); });
+  };
 
   const sendAsk = async () => {
     const text = ask.trim();
@@ -549,9 +575,43 @@ export default function HelpCenter() {
                   </button>
                 )}
 
-                {/* Coaching ask. Rendered only once they have asked for it, and
-                    only for signed-in players; eligibility decides usability. */}
-                {showAsk && elig && (
+                {/* Coaching ask. Rendered once they have asked for it. Every
+                    branch below renders SOMETHING: the old code required `elig`
+                    to be loaded, so while it was in flight (or had failed, or
+                    the visitor was signed out) the promised form was replaced by
+                    blank space with no explanation. */}
+                {showAsk && eligState === 'loading' && (
+                  <>
+                    <div className="hc-ask-divider" />
+                    <span className="hc-ask-note">Checking your account…</span>
+                  </>
+                )}
+
+                {showAsk && eligState === 'anon' && (
+                  <>
+                    <div className="hc-ask-divider" />
+                    <span className="hc-ask-note">
+                      Please <Link className="hc-open-inline" to="/login">sign in</Link> to
+                      message a moderator — the reply comes back to your account here in the
+                      Help Center.
+                    </span>
+                  </>
+                )}
+
+                {showAsk && eligState === 'error' && (
+                  <>
+                    <div className="hc-ask-divider" />
+                    <span className="hc-ask-note">
+                      We could not check your account just now.{' '}
+                      <button className="hc-open-inline hc-retry" onClick={retryElig} type="button">
+                        Try again
+                      </button>
+                      {' '}— or <Link className="hc-open-inline" to="/contact">contact the Nexus team</Link>.
+                    </span>
+                  </>
+                )}
+
+                {showAsk && eligState === 'ready' && elig && (
                   elig.canAsk ? (
                     <>
                       <div className="hc-ask-divider" />

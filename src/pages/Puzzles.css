@@ -498,11 +498,11 @@
   }
 
   /* Mobile layout, top → bottom:
-       1. Rating (hero) + sound toggle
-       2. Chessboard
-       3. From the game (who vs who)
-       4. Puzzle difficulty
-       5. Today's Puzzles 0/5
+       1. Rating (hero) + who-to-move + sound toggle
+       2. Today's Puzzles 0/5  (the five dots)
+       3. Chessboard
+       4. From the game (who vs who)
+       5. Puzzle difficulty
        6. Skip / Next button
      The left panel's children are hoisted into the container with `display:
      contents`, so each one can be ordered independently around the board. */
@@ -517,16 +517,21 @@
     max-width: 100%;
     min-height: 450px;
     padding: 10px;
-    order: 2;                 /* board sits right below the rating */
+    order: 3;                 /* below rating, who-to-move and today's dots */
   }
 
   /* Order the hoisted left-panel pieces around the board. */
   .puzzles-left-panel .lp-topbar     { order: 0; padding: 12px 15px 0; }
-  .puzzles-left-panel .lp-hero       { order: 1; }
-  /* board = order 2 */
-  .puzzles-left-panel .lp-from-game  { order: 3; margin: 10px 15px 0; }
-  .puzzles-left-panel .lp-difficulty { order: 4; margin: 10px 15px 0; }
-  .puzzles-left-panel .lp-progress   { order: 5; margin: 10px 15px 0; }
+  /* The rating moves to the BOTTOM — it is a score, not something you need
+     while solving. "White to move" and today's five dots stay above the board
+     because you read those on every move. (They are siblings in the JSX so
+     each can take its own order; see the note there.) */
+  .puzzles-left-panel .lp-who-to-move { order: 1; margin: 8px 15px 0; }
+  .puzzles-left-panel .lp-progress   { order: 2; margin: 8px 15px 0; }
+  /* board = order 3 (see .puzzles-right-panel) */
+  .puzzles-left-panel .lp-from-game  { order: 4; margin: 10px 15px 0; }
+  .puzzles-left-panel .lp-difficulty { order: 5; margin: 10px 15px 0; }
+  .puzzles-left-panel .lp-hero       { order: 6; }
   .puzzles-left-panel .lp-cta        { order: 6; margin: 12px 15px 16px; }
 
   /* The desktop flex spacer (<div style="flex:1">) would otherwise sit at order
@@ -851,4 +856,16 @@
   .training-completion-container {
     max-width: 100%;
   }
+}
+
+/* Desktop: who-to-move sits directly under the rating, as it did when the two
+   shared one .lp-hero block. They are separate elements now (so mobile can
+   order them independently), so the panel's flex order restores the original
+   visual arrangement here. */
+@media (min-width: 769px) {
+  .puzzles-left-panel .lp-hero        { order: 1; }
+  .puzzles-left-panel .lp-who-to-move { order: 2; }
+  .puzzles-left-panel .lp-from-game   { order: 3; }
+  .puzzles-left-panel .lp-difficulty  { order: 4; }
+  .puzzles-left-panel .lp-progress    { order: 5; }
 }

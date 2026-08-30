@@ -12,6 +12,11 @@ const addLog = (message, type = 'info') => {
   const timestamp = new Date().toLocaleTimeString();
 };
 
+// Width reserved on desktop for the Skip Puzzle rail sitting to the RIGHT of
+// the board (button + the flex gap). The board sizing below subtracts this, so
+// the two always fit the centre grid track together.
+const SKIP_RAIL = 116;
+
 // Updated with Obsidian Glass theme matching ChooseTopic
 
 const styles = {
@@ -532,6 +537,10 @@ export default function ArenaRace({ isAdminView = false }) {
       const availableWidth = viewportWidth - sidebarWidth - padding;
       const availableHeight = viewportHeight - 120; // header and padding
 
+      // Chessboard reserves space for the rank/file labels on the bottom+left.
+      // ~5% of the board is a safe allowance at these sizes.
+      const boardGutterAllowance = 45;
+
       // Determine device type and set appropriate size
       let newSize;
       if (viewportWidth < 768) {
@@ -541,8 +550,24 @@ export default function ArenaRace({ isAdminView = false }) {
         // Tablet: medium board
         newSize = Math.min(450, Math.min(availableWidth - 40, availableHeight - 40)); // Set to 450px for tablets
       } else {
-        // Desktop: larger board
-        newSize = Math.min(435, Math.min(availableWidth, availableHeight)); // Set to 435px for desktop chessboard
+        // Desktop: fill the space actually available.
+        //
+        // This was hardcoded to 435px, which is SMALLER than the tablet branch
+        // above (450) — so a 1440p monitor drew a smaller board than an iPad
+        // while most of the column sat empty. Height is the real limit for a
+        // square board, so take whichever of width/height runs out first and
+        // cap only to keep it sane on very large displays.
+        // The desktop layout is a `300px auto 300px` grid, so the board only
+        // owns the middle track — subtract both side columns, the Skip rail now
+        // sitting beside the board, and the board's coordinate gutters, or the
+        // grid overflows on 1280-1440px laptops. The card padding that used to
+        // be subtracted here is gone along with the card itself.
+        // Two side panels at their 220px minimum, plus the two 24px grid gaps.
+        const centreTrack = availableWidth - 440 - 48 - SKIP_RAIL - boardGutterAllowance;
+        // Never go below the old fixed 435 — on a 1280-1440 laptop the side
+        // panels eat the row, and shrinking the board to "fit" would be a
+        // regression. Those widths keep today's size; roomier screens grow.
+        newSize = Math.max(435, Math.min(centreTrack, availableHeight, 820));
       }
 
       // Ensure minimum size
@@ -1214,9 +1239,14 @@ export default function ArenaRace({ isAdminView = false }) {
       
       <div style={{
         ...styles.container,
-        gridTemplateColumns: (isMobileLayout ? '1fr' : '300px auto 300px'),
-        gap: isMobileLayout ? '20px' : '30px',
+        // Side panels were a rigid 300px each, so on a 1280-1440 laptop they
+        // squeezed (and overflowed) the board. `minmax` lets them give way down
+        // to 220px and the board keeps the middle track.
+        gridTemplateColumns: (isMobileLayout ? '1fr' : 'minmax(220px, 300px) auto minmax(220px, 300px)'),
+        gap: isMobileLayout ? '20px' : '24px',
         padding: isMobileLayout ? '10px' : '0',
+        // The 1400px cap meant a 1920/1440p monitor left the extra room unused.
+        maxWidth: isMobileLayout ? undefined : '1800px',
       }}>
         {/* LEADERBOARD - Left Side */}
         <div style={styles.leaderboardSection}>
@@ -1237,17 +1267,25 @@ export default function ArenaRace({ isAdminView = false }) {
         {/* CHESSBOARD - Center (hidden for admin view) */}
         {!isAdminView && (
         <div style={{
-          ...styles.boardSection,
-          padding: isMobileLayout ? '20px' : '30px',
+          // Desktop drops the card entirely — no surface, border, shadow or
+          // padding — so the board itself is the widest thing in the column.
+          // Mobile keeps the card look it already had.
+          ...(isMobileLayout ? styles.boardSection : null),
+          padding: isMobileLayout ? '20px' : '0',
           marginBottom: isMobileLayout ? '20px' : '0',
           width: (() => {
             // Ask the board for its real gutters instead of copying its internal
             // math — only the labelled sides (bottom+left) reserve space.
             const g = gutterFor(boardSize);
             const totalBoardWidth = boardSize + g.left + g.right;
-            return `${totalBoardWidth + (isMobileLayout ? 40 : 60)}px`;
+            // Card padding only exists on mobile now; desktop adds the Skip rail.
+            return `${totalBoardWidth + (isMobileLayout ? 40 : SKIP_RAIL)}px`;
           })(),
           maxWidth: '100%', // Prevent overflow on very small screens
+          // Board left, Skip rail right — on mobile it stays stacked as before.
+          display: isMobileLayout ? 'block' : 'flex',
+          alignItems: 'flex-start',
+          gap: isMobileLayout ? '0' : '16px',
         }}>
           <div style={{
             position: 'relative',
@@ -1269,7 +1307,9 @@ export default function ArenaRace({ isAdminView = false }) {
           <div style={{
             display: 'flex',
             justifyContent: 'center',
-            marginTop: '20px'
+            // Desktop: sit beside the board instead of under it.
+            marginTop: isMobileLayout ? '20px' : '0',
+            flex: isMobileLayout ? undefined : '0 0 auto',
           }}>
             <button
               onClick={async () => {
@@ -1304,11 +1344,15 @@ export default function ArenaRace({ isAdminView = false }) {
                 backdropFilter: 'blur(10px)',
                 color: 'var(--color-danger)',
                 border: '1px solid var(--color-danger-a30)',
-                padding: '12px 24px',
+                padding: isMobileLayout ? '12px 24px' : '12px 10px',
                 borderRadius: 'var(--radius-lg)',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer',
+                // Keep the rail narrow: wrap the label onto two short lines.
+                whiteSpace: isMobileLayout ? 'nowrap' : 'normal',
+                width: isMobileLayout ? 'auto' : '100%',
+                lineHeight: 1.3,
                 boxShadow: '0 4px 16px var(--color-danger-a20)',
                 transition: 'all 0.3s ease'
               }}

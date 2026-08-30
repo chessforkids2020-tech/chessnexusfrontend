@@ -506,12 +506,19 @@
   position: relative;
   overflow: hidden;
   min-width: 0;
+  /* Cap the card itself rather than the grid: on a wide monitor a third of the
+     row was ~456px for one line of blurb, which is what made these feel
+     oversized. The ROW still spans full width, so it stays aligned with the
+     hero banner and tournament list above and below. */
+  width: 100%;
+  max-width: 340px;
+  justify-self: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 0;
-  padding: 30px 22px 26px;
+  padding: 22px 18px 20px;
   border-radius: var(--radius-xl);
   background: var(--color-surface);
   border: 1px solid var(--color-accent-a20);
@@ -527,7 +534,7 @@
 .po-glow {
   position: absolute;
   top: -60px; left: 50%; transform: translateX(-50%);
-  width: 220px; height: 220px; border-radius: var(--radius-circle);
+  width: 170px; height: 170px; border-radius: var(--radius-circle);
   background: radial-gradient(circle, var(--color-accent-a15) 0%, transparent 68%);
   pointer-events: none;
   transition: opacity .2s ease;
@@ -538,25 +545,25 @@
 /* Ringed icon */
 .po-ring {
   position: relative;
-  width: 92px; height: 92px;
+  width: 68px; height: 68px;
   display: flex; align-items: center; justify-content: center;
   border-radius: var(--radius-circle);
   background: var(--color-black-a35);
   border: 1px solid var(--color-accent-a30);
   box-shadow: 0 6px 22px var(--color-black-a50);
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   transition: transform .2s ease, border-color .2s ease;
 }
 .play-option-card--row:hover .po-ring {
   transform: scale(1.05);
   border-color: var(--color-accent);
 }
-.po-emoji { font-size: 40px; line-height: 1; }
+.po-emoji { font-size: 30px; line-height: 1; }
 
 /* Title — display face, so a heading reads as a heading. */
 .play-option-card--row .play-option-title {
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 15.5px;
   font-weight: 700;
   letter-spacing: 0.5px;
   line-height: 1.3;
@@ -567,8 +574,8 @@
 /* Crowned rule under the title */
 .po-divider {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; max-width: 150px;
-  margin: 10px 0 12px;
+  width: 100%; max-width: 120px;
+  margin: 7px 0 9px;
 }
 .po-divider::before,
 .po-divider::after {
@@ -579,23 +586,23 @@
 .po-divider-mark { font-size: 11px; color: var(--color-accent); line-height: 1; }
 
 .play-option-blurb {
-  margin: 0 0 20px;
+  margin: 0 0 14px;
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.5;
   color: var(--color-text-muted);
 }
 
 /* Pill CTA */
 .po-cta {
   margin-top: auto;
-  min-width: 118px;
-  padding: 10px 26px;
+  min-width: 96px;
+  padding: 8px 22px;
   border-radius: var(--radius-2xl);
   border: 1px solid var(--color-accent-a40);
   color: var(--color-accent);
-  font-size: 15px; line-height: 1;
+  font-size: 14px; line-height: 1;
   transition: background .2s ease, border-color .2s ease, transform .2s ease;
 }
 .play-option-card--row:hover .po-cta {
@@ -606,9 +613,9 @@
 
 .po-soon {
   margin-top: auto;
-  padding: 8px 18px; border-radius: var(--radius-2xl);
+  padding: 7px 16px; border-radius: var(--radius-2xl);
   background: var(--color-warning-a20); color: var(--color-text);
-  font-size: 12px; font-weight: 700; white-space: nowrap;
+  font-size: 11.5px; font-weight: 700; white-space: nowrap;
 }
 
 /* Two per row on mid-width screens, before the single column kicks in. */
@@ -620,9 +627,9 @@
   /* Single column on phones. */
   .games-play-row { grid-template-columns: minmax(0, 1fr); }
   /* A little tighter on phones — the card is tall by design now. */
-  .play-option-card--row { padding: 24px 18px 22px; }
-  .po-ring { width: 76px; height: 76px; margin-bottom: 14px; }
-  .po-emoji { font-size: 34px; }
+  .play-option-card--row { padding: 18px 16px 16px; }
+  .po-ring { width: 58px; height: 58px; margin-bottom: 10px; }
+  .po-emoji { font-size: 26px; }
 }
 
 /* Info Card */
