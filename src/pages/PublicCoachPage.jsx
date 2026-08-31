@@ -20,7 +20,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import CoachProse from '../components/CoachProse';
 import { htmlToText } from '../utils/htmlToText';
 import { useParams, Link } from 'react-router-dom';
-import api from '../api';
+import api, { resolveApiAssetUrl } from '../api';
+// Uploaded media is stored as a RELATIVE path ('/api/public/...'). The frontend
+// and API share an origin on localhost but NOT in production (Vercel vs
+// api.chessnexus.in), so every such image must be resolved against the API base
+// or it 404s as a broken-image icon on the live site.
 import SEO from '../components/SEO';
 import './PublicCoachPage.css';
 
@@ -188,7 +192,7 @@ export default function PublicCoachPage() {
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <header className="pc-head">
         <div className="pc-photo">
-          {c.photo ? <img src={c.photo} alt="" /> : <span>{initials(c.name)}</span>}
+          {c.photo ? <img src={resolveApiAssetUrl(c.photo)} alt="" /> : <span>{initials(c.name)}</span>}
         </div>
 
         <div className="pc-head-tx">
@@ -244,6 +248,30 @@ export default function PublicCoachPage() {
                               href={c.handles.lichess ? `https://lichess.org/@/${c.handles.lichess}` : null} />
                   <HeadRating label="Chess.com" value={c.ratings.chesscom}
                               href={c.handles.chesscom ? `https://www.chess.com/member/${c.handles.chesscom}` : null} />
+                </dd>
+              </div>
+            )}
+
+            {/* Opt-in links the coach added. Hosts are allow-listed server-side,
+                so these are safe to render; rel="noopener" regardless, and
+                nofollow because an unverified outbound link should not pass
+                this site's SEO authority. */}
+            {(c.links?.instagram || c.links?.youtube || c.links?.website) && (
+              <div className="pc-row">
+                <dt>Links</dt>
+                <dd className="pc-rate-line">
+                  {c.links.website && (
+                    <a className="pc-sociallink" href={c.links.website}
+                       target="_blank" rel="noopener noreferrer nofollow">🌐 Website</a>
+                  )}
+                  {c.links.instagram && (
+                    <a className="pc-sociallink" href={c.links.instagram}
+                       target="_blank" rel="noopener noreferrer nofollow">📸 Instagram</a>
+                  )}
+                  {c.links.youtube && (
+                    <a className="pc-sociallink" href={c.links.youtube}
+                       target="_blank" rel="noopener noreferrer nofollow">▶️ YouTube</a>
+                  )}
                 </dd>
               </div>
             )}
@@ -323,7 +351,7 @@ export default function PublicCoachPage() {
                       onClick={() => setLightbox(gallery.indexOf(img))}
                       aria-label={img.caption || 'Open photo'}
                     >
-                      <img src={img.url} alt={img.caption || ''} loading="lazy" />
+                      <img src={resolveApiAssetUrl(img.url)} alt={img.caption || ''} loading="lazy" />
                     </button>
                     {img.caption && <figcaption>{img.caption}</figcaption>}
                   </figure>
@@ -368,7 +396,7 @@ export default function PublicCoachPage() {
                     onClick={() => setLightbox(gallery.indexOf(img))}
                     aria-label={img.caption || 'Open photo'}
                   >
-                    <img src={img.url} alt={img.caption || ''} loading="lazy" />
+                    <img src={resolveApiAssetUrl(img.url)} alt={img.caption || ''} loading="lazy" />
                   </button>
                   {img.caption && <figcaption>{img.caption}</figcaption>}
                 </figure>
@@ -403,7 +431,7 @@ export default function PublicCoachPage() {
             aria-label="Close"
           >✕</button>
           <figure className="pc-lightbox-fig" onClick={(e) => e.stopPropagation()}>
-            <img src={gallery[lightbox].url} alt={gallery[lightbox].caption || ''} />
+            <img src={resolveApiAssetUrl(gallery[lightbox].url)} alt={gallery[lightbox].caption || ''} />
             {gallery[lightbox].caption && (
               <figcaption>{gallery[lightbox].caption}</figcaption>
             )}

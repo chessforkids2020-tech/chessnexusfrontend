@@ -601,3 +601,26 @@ a.pc-hr:hover strong { text-decoration: underline; }
   .pc-ach-photos { flex-direction: row; flex-wrap: wrap; }
   .pc-ach-photo { flex: 1 1 140px; }
 }
+
+/* Opt-in social links in the facts list. Sits beside the rating chips, so it
+   borrows their row layout and only needs its own chip styling. */
+.pc-sociallink {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  margin-right: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pc-sociallink:hover {
+  border-color: rgba(6, 182, 212, 0.5);
+  background: rgba(6, 182, 212, 0.1);
+}

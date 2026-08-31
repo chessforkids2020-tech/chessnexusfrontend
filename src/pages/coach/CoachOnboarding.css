@@ -517,3 +517,16 @@
   font-size: 13px;
   margin: 8px 0 16px;
 }
+
+/* Proof-of-coaching block — grouped and lightly boxed so it reads as one
+   question ("show us your coaching") rather than three unrelated fields. */
+.coach-onboard-proof {
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  background: rgba(6, 182, 212, 0.05);
+  border-radius: var(--radius-lg, 12px);
+  padding: 14px;
+  margin-top: 4px;
+}
+
+.coach-onboard-proof .field { margin-bottom: 10px; }
+.coach-onboard-proof .field:last-child { margin-bottom: 0; }

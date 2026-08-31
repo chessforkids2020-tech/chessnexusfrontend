@@ -28,6 +28,11 @@ export default function CoachOnboarding() {
     coachType: 'individual',   // 'individual' | 'academy' (academy = you're the head)
     usesCoachingTools: true,   // academy owner: will they also teach (show coach tools)?
     academyName: '',
+    // Proof of coaching — asked of EVERYONE. See the field in the form below for
+    // why this replaced "academy name" as the thing a reviewer actually acts on.
+    proofType: 'lichess_team',
+    proofUrl: '',
+    proofNote: '',
     bio: '',
     specialization: '',
     referredByCoachCode: '',    // optional — another coach's code (referral)
@@ -72,7 +77,17 @@ export default function CoachOnboarding() {
     setError('');
     if (!form.coachName.trim()) return setError('Please enter your coach name.');
     if (!form.coachCountry) return setError('Please pick your country.');
-    if (!form.academyName.trim()) return setError('Please enter your academy / brand name.');
+    // Only an ACADEMY has an academy name. Asking individuals for one is what
+    // produced a queue full of "no" and "n/a".
+    if (form.coachType === 'academy' && !form.academyName.trim()) {
+      return setError('Please enter your academy name.');
+    }
+    if (!form.proofUrl.trim() && !form.proofNote.trim()) {
+      return setError('Please add a link where we can see your coaching — or tell us where you teach.');
+    }
+    if (form.proofUrl.trim() && !/^https?:\/\/[^\s.]+\.[^\s]{2,}$/i.test(form.proofUrl.trim())) {
+      return setError('That link does not look valid — include https:// (or leave it blank and tell us where you teach).');
+    }
     if (!agreedTerms) return setError('Please accept the coach terms to continue.');
 
 
@@ -333,22 +348,77 @@ export default function CoachOnboarding() {
               </>
             )}
 
-            <label className="field">
-              <span>Academy / brand name *</span>
-              <input
-                type="text"
-                value={form.academyName}
-                onChange={e => update('academyName', e.target.value)}
-                placeholder="e.g. Queen's Chess Academy"
-                required
-              />
-            </label>
+            {/* Academy name is asked ONLY of academies. Asking an INDIVIDUAL coach
+                for an "academy name" is a contradictory question, and they were
+                answering it honestly with "no" / "n/a" — which told the reviewer
+                nothing. Individuals who do trade under a brand can still add one
+                later from their profile. */}
+            {form.coachType === 'academy' && (
+              <label className="field">
+                <span>Academy name *</span>
+                <input
+                  type="text"
+                  value={form.academyName}
+                  onChange={e => update('academyName', e.target.value)}
+                  placeholder="e.g. Queen's Chess Academy"
+                  required
+                />
+              </label>
+            )}
 
-            {/* The "Social profile" field (Facebook / Instagram / Chess.com /
-                Lichess) was removed. It existed so the Nexus team could verify a
-                coach was real, but a throwaway account on any of those platforms
-                takes two minutes to create — so it verified nothing while adding
-                a required step to onboarding. */}
+            {/* PROOF OF COACHING — the field that replaced the old social handle.
+                A previous version removed that handle on the grounds that a
+                throwaway account proves nothing, which is true. This is not asked
+                as PROOF OF IDENTITY: it exists so a human reviewer can open one
+                link and see real coaching activity (or an empty page) in seconds.
+                An academy name alone never gave them that. */}
+            <div className="coach-onboard-proof">
+              <label className="field">
+                <span>Where can we see your coaching? *</span>
+                <select
+                  value={form.proofType}
+                  onChange={e => update('proofType', e.target.value)}
+                >
+                  <option value="lichess_team">Lichess team / club</option>
+                  <option value="website">Website</option>
+                  <option value="facebook">Facebook page</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="chesscom">Chess.com profile</option>
+                  <option value="youtube">YouTube channel</option>
+                  <option value="other">Something else</option>
+                </select>
+              </label>
+
+              <label className="field">
+                <span>Link</span>
+                <input
+                  type="url"
+                  value={form.proofUrl}
+                  onChange={e => update('proofUrl', e.target.value)}
+                  placeholder="https://lichess.org/team/your-club"
+                />
+              </label>
+
+              <div className="coach-onboard-social-hint">
+                This is how our team confirms you really coach — it keeps the
+                platform safe for the children learning here. A club page, class
+                photos, or a profile with your students all work.
+              </div>
+
+              {/* Offline coaches are REAL and common — a school or neighbourhood
+                  coach with no web presence must not be shut out, so a written
+                  explanation is accepted in place of a link. */}
+              <label className="field">
+                <span>No link? Tell us where you teach instead</span>
+                <textarea
+                  rows={2}
+                  value={form.proofNote}
+                  onChange={e => update('proofNote', e.target.value)}
+                  placeholder="e.g. I teach chess at St. Mary's School, Chennai — 20 students, Saturdays."
+                  maxLength={500}
+                />
+              </label>
+            </div>
 
             <label className="field">
               <span>Specialization (optional)</span>

@@ -3,7 +3,10 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import socket from '../socket-jwt';
-import api from '../api';
+import api, { resolveApiAssetUrl } from '../api';
+// Club pictures are stored as a RELATIVE path by the upload route, which only
+// resolves when the app and API share an origin (localhost). In production they
+// are different hosts, so these must be resolved against the API base.
 import UserAvatar from '../components/UserAvatar';
 import PlayerName from '../components/PlayerName';
 // Same rich-text pair the coach profile uses: CoachRichText to author, CoachProse
@@ -722,7 +725,7 @@ export default function ClubDetailPage() {
 
               {club.imageUrl && (
                 <img
-                  src={club.imageUrl}
+                  src={resolveApiAssetUrl(club.imageUrl)}
                   alt={`${club.name} banner`}
                   className="sh-club-about-image"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }}
@@ -973,7 +976,7 @@ export default function ClubDetailPage() {
               <div className="sh-club-pic-row">
                 {editForm.imageUrl ? (
                   <img
-                    src={editForm.imageUrl}
+                    src={resolveApiAssetUrl(editForm.imageUrl)}
                     alt="Club picture"
                     className="sh-club-pic-preview"
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}

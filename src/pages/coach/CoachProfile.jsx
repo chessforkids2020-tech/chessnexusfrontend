@@ -5,7 +5,7 @@
 // coachProfile + coachSubscription + access, and /api/coach/dashboard has counts.
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../api';
+import api, { resolveApiAssetUrl } from '../../api';
 import { copyText } from '../../utils/clipboard';
 import CoachRichText from '../../components/CoachRichText';
 import CoachProse from '../../components/CoachProse';
@@ -24,7 +24,10 @@ const EDITABLE = ['coachName', 'coachCountry', 'hourlyRate', 'monthlyRate', 'rat
   // The server ignores it here too — see routes/coach.js.
   'profilePhotoUrl', 'publicListed', 'acceptingStudents',
   'fideRating', 'lichessRating', 'chessComRating', 'experienceYears',
-  'coachAchievements', 'languages', 'teaches'];
+  'coachAchievements', 'languages', 'teaches',
+  // Opt-in public links. Lichess / Chess.com / FIDE are NOT here: those are
+  // already linked from the account handles and shown beside the ratings.
+  'instagramUrl', 'youtubeUrl', 'websiteUrl'];
 const LEVELS = [
   { key: 'beginner', label: 'Beginner' },
   { key: 'intermediate', label: 'Intermediate' },
@@ -213,6 +216,11 @@ export default function CoachProfile() {
     next.teaches = Array.isArray(p.teaches) ? p.teaches : [];
     next.publicListed = !!p.publicListed;
     next.acceptingStudents = p.acceptingStudents !== false;
+    // Chess handles live on the USER document, so they arrive in a separate
+    // `chessHandles` object rather than in `coachProfile` like everything else.
+    const h = status?.chessHandles || {};
+    next.lichessUsername = h.lichessUsername || '';
+    next.chessComUsername = h.chessComUsername || '';
     setForm(next);
     setError('');
     setEditing(true);
@@ -261,9 +269,20 @@ export default function CoachProfile() {
         lichessRating: form.lichessRating === '' ? null : form.lichessRating,
         chessComRating: form.chessComRating === '' ? null : form.chessComRating,
         experienceYears: form.experienceYears === '' ? null : form.experienceYears,
+        // Turn the typed ratings into real profile LINKS on the public page.
+        lichessUsername: form.lichessUsername ?? '',
+        chessComUsername: form.chessComUsername ?? '',
       };
       const res = await api.put('/api/coach/profile', body);
-      setStatus(s => ({ ...s, coachProfile: res.data.coachProfile }));
+      setStatus(s => ({
+        ...s,
+        coachProfile: res.data.coachProfile,
+        chessHandles: {
+          ...(s?.chessHandles || {}),
+          lichessUsername: body.lichessUsername,
+          chessComUsername: body.chessComUsername,
+        },
+      }));
       setEditing(false);
     } catch (err) {
       setError(err?.response?.data?.message || 'Could not save. Please try again.');
@@ -524,6 +543,27 @@ export default function CoachProfile() {
                   <input className="cp-input" type="number" min="0" max="80" placeholder="e.g. 12"
                          value={form.experienceYears} onChange={set('experienceYears')} />
                 </div>
+                {/* Public links. The server checks the HOST of each of these, so a
+                    student clicking "Instagram" cannot be sent somewhere else. */}
+                <div className="cp-field">
+                  <label>Instagram</label>
+                  <input className="cp-input" type="url" placeholder="https://instagram.com/yourhandle"
+                         value={form.instagramUrl} onChange={set('instagramUrl')} />
+                </div>
+                <div className="cp-field">
+                  <label>YouTube</label>
+                  <input className="cp-input" type="url" placeholder="https://youtube.com/@yourchannel"
+                         value={form.youtubeUrl} onChange={set('youtubeUrl')} />
+                </div>
+                <div className="cp-field">
+                  <label>Website</label>
+                  <input className="cp-input" type="url" placeholder="https://your-academy.com"
+                         value={form.websiteUrl} onChange={set('websiteUrl')} />
+                  <span className="cp-hint">
+                    Optional. Your Lichess, Chess.com and FIDE profiles are already
+                    linked from your ratings above.
+                  </span>
+                </div>
                 <div className="cp-field">
                   <label>FIDE rating</label>
                   <input className="cp-input" type="number" min="0" max="3000" placeholder="e.g. 2145"
@@ -538,6 +578,21 @@ export default function CoachProfile() {
                   <label>Chess.com rating</label>
                   <input className="cp-input" type="number" min="0" max="4000" placeholder="e.g. 2190"
                          value={form.chessComRating} onChange={set('chessComRating')} />
+                </div>
+                {/* The handles that turn the ratings above into LINKS. Without
+                    these the public page can only print the number as plain
+                    text, because it has no profile to point at. */}
+                <div className="cp-field">
+                  <label>Lichess username</label>
+                  <input className="cp-input" placeholder="e.g. yourhandle"
+                         value={form.lichessUsername} onChange={set('lichessUsername')} />
+                  <span className="cp-hint">Makes your Lichess rating a link to your profile.</span>
+                </div>
+                <div className="cp-field">
+                  <label>Chess.com username</label>
+                  <input className="cp-input" placeholder="e.g. yourhandle"
+                         value={form.chessComUsername} onChange={set('chessComUsername')} />
+                  <span className="cp-hint">Makes your Chess.com rating a link to your profile.</span>
                 </div>
                 <div className="cp-field">
                   <label>Teaching languages</label>
@@ -583,7 +638,13 @@ export default function CoachProfile() {
                 <div className="cp-gal-grid">
                   {gallery.map((img) => (
                     <div key={img.id || img.url} className="cp-gal-cell">
-                      <img src={img.url} alt={img.caption || ''} loading="lazy" />
+                      {/* Gallery URLs are stored RELATIVE ('/api/public/coach-gallery/...').
+                          On localhost the app and API share an origin so that resolved;
+                          in production the frontend is on Vercel and the API on
+                          api.chessnexus.in, so the browser asked the WRONG host and every
+                          photo rendered as a broken-image icon. Resolve against the API
+                          base. */}
+                      <img src={resolveApiAssetUrl(img.url)} alt={img.caption || ''} loading="lazy" />
                       <button
                         type="button"
                         className="cp-gal-del"

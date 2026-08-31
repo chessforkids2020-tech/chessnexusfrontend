@@ -60,6 +60,12 @@ const PLAN_LABEL = {
   starter: "Starter", pro: "Pro", pro_plus: "Pro+", academy: "Academy",
 };
 
+// What kind of evidence a coach gave at onboarding, for the review queue.
+const PROOF_LABELS = {
+  lichess_team: "Lichess team", website: "Website", facebook: "Facebook",
+  instagram: "Instagram", chesscom: "Chess.com", youtube: "YouTube", other: "Link",
+};
+
 const STATUS_STYLE = {
   active: { label: "Active", color: "#047857", bg: "rgba(16,185,129,0.14)" },
   expired: { label: "Expired", color: "#b91c1c", bg: "rgba(239,68,68,0.12)" },
@@ -600,6 +606,14 @@ export default function AdminCoaches() {
                               <DetailLine k="Coach name" v={c.coachName} />
                               <DetailLine k="Type" v={c.coachType === "academy" ? "Academy" : "Individual"} />
                               <DetailLine k="Academy" v={c.academyName} />
+                              {/* The review evidence, rendered as a real link so
+                                  it is one click to check rather than a copy-paste. */}
+                              <DetailLine k="Proof" v={c.proofUrl ? (
+                                <a href={c.proofUrl} target="_blank" rel="noopener noreferrer">
+                                  {PROOF_LABELS[c.proofType] || 'Link'} ↗
+                                </a>
+                              ) : ''} />
+                              <DetailLine k="Proof note" v={c.proofNote} />
                               <DetailLine k="Country" v={c.country} />
                               <DetailLine k="Coach code" v={c.coachCode} />
                               <DetailLine k="Specialization" v={c.specialization} />
