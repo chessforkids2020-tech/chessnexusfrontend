@@ -59,8 +59,11 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
 
   // Live socket wiring — join the same room the players are in, listen only.
   useEffect(() => {
-    if (!socket.connected) socket.connect();
-    socket.emit('joinArenaRoom', `arena:${roomId}`);
+    // The room join must happen ON an established connection: the server's
+    // joinArenaRoom handler drops the call when the socket has no authed
+    // userId yet, which is the case for an emit fired during the handshake.
+    // So join now only if already connected, and (re)join on every 'connect'.
+    const joinRoom = () => socket.emit('joinArenaRoom', `arena:${roomId}`);
 
     const onLeaderboard = (d) => {
       if (d?.leaderboard) setData(prev => ({ ...(prev || {}), leaderboard: d.leaderboard }));
@@ -69,7 +72,7 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
     const onStarted = () => load();
     const onEnded = () => load();
     const onPlayerJoined = () => load();
-    const onReconnect = () => socket.emit('joinArenaRoom', `arena:${roomId}`);
+    const onConnect = () => joinRoom();
 
     socket.on('leaderboardUpdate', onLeaderboard);
     socket.on('arenaTimeUpdate', onTime);
@@ -77,7 +80,9 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
     socket.on('raceEnded', onEnded);
     socket.on('raceCompleted', onEnded);
     socket.on('playerJoined', onPlayerJoined);
-    socket.on('connect', onReconnect);
+    socket.on('connect', onConnect);
+
+    if (socket.connected) joinRoom(); else socket.connect();
 
     return () => {
       socket.off('leaderboardUpdate', onLeaderboard);
@@ -86,10 +91,23 @@ export default function CoachArenaLive({ roomId: roomIdProp, embedded = false, o
       socket.off('raceEnded', onEnded);
       socket.off('raceCompleted', onEnded);
       socket.off('playerJoined', onPlayerJoined);
-      socket.off('connect', onReconnect);
+      socket.off('connect', onConnect);
     };
     // eslint-disable-next-line
   }, [roomId]);
+
+  // Safety net: a coach watching a 10-minute race must never be looking at a
+  // frozen table. Sockets can silently drop a room (proxy timeout, transport
+  // upgrade, laptop sleep) with no 'connect' event to re-trigger the rejoin,
+  // so poll the REST /live route while the race is running. 10s is cheap for
+  // a handful of coach tabs and keeps the board honest between socket pushes.
+  useEffect(() => {
+    const status = data?.status;
+    if (status !== 'active' && status !== 'waiting') return;
+    const id = setInterval(() => { load(); }, 10000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line
+  }, [data?.status, roomId]);
 
   // Local 1s countdown between server time syncs.
   useEffect(() => {

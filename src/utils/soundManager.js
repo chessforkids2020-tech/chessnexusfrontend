@@ -12,6 +12,12 @@ const SoundGenerator = {
     if (!this.audioContext) {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
+    // Browsers hand back a SUSPENDED context until the page has seen a real user
+    // gesture. Without this resume the oscillator below runs and produces silence
+    // — the reason the chat ping seemed to do nothing at all.
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume().catch(() => {});
+    }
     return this.audioContext;
   },
 
@@ -168,6 +174,8 @@ class SoundManager {
     this.muted = false;
     this.volume = 0.5;
     this.initialized = false;
+    // Sounds already warned about, so a repeating ping logs once, not every time.
+    this._warned = new Set();
     
     // Define all sound files
     this.soundFiles = {
@@ -181,7 +189,11 @@ class SoundManager {
       complete: '/sounds/success-chime.mp3',
       
       // Chat notification
-      notification: '/sounds/chat-notification.mp3'
+      // .wav, not .mp3: the repo shipped no audio at all (only a README listing
+      // files nobody downloaded), so this one is generated and committed. Every
+      // target browser plays WAV natively. The synthesized tone in SoundGenerator
+      // stays as the fallback if this ever fails to load.
+      notification: '/sounds/chat-notification.wav'
     };
   }
 
@@ -265,9 +277,15 @@ class SoundManager {
       // Use enhanced sound generator
       if (SoundGenerator[soundName]) {
         SoundGenerator[soundName]();
-      } else {
+      } else if (!this._warned.has(soundName)) {
+        this._warned.add(soundName);
+        console.warn(`[soundManager] No audio file and no generator for "${soundName}".`);
       }
     } catch (error) {
+      if (!this._warned.has(soundName)) {
+        this._warned.add(soundName);
+        console.warn(`[soundManager] Fallback tone failed for "${soundName}":`, error?.message || error);
+      }
     }
   }
 
@@ -318,6 +336,9 @@ const soundManager = new SoundManager();
 if (typeof window !== 'undefined') {
   const initOnInteraction = () => {
     soundManager.init();
+    // Unlock the Web Audio context on the same gesture — init() only preloads
+    // <audio> elements and leaves the oscillator fallback muted.
+    try { SoundGenerator.getAudioContext(); } catch { /* no Web Audio support */ }
     // Remove listeners after first interaction
     document.removeEventListener('click', initOnInteraction);
     document.removeEventListener('keydown', initOnInteraction);

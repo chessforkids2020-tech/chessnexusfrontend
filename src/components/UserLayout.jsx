@@ -7,6 +7,7 @@ import AcademySidebar from './AcademySidebar';
 import StudyPuzzleSidebar from './StudyPuzzleSidebar';
 import Footer from './Footer';
 import FeedbackPromptGate from './FeedbackPromptGate';
+import ChatToasts from './ChatToasts';
 import './UserLayout.css';
 
 // Pages that use the slim 60px icon rail instead of the 170px main sidebar,
@@ -133,6 +134,10 @@ export default function UserLayout({ children, showFooter = true }) {
 
   return (
     <div className="user-layout-container">
+      {/* Fixed-position message toasts (desktop only; the component no-ops on
+          narrow screens). Mounted at the layout root so a card can appear on any
+          in-app page, not just the chat page. */}
+      <ChatToasts />
       <div className="user-content-wrapper">
         <>
           {/* The narrow rail renders itself at every size — including its own

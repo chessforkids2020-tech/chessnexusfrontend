@@ -68,8 +68,10 @@ export default function CoachArenaTournamentLive() {
 
   // ── Socket (listen-only; NO per-move events) ──
   useEffect(() => {
-    if (!socket.connected) socket.connect();
-    socket.emit('joinArenaTournamentLobby', { tournamentId: id });
+    // Join only on an established connection — an emit fired mid-handshake is
+    // dropped by the server handler, which would leave this tab in no room and
+    // therefore silently frozen until a manual refresh.
+    const joinLobby = () => socket.emit('joinArenaTournamentLobby', { tournamentId: id });
 
     const onLeaderboard = () => loadLeaderboard();
     const onGameStarted = () => loadGames();       // new pairing appears
@@ -78,7 +80,7 @@ export default function CoachArenaTournamentLive() {
     const onEnded = () => { loadLobby(); loadLeaderboard(); loadGames(); };
     const onJoined = () => loadLobby();
     const onChat = (msg) => setChat(prev => [...prev, msg]);
-    const onReconnect = () => socket.emit('joinArenaTournamentLobby', { tournamentId: id });
+    const onReconnect = () => joinLobby();
 
     socket.on('tournamentLeaderboardUpdate', onLeaderboard);
     socket.on('arenaTournamentGameStarted', onGameStarted);
@@ -88,6 +90,8 @@ export default function CoachArenaTournamentLive() {
     socket.on('participantJoined', onJoined);
     socket.on('arenaTournamentChatMessage', onChat);
     socket.on('connect', onReconnect);
+
+    if (socket.connected) joinLobby(); else socket.connect();
 
     return () => {
       socket.emit('leaveArenaTournamentLobby', { tournamentId: id });
@@ -104,6 +108,17 @@ export default function CoachArenaTournamentLive() {
   }, [id]);
 
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [chat]);
+
+  // Safety net: same reasoning as CoachArenaLive — a dropped socket room has no
+  // 'connect' event to recover from, so refresh standings from REST while the
+  // tournament is live rather than stranding the coach on a frozen table.
+  useEffect(() => {
+    const st = tournament?.status;
+    if (st !== 'active' && st !== 'lobby' && st !== 'scheduled') return;
+    const iv = setInterval(() => { loadLobby(); loadLeaderboard(); loadGames(); }, 10000);
+    return () => clearInterval(iv);
+    // eslint-disable-next-line
+  }, [tournament?.status, id]);
 
   // 1-second tick so the start/end countdowns update live.
   useEffect(() => {

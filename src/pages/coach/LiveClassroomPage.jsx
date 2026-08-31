@@ -1217,6 +1217,17 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
   const [customInc, setCustomInc] = useState(0);
   // Pairings the coach is building: [{whiteId, blackId}] before Start.
   const [pairs, setPairs] = useState([]);
+  // After a round ends the finished games are KEPT for review, which used to make
+  // this component render the review grid forever — there was no way back to the
+  // pairing form, so a coach could never start a second round without ending the
+  // whole class. This flag flips the view back to setup on demand; the finished
+  // games stay in `classGames` and remain reviewable via "← Back to the games".
+  const [setupAgain, setSetupAgain] = useState(false);
+  // A genuinely new round arriving (or the games being cleared) retires the flag,
+  // so the live grid always wins over a stale setup view.
+  React.useEffect(() => {
+    if (classGames.some(g => g.status === 'active')) setSetupAgain(false);
+  }, [classGames]);
   // Which game's PGN was just copied (shows "✓ Copied" on that card only).
   const [copiedId, setCopiedId] = useState(null);
   const copyGamePgn = async (g) => {
@@ -1252,8 +1263,9 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
     onStartGames && onStartGames(timeControl, valid);
   };
 
-  // Live grid once games are running.
-  if (classGames.length > 0) {
+  // Live grid once games are running. `setupAgain` lets a coach step back to the
+  // pairing form after a round has finished without losing the games for review.
+  if (classGames.length > 0 && !setupAgain) {
     return (
       <div style={cg.section}>
         <div style={cg.secHead}>
@@ -1261,13 +1273,18 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
             {playEnded ? '♟ Games to review' : '♟ Games in play'}
             <span style={{ color: '#9ca3af', fontWeight: 600 }}> ({classGames.length})</span>
           </div>
-          {!playEnded && (
+          {!playEnded ? (
             <button style={cg.endBtn} onClick={() => { onEndGames && onEndGames(); setPairs([]); }}>■ End games</button>
+          ) : (
+            // The whole point of the fix: another round, without ending the class.
+            <button style={cg.newRoundBtn} onClick={() => { setPairs([]); setSetupAgain(true); }}>
+              ♟ New round
+            </button>
           )}
         </div>
         <div style={cg.hint}>
           {playEnded
-            ? <>Play is over. Hit <b>🔎 Review on board</b> on any game to walk through it — the whole class follows your board. These games stay until the class ends.</>
+            ? <>Play is over. Hit <b>🔎 Review on board</b> on any game to walk through it — the whole class follows your board. Want them playing again? Hit <b>♟ New round</b> to re-pair the class.</>
             : <>Click <b>Spotlight</b> on any board — every non-playing student watches that board.</>}
         </div>
         <div style={cg.grid}>
@@ -1317,11 +1334,18 @@ function ClassPlaySection({ participants = [], classGames = [], classSpotlightId
     );
   }
 
-  // Setup UI (no games yet).
+  // Setup UI (no games yet, or the coach stepped back here for another round).
   return (
     <div style={cg.section}>
       <div style={cg.secHead}>
-        <div style={{ fontSize: 15, fontWeight: 800 }}>♟ Play in class</div>
+        <div style={{ fontSize: 15, fontWeight: 800 }}>
+          {setupAgain ? '♟ New round — pair the class again' : '♟ Play in class'}
+        </div>
+        {/* The previous round's games are still held for review; don't strand the
+            coach in the setup form if they only wanted to look. */}
+        {setupAgain && classGames.length > 0 && (
+          <button style={cg.backBtn} onClick={() => setSetupAgain(false)}>← Back to the games</button>
+        )}
       </div>
       {admitted.length < 2 ? (
         <div style={as.empty}>Admit at least 2 students to start games. Currently admitted: {admitted.length}.</div>
@@ -2008,6 +2032,8 @@ const cg = {
   free: { fontSize: 12, color: '#fcd34d', marginBottom: 10 },
   startBtn: { padding: '9px 20px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,#06b6d4,#10b981)', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: 'pointer' },
   endBtn: { padding: '6px 14px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.14)', color: '#fca5a5', cursor: 'pointer', fontSize: 13, fontWeight: 700 },
+  newRoundBtn: { padding: '6px 14px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(34,197,94,0.45)', background: 'rgba(34,197,94,0.16)', color: '#6ee7b7', cursor: 'pointer', fontSize: 13, fontWeight: 700 },
+  backBtn: { padding: '6px 14px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.16)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', fontSize: 13, fontWeight: 700 },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(240px,1fr))', gap: 12 },
   card: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 'var(--radius-lg)', padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' },
   cardSpot: { border: '2px solid #22c55e', boxShadow: '0 0 0 3px rgba(34,197,94,0.18)' },
