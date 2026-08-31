@@ -43,17 +43,6 @@ const SIDE_BY_SIDE_MIN_PX = 860;
 // Kept in sync with .pc-ach-photos in PublicCoachPage.css.
 const PHOTO_SLOT_PX = 162;
 
-// Compact rating for the header row: "FIDE 2343  Lichess 2585".
-// Links out where we know the handle, so a visitor can check the number — these
-// are typed by the coach, not fetched from anywhere.
-function HeadRating({ label, value, href }) {
-  if (!value) return null;
-  const inner = <><span className="pc-hr-l">{label}</span> <strong>{value}</strong></>;
-  return href
-    ? <a className="pc-hr" href={href} target="_blank" rel="noopener noreferrer nofollow">{inner}</a>
-    : <span className="pc-hr">{inner}</span>;
-}
-
 export default function PublicCoachPage() {
   const { code } = useParams();
   const [state, setState] = useState({ loading: true, coach: null, error: '' });
@@ -148,6 +137,37 @@ export default function PublicCoachPage() {
   ].filter(Boolean).join(' · ') || null;
   const years = c.coachingSince ? new Date(c.coachingSince).getFullYear() : null;
 
+  // Every outbound link in ONE list, chess accounts first because that is what a
+  // parent judging a chess coach looks for. Built from handles (which the coach
+  // types as a username) and from the opt-in social URLs, whose hosts are
+  // allow-listed server-side. A coach who filled in nothing renders no strip.
+  const profileLinks = [
+    c.handles?.lichess && {
+      k: 'lichess', icon: '♞', label: 'Lichess',
+      href: `https://lichess.org/@/${encodeURIComponent(c.handles.lichess)}`,
+      title: `Lichess profile: ${c.handles.lichess}`,
+    },
+    c.handles?.chesscom && {
+      k: 'chesscom', icon: '♟', label: 'Chess.com',
+      href: `https://www.chess.com/member/${encodeURIComponent(c.handles.chesscom)}`,
+      title: `Chess.com profile: ${c.handles.chesscom}`,
+    },
+    c.handles?.fideId && {
+      k: 'fide', icon: '🏅', label: 'FIDE',
+      href: `https://ratings.fide.com/profile/${encodeURIComponent(c.handles.fideId)}`,
+      title: `FIDE profile: ${c.handles.fideId}`,
+    },
+    c.links?.website && {
+      k: 'website', icon: '🌐', label: 'Website', href: c.links.website, title: 'Coach website',
+    },
+    c.links?.instagram && {
+      k: 'instagram', icon: '📸', label: 'Instagram', href: c.links.instagram, title: 'Instagram',
+    },
+    c.links?.youtube && {
+      k: 'youtube', icon: '▶️', label: 'YouTube', href: c.links.youtube, title: 'YouTube channel',
+    },
+  ].filter(Boolean);
+
   const gallery = Array.isArray(c.gallery) ? c.gallery : [];
 
   // How many photos fit beside the achievements text.
@@ -238,40 +258,16 @@ export default function PublicCoachPage() {
               </div>
             )}
 
+            {/* Ratings stay here as FACTS. The profile LINKS that used to be
+                welded to them now live in one strip below, so a coach who gave a
+                handle but no rating is no longer invisible. */}
             {(c.ratings.fide || c.ratings.lichess || c.ratings.chesscom) && (
               <div className="pc-row">
                 <dt>Rating</dt>
                 <dd className="pc-rate-line">
-                  <HeadRating label="FIDE" value={c.ratings.fide}
-                              href={c.handles.fideId ? `https://ratings.fide.com/profile/${c.handles.fideId}` : null} />
-                  <HeadRating label="Lichess" value={c.ratings.lichess}
-                              href={c.handles.lichess ? `https://lichess.org/@/${c.handles.lichess}` : null} />
-                  <HeadRating label="Chess.com" value={c.ratings.chesscom}
-                              href={c.handles.chesscom ? `https://www.chess.com/member/${c.handles.chesscom}` : null} />
-                </dd>
-              </div>
-            )}
-
-            {/* Opt-in links the coach added. Hosts are allow-listed server-side,
-                so these are safe to render; rel="noopener" regardless, and
-                nofollow because an unverified outbound link should not pass
-                this site's SEO authority. */}
-            {(c.links?.instagram || c.links?.youtube || c.links?.website) && (
-              <div className="pc-row">
-                <dt>Links</dt>
-                <dd className="pc-rate-line">
-                  {c.links.website && (
-                    <a className="pc-sociallink" href={c.links.website}
-                       target="_blank" rel="noopener noreferrer nofollow">🌐 Website</a>
-                  )}
-                  {c.links.instagram && (
-                    <a className="pc-sociallink" href={c.links.instagram}
-                       target="_blank" rel="noopener noreferrer nofollow">📸 Instagram</a>
-                  )}
-                  {c.links.youtube && (
-                    <a className="pc-sociallink" href={c.links.youtube}
-                       target="_blank" rel="noopener noreferrer nofollow">▶️ YouTube</a>
-                  )}
+                  {c.ratings.fide && <span className="pc-hr"><span className="pc-hr-l">FIDE</span> <strong>{c.ratings.fide}</strong></span>}
+                  {c.ratings.lichess && <span className="pc-hr"><span className="pc-hr-l">Lichess</span> <strong>{c.ratings.lichess}</strong></span>}
+                  {c.ratings.chesscom && <span className="pc-hr"><span className="pc-hr-l">Chess.com</span> <strong>{c.ratings.chesscom}</strong></span>}
                 </dd>
               </div>
             )}
@@ -311,6 +307,27 @@ export default function PublicCoachPage() {
               : <span className="pc-badge pc-badge-full">Not taking students right now</span>}
             {years && <span className="pc-badge">On Chess Nexus since {years}</span>}
           </div>
+
+          {/* ── Profile links ──────────────────────────────────────────────
+              ONE strip for every outbound link, sitting under the coach's photo
+              and name and directly above their About text.
+
+              These were previously split in two — chess accounts hidden inside
+              the "Rating" row, socials in a separate "Links" row further down —
+              which buried them among location/languages/rate and made the chess
+              ones vanish entirely for a coach who gave a handle but no rating.
+              They are all the same kind of thing to a visitor ("where else can I
+              see this coach?"), so they belong together, above the fold. */}
+          {profileLinks.length > 0 && (
+            <div className="pc-links" aria-label="Coach profiles and links">
+              {profileLinks.map(pl => (
+                <a key={pl.k} className="pc-link-chip" href={pl.href} title={pl.title}
+                   target="_blank" rel="noopener noreferrer nofollow">
+                  <span aria-hidden="true">{pl.icon}</span> {pl.label}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </header>
 

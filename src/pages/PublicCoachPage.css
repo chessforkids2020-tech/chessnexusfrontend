@@ -602,14 +602,23 @@ a.pc-hr:hover strong { text-decoration: underline; }
   .pc-ach-photo { flex: 1 1 140px; }
 }
 
-/* Opt-in social links in the facts list. Sits beside the rating chips, so it
-   borrows their row layout and only needs its own chip styling. */
-.pc-sociallink {
+/* ── Profile links strip ────────────────────────────────────────────────
+   One row of chips under the coach's name and badges, above their About
+   text: Lichess, Chess.com, FIDE, website, Instagram, YouTube. Previously
+   these were split between the "Rating" row and a separate "Links" row,
+   which buried them among location/languages/rate. */
+.pc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pc-link-chip {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  margin-right: 8px;
+  gap: 6px;
+  padding: 6px 13px;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.05);
@@ -618,9 +627,15 @@ a.pc-hr:hover strong { text-decoration: underline; }
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
+  transition: border-color 120ms ease, background 120ms ease;
 }
 
-.pc-sociallink:hover {
-  border-color: rgba(6, 182, 212, 0.5);
-  background: rgba(6, 182, 212, 0.1);
+.pc-link-chip:hover,
+.pc-link-chip:focus-visible {
+  border-color: rgba(6, 182, 212, 0.55);
+  background: rgba(6, 182, 212, 0.12);
+}
+
+@media (max-width: 640px) {
+  .pc-link-chip { font-size: 12.5px; padding: 5px 11px; }
 }

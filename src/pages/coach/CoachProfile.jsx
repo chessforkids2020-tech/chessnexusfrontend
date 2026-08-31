@@ -39,7 +39,15 @@ const NOT_SET = <span className="cp-not-set">Not set</span>;
 // Gallery limits. Mirrored from routes/coach.js — the server enforces both;
 // these exist so a coach is told before a doomed upload, not after it.
 const GALLERY_MAX = 20;
-const GALLERY_MAX_BYTES = 2 * 1024 * 1024;
+// 900 KB, matching the server. The proxy in front of the API rejects request
+// bodies over 1 MB before Express sees them, so a larger file failed with a raw
+// 413 rather than a useful message. Keep this in sync with routes/coach.js.
+const GALLERY_MAX_BYTES = 900 * 1024;
+// The profile PHOTO is sent as a base64 data URL inside JSON, not as a file
+// upload, and base64 adds ~33%. So its raw-file ceiling has to be lower than the
+// gallery's or the browser would happily accept a file the server must refuse:
+// 700 KB -> ~955 KB of JSON, which still fits the 1 MB body and proxy caps.
+const PHOTO_MAX_BYTES = 700 * 1024;
 
 // Pretty label for the verification-handle platform (stored as a short enum).
 const SOCIAL_LABEL = { facebook: 'Facebook', instagram: 'Instagram', chesscom: 'Chess.com', lichess: 'Lichess' };
@@ -121,9 +129,9 @@ export default function CoachProfile() {
 
     setGalleryError('');
     // Checked client-side too so a coach on a slow connection is told straight
-    // away rather than after a 2 MB upload the server will reject.
+    // away rather than after an upload the proxy will reject outright.
     if (file.size > GALLERY_MAX_BYTES) {
-      setGalleryError('That image is over 2 MB. Please choose a smaller one.');
+      setGalleryError('That image is over 900 KB. Shrink it first — squoosh.app resizes and compresses in your browser.');
       return;
     }
     if (gallery.length >= GALLERY_MAX) {
@@ -241,8 +249,8 @@ export default function CoachProfile() {
       setError('Use a PNG, JPG or WebP image.');
       return;
     }
-    if (file.size > 2_000_000) {
-      setError('That image is over 2MB. Please use a smaller one.');
+    if (file.size > PHOTO_MAX_BYTES) {
+      setError('That photo is over 700 KB. Shrink it first — squoosh.app resizes and compresses in your browser.');
       return;
     }
     const reader = new FileReader();
@@ -516,7 +524,7 @@ export default function CoachProfile() {
                       Remove
                     </button>
                   )}
-                  <span className="cp-photo-hint">PNG, JPG or WebP · up to 2MB</span>
+                  <span className="cp-photo-hint">PNG, JPG or WebP · up to 700 KB</span>
                 </div>
               </div>
 
@@ -631,7 +639,7 @@ export default function CoachProfile() {
               <div className="cp-field">
                 <label>Gallery</label>
                 <div className="cp-hint">
-                  Up to {GALLERY_MAX} photos, each under 2 MB. Shown on your
+                  Up to {GALLERY_MAX} photos, each under 900 KB. Shown on your
                   public page — medals, classes, tournaments.
                 </div>
 

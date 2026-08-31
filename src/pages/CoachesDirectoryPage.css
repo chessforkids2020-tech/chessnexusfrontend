@@ -360,3 +360,26 @@
   background: rgba(212, 167, 44, 0.12);
   border: 1px solid rgba(212, 167, 44, 0.30);
 }
+
+/* Platforms the coach has linked. Indicators only — the card itself is the
+   link, so these are spans and must not look clickable on their own. */
+.cd-platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.cd-platform {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.75);
+  white-space: nowrap;
+}

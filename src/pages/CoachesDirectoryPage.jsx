@@ -10,7 +10,7 @@
 // open, but nobody reaches a coach without that coach agreeing.
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api';
+import api, { resolveApiAssetUrl } from '../api';
 import SEO from '../components/SEO';
 import { htmlToText } from '../utils/htmlToText';
 import './CoachesDirectoryPage.css';
@@ -70,6 +70,17 @@ export function CoachCard({ c }) {
   //
   // Each entry is only rendered when the coach actually supplied it, so a new
   // coach shows a shorter strip rather than a row of zeroes.
+  // Platforms the coach linked — chess accounts first (most relevant to a
+  // parent judging a coach), then the optional social/web links.
+  const platforms = [
+    c.handles?.lichess  ? { k: 'li', icon: '♞', label: 'Lichess',   title: `Lichess: ${c.handles.lichess}` } : null,
+    c.handles?.chesscom ? { k: 'cc', icon: '♟', label: 'Chess.com', title: `Chess.com: ${c.handles.chesscom}` } : null,
+    c.handles?.fideId   ? { k: 'fi', icon: '🏅', label: 'FIDE',      title: `FIDE ID: ${c.handles.fideId}` } : null,
+    c.links?.website    ? { k: 'we', icon: '🌐', label: 'Website',   title: 'Has a website' } : null,
+    c.links?.instagram  ? { k: 'ig', icon: '📸', label: 'Instagram', title: 'Has an Instagram page' } : null,
+    c.links?.youtube    ? { k: 'yt', icon: '▶️', label: 'YouTube',   title: 'Has a YouTube channel' } : null,
+  ].filter(Boolean);
+
   const credentials = [
     c.experienceYears ? { k: 'exp', n: c.experienceYears, l: c.experienceYears === 1 ? 'yr coaching' : 'yrs coaching' } : null,
     c.studentsCount ? { k: 'stu', n: c.studentsCount, l: c.studentsCount === 1 ? 'student' : 'students' } : null,
@@ -82,7 +93,7 @@ export function CoachCard({ c }) {
             the PERSON rather than floating among the tags below. */}
         <div className="cd-photo-wrap">
           <div className="cd-photo">
-            {c.photo ? <img src={c.photo} alt="" /> : <span>{initials(c.name)}</span>}
+            {c.photo ? <img src={resolveApiAssetUrl(c.photo)} alt="" /> : <span>{initials(c.name)}</span>}
           </div>
           {c.verified && (
             <span className="cd-verified" title="Verified by ChessNexus" aria-label="Verified coach">✓</span>
@@ -115,6 +126,18 @@ export function CoachCard({ c }) {
               <span className="cd-fact cd-fact-lang">{c.languages.slice(0, 3).join(', ')}</span>
             )}
           </div>
+
+          {/* Which platforms this coach has linked. Rendered as plain spans, not
+              anchors: the entire card is a <Link>, and an <a> inside an <a> is
+              invalid HTML that breaks the card's own click target. Tapping the
+              card opens the profile, where these are real links. */}
+          {platforms.length > 0 && (
+            <div className="cd-platforms" aria-label="Linked profiles">
+              {platforms.map(pf => (
+                <span key={pf.k} className="cd-platform" title={pf.title}>{pf.icon} {pf.label}</span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
