@@ -1387,7 +1387,16 @@ export default function UserDashboard() {
           }
           if (!res.ok) throw new Error('Failed to load profile');
           const data = await res.json();
+          // SPREAD FIRST, then override. This used to hand-copy ~25 named
+          // fields, which meant every field the API added was silently dropped
+          // here until someone remembered this list — `nexusTitle` was, so a
+          // Nexus Coach showed as "NC bb" in every leaderboard and as a bare
+          // "bb" on their own profile page. Spreading makes the public view
+          // inherit new fields the way the own-dashboard path already does
+          // (it just calls setUser(u)); the explicit keys below are only the
+          // ones that genuinely differ for a spectator.
           setUser({
+            ...data,
             _id: data.username, // use username as a stable identifier (no real _id is exposed publicly)
             id: data.username,
             displayName: data.displayName,

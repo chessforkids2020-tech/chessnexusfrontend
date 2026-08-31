@@ -114,6 +114,12 @@ export default function ArenaTournamentLive() {
   const [carryBonusToast, setCarryBonusToast] = useState(0);
   const [carryExpiredToast, setCarryExpiredToast] = useState(false);
   const [boardWidth, setBoardWidth] = useState(560);
+  // The chess COLUMN, measured directly. Sizing the board from window.innerWidth
+  // ignored the fact that the board sits in a 1fr middle column between two 0.7fr
+  // panels, so on a wide screen the board grew past its column and slid under the
+  // right-hand card. Measuring the container is the only thing that cannot drift
+  // out of step with the CSS grid.
+  const chessColRef = useRef(null);
   const [whiteTimeRemaining, setWhiteTimeRemaining] = useState(null);
   const [blackTimeRemaining, setBlackTimeRemaining] = useState(null);
   const [lastMove, setLastMove] = useState(null);
@@ -304,18 +310,51 @@ export default function ArenaTournamentLive() {
         const byWidth = width - 24;
         const byHeight = Math.floor(height * 0.62);
         setBoardWidth(Math.max(260, Math.min(byWidth, byHeight)));
-      } else if (width <= 1024) {
-        setBoardWidth(Math.min(560, Math.floor(width * 0.44)));
-      } else {
-        // Desktop: was capped at 620px so the board never grew on big monitors.
-        // Raised to 760; laptops unchanged (width*0.36 ≈ 520 at 1440px is binding).
-        setBoardWidth(Math.min(760, Math.floor(width * 0.36)));
+        return;
       }
+
+      // DESKTOP / TABLET: size from the column the board actually lives in, not
+      // from the viewport. The old `window.innerWidth * 0.36` was a guess at how
+      // wide the middle column would be; at 1920px it asked for ~691px inside a
+      // column that is narrower than that, which is how the board ended up
+      // overlapping the right-hand card. COLUMN_PAD leaves the board clear of the
+      // column's own padding and border so it never touches the neighbouring panel.
+      const COLUMN_PAD = 24;
+      const el = chessColRef.current;
+      const colWidth = el ? el.clientWidth - COLUMN_PAD : null;
+
+      // Height still matters: the board shares the column with the clocks and the
+      // player rows above and below it, so a very wide, short window must not
+      // produce a board taller than the screen.
+      const byHeight = Math.floor(height * 0.74);
+
+      // Before the ref attaches (first paint) fall back to the old proportional
+      // guess rather than rendering a 260px board for one frame.
+      const fallback = Math.floor(width * 0.36);
+      const available = colWidth && colWidth > 0 ? colWidth : fallback;
+
+      // Cap raised 760 -> 900: with the column measured, a bigger board can no
+      // longer overlap anything, so large monitors get a genuinely larger board.
+      setBoardWidth(Math.max(280, Math.min(900, available, byHeight)));
     };
 
     updateBoardSize();
     window.addEventListener('resize', updateBoardSize);
-    return () => window.removeEventListener('resize', updateBoardSize);
+
+    // The column can change width without the WINDOW changing — the right panel
+    // growing, a scrollbar appearing, the grid reflowing. A resize listener alone
+    // misses those, and the board would stay too wide until the next window
+    // resize; ResizeObserver catches every one of them.
+    let ro = null;
+    if (typeof ResizeObserver !== 'undefined' && chessColRef.current) {
+      ro = new ResizeObserver(() => updateBoardSize());
+      ro.observe(chessColRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateBoardSize);
+      if (ro) ro.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -1422,38 +1461,38 @@ export default function ArenaTournamentLive() {
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0, color: crown?.color || 'var(--color-text)', fontWeight: crown ? '700' : '600', textShadow: crown ? `0 0 8px ${crown.color}88` : 'none' }}><PlayerName displayName={p.displayName} username={p.username} userId={p.userId} /></span>
                       {/* Chess960 has no rating — show only display name + points. */}
                       {tournament?.tournamentType !== 'chess960' && (() => {
-                        // SHOW THE PLAYER'S REAL RATING, like the lobby does.
+                        // ONE rating, matching the lobby exactly.
                         //
-                        // This used to print `tournamentRating`, which by design
-                        // starts at 1200 for EVERY player and only drifts as
-                        // games are played. So the lobby showed real, varied bot
-                        // ratings and the live page showed a wall of 1200s — the
-                        // ratings looked like they collapsed the moment the
-                        // tournament started. `ratingAtJoin` is the frozen real
-                        // rating (marathons keep one per phase) and is already
-                        // sent by /details, so we match the lobby exactly.
+                        // This row used to print TWO numbers side by side —
+                        // "1179 (1224 +15)" — the player's real rating followed by
+                        // a separate per-tournament Elo that starts at 1200 for
+                        // everyone and drifts as games are played. Two different
+                        // rating systems in one line is unreadable: nobody could
+                        // tell which number was "their" rating, and in a marathon
+                        // it looked like the page was showing every rating a
+                        // player has rather than the one for the format in play.
+                        //
+                        // The per-tournament Elo is still what the arena pairs and
+                        // ranks on, but that is internal machinery — the SCORE
+                        // column is what a player reads to see how they are doing.
+                        // A marathon shows the phase's rating (Bullet in phase 1,
+                        // Blitz from phase 2), which is the rating of the game
+                        // actually being played.
                         const isMarathon = tournament?.tournamentType === 'bullet_blitz_marathon';
                         const inBlitzPhase = isMarathon && (tournament?.currentPhase ?? 0) >= 1;
-                        const real = isMarathon
+                        const shown = isMarathon
                           ? (inBlitzPhase ? p.blitzRatingAtJoin : p.bulletRatingAtJoin)
                           : p.ratingAtJoin;
-                        const realLabel = isMarathon
+                        if (shown == null) return null;
+                        const label = isMarathon
                           ? (inBlitzPhase ? 'Blitz rating when joined' : 'Bullet rating when joined')
                           : 'Rating when joined';
                         return (
-                          <span style={{ fontSize: '10px', fontWeight: '700', color: 'var(--color-text-muted)', flexShrink: 0, fontVariantNumeric: 'tabular-nums', display: 'inline-flex', gap: '4px' }}>
-                            {real != null && <span title={realLabel}>{real}</span>}
-                            {/* The per-tournament Elo still matters (it is what the
-                                arena pairs and ranks on), so keep it — but as the
-                                secondary number, in brackets, never alone. */}
-                            <span title="Tournament rating" style={{ opacity: 0.75 }}>
-                              {real != null ? '(' : ''}{p.tournamentRating ?? 1200}
-                              {p.tournamentRatingChange ? (
-                                <span style={{ marginLeft: '2px', color: p.tournamentRatingChange > 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>
-                                  {p.tournamentRatingChange > 0 ? `+${p.tournamentRatingChange}` : p.tournamentRatingChange}
-                                </span>
-                              ) : null}{real != null ? ')' : ''}
-                            </span>
+                          <span
+                            title={label}
+                            style={{ fontSize: '10px', fontWeight: '700', color: 'var(--color-text-muted)', flexShrink: 0, fontVariantNumeric: 'tabular-nums' }}
+                          >
+                            {shown}
                           </span>
                         );
                       })()}
@@ -1509,7 +1548,7 @@ export default function ArenaTournamentLive() {
         )}
 
         {/* CHESS — grid-area: chess (col 2 on desktop) */}
-        <div className="at-live-chess">
+        <div className="at-live-chess" ref={chessColRef}>
           {currentGame && gameState ? (
             <div style={{
               width: '100%',
