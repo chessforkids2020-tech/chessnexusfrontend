@@ -1,0 +1,1062 @@
+/* ClassLeaderboard.css
+   Styling for the My Coach → Leaderboard section. Uses the same design tokens
+   as MyCoachPortal.css so the section sits inside that page without looking
+   bolted on, and stays theme-aware in light and dark. */
+
+.clb { display: flex; flex-direction: column; gap: 26px; }
+
+/* ── Header ── */
+.clb-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.clb-title {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.clb-sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-faint);
+}
+
+.clb-sub-tight { margin: -4px 0 12px; }
+
+/* ── COACH HERO: the class at a glance ─────────────────────────────────────
+   The coach view has no rank, no badges and no "you", so without this the page
+   opened on a grey podium and read as a spreadsheet. */
+.clb-chero {
+  position: relative;
+  overflow: hidden;
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-accent-a30);
+  background:
+    linear-gradient(135deg, var(--color-accent-a15), transparent 62%),
+    var(--color-surface-2, var(--color-black-a20));
+  animation: clbRise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.clb-chero-stats {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.clb-stat {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-black-a20);
+  min-width: 0;
+}
+.clb-stat.is-good { border-color: var(--color-success-a30); }
+.clb-stat.is-warn { border-color: var(--color-warning-a30); background: var(--color-warning-a12); }
+
+.clb-stat-num {
+  font-size: 28px; font-weight: 900; line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+.clb-stat.is-good .clb-stat-num { color: var(--color-success); }
+.clb-stat.is-warn .clb-stat-num { color: var(--color-warning); }
+
+.clb-stat-lab {
+  font-size: 11px; font-weight: 600; color: var(--color-text-faint);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.clb-chero-parts {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.clb-chero-part { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.clb-chero-part-top {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 6px;
+  font-size: 11.5px; color: var(--color-text-faint);
+  overflow: hidden; white-space: nowrap;
+}
+.clb-chero-part-top strong {
+  font-size: 13px; font-weight: 800; color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A flat habit across the whole class is the thing a coach needs to SEE. */
+.clb-bar-fill.is-low  { background: var(--color-warning); }
+.clb-bar-fill.is-high { background: var(--color-success); }
+
+.clb-chero-line {
+  position: relative;
+  margin: 14px 0 0;
+  font-size: 13.5px; line-height: 1.5; color: var(--color-text);
+}
+.clb-chero-line strong { color: var(--color-warning); font-weight: 800; }
+
+/* Section heading: reads as a chapter break between page areas. */
+.clb-block-title {
+  display: flex; align-items: center; gap: 8px;
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-accent);
+}
+
+/* ── Avatar (shared by every board and the rail) ── */
+.clb-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+.clb-avatar-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent-2, var(--color-accent));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.clb-name-cell { display: inline-flex; align-items: center; gap: 9px; min-width: 0; }
+.clb-name { font-weight: 600; white-space: nowrap; }
+.clb-you { font-style: normal; font-size: 11px; font-weight: 700; color: var(--color-accent); }
+
+/* ── Blocks ── */
+.clb-block { display: flex; flex-direction: column; }
+
+/* ── Badges ── */
+.clb-badges { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.clb-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 108px;
+  padding: 12px 8px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-surface-2, rgba(23, 23, 23, 0.6));
+  text-align: center;
+}
+
+.clb-badge-icon { font-size: 26px; line-height: 1; }
+.clb-badge-label { font-size: 11.5px; font-weight: 700; color: var(--color-text); }
+.clb-badge-hint { font-size: 10px; color: var(--color-text-faint); line-height: 1.3; }
+
+/* ── States ── */
+.clb-note { padding: 24px; text-align: center; color: var(--color-text-faint); font-size: 14px; }
+.clb-note-err { color: var(--color-danger, #ef4444); }
+
+.clb-empty, .clb-empty-sm {
+  margin: 0;
+  color: var(--color-text-faint);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.clb-empty-sm { font-size: 12px; }
+
+/* Shared component bar, used by the rail and the coach hero. */
+.clb-bar {
+  display: block;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-white-a07);
+  overflow: hidden;
+}
+.clb-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--color-accent-2, var(--color-accent));
+  transition: width 0.3s ease;
+}
+
+/* ── THE MAIN GRID ─────────────────────────────────────────────────────────
+   Complete class list in a narrow rail on the left (like the Social Hub player
+   list), the boards worth being excited about on the right. */
+.clb-grid {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* Boards sit two-up on a wide screen. Stacked in one tall column they left a
+   large dead block beside the (much shorter) class rail, and wasted the width. */
+.clb-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* Two equal boards side by side (the last-month pair). */
+.clb-two {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* ── Left rail: every active student ── */
+.clb-rail {
+  padding: 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-surface-2, rgba(23, 23, 23, 0.6));
+  /* The list is complete, so it scrolls inside the rail rather than making the
+     whole page as tall as the class. */
+  /* Sticky so a long right-hand column does not scroll the class list out of
+     sight; capped to the viewport so the list scrolls inside the rail rather
+     than the rail growing taller than the screen. */
+  position: sticky;
+  top: 12px;
+  max-height: calc(100vh - 24px);
+  display: flex;
+  flex-direction: column;
+}
+
+.clb-rail-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+
+.clb-rail-count {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--color-accent-a15);
+  color: var(--color-accent);
+  font-size: 11px; font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.clb-rail-list {
+  list-style: none; margin: 10px 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: 2px;
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  /* With a big class the list ends mid-row at the fold and reads as TRUNCATED
+     rather than scrollable. Fading the last rows is the cue that it continues. */
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 34px), transparent);
+          mask-image: linear-gradient(180deg, #000 calc(100% - 34px), transparent);
+}
+
+.clb-rail-list::-webkit-scrollbar { width: 6px; }
+.clb-rail-list::-webkit-scrollbar-thumb {
+  background: var(--color-white-a13); border-radius: 999px;
+}
+.clb-rail-list::-webkit-scrollbar-track { background: transparent; }
+
+.clb-rail-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 8px;
+  border-radius: var(--radius-md, 10px);
+  min-width: 0;
+}
+.clb-rail-row:hover { background: var(--color-white-a04); }
+.clb-rail-row.is-top3 { background: var(--color-warning-a12); }
+.clb-rail-row.is-me {
+  background: var(--color-accent-a12);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+
+.clb-rail-name {
+  flex: 1 1 auto; min-width: 0;
+  font-size: 12.5px; font-weight: 600; color: var(--color-text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.clb-rail-score {
+  font-size: 13px; font-weight: 800; color: var(--color-text);
+  font-variant-numeric: tabular-nums; flex: 0 0 auto;
+}
+
+/* ── A ranked board (top 5 + More) ── */
+.clb-rb {
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-surface-2, rgba(23, 23, 23, 0.6));
+  min-width: 0;
+}
+
+.clb-rb-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+
+.clb-rb-title {
+  margin: 0; font-size: 13.5px; font-weight: 800; color: var(--color-text);
+}
+
+.clb-rb-more {
+  padding: 4px 10px;
+  border: 1px solid var(--color-accent-a30);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-accent);
+  font-size: 11.5px; font-weight: 700; cursor: pointer;
+  transition: background 0.15s ease;
+  flex: 0 0 auto;
+}
+.clb-rb-more:hover { background: var(--color-accent-a12); }
+
+.clb-rb-note {
+  margin: 4px 0 0; font-size: 11px; color: var(--color-text-faint); line-height: 1.4;
+}
+
+.clb-rb-list {
+  list-style: none; margin: 10px 0 0; padding: 0;
+  display: flex; flex-direction: column; gap: 2px;
+}
+
+.clb-rb-row {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 8px;
+  border-radius: var(--radius-md, 10px);
+  font-size: 13px; color: var(--color-text);
+  min-width: 0;
+}
+.clb-rb-row:hover { background: var(--color-white-a04); }
+.clb-rb-row.is-me {
+  background: var(--color-accent-a12);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+
+.clb-rb-rank {
+  width: 22px; text-align: center; font-weight: 800; flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.clb-rb-name {
+  flex: 1 1 auto; min-width: 0;
+  display: flex; flex-direction: column; gap: 2px;
+  font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.clb-rb-meta { display: flex; flex-wrap: wrap; gap: 4px; }
+
+.clb-rb-val {
+  font-weight: 800; white-space: nowrap; flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+.clb-rb-val small { font-size: 10.5px; font-weight: 600; color: var(--color-text-faint); }
+
+/* Small "why" tags under a name (100% classes, all homework, accuracy…). */
+.clb-tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--color-accent-a12);
+  color: var(--color-accent);
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.01em;
+}
+.clb-tag.is-good { background: var(--color-success-a20); color: var(--color-success); }
+.clb-tag.is-dim  { background: var(--color-white-a07); color: var(--color-text-faint); }
+
+/* ── "Show all 10" dialog ── */
+.clb-modal {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: var(--color-black-a65);
+  animation: clbFade 0.15s ease both;
+}
+
+.clb-modal-card {
+  width: min(460px, 100%);
+  max-height: 80vh; overflow-y: auto;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-white-a13);
+  background: var(--color-surface, #141414);
+  animation: clbRise 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.clb-modal-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-bottom: 6px;
+}
+
+.clb-modal-x {
+  width: 28px; height: 28px;
+  border: 0; border-radius: 50%;
+  background: var(--color-white-a07);
+  color: var(--color-text);
+  font-size: 18px; line-height: 1; cursor: pointer;
+}
+.clb-modal-x:hover { background: var(--color-white-a13); }
+
+@keyframes clbFade { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .clb-modal, .clb-modal-card { animation: none; }
+}
+
+/* ── Grid on narrower screens ── */
+@media (max-width: 1000px) {
+  /* The rail stops being a rail: below this the two columns are both too
+     narrow to read, so the class list goes back to full width on top. */
+  .clb-grid { grid-template-columns: minmax(0, 1fr); }
+  .clb-rail { position: static; }
+  .clb-rail-list { max-height: 360px; }
+}
+
+@media (max-width: 640px) {
+  .clb-two { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* ── Badge polish ──────────────────────────────────────────────────────────
+   An earned badge should read as a trophy, not a list item: full colour, a
+   coloured border and a small "Earned" pill. A locked one keeps its icon and
+   its requirement, plus a progress bar — "3/5" is the part that pulls. */
+.clb-badge-count {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--color-accent-a15);
+  color: var(--color-accent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.clb-badge { transition: transform 0.18s ease, border-color 0.18s ease; }
+.clb-badge:hover { transform: translateY(-2px); }
+
+.clb-badge.is-earned {
+  border-color: var(--color-warning-a30);
+  background:
+    linear-gradient(160deg, var(--color-warning-a12), transparent 70%),
+    var(--color-surface-2, var(--color-black-a20));
+}
+
+.clb-badge-got {
+  margin-top: 1px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--color-warning-a20);
+  color: var(--color-warning);
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Progress on a locked badge. */
+.clb-badge-bar {
+  width: 100%;
+  height: 5px;
+  margin-top: 3px;
+  border-radius: 999px;
+  background: var(--color-white-a07);
+  overflow: hidden;
+}
+.clb-badge-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--color-accent);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* A locked badge that has been STARTED is worth more attention than one at
+   zero — it is the one the student can actually finish this week. */
+.clb-badge.is-locked { opacity: 0.62; }
+.clb-badge.is-locked:hover { opacity: 1; }
+
+/* Top-3 rows in the main table get a subtle gold wash, so the table agrees
+   with the podium above it instead of flattening everyone into one list. */
+.clb-table tbody tr.is-top3 td { background: var(--color-warning-a12); }
+.clb-table tbody tr.is-top3.is-me td { background: var(--color-accent-a12); }
+
+@media (prefers-reduced-motion: reduce) {
+  .clb-badge:hover { transform: none; }
+  .clb-badge-fill { transition: none; }
+}
+
+/* ── TOP 5 TROPHIES ────────────────────────────────────────────────────────
+   Replaces the old three-bar podium. The artwork is a metal RING on a base —
+   an empty frame — so the student's face is placed inside the ring and the
+   whole thing reads as "your photo mounted in a trophy".
+
+   Order across the row is 5 - 3 - 1 - 2 - 4, and size falls the same way, so
+   the winner is unmistakably the centre of the page. */
+.clb-trophies {
+  display: grid;
+  /* The centre column is wider: the winner's trophy is the one that has to be
+     readable, and equal columns capped it at the same width as 5th place. */
+  grid-template-columns: 1fr 1.06fr 1.34fr 1.06fr 1fr;
+  align-items: end;
+  gap: 10px;
+  padding: 8px 4px 4px;
+}
+
+.clb-tr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  animation: clbRise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.clb-tr.is-empty { visibility: hidden; }
+
+/* The four sizes. Percentages of the column, so the row scales with the page
+   instead of being pinned to fixed pixels. */
+.clb-tr-lg  { --tr: 100%; }   /* 1st */
+.clb-tr-mdl { --tr: 96%;  }   /* 2nd */
+.clb-tr-md  { --tr: 92%;  }   /* 3rd */
+.clb-tr-sm  { --tr: 86%;  }   /* 4th, 5th */
+
+.clb-tr-lg  { animation-delay: 0s;    }
+.clb-tr-mdl { animation-delay: 0.06s; }
+.clb-tr-md  { animation-delay: 0.12s; }
+.clb-tr-sm  { animation-delay: 0.18s; }
+
+.clb-tr-art {
+  position: relative;
+  width: var(--tr);
+  /* Per-rank: the five trophies have DIFFERENT ratios and ring positions
+     (1st/3rd 1.145, 2nd 1.027, 4th/5th 1.174), so one shared value skewed the
+     art and pushed faces off-centre. All measured from the PNGs. */
+  aspect-ratio: var(--tr-ratio, 1.145);
+  margin-inline: auto;
+}
+
+.clb-tr-p1 { --tr-ratio: 1.1454; --hx: 21.09%; --hy: 12.19%; --hw: 55.27%; --hh: 61.19%; }
+.clb-tr-p2 { --tr-ratio: 1.0271; --hx: 20.70%; --hy: 20.46%; --hw: 56.35%; --hh: 56.07%; }
+.clb-tr-p3 { --tr-ratio: 1.1454; --hx: 21.00%; --hy: 12.19%; --hw: 55.47%; --hh: 61.19%; }
+.clb-tr-p4 { --tr-ratio: 1.1743; --hx: 21.58%; --hy:  8.60%; --hw: 55.96%; --hh: 63.30%; }
+.clb-tr-p5 { --tr-ratio: 1.1743; --hx: 21.58%; --hy:  8.83%; --hw: 55.96%; --hh: 62.84%; }
+
+.clb-tr-img {
+  display: block;
+  width: 100%; height: 100%;
+  object-fit: contain;
+}
+
+/* The winner's trophy gets a warm glow behind it. */
+.clb-tr-lg .clb-tr-art::before {
+  content: '';
+  position: absolute;
+  left: 50%; top: 40%;
+  width: 88%; aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-warning-a30), transparent 68%);
+  pointer-events: none;
+}
+
+/* THE FACE. Positioned on the ring's measured inner hole: the artwork's
+   opening starts at 18.5% / 8% of the image box and is 63% x 65% of it.
+   Measured from the PNGs rather than eyeballed, so the photo sits centred in
+   the ring at every size. */
+.clb-tr-face {
+  position: absolute;
+  left: var(--hx);
+  top: var(--hy);
+  width: var(--hw);
+  height: var(--hh);
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent);
+}
+
+.clb-tr-photo { width: 100%; height: 100%; object-fit: cover; }
+
+.clb-tr-initial {
+  color: #fff;
+  font-weight: 800;
+  /* Scales with the trophy, so 5th place is not stuck with 1st place's type. */
+  font-size: clamp(13px, 2.1vw, 30px);
+  line-height: 1;
+  user-select: none;
+}
+
+.clb-tr-name {
+  margin-top: 6px;
+  max-width: 100%;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: center;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.clb-tr-lg .clb-tr-name { font-size: 14px; }
+
+.clb-tr-score {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--color-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.clb-tr-score small { font-size: 10px; font-weight: 600; }
+.clb-tr-lg .clb-tr-score { color: var(--color-warning); font-size: 16px; }
+
+.clb-tr.is-me .clb-tr-name { color: var(--color-accent); }
+.clb-tr.is-me .clb-tr-face { box-shadow: 0 0 0 3px var(--color-accent); }
+
+/* ── MY STANDING ───────────────────────────────────────────────────────────
+   The student's own position in plain numbers. Deliberately NOT percentage
+   bars: a child does not act on "practice 68%", they act on "12 points to pass
+   Riya". Every figure here is a gap they can close. */
+.clb-standing {
+  padding: 16px 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-accent-a30);
+  background:
+    linear-gradient(135deg, var(--color-accent-a12), transparent 62%),
+    var(--color-surface-2, var(--color-black-a20));
+}
+
+.clb-standing-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
+  margin-bottom: 14px;
+}
+
+.clb-standing-name {
+  font-size: 17px; font-weight: 800; color: var(--color-text);
+}
+
+.clb-standing-rank { font-size: 13px; color: var(--color-text-faint); }
+.clb-standing-rank strong {
+  font-size: 22px; font-weight: 900; color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+.clb-standing-of { font-size: 12px; }
+
+.clb-standing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.clb-fact {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md, 10px);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-black-a20);
+  min-width: 0;
+}
+.clb-fact.is-climb { border-color: var(--color-accent-a30); }
+.clb-fact.is-star  { border-color: var(--color-warning-a30); }
+
+.clb-fact-num {
+  font-size: 26px; font-weight: 900; line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+.clb-fact.is-climb .clb-fact-num { color: var(--color-accent); }
+.clb-fact.is-star  .clb-fact-num { color: var(--color-warning); }
+
+.clb-fact-lab {
+  font-size: 11.5px; font-weight: 600; line-height: 1.35;
+  color: var(--color-text-faint);
+}
+.clb-fact-lab strong { color: var(--color-text); font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+  .clb-tr { animation: none; }
+}
+
+/* ── Trophies + standing on narrow screens ── */
+@media (max-width: 720px) {
+  /* Five trophies across a phone are unreadable. The top three keep the podium
+     shape on one row; 4th and 5th drop to a second row beneath, still smaller. */
+  .clb-trophies { grid-template-columns: repeat(6, 1fr); row-gap: 14px; }
+  .clb-trophies > :nth-child(1) { grid-column: 1 / 3; grid-row: 2; }  /* 5th */
+  .clb-trophies > :nth-child(2) { grid-column: 1 / 3; grid-row: 1; }  /* 3rd */
+  .clb-trophies > :nth-child(3) { grid-column: 3 / 5; grid-row: 1; }  /* 1st */
+  .clb-trophies > :nth-child(4) { grid-column: 5 / 7; grid-row: 1; }  /* 2nd */
+  .clb-trophies > :nth-child(5) { grid-column: 5 / 7; grid-row: 2; }  /* 4th */
+
+  .clb-standing-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SOCIAL-HUB ENERGY PASS
+   The Players tab feels alive and this page did not, and the difference was
+   never colour — it was five concrete things, all borrowed here:
+
+     1. Panels have DEPTH: backdrop blur + a real drop shadow, not a flat fill.
+     2. Every panel header carries a 44px gradient ICON TILE.
+     3. The accent strip FADES IN from both edges instead of being a hard bar.
+     4. Scores are PILLS — coloured chip on a tinted ground, not plain text.
+     5. Rows SLIDE on hover, so the list feels like it responds to you.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Panel depth ── */
+.clb-rb,
+.clb-rail,
+.clb-chero,
+.clb-standing {
+  border-radius: var(--radius-xl, 16px);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+  box-shadow: 0 10px 34px var(--color-black-a35);
+}
+
+.clb-rb,
+.clb-rail {
+  background: linear-gradient(180deg, var(--color-white-a04), var(--color-white-a04));
+  border: 1px solid var(--color-white-a07);
+  padding: 20px;
+}
+
+/* ── 3. The accent strip: a glow that fades in from both edges ── */
+.clb-rb::before,
+.clb-rail::before {
+  height: 3px;
+  opacity: 0.85;
+  background: linear-gradient(90deg, transparent, var(--clb-tone, var(--color-accent)), transparent);
+}
+.clb-rail::before { background: linear-gradient(90deg, transparent, var(--color-accent), transparent); }
+
+/* ── 2. Panel header with an icon tile ── */
+.clb-rb-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  /* Undo the old negative-margin header wash: the tile carries the identity
+     now, so the header sits inside the panel like every other element. */
+  margin: 0 0 16px;
+  padding: 0;
+  background: none;
+}
+
+.clb-rb-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px var(--color-white-a07);
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--clb-tone, var(--color-accent)) 30%, transparent),
+    color-mix(in srgb, var(--clb-tone, var(--color-accent)) 8%, transparent));
+}
+
+.clb-rb-headtext { flex: 1; min-width: 0; }
+
+.clb-rb-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: var(--color-text);
+}
+
+.clb-rb-note {
+  font-size: 12px;
+  color: var(--color-text-faint);
+  margin: 2px 0 0;
+}
+
+/* ── 4/5. Rows: pill scores, hover slide ── */
+.clb-rb-list { gap: 6px; }
+
+.clb-rb-row {
+  gap: 12px;
+  padding: 9px 11px;
+  border-radius: var(--radius-lg);
+  background: var(--color-white-a04);
+  border: 1px solid transparent;
+  transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+.clb-rb-row:hover {
+  border-color: var(--color-white-a07);
+  transform: translateX(3px);
+}
+
+/* Top row of every board wears its own colour. */
+.clb-rb-list .clb-rb-row:first-child {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--clb-tone, var(--color-accent)) 14%, transparent),
+    transparent 72%);
+  border-color: color-mix(in srgb, var(--clb-tone, var(--color-accent)) 25%, transparent);
+}
+
+.clb-rb-rank {
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; font-weight: 800;
+  border-radius: var(--radius-md, 10px);
+  background: var(--color-white-a04);
+  color: var(--color-text-muted);
+}
+
+.clb-rb-name { font-size: 14px; font-weight: 700; }
+.clb-rb-meta { margin-top: 1px; }
+
+/* The score pill — the single biggest visual lift on the page. */
+.clb-rb-val {
+  font-size: 15px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: var(--radius-md, 10px);
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--clb-tone, var(--color-accent));
+  background: color-mix(in srgb, var(--clb-tone, var(--color-accent)) 12%, transparent);
+}
+.clb-rb-val small { font-size: 10px; font-weight: 600; opacity: 0.7; color: inherit; }
+
+/* ── The class rail, same treatment ── */
+.clb-rail-head { margin-bottom: 4px; }
+
+.clb-rail-list { gap: 5px; }
+
+.clb-rail-row {
+  gap: 11px;
+  padding: 8px 9px;
+  border-radius: var(--radius-lg);
+  transition: background 0.16s ease, transform 0.16s ease;
+}
+.clb-rail-row:hover { background: var(--color-white-a04); transform: translateX(2px); }
+
+/* Top three in the rail get a warm wash, matching the podium above. */
+.clb-rail-row.is-top3 {
+  background: linear-gradient(90deg, var(--color-warning-a12), transparent 72%);
+}
+.clb-rail-row.is-me {
+  background: linear-gradient(90deg, var(--color-accent-a15), transparent 72%);
+  box-shadow: inset 3px 0 0 var(--color-accent);
+}
+
+.clb-rail-name { font-size: 13.5px; font-weight: 700; flex: 1 1 auto; min-width: 0; }
+
+/* The rail is the narrow column: it cannot afford the 20px panel padding the
+   wide boards use, or the name is squeezed until it truncates. */
+.clb-rail { padding: 16px 12px; }
+.clb-rail-row { gap: 9px; padding: 8px 7px; }
+.clb-rail .clb-avatar { width: 28px; height: 28px; }
+.clb-rail .clb-rb-rank { width: 24px; height: 24px; font-size: 14px; }
+.clb-rail-score { padding: 3px 8px; font-size: 13px; }
+
+.clb-rail-score {
+  font-size: 14px; font-weight: 800;
+  padding: 3px 10px;
+  border-radius: var(--radius-md, 10px);
+  color: var(--color-accent);
+  background: var(--color-accent-a12);
+}
+.clb-rail-row.is-top3 .clb-rail-score {
+  color: var(--color-warning);
+  background: var(--color-warning-a12);
+}
+
+/* Bigger avatars, matching the Players tab's presence. */
+.clb-avatar { width: 32px; height: 32px; }
+.clb-avatar-fallback { font-size: 13px; text-shadow: 0 1px 2px var(--color-black-a35); }
+
+/* ── The "More" button, as a pill ── */
+.clb-rb-more {
+  padding: 5px 12px;
+  border-radius: var(--radius-2xl, 999px);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: var(--clb-tone, var(--color-accent));
+  border: 1px solid color-mix(in srgb, var(--clb-tone, var(--color-accent)) 30%, transparent);
+  background: color-mix(in srgb, var(--clb-tone, var(--color-accent)) 8%, transparent);
+  align-self: center;
+}
+.clb-rb-more:hover {
+  background: color-mix(in srgb, var(--clb-tone, var(--color-accent)) 18%, transparent);
+}
+
+/* ── Section heading with its own gradient chip ── */
+.clb-block-title {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clb-rb-row:hover,
+  .clb-rail-row:hover { transform: none; }
+}
+
+
+/* ── STAR RATING ───────────────────────────────────────────────────────────
+   Five slots. Empty ones stay VISIBLE as dark outlines rather than being
+   hidden: the gap is the motivation. Each rank has its own metal so the first
+   star already looks different from the fifth. */
+.clb-stars {
+  display: inline-flex;
+  gap: 4px;
+  line-height: 1;
+}
+
+.clb-star {
+  font-size: 20px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+/* An empty slot: a dark socket, clearly a place something belongs. */
+.clb-star.is-off {
+  color: rgb(255 255 255 / 0.10);
+  text-shadow: 0 1px 0 var(--color-black-a35);
+}
+
+/* The four metals. Gradient-filled text so each star reads as struck metal
+   rather than a flat coloured glyph. */
+.clb-star.is-on {
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.clb-star-gold   { background-image: linear-gradient(160deg, #fde68a, #f59e0b 55%, #b45309); }
+.clb-star-silver { background-image: linear-gradient(160deg, #f8fafc, #cbd5e1 55%, #94a3b8); }
+.clb-star-bronze { background-image: linear-gradient(160deg, #fed7aa, #ea8c55 55%, #b45309); }
+.clb-star-medal  { background-image: linear-gradient(160deg, #e5c9a8, #c9a227 55%, #8a6d1f); }
+
+/* The big row above the podium. */
+.clb-stars-lg .clb-star { font-size: 34px; }
+.clb-stars-lg .clb-star.is-on { filter: drop-shadow(0 2px 6px rgb(245 158 11 / 0.35)); }
+
+.clb-starbar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 0 0 auto;
+  padding: 10px 18px;
+  border-radius: var(--radius-xl, 16px);
+  border: 1px solid var(--color-warning-a20);
+  background:
+    linear-gradient(135deg, var(--color-warning-a12), transparent 60%),
+    var(--color-surface-2, var(--color-black-a20));
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+  box-shadow: 0 10px 34px var(--color-black-a35);
+}
+
+
+.clb-starbar-count {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--color-warning);
+  font-variant-numeric: tabular-nums;
+}
+.clb-starbar-count small { font-size: 13px; font-weight: 700; color: var(--color-text-faint); }
+
+/* ── The inline mark beside a name ─────────────────────────────────────────
+   A count with ONE star, not five glyphs: five repeated down a thirty-row list
+   is noise, and the point here is to mark the student, not re-state the whole
+   rating. */
+.clb-starmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  margin-left: 6px;
+  font-size: 12px;
+  line-height: 1;
+  vertical-align: baseline;
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.clb-starmark-n {
+  font-size: 10px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The trophy row's names carry a slightly larger mark. */
+.clb-tr-name .clb-starmark { font-size: 13px; margin-left: 5px; }
+
+@media (max-width: 640px) {
+  .clb-stars-lg .clb-star { font-size: 26px; }
+  .clb-starbar { gap: 12px; padding: 12px 14px; }
+  .clb-starbar-count { font-size: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clb-star { transition: none; }
+}
+
+
+/* Stars inside a standing tile. Sized to sit on the same line as the other
+   tiles' big numbers, so the three facts still read as one row. */
+.clb-fact-stars {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.clb-fact-stars .clb-star { font-size: 22px; }
+.clb-fact-stars .clb-stars { gap: 3px; }
+
+.clb-fact-starnum {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--color-warning);
+  font-variant-numeric: tabular-nums;
+}
+.clb-fact-starnum small { font-size: 12px; font-weight: 700; color: var(--color-text-faint); }
+
+@media (max-width: 640px) {
+  .clb-fact-stars .clb-star { font-size: 19px; }
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  /* On a phone the title and a five-star row cannot share a line without one
+     of them shrinking to nothing, so the stars take their own row underneath. */
+  .clb-head { flex-direction: column; align-items: stretch; }
+  .clb-starbar { width: 100%; margin: 0; justify-content: center; }
+
+  /* The four habit columns do not fit a phone, so the table scrolls sideways
+     inside its own box (the page itself never does). Fading the container's
+     right edge is the cue that there is more to see — without it the table
+     just looks chopped off. A mask does this without an extra element, which
+     a floated/sticky pseudo-element could not do reliably inside a scroller. */
+  .clb-table-wrap {
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent);
+            mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent);
+  }
+
+  .clb-head { flex-direction: column; }
+  .clb-badge { width: calc(50% - 5px); }
+
+  /* The hero stays the loud element on a phone, just tighter. */
+  /* Four habit bars side by side are too narrow to read on a phone. */
+
+  /* The next-badge strip stacks instead of squeezing to nothing. */
+
+}

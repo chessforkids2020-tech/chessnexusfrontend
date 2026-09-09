@@ -329,6 +329,50 @@
   letter-spacing: 0.2px;
 }
 
+/* ── Guided help (Hint / Show a move) ──
+   Sits directly under the status message while solving. Accent-tinted so it
+   reads as help the student asked for, distinct from the plain status line. */
+.hm-help-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--color-black-a20);
+  border: 1px solid var(--color-accent-2);
+  border-radius: var(--hm-radius-sm);
+  text-align: center;
+}
+
+.hm-help-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-accent-2);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* The move itself — monospace so notation lines up and reads as a move. */
+.hm-help-move {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-accent-2);
+  letter-spacing: 0.5px;
+}
+
+.hm-help-sub {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hm-text-dim);
+}
+
+.hm-help-sub strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--color-accent-2);
+}
+
 /* ── Mode switcher ── */
 /* Side padding trimmed with the narrower left column: at 20px each side the
    two mode buttons had ~85px of text space and "🧩 Healthy Mix" truncated. */

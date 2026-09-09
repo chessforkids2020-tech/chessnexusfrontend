@@ -1,0 +1,250 @@
+/* pages/coach/CoachVideoGuides.css */
+
+.cvg-page {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.cvg-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.cvg-head h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text, #e2e8f0);
+}
+
+.cvg-sub {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-muted, #9ca3af);
+  max-width: 60ch;
+}
+
+.cvg-empty {
+  padding: 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-text-muted, #9ca3af);
+  margin-bottom: 18px;
+}
+
+.cvg-empty a,
+.cvg-foot a {
+  color: #22d3ee;
+  text-decoration: none;
+}
+
+.cvg-empty a:hover,
+.cvg-foot a:hover { text-decoration: underline; }
+
+.cvg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cvg-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+  transition: border-color 120ms ease;
+}
+
+.cvg-card:hover { border-color: rgba(255, 255, 255, 0.18); }
+
+.cvg-card.is-open {
+  border-color: rgba(6, 182, 212, 0.45);
+  box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.12);
+}
+
+/* The whole header row is the toggle. A real <button> so it is keyboard
+   reachable and announced, with the button chrome reset away. */
+.cvg-card-head {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.cvg-card-head:disabled { cursor: default; opacity: 0.65; }
+.cvg-card-head:focus-visible { outline: 2px solid #06b6d4; outline-offset: -2px; }
+
+.cvg-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(6, 182, 212, 0.16);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #67e8f9;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.cvg-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.cvg-title {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--color-text, #e2e8f0);
+}
+
+.cvg-blurb {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.cvg-covers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.cvg-tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text-muted, #9ca3af);
+  white-space: nowrap;
+}
+
+.cvg-action {
+  flex-shrink: 0;
+  align-self: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #67e8f9;
+  white-space: nowrap;
+}
+
+.cvg-card-head:disabled .cvg-action { color: var(--color-text-muted, #9ca3af); }
+
+/* 16:9 player. padding-top rather than aspect-ratio so older mobile browsers
+   still size it correctly. */
+.cvg-player {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background: #000;
+}
+
+.cvg-player iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.cvg-foot {
+  margin: 22px 0 0;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+@media (max-width: 600px) {
+  .cvg-page { padding: 16px; }
+  .cvg-card-head { padding: 14px; gap: 10px; }
+  .cvg-title { font-size: 14.5px; }
+  .cvg-action { font-size: 12px; }
+}
+
+/* ── Subscribe row ──
+   Sits after the guides. Uses YouTube red only on the button itself — a full
+   red panel would shout louder than the guides it follows. */
+.cvg-subscribe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cvg-sub-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cvg-sub-text strong {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--color-text, #e2e8f0);
+}
+
+.cvg-sub-text span {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.cvg-sub-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: #ff0000;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: filter 120ms ease, transform 120ms ease;
+}
+
+.cvg-sub-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.cvg-sub-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+@media (max-width: 600px) {
+  .cvg-subscribe { flex-direction: column; align-items: stretch; }
+  .cvg-sub-btn { justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cvg-sub-btn { transition: none; }
+  .cvg-sub-btn:hover { transform: none; }
+}

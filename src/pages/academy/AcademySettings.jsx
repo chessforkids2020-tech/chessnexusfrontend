@@ -9,6 +9,8 @@ export default function AcademySettings() {
   const [s, setS] = useState(null);
   const [name, setName] = useState('');
   const [usesCoachingTools, setUses] = useState(true);
+  // Who may run an activity across EVERY coach's students. 'head' | 'any'.
+  const [activityCreators, setActivityCreators] = useState('head');
   const [copied, setCopied] = useState(false);
   const [msg, setMsg] = useState('');
   const [err, setErr] = useState('');
@@ -17,13 +19,14 @@ export default function AcademySettings() {
   useEffect(() => {
     api.get('/api/academy/settings').then(r => {
       setS(r.data); setName(r.data.name || ''); setUses(r.data.usesCoachingTools !== false);
+      setActivityCreators(r.data.academyActivityCreators || 'head');
     }).catch(e => setErr(e.response?.data?.message || 'Could not load settings.'));
   }, []);
 
   const save = async () => {
     setSaving(true); setErr(''); setMsg('');
     try {
-      await api.post('/api/academy/settings', { name, usesCoachingTools });
+      await api.post('/api/academy/settings', { name, usesCoachingTools, academyActivityCreators: activityCreators });
       setMsg('✅ Settings saved.');
     } catch (e) {
       setErr(e.response?.data?.message || 'Could not save.');
@@ -99,6 +102,35 @@ export default function AcademySettings() {
           <input type="checkbox" checked={usesCoachingTools} onChange={e => setUses(e.target.checked)} />
           <span>Show me the coaching tools (I coach too). Turn off to see only the academy.</span>
         </label>
+      </div>
+
+      {/* Academy-wide activities. A coach can ALWAYS run races for their own
+          students — this only governs the roster that spans every coach in the
+          academy, which is why the default is head-only: five coaches each able
+          to summon the whole academy is how you get clashing events. */}
+      <div className="acad-set-field">
+        <label>Who can run academy-wide activities?</label>
+        <label className="acad-toggle">
+          <input
+            type="radio"
+            name="activityCreators"
+            checked={activityCreators === 'head'}
+            onChange={() => setActivityCreators('head')}
+          />
+          <span><b>Only me (head)</b> — I set up races and tournaments for every student in the academy.</span>
+        </label>
+        <label className="acad-toggle">
+          <input
+            type="radio"
+            name="activityCreators"
+            checked={activityCreators === 'any'}
+            onChange={() => setActivityCreators('any')}
+          />
+          <span><b>Any coach in the academy</b> — any of my coaches can run an activity for all academy students.</span>
+        </label>
+        <p className="acad-set-hint">
+          Either way, every coach can still run activities for their own students.
+        </p>
       </div>
 
       <button className="btn-primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save settings'}</button>

@@ -205,6 +205,15 @@ export default function CoachProfile() {
   const p = status.coachProfile || {};
   const access = status.access || {};
   const isAcademy = p.coachType === 'academy';
+  // A coach teaching UNDER an academy does not own the academy's identity: they
+  // cannot relist themselves as independent, nor rename the academy on their own
+  // card. The academy's HEAD is exempt — it is their academy. Mirrors the guard
+  // in routes/coach.js, which is the real enforcement; this only stops the coach
+  // filling in a field that would be rejected on save.
+  const academyLocked = !!academyInfo?.academy
+    && academyInfo?.status === 'active'
+    && academyInfo?.role !== 'head'
+    && !academyInfo?.isOwner;
   // Either rate, both, or neither. A coach who quotes only a monthly package
   // used to have nothing to show here, because the display only ever read
   // hourlyRate.
@@ -446,15 +455,36 @@ export default function CoachProfile() {
               </div>
               <div className="cp-field">
                 <label>Coach type</label>
-                <select value={form.coachType} onChange={set('coachType')}>
+                <select
+                  value={form.coachType}
+                  onChange={set('coachType')}
+                  disabled={academyLocked}
+                >
                   <option value="individual">Individual</option>
                   <option value="academy">Academy</option>
                 </select>
+                {academyLocked && (
+                  <span className="cp-hint">
+                    🏛️ You teach under {academyInfo.academy.name}, so your profile stays
+                    listed as part of it. Leave the academy to be listed as an
+                    individual coach.
+                  </span>
+                )}
               </div>
               {form.coachType === 'academy' && (
                 <div className="cp-field">
                   <label>Academy name</label>
-                  <input className="cp-input" value={form.academyName} onChange={set('academyName')} />
+                  <input
+                    className="cp-input"
+                    value={academyLocked ? academyInfo.academy.name : form.academyName}
+                    onChange={set('academyName')}
+                    disabled={academyLocked}
+                  />
+                  {academyLocked && (
+                    <span className="cp-hint">
+                      Set by your academy — only {academyInfo.academy.name} can change this.
+                    </span>
+                  )}
                 </div>
               )}
               {/* Two rates, both optional. Many coaches sell a monthly package

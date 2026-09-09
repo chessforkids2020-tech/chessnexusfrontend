@@ -4,6 +4,9 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import Footer from "./components/Footer";
+// The homepage gets its own larger marketing footer; every other route keeps
+// the compact <Footer /> above. See components/HomeFooter.jsx.
+import HomeFooter from "./components/HomeFooter";
 import UserLayout from "./components/UserLayout";
 import MarketingLayout from "./components/MarketingLayout";
 import AnalyticsTracker from "./components/AnalyticsTracker";
@@ -15,6 +18,7 @@ import CoachStudentDetail from "./pages/coach/CoachStudentDetail";
 import CoachAssignments from "./pages/coach/CoachAssignments";
 import CourseBuilder from "./pages/coach/CourseBuilder";
 import CoachLibrary from "./pages/coach/CoachLibrary";
+import CoachVideoGuides from "./pages/coach/CoachVideoGuides";
 import CourseProgress from "./pages/coach/CourseProgress";
 import CoachSubscription from "./pages/coach/CoachSubscription";
 import CoachAttendancePage from "./pages/coach/CoachAttendancePage";
@@ -23,6 +27,7 @@ import MyMeetingsPage from "./pages/coach/MyMeetingsPage";
 import LiveClassroomPage from "./pages/coach/LiveClassroomPage";
 import CoachActivities from "./pages/coach/CoachActivities";
 import CoachBatches from "./pages/coach/CoachBatches";
+import CoachLeaderboard from "./pages/coach/CoachLeaderboard";
 import CoachProfile from "./pages/coach/CoachProfile";
 import CoachArenaLive from "./pages/coach/CoachArenaLive";
 import CoachArenaTournamentLive from "./pages/coach/CoachArenaTournamentLive";
@@ -73,6 +78,7 @@ import ProgressReportsPage from "./pages/marketing/ProgressReportsPage";
 import ArenaTournamentPage from "./pages/marketing/ArenaTournamentPage";
 import ChessStudyPage from "./pages/marketing/ChessStudyPage";
 import ChessCommunityPage from "./pages/marketing/ChessCommunityPage";
+import CareersPage from "./pages/CareersPage";
 
 // Reports / complaints
 import ReportPage from "./pages/ReportPage";
@@ -489,7 +495,7 @@ export default function App() {
             <div style={styles.content}>
               <HomePage />
             </div>
-            <Footer />
+            <HomeFooter />
           </div>
         } />
         <Route path="/schedule" element={<SchedulePage />} />
@@ -713,6 +719,11 @@ export default function App() {
         <Route path="/chess-community" element={
           <MarketingLayout>
             <ChessCommunityPage />
+          </MarketingLayout>
+        } />
+        <Route path="/careers" element={
+          <MarketingLayout>
+            <CareersPage />
           </MarketingLayout>
         } />
         <Route path="/settings" element={
@@ -1302,6 +1313,13 @@ export default function App() {
             </CoachRoute>
           </UserLayout>
         } />
+        <Route path="/coach/videos" element={
+          <UserLayout>
+            <CoachRoute>
+              <CoachVideoGuides />
+            </CoachRoute>
+          </UserLayout>
+        } />
         <Route path="/coach/courses/:courseId/progress" element={
           <UserLayout>
             <CoachRoute>
@@ -1362,6 +1380,13 @@ export default function App() {
           <UserLayout>
             <CoachRoute>
               <CoachBatches />
+            </CoachRoute>
+          </UserLayout>
+        } />
+        <Route path="/coach/leaderboard" element={
+          <UserLayout>
+            <CoachRoute>
+              <CoachLeaderboard />
             </CoachRoute>
           </UserLayout>
         } />

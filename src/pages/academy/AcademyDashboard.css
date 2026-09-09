@@ -303,3 +303,13 @@
 }
 .acad-fee-cell-amt { font-size: 13px; font-weight: 800; color: var(--color-text); line-height: 1.2; }
 .acad-fee-cell--empty .acad-fee-cell-amt { color: var(--color-text-faint); font-weight: 600; }
+
+/* Clarifying line under a settings choice — quieter than the option labels so
+   it reads as a note, not a third option. */
+.acad-set-hint {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-text-muted, #9ca3af);
+  opacity: 0.85;
+}

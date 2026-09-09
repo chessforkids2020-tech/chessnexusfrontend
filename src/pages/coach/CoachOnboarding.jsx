@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
+import {
+  COACH_VIDEO_GUIDES,
+  coachVideoEmbedUrl,
+} from '../../data/coachVideoGuides';
 import './CoachOnboarding.css';
 
 const COUNTRIES = [
@@ -22,6 +26,9 @@ export default function CoachOnboarding() {
   const { user, refreshUser, isGuest } = useAuth();
 
   const [step, setStep] = useState('prompt'); // 'prompt' | 'form'
+  // Which walkthrough is expanded on the prompt screen. null = none open, so
+  // the decision buttons stay visible until someone actually asks to watch.
+  const [openVideo, setOpenVideo] = useState(null);
   const [form, setForm] = useState({
     coachName: user?.displayName || '',
     coachCountry: user?.country || '',
@@ -231,6 +238,41 @@ export default function CoachOnboarding() {
 
             {/* Coach reference pages — open in a new tab so onboarding isn't lost. */}
             <div className="coach-onboard-refs">
+              {/* Videos come BEFORE the reading links, and before the decision.
+                  The onboarding walkthrough is most useful to someone deciding
+                  whether to sign up — showing it only afterwards, in Help, meant
+                  the one video that answers "what am I signing up for?" arrived
+                  after the question had already been answered. */}
+              <div className="coach-onboard-videos">
+                <div className="coach-onboard-refs-title">🎬 See how it works</div>
+                {COACH_VIDEO_GUIDES.filter(v => v.preOnboarding && v.videoId).map(v => {
+                  const isOpen = openVideo === v.id;
+                  return (
+                    <div className={`cob-vid ${isOpen ? 'is-open' : ''}`} key={v.id}>
+                      <button
+                        type="button"
+                        className="cob-vid-head"
+                        onClick={() => setOpenVideo(isOpen ? null : v.id)}
+                        aria-expanded={isOpen}
+                      >
+                        <span className="cob-vid-play" aria-hidden="true">{isOpen ? '▲' : '▶'}</span>
+                        <span className="cob-vid-title">{v.title}</span>
+                      </button>
+                      {isOpen && (
+                        <div className="cob-vid-player">
+                          <iframe
+                            src={coachVideoEmbedUrl(v.videoId)}
+                            title={v.title}
+                            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
               <div className="coach-onboard-refs-title">📚 Learn more before you start</div>
               <div className="coach-onboard-refs-links">
                 <a href="/chess-coach-guide" target="_blank" rel="noopener noreferrer">Coach Guide</a>

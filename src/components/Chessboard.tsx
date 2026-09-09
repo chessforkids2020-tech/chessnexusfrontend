@@ -65,6 +65,16 @@ interface ChessboardProps {
    */
   fullBleed?: boolean;
   /**
+   * Share of the viewport HEIGHT a desktop board may occupy. Defaults to 0.92,
+   * which is what every board used before this existed.
+   *
+   * On a wide-but-short window (e.g. 1919x700) this cap — not the free width —
+   * is what limits a square board, so a page with nothing stacked under the
+   * board can pass a higher value to use the space. Pages that DO put controls
+   * below the board should leave it alone.
+   */
+  desktopHeightRatio?: number;
+  /**
    * Drag-to-resize is ON by default and fully self-contained: the board renders its
    * own grip and tracks its own size. Pages need to wire nothing. Set false to hide
    * the grip (e.g. tiny preview boards, or a mobile layout that must stay fixed).
@@ -184,6 +194,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
   // undefined = edge-to-edge on mobile (the default). Pass fullBleed={false} to
   // keep the small side margin.
   fullBleed,
+  desktopHeightRatio = 0.92,
   resizable = true,
   onResize,
   minBoardWidth = 280,
@@ -303,7 +314,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
   // their fixed-size containers and get clipped.
   const viewportCap = viewport.w <= MOBILE_BP
     ? Math.min(Math.floor(viewport.w * MOBILE_VW), Math.floor(viewport.h * MOBILE_VH))
-    : Math.floor(viewport.h * 0.92);
+    : Math.floor(viewport.h * desktopHeightRatio);
   const boardWidth = Math.min(effectiveWidth, viewportCap);
 
   // Notify the parent whenever the user draws/clears arrows or highlights, so a

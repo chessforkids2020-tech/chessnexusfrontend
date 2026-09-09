@@ -81,6 +81,23 @@ function AvatarFallback({ name, speaking }) {
   );
 }
 
+// ── Student star mark ───────────────────────────────────────────────────────
+// The 0-5 monthly star rating a student earned with their coach, shown beside
+// their name here as well as on the leaderboard. Compact by design: a count
+// with ONE star, because five glyphs on every row of a class roster is noise.
+// Inline-styled like the rest of this page, so it needs no stylesheet.
+const STAR_TIER_COLOR = ['#f59e0b', '#cbd5e1', '#ea8c55', '#c9a227', '#c9a227'];
+function StarMark({ stars = 0 }) {
+  if (!stars) return null;
+  const color = STAR_TIER_COLOR[Math.min(stars, 5) - 1];
+  return (
+    <span
+      title={`${stars} of 5 stars`}
+      style={{ marginLeft: 5, color, fontSize: 11, fontWeight: 800, whiteSpace: 'nowrap' }}
+    >★{stars}</span>
+  );
+}
+
 // One participant tile: video when the camera is on; otherwise their profile
 // photo / avatar (like Zoom). Also plays the participant's audio (remote only —
 // Live self-preview for the Video-effects panel. Grabs its OWN camera stream and
@@ -5322,7 +5339,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                       ? <div style={{ color: '#6b7280', fontSize: 13 }}>No one waiting.</div>
                       : waitingNow.map(w => (
                         <div key={w.studentId} style={s.waitRow}>
-                          <span style={{ flex: 1, fontSize: 14 }}>{w.name || w.username || 'Student'}</span>
+                          <span style={{ flex: 1, fontSize: 14 }}>{w.name || w.username || 'Student'}<StarMark stars={w.stars} /></span>
                           <button style={s.present} onClick={() => admit(w.studentId, 'Present')}>Present</button>
                           <button style={s.catchup} onClick={() => admit(w.studentId, 'Catch-up')}>Catch up</button>
                           <button style={s.remove} onClick={() => removeStu(w.studentId)}>Remove</button>
@@ -5337,7 +5354,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
                       {waitingNow.slice(0, 2).map(w => (
                         <div key={w.studentId} style={s.waitRow}>
-                          <span style={{ flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{w.name || w.username || 'Student'}</span>
+                          <span style={{ flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{w.name || w.username || 'Student'}<StarMark stars={w.stars} /></span>
                           <button style={s.present} onClick={() => admit(w.studentId, 'Present')}>Present</button>
                           <button style={s.catchup} onClick={() => admit(w.studentId, 'Catch-up')}>Catch up</button>
                         </div>

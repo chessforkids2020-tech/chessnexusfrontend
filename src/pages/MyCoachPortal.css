@@ -23,7 +23,42 @@
   z-index: 0;
 }
 
-.mcp-header { position: relative; z-index: 1; margin-bottom: 28px; }
+.mcp-header {
+  position: relative; z-index: 1; margin-bottom: 28px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+}
+.mcp-header-text { min-width: 0; }
+
+/* The way back, now that this page has no desktop sidebar. Hidden on mobile,
+   where the ☰ Menu button already opens the full site nav. */
+.mcp-back-btn {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-white-a13);
+  background: var(--color-white-a04);
+  color: var(--color-text);
+  font-size: 13px; font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+.mcp-back-btn:hover {
+  background: var(--color-accent-a12);
+  border-color: var(--color-accent-a30);
+  color: var(--color-accent);
+  transform: translateX(-2px);
+}
+
+@media (max-width: 860px) {
+  .mcp-back-btn { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mcp-back-btn:hover { transform: none; }
+}
 
 .mcp-title {
   font-size: 32px;

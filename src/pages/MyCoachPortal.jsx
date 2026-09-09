@@ -4,6 +4,7 @@ import api from '../api';
 import StudentAssignments from '../components/StudentAssignments';
 import StudentCourses from '../components/StudentCourses';
 import CoachChat from '../components/coach/CoachChat';
+import ClassLeaderboard from '../components/coach/ClassLeaderboard';
 import AskCoachPanel from '../components/AskCoachPanel';
 import { DAY_NAMES, DAY_FULL, localTimeLabel, localDow, soonestClass, classesOnLocalDate } from '../utils/istSchedule';
 import './MyCoachPortal.css';
@@ -20,6 +21,7 @@ const MCP_TABS = [
   { id: 'overview',    icon: '📊', text: 'Overview' },
   { id: 'schedule',    icon: '📅', text: 'Schedule' },
   { id: 'activities',  icon: '🎯', text: 'Activities' },
+  { id: 'leaderboard', icon: '🏆', text: 'Leaderboard' },
   { id: 'messages',    icon: '💬', text: 'Messages' },
   { id: 'courses',     icon: '📚', text: 'My Syllabus' },
   { id: 'assignments', icon: '📋', text: 'Assignments' },
@@ -53,6 +55,9 @@ export default function MyCoachPortal() {
   // Coach activities (private races) + unseen count for the Activities tab badge.
   const [activities, setActivities] = useState([]);
   const [activityUnseen, setActivityUnseen] = useState(0);
+  // Which coach's class the Leaderboard tab is showing (only matters when the
+  // student has more than one coach). Defaults to the first once they load.
+  const [lbCoachId, setLbCoachId] = useState(null);
 
   // Class Payment request form (targets the student's coach via the link).
   const [payForm, setPayForm] = useState({ paidDate: '', fromDate: '', untilDate: '', amount: '' });
@@ -99,7 +104,10 @@ export default function MyCoachPortal() {
         // Exclude the ADMIN coach here — admin-added students manage their
         // classes (attendance/fees/assignments) in the Student Portal, not here.
         // My Coach is only for PRIVATE coaches.
-        setCoaches((coachesRes.data || []).filter(c => !c.isAdmin));
+        const myCoaches = (coachesRes.data || []).filter(c => !c.isAdmin);
+        setCoaches(myCoaches);
+        // Default the Leaderboard tab to the first coach.
+        setLbCoachId(prev => prev || myCoaches[0]?.coachId || null);
         setPayments(paymentsRes.data?.payments || []);
         setAssignments(assignmentsRes.data?.assignments || []);
         setClasses(scheduleRes.data?.classes || []);
@@ -281,8 +289,20 @@ export default function MyCoachPortal() {
           gets that sidebar. The page's own tab menu (Overview / Schedule / …)
           is the separate ☰ below. */}
       <div className="mcp-header">
-        <h1 className="mcp-title">🎓 My Coach</h1>
-        <p className="mcp-subtitle">Attendance & payments recorded by your coach</p>
+        <div className="mcp-header-text">
+          <h1 className="mcp-title">🎓 My Coach</h1>
+          <p className="mcp-subtitle">Attendance & payments recorded by your coach</p>
+        </div>
+        {/* The desktop sidebar is hidden on this page, so this is the student's
+            way back. On mobile the ☰ Menu button below still opens the full
+            site nav, which is why this is desktop-only. */}
+        <button
+          type="button"
+          className="mcp-back-btn"
+          onClick={() => navigate('/dashboard')}
+        >
+          ← Back to dashboard
+        </button>
       </div>
 
       {error && <div className="mcp-error">{error}</div>}
@@ -665,6 +685,45 @@ export default function MyCoachPortal() {
       {tab === 'assignments' && (
         <div className="mcp-section">
           <StudentAssignments only="private" onLoaded={setAssignments} />
+        </div>
+      )}
+
+      {/* ── Leaderboard ──
+          Scoped to ONE coach: the board ranks a class, and a student with two
+          coaches has two different classes. Defaults to the first coach and
+          offers a picker only when there is genuinely a choice. */}
+      {tab === 'leaderboard' && (
+        <div className="mcp-section">
+          {coaches.length === 0 ? (
+            <p style={{ color: 'var(--color-text-faint)' }}>
+              You are not linked to a coach yet, so there is no class leaderboard.
+            </p>
+          ) : (
+            <>
+              {coaches.length > 1 && (
+                <div className="mcp-tabs" style={{ marginBottom: 16 }}>
+                  {coaches.map(c => (
+                    <button
+                      key={c.coachId}
+                      className={`mcp-tab ${lbCoachId === c.coachId ? 'mcp-tab-active' : ''}`}
+                      onClick={() => setLbCoachId(c.coachId)}
+                    >
+                      {c.coachName || 'Coach'}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {(() => {
+                const active = coaches.find(c => c.coachId === lbCoachId) || coaches[0];
+                return (
+                  <ClassLeaderboard
+                    coachId={active.coachId}
+                    coachName={active.coachName}
+                  />
+                );
+              })()}
+            </>
+          )}
         </div>
       )}
 

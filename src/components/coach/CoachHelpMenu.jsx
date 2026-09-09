@@ -9,10 +9,17 @@
 //   2. Request a feature   → the same inbox, tagged so feature demand can be
 //                            told apart from breakage
 //   3. Book a call         → the existing BookDemoModal, unchanged
+//   4. Video guides        → /coach/videos, the walkthrough recordings played
+//                            inside the app
+//
+// Video guides are listed FIRST: a coach who is stuck part-way through setting
+// up is usually better served by watching it done than by filing a report about
+// it. Reporting is what you do when watching did not help.
 //
 // Nothing new on the server. A coach who hits a wall at 9pm on a Sunday should
 // not have to hunt through marketing pages to tell someone.
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api';
 import BookDemoModal from '../BookDemoModal';
 import './CoachHelpMenu.css';
@@ -22,6 +29,7 @@ export default function CoachHelpMenu() {
   const [form, setForm] = useState(null);      // 'bug' | 'feature' | null
   const [demo, setDemo] = useState(false);
   const wrapRef = useRef(null);
+  const navigate = useNavigate();
 
   // Close on an outside click or Escape — a dropdown that traps you is worse
   // than no dropdown.
@@ -55,6 +63,18 @@ export default function CoachHelpMenu() {
 
       {open && (
         <div className="chm-menu" role="menu">
+          <button
+            type="button"
+            className="chm-item"
+            role="menuitem"
+            onClick={() => { setOpen(false); navigate('/coach/videos'); }}
+          >
+            <span className="chm-ic" aria-hidden="true">🎬</span>
+            <span>
+              <b>Video guides</b>
+              <em>Watch how to set up and run your coaching</em>
+            </span>
+          </button>
           <button type="button" className="chm-item" role="menuitem" onClick={() => openForm('bug')}>
             <span className="chm-ic" aria-hidden="true">🐞</span>
             <span>

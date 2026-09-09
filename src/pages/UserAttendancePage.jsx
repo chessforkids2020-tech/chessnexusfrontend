@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import api from '../api';
 import StudentAssignments from '../components/StudentAssignments';
 import CoachChat from '../components/coach/CoachChat';
+import ClassLeaderboard from '../components/coach/ClassLeaderboard';
 import { soonestClass, localDayLabel, localTimeLabel, DAY_NAMES } from '../utils/istSchedule';
 import './UserDashboard.css'; // Import the dashboard CSS for consistent styling
 import './MyCoachPortal.css'; // reuse the Player-card (mcp-*) styles
@@ -703,12 +704,36 @@ const UserAttendancePage = () => {
     );
   };
 
+  // Leaderboard tab — the same class board My Coach shows private-coach
+  // students, for students the ADMIN added. Same component, same endpoint: the
+  // backend scopes an admin board to the student's own batch, so this is
+  // "my batch", not a site-wide list of the whole academy.
+  //
+  // A student can be enrolled with more than one admin account, so this picks
+  // the first — there is no batch switcher here because in practice there is
+  // one academy admin.
+  const renderLeaderboardTab = () => {
+    const c = adminCoaches[0];
+    if (!c) {
+      return (
+        <div style={{ ...styles.section, textAlign: 'center', color: 'var(--color-text-muted)' }}>
+          No class leaderboard yet — you are not enrolled with a coach.
+        </div>
+      );
+    }
+    return (
+      <div style={styles.section}>
+        <ClassLeaderboard coachId={c.coachId} coachName={c.coachName} />
+      </div>
+    );
+  };
+
   // Player tab — the student's enrollment profile with the admin (their "class").
   // Reuses the My Coach player-card layout (mcp-* classes).
   const renderPlayerTab = () => (
     <div>
       {adminCoaches.length === 0 ? (
-        <div style={{ ...styles.section, textAlign: 'center', color: palette.muted }}>
+        <div style={{ ...styles.section, textAlign: 'center', color: 'var(--color-text-muted)' }}>
           No enrollment details yet.
         </div>
       ) : (
@@ -1122,6 +1147,12 @@ const UserAttendancePage = () => {
           👤 Player
         </div>
         <div
+          style={{...styles.tab, ...(activeTab === 'leaderboard' ? styles.activeTab : {})}}
+          onClick={() => setActiveTab('leaderboard')}
+        >
+          🏆 Leaderboard
+        </div>
+        <div
           style={{...styles.tab, ...(activeTab === 'attendance' ? styles.activeTab : {})}}
           onClick={() => setActiveTab('attendance')}
         >
@@ -1142,6 +1173,7 @@ const UserAttendancePage = () => {
         {/* Read + reply only — mode="student" hides all thread-creation controls. */}
         {activeTab === 'messages' && <CoachChat mode="student" />}
         {activeTab === 'player' && renderPlayerTab()}
+        {activeTab === 'leaderboard' && renderLeaderboardTab()}
         {activeTab === 'attendance' && renderAttendanceTab()}
         {activeTab === 'payments' && renderPaymentsTab()}
       </div>

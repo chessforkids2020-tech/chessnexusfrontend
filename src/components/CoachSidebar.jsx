@@ -17,6 +17,7 @@ const NAV = [
   { icon: '📅', label: 'Schedule',    path: '/coach/schedule' },
   { icon: '🎯', label: 'Activities',  path: '/coach/activities' },
   { icon: '📋', label: 'Attendance',  path: '/coach/attendance' },
+  { icon: '🏆', label: 'Leaderboard', path: '/coach/leaderboard' },
 ];
 
 // Live Class is host-only (the 2 allowed accounts). Appended conditionally below.
@@ -103,8 +104,13 @@ export default function CoachSidebar({ onNavigate }) {
       <div style={styles.content}>
         {/* Brand */}
         <div style={styles.brand} onClick={() => go('/coach/dashboard')} title="ChessNexus Coach">
-          <span style={styles.brandText}>ChessNexus</span>
-          <span style={styles.brandSub}>Coach</span>
+          {/* The twin-knight mark. Without it the wordmark was just two words in
+              the nav font and read as a heading rather than a brand. */}
+          <img src="/logo- no name.png" alt="" style={styles.brandLogo} />
+          <span style={styles.brandWords}>
+            <span style={styles.brandText}>CHESSNEXUS</span>
+            <span style={styles.brandSub}>Coach</span>
+          </span>
         </div>
 
         <div style={styles.separator} />
@@ -245,23 +251,36 @@ const styles = {
     backdropFilter: 'blur(10px)',
   },
   content: { display: 'flex', flexDirection: 'column', height: '100%', padding: '20px 0', position: 'relative' },
+  // ONE line instead of two stacked serif lines. The old wordmark cost 47px of
+  // vertical space on a rail that has to carry eleven nav items; Poppins is
+  // both narrower than Georgia at the same size and already this sidebar's
+  // family, so the brand now reads as part of the UI rather than a masthead.
   brand: {
-    display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-    padding: '0 14px 4px', cursor: 'pointer', lineHeight: 1.1,
+    display: 'flex', alignItems: 'center', gap: '8px',
+    padding: '0 12px 2px', cursor: 'pointer', lineHeight: 1.1,
   },
+  // The mark does the identifying, so the type can stay small. 26px keeps the
+  // whole lockup near the height of one nav row.
+  brandLogo: {
+    width: '32px', height: '28px', objectFit: 'contain', flexShrink: 0,
+    filter: 'brightness(1.35) contrast(1.1) drop-shadow(0 0 6px var(--color-accent-a30))',
+  },
+  brandWords: { display: 'flex', flexDirection: 'column', minWidth: 0 },
+  // Orbitron is already loaded for the app and is a display face - it reads as
+  // a logotype at 11px where Poppins just read as small text.
   brandText: {
-    fontFamily: "'Georgia', 'Times New Roman', serif",
-    fontSize: '15px', fontWeight: 600, letterSpacing: '0.5px',
+    fontFamily: "'Orbitron', 'Poppins', sans-serif",
+    fontSize: '11px', fontWeight: 800, letterSpacing: '0.5px',
     background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
     WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
+    whiteSpace: 'nowrap',
   },
   brandSub: {
-    fontFamily: "'Georgia', 'Times New Roman', serif",
-    fontSize: '26px', fontWeight: 700, letterSpacing: '1px',
-    fontStyle: 'italic',
-    background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-2) 100%)',
-    WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
-    marginTop: '-2px',
+    fontFamily: "'Poppins', sans-serif",
+    fontSize: '10px', fontWeight: 600, letterSpacing: '2.4px',
+    textTransform: 'uppercase',
+    color: 'var(--color-text-faint)',
+    marginTop: '1px',
   },
   separator: {
     height: '1px', margin: '8px 12px',

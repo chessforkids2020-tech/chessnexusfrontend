@@ -1,0 +1,641 @@
+/* pages/CareersPage.css
+   Layers on top of components/marketing/marketing.css — the page reuses that
+   file's .mkt-page / .mkt-inner / .mkt-hero shell so it sits visually with the
+   other public pages, and only adds what is specific to careers. */
+
+.careers-page .cr-section {
+  margin-top: 48px;
+}
+
+.careers-page .cr-section > h2 {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 18px;
+  color: var(--color-text, #e2e8f0);
+}
+
+/* ── Why work here ── */
+.cr-perks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.cr-perk {
+  background: var(--mkt-card, rgba(20, 25, 35, 0.6));
+  border: 1px solid var(--mkt-border, rgba(255, 255, 255, 0.08));
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.cr-perk-icon {
+  font-size: 24px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.cr-perk h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text, #e2e8f0);
+}
+
+.cr-perk p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+/* ── Role cards ── */
+.cr-tag {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(6, 182, 212, 0.14);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #67e8f9;
+  white-space: nowrap;
+}
+
+.cr-tag-loc {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.cr-role-about {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.cr-role-sub {
+  margin: 16px 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-text, #e2e8f0);
+  opacity: 0.7;
+}
+
+.cr-list {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cr-list li {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.cr-list-muted li { opacity: 0.85; }
+
+/* ── Apply button ── */
+.cr-apply {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 18px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  color: #04211d;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.cr-apply:hover { transform: translateY(-1px); filter: brightness(1.08); }
+
+.cr-apply:focus-visible {
+  outline: 2px solid #06b6d4;
+  outline-offset: 3px;
+}
+
+/* ── No openings ── */
+.cr-empty {
+  background: var(--mkt-card, rgba(20, 25, 35, 0.6));
+  border: 1px solid var(--mkt-border, rgba(255, 255, 255, 0.08));
+  border-radius: 16px;
+  padding: 26px;
+}
+
+.cr-empty-lead {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-text, #e2e8f0);
+}
+
+.cr-empty p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+/* ── How to apply ── */
+.cr-steps {
+  margin: 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cr-steps li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.cr-steps a,
+.cr-note a {
+  color: #22d3ee;
+  text-decoration: none;
+}
+
+.cr-steps a:hover,
+.cr-note a:hover { text-decoration: underline; }
+
+.cr-note {
+  margin: 20px 0 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--mkt-border, rgba(255, 255, 255, 0.08));
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+@media (max-width: 600px) {
+  .careers-page .cr-section { margin-top: 36px; }
+  .cr-role { padding: 18px; }
+  .cr-role-title { font-size: 16.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-apply { transition: none; }
+  .cr-apply:hover { transform: none; }
+}
+
+/* Accent word in the hero headline — mirrors the homepage's .hp-hero-accent,
+   so the careers page reads as the same brand rather than a bolted-on page. */
+.careers-page .cr-accent {
+  background: linear-gradient(135deg, #06b6d4, #10b981);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #06b6d4;   /* fallback where background-clip:text is unsupported */
+}
+
+/* The one-line promise under the hero paragraph. Short, spaced out, quieter
+   than the paragraph above it — it is a closing beat, not a third sentence. */
+.cr-hero-line {
+  margin: 14px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted, #9ca3af);
+  opacity: 0.9;
+}
+
+/* ── Role count beside the heading ── */
+.cr-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  margin-left: 10px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(6, 182, 212, 0.16);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #67e8f9;
+  font-size: 12.5px;
+  font-weight: 800;
+  vertical-align: middle;
+}
+
+/* An expanded card is the one the reader is acting on — lift it out of the
+   stack so it is obvious which role the form belongs to. */
+.cr-cancel {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--mkt-border, rgba(255, 255, 255, 0.14));
+  background: transparent;
+  color: var(--color-text-muted, #9ca3af);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cr-cancel:hover { color: var(--color-text, #e2e8f0); border-color: rgba(255, 255, 255, 0.3); }
+
+/* ── Apply form ── */
+.cr-form {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--mkt-border, rgba(255, 255, 255, 0.08));
+}
+
+.cr-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cr-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* Long inputs (links, the message) span the full width — a URL in a half-width
+   box is unreadable while typing. */
+.cr-field-wide { grid-column: 1 / -1; }
+
+.cr-field > span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.cr-field input,
+.cr-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--mkt-border, rgba(255, 255, 255, 0.12));
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--color-text, #e2e8f0);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.cr-field textarea { resize: vertical; line-height: 1.6; }
+
+.cr-field input::placeholder,
+.cr-field textarea::placeholder { color: rgba(156, 163, 175, 0.55); }
+
+.cr-field input:focus,
+.cr-field textarea:focus {
+  outline: none;
+  border-color: rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.14);
+}
+
+/* Honeypot: off-screen rather than display:none — some bots skip hidden fields
+   but still fill ones that are merely positioned away. */
+.cr-hp {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+.cr-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.cr-form-actions .cr-apply { margin-top: 0; }
+.cr-apply:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.cr-form-error {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  font-size: 13px;
+}
+
+.cr-form-note {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--color-text-muted, #9ca3af);
+  opacity: 0.8;
+}
+
+.cr-sent {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cr-tag-pay {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #fcd34d;
+}
+
+@media (max-width: 600px) {
+  /* One column: two side-by-side inputs on a phone are too narrow to type in. */
+  .cr-form-grid { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   JOB BOARD — filter chips, grouped rows, expandable detail
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.cr-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.cr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--mkt-border, rgba(255, 255, 255, 0.12));
+  background: transparent;
+  color: var(--color-text-muted, #9ca3af);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.cr-chip:hover { color: var(--color-text, #e2e8f0); border-color: rgba(255, 255, 255, 0.26); }
+
+.cr-chip.is-active {
+  background: rgba(6, 182, 212, 0.14);
+  border-color: rgba(6, 182, 212, 0.5);
+  color: #67e8f9;
+}
+
+.cr-chip-n {
+  font-size: 11px;
+  font-weight: 800;
+  opacity: 0.7;
+}
+
+.cr-chip:focus-visible,
+.cr-row-main:focus-visible,
+.cr-modal-x:focus-visible {
+  outline: 2px solid #06b6d4;
+  outline-offset: 2px;
+}
+
+/* ── Groups ── */
+.cr-group { margin-bottom: 30px; }
+
+.cr-group-head {
+  margin: 0 0 10px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, #9ca3af);
+  opacity: 0.8;
+}
+
+/* ── Rows ── */
+.cr-row {
+  border: 1px solid var(--mkt-border, rgba(255, 255, 255, 0.08));
+  border-radius: 14px;
+  background: var(--mkt-card, rgba(20, 25, 35, 0.6));
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 120ms ease;
+}
+
+.cr-row:hover { border-color: rgba(255, 255, 255, 0.18); }
+
+.cr-row.is-open {
+  border-color: rgba(6, 182, 212, 0.4);
+  box-shadow: 0 0 0 1px rgba(6, 182, 212, 0.12);
+}
+
+/* The clickable row header. Reset the button chrome — it is a layout element
+   that happens to be a button for keyboard and screen-reader reasons. */
+.cr-row-main {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+
+.cr-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.cr-row-title {
+  font-size: 16.5px;
+  font-weight: 800;
+  color: var(--color-text, #e2e8f0);
+}
+
+.cr-row-sum {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.cr-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.cr-row-arrow {
+  flex-shrink: 0;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--color-text-muted, #9ca3af);
+  transform: rotate(90deg);
+  transition: transform 160ms ease, color 120ms ease;
+}
+
+.cr-row-arrow.is-open { transform: rotate(-90deg); color: #22d3ee; }
+
+.cr-row-detail {
+  padding: 4px 18px 20px;
+  border-top: 1px solid var(--mkt-border, rgba(255, 255, 255, 0.06));
+  margin-top: 2px;
+}
+
+.cr-row-detail .cr-role-about { margin-top: 14px; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   APPLY MODAL
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.cr-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;             /* above the sidebar (100–1001) and page chrome */
+  background: rgba(0, 0, 0, 0.72);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 5vh 16px;
+  overflow-y: auto;          /* a long form must scroll, not overflow the screen */
+  animation: cr-fade 140ms ease-out;
+}
+
+.cr-modal {
+  width: 100%;
+  max-width: 640px;
+  background: #0f1520;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  padding: 22px;
+  animation: cr-rise 180ms ease-out;
+}
+
+@keyframes cr-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cr-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.cr-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.cr-modal-kicker {
+  margin: 0 0 2px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, #9ca3af);
+  opacity: 0.75;
+}
+
+.cr-modal-head h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-text, #e2e8f0);
+}
+
+.cr-modal-x {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  color: var(--color-text-muted, #9ca3af);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cr-modal-x:hover { color: var(--color-text, #e2e8f0); border-color: rgba(255, 255, 255, 0.3); }
+
+/* Inside the modal the form has no divider — the header already separates it. */
+.cr-modal .cr-form { margin-top: 14px; padding-top: 0; border-top: 0; }
+
+@media (max-width: 600px) {
+  .cr-modal-backdrop { padding: 0; }
+  .cr-modal {
+    max-width: none;
+    min-height: 100%;
+    border-radius: 0;
+    border: 0;
+  }
+  .cr-row-main { padding: 14px; }
+  .cr-row-title { font-size: 15.5px; }
+  .cr-row-detail { padding: 4px 14px 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-modal-backdrop,
+  .cr-modal { animation: none; }
+  .cr-row-arrow { transition: none; }
+}
+
+/* ── Coming soon ──────────────────────────────────────────────────────────
+   Shown while ROLES is empty. Deliberately a calm, centred panel rather than
+   a greyed-out list: "no roles yet" is a real state, not a broken page. */
+.cr-soon {
+  text-align: center;
+  padding: 44px 26px;
+  border-radius: 18px;
+  background: var(--mkt-card, rgba(20, 25, 35, 0.6));
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+}
+
+.cr-soon-icon {
+  font-size: 40px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.cr-soon-lead {
+  margin: 0 0 10px;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--color-text, #e2e8f0);
+}
+
+.cr-soon-text {
+  margin: 0 auto 8px;
+  max-width: 52ch;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.cr-soon-text:last-child { margin-bottom: 0; }
+
+.cr-soon-text a {
+  color: #22d3ee;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.cr-soon-text a:hover { text-decoration: underline; }

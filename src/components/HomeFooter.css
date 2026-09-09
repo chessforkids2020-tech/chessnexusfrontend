@@ -1,0 +1,273 @@
+/* components/HomeFooter.css
+   Homepage-only marketing footer. Uses the app's existing CSS custom properties
+   so it follows the active theme rather than hardcoding a palette. */
+
+.home-footer {
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-white-a04);
+  /* Left padding clears the FIXED app sidebar, which HomePage renders on every
+     visit (logged in or not). The homepage goes through App.jsx's plain
+     container rather than UserLayout, so it inherits no sidebar offset — the
+     rail simply overlays whatever sits beneath it. The compact <Footer /> never
+     noticed, being one centred row that happens to clear the rail; this footer
+     is a full-width grid, so its first column went underneath and the wordmark
+     read "…EXUS".
+
+     180px matches .hp-content's own `margin-left` in HomePage.css exactly, so
+     the footer lines up with the page content above it. Padding rather than
+     margin, so the footer's background still spans the full width and no bare
+     strip shows beside the sidebar. Keep in step with HomePage.css if that
+     offset ever changes. */
+  padding: 56px 24px 0 calc(180px + 24px);
+  position: relative;
+  z-index: 50;
+  box-shadow: 0 -2px 20px var(--color-black-a50);
+}
+
+/* A thin accent rule along the very top, matching the compact footer's. */
+.home-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--color-accent-a30) 30%,
+    var(--color-accent-2-a30) 70%,
+    transparent
+  );
+}
+
+/* Visible to screen readers only — the footer needs a heading for landmark
+   navigation, but showing it would be redundant next to the wordmark. */
+.hf-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hf-inner {
+  /* Deliberately NOT capped at a centred 1200px. .hp-content above spans the
+     full width beside the sidebar, so a narrower centred footer would sit
+     visibly inset from the page content and read as misaligned — on a 1920px
+     screen it would start ~270px clear of the sidebar while the content above
+     starts at 180px. Full width keeps the footer's first column flush with the
+     page's left edge. 1600px is a readability ceiling for ultra-wide monitors
+     only, where a 2500px-wide row of links becomes hard to scan. */
+  max-width: 1600px;
+  margin: 0;
+  display: grid;
+  /* Brand column is wider than the link columns; the rest share the remainder. */
+  grid-template-columns: 1.6fr repeat(4, 1fr);
+  gap: 40px 28px;
+  align-items: start;
+}
+
+/* ── Brand ── */
+.hf-brand-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.hf-logo {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+}
+
+.hf-wordmark {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--color-text);
+}
+
+.hf-tagline {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  max-width: 34ch;
+}
+
+.hf-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.hf-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2, var(--color-accent)));
+  color: var(--color-bg);
+  border: 1px solid transparent;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.hf-cta:hover { transform: translateY(-1px); filter: brightness(1.08); }
+
+.hf-cta-ghost {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-white-a10, rgba(255, 255, 255, 0.16));
+}
+
+.hf-cta-ghost:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  filter: none;
+}
+
+.hf-social {
+  display: flex;
+  gap: 10px;
+}
+
+.hf-social a {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid var(--color-white-a10, rgba(255, 255, 255, 0.14));
+  color: var(--color-text-muted);
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.hf-social a:hover { color: var(--color-accent); border-color: var(--color-accent); }
+.hf-social svg { width: 17px; height: 17px; }
+
+/* ── Link columns ── */
+.hf-col {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.hf-col-head {
+  margin: 0 0 4px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  opacity: 0.65;
+}
+
+.hf-col a {
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+
+.hf-col a:hover { color: var(--color-accent); }
+.hf-col a:focus-visible,
+.hf-legal a:focus-visible,
+.hf-cta:focus-visible,
+.hf-social a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ── Legal strip ── */
+.hf-bottom {
+  max-width: 1600px;
+  margin: 40px 0 0;
+  padding: 18px 0 22px;
+  border-top: 1px solid var(--color-white-a04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hf-copy,
+.hf-made {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.hf-legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.hf-legal a {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.hf-legal a:hover { color: var(--color-accent); }
+
+/* ── Tablet: brand on its own row, links in two pairs ── */
+@media (max-width: 1024px) {
+  /* Matches HomePage.css: at this width .hp-content drops to margin-left: 0
+     because the sidebar collapses, so the footer must drop its offset too. */
+  .home-footer { padding-left: 24px; }
+
+  .hf-inner {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px 24px;
+  }
+  .hf-brand { grid-column: 1 / -1; }
+  .hf-tagline { max-width: 52ch; }
+}
+
+/* ── Phone: single column, centred, tighter ── */
+@media (max-width: 600px) {
+  /* Mobile portrait: the sidebar is a hamburger overlay, so no offset. */
+  .home-footer { padding: 40px 18px 0; }
+
+  .hf-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    text-align: center;
+  }
+
+  .hf-brand-top,
+  .hf-cta-row,
+  .hf-social { justify-content: center; }
+
+  .hf-tagline { margin-left: auto; margin-right: auto; }
+
+  .hf-col { align-items: center; }
+
+  .hf-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .hf-legal { justify-content: center; gap: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hf-cta { transition: none; }
+  .hf-cta:hover { transform: none; }
+}

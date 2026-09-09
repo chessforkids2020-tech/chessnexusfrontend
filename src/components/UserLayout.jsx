@@ -11,13 +11,18 @@ import ChatToasts from './ChatToasts';
 import './UserLayout.css';
 
 // Pages that use the slim 60px icon rail instead of the 170px main sidebar,
-// because they need the horizontal room (e.g. My Coach's nine tabs).
-const NARROW_SIDEBAR_PATHS = ['/my-coach'];
+// because they need the horizontal room.
+const NARROW_SIDEBAR_PATHS = [];
 
 // Pages that hide the sidebar entirely on desktop, because they lay out their own
 // full-width workspace (e.g. the Healthy Mix board + side cards). The mobile
 // hamburger still works, so the sidebar stays reachable at every size.
-const HIDDEN_SIDEBAR_PATHS = ['/training/healthy-mix'];
+//
+// My Coach is here rather than on the narrow rail: the rail cost 60px across
+// the whole page for navigation the student rarely needs mid-lesson, and the
+// page has its own tabs. It carries a "Back to dashboard" button instead, which
+// is the one thing they actually leave this page to do.
+const HIDDEN_SIDEBAR_PATHS = ['/training/healthy-mix', '/my-coach'];
 
 // Pages that place the app menu in their own fixed bar rather than using the
 // floating ☰. They open the sidebar with an 'open-app-sidebar' event.

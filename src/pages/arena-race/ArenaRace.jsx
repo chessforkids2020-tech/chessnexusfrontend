@@ -3,7 +3,7 @@ import { Chess } from 'chess.js';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import PlayerName from '../../components/PlayerName';
-import Chessboard, { gutterFor } from '../../components/Chessboard';
+import Chessboard from '../../components/Chessboard';
 import { useAuth } from '../../contexts/AuthContext';
 import socket from '../../socket';
 
@@ -11,11 +11,6 @@ import socket from '../../socket';
 const addLog = (message, type = 'info') => {
   const timestamp = new Date().toLocaleTimeString();
 };
-
-// Width reserved on desktop for the Skip Puzzle rail sitting to the RIGHT of
-// the board (button + the flex gap). The board sizing below subtracts this, so
-// the two always fit the centre grid track together.
-const SKIP_RAIL = 116;
 
 // Updated with Obsidian Glass theme matching ChooseTopic
 
@@ -133,8 +128,11 @@ const styles = {
     borderRadius: 'var(--radius-2xl)',
     padding: '25px',
     border: '1px solid var(--color-white-a04)',
-    flex: 1,
     boxShadow: '0 8px 32px var(--color-black-a50)',
+    // No `flex: 1`: inside a stretched grid cell it made the card fill the
+    // board's full height, leaving a tall empty panel under the rankings.
+    alignSelf: 'start',
+    width: '100%',
   },
   puzzleInfo: {
     textAlign: 'center',
@@ -168,6 +166,47 @@ const styles = {
     borderBottom: '1px solid var(--color-white-a04)',
     color: 'var(--color-text-muted)',
     fontSize: '14px',
+  },
+  lbPager: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '8px',
+    marginTop: '12px',
+  },
+  lbPagerBtn: {
+    background: 'var(--color-surface)',
+    color: 'var(--color-text)',
+    border: '1px solid var(--color-white-a04)',
+    borderRadius: 'var(--radius-md)',
+    width: '32px',
+    height: '32px',
+    fontSize: '18px',
+    lineHeight: 1,
+    cursor: 'pointer',
+    flex: '0 0 auto',
+  },
+  lbPagerBtnDisabled: {
+    opacity: 0.35,
+    cursor: 'default',
+  },
+  lbPagerLabel: {
+    fontSize: '12px',
+    color: 'var(--color-text-muted)',
+    whiteSpace: 'nowrap',
+  },
+  lbJumpToMe: {
+    display: 'block',
+    width: '100%',
+    marginTop: '8px',
+    padding: '8px',
+    background: 'var(--color-accent-a12)',
+    color: 'var(--color-accent)',
+    border: '1px solid var(--color-accent-a20)',
+    borderRadius: 'var(--radius-md)',
+    fontSize: '12px',
+    fontWeight: 600,
+    cursor: 'pointer',
   },
   currentPlayer: {
     background: 'var(--color-accent-a12)',
@@ -290,6 +329,28 @@ export default function ArenaRace({ isAdminView = false }) {
   const [error, setError] = useState('');
   const [currentUser, setCurrentUser] = useState(null);
   const [leaderboard, setLeaderboard] = useState([]);
+  // Leaderboard paging. `null` means "follow me": the page containing the
+  // current user is shown and keeps following them as their rank moves during
+  // the race. Once they press a page arrow this holds that page number, so a
+  // live score update can't yank the view out from under them mid-read.
+  const [lbPage, setLbPage] = useState(null);
+  const updateBoardSizeRef = useRef(null);
+  const gridResizeObserverRef = useRef(null);
+  // Callback ref: fires with the node the instant the grid mounts (and with
+  // null on unmount), so we measure the real element instead of guessing.
+  const gridRefCb = useCallback((node) => {
+    if (gridResizeObserverRef.current) {
+      gridResizeObserverRef.current.disconnect();
+      gridResizeObserverRef.current = null;
+    }
+    if (!node) return;
+    updateBoardSizeRef.current?.();
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => updateBoardSizeRef.current?.());
+      ro.observe(node);
+      gridResizeObserverRef.current = ro;
+    }
+  }, []);
   const [boardSize, setBoardSize] = useState(600);
   const [lastMove, setLastMove] = useState(null);
   const [isMobileLayout, setIsMobileLayout] = useState(false);
@@ -532,23 +593,42 @@ export default function ArenaRace({ isAdminView = false }) {
       setIsMobileLayout(viewportWidth < 1200);
 
       // Calculate available space for board (accounting for sidebar and padding)
-      const sidebarWidth = viewportWidth < 1200 ? 0 : 300; // Sidebar on laptops and desktops, not on mobile/tablet
+      // The grid measurement below is authoritative; this is only the
+      // first-paint fallback before the element exists.
+      const sidebarWidth = viewportWidth < 1200 ? 0 : 300;
       const padding = 80; // total padding and margins
       const availableWidth = viewportWidth - sidebarWidth - padding;
-      const availableHeight = viewportHeight - 120; // header and padding
+      // 120px was reserved for the header plus the board card's padding. The
+      // card is gone now, and the board no longer has controls stacked under it
+      // (Skip moved to the right column), so only the page chrome needs
+      // reserving. Reclaiming this is what actually makes the board bigger on a
+      // short window, where HEIGHT — not the free width — is the binding limit.
+      // The coordinate labels live OUTSIDE the board, so the column needs
+      // board + bottom gutter to fit. Reserving only 12px let a 573px board
+      // render 591px tall on a 585px window and pushed the file letters off
+      // screen. ~34px covers the gutter (18px at these sizes) plus breathing
+      // room, so the a-h row is always visible.
+      const availableHeight = viewportHeight - 34;
 
       // Chessboard reserves space for the rank/file labels on the bottom+left.
       // ~5% of the board is a safe allowance at these sizes.
       const boardGutterAllowance = 45;
 
       // Determine device type and set appropriate size
+      // Hoisted so the desktop branch and the diagnostic below can both see it.
+      const gridEl = document.querySelector('[data-arena-grid]');
+      const gridWidth = gridEl ? gridEl.getBoundingClientRect().width : availableWidth;
+
       let newSize;
-      if (viewportWidth < 768) {
-        // Mobile: smaller board
-        newSize = Math.min(viewportWidth - 60, 450); // Increased to 450px as requested
-      } else if (viewportWidth < 1024) {
-        // Tablet: medium board
-        newSize = Math.min(450, Math.min(availableWidth - 40, availableHeight - 40)); // Set to 450px for tablets
+      if (viewportWidth < 1024) {
+        // Phones/tablets: EDGE TO EDGE, like HealthyMix.
+        //
+        // This used to be `viewportWidth - 60` capped at 450, so a 430px phone
+        // got a 370px board and an iPad got 450 of its 768. The Chessboard
+        // clamps DOWN to the viewport but never UP, so those small numbers won
+        // and no page-level fix could widen them. Hand it the full width and
+        // let its own mobile sizing (MOBILE_VW/MOBILE_VH) govern.
+        newSize = viewportWidth;
       } else {
         // Desktop: fill the space actually available.
         //
@@ -558,16 +638,26 @@ export default function ArenaRace({ isAdminView = false }) {
         // square board, so take whichever of width/height runs out first and
         // cap only to keep it sane on very large displays.
         // The desktop layout is a `300px auto 300px` grid, so the board only
-        // owns the middle track — subtract both side columns, the Skip rail now
-        // sitting beside the board, and the board's coordinate gutters, or the
-        // grid overflows on 1280-1440px laptops. The card padding that used to
-        // be subtracted here is gone along with the card itself.
-        // Two side panels at their 220px minimum, plus the two 24px grid gaps.
-        const centreTrack = availableWidth - 440 - 48 - SKIP_RAIL - boardGutterAllowance;
-        // Never go below the old fixed 435 — on a 1280-1440 laptop the side
-        // panels eat the row, and shrinking the board to "fit" would be a
-        // regression. Those widths keep today's size; roomier screens grow.
-        newSize = Math.max(435, Math.min(centreTrack, availableHeight, 820));
+        // owns the middle track — subtract both side columns and the board's
+        // coordinate gutters, or the grid overflows on 1280-1440px laptops.
+        // The card padding and the Skip rail that used to be subtracted here
+        // are both gone (Skip now sits under the Score card).
+        // MEASURED, not assumed: the debug panel showed the grid is already
+        // ~clientWidth (1234 of 1274) — it does NOT include the app sidebar, so
+        // subtracting `sidebarWidth` here double-counted it and left a
+        // centreTrack of 367 on a 1280px window. That fell under the old 435
+        // floor, so the floor won and every width change was dead code.
+        //
+        // Measure the grid track we actually live in instead of guessing
+        // (gridEl/gridWidth are computed above).
+        // Budget the sides at their 190px MINIMUM. The track itself is now
+        // sized from boardSize (see gridTemplateColumns), so this only decides
+        // how much room the board may claim; the sides soak up whatever it
+        // doesn't use. Using the minimum here — not the rendered width — keeps
+        // this independent of the track it feeds, so the two can't chase each
+        // other from frame to frame.
+        const centreTrack = gridWidth - 380 - 48 - boardGutterAllowance;
+        newSize = Math.max(300, Math.min(centreTrack, availableHeight));
       }
 
       // Ensure minimum size
@@ -575,9 +665,16 @@ export default function ArenaRace({ isAdminView = false }) {
       setBoardSize(newSize);
     };
 
+    // Published so the grid's callback ref can re-run this the moment the
+    // element mounts. This effect runs while the page is still in its `loading`
+    // early-return, so querySelector here ALWAYS returns null — which is why
+    // the measurement silently fell back to the estimate.
+    updateBoardSizeRef.current = updateBoardSize;
     updateBoardSize();
     window.addEventListener('resize', updateBoardSize);
-    return () => window.removeEventListener('resize', updateBoardSize);
+    return () => {
+      window.removeEventListener('resize', updateBoardSize);
+    };
   }, []);
 
   
@@ -1233,59 +1330,153 @@ export default function ArenaRace({ isAdminView = false }) {
     );
   }
 
+  // ---- Leaderboard paging ------------------------------------------------
+  const LB_PAGE_SIZE = 20;
+  const lbTotalPages = Math.max(1, Math.ceil(leaderboard.length / LB_PAGE_SIZE));
+  // Where the current user sits right now. -1 when they're not on the board yet.
+  const myIndex = user
+    ? leaderboard.findIndex(p => p.username === user.username)
+    : -1;
+  const myPage = myIndex >= 0 ? Math.floor(myIndex / LB_PAGE_SIZE) : 0;
+  // Browsing a page pins it; otherwise track the user's own rank. Clamped so a
+  // shrinking leaderboard can never strand us past the last page.
+  const lbCurrentPage = Math.min(lbPage ?? myPage, lbTotalPages - 1);
+  const lbStart = lbCurrentPage * LB_PAGE_SIZE;
+  const lbSlice = leaderboard.slice(lbStart, lbStart + LB_PAGE_SIZE);
+
   return (
-    <div style={styles.page}>
+    <div style={{
+      ...styles.page,
+      // The 20px page padding is another inset the full-bleed board has to
+      // clear on mobile; `overflow: hidden` would also clip it. `overflow-x`
+      // alone still guards against sideways scroll.
+      ...(isMobileLayout ? { padding: '10px 0', overflow: 'visible', overflowX: 'hidden' } : null),
+    }}>
       <div style={styles.background}></div>
       
-      <div style={{
+      <div ref={gridRefCb} data-arena-grid="" style={{
         ...styles.container,
-        // Side panels were a rigid 300px each, so on a 1280-1440 laptop they
-        // squeezed (and overflowed) the board. `minmax` lets them give way down
-        // to 220px and the board keeps the middle track.
-        gridTemplateColumns: (isMobileLayout ? '1fr' : 'minmax(220px, 300px) auto minmax(220px, 300px)'),
+        // The board is capped by the window HEIGHT, not by this row's width, so
+        // once it stops growing any width left over just becomes dead space
+        // between the board and the side cards. Sizing the middle track to the
+        // board's real width and giving the sides `1fr` hands that slack to the
+        // cards instead of leaving it as a gap. They still shrink first (down to
+        // 190px) on a narrow window so the board keeps its room.
+        gridTemplateColumns: (isMobileLayout
+          ? '1fr'
+          : `minmax(190px, 1fr) ${boardSize + 24}px minmax(190px, 1fr)`),
         gap: isMobileLayout ? '20px' : '24px',
         padding: isMobileLayout ? '10px' : '0',
+        // Grid items stretch to the row height by default, which is why the
+        // leaderboard card grew tall and empty as the board got bigger. Size
+        // each column to its own content and top-align them; the board centres
+        // itself in the middle track.
+        alignItems: isMobileLayout ? 'stretch' : 'start',
         // The 1400px cap meant a 1920/1440p monitor left the extra room unused.
         maxWidth: isMobileLayout ? undefined : '1800px',
       }}>
-        {/* LEADERBOARD - Left Side */}
-        <div style={styles.leaderboardSection}>
+        {/* LEADERBOARD - Left Side (drops BELOW the board on mobile) */}
+        <div style={{
+          ...styles.leaderboardSection,
+          // The board is the point of the page; a tall leaderboard above it
+          // pushed it off the first screen on phones.
+          ...(isMobileLayout ? { order: 4 } : null),
+        }}>
           <div style={styles.leaderboard}>
             <div style={styles.leaderboardTitle}>🏆 Leaderboard</div>
-            {leaderboard.map((player, index) => (
+            {lbSlice.map((player, index) => (
               <div key={player.username || index} style={{
                 ...styles.leaderboardItem,
                 ...(user && player.username === user.username ? styles.currentPlayer : {})
               }}>
-                <span>#{index + 1} <PlayerName displayName={player.displayName} username={player.username} /></span>
+                {/* Rank is the position in the FULL list, not on this page. */}
+                <span>#{lbStart + index + 1} <PlayerName displayName={player.displayName} username={player.username} /></span>
                 <span>{player.score}</span>
               </div>
             ))}
+
+            {lbTotalPages > 1 && (
+              <div style={styles.lbPager}>
+                <button
+                  type="button"
+                  onClick={() => setLbPage(Math.max(0, lbCurrentPage - 1))}
+                  disabled={lbCurrentPage === 0}
+                  style={{
+                    ...styles.lbPagerBtn,
+                    ...(lbCurrentPage === 0 ? styles.lbPagerBtnDisabled : null),
+                  }}
+                  aria-label="Previous page"
+                >‹</button>
+
+                <span style={styles.lbPagerLabel}>
+                  {lbStart + 1}-{Math.min(lbStart + LB_PAGE_SIZE, leaderboard.length)} of {leaderboard.length}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={() => setLbPage(Math.min(lbTotalPages - 1, lbCurrentPage + 1))}
+                  disabled={lbCurrentPage >= lbTotalPages - 1}
+                  style={{
+                    ...styles.lbPagerBtn,
+                    ...(lbCurrentPage >= lbTotalPages - 1 ? styles.lbPagerBtnDisabled : null),
+                  }}
+                  aria-label="Next page"
+                >›</button>
+              </div>
+            )}
+
+            {/* Only offered once they've actually navigated away from their own
+                page — otherwise the view is already following them. */}
+            {lbPage !== null && myIndex >= 0 && lbCurrentPage !== myPage && (
+              <button
+                type="button"
+                onClick={() => setLbPage(null)}
+                style={styles.lbJumpToMe}
+              >
+                Jump to my rank (#{myIndex + 1})
+              </button>
+            )}
           </div>
         </div>
+
+        {/* WHOSE MOVE — mobile only, sits directly ABOVE the board. */}
+        {!isAdminView && isMobileLayout && (
+          <div style={{
+            order: 1,
+            textAlign: 'center',
+            fontSize: '17px',
+            fontWeight: 700,
+            padding: '10px 0 2px',
+            color: chess.turn() === 'w' ? 'var(--color-text)' : 'var(--color-text-muted)',
+          }}>
+            {chess.turn() === 'w' ? 'White' : 'Black'} to move
+          </div>
+        )}
 
         {/* CHESSBOARD - Center (hidden for admin view) */}
         {!isAdminView && (
         <div style={{
-          // Desktop drops the card entirely — no surface, border, shadow or
-          // padding — so the board itself is the widest thing in the column.
-          // Mobile keeps the card look it already had.
-          ...(isMobileLayout ? styles.boardSection : null),
-          padding: isMobileLayout ? '20px' : '0',
-          marginBottom: isMobileLayout ? '20px' : '0',
-          width: (() => {
-            // Ask the board for its real gutters instead of copying its internal
-            // math — only the labelled sides (bottom+left) reserve space.
-            const g = gutterFor(boardSize);
-            const totalBoardWidth = boardSize + g.left + g.right;
-            // Card padding only exists on mobile now; desktop adds the Skip rail.
-            return `${totalBoardWidth + (isMobileLayout ? 40 : SKIP_RAIL)}px`;
-          })(),
-          maxWidth: '100%', // Prevent overflow on very small screens
-          // Board left, Skip rail right — on mobile it stays stacked as before.
-          display: isMobileLayout ? 'block' : 'flex',
-          alignItems: 'flex-start',
-          gap: isMobileLayout ? '0' : '16px',
+          // NO card on any screen — no surface, border, shadow or padding — so
+          // the board itself is the widest thing in the column. On mobile the
+          // card's 20px padding plus its border was the last inset keeping the
+          // board off the screen edges.
+          padding: 0,
+          marginBottom: isMobileLayout ? '16px' : '0',
+          ...(isMobileLayout ? {
+            order: 2,
+            // Break out of the grid container's 10px side padding so the board
+            // reaches the true screen edges, the way HealthyMix does.
+            width: '100dvw',
+            marginLeft: 'calc(50% - 50dvw)',
+            display: 'flex',
+            justifyContent: 'center',
+          } : {
+            // Fill the middle track so the board sits centred BETWEEN the two
+            // side cards, instead of hugging the left edge of the track.
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }),
         }}>
           <div style={{
             position: 'relative',
@@ -1299,17 +1490,89 @@ export default function ArenaRace({ isAdminView = false }) {
               lastMove={lastMove}
               isInteractive={true}
               boardWidth={boardSize}
+              // Nothing is stacked under this board any more (no card, and Skip
+              // moved to the right column), so it can use nearly the whole
+              // window height. On a wide 1919x700 window that height — not the
+              // ~1400px of free width — is what caps a square board.
+              desktopHeightRatio={0.99}
               draggable={true}
             />
             {/* Resize Handle */}
           </div>
 
+
+        </div>
+        )}
+
+        {/* TIME & SCORE - Right Side (sits between board and leaderboard on mobile) */}
+        <div style={{
+          ...styles.infoSection,
+          // Mobile order inside this column: Skip first, then Time + Score.
+          ...(isMobileLayout ? { order: 3, gap: '12px' } : null),
+        }}>
+          {/* PUZZLE NUMBER — desktop only. On mobile the number is dropped and
+              the "X to move" line is rendered above the board instead. */}
+          {!isAdminView && !isMobileLayout && (
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '20px',
+            padding: '15px',
+            backgroundColor: 'var(--color-surface)',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--color-accent-a20)',
+          }}>
+            <div style={{
+              fontSize: '24px',
+              fontWeight: '700',
+              color: 'var(--color-accent)',
+              marginBottom: '8px',
+            }}>
+              Puzzle {currentPuzzleIndex + 1}
+            </div>
+            <div style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              color: chess.turn() === 'w' ? 'var(--color-text)' : 'var(--color-text-muted)',
+            }}>
+              {chess.turn() === 'w' ? 'White' : 'Black'} to move
+            </div>
+          </div>
+          )}
+
+          {/* Time + Score sit SIDE BY SIDE on mobile, stacked on desktop.
+              order 2 puts them BELOW the Skip button on mobile. */}
+          <div style={{
+            ...styles.statsFlyer,
+            ...(isMobileLayout ? { display: 'flex', flexDirection: 'row', gap: '10px', order: 2, padding: '14px' } : null),
+          }}>
+            <div style={{
+              ...styles.timerTile,
+              ...(isMobileLayout ? { flex: '1 1 0', minWidth: 0, padding: '14px 10px' } : null),
+            }}>
+              <div style={styles.timer}>
+                {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+              </div>
+              <div style={styles.timerLabel}>Time Left</div>
+            </div>
+            {!isAdminView && (
+            <div style={{
+              ...styles.scoreTile,
+              ...(isMobileLayout ? { flex: '1 1 0', minWidth: 0, padding: '14px 10px' } : null),
+            }}>
+              <div style={styles.score}>{score}</div>
+              <div style={styles.scoreLabel}>Score</div>
+            </div>
+            )}
+          </div>
+
+          {/* SKIP PUZZLE — under the Score card on desktop; on mobile order 1
+              puts it directly below the board, above Time + Score. */}
+          {!isAdminView && (
           <div style={{
             display: 'flex',
             justifyContent: 'center',
-            // Desktop: sit beside the board instead of under it.
-            marginTop: isMobileLayout ? '20px' : '0',
-            flex: isMobileLayout ? undefined : '0 0 auto',
+            marginTop: 0,
+            ...(isMobileLayout ? { order: 1 } : null),
           }}>
             <button
               onClick={async () => {
@@ -1344,14 +1607,13 @@ export default function ArenaRace({ isAdminView = false }) {
                 backdropFilter: 'blur(10px)',
                 color: 'var(--color-danger)',
                 border: '1px solid var(--color-danger-a30)',
-                padding: isMobileLayout ? '12px 24px' : '12px 10px',
+                padding: '12px 24px',
                 borderRadius: 'var(--radius-lg)',
                 fontSize: '14px',
                 fontWeight: '600',
                 cursor: 'pointer',
-                // Keep the rail narrow: wrap the label onto two short lines.
-                whiteSpace: isMobileLayout ? 'nowrap' : 'normal',
-                width: isMobileLayout ? 'auto' : '100%',
+                whiteSpace: 'nowrap',
+                width: '100%',
                 lineHeight: 1.3,
                 boxShadow: '0 4px 16px var(--color-danger-a20)',
                 transition: 'all 0.3s ease'
@@ -1370,55 +1632,10 @@ export default function ArenaRace({ isAdminView = false }) {
               ⏭️ Skip Puzzle
             </button>
           </div>
-        </div>
-        )}
-
-        {/* TIME & SCORE - Right Side */}
-        <div style={styles.infoSection}>
-          {/* PUZZLE NUMBER - Above Time Left (hidden for admin view) */}
-          {!isAdminView && (
-          <div style={{
-            textAlign: 'center',
-            marginBottom: '20px',
-            padding: '15px',
-            backgroundColor: 'var(--color-surface)',
-            borderRadius: 'var(--radius-lg)',
-            border: '1px solid var(--color-accent-a20)',
-          }}>
-            <div style={{
-              fontSize: '24px',
-              fontWeight: '700',
-              color: 'var(--color-accent)',
-              marginBottom: '8px',
-            }}>
-              Puzzle {currentPuzzleIndex + 1}
-            </div>
-            <div style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              color: chess.turn() === 'w' ? 'var(--color-text)' : 'var(--color-text-muted)',
-            }}>
-              {chess.turn() === 'w' ? 'White' : 'Black'} to move
-            </div>
-          </div>
           )}
-
-          <div style={styles.statsFlyer}>
-            <div style={styles.timerTile}>
-              <div style={styles.timer}>
-                {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
-              </div>
-              <div style={styles.timerLabel}>Time Left</div>
-            </div>
-            {!isAdminView && (
-            <div style={styles.scoreTile}>
-              <div style={styles.score}>{score}</div>
-              <div style={styles.scoreLabel}>Score</div>
-            </div>
-            )}
-          </div>
         </div>
       </div>
+
     </div>
   );
 }

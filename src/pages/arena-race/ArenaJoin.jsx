@@ -598,10 +598,6 @@ export default function ArenaJoin() {
                       <div style={styles.statValue}>👥 {room.playerCount}</div>
                     </div>
                     <div style={styles.statBox}>
-                      <div style={styles.statLabel}>Puzzles</div>
-                      <div style={styles.statValue}>🧩 {room.puzzleCount}</div>
-                    </div>
-                    <div style={styles.statBox}>
                       <div style={styles.statLabel}>Time Limit</div>
                       <div style={styles.statValue}>⏱️ {room.timeLimit} min</div>
                     </div>
@@ -612,7 +608,8 @@ export default function ArenaJoin() {
                       <div style={styles.progressTitle}>📊 Your Progress</div>
                       <div style={styles.progressRow}>
                         <span style={styles.progressLabel}>Current Puzzle</span>
-                        <span style={styles.progressValue}>{room.userProgress.currentPuzzleIndex + 1}/{room.puzzleCount}</span>
+                        {/* Position only — the "/N" told the user the race length. */}
+                        <span style={styles.progressValue}>{room.userProgress.currentPuzzleIndex + 1}</span>
                       </div>
                       <div style={styles.progressRow}>
                         <span style={styles.progressLabel}>Score</span>
@@ -772,7 +769,6 @@ export default function ArenaJoin() {
                         <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>📚 <span style={{ color: 'var(--color-text)' }}>{race.topicTitle || race.topic}</span></div>
                         <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱️ <span style={{ color: 'var(--color-text)' }}>{race.timeLimit} min</span></div>
                         <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 <span style={{ color: 'var(--color-text)' }}>{race.playerCount} joined</span></div>
-                        <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>🧩 <span style={{ color: 'var(--color-text)' }}>{race.puzzleCount} puzzles</span></div>
                       </div>
 
                       <button
@@ -956,7 +952,6 @@ export default function ArenaJoin() {
                     <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>📚 <span style={{ color: 'var(--color-text)' }}>{race.topic}</span></div>
                     <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>👥 <span style={{ color: 'var(--color-text)' }}>{race.playerCount} players</span></div>
                     <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>⏱️ <span style={{ color: 'var(--color-text)' }}>{race.timeLimit} min</span></div>
-                    <div style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>🧩 <span style={{ color: 'var(--color-text)' }}>{race.puzzleCount} puzzles</span></div>
                   </div>
                   <div style={{ fontSize: 11, color: 'var(--color-text-faint)' }}>
                     Finished {(() => {

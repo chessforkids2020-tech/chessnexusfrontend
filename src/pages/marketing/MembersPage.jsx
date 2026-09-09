@@ -8,6 +8,56 @@ const CANONICAL = "/members";
 // backend/config/coachPlans.js. Keep the two in step if the cap ever moves.
 const FREE_STUDENTS = 30;
 
+// ── NEXUS TITLES ───────────────────────────────────────────────────────────
+// Shown before the name the way a FIDE title is ("NS Hikaru") — chess players
+// read a title instantly, where a "supporter badge" means nothing.
+//
+// Prices mirror COFFEE_TIERS_INR / COFFEE_TIERS_USD in pages/BuyMeACoffee.jsx,
+// and the rules mirror TIER_TITLES + titleFor() in models/CoffeeSupporter.js.
+// Keep them in step if either changes.
+// What an ACTIVE SUPPORTER unlocks.
+//
+// This list mirrors "WHAT A SUPPORTER GETS" in backend/helpers/privileged.js —
+// the single definition every feature gate reads (isPrivileged()). A supporter
+// IS elite as far as access is concerned; they simply do not carry the `elite`
+// role, which stays admin-granted and never expires. Keep the two in step.
+const SUPPORTER_UNLOCKS = [
+  { icon: "🎯", title: "Monthly Focus challenges", desc: "Create your own month-long daily challenges, with XP and a leaderboard for everyone taking part." },
+  { icon: "👥", title: "Team Races", desc: "Host and run team-based puzzle races — set them up and invite players to compete." },
+  { icon: "📖", title: "Opening repertoire", desc: "Unlimited cloud saves for your repertoire, instead of the standard limit." },
+  { icon: "♟️", title: "Endgame trainer — no XP", desc: "The premium endgame library and playing positions out against the engine, without spending any XP." },
+  { icon: "📚", title: "Books, free", desc: "Read the Chess Nexus book library at no cost." },
+  { icon: "📈", title: "Weekly streak report — no XP", desc: "Your weekly progress report unlocked without spending XP on it." },
+];
+
+const NEXUS_TITLES = [
+  {
+    code: "NS",
+    name: "Nexus Supporter",
+    role: "Supports the platform",
+    how: "Given to members who support Chess Nexus",
+    desc: "Held by members who back the growth of Chess Nexus. NS is carried before your name wherever you play — leaderboards, chat, your profile, every race and tournament you enter.",
+    accent: "ns",
+  },
+  {
+    code: "NX",
+    name: "Nexus Expert",
+    role: "Supports the platform",
+    how: "Given to members who support Chess Nexus",
+    desc: "The senior supporter title. NX works exactly as NS does — same recognition, carried the same way, at a higher standing.",
+    accent: "nx",
+  },
+  {
+    code: "NC",
+    name: "Nexus Coach",
+    role: "Builds the community",
+    how: "Awarded to the most active coaches — cannot be bought",
+    desc: "Awarded to the coaches who build this community — teaching here regularly, bringing their own academy across, and introducing other academies and coaches to Chess Nexus. It recognises contribution, not payment, and it never expires.",
+    accent: "nc",
+    earned: true,
+  },
+];
+
 // What every signed-up player gets, at no cost.
 const USER_PERKS = [
   { icon: "🧩", title: "All puzzles & training", desc: "Daily puzzles, themed tactics, rating-band and piece-count training in Healthy Mix — solve as much as you want, with no daily limit." },
@@ -271,6 +321,139 @@ export default function MembersPage() {
           gap: 1rem;
           flex-wrap: wrap;
         }
+
+        /* ── Nexus title cards ── */
+        .nx-titles {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 1rem;
+          margin: 1.25rem 0 1.5rem;
+        }
+
+        .nx-card {
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 1rem;
+          padding: 1.25rem;
+          display: flex;
+          flex-direction: column;
+        }
+
+        /* Each title gets its own accent so the four are told apart at a glance
+           rather than by reading. NC is gold on purpose: it is the one that
+           cannot be bought, so it should not look like another price tier. */
+        .nx-knight { border-color: rgba(148,163,184,0.35); }
+        .nx-ns     { border-color: rgba(6,182,212,0.40); }
+        .nx-nx     { border-color: rgba(139,92,246,0.45); }
+        .nx-nc     {
+          border-color: rgba(245,158,11,0.55);
+          background: linear-gradient(180deg, rgba(245,158,11,0.10), rgba(255,255,255,0.02));
+        }
+
+        .nx-card-top {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.75rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .nx-code {
+          flex-shrink: 0;
+          min-width: 3rem;
+          height: 2.5rem;
+          padding: 0 0.6rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 0.6rem;
+          font-size: 1.05rem;
+          font-weight: 900;
+          letter-spacing: 0.04em;
+          background: rgba(0,0,0,0.35);
+        }
+
+        .nx-knight .nx-code { color: #cbd5e1; }
+        .nx-ns .nx-code     { color: #67e8f9; }
+        .nx-nx .nx-code     { color: #c4b5fd; }
+        .nx-nc .nx-code     { color: #fcd34d; }
+
+        .nx-name {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 800;
+          color: #e2e8f0;
+        }
+
+        /* The role label, not a tagline: it states what the title RECOGNISES,
+           so it is set as a small caps-style descriptor rather than sales copy. */
+        .nx-role {
+          margin: 0.2rem 0 0;
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #9ca3af;
+          opacity: 0.85;
+        }
+
+        .nx-desc {
+          margin: 0 0 1rem;
+          font-size: 0.86rem;
+          line-height: 1.6;
+          color: #9ca3af;
+          flex: 1;
+        }
+
+        /* How the title is obtained. Sits where a price used to: this page
+           explains what the titles ARE and how they work — the amounts belong on
+           /buy-coffee, whose job is to take a payment. */
+        .nx-how {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding-top: 0.75rem;
+          border-top: 1px solid rgba(255,255,255,0.07);
+          font-size: 0.78rem;
+          font-weight: 600;
+          line-height: 1.45;
+          color: #9ca3af;
+        }
+
+        .nx-nc .nx-how { color: #fcd34d; }
+
+        .nx-sub {
+          margin: 1.75rem 0 0.35rem;
+          font-size: 1rem;
+          font-weight: 800;
+          color: #e2e8f0;
+        }
+
+        .nx-sub-lead {
+          margin: 0 0 1rem;
+          font-size: 0.88rem;
+          line-height: 1.6;
+          color: #9ca3af;
+        }
+
+        .nx-notes {
+          display: flex;
+          flex-direction: column;
+          gap: 0.7rem;
+          padding: 1rem 1.15rem;
+          border-radius: 0.9rem;
+          background: rgba(255,255,255,0.025);
+          border: 1px solid rgba(255,255,255,0.07);
+          margin-bottom: 1.25rem;
+        }
+
+        .nx-notes p {
+          margin: 0;
+          font-size: 0.86rem;
+          line-height: 1.65;
+          color: #9ca3af;
+        }
+
+        .nx-notes b { color: #e2e8f0; }
         
         .mkt-btn {
           display: inline-block;
@@ -430,9 +613,118 @@ export default function MembersPage() {
             <p className="mkt-section-lead">
               Elite is a small invited role for people who help run the community.
               Elite members get everything above, plus the power to create and host
-              events for everyone else.
+              events for everyone else. Holding a Nexus title unlocks these same
+              abilities — the difference is that Elite is granted by us and never
+              expires, while a title is self-serve and lasts as long as you hold it.
             </p>
             <PerkList items={ELITE_PERKS} />
+          </section>
+
+          {/* ── Nexus titles ──
+              These titles are carried beside names all over the app, and nothing
+              explained them anywhere — a new player saw "NC bb" on a leaderboard
+              with no way to find out what it meant.
+
+              Framing matters here: an earlier draft called them "letters before
+              some names", which reduces a title to typography. Chess players care
+              about titles specifically, so the copy names them as titles — held,
+              carried and addressed by — never as decoration. */}
+          <section className="mkt-section" aria-label="Nexus titles explained">
+            <h2>🎖️ Nexus titles — NS, NX and NC</h2>
+            <p className="mkt-section-lead">
+              Chess Nexus has its own titles — <b>NS</b>, <b>NX</b> and <b>NC</b> —
+              which recognise the different roles people play in this community.
+            </p>
+            <p className="mkt-section-lead">
+              Like any chess title, they are carried before your name wherever you
+              play on Chess Nexus: <b>NS Hikaru</b>. Each one marks a different way a
+              member contributes to the platform and represents it to everyone else.
+            </p>
+
+            <div className="nx-titles">
+              {NEXUS_TITLES.map((t) => (
+                <div className={`nx-card nx-${t.accent}`} key={t.name}>
+                  <div className="nx-card-top">
+                    <span className="nx-code" aria-hidden="true">{t.code}</span>
+                    <div>
+                      <h3 className="nx-name">{t.name}</h3>
+                      <p className="nx-role">{t.role}</p>
+                    </div>
+                  </div>
+
+                  <p className="nx-desc">{t.desc}</p>
+
+                  <div className="nx-how">
+                    <span aria-hidden="true">{t.earned ? "🏅" : "⭐"}</span> {t.how}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* What the title actually unlocks. The page previously implied a
+                Nexus title was recognition only, while the Elite section above
+                listed the same abilities as elite-exclusive — which undersold
+                the titles and was simply wrong: see helpers/privileged.js. */}
+            <h3 className="nx-sub">What a Nexus title unlocks</h3>
+            <p className="nx-sub-lead">
+              NS and NX open the same tools the Elite role does, for as long as the
+              title is held:
+            </p>
+            <PerkList items={SUPPORTER_UNLOCKS} />
+
+            <div className="nx-notes">
+              <p>
+                <b>NS and NX work the same way.</b> Both are supporter titles: you
+                choose one, it is carried before your name across the whole platform,
+                and NX simply sits above NS. <b>NC is different in kind</b> — it is
+                awarded, never bought, so a coach who also supports us still carries
+                NC, because it is the one that has to be earned.
+              </p>
+              <p>
+                <b>♞ The Knight.</b> Members who support us at the entry level carry a
+                knight beside their name instead of initials — the same recognition,
+                without a lettered title.
+              </p>
+              <p>
+                <b>What NC coaches get.</b> The title itself, which never expires,
+                plus Chess Nexus coaching tools free for up to two years — the full
+                coach plan, with the student cap and live-class limits lifted. The
+                exact length is set when the title is awarded.
+              </p>
+              <p>
+                <b>Are you an active coach here?</b> NC is awarded, not sold — but you
+                can put yourself forward. If you teach regularly on Chess Nexus, run
+                your academy here, or introduce other academies and coaches to the
+                platform, open <Link to="/chat">your chat with the Nexus team</Link>{" "}
+                and apply for your Nexus Coach title. We reply in the same conversation.
+              </p>
+              <p>
+                <b>👑 Founding Supporter.</b> The first supporters carry a permanent
+                crown beside their name. Unlike the titles above, it never expires —
+                it was promised as permanent and it stays that way.
+              </p>
+              <p>
+                <b>How long a title lasts.</b> You choose 1, 3, 6 or 12 months at
+                checkout. It is a one-time payment with no auto-renewal — when the
+                period ends the title simply stops showing, and you can renew whenever
+                you like.
+              </p>
+              <p>
+                <b>Never an advantage at the board.</b> A title unlocks tools for
+                running things — challenges, races, your repertoire — but no extra
+                moves and no edge over the person you are playing. Every puzzle,
+                race, study and tournament here stays free for everyone.
+              </p>
+            </div>
+
+            <div className="mkt-cta-row">
+              <Link to="/nexus-supporter" className="mkt-btn mkt-btn-primary">
+                See who holds a title
+              </Link>
+              <Link to="/buy-coffee" className="mkt-btn">
+                Become a supporter
+              </Link>
+            </div>
           </section>
 
           {/* ── Collaboration / become Elite ── */}

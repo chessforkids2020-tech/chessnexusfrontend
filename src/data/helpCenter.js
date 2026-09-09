@@ -248,6 +248,86 @@ export const HELP_SECTIONS = [
       },
     ],
   },
+
+  // ── NEXUS TITLES & SUPPORTING ────────────────────────────────────────────
+  // Answers here are taken from the code, not from marketing copy:
+  //   tiers/prices     -> pages/BuyMeACoffee.jsx  (COFFEE_TIERS_INR / _USD)
+  //   title rules      -> models/CoffeeSupporter.js  (TIER_TITLES, titleFor)
+  //   what they unlock -> helpers/privileged.js  ("WHAT A SUPPORTER GETS")
+  //   expiry           -> models/CoffeeSupporter.js  (activeMatch)
+  // Keep them in step if any of those change.
+  {
+    id: 'nexus-titles',
+    audience: 'player',
+    icon: '🎖️',
+    title: 'Nexus titles & supporting',
+    blurb: 'NS, NX and NC — what they are, how to get one, and how long they last.',
+    articles: [
+      {
+        q: 'What are NS, NX and NC?',
+        a: 'They are Chess Nexus titles, carried before your name the way a FIDE title is: "NS Hikaru". NS (Nexus Supporter) and NX (Nexus Expert) are held by members who support the platform. NC (Nexus Coach) is awarded to the coaches who do the most for the community and cannot be bought at any price.',
+        to: '/members',
+      },
+      {
+        q: 'How do I get NS or NX?',
+        a: 'Support Chess Nexus from the support page and choose a tier: Nexus Supporter gives you NS, Nexus Expert gives you NX. Your title starts immediately and is shown everywhere you play — leaderboards, chat, your profile, races and tournaments.',
+        to: '/buy-coffee',
+      },
+      {
+        q: 'How do I support Chess Nexus?',
+        a: 'Open the support page, pick a tier and a duration of 1, 3, 6 or 12 months, and pay once. Indian payments go through Razorpay (UPI, cards, net banking) and international payments through PayPal or Razorpay International. There is no subscription and no auto-renewal.',
+        to: '/buy-coffee',
+      },
+      {
+        q: 'What do I get for supporting?',
+        a: 'Your title, plus the same abilities the Elite role has: create your own Monthly Focus challenges, host Team Races, unlimited opening-repertoire cloud saves, the premium endgame trainer and endgame play with no XP, free access to the book library, and your weekly streak report without spending XP.',
+        to: '/members',
+      },
+      {
+        q: 'Will I lose my title if I stop supporting?',
+        a: 'Yes. A title lasts for the period you paid for and then stops showing — it is not a subscription, so nothing renews automatically and you are never charged again. Everything you unlocked while supporting returns to the normal free rules, and you can renew any time to bring the title back. Two things are permanent and never expire: the Founding Supporter crown, and NC.',
+      },
+      {
+        q: 'How long does a Nexus title last?',
+        a: 'As long as the period you chose at checkout — 1, 3, 6 or 12 months. You can renew whenever you like, and renewing never demotes you: if you hold several, the strongest title is the one shown.',
+      },
+      {
+        q: 'Who gets the NC (Nexus Coach) title?',
+        a: 'Coaches who actively build Chess Nexus rather than pay for it. In practice that means the coaches teaching here regularly with real students, the ones who bring their own academy onto the platform, and the ones who introduce other academies and coaches to it. It is a recognition of the people growing this community, and it is reviewed and awarded by the Nexus team.',
+      },
+      {
+        q: 'What do NC coaches get?',
+        a: 'The NC title itself, carried before their name everywhere, and it never expires — unlike the supporter titles it does not lapse. NC coaches are also granted Chess Nexus coaching tools free for up to two years: the full coach plan, with the student cap and the live-class limits lifted. The exact length is set when the title is awarded.',
+      },
+      {
+        q: 'Can I buy the NC title?',
+        a: 'No. NC cannot be bought at any price — no payment path can grant it, by design. It is awarded by the Nexus team to coaches who do the most for this community. That is exactly why it outranks NS and NX: the titles you can buy sit below the one you cannot.',
+      },
+      {
+        q: 'I am an active coach — how do I apply for NC?',
+        a: 'Open your chat with the Nexus team and tell us how you teach here — how many students you run, whether your academy is on Chess Nexus, and any coaches or academies you have introduced. Every account already has that conversation from the welcome message, so just reply there. We review each one and answer in the same chat.',
+        to: '/chat',
+      },
+      {
+        q: 'Does a title give me an advantage in games?',
+        a: 'No. A title unlocks tools for running things — challenges, races, your repertoire — but no extra moves and no edge over the person you are playing. Every puzzle, race, study and tournament on Chess Nexus stays free for everyone, with or without a title.',
+      },
+      {
+        q: 'What is the knight ♞ beside some names?',
+        a: 'It is the entry supporter tier. It carries a knight icon instead of initials — the same recognition, without a lettered title.',
+        to: '/buy-coffee',
+      },
+      {
+        q: 'What is the crown 👑 next to a name?',
+        a: 'That marks a Founding Supporter — one of the first people to back Chess Nexus. Unlike the other titles it is permanent and never expires, because it was promised that way.',
+      },
+      {
+        q: 'Is a Nexus title the same as being Elite?',
+        a: 'They unlock the same abilities, but they are different things. Elite is a small invited role granted by the Nexus team and it never expires. A Nexus title is self-serve and lasts as long as you hold it. Holding NS or NX does not make you Elite.',
+        to: '/members',
+      },
+    ],
+  },
 ];
 
 /** The curated articles, flattened. These drive the browsable topic chips. */

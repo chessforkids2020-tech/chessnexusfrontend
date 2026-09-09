@@ -884,20 +884,6 @@ export default function ArenaWaiting() {
                 }}
               >
                 <div style={styles.statLabel}>
-                  <span>🧩</span> Puzzles
-                </div>
-                <div style={styles.statValue}>{roomData?.puzzleCount}</div>
-              </motion.div>
-
-              <motion.div 
-                style={styles.statItem}
-                whileHover={{ 
-                  y: -2,
-                  boxShadow: '0 4px 16px var(--color-accent-a20)',
-                  border: '1px solid var(--color-accent-a20)'
-                }}
-              >
-                <div style={styles.statLabel}>
                   <span>👥</span> Players
                 </div>
                 <div style={styles.statValue}>{roomData?.playerCount}</div>
