@@ -309,19 +309,22 @@ const styles = {
   },
   tabs: {
     display: 'flex',
+    flexWrap: 'wrap',
     borderBottom: '1px solid var(--color-white-a10)',
     marginBottom: '32px',
-    gap: '4px'
+    gap: '2px',
+    rowGap: '0px',
   },
   tab: {
-    padding: '16px 32px',
+    padding: '14px 18px',
     cursor: 'pointer',
     borderBottom: '2px solid transparent',
     transition: 'all 0.3s ease',
     fontWeight: '600',
     color: 'var(--color-text-muted)',
-    fontSize: '15px',
-    position: 'relative'
+    fontSize: '14.5px',
+    position: 'relative',
+    whiteSpace: 'nowrap',
   },
   activeTab: {
     color: 'var(--color-text)',
