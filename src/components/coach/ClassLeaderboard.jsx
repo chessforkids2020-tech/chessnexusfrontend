@@ -24,6 +24,7 @@
 // to filter them out.
 import React, { useEffect, useState } from 'react';
 import api from '../../api';
+import UserAvatar from '../UserAvatar';
 import './ClassLeaderboard.css';
 
 // Medal for the podium; plain number after that.
@@ -66,9 +67,22 @@ function useCountUp(target, ms = 900) {
   return n;
 }
 
-function Avatar({ src, name }) {
-  if (src) return <img className="clb-avatar" src={src} alt="" />;
-  return <span className="clb-avatar clb-avatar-fallback">{(name || '?').charAt(0).toUpperCase()}</span>;
+// Thin wrapper over the app's shared UserAvatar so this page resolves avatars
+// exactly the way every other list does: uploaded photo, then preset, then 3D
+// model, then an initial. The local photo-only version meant a student who had
+// picked a preset avatar - which is most of them - showed a bare letter here
+// while their avatar appeared correctly everywhere else in the app.
+function Avatar({ row, size = 32 }) {
+  return (
+    <UserAvatar
+      profilePhotoUrl={row?.avatar}
+      activeAvatarUrl={row?.activeAvatarUrl}
+      active3dModel={row?.active3dModel}
+      displayName={row?.name}
+      size={size}
+      className="clb-avatar"
+    />
+  );
 }
 
 // ── Coach hero: the class at a glance ───────────────────────────────────────
@@ -193,7 +207,7 @@ function RankBoard({ title, icon, rows, unit, empty, note, renderMeta, modalTitl
   const Row = ({ r }) => (
     <li className={`clb-rb-row ${r.isMe ? 'is-me' : ''}`}>
       <span className="clb-rb-rank">{rankLabel(r.rank)}</span>
-      <Avatar src={r.avatar} name={r.name} />
+      <Avatar row={r} size={28} />
       <span className="clb-rb-name">
         {r.name}<StarMark stars={r.stars} />{r.isMe && <em className="clb-you"> you</em>}
         {renderMeta && <span className="clb-rb-meta">{renderMeta(r)}</span>}
@@ -268,7 +282,7 @@ function OverallRail({ rows, total, scopeLabel }) {
           {rows.map(r => (
             <li key={r.id} className={`clb-rail-row ${r.isMe ? 'is-me' : ''} ${r.rank <= 3 ? 'is-top3' : ''}`}>
               <span className="clb-rb-rank">{rankLabel(r.rank)}</span>
-              <Avatar src={r.avatar} name={r.name} />
+              <Avatar row={r} size={28} />
               <span className="clb-rail-name">
                 {r.name}<StarMark stars={r.stars} />{r.isMe && <em className="clb-you"> you</em>}
               </span>
@@ -324,8 +338,15 @@ function Podium({ rows }) {
                   image box), so the photo looks mounted in the trophy rather
                   than floating over it. */}
               <span className="clb-tr-face">
-                {r.avatar
-                  ? <img className="clb-tr-photo" src={r.avatar} alt="" />
+                {(r.avatar || r.activeAvatarUrl || r.active3dModel)
+                  ? <UserAvatar
+                      profilePhotoUrl={r.avatar}
+                      activeAvatarUrl={r.activeAvatarUrl}
+                      active3dModel={r.active3dModel}
+                      displayName={r.name}
+                      size={'100%'}
+                      className="clb-tr-photo"
+                    />
                   : <span className="clb-tr-initial">{(r.name || '?').charAt(0).toUpperCase()}</span>}
               </span>
             </div>
