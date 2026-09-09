@@ -223,14 +223,13 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-white-a07);
   background: var(--color-surface-2, rgba(23, 23, 23, 0.6));
-  /* The list is complete, so it scrolls inside the rail rather than making the
-     whole page as tall as the class. */
-  /* Sticky so a long right-hand column does not scroll the class list out of
-     sight; capped to the viewport so the list scrolls inside the rail rather
-     than the rail growing taller than the screen. */
-  position: sticky;
-  top: 12px;
-  max-height: calc(100vh - 24px);
+  /* Tall enough to show ~20 students without scrolling. Measured: the row pitch
+     is 49px, so twenty rows need about 980px of list, plus the header.
+     Sticky + max-height:100vh capped this at 13 rows on a 768px laptop, and no
+     padding tuning reaches 20 inside one viewport - so the rail is now a normal
+     block that grows to fit, and the PAGE scrolls rather than a pinned panel
+     having its own inner scrollbar. */
+  min-height: 1060px;
   display: flex;
   flex-direction: column;
 }
@@ -251,9 +250,13 @@
 .clb-rail-list {
   list-style: none; margin: 10px 0 0; padding: 0;
   display: flex; flex-direction: column; gap: 2px;
-  flex: 1 1 auto; min-height: 0; overflow-y: auto;
-  /* With a big class the list ends mid-row at the fold and reads as TRUNCATED
-     rather than scrollable. Fading the last rows is the cue that it continues. */
+  flex: 1 1 auto; min-height: 0;
+}
+
+/* A class larger than the rail still scrolls inside it, and only then does the
+   bottom fade earn its place as a "there is more" cue. */
+.clb-rail-list.is-scrollable {
+  overflow-y: auto;
   -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 34px), transparent);
           mask-image: linear-gradient(180deg, #000 calc(100% - 34px), transparent);
 }

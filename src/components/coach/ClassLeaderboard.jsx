@@ -278,7 +278,7 @@ function OverallRail({ rows, total, scopeLabel }) {
           finishing assignments and attending classes.
         </p>
       ) : (
-        <ol className="clb-rail-list">
+        <ol className={`clb-rail-list ${rows.length > 20 ? 'is-scrollable' : ''}`}>
           {rows.map(r => (
             <li key={r.id} className={`clb-rail-row ${r.isMe ? 'is-me' : ''} ${r.rank <= 3 ? 'is-top3' : ''}`}>
               <span className="clb-rb-rank">{rankLabel(r.rank)}</span>
