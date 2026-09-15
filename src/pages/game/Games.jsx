@@ -161,9 +161,15 @@ export default function Games() {
       // navigation, where it competed with Puzzles, Study and Race.
       id: '3darena',
       title: "3D Arena",
-      blurb: "The same chess on an immersive 3D board. Opens in a new tab.",
+      blurb: "Offline while we rebuild the 3D board for smoother, faster play.",
       icon: "🎮",
       color: "var(--color-accent-2)",
+      // Temporarily taken down (the 3D board runs on its own server and was
+      // barely being used). Players already know it exists, so the pill says
+      // it is being upgraded rather than "Coming Soon". Flip `disabled` back
+      // to false to bring it live again — `action` is left wired up.
+      disabled: true,
+      disabledLabel: '🛠️ Under Improvement',
       action: open3DArena
     },
     {
@@ -389,7 +395,7 @@ export default function Games() {
             {option.blurb && <p className="play-option-blurb">{option.blurb}</p>}
 
             {option.disabled ? (
-              <div className="po-soon">🔜 Coming Soon</div>
+              <div className="po-soon">{option.disabledLabel || '🔜 Coming Soon'}</div>
             ) : (
               <div className="po-cta"><span>→</span></div>
             )}

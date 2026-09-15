@@ -136,6 +136,11 @@ export default function MyCoachPortal() {
     return () => { alive = false; clearInterval(id); };
   }, []);
 
+  // The student's academy, if any — read off the activities already fetched
+  // rather than with a second request. A student belongs to at most one academy
+  // (their coach's), so the first academy-tagged activity identifies it.
+  const studentAcademy = activities.find(a => a.academy)?.academy || null;
+
   // Poll coach activities (private races) for the Activities tab + its badge.
   const loadActivities = async () => {
     try {
@@ -289,6 +294,17 @@ export default function MyCoachPortal() {
           gets that sidebar. The page's own tab menu (Overview / Schedule / …)
           is the separate ☰ below. */}
       <div className="mcp-header">
+        {/* The student's academy crest, faded so it reads as a watermark rather
+            than competing with the page title. Taken from the activities already
+            loaded — no extra request just to show a logo. */}
+        {studentAcademy?.logoUrl && (
+          <img
+            src={studentAcademy.logoUrl}
+            alt={studentAcademy.name || 'Academy'}
+            title={studentAcademy.name || 'Academy'}
+            className="mcp-academy-logo"
+          />
+        )}
         <div className="mcp-header-text">
           <h1 className="mcp-title">🎓 My Coach</h1>
           <p className="mcp-subtitle">Attendance & payments recorded by your coach</p>
@@ -425,6 +441,18 @@ export default function MyCoachPortal() {
                 };
                 return (
                   <div key={a._id} className="mcp-class-card">
+                    {/* A student in an academy is on the roster of BOTH their own
+                        coach's activities and the academy-wide ones. This badge
+                        is how they tell them apart — without it "Friday Blitz"
+                        gives no clue who is running it. */}
+                    {a.academy && (
+                      <div className="mcp-academy-badge" title={`Run by ${a.academy.name}`}>
+                        {a.academy.logoUrl
+                          ? <img src={a.academy.logoUrl} alt="" />
+                          : <span>🏛️</span>}
+                        <span className="mcp-academy-badge-name">{a.academy.name}</span>
+                      </div>
+                    )}
                     <div className="mcp-class-title">{isTournament ? '🏆' : '🏁'} {a.name || (isTournament ? 'Class Tournament' : 'Class Race')}</div>
                     <div className="mcp-class-coach">{isTournament ? 'Arena Tournament' : `${a.topic} · ${a.timeLimit} min`}</div>
                     <div className="mcp-class-time" style={{ marginTop: 6 }}>

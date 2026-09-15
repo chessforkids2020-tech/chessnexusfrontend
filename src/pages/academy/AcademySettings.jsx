@@ -15,13 +15,53 @@ export default function AcademySettings() {
   const [msg, setMsg] = useState('');
   const [err, setErr] = useState('');
   const [saving, setSaving] = useState(false);
+  // Logo is uploaded on its own endpoint (multipart), not through Save — so it
+  // has its own state and applies immediately rather than waiting for the form.
+  const [logoUrl, setLogoUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     api.get('/api/academy/settings').then(r => {
       setS(r.data); setName(r.data.name || ''); setUses(r.data.usesCoachingTools !== false);
       setActivityCreators(r.data.academyActivityCreators || 'head');
+      setLogoUrl(r.data.branding?.logoUrl || '');
     }).catch(e => setErr(e.response?.data?.message || 'Could not load settings.'));
   }, []);
+
+  const uploadLogo = async (e) => {
+    const file = e.target.files?.[0];
+    // Clear the input so picking the SAME file again still fires onChange.
+    e.target.value = '';
+    if (!file) return;
+    setUploading(true); setErr(''); setMsg('');
+    try {
+      const fd = new FormData();
+      fd.append('logo', file);
+      const res = await api.post('/api/academy/logo', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setLogoUrl(res.data?.logoUrl || '');
+      setMsg('✅ Logo updated.');
+    } catch (e2) {
+      setErr(e2.response?.data?.message || 'Could not upload the logo.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeLogo = async () => {
+    if (!window.confirm('Remove the academy logo?')) return;
+    setUploading(true); setErr(''); setMsg('');
+    try {
+      await api.delete('/api/academy/logo');
+      setLogoUrl('');
+      setMsg('Logo removed.');
+    } catch (e2) {
+      setErr(e2.response?.data?.message || 'Could not remove the logo.');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const save = async () => {
     setSaving(true); setErr(''); setMsg('');
@@ -84,6 +124,41 @@ export default function AcademySettings() {
       <div className="acad-set-field">
         <label>Academy name</label>
         <input value={name} onChange={e => setName(e.target.value)} maxLength={120} />
+      </div>
+
+      {/* Academy logo — the academy's badge. It marks every academy-wide
+          activity card so a student can tell an academy event from their own
+          coach's, and watermarks the student's My Coach page. */}
+      <div className="acad-set-field">
+        <label>Academy logo</label>
+        <div className="acad-logo-row">
+          <div className="acad-logo-preview">
+            {logoUrl
+              ? <img src={logoUrl} alt="Academy logo" />
+              : <span className="acad-logo-empty">🏛️</span>}
+          </div>
+          <div className="acad-logo-actions">
+            <label className="acad-logo-btn">
+              {uploading ? 'Uploading…' : (logoUrl ? 'Replace logo' : 'Upload logo')}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                hidden
+                disabled={uploading}
+                onChange={uploadLogo}
+              />
+            </label>
+            {logoUrl && (
+              <button type="button" className="acad-logo-remove" onClick={removeLogo} disabled={uploading}>
+                Remove
+              </button>
+            )}
+            <p className="acad-set-hint">
+              PNG, JPG, WEBP, GIF or SVG · up to 2 MB. Shown on academy activity
+              cards and to your students.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="acad-set-field">

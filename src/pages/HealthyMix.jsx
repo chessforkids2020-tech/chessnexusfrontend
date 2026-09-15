@@ -441,17 +441,15 @@ export default function HealthyMix() {
   const submittedRef = useRef(false);
   const failedRef = useRef(false);   // puzzle scored as a fail (wrong move or solution shown)
 
-  // ── GUIDED HELP (hint → reveal one move → …) ───────────────────────────────
+  // ── GUIDED HELP (hint) ─────────────────────────────────────────────────────
   // The old "View solution" auto-played the whole line, so a Mate in 3 was over
-  // in one click and the student never worked out moves 2 and 3. Help is now
-  // handed out one step at a time and the student keeps playing the line.
+  // in one click and the student never worked out moves 2 and 3. That action and
+  // its milder sibling ("Show a move", which drew the move as an arrow) are both
+  // gone: the only help now is a hint, and the student always plays every move.
   //
-  // `hint` is the nudge shown BEFORE any move is given away (piece + its square,
-  // never the destination). `revealed` is the single next solution move, drawn
-  // as an arrow on the board with its notation beside it — the student still has
-  // to play it, and then find the reply themselves.
+  // `hint` names the piece to move (its square, never the destination), so it
+  // points at where to look without giving away the idea.
   const [hint, setHint] = useState(null);          // { san, from } | null
-  const [revealed, setRevealed] = useState(null);  // { san, from, to } | null
   const tooEasyRef = useRef(false);  // last solve earned 0 (puzzle far below user rating)
   const statusRef = useRef('loading'); // mirror of status for use inside callbacks
 
@@ -622,7 +620,18 @@ export default function HealthyMix() {
     // rightwards and opened a widening gap. Capping the DRAG at that height
     // instead was worse — it stopped the grip below the width where the board
     // even meets the card, so resizing appeared dead.
-    const heightCap = Math.floor(window.innerHeight * 0.92);
+    // MEASURE where the board actually starts — do not assume it is the top of
+    // the window. Coming from a coach assignment, the progress banner sits above
+    // the grid and pushes the board down ~46px. A flat innerHeight * 0.92 does
+    // not know that, so the drag let the board grow taller than the room left
+    // below the banner and it ran past the bottom of the right card. Subtracting
+    // the measured top (the same way the card-width effect below already does)
+    // caps the drag at what genuinely fits, banner or no banner.
+    const boardTop = boardColRef.current?.getBoundingClientRect().top ?? 0;
+    const heightCap = Math.floor(Math.min(
+      window.innerHeight * 0.92,
+      window.innerHeight - boardTop - VERT_FALLBACK - FRAME_CHROME,
+    ));
     const cap = Math.max(MIN_BOARD, Math.min(MAX_BOARD, freeAtComfort + room));
     const want = Math.min(next, cap);
     const rendered = Math.min(want, heightCap);   // what will actually be drawn
@@ -953,7 +962,6 @@ export default function HealthyMix() {
     failedRef.current = false;
     tooEasyRef.current = false;
     setHint(null);
-    setRevealed(null);
     puzzleStartTimeRef.current = Date.now();
     setPuzzle(p);
     puzzleRef.current = p;
@@ -1063,7 +1071,6 @@ export default function HealthyMix() {
       failedRef.current = false;
       tooEasyRef.current = false;
       setHint(null);
-      setRevealed(null);
 
       // Analytics: count this as a puzzle attempt (feeds admin Puzzle Analytics).
       puzzleStartTimeRef.current = Date.now();
@@ -1277,9 +1284,8 @@ export default function HealthyMix() {
     const isAltMate = game.isCheckmate();
 
     if (matchesLine || isAltMate) {
-      // Correct move — any hint/arrow for THIS move has been used up.
+      // Correct move — any hint for THIS move has been used up.
       setHint(null);
-      setRevealed(null);
       chessRef.current = game;
       setFen(game.fen());
       setLastMove({ from: result.from, to: result.to });
@@ -1337,8 +1343,7 @@ export default function HealthyMix() {
 
   // ── Score the puzzle as failed, once ──
   // Asking for help costs the point exactly like a wrong move does, and costs it
-  // only on the FIRST request — a student who takes a hint and then a revealed
-  // move is not penalised twice for one puzzle.
+  // only on the FIRST request, so one puzzle is never penalised twice.
   const markFailedOnce = useCallback(() => {
     if (statusRef.current !== 'solving' || failedRef.current) return;
     failedRef.current = true;
@@ -1366,7 +1371,7 @@ export default function HealthyMix() {
     } catch (_) { return null; }
   }, []);
 
-  // ── Step 1: Hint ──
+  // ── Hint ──
   // Names the piece and where it stands, never where it goes. Enough to break a
   // student out of staring at the wrong side of the board, while leaving the
   // actual idea for them to find.
@@ -1375,64 +1380,12 @@ export default function HealthyMix() {
     if (!mv) return;
     markFailedOnce();
     setHint({ san: mv.san, from: mv.from });
-    setRevealed(null);
     setMessage('Hint shown. Still your move — try to find it.');
   }, [nextSolutionMove, markFailedOnce]);
 
-  // ── Step 2: Reveal ONE move ──
-  // Draws the move as an arrow and shows its notation, but does NOT play it: the
-  // student plays it themselves, the opponent replies, and they are back to
-  // solving the rest of the line on their own. This is the whole point of the
-  // change — a Mate in 3 now takes three decisions instead of one click.
-  const revealNextMove = useCallback(() => {
-    const mv = nextSolutionMove();
-    if (!mv) return;
-    markFailedOnce();
-    setHint(null);
-    setRevealed(mv);
-    setMessage(`Play ${mv.san} on the board, then find the next move.`);
-  }, [nextSolutionMove, markFailedOnce]);
-
-  // ── Give up: play out the rest ──
-  // Kept for the student who is genuinely done with this puzzle. Unchanged
-  // behaviour: auto-plays the remaining line and drops into the free analysis
-  // board. It is now a deliberate last resort rather than the first thing on
-  // offer.
-  const showSolution = useCallback(() => {
-    usedSolutionRef.current = true;
-    markFailedOnce();
-    if (statusRef.current === 'solving') {
-      setMessage('Solution revealed. Free play enabled.');
-    }
-    setHint(null);
-    setRevealed(null);
-    // Auto-play the remaining solution moves, then enter free-play.
-    let game = new Chess(chessRef.current.fen());
-    const sol = solutionRef.current;
-    let i = moveIndexRef.current;
-    const step = () => {
-      if (i >= sol.length) {
-        chessRef.current = game;
-        moveIndexRef.current = i;
-        setStatusSynced('failed'); // puzzle over → free analysis board
-        return;
-      }
-      try {
-        let mv;
-        try { mv = game.move(sol[i]); }
-        catch (e) {
-          const m = game.moves({ verbose: true }).find(x => normSan(x.san) === normSan(sol[i]));
-          if (m) mv = game.move(m); else throw e;
-        }
-        setFen(game.fen());
-        if (mv) { setLastMove({ from: mv.from, to: mv.to }); pushPly(mv.san, game.fen(), mv.from, mv.to); }
-        chessRef.current = game;
-      } catch (_) { /* ignore */ }
-      i += 1;
-      setTimeout(step, 500);
-    };
-    step();
-  }, [markFailedOnce, setStatusSynced, pushPly]);
+  // NOTE: the old "Give up — play it out" action was removed from the help
+  // buttons. usedSolutionRef is kept: it still rides along in the submit payload
+  // as `usedSolution` and gates redo counting, and now simply stays false.
 
   const next = () => {
     if (isRedo) {
@@ -1467,8 +1420,7 @@ export default function HealthyMix() {
     setEngineOn(false);   // back to solving → engine hidden and off again
     setSelection(null);   // …and the square labels go with it
     setSquareEvals({});
-    setHint(null);       // a retry starts from a clean board — no stale arrow
-    setRevealed(null);
+    setHint(null);       // a retry starts from a clean board — no stale hint
     setStatusSynced('solving');
     setMessage(failedRef.current ? 'Retry — find the right line (no points).' : turnPrompt(game));
   }, [puzzle, setStatusSynced, clearVariations]);
@@ -1596,14 +1548,12 @@ export default function HealthyMix() {
   // student has stepped back through the moves card, an arrow computed for the
   // live board would sit on a position that is not on screen.
   const showHelpOverlay = status === 'solving' && atLive;
-  const boardHelpArrows = React.useMemo(() => (
-    showHelpOverlay && revealed
-      ? [{ from: revealed.from, to: revealed.to, color: 'var(--color-accent-2)' }]
-      : []
-  ), [showHelpOverlay, revealed]);
+  // Help never draws an arrow any more (that was "Show a move"). The board prop
+  // is kept so the component's signature is unchanged, but it is always empty.
+  const boardHelpArrows = React.useMemo(() => [], []);
   const boardHelpHighlights = React.useMemo(() => (
-    showHelpOverlay && hint && !revealed ? { [hint.from]: 'var(--color-accent-2)' } : {}
-  ), [showHelpOverlay, hint, revealed]);
+    showHelpOverlay && hint ? { [hint.from]: 'var(--color-accent-2)' } : {}
+  ), [showHelpOverlay, hint]);
   const boardInteractive =
     puzzleOver || (atLive && status === 'solving' && !botThinking);
   // Back/start are dead only at the very start of the mainline — inside a variation
@@ -1888,11 +1838,10 @@ export default function HealthyMix() {
               }
               onSelectionChange={squareEvalsOn && puzzleOver ? setSelection : undefined}
               squareEvals={squareEvalsOn && puzzleOver ? squareEvals : undefined}
-              // Guided help. A revealed move is drawn as a full arrow (the
-              // student still has to play it); a hint only rings the piece to
-              // move, so it points at the idea without giving the move away.
-              // Both are suppressed while browsing history, where an arrow for
-              // the live position would be pointing at the wrong board.
+              // Guided help. A hint only rings the piece to move, so it points
+              // at the idea without giving the move away. It is suppressed while
+              // browsing history, where a highlight computed for the live
+              // position would be pointing at the wrong board.
               arrows={boardHelpArrows}
               highlightSquares={boardHelpHighlights}
               // Take ownership of the drag. Left to itself the board clamps the
@@ -2124,25 +2073,14 @@ export default function HealthyMix() {
           <div className="hm-controls">
             <div className="hm-message-inline">{message}</div>
 
-            {/* The notation half of the reveal — the arrow says WHERE, this says
-                WHAT, which is what a student needs in order to write the move
-                down and learn it. Mirrors the board overlay exactly. */}
-            {status === 'solving' && atLive && (hint || revealed) && (
+            {/* The wording half of the hint — the board rings the piece, this
+                names its square. Mirrors the board overlay exactly. */}
+            {status === 'solving' && atLive && hint && (
               <div className="hm-help-note">
-                {revealed ? (
-                  <>
-                    <span className="hm-help-label">Play this move:</span>
-                    <span className="hm-help-move">{revealed.san}</span>
-                    <span className="hm-help-sub">then find the next one yourself</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="hm-help-label">Hint:</span>
-                    <span className="hm-help-sub">
-                      look at the piece on <strong>{hint.from}</strong>
-                    </span>
-                  </>
-                )}
+                <span className="hm-help-label">Hint:</span>
+                <span className="hm-help-sub">
+                  look at the piece on <strong>{hint.from}</strong>
+                </span>
               </div>
             )}
 
@@ -2152,27 +2090,16 @@ export default function HealthyMix() {
                 ↻ Retry from start
               </button>
             )}
-            {/* ── Graduated help: Hint → Show a move → Give up ──────────────
-                Offered in increasing order of how much they give away. The
-                student keeps the move themselves at every step except the last,
-                so a Mate in 3 is still three decisions. All three cost the
-                point (once), exactly as a wrong move does. */}
-            {status === 'solving' && atLive && (
-              <>
-                {!hint && !revealed && (
-                  <button className="hm-btn hm-btn-ghost" onClick={showHint}>
-                    💡 Hint
-                  </button>
-                )}
-                {!revealed && (
-                  <button className="hm-btn hm-btn-ghost" onClick={revealNextMove}>
-                    ➡️ Show a move
-                  </button>
-                )}
-                <button className="hm-btn hm-btn-ghost" onClick={showSolution}>
-                  Give up — play it out
-                </button>
-              </>
+            {/* ── Help: Hint ────────────────────────────────────────────────
+                One help button. It rings the piece to move and nothing else, so
+                the student still has to find the idea themselves — a Mate in 3
+                stays three decisions. Costs the point (once), exactly as a wrong
+                move does. The old "Show a move" and "Give up" actions were
+                removed: both handed over the answer outright. */}
+            {status === 'solving' && atLive && !hint && (
+              <button className="hm-btn hm-btn-ghost" onClick={showHint}>
+                💡 Hint
+              </button>
             )}
 
             {/* After the puzzle is over (solved or failed) */}

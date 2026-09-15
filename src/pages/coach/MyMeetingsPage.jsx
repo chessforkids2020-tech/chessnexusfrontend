@@ -165,12 +165,16 @@ export default function MyMeetingsPage() {
         {/* ── Hero header ── */}
         <div style={s.hero}>
           <div style={s.heroMain}>
+            {/* The eyebrow used to read "Live Classroom" above a "Your classroom
+                meetings" title. The title now carries the name, so repeating it
+                here would print the same words twice; the eyebrow keeps the live
+                dot and says what the page lists instead. */}
             <div style={s.eyebrow}>
-              <span style={s.liveDot} />Live Classroom
+              <span style={s.liveDot} />Your classrooms
             </div>
-            <h1 style={s.h1}>Your classroom meetings</h1>
+            <h1 style={s.h1}>Live Classroom</h1>
             <p style={s.sub}>
-              Create a reusable meeting once — it gets a permanent
+              Create a reusable classroom once — it gets a permanent
               link you can share with a batch and reuse any day.
             </p>
           </div>

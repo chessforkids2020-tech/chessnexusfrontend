@@ -1,0 +1,139 @@
+/* pages/academy/AcademyActivities.css
+   Styles for /academy/activities. Layout primitives (.acad-wrap, .acad-head,
+   .acad-empty, .acad-error, .acad-msg) come from AcademyDashboard.css, which
+   this page also imports; everything here is activity-specific. */
+
+/* Logo beside the page title, and the per-card academy badge. */
+.acad-act-headlogo {
+  height: 30px; width: 30px; object-fit: contain;
+  border-radius: var(--radius-sm); vertical-align: -6px; margin-right: 8px;
+}
+
+.acad-act-headbtns { display: flex; gap: 8px; align-items: flex-start; }
+
+/* ── Create button + dropdown ─────────────────────────────────────────────── */
+.acad-act-menu { position: relative; }
+.acad-act-create {
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+  color: #04211d; border: none; border-radius: var(--radius-md);
+  padding: 9px 16px; font-size: 13.5px; font-weight: 700; cursor: pointer;
+  font-family: inherit;
+}
+.acad-act-create:disabled { opacity: 0.45; cursor: not-allowed; }
+.acad-act-back {
+  background: none; border: 1px solid var(--color-white-a13);
+  color: var(--color-text-muted); border-radius: var(--radius-md);
+  padding: 9px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+  text-decoration: none; display: inline-block; font-family: inherit;
+}
+.acad-act-backdrop { position: fixed; inset: 0; z-index: 40; }
+.acad-act-dropdown {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 41;
+  min-width: 220px; background: var(--color-surface);
+  border: 1px solid var(--color-white-a13); border-radius: var(--radius-lg);
+  padding: 6px; box-shadow: 0 10px 30px var(--color-black-a35);
+}
+.acad-act-item {
+  display: block; width: 100%; text-align: left; background: none; border: none;
+  color: var(--color-text); padding: 10px 12px; font-size: 13.5px;
+  border-radius: var(--radius-md); cursor: pointer; font-family: inherit;
+}
+.acad-act-item:hover { background: var(--color-accent-a12); color: var(--color-accent); }
+
+/* ── Notes (read-only coach, no students yet) ─────────────────────────────── */
+.acad-act-note {
+  background: var(--color-accent-a08); border: 1px solid var(--color-accent-a30);
+  border-radius: var(--radius-lg); padding: 12px 14px; margin-bottom: 18px;
+  font-size: 13.5px; color: var(--color-text); line-height: 1.5;
+}
+.acad-act-note a { color: var(--color-accent); }
+
+/* ── Inline create forms ──────────────────────────────────────────────────── */
+.acad-act-form {
+  background: var(--color-surface); border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg); padding: 16px; margin-bottom: 20px;
+}
+.acad-act-form h3 { margin: 0 0 14px; font-size: 15px; color: var(--color-text); }
+.acad-act-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;
+}
+.acad-act-grid label { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.acad-act-grid label span { font-size: 12px; color: rgba(226,232,240,0.6); font-weight: 600; }
+.acad-act-grid input,
+.acad-act-grid select {
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a13);
+  border-radius: var(--radius-md); padding: 9px 10px; color: var(--color-text);
+  font-size: 13.5px; font-family: inherit; width: 100%; box-sizing: border-box;
+}
+.acad-act-grid input:focus,
+.acad-act-grid select:focus { outline: none; border-color: var(--color-accent); }
+.acad-act-hint { font-size: 12.5px; color: rgba(226,232,240,0.55); margin: 12px 0 0; line-height: 1.5; }
+.acad-act-formbtns { display: flex; gap: 8px; margin-top: 14px; }
+
+/* ── Type tabs ────────────────────────────────────────────────────────────── */
+.acad-act-tabs {
+  display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--color-white-a07); padding-bottom: 10px;
+}
+.acad-act-tab {
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a07);
+  color: rgba(226,232,240,0.65); border-radius: var(--radius-lg);
+  padding: 7px 13px; font-size: 12.5px; font-weight: 700; cursor: pointer;
+  font-family: inherit; white-space: nowrap;
+}
+.acad-act-tab.is-active {
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+  color: #04211d; border-color: transparent;
+}
+
+/* ── Activity cards ───────────────────────────────────────────────────────── */
+.acad-act-cards {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px;
+}
+.acad-act-card {
+  background: var(--color-surface); border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg); padding: 14px; display: flex; flex-direction: column;
+}
+.acad-act-cardtop { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+/* The academy crest on each card — this page is all academy events, so the
+   logo is the badge that says so. */
+.acad-act-badge {
+  height: 34px; width: 34px; object-fit: contain; border-radius: var(--radius-sm);
+  flex-shrink: 0; background: var(--color-white-a04);
+}
+.acad-act-badge-ph {
+  height: 34px; width: 34px; display: grid; place-items: center; font-size: 18px;
+  border-radius: var(--radius-sm); background: var(--color-white-a04); flex-shrink: 0;
+}
+.acad-act-cardname { min-width: 0; flex: 1; }
+.acad-act-title {
+  font-size: 14.5px; font-weight: 700; color: var(--color-text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.acad-act-type { font-size: 11.5px; color: rgba(226,232,240,0.5); margin-top: 2px; }
+.acad-act-chip { font-size: 11.5px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.acad-act-chip.is-live { color: var(--color-danger); }
+.acad-act-chip.is-wait { color: var(--color-warning); }
+.acad-act-chip.is-done { color: var(--color-success); }
+.acad-act-chip.is-off  { color: rgba(226,232,240,0.45); }
+
+.acad-act-meta {
+  display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px;
+  color: #a78bfa; margin-bottom: 8px;
+}
+.acad-act-meta span:not(:last-child)::after { content: ' ·'; color: rgba(226,232,240,0.3); }
+.acad-act-reach { font-size: 12.5px; color: rgba(226,232,240,0.6); margin-bottom: 12px; }
+.acad-act-by { color: rgba(226,232,240,0.45); }
+.acad-act-open {
+  margin-top: auto; display: inline-block; text-align: center;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
+  color: #04211d; border-radius: var(--radius-md); padding: 8px 14px;
+  font-size: 13px; font-weight: 700; text-decoration: none;
+}
+
+@media (max-width: 560px) {
+  .acad-act-headbtns { width: 100%; }
+  .acad-act-create { flex: 1; }
+  .acad-act-dropdown { right: auto; left: 0; }
+  .acad-act-cards { grid-template-columns: 1fr; }
+}

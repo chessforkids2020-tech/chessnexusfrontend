@@ -8,7 +8,11 @@ export default function ArenaTournamentCreate() {
   const [searchParams] = useSearchParams();
   const clubId = searchParams.get('clubId') || '';
   // Coach mode: a private tournament for the coach's own students only.
-  const coachMode = searchParams.get('coach') === '1';
+  // Academy mode: the roster is every student of every coach in the academy.
+  // Mutually exclusive — academy wins, matching the backend, which checks
+  // academyWide before coachPrivate.
+  const academyMode = searchParams.get('academy') === '1';
+  const coachMode = !academyMode && searchParams.get('coach') === '1';
   const [linkToClub, setLinkToClub] = useState(Boolean(clubId));
   const [tournamentType, setTournamentType] = useState('standard');
   const [teamCount, setTeamCount] = useState(2);
@@ -66,8 +70,9 @@ export default function ArenaTournamentCreate() {
         description: formData.description,
         createdInTimezone: userTimezone,
         tournamentType,
+        ...(academyMode ? { academyWide: true } : {}),
         ...(coachMode ? { coachPrivate: true } : {}),
-        ...(!coachMode && clubId && linkToClub ? { clubId } : {})
+        ...(!coachMode && !academyMode && clubId && linkToClub ? { clubId } : {})
       };
 
       if (!isMarathon) {
@@ -85,7 +90,12 @@ export default function ArenaTournamentCreate() {
       const response = await api.post('/api/arenatournament/create', payload);
 
       if (response.data.success) {
-        if (coachMode) {
+        if (academyMode) {
+          // Academy → the academy Activities page, where every academy event
+          // and its results are collected. Students across all member coaches
+          // see it in their own Activities tab automatically.
+          navigate('/academy/activities');
+        } else if (coachMode) {
           // Coach → their own no-live-board spectator page. Students see it in
           // their Activities tab automatically (no join code to share).
           navigate(`/coach/arena-tournament/${response.data.tournament._id}`);

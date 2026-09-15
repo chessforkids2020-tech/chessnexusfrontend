@@ -9,6 +9,7 @@ import api from '../api';
 const NAV = [
   { icon: '📊', label: 'Overview',   path: '/academy/overview' },
   { icon: '👨‍🏫', label: 'Coaches',   path: '/academy/coaches' },
+  { icon: '🎯', label: 'Activities', path: '/academy/activities' },
   { icon: '💳', label: 'Billing',    path: '/academy/billing' },
   { icon: '🧾', label: 'Payments',   path: '/academy/payments' },
   { icon: '⚙️', label: 'Settings',   path: '/academy/settings' },

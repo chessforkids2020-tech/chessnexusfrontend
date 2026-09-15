@@ -70,6 +70,7 @@ const ROUTES = [
   '/3d-chess-arena-tournament',
   '/chess-study',
   '/chess-community',
+  '/careers',
   // The coach landing page. Not prerendered before, so a visitor got an empty
   // <div id="root"> and waited for the whole bundle to download, parse and boot
   // before ANY content appeared — the "5-10 seconds before coaches show up".

@@ -78,18 +78,22 @@ const Chat = () => {
     soundManager.play('notification');
   };
 
-  // Connect socket on mount
+  // Make sure the shared socket is up while the chat page is open.
+  //
+  // It must NOT be disconnected on unmount. `socket` is a module-level singleton
+  // owned by AuthContext, which connects it at login and keeps it up for the
+  // whole session — the unread badge, the chat toasts and every live feature
+  // listen on it. Disconnecting here killed all of them the moment the user left
+  // the chat page: AuthContext only reconnects when `user` changes, so new
+  // messages stopped arriving anywhere until a full page reload.
+  //
+  // Connect (idempotent — a no-op when already connected) and leave teardown to
+  // AuthContext, which disconnects on logout.
   useEffect(() => {
-    if (user) {
+    if (user && !socket.connected) {
+      // Server authenticates via the JWT in the socket handshake.
       socket.connect();
-      
-      // Ensure authentication for socket
-      // Server handles authentication via JWT token in socket handshake
     }
-
-    return () => {
-      socket.disconnect();
-    };
   }, [user]);
 
   // Fetch chats
@@ -132,10 +136,18 @@ const Chat = () => {
 
   // Keep the open chat's participant data (incl. lastActivity for the online dot)
   // in sync with the periodic chat-list refresh, without disturbing selection.
+  //
+  // The comparison MUST be by value. fetchChats builds brand-new objects every
+  // 60s, so a reference check (fresh.participants !== selected.participants) is
+  // always true and replaces selectedChat on every poll — which re-runs the
+  // "load messages" effect below and flashes "Loading messages..." in the user's
+  // face mid-read. Compare the serialised participants instead, so we only touch
+  // selectedChat when something actually changed.
   useEffect(() => {
     if (!selectedChat) return;
     const fresh = chats.find(c => c._id === selectedChat._id);
-    if (fresh && fresh.participants !== selectedChat.participants) {
+    if (!fresh) return;
+    if (JSON.stringify(fresh.participants) !== JSON.stringify(selectedChat.participants)) {
       setSelectedChat(prev => (prev ? { ...prev, participants: fresh.participants } : prev));
     }
   }, [chats]); // eslint-disable-line
@@ -237,11 +249,17 @@ const Chat = () => {
   }, [user, isMuted]); // removed selectedChat — using ref instead to avoid stale closures
 
   // Fetch messages when chat is selected
+  // Load messages ONLY when the user actually opens a different chat. Keying on
+  // selectedChat._id (not the object) means harmless re-renders of the same
+  // conversation — a presence poll refreshing participants, say — never clear
+  // the thread or show the loading state while the user is reading it. New
+  // messages for the open chat arrive over the socket, so there is nothing to
+  // re-fetch anyway.
   useEffect(() => {
-    if (selectedChat) {
+    if (selectedChat?._id) {
       fetchMessages(selectedChat._id);
     }
-  }, [selectedChat]);
+  }, [selectedChat?._id]); // eslint-disable-line
 
   // When no chat is selected, clear messages to show the "Select a chat" empty state
   useEffect(() => {

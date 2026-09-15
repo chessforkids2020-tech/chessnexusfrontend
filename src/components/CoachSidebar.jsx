@@ -29,6 +29,12 @@ const LIVE_NAV = { icon: '🔴', label: 'Classroom', path: '/coach/live' };
 // from. A member coach is a normal coach — the academy is an overlay over their
 // account, not somewhere they manage.
 const ACADEMY_NAV = { icon: '🏛️', label: 'Academy', path: '/academy/dashboard' };
+// A MEMBER coach still has no management area, but they do have one academy
+// page: the academy-wide activities their own students get pulled into. That
+// page uses AcademyMemberGate (not AcademyGate), so this entry lands rather
+// than bouncing. Without it a head could schedule an event across a coach's
+// class and the coach would have no way to see it existed.
+const ACADEMY_ACTIVITIES_NAV = { icon: '🏛️', label: 'Academy', path: '/academy/activities' };
 
 export default function CoachSidebar({ onNavigate }) {
   const location = useLocation();
@@ -49,8 +55,12 @@ export default function CoachSidebar({ onNavigate }) {
   // Owner only — must match AcademyGate in App.jsx, which is what actually
   // guards the destination.
   const isAcademyOwner = !!(academy?.academy && academy?.status === 'active' && academy?.isOwner);
+  // An active member who is NOT the owner: no management area, but they do get
+  // the academy activities page.
+  const isAcademyMember = !!(academy?.academy && academy?.status === 'active' && !academy?.isOwner);
   let navItems = showClassroom ? [...NAV, LIVE_NAV] : [...NAV];
   if (isAcademyOwner) navItems = [...navItems, ACADEMY_NAV];
+  else if (isAcademyMember) navItems = [...navItems, ACADEMY_ACTIVITIES_NAV];
   // Students online (mirrors the main sidebar's "friends online").
   const [onlineStudents, setOnlineStudents] = useState([]);
   const [showOnline, setShowOnline] = useState(false);

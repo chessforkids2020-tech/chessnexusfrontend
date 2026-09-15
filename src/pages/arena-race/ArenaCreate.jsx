@@ -10,7 +10,11 @@ export default function ArenaCreate() {
   const { user } = useAuth();
   const clubId = searchParams.get('clubId') || '';
   // Coach mode: a private race for the coach's own students only.
-  const coachMode = searchParams.get('coach') === '1';
+  // Academy mode: the roster is every student of every coach in the academy.
+  // The two are mutually exclusive — academy wins if both are somehow set,
+  // matching the backend, which checks academyWide before coachPrivate.
+  const academyMode = searchParams.get('academy') === '1';
+  const coachMode = !academyMode && searchParams.get('coach') === '1';
   const [linkToClub, setLinkToClub] = useState(Boolean(clubId));
   
   // Form state
@@ -74,15 +78,20 @@ export default function ArenaCreate() {
         maxPlayers,
         startMode,
         plannedStartTime: plannedStart.toISOString(),
+        ...(academyMode ? { academyWide: true } : {}),
         ...(coachMode ? { coachPrivate: true } : {}),
-        ...(!coachMode && clubId && linkToClub ? { clubId } : {})
+        ...(!coachMode && !academyMode && clubId && linkToClub ? { clubId } : {})
       });
 
       if (response.data.ok) {
-        // Coach → their live view; everyone else → the waiting room.
-        navigate(coachMode
-          ? `/coach/arena/${response.data.roomId}`
-          : `/arena/waiting/${response.data.roomId}`);
+        // Academy → back to the academy Activities page, where the results for
+        // every academy event are collected. Coach → their live view. Everyone
+        // else → the waiting room.
+        navigate(academyMode
+          ? '/academy/activities'
+          : coachMode
+            ? `/coach/arena/${response.data.roomId}`
+            : `/arena/waiting/${response.data.roomId}`);
       }
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to create race');

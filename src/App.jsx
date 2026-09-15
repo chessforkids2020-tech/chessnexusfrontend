@@ -64,6 +64,7 @@ import CoachReferralPage from "./pages/marketing/CoachReferralPage";
 import CoachFaqPage from "./pages/marketing/CoachFaqPage";
 import AcademyDashboard from "./pages/academy/AcademyDashboard";
 import AcademyCoaches from "./pages/academy/AcademyCoaches";
+import AcademyActivities from "./pages/academy/AcademyActivities";
 import AcademyBilling from "./pages/academy/AcademyBilling";
 import AcademyPayments from "./pages/academy/AcademyPayments";
 import AcademySettings from "./pages/academy/AcademySettings";
@@ -373,6 +374,36 @@ function AcademyGate({ children, allowUnpaid = false }) {
 
   const paid = me.academy.planStatus === 'active';
   if (!paid && !allowUnpaid) return <Navigate to="/academy/billing" replace />;
+  return children;
+}
+
+// AcademyMemberGate: like AcademyGate, but admits ANY active member coach, not
+// only the owner. Academy-wide activities are the one academy page a member
+// coach must reach: the head can schedule an event that pulls in their students,
+// and a coach who cannot see it has had their class booked by an invisible hand.
+// Creation stays gated server-side by the academy's academyActivityCreators
+// setting, so read access here never implies write access.
+//
+// No plan check: the academy's subscription is the OWNER's concern, and a member
+// coach cannot pay it. Bouncing them to a billing page they have no rights on
+// would be a dead end, so members read regardless of plan status.
+function AcademyMemberGate({ children }) {
+  const { user, loading } = useAuth();
+  const [me, setMe] = React.useState(undefined); // undefined = loading
+
+  React.useEffect(() => {
+    let alive = true;
+    api.get('/api/academy/me').then(r => { if (alive) setMe(r.data || null); }).catch(() => { if (alive) setMe(null); });
+    return () => { alive = false; };
+  }, []);
+
+  if (loading || me === undefined) return <div style={{ textAlign: 'center', padding: 50 }}>Loading…</div>;
+  if (!user) return <Navigate to="/login" replace />;
+  // Must be an ACTIVE member (a pending 'requested' membership is not yet in).
+  if (!me?.academy || me?.status !== 'active') return <Navigate to="/coach/dashboard" replace />;
+  // The owner still has to have paid, matching AcademyGate — otherwise the head
+  // could use the academy's features without an active plan.
+  if (me.isOwner && me.academy.planStatus !== 'active') return <Navigate to="/academy/billing" replace />;
   return children;
 }
 
@@ -1258,6 +1289,11 @@ export default function App() {
             by requireAcademyOwner on the detail endpoint. */}
         <Route path="/academy/coaches/:coachId" element={
           <UserLayout><CoachRoute><AcademyGate><AcademyCoachDetail /></AcademyGate></CoachRoute></UserLayout>
+        } />
+        {/* Academy-wide activities. AcademyMemberGate (not AcademyGate): every
+            active member coach reads this page, not just the owner. */}
+        <Route path="/academy/activities" element={
+          <UserLayout><CoachRoute><AcademyMemberGate><AcademyActivities /></AcademyMemberGate></CoachRoute></UserLayout>
         } />
         <Route path="/academy/billing" element={
           <UserLayout><CoachRoute><AcademyGate allowUnpaid><AcademyBilling /></AcademyGate></CoachRoute></UserLayout>

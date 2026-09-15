@@ -30,6 +30,39 @@
 }
 .mcp-header-text { min-width: 0; }
 
+/* The student's academy crest, top-right of the page. Absolutely positioned
+   rather than placed in the header's flex row: the row is space-between with
+   the back button on the right, and a third child would push the layout around.
+   Faded to 50% so it reads as a watermark, not a second heading. */
+.mcp-academy-logo {
+  position: absolute; top: 0; right: 0;
+  height: 54px; width: 54px; object-fit: contain;
+  opacity: 0.5; pointer-events: none; z-index: 0;
+  border-radius: var(--radius-md);
+}
+/* The back button sits on the same corner on desktop, so the crest drops below
+   it there; on mobile the button is hidden and the corner is free. */
+@media (min-width: 721px) {
+  .mcp-academy-logo { top: 46px; }
+}
+
+/* Academy badge on a student's activity card — says an academy is running this
+   one, not their own coach. */
+.mcp-academy-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--color-white-a04); border: 1px solid var(--color-white-a13);
+  border-radius: 999px; padding: 3px 9px 3px 4px; margin-bottom: 8px;
+  max-width: 100%;
+}
+.mcp-academy-badge img {
+  height: 18px; width: 18px; object-fit: contain; border-radius: 50%; flex-shrink: 0;
+}
+.mcp-academy-badge > span:first-child { font-size: 13px; line-height: 1; }
+.mcp-academy-badge-name {
+  font-size: 11px; font-weight: 700; color: var(--color-text-muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
 /* The way back, now that this page has no desktop sidebar. Hidden on mobile,
    where the ☰ Menu button already opens the full site nav. */
 .mcp-back-btn {

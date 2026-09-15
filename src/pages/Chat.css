@@ -80,7 +80,9 @@
 .chat-container.expanded .messages-area { padding: 12px; gap: 8px; }
 .chat-container.expanded .message { padding: 8px 12px; border-radius: var(--radius-lg); font-size: 0.9em; }
 .chat-container.expanded .message-sender { font-size: 0.7em; }
-.chat-container.expanded .message-content { white-space: normal; }
+/* pre-wrap (not normal) so multi-line messages keep their line breaks —
+   this rule outranks the base .message-content and would otherwise collapse them. */
+.chat-container.expanded .message-content { white-space: pre-wrap; }
 .chat-container.expanded .message-input-area { padding: 10px; }
 .chat-container.expanded .message-input { padding: 8px; font-size: 0.9em; }
 .chat-container.expanded .send-button { padding: 8px 12px; font-size: 0.9em; }
