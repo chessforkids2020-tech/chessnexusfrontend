@@ -50,3 +50,12 @@ nul.css
 public/replay-traning/
 public/replay-games-raw/
 *.pgn
+
+# Environment files — never commit these.
+# They hold only VITE_* URLs today (Vite inlines those into the public bundle
+# anyway), but a tracked .env is where a real secret eventually gets added by
+# accident. Keep them local; set the values in the Vercel dashboard, or pass
+# VITE_API_URL inline when building.
+.env
+.env.*
+!.env.example
