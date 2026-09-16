@@ -8,6 +8,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import socket from '../socket';
 import GameAnalysisModal from './masterGames/GameAnalysisModal';
 import '../pages/MyCoachPortal.css';
 
@@ -60,6 +61,17 @@ export default function StudentCourses() {
     let alive = true;
     (async () => { setLoading(true); await reload(); if (alive) setLoading(false); })();
     return () => { alive = false; };
+  }, [reload]);
+
+  // The coach changed a course/syllabus — refetch so the list is current without
+  // the student reloading. `reload` deliberately does not touch `loading`, so
+  // this updates in place instead of flashing a spinner over readable content.
+  useEffect(() => {
+    const onUpdate = (payload = {}) => {
+      if (payload.kind === 'syllabus') reload();
+    };
+    socket.on('student:update', onUpdate);
+    return () => { socket.off('student:update', onUpdate); };
   }, [reload]);
 
   // A UserStudy lesson. Its chapters are embedded subdocs, so a single chapter

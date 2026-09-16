@@ -21,6 +21,19 @@ function initials(name) {
   return String(name || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 }
 
+// 1200 → "1.2k". The credential chips are narrow (two to a row on a phone), and
+// a popular coach's raw view count would wrap the number onto its own line.
+function compactCount(n) {
+  const v = Number(n) || 0;
+  if (v < 1000) return String(v);
+  if (v < 1000000) {
+    const k = v / 1000;
+    return `${k < 10 ? k.toFixed(1).replace(/\.0$/, '') : Math.round(k)}k`;
+  }
+  const m = v / 1000000;
+  return `${m < 10 ? m.toFixed(1).replace(/\.0$/, '') : Math.round(m)}m`;
+}
+
 // Exported so the Coach hub page can show the same cards without duplicating
 // the markup — one card definition, so a change to it shows up in both places.
 // First line or two of a coach's bio, for the card.
@@ -81,9 +94,13 @@ export function CoachCard({ c }) {
     c.links?.youtube    ? { k: 'yt', icon: '▶️', label: 'YouTube',   title: 'Has a YouTube channel' } : null,
   ].filter(Boolean);
 
+  // How many students a coach has is PRIVATE and never shown here: a coach
+  // with one student would be advertising the very thing that puts a
+  // prospective student off. Profile views stand in — they signal interest
+  // without saying anything about who the coach teaches.
   const credentials = [
     c.experienceYears ? { k: 'exp', n: c.experienceYears, l: c.experienceYears === 1 ? 'yr coaching' : 'yrs coaching' } : null,
-    c.studentsCount ? { k: 'stu', n: c.studentsCount, l: c.studentsCount === 1 ? 'student' : 'students' } : null,
+    c.profileViews ? { k: 'views', n: compactCount(c.profileViews), l: c.profileViews === 1 ? 'profile view' : 'profile views' } : null,
   ].filter(Boolean);
 
   return (

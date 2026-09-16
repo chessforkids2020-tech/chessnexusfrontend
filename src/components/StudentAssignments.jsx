@@ -15,6 +15,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
+import socket from '../socket';
 import BlunderAssignmentPlayer from '../pages/BlunderAssignmentPlayer';
 import FenAssignmentPlayer from '../pages/FenAssignmentPlayer';
 import '../pages/MyCoachPortal.css';
@@ -69,6 +70,17 @@ export default function StudentAssignments({ onLoaded, only }) {
     return () => { alive = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // The coach posted, retagged or withdrew an assignment — refetch in place so
+  // the list is current without a reload. `reload` leaves `loading` alone, so
+  // nothing flashes while the student is reading.
+  useEffect(() => {
+    const onUpdate = (payload = {}) => {
+      if (payload.kind === 'assignment') reload();
+    };
+    socket.on('student:update', onUpdate);
+    return () => { socket.off('student:update', onUpdate); };
+  }, [reload]);
 
   // Open an assignment. Custom (PGN blunders) opens an inline player; the others
   // navigate into the matching training flow, tagged with the assignment id.

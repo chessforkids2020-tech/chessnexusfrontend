@@ -1331,6 +1331,38 @@ export default function GameAnalysis() {
   const [loadingPrev, setLoadingPrev]     = useState(true);
   const [selectedGameIndex, setSelectedGameIndex] = useState(null);
   const [history, setHistory]             = useState([]);
+
+  // ── Where to slot the game replay inside the button grid ──────────────────
+  // The board is rendered as a full-width item placed just after the row that
+  // holds the selected button, so a tap on Game 2 opens the board right there
+  // instead of ~14 rows further down past all 50 buttons.
+  //
+  // grid-row must be computed in JS because it depends on the COLUMN COUNT,
+  // which is a CSS breakpoint (5 wide / 3 on tablet+phone). The media query is
+  // the single source of truth — this mirrors it rather than guessing from a
+  // width constant, so the two cannot disagree.
+  const [gameCols, setGameCols] = useState(5);
+  useEffect(() => {
+    // Matches the `@media (max-width: 768px)` block in GameAnalysis.css that
+    // sets .ga-game-btns to repeat(3, 1fr).
+    const mq = window.matchMedia('(max-width: 768px)');
+    const apply = () => setGameCols(mq.matches ? 3 : 5);
+    apply();
+    // addEventListener on MediaQueryList is unsupported on older Safari, which
+    // still has addListener — fall back so the layout is not stuck at 5.
+    if (mq.addEventListener) mq.addEventListener('change', apply);
+    else mq.addListener(apply);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener('change', apply);
+      else mq.removeListener(apply);
+    };
+  }, []);
+
+  // Grid rows are 1-based, so the button at index i sits on row
+  // floor(i / cols) + 1 and the replay goes on the row after it.
+  const replayGridRow = selectedGameIndex === null
+    ? undefined
+    : Math.floor(selectedGameIndex / gameCols) + 2;
   // Opening Repertoire UI was removed — repertoire is no longer fetched/shown.
   const [usageLoggedForCacheId, setUsageLoggedForCacheId] = useState(null);
 
@@ -2177,6 +2209,15 @@ export default function GameAnalysis() {
             <>
               <h3 className="ga-section-title">📋 Per-Game Breakdown</h3>
               <p className="ga-section-desc">Click a game to see full move-by-move Chess Nexus analysis.</p>
+              {/* The replay is placed INSIDE the button grid, immediately after
+                  the row holding the selected game — not after all 50 buttons.
+                  With 50 games on a phone the board was ~14 rows below the tap,
+                  well off-screen, so tapping a game looked like it did nothing.
+
+                  It is a full-width grid item whose grid-row is computed from
+                  the selected index, which keeps the buttons in their natural
+                  source order (so tab order and screen-reader order still run
+                  Game 1..50) while the board visually slots in mid-grid. */}
               <div className="ga-game-btns">
                 {result.games.map((g, i) => (
                   <button
@@ -2187,20 +2228,25 @@ export default function GameAnalysis() {
                     Game {g.gameNumber}
                   </button>
                 ))}
+                {selectedGameIndex !== null && result.games[selectedGameIndex] && (
+                  <div
+                    className="ga-game-replay-slot"
+                    style={{ gridRow: replayGridRow }}
+                  >
+                    <GameReplay
+                      game={result.games[selectedGameIndex]}
+                      totalGames={result.games.length}
+                      onClose={() => setSelectedGameIndex(null)}
+                      onNext={() => setSelectedGameIndex(prev =>
+                        prev < result.games.length - 1 ? prev + 1 : prev
+                      )}
+                      onPrev={() => setSelectedGameIndex(prev =>
+                        prev > 0 ? prev - 1 : prev
+                      )}
+                    />
+                  </div>
+                )}
               </div>
-              {selectedGameIndex !== null && result.games[selectedGameIndex] && (
-                <GameReplay
-                  game={result.games[selectedGameIndex]}
-                  totalGames={result.games.length}
-                  onClose={() => setSelectedGameIndex(null)}
-                  onNext={() => setSelectedGameIndex(prev =>
-                    prev < result.games.length - 1 ? prev + 1 : prev
-                  )}
-                  onPrev={() => setSelectedGameIndex(prev =>
-                    prev > 0 ? prev - 1 : prev
-                  )}
-                />
-              )}
             </>
           )}
 

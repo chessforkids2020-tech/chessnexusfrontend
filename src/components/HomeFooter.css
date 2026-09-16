@@ -239,16 +239,21 @@
   .hf-tagline { max-width: 52ch; }
 }
 
-/* ── Phone: single column, centred, tighter ── */
+/* ── Phone: brand on top, link groups two-up ── */
 @media (max-width: 600px) {
   /* Mobile portrait: the sidebar is a hamburger overlay, so no offset. */
   .home-footer { padding: 40px 18px 0; }
 
+  /* TWO columns, not one: four link groups stacked single-file made the footer
+     an extremely long scroll on a phone. Two-up puts them in two rows of two.
+     The brand block spans both (it has the tagline and CTAs, which need width). */
   .hf-inner {
-    grid-template-columns: 1fr;
-    gap: 28px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 26px 18px;
     text-align: center;
   }
+
+  .hf-brand { grid-column: 1 / -1; }
 
   .hf-brand-top,
   .hf-cta-row,
@@ -256,7 +261,14 @@
 
   .hf-tagline { margin-left: auto; margin-right: auto; }
 
-  .hf-col { align-items: center; }
+  /* The link groups go left-aligned once they sit side by side: two centred
+     columns leave a ragged gutter down the middle and the eye loses the list.
+     The brand block above stays centred. */
+  .hf-col {
+    align-items: flex-start;
+    text-align: left;
+    min-width: 0;
+  }
 
   .hf-bottom {
     flex-direction: column;

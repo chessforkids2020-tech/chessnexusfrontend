@@ -1014,6 +1014,15 @@
   margin-bottom: 16px;
 }
 
+/* The game replay, slotted INTO the button grid directly under the row of the
+   selected game (its grid-row is set inline from the selected index — see
+   GameAnalysis.jsx). Spanning every column pushes the remaining buttons down,
+   so the board appears between the rows rather than after all 50 buttons. */
+.ga-game-replay-slot {
+  grid-column: 1 / -1;
+  min-width: 0;   /* a wide board must not stretch the grid's columns */
+}
+
 .ga-game-btn {
   background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
@@ -2589,8 +2598,35 @@
     text-align: center;
   }
 
+  /* TWO CHIPS PER ROW on phones.
+     Left as flex-wrap, each chip sized to its own text, these ended up one per
+     line: "Drops pieces under pressure" is ~190px and two of them cannot share
+     ~330px of usable width, so every chip wrapped. Flex sizes to content, so no
+     amount of wrapping fixes that — a 2-column grid is what forces the pairing.
+     Chips stretch to the column, which also lines their edges up instead of
+     leaving a ragged centred stack. */
   .ga-playstyle-chips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    justify-content: stretch;
+    width: 100%;
+  }
+
+  .ga-ps-chip {
+    /* The longest label must not force the column wider than half the card. */
+    min-width: 0;
+    padding: 5px 8px;
+    font-size: 11.5px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+    /* A label that needs two lines would otherwise leave its neighbour a
+       short pill next to a tall one. Centring both ways keeps the pair
+       looking like one row rather than two mismatched blobs. */
+    display: flex;
+    align-items: center;
     justify-content: center;
+    text-align: center;
   }
 
   .ga-trends-wrap {

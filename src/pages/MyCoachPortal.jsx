@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api';
+import socket from '../socket';
 import StudentAssignments from '../components/StudentAssignments';
 import StudentCourses from '../components/StudentCourses';
 import CoachChat from '../components/coach/CoachChat';
@@ -88,39 +89,47 @@ export default function MyCoachPortal() {
     }
   };
 
-  // Initial load: coaches + payments (don't depend on month)
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      setLoading(true);
-      try {
-        const [coachesRes, paymentsRes, assignmentsRes, scheduleRes] = await Promise.all([
-          api.get('/api/coach-attendance/my/coaches'),
-          api.get('/api/coach-attendance/my/payments'),
-          api.get('/api/coach/my-assignments'),
-          api.get('/api/coach-schedule/my').catch(() => ({ data: { classes: [], holidays: [] } })),
-        ]);
-        if (!alive) return;
-        // Exclude the ADMIN coach here — admin-added students manage their
-        // classes (attendance/fees/assignments) in the Student Portal, not here.
-        // My Coach is only for PRIVATE coaches.
-        const myCoaches = (coachesRes.data || []).filter(c => !c.isAdmin);
-        setCoaches(myCoaches);
-        // Default the Leaderboard tab to the first coach.
-        setLbCoachId(prev => prev || myCoaches[0]?.coachId || null);
-        setPayments(paymentsRes.data?.payments || []);
-        setAssignments(assignmentsRes.data?.assignments || []);
-        setClasses(scheduleRes.data?.classes || []);
-        setHolidays(scheduleRes.data?.holidays || []);
-        setError(null);
-      } catch {
-        if (alive) setError('Could not load your coach records.');
-      } finally {
-        if (alive) setLoading(false);
-      }
-    })();
-    return () => { alive = false; };
+  // Core loader, extracted so the socket handler below can re-run it.
+  //
+  // `quiet` re-fetches WITHOUT touching the loading flag: a live refresh must
+  // not flash the whole page back to "Loading…" while the student is reading
+  // it. The screen simply updates in place.
+  const aliveRef = useRef(true);
+  useEffect(() => () => { aliveRef.current = false; }, []);
+
+  const loadCore = useCallback(async ({ quiet = false } = {}) => {
+    if (!quiet) setLoading(true);
+    try {
+      const [coachesRes, paymentsRes, assignmentsRes, scheduleRes] = await Promise.all([
+        api.get('/api/coach-attendance/my/coaches'),
+        api.get('/api/coach-attendance/my/payments'),
+        api.get('/api/coach/my-assignments'),
+        api.get('/api/coach-schedule/my').catch(() => ({ data: { classes: [], holidays: [] } })),
+      ]);
+      if (!aliveRef.current) return;
+      const myCoaches = (coachesRes.data || []).filter(c => !c.isAdmin);
+      setCoaches(myCoaches);
+      setLbCoachId(prev => prev || myCoaches[0]?.coachId || null);
+      setPayments(paymentsRes.data?.payments || []);
+      setAssignments(assignmentsRes.data?.assignments || []);
+      setClasses(scheduleRes.data?.classes || []);
+      setHolidays(scheduleRes.data?.holidays || []);
+      setError(null);
+    } catch {
+      // A failed BACKGROUND refresh keeps the data already on screen — showing
+      // an error banner over content that is still perfectly usable would be
+      // worse than silently trying again on the next event.
+      if (aliveRef.current && !quiet) setError('Could not load your coach records.');
+    } finally {
+      if (aliveRef.current && !quiet) setLoading(false);
+    }
   }, []);
+
+  // Initial load: coaches + payments (don't depend on month).
+  // Note on the ADMIN coach: loadCore filters it out, because admin-added
+  // students manage their classes (attendance/fees/assignments) in the Student
+  // Portal, not here. My Coach is only for PRIVATE coaches.
+  useEffect(() => { loadCore(); }, [loadCore]);
 
   // Poll unread coach-message count for the Messages tab badge.
   useEffect(() => {
@@ -156,6 +165,39 @@ export default function MyCoachPortal() {
     const id = setInterval(run, 30000);
     return () => { alive = false; clearInterval(id); };
   }, []);
+
+  // ── Live updates from the coach ────────────────────────────────────────────
+  // The server emits `student:update` when a coach changes something this
+  // student can see. We refetch quietly, so the page is simply CURRENT — no
+  // toast, no badge, nothing announcing itself. From the student's side there
+  // was never an "update": the schedule just says what it says.
+  //
+  // This replaces waiting on the 30s polls below (which stay as a safety net
+  // for a dropped socket). The payload carries no content — it only says which
+  // area changed, and the refetch goes through the normal authorized GETs.
+  useEffect(() => {
+    const onUpdate = (payload = {}) => {
+      switch (payload.kind) {
+        case 'activity':
+          loadActivities();
+          break;
+        case 'assignment':
+        case 'schedule':
+        case 'classroom':
+          // All three live in the core payload (assignments + schedule + the
+          // coach list that carries the classroom link).
+          loadCore({ quiet: true });
+          break;
+        case 'syllabus':
+          // StudentCourses fetches its own list; it listens for this itself.
+          break;
+        default:
+          break; // unknown kind — ignore rather than refetch everything
+      }
+    };
+    socket.on('student:update', onUpdate);
+    return () => { socket.off('student:update', onUpdate); };
+  }, [loadCore]);
 
   // Opening the Messages tab marks threads read → clear the badge.
   useEffect(() => {
