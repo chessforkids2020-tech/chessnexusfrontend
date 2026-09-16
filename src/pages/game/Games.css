@@ -624,12 +624,53 @@
 }
 
 @media (max-width: 640px) {
-  /* Single column on phones. */
-  .games-play-row { grid-template-columns: minmax(0, 1fr); }
-  /* A little tighter on phones — the card is tall by design now. */
-  .play-option-card--row { padding: 18px 16px 16px; }
-  .po-ring { width: 58px; height: 58px; margin-bottom: 10px; }
-  .po-emoji { font-size: 26px; }
+  /* TWO per row on phones, not one. Stacked single-file these cards are tall
+     by design, so five of them made the play options a long scroll and pushed
+     everything below the fold. Two-up keeps the whole set visible at a glance.
+     Each card now gets ~165px on a 390px screen, so the ring, the text and the
+     CTA pill all step down to fit — in particular the pill's min-width, which
+     would otherwise hold the card wider than half the row. */
+  .games-play-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .play-option-card--row {
+    padding: 16px 10px 14px;
+    max-width: none;      /* the grid column is the width now, not 340px */
+    /* Without this the padding is ADDED to the column width and each card
+       renders ~34px wider than its track, which pushed the row off-screen
+       (two 224px cards in a 390px viewport). */
+    box-sizing: border-box;
+  }
+  /* Long blurbs otherwise set the card's min-content width and stretch the
+     whole grid track. Wrapping mid-word is the right trade at this size. */
+  .play-option-card--row > * { max-width: 100%; }
+  .play-option-blurb, .play-option-title { overflow-wrap: anywhere; }
+  .po-ring { width: 48px; height: 48px; margin-bottom: 8px; }
+  .po-emoji { font-size: 22px; }
+  .play-option-card--row .play-option-title { font-size: 13px; letter-spacing: 0.3px; }
+  .po-divider { max-width: 70px; margin: 5px 0 7px; }
+  .play-option-blurb {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  .po-cta {
+    min-width: 0;
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+  .po-soon { font-size: 10.5px; }
+}
+
+/* Very narrow phones (~360px and below): two cards still fit, but only once
+   the blurb stops competing for the space. The title, icon and CTA carry the
+   card on their own at this width. */
+@media (max-width: 380px) {
+  .games-play-row { gap: 8px; }
+  .play-option-card--row { padding: 14px 8px 12px; }
+  .play-option-blurb { display: none; }
+  .po-divider { margin: 4px 0 8px; }
 }
 
 /* Info Card */

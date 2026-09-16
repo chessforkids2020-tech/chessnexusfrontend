@@ -134,7 +134,6 @@ export default function ArenaTournamentLive() {
   const [moveHistory, setMoveHistory] = useState([]);
   const historyStartFenRef = useRef(null); // FEN before move 1 of this game
   
-  const [showLeaderboard, setShowLeaderboard] = useState(true);
   const [teamLeaderboard, setTeamLeaderboard] = useState([]);
   const [chatOpen, setChatOpen] = useState(false);
   const [unreadChat, setUnreadChat] = useState(0);
@@ -1912,6 +1911,13 @@ export default function ArenaTournamentLive() {
         <div className="at-live-right">
 
           {/* Time section — hidden on mobile/tablet (shown in mobile banner instead) */}
+          {/* NOTE: layout (display/align/justify/gap) lives in the CSS class,
+              NOT here. An inline `display: flex` beats any class rule, media
+              query included, so the "hide on tablet/mobile" rule in
+              ArenaTournamentLive.css could never take effect — which is why
+              this desktop timer went on showing BELOW the board while the
+              mobile banner showed above it, giving two Time Remaining panels
+              on a phone. Keep display out of this style object. */}
           <div className="at-live-right-timer" style={{
             background: 'var(--color-warning-a12)',
             borderRadius: 'var(--radius-lg)',
@@ -1920,10 +1926,6 @@ export default function ArenaTournamentLive() {
             border: '1px solid var(--color-warning-a20)',
             backdropFilter: 'blur(5px)',
             WebkitBackdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px'
           }}>
             <div style={{ 
               color: 'var(--color-warning)', 
@@ -1949,7 +1951,9 @@ export default function ArenaTournamentLive() {
           {/* Action Buttons — below Time Remaining, only during active game */}
           {currentGame && gameState && (
             <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+              {/* On mobile these stretch to fill the row (see .at-live-actions
+                  in the stylesheet); on desktop they stay 40px icon buttons. */}
+              <div className="at-live-actions" style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                 {/* Sound toggle */}
                 <button onClick={() => setSoundEnabled(v => !v)} title={soundEnabled ? 'Sound On' : 'Sound Off'} style={{ width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: soundEnabled ? 'var(--color-success-a12)' : 'rgba(107,114,128,0.18)', color: soundEnabled ? 'var(--color-success)' : 'var(--color-text-muted)', border: `1px solid ${soundEnabled ? 'var(--color-success-a30)' : 'rgba(107,114,128,0.25)'}`, borderRadius: 'var(--radius-md)', fontSize: '18px', cursor: 'pointer' }}>
                   {soundEnabled ? '🔔' : '🔕'}
@@ -1996,8 +2000,15 @@ export default function ArenaTournamentLive() {
                 </span>
               </div>
 
-              {/* Notation — paired rows, compact, scrollable. Click a move to jump. */}
-              <div style={{ maxHeight: '132px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.5 }}>
+              {/* Notation — click a move to jump.
+                  Desktop keeps the paired-column table (it sits in a narrow
+                  sidebar, where columns read well). On mobile the same rows are
+                  laid out INLINE — "1. e4 e5  2. Nf3 Nf6 …" flowing and
+                  wrapping — because one move-pair per line turns into a tall
+                  scroller on a phone for very little information. The switch is
+                  CSS-only (.at-live-moves), so there is one source of truth for
+                  the move data and no second render path to keep in sync. */}
+              <div className="at-live-moves" style={{ maxHeight: '132px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.5 }}>
                 {(() => {
                   const sans = reviewPositions.sans || [];
                   // Each ply's color from the FEN BEFORE it (fens[i] is before sans[i]).
@@ -2007,7 +2018,11 @@ export default function ArenaTournamentLive() {
                   }));
                   const activePly = reviewing ? reviewPly : totalPlies;
                   const cell = (it) => it == null
-                    ? <span style={{ color: 'var(--color-text-faint)' }}>…</span>
+                    // Placeholder for the missing half of a pair. It keeps the
+                    // desktop table's columns aligned; inline on mobile it
+                    // would read as a stray "…" mid-sentence, so it is hidden
+                    // there (see .at-live-move-gap in the stylesheet).
+                    ? <span className="at-live-move-gap" style={{ color: 'var(--color-text-faint)' }}>…</span>
                     : <span
                         onClick={() => setReviewPly(it.ply >= totalPlies ? null : it.ply)}
                         style={{
@@ -2031,11 +2046,14 @@ export default function ArenaTournamentLive() {
                       idx += 1;
                     }
                   }
+                  // No inline `display` on the row: the mobile rule flips these
+                  // from a grid to inline flow, and an inline style would win
+                  // over the media query and keep the stacked layout.
                   return rows.map(r => (
-                    <div key={r.no} style={{ display: 'grid', gridTemplateColumns: '28px 1fr 1fr', gap: '4px', alignItems: 'center' }}>
-                      <span style={{ color: 'var(--color-text-faint)', fontSize: '12px' }}>{r.no}.</span>
-                      <span>{cell(r.w)}</span>
-                      <span>{cell(r.b)}</span>
+                    <div key={r.no} className="at-live-move-row">
+                      <span className="at-live-move-no">{r.no}.</span>
+                      <span className="at-live-move-cell">{cell(r.w)}</span>
+                      <span className="at-live-move-cell">{cell(r.b)}</span>
                     </div>
                   ));
                 })()}
@@ -2177,15 +2195,12 @@ export default function ArenaTournamentLive() {
             </div>
           )}
 
-          {/* Leaderboard toggle button — visible on mobile/tablet only */}
-          <button
-            className={`at-live-lb-toggle ${showLeaderboard ? 'open' : ''}`}
-            onClick={() => setShowLeaderboard(v => !v)}
-          >
-            🏆 Leaderboard ({leaderboard.length})
-            <span className="at-live-lb-toggle-arrow">▼</span>
-          </button>
-
+          {/* The "🏆 Leaderboard (n)" collapse button used to sit here. It was
+              removed because it never worked: its state only ever toggled the
+              button's own arrow — no element carried the .at-live-lb-body class
+              the collapse CSS targeted — so the leaderboard below stayed open
+              either way, and the control read as broken. The leaderboard is
+              always visible; it does not need a toggle above it. */}
           {/* Team Score Cards — right panel (team_battle only) */}
           {tournament?.tournamentType === 'team_battle' && teamLeaderboard.length > 0 && (
             <div style={{ background: 'var(--color-black-a35)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--color-white-a04)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)', overflow: 'hidden' }}>

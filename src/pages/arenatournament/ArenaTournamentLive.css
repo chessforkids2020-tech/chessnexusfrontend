@@ -65,6 +65,29 @@
 .at-live-chat          { grid-area: chat;   min-height: 0; height: calc(100vh - 40px); max-height: calc(100vh - 40px); }
 .at-live-mobile-timer  { display: none; }     /* hidden on desktop */
 
+/* ── Move notation ───────────────────────────────────────────────────────────
+   DESKTOP: a paired table — move number, white's move, black's move — which
+   reads well in the narrow right-hand sidebar. */
+.at-live-move-row {
+  display: grid;
+  grid-template-columns: 28px 1fr 1fr;
+  gap: 4px;
+  align-items: center;
+}
+.at-live-move-no { color: var(--color-text-faint); font-size: 12px; }
+
+/* The desktop timer inside the right panel. Its layout lives HERE rather than
+   as an inline style on the element: an inline `display` wins over every class
+   rule, media queries included, so the "hide on tablet/mobile" rule further
+   down could never fire — leaving a second Time Remaining panel below the
+   board on phones, under the mobile banner already shown above it. */
+.at-live-right-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
 /* ── Stats card (now inside right panel) ── */
 .at-live-stats {
   background: var(--color-black-a35);
@@ -127,23 +150,11 @@
   z-index: 5;
 }
 
-/* Leaderboard toggle button — hidden on desktop */
-.at-live-lb-toggle {
-  display: none;
-}
-
-/* Leaderboard content — always visible on desktop */
-.at-live-lb-body {
-  flex: 1;
-  background: var(--color-black-a35);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--color-white-a04);
-  -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+/* NOTE: the .at-live-lb-toggle / .at-live-lb-body rules that used to live here
+   were removed along with the collapse button. No element ever carried
+   .at-live-lb-body, so the collapse CSS matched nothing and the button only
+   toggled its own arrow. The leaderboard sits inside .at-live-chat and is
+   always visible. */
 
 /* Leaderboard scroll area */
 .at-live-lb-scroll {
@@ -204,13 +215,17 @@
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ── Mobile-only time banner ─ shown on mobile/tablet only ── */
+/* ── Mobile-only time banner ─ shown on mobile/tablet only ──
+   No `display` here on purpose. This rule sits AFTER the `display: none` near
+   the top of the file, and at equal specificity the later rule wins — so a
+   `display: flex` here would un-hide the banner on desktop, putting it above
+   the board while the right-panel timer still showed beside it. The ≤768px
+   query sets `display: flex` when it is actually wanted. */
 .at-live-mobile-timer {
   background: var(--color-warning-a12);
   border: 1px solid var(--color-warning-a30);
   border-radius: var(--radius-lg);
   padding: 12px 20px;
-  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -275,7 +290,14 @@
     gap: 14px;
     max-width: 600px;
     margin: 0 auto;
+    /* Every child spans the full width. Without this the column's items size to
+       their own content, which left the stats, bonuses and leaderboard cards
+       sitting at roughly half the screen with dead space beside them. */
+    align-items: stretch;
   }
+  /* Belt and braces: these three carry grid-era sizing (grid-area, fixed
+     heights) that can still leave them narrower than the row. */
+  .at-live-grid > * { width: 100%; min-width: 0; }
 
   /* Visual order on tablet/mobile */
   .at-live-mobile-timer { display: flex; order: 1; }
@@ -283,55 +305,45 @@
   .at-live-right         { order: 3; height: auto !important; background: transparent; box-shadow: none; padding: 0; border: none; }
   .at-live-chat          { order: 4; height: 340px; max-height: 340px; min-height: 340px; }
 
-  /* Leaderboard toggle button — show on tablet */
-  .at-live-lb-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 14px 18px;
-    background: rgba(23, 23, 23, 0.8);
-    border: 1px solid var(--color-white-a07);
-    border-radius: var(--radius-lg);
-    color: var(--color-text);
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.25s ease;
-  }
-
-  .at-live-lb-toggle:hover {
-    background: var(--color-accent-a15);
-    border-color: var(--color-accent-a30);
-  }
-
-  .at-live-lb-toggle-arrow {
-    font-size: 12px;
-    transition: transform 0.3s ease;
-  }
-
-  .at-live-lb-toggle.open .at-live-lb-toggle-arrow {
-    transform: rotate(180deg);
-  }
-
-  /* Collapsible leaderboard panel */
-  .at-live-lb-body {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.35s ease, opacity 0.3s ease;
-    opacity: 0;
-    border-radius: 0 0 14px 14px;
-    border-top: none;
-  }
-
-  .at-live-lb-body.open {
-    max-height: 480px;
-    opacity: 1;
-  }
+  /* (The leaderboard collapse button and its panel rules were removed — the
+     collapse never worked. See the note beside .at-live-lb-scroll above.) */
 
   /* Time block inside right panel — hide on table/mobile (shown in mobile-timer instead) */
   .at-live-right-timer {
     display: none;
+  }
+
+  /* ── Moves: one flowing line instead of a column of pairs ──────────────────
+     "1. e4 e5  2. Nf3 Nf6  3. Bb5 a6 …", wrapping as needed. A phone has the
+     width for this and not the height: stacked pairs made a tall scroller that
+     showed only four or five moves at a time. */
+  .at-live-moves {
+    max-height: 96px;          /* a few wrapped lines, then scroll */
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 2px 6px;
+  }
+  .at-live-move-row {
+    display: inline-flex;      /* was a 3-column grid on desktop */
+    align-items: baseline;
+    gap: 3px;
+    white-space: nowrap;       /* never split "2. Nf3 Nf6" across lines */
+  }
+  .at-live-move-no { font-size: 11.5px; }
+  /* The "…" standing in for the missing half of a pair keeps the desktop
+     table's columns aligned, but inline it reads as a stray ellipsis in the
+     middle of the notation. */
+  .at-live-move-gap { display: none; }
+
+  /* ── Action buttons: fill the width of the screen ────────────────────────── */
+  .at-live-actions {
+    justify-content: stretch !important;
+  }
+  .at-live-actions > button {
+    flex: 1 1 0;
+    width: auto !important;    /* overrides the inline 40px */
+    min-width: 0;
   }
 }
 
@@ -358,11 +370,6 @@
     border-radius: var(--radius-lg) !important;
   }
 
-  .at-live-lb-toggle {
-    padding: 12px 14px;
-    font-size: 14px;
-    border-radius: var(--radius-lg);
-  }
 
   .at-live-chat {
     height: 300px;
