@@ -13,9 +13,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api';
+import { mediaUrl } from '../utils/mediaUrl';
 import SEO from '../components/SEO';
 import { useAuth } from '../contexts/AuthContext';
 import './Newsletter.css';
+
+// Prefix every server-relative <img src> in the post body with the API host.
+// Only touches paths the upload route produces, so nothing else in the markup
+// can be rewritten by accident.
+function withMediaHosts(html) {
+  return String(html || '').replace(
+    /(<img[^>]*src=")(\/api\/public\/newsletter\/[^"]+)(")/gi,
+    (_m, pre, path, post) => `${pre}${mediaUrl(path)}${post}`,
+  );
+}
 
 function fmtDate(d) {
   if (!d) return '';
@@ -97,7 +108,7 @@ export default function NewsletterPostPage() {
 
       {/* 1. TITLE PICTURE, full width at the very top. */}
       {post.coverImage && (
-        <img className="nl-cover" src={post.coverImage} alt="" />
+        <img className="nl-cover" src={mediaUrl(post.coverImage)} alt="" />
       )}
 
       {/* 2. Title. */}
@@ -117,7 +128,14 @@ export default function NewsletterPostPage() {
           helpers/newsletterHtml.js), so what arrives here is already safe —
           scripts, iframes, event handlers and javascript: hrefs are gone. */}
       {post.body && (
-        <div className="nl-body" dangerouslySetInnerHTML={{ __html: post.body }} />
+        <div
+          className="nl-body"
+          // Inline <img> src values in the stored HTML are server-relative too,
+          // so they need the same API-host prefix as the cover. Rewritten here
+          // rather than at save time: the stored path stays host-agnostic, so
+          // the same post renders correctly in dev and in production.
+          dangerouslySetInnerHTML={{ __html: withMediaHosts(post.body) }}
+        />
       )}
 
       {/* 5. Legacy trailing pictures.
@@ -130,7 +148,7 @@ export default function NewsletterPostPage() {
         <div className="nl-images">
           {post.images.map((im, i) => (
             <figure key={i} className="nl-figure">
-              <img src={im.url} alt={im.caption || ''} loading="lazy" />
+              <img src={mediaUrl(im.url)} alt={im.caption || ''} loading="lazy" />
               {im.caption && <figcaption>{im.caption}</figcaption>}
             </figure>
           ))}
