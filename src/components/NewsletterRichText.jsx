@@ -134,7 +134,7 @@ export default function NewsletterRichText({ value, onChange, placeholder, onUpl
           placeholder={placeholder}
         />
       </Suspense>
-      <input ref={fileRef} type="file" accept="image/*" hidden onChange={pickFile} />
+      <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/gif" hidden onChange={pickFile} />
     </div>
   );
 }

@@ -208,10 +208,12 @@ export default function AdminNewsletter() {
                 Upload title picture
               </button>
             )}
-            <input ref={coverInput} type="file" accept="image/*" hidden onChange={pickCover} />
+            <input ref={coverInput} type="file" accept="image/png,image/jpeg,image/gif" hidden onChange={pickCover} />
             <div className="anl-hint">
               Best at <strong>1200×630</strong> — this is also the picture WhatsApp
-              and Facebook show when someone shares the post. Max 4&nbsp;MB.
+              and Facebook show when someone shares the post. PNG, JPG or GIF,
+              max 4&nbsp;MB. <strong>WEBP is not supported</strong> — the editor
+              cannot display it.
             </div>
           </div>
 
@@ -228,7 +230,7 @@ export default function AdminNewsletter() {
               want one, press the image button in the toolbar, and choose{' '}
               <strong>right</strong>, <strong>left</strong> or <strong>full width</strong> —
               the text wraps around it. On a phone every picture becomes full width
-              automatically.
+              automatically. PNG, JPG or GIF only — <strong>WEBP will not show</strong>.
             </div>
           </div>
 
