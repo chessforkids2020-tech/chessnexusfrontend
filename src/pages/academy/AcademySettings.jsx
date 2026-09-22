@@ -2,7 +2,7 @@
 // Academy name, join link, and the "do you also teach" coaching-tools toggle.
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../api';
+import api, { resolveApiAssetUrl } from '../../api';
 import './AcademyDashboard.css';
 
 export default function AcademySettings() {
@@ -134,7 +134,7 @@ export default function AcademySettings() {
         <div className="acad-logo-row">
           <div className="acad-logo-preview">
             {logoUrl
-              ? <img src={logoUrl} alt="Academy logo" />
+              ? <img src={resolveApiAssetUrl(logoUrl)} alt="Academy logo" />
               : <span className="acad-logo-empty">🏛️</span>}
           </div>
           <div className="acad-logo-actions">

@@ -12,8 +12,7 @@
 //            Pictures are inserted INSIDE the writing from the editor toolbar
 //            (left / right / full width), not collected at the end.
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import api from '../api';
-import { mediaUrl } from '../utils/mediaUrl';
+import api, { resolveApiAssetUrl } from '../api';
 import NewsletterRichText from '../components/NewsletterRichText';
 import './AdminNewsletter.css';
 
@@ -201,7 +200,7 @@ export default function AdminNewsletter() {
             <span>Title picture</span>
             {form.coverImage ? (
               <div className="anl-cover">
-                <img src={mediaUrl(form.coverImage)} alt="" />
+                <img src={resolveApiAssetUrl(form.coverImage)} alt="" />
                 <button className="anl-btn anl-danger" onClick={() => set('coverImage', '')}>Remove</button>
               </div>
             ) : (
@@ -263,7 +262,7 @@ export default function AdminNewsletter() {
             {posts.map(p => (
               <div key={p.id} className="anl-item">
                 {p.coverImage
-                  ? <img className="anl-thumb" src={mediaUrl(p.coverImage)} alt="" />
+                  ? <img className="anl-thumb" src={resolveApiAssetUrl(p.coverImage)} alt="" />
                   : <div className="anl-thumb anl-thumb-empty">📰</div>}
 
                 <div className="anl-item-body">

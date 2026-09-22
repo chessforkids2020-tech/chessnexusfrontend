@@ -12,8 +12,7 @@
 // failing silently.
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import api from '../api';
-import { mediaUrl } from '../utils/mediaUrl';
+import api, { resolveApiAssetUrl } from '../api';
 import SEO from '../components/SEO';
 import { useAuth } from '../contexts/AuthContext';
 import './Newsletter.css';
@@ -24,7 +23,7 @@ import './Newsletter.css';
 function withMediaHosts(html) {
   return String(html || '').replace(
     /(<img[^>]*src=")(\/api\/public\/newsletter\/[^"]+)(")/gi,
-    (_m, pre, path, post) => `${pre}${mediaUrl(path)}${post}`,
+    (_m, pre, path, post) => `${pre}${resolveApiAssetUrl(path)}${post}`,
   );
 }
 
@@ -108,7 +107,7 @@ export default function NewsletterPostPage() {
 
       {/* 1. TITLE PICTURE, full width at the very top. */}
       {post.coverImage && (
-        <img className="nl-cover" src={mediaUrl(post.coverImage)} alt="" />
+        <img className="nl-cover" src={resolveApiAssetUrl(post.coverImage)} alt="" />
       )}
 
       {/* 2. Title. */}
@@ -148,7 +147,7 @@ export default function NewsletterPostPage() {
         <div className="nl-images">
           {post.images.map((im, i) => (
             <figure key={i} className="nl-figure">
-              <img src={mediaUrl(im.url)} alt={im.caption || ''} loading="lazy" />
+              <img src={resolveApiAssetUrl(im.url)} alt={im.caption || ''} loading="lazy" />
               {im.caption && <figcaption>{im.caption}</figcaption>}
             </figure>
           ))}

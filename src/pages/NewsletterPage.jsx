@@ -9,8 +9,7 @@
 // This is the LIST. One post's full text lives in NewsletterPostPage.
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../api';
-import { mediaUrl } from '../utils/mediaUrl';
+import api, { resolveApiAssetUrl } from '../api';
 import SEO from '../components/SEO';
 import './Newsletter.css';
 
@@ -86,7 +85,7 @@ function PostCard({ post, pinned }) {
   return (
     <Link to={`/newsletter/${post.id}`} className={`nl-card ${pinned ? 'is-pinned' : ''}`}>
       {post.coverImage
-        ? <img className="nl-card-img" src={mediaUrl(post.coverImage)} alt="" loading="lazy" />
+        ? <img className="nl-card-img" src={resolveApiAssetUrl(post.coverImage)} alt="" loading="lazy" />
         : <div className="nl-card-img nl-card-img-empty" aria-hidden="true">📰</div>}
 
       <div className="nl-card-body">

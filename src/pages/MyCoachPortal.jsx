@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../api';
+import api, { resolveApiAssetUrl } from '../api';
 import socket from '../socket';
 import StudentAssignments from '../components/StudentAssignments';
 import StudentCourses from '../components/StudentCourses';
@@ -341,7 +341,7 @@ export default function MyCoachPortal() {
             loaded — no extra request just to show a logo. */}
         {studentAcademy?.logoUrl && (
           <img
-            src={studentAcademy.logoUrl}
+            src={resolveApiAssetUrl(studentAcademy.logoUrl)}
             alt={studentAcademy.name || 'Academy'}
             title={studentAcademy.name || 'Academy'}
             className="mcp-academy-logo"
@@ -490,7 +490,7 @@ export default function MyCoachPortal() {
                     {a.academy && (
                       <div className="mcp-academy-badge" title={`Run by ${a.academy.name}`}>
                         {a.academy.logoUrl
-                          ? <img src={a.academy.logoUrl} alt="" />
+                          ? <img src={resolveApiAssetUrl(a.academy.logoUrl)} alt="" />
                           : <span>🏛️</span>}
                         <span className="mcp-academy-badge-name">{a.academy.name}</span>
                       </div>
