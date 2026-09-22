@@ -1,0 +1,451 @@
+/* Newsletter — the in-app blog: list + post.
+   Tokens only (see styles/tokens/), so it follows the app's theme rather than
+   hardcoding a second palette. */
+
+.nl-wrap {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+  color: var(--color-text);
+}
+
+.nl-head { margin-bottom: 26px; }
+
+.nl-h1 {
+  margin: 0 0 6px;
+  font-size: clamp(24px, 3.2vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.nl-lead {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-faint);
+  max-width: 560px;
+}
+
+.nl-section {
+  margin: 34px 0 14px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.nl-note { padding: 28px 4px; color: var(--color-text-faint); font-size: 14px; }
+.nl-note-err { color: var(--color-danger); }
+
+.nl-empty {
+  text-align: center;
+  padding: 54px 20px;
+  border: 1px dashed var(--color-white-a07);
+  border-radius: var(--radius-xl);
+  color: var(--color-text-faint);
+}
+.nl-empty-icon { font-size: 40px; margin-bottom: 8px; }
+
+/* ── List ──────────────────────────────────────────────────────────────── */
+.nl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.nl-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+.nl-card:hover { transform: translateY(-2px); border-color: var(--color-accent-a15); }
+.nl-card.is-pinned { border-color: var(--color-warning-a12); }
+
+.nl-card-img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  background: var(--color-white-a04);
+}
+.nl-card-img-empty {
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+}
+
+.nl-card-body { padding: 13px 15px 15px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+.nl-card-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.nl-chip {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-a15);
+  color: var(--color-accent);
+}
+.nl-chip-pin { background: var(--color-warning-a12); color: var(--color-warning); }
+.nl-chip-solo { margin-bottom: 10px; }
+
+.nl-card-title { margin: 0; font-size: 16px; font-weight: 800; line-height: 1.35; }
+
+.nl-card-sum {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--color-text-faint);
+  /* Two lines, so every card in a row is the same height. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.nl-card-foot {
+  margin-top: auto;
+  padding-top: 9px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--color-text-faint);
+}
+
+/* ── Post ──────────────────────────────────────────────────────────────── */
+.nl-back {
+  display: inline-block;
+  margin-bottom: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+.nl-back:hover { text-decoration: underline; }
+
+.nl-cover {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: var(--radius-xl);
+  display: block;
+  margin-bottom: 20px;
+}
+
+.nl-title {
+  margin: 0 0 12px;
+  font-size: clamp(23px, 3.6vw, 36px);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+.nl-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 10px 0 14px;
+  border-bottom: 1px solid var(--color-white-a07);
+  font-size: 12.5px;
+  color: var(--color-text-faint);
+}
+
+.nl-summary {
+  margin: 18px 0 0;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* The admin's rich text. Spacing is set here because the stored HTML carries
+   no styles of its own (the sanitiser strips them). */
+.nl-body {
+  margin-top: 26px;
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: rgba(226, 232, 240, 0.9);
+  word-break: break-word;
+}
+.nl-body p { margin: 0 0 15px; }
+.nl-body h1, .nl-body h2, .nl-body h3, .nl-body h4 {
+  margin: 26px 0 10px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--color-text);
+}
+.nl-body h1 { font-size: 24px; }
+.nl-body h2 { font-size: 20px; }
+.nl-body h3 { font-size: 17px; }
+.nl-body h4 { font-size: 15.5px; }
+.nl-body ul, .nl-body ol { margin: 0 0 15px; padding-left: 24px; }
+.nl-body li { margin-bottom: 7px; }
+.nl-body a { color: var(--color-accent); }
+.nl-body blockquote {
+  margin: 0 0 15px;
+  padding: 10px 16px;
+  border-left: 3px solid var(--color-accent);
+  background: var(--color-white-a04);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--color-text-faint);
+}
+.nl-body code {
+  background: var(--color-white-a07);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+}
+.nl-body pre {
+  background: var(--color-white-a07);
+  padding: 13px 15px;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+
+/* ── Images INSIDE the article ─────────────────────────────────────────────
+   Pictures belong in the middle of the writing, not stacked at the end: a
+   screenshot is only useful next to the sentence describing it.
+
+   Three placements, written by the editor as a class on <figure> (and matched
+   by the server's allowedClasses whitelist — the two lists must stay in step):
+     nl-img-right — floats right, text wraps down the left
+     nl-img-left  — floats left, text wraps down the right
+     nl-img-full  — full width, text resumes below
+   A figure with no class renders full width, so an unrecognised value degrades
+   safely rather than breaking the column. */
+/* A BARE <img>, not wrapped in a figure.
+   Quill has no `figure` blot, so when the editor pastes one in it can flatten
+   the wrapper and store the <img> on its own. Without this rule such an image
+   inherits nothing and renders at its NATURAL pixel size — a 1920px screenshot
+   then blows straight past the cover, which is exactly the "even bigger than
+   before" case. Every image in the body is capped here first; the figure rules
+   below only narrow it further. */
+.nl-body img {
+  display: block;
+  max-width: 560px;
+  width: 100%;
+  height: auto;
+  margin: 14px auto 18px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-white-a07);
+}
+
+.nl-body figure {
+  margin: 6px 0 18px;
+}
+/* Inside a figure the WRAPPER sets the width, so the image fills it. The
+   `max-width: none` is required: the bare-img rule above caps every body image
+   at 560px, which would otherwise stop a floated image filling its own column
+   and leave a gap beside the text. Margins reset for the same reason. */
+.nl-body figure img {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  display: block;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-white-a07);
+}
+.nl-body figure figcaption {
+  margin-top: 7px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-faint);
+}
+
+/* IN-ARTICLE PICTURES ARE SMALLER THAN THE COVER, ALWAYS.
+   The cover is the post's headline image and should be the biggest thing on
+   the page; a screenshot beside a paragraph is supporting material. Previously
+   `nl-img-full` was width:100% — the same 940px as the cover — so an inline
+   picture competed with it, and the floated ones at 42%/360px were still large
+   enough to dominate a short paragraph. Both are now capped well below the
+   cover's width. */
+.nl-body figure.nl-img-right,
+.nl-body figure.nl-img-left {
+  width: 34%;
+  max-width: 260px;
+}
+.nl-body figure.nl-img-right { float: right; margin-left: 20px; }
+.nl-body figure.nl-img-left  { float: left;  margin-right: 20px; }
+
+/* The same three placements when the class sits on the IMG rather than a
+   figure — which is what the editor writes now, because Quill preserves an
+   image's attributes but discards a <figure> wrapper. Both shapes are
+   supported so posts written either way keep their layout. */
+/* A floated image sits inside Quill's own <p>. That paragraph is a block, so
+   by default the NEXT paragraph starts below it and nothing wraps — the image
+   just sits alone, centred-looking, with text above and below. Collapsing the
+   wrapper paragraph lets the float escape into the following text, which is
+   what makes "image right, text down the left" actually happen.
+   Guarded by @supports: :has() is unsupported in older browsers, and there the
+   image simply renders on its own line — plainer, never broken. */
+@supports selector(p:has(> img)) {
+  .nl-body p:has(> img.nl-img-right),
+  .nl-body p:has(> img.nl-img-left) {
+    margin: 0;
+    display: contents;
+  }
+}
+
+.nl-body img.nl-img-right,
+.nl-body img.nl-img-left {
+  width: 34%;
+  max-width: 260px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+.nl-body img.nl-img-right { float: right; margin-left: 20px; margin-right: 0; }
+.nl-body img.nl-img-left  { float: left;  margin-right: 20px; margin-left: 0; }
+.nl-body img.nl-img-full  { max-width: 560px; clear: both; }
+
+/* "Full width" means the full width of the TEXT COLUMN, not of the page, and
+   still noticeably narrower than the cover above it. Centred so the shortfall
+   reads as deliberate rather than as a broken image. */
+.nl-body figure.nl-img-full {
+  width: 100%;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+  clear: both;
+}
+
+/* A heading must never start beside a floated picture — it reads as a caption
+   for it rather than the start of a new section. */
+.nl-body h1, .nl-body h2, .nl-body h3, .nl-body h4 { clear: both; }
+
+/* Floats are taken out of flow, so without this a tall picture hangs past the
+   end of the article and overlaps the reactions bar. */
+.nl-body::after { content: ''; display: block; clear: both; }
+
+/* On a phone a 42% column leaves ~8 words a line, which is unreadable. Every
+   picture goes full width and the float is dropped entirely. */
+@media (max-width: 620px) {
+  .nl-body figure.nl-img-right,
+  .nl-body figure.nl-img-left,
+  .nl-body figure.nl-img-full,
+  .nl-body img.nl-img-right,
+  .nl-body img.nl-img-left,
+  .nl-body img.nl-img-full {
+    float: none;
+    width: 100%;
+    /* `max-width: none` here would let a phone render an inline picture WIDER
+       than it appears on desktop, and as wide as the cover — the opposite of
+       the intent. The column is the cap instead. */
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.nl-images { margin-top: 26px; display: grid; gap: 20px; }
+.nl-figure { margin: 0; }
+/* Legacy trailing pictures (posts written before images moved inline). Capped
+   to the same width as an in-article picture so an old post does not suddenly
+   show something bigger than the cover. */
+.nl-figure img {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  border-radius: var(--radius-lg);
+  display: block;
+}
+.nl-figure figcaption {
+  margin-top: 7px;
+  font-size: 12.5px;
+  color: var(--color-text-faint);
+  text-align: center;
+}
+
+/* ── React ─────────────────────────────────────────────────────────────── */
+/* React and share both sit at the FOOT, after the article — a reader judges a
+   post once they have read it. The top margin separates the pair from the body. */
+.nl-react {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 34px;
+  padding: 16px;
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-xl);
+}
+.nl-react-lead { font-size: 13.5px; font-weight: 700; margin-right: 4px; }
+
+.nl-react-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-white-a07);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.nl-react-btn:hover:not(:disabled) { border-color: var(--color-accent); }
+.nl-react-btn:disabled { opacity: 0.55; cursor: default; }
+.nl-react-btn.is-on {
+  background: var(--color-accent-a15);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+/* A dislike reads as a caution, not an accent — and its COUNT is never shown
+   to a reader, only to the admin. */
+.nl-react-down.is-on {
+  background: var(--color-warning-a12);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+.nl-react-login { font-size: 12.5px; color: var(--color-accent); text-decoration: none; }
+.nl-react-login:hover { text-decoration: underline; }
+
+/* ── Share ─────────────────────────────────────────────────────────────── */
+/* Share follows the react bar, both at the foot. */
+.nl-share { margin-top: 18px; }
+.nl-share-lead {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-faint);
+  margin-bottom: 9px;
+}
+.nl-share-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.nl-share-btn {
+  padding: 8px 15px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-white-a04);
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.nl-share-btn:hover { border-color: var(--color-accent); }
+.nl-share-btn.is-wa:hover { border-color: #25d366; color: #25d366; }
+.nl-share-btn.is-fb:hover { border-color: #4267b2; color: #6d94e8; }
+.nl-share-btn.is-in:hover { border-color: #0a66c2; color: #5b9bd5; }
+.nl-share-btn.is-done { border-color: var(--color-success); color: var(--color-success); }
+
+@media (max-width: 560px) {
+  .nl-wrap { padding: 18px 13px 48px; }
+  .nl-cover { max-height: 240px; margin-bottom: 15px; }
+  .nl-stats { gap: 12px; }
+}

@@ -110,6 +110,8 @@ export default function CoachAssignments() {
     targetMaxLosses: 0,
     studentIds: [],
     dueDate: '',
+    // Empty = release now. See the Release field in the form.
+    releaseAt: '',
     // PGN "find the blunders" (custom type)
     pgnFindTarget: 2,
     pgnGames: [{ pgn: '', blunders: [{ move: '', betterMove: '', explanation: '' }] }],
@@ -455,7 +457,7 @@ export default function CoachAssignments() {
         targetCount: 10, testTimeLimit: 300, targetGrade: 0,
         rushTopic: 'mixed', rushMinutes: 5, rushTargetSolved: 0,
         arenaTournamentCode: '', targetGames: 0, targetScore: 0, targetRank: 0, targetWins: 0, targetMaxLosses: 0,
-        studentIds: [], dueDate: '',
+        studentIds: [], dueDate: '', releaseAt: '',
         pgnFindTarget: 2, pgnGames: [{ pgn: '', blunders: [{ move: '', betterMove: '', explanation: '' }] }],
         fenTolerance: 80, fenPositions: [{ fen: '', solution: '', userMoveCount: 1, tag: '' }]
       });
@@ -581,6 +583,17 @@ export default function CoachAssignments() {
                       {isArena && a.targetWins > 0 && <span>· {a.targetWins}+ wins</span>}
                       {isArena && a.targetMaxLosses > 0 && <span>· ≤{a.targetMaxLosses} losses</span>}
                       {a.dueDate && <span>· due {new Date(a.dueDate).toLocaleDateString()}</span>}
+                      {/* A post-dated assignment is invisible to students until
+                          its moment, so the coach needs to see that here —
+                          otherwise a scheduled item is indistinguishable from a
+                          live one and looks like nobody has started it. */}
+                      {a.releaseAt && new Date(a.releaseAt) > new Date() && (
+                        <span className="ca-scheduled-chip" title="Preset — students cannot see this yet">
+                          📅 Preset · {new Date(a.releaseAt).toLocaleString([], {
+                            day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                          })}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -1475,6 +1488,49 @@ export default function CoachAssignments() {
                   onChange={e => update('dueDate', e.target.value)}
                 />
               </label>
+
+              {/* ── SCHEDULED RELEASE ────────────────────────────────────────
+                  Lets a coach prepare a week of work in one sitting, each piece
+                  surfacing on its own day. Until its moment, the assignment is
+                  invisible to students — not greyed out, not "coming soon":
+                  the server leaves it out of their list entirely.
+
+                  `datetime-local` gives the time as well as the day, because
+                  "Monday" usually means Monday morning, not midnight. The value
+                  is local to the coach's machine and sent as an ISO instant, so
+                  a student in another timezone sees it open at the same moment
+                  the coach intended. */}
+              {/* Labelled "Preset assignment", not "Release to students".
+                  The old wording named the MECHANISM (when the server reveals
+                  it) rather than the thing the coach is actually doing —
+                  setting work up in advance. Coaches read "release" as an
+                  extra publishing step they had to remember to come back and
+                  perform, which is the opposite of the point. */}
+              <div className="field">
+                <span>📅 Preset assignment (optional)</span>
+                <div className="ca-release-row">
+                  <input
+                    type="datetime-local"
+                    value={form.releaseAt}
+                    onChange={e => update('releaseAt', e.target.value)}
+                  />
+                  {form.releaseAt && (
+                    <button
+                      type="button"
+                      className="btn-ghost"
+                      onClick={() => update('releaseAt', '')}
+                      title="Send this assignment straight away instead"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+                <div className="ca-release-hint">
+                  {form.releaseAt
+                    ? <>🕒 Preset — students see this on <strong>{new Date(form.releaseAt).toLocaleString()}</strong>. Until then it stays hidden from them.</>
+                    : <>Leave empty to send it now. Or preset it: pick a day and time, and it reaches your students by itself — so you can set up a whole week in one sitting.</>}
+                </div>
+              </div>
 
               <div className="field">
                 <span>Assign to *</span>

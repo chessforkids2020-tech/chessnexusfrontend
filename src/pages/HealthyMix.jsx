@@ -1383,9 +1383,63 @@ export default function HealthyMix() {
     setMessage('Hint shown. Still your move — try to find it.');
   }, [nextSolutionMove, markFailedOnce]);
 
+  // ── View solution ──
+  // Plays the REST of the line out on the board, one move at a time, so the
+  // student sees the whole idea rather than a single next move. The puzzle is
+  // marked failed first (exactly as a wrong move would), then the position is
+  // handed over as a normal finished board they can step back through.
+  //
+  // `usedSolutionRef` is what stops a revealed puzzle counting as solved on a
+  // later redo — it rides along in the submit payload as `usedSolution`.
+  const viewSolution = useCallback(() => {
+    if (statusRef.current !== 'solving') return;
+    markFailedOnce();
+    usedSolutionRef.current = true;
+    setHint(null);
+
+    const sol = solutionRef.current || [];
+    let i = moveIndexRef.current;
+    if (i >= sol.length) { setStatus('failed'); return; }
+
+    // Stepped rather than instant: a line that appears all at once teaches
+    // nothing, and for a Mate in 3 the ORDER is the whole point.
+    setBotThinking(true);
+    const step = () => {
+      if (i >= sol.length) {
+        setBotThinking(false);
+        setStatus('failed');
+        setMessage('That was the full line — step back through it with ◀ to replay it.');
+        return;
+      }
+      const game = new Chess(chessRef.current.fen());
+      const san = sol[i];
+      try {
+        let mv;
+        try { mv = game.move(san); }
+        catch (e) {
+          const match = game.moves({ verbose: true })
+            .find(m => normSan(m.san) === normSan(san));
+          if (match) mv = game.move(match); else throw e;
+        }
+        chessRef.current = game;
+        setFen(game.fen());
+        if (mv) { setLastMove({ from: mv.from, to: mv.to }); pushPly(mv.san, game.fen(), mv.from, mv.to); }
+        i += 1;
+        moveIndexRef.current = i;
+        setTimeout(step, 600);
+      } catch (_) {
+        // A move the position will not accept — stop cleanly rather than
+        // looping on it, and leave what has been shown so far on the board.
+        setBotThinking(false);
+        setStatus('failed');
+      }
+    };
+    setTimeout(step, 300);
+  }, [markFailedOnce, pushPly]);
+
   // NOTE: the old "Give up — play it out" action was removed from the help
   // buttons. usedSolutionRef is kept: it still rides along in the submit payload
-  // as `usedSolution` and gates redo counting, and now simply stays false.
+  // as `usedSolution` and gates redo counting.
 
   const next = () => {
     if (isRedo) {
@@ -2071,7 +2125,22 @@ export default function HealthyMix() {
           <MovesPanel {...{ plies, shownPlyIdx, atLive, atStart, navFirst, navPrev, navNext,
                             navLast, goToPly, variations, activeVar, varViewIdx, goToVarPly }} />
           <div className="hm-controls">
-            <div className="hm-message-inline">{message}</div>
+            {/* The prompt line, with the HINT as a bulb beside it.
+                A full-width "💡 Hint" button sat in the row of actions below,
+                where it read as a main choice; a student wanting a nudge
+                reaches for it right where the instruction is, and a small bulb
+                keeps it as a nudge rather than an offer to give up. */}
+            <div className="hm-message-row">
+              <span className="hm-message-inline">{message}</span>
+              {status === 'solving' && atLive && !hint && (
+                <button
+                  className="hm-bulb"
+                  onClick={showHint}
+                  title="Hint"
+                  aria-label="Show a hint"
+                >💡</button>
+              )}
+            </div>
 
             {/* The wording half of the hint — the board rings the piece, this
                 names its square. Mirrors the board overlay exactly. */}
@@ -2090,15 +2159,15 @@ export default function HealthyMix() {
                 ↻ Retry from start
               </button>
             )}
-            {/* ── Help: Hint ────────────────────────────────────────────────
-                One help button. It rings the piece to move and nothing else, so
-                the student still has to find the idea themselves — a Mate in 3
-                stays three decisions. Costs the point (once), exactly as a wrong
-                move does. The old "Show a move" and "Give up" actions were
-                removed: both handed over the answer outright. */}
-            {status === 'solving' && atLive && !hint && (
-              <button className="hm-btn hm-btn-ghost" onClick={showHint}>
-                💡 Hint
+            {/* ── View solution ─────────────────────────────────────────────
+                The hint moved to the bulb beside the prompt above, so this slot
+                now holds the stronger option: play the WHOLE line out. A
+                student who is stuck learns nothing from a puzzle they abandon,
+                and seeing the full idea — in order — is how the pattern sticks.
+                Costs the point, exactly as a wrong move does. */}
+            {status === 'solving' && atLive && !botThinking && (
+              <button className="hm-btn hm-btn-ghost" onClick={viewSolution}>
+                👁 View solution
               </button>
             )}
 

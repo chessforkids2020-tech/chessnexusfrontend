@@ -35,12 +35,20 @@ function rankLabel(rank) {
   return rank;
 }
 
-// The four scored habits, in the order they appear on the coach's summary.
+// The four scored habits, in the order they appear on the coach's summary —
+// which is also the order of WEIGHTS in services/coachLeaderboard.js
+// (practice .35, assignments .30, tournaments .20, attendance .15), so both the
+// class strip and the per-student breakdown read in order of what moves the
+// score most.
+//
+// `weight`/`unit`/`hint` are used by the breakdown dialog; the coach's class
+// strip uses only `icon` and `label`. One definition rather than two, so the
+// habits can never be named differently in the two places they appear.
 const PARTS = [
-  { key: 'practice',    icon: '🔥', label: 'Practice' },
-  { key: 'assignments', icon: '📝', label: 'Homework' },
-  { key: 'tournaments', icon: '🏆', label: 'Events' },
-  { key: 'attendance',  icon: '📅', label: 'Class' },
+  { key: 'practice',    icon: '🔥', label: 'Practice',    weight: 35, unit: 'days',     hint: 'Days practised' },
+  { key: 'assignments', icon: '📝', label: 'Homework',    weight: 30, unit: 'done',     hint: 'Assignments finished' },
+  { key: 'tournaments', icon: '🏆', label: 'Events',      weight: 20, unit: 'played',   hint: 'Tournaments and races entered' },
+  { key: 'attendance',  icon: '📅', label: 'Class',       weight: 15, unit: 'attended', hint: 'Classes attended' },
 ];
 
 // A number that counts up to its value on mount. Watching a score climb is the
@@ -90,7 +98,11 @@ function Avatar({ row, size = 32 }) {
 // opens on a podium and reads as a spreadsheet. A coach comes here to answer
 // two questions — is my class moving, and who has stalled — so those are the
 // numbers, big, before anything else.
-function CoachHero({ summary, topName }) {
+// `period` is passed so the copy cannot lie: with the window switch the coach
+// can be looking at 7 days, and "Active this month" / "have not started this
+// month" would then be wrong on every reading.
+function CoachHero({ summary, topName, period = 'month' }) {
+  const windowWord = period === 'week' ? 'this week' : 'this month';
   const avg = useCountUp(summary.avgScore);
   const pct = summary.students
     ? Math.round((summary.active / summary.students) * 100) : 0;
@@ -106,7 +118,7 @@ function CoachHero({ summary, topName }) {
         </div>
         <div className="clb-stat is-good">
           <span className="clb-stat-num">{summary.active}</span>
-          <span className="clb-stat-lab">Active this month</span>
+          <span className="clb-stat-lab">Active {windowWord}</span>
         </div>
         {/* The number a coach acts on. Styled as a warning only when non-zero —
             a class with nobody stalled should look clean, not red. */}
@@ -143,8 +155,8 @@ function CoachHero({ summary, topName }) {
         {summary.students === 0
           ? 'No active students yet.'
           : summary.inactive > 0
-            ? <>{pct}% of your class is active. <strong>{summary.inactive}</strong> {summary.inactive === 1 ? 'student has' : 'students have'} not started this month.</>
-            : <>Every student is active this month. {topName ? <>Leading: <strong>{topName}</strong>.</> : null}</>}
+            ? <>{pct}% of your class is active. <strong>{summary.inactive}</strong> {summary.inactive === 1 ? 'student has' : 'students have'} not started {windowWord}.</>
+            : <>Every student is active {windowWord}. {topName ? <>Leading: <strong>{topName}</strong>.</> : null}</>}
       </p>
     </div>
   );
@@ -261,7 +273,10 @@ function RankBoard({ title, icon, rows, unit, empty, note, renderMeta, modalTitl
 // players. It stays COMPLETE (not a top 5) — a student who is 14th still needs
 // to find themselves — but it no longer dominates the page, because the boards
 // beside it are the part worth being excited about.
-function OverallRail({ rows, total, scopeLabel }) {
+// `onPick` makes each row open its habit breakdown. For a STUDENT that is
+// mostly their own row; for a COACH it is the whole point — "which lever is
+// flat for THIS child" is the question the class-average strip cannot answer.
+function OverallRail({ rows, total, scopeLabel, onPick }) {
   return (
     <aside className="clb-rail">
       <div className="clb-rb-head clb-rail-head">
@@ -280,13 +295,24 @@ function OverallRail({ rows, total, scopeLabel }) {
       ) : (
         <ol className={`clb-rail-list ${rows.length > 20 ? 'is-scrollable' : ''}`}>
           {rows.map(r => (
-            <li key={r.id} className={`clb-rail-row ${r.isMe ? 'is-me' : ''} ${r.rank <= 3 ? 'is-top3' : ''}`}>
-              <span className="clb-rb-rank">{rankLabel(r.rank)}</span>
-              <Avatar row={r} size={28} />
-              <span className="clb-rail-name">
-                {r.name}<StarMark stars={r.stars} />{r.isMe && <em className="clb-you"> you</em>}
-              </span>
-              <span className="clb-rail-score">{r.score}</span>
+            <li key={r.id} className={`clb-rail-row ${r.isMe ? 'is-me' : ''} ${r.rank <= 3 ? 'is-top3' : ''} ${onPick ? 'is-tappable' : ''}`}>
+              {/* A <button> rather than an onClick on the <li>: the row has to be
+                  reachable by keyboard and announced as activatable, and a whole
+                  class list of clickable non-buttons is unusable without a mouse. */}
+              <button
+                type="button"
+                className="clb-rail-hit"
+                onClick={() => onPick && onPick(r.id)}
+                disabled={!onPick}
+                aria-label={`${r.name} — ${r.score} points, see habit breakdown`}
+              >
+                <span className="clb-rb-rank">{rankLabel(r.rank)}</span>
+                <Avatar row={r} size={28} />
+                <span className="clb-rail-name">
+                  {r.name}<StarMark stars={r.stars} />{r.isMe && <em className="clb-you"> you</em>}
+                </span>
+                <span className="clb-rail-score">{r.score}</span>
+              </button>
             </li>
           ))}
         </ol>
@@ -359,11 +385,110 @@ function Podium({ rows }) {
   );
 }
 
+// ── Next badge: "you are 2 away" ────────────────────────────────────────────
+// `nextUp` is computed by badgesFor() in the service with deliberate care — a
+// badge already STARTED beats an untouched easier one, because finishing
+// something begun is the easier ask. It has always been sent and never shown.
+//
+// This is the one element on the page that answers "what do I do tonight?".
+// Rank tells a child where they are; this tells them where to go next.
+function NextBadge({ badge }) {
+  if (!badge) return null;
+  const pct = typeof badge.pct === 'number' ? badge.pct : 0;
+  return (
+    <div className="clb-nextup">
+      <span className="clb-nextup-icon" aria-hidden="true">{badge.icon}</span>
+      <div className="clb-nextup-body">
+        <div className="clb-nextup-top">
+          <span className="clb-nextup-lead">Closest badge</span>
+          <strong className="clb-nextup-label">{badge.label}</strong>
+        </div>
+        {typeof badge.remaining === 'number' ? (
+          <>
+            <div className="clb-nextup-bar">
+              <span className="clb-nextup-fill" style={{ width: `${pct}%` }} />
+            </div>
+            <div className="clb-nextup-foot">
+              <strong>{badge.remaining} to go</strong>
+              <span> · {badge.have}/{badge.need} — {badge.hint}</span>
+            </div>
+          </>
+        ) : (
+          <div className="clb-nextup-foot">{badge.hint}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Which habit is the gap ──────────────────────────────────────────────────
+// Every row already carries `raw` (the real counts) and `pct` (how far toward a
+// full score) for all four habits — the data has always been in the payload and
+// nothing rendered it. Without this the student is told "+7 to pass Rahul" but
+// never WHICH seven, so "try harder" is the only available conclusion.
+//
+// Shown for the student's own row AND, on the coach view, for any student they
+// tap: the coach's version of "which lever is flat" is per-child, and this is
+// the same question asked one student at a time.
+function ComponentBreakdown({ row, onClose }) {
+  if (!row) return null;
+  const parts = PARTS.map(p => ({
+    ...p,
+    raw: row.raw?.[p.key] ?? 0,
+    pct: row.pct?.[p.key] ?? 0,
+  }));
+  // The weakest habit BY WEIGHTED LOSS, not by lowest percentage: being at 0%
+  // on attendance (15%) costs less than 40% on practice (35%), so pointing a
+  // student at attendance first would be bad advice.
+  const weakest = [...parts].sort(
+    (a, b) => ((100 - b.pct) * b.weight) - ((100 - a.pct) * a.weight)
+  )[0];
+
+  return (
+    <div className="clb-modal" role="dialog" aria-modal="true"
+         aria-label={`${row.name} — habit breakdown`} onClick={onClose}>
+      <div className="clb-modal-card" onClick={e => e.stopPropagation()}>
+        <div className="clb-modal-head">
+          <h4 className="clb-rb-title">
+            {row.name} — {row.score} pts <small className="clb-bd-rank">#{row.rank}</small>
+          </h4>
+          <button className="clb-modal-x" onClick={onClose} aria-label="Close">×</button>
+        </div>
+
+        <ul className="clb-bd-list">
+          {parts.map(p => (
+            <li key={p.key} className={`clb-bd-row ${p.key === weakest?.key ? 'is-weak' : ''}`}>
+              <span className="clb-bd-icon" aria-hidden="true">{p.icon}</span>
+              <span className="clb-bd-label">
+                {p.label}
+                <small className="clb-bd-weight">{p.weight}% of score</small>
+              </span>
+              <span className="clb-bd-bar">
+                <span className="clb-bd-fill" style={{ width: `${p.pct}%` }} />
+              </span>
+              <span className="clb-bd-val">
+                <strong>{p.raw}</strong> <small>{p.unit}</small>
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        {/* One sentence of advice beats four bars the reader has to interpret. */}
+        {weakest && weakest.pct < 100 && (
+          <p className="clb-bd-tip">
+            Biggest gain right now: <strong>{weakest.label.toLowerCase()}</strong> — {weakest.hint.toLowerCase()}.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── The student's own standing, in words ────────────────────────────────────
 // Replaces the old percentage bars under the hero. A child does not act on
 // "practice 75%"; they act on "you are 32 points from 15th". Every line here is
 // a number they can close.
-function MyStanding({ me, total, rows }) {
+function MyStanding({ me, total, rows, onExplain }) {
   const pts = useCountUp(me.score);
 
   // The student directly above. Ranks can be SHARED, so "one rank up" is the
@@ -391,6 +516,14 @@ function MyStanding({ me, total, rows }) {
           <span className="clb-fact-lab">
             {above ? <>to pass <strong>{above.name}</strong> (#{above.rank})</> : 'You are top of the class'}
           </span>
+          {/* The gap says HOW MUCH; this says WHERE from. Without it the only
+              conclusion a child can draw from "+7" is "try harder", which is
+              not an instruction. */}
+          {onExplain && (
+            <button type="button" className="clb-fact-link" onClick={onExplain}>
+              Where do I gain points? ›
+            </button>
+          )}
         </div>
 
         <div className="clb-fact is-star">
@@ -417,10 +550,18 @@ function MyStanding({ me, total, rows }) {
 //                         identifies them), and hides the badge block: badges
 //                         are one child's rewards, not information about a class.
 export default function ClassLeaderboard({ coachId, coachName, mode = 'student' }) {
-  // Monthly only. The weekly window still exists in the API and the service —
-  // this is a UI decision, not a data one — so restoring the switch later means
-  // putting the buttons back, nothing more.
-  const period = 'month';
+  // Week or month. Both are ROLLING windows (never empty on the 1st) and both
+  // have always worked in the API and the service — this was a UI-only
+  // restriction, so restoring it was exactly "putting the buttons back".
+  //
+  // Month stays the default: it is the window the page was designed around, and
+  // it is what the coach and student already know. Week is the escape hatch for
+  // a student who had a bad month and needs to see that this week went well —
+  // a 30-day average hides a turnaround for weeks.
+  const [period, setPeriod] = useState('month');
+  // Which student's habit breakdown is open (row id), or null. Drives the
+  // drill-down dialog — see ComponentBreakdown.
+  const [breakdownId, setBreakdownId] = useState(null);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -461,6 +602,9 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
   const rows = data.overall?.rows || [];
   const badges = data.badges || { earned: [], locked: [] };
   const me = data.me;
+  // Every "this month" on the page has to follow the window switch, or the
+  // empty states tell a coach looking at 7 days that nothing happened all month.
+  const windowWord = period === 'week' ? 'this week' : 'this month';
   // The focused boards. Defaulted so an older API response (or a coach endpoint
   // that has not been redeployed yet) renders empty boards instead of crashing.
   const boards = data.boards || { classroom: [], assignments: [], tournaments: [] };
@@ -484,16 +628,39 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
           </p>
         </div>
 
-        {/* ── YOUR STARS ── sits beside the title on desktop and drops below it
-            on a phone. This is the one number on the page the student owns
-            outright: it cannot be taken by a classmate having a better month,
-            only earned or abandoned. */}
-        {me && (
-          <div className="clb-starbar">
-            <StarRating stars={me.stars || 0} size="lg" />
-            <span className="clb-starbar-count">{me.stars || 0}<small>/5</small></span>
+        <div className="clb-head-right">
+          {/* ── WINDOW SWITCH ── both views. A student who had a poor month can
+              see that THIS WEEK went well, instead of carrying a 30-day average
+              for another fortnight; a coach can check "is the class moving this
+              week?" without last month's work masking it.
+              Note the targets differ per window (services/coachLeaderboard.js
+              TARGETS), so week scores are not a slice of the month — they are
+              scored against a smaller bar, which is the intended behaviour. */}
+          <div className="clb-period" role="group" aria-label="Time window">
+            {[['week', 'Week'], ['month', 'Month']].map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                className={`clb-period-btn ${period === key ? 'is-on' : ''}`}
+                aria-pressed={period === key}
+                onClick={() => setPeriod(key)}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-        )}
+
+          {/* ── YOUR STARS ── sits beside the title on desktop and drops below it
+              on a phone. This is the one number on the page the student owns
+              outright: it cannot be taken by a classmate having a better month,
+              only earned or abandoned. */}
+          {me && (
+            <div className="clb-starbar">
+              <StarRating stars={me.stars || 0} size="lg" />
+              <span className="clb-starbar-count">{me.stars || 0}<small>/5</small></span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── TOP 5 TROPHIES ── first thing on BOTH views. The winner is centre
@@ -506,12 +673,19 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
           me={me}
           total={data.overall?.totalStudents || rows.length}
           rows={rows}
+          onExplain={() => setBreakdownId(me.id)}
         />
       )}
 
+      {/* "You are 2 away from Steady Hand." Sits directly under the standing,
+          because that is where a student has just learned they are behind and
+          is most likely to act. Student view only — the badges belong to one
+          child, and the coach endpoint sends none. */}
+      {!isCoach && <NextBadge badge={badges.nextUp} />}
+
       {/* The coach's equivalent: no rank of their own, so the CLASS is the hero. */}
       {isCoach && data.summary && (
-        <CoachHero summary={data.summary} topName={rows[0]?.name} />
+        <CoachHero summary={data.summary} topName={rows[0]?.name} period={period} />
       )}
 
       {/* ── THE MAIN GRID ──────────────────────────────────────────────────
@@ -525,6 +699,7 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
           rows={rows}
           total={data.overall?.totalStudents || rows.length}
           scopeLabel={isCoach ? 'Your class' : (data.scope || 'Your class')}
+          onPick={setBreakdownId}
         />
 
         <div className="clb-col">
@@ -564,13 +739,13 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
               title="Classroom Activities" icon="🏫" tone="class"
               rows={boards.classroom} unit="joined"
               note="Races, tournaments and live classes your coach ran"
-              empty="No class activities yet this month."
+              empty={`No class activities yet ${windowWord}.`}
             />
             <RankBoard
               title="Tournaments" icon="🏆" tone="cup"
               rows={boards.tournaments} unit="played"
               note="Tournaments, races and team races entered"
-              empty="No tournaments yet this month."
+              empty={`No tournaments yet ${windowWord}.`}
             />
           </div>
 
@@ -578,7 +753,7 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
             title="Assignments" icon="📝" tone="work"
             rows={boards.assignments} unit="done"
             note="Most homework finished — accuracy breaks ties"
-            empty="No finished assignments yet this month."
+            empty={`No finished assignments yet ${windowWord}.`}
             renderMeta={r => <span className="clb-tag is-dim">{r.accuracy}% accuracy</span>}
           />
 
@@ -591,7 +766,7 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
           <span className="clb-badge-count">{badges.earned.length}/{badges.earned.length + badges.locked.length}</span>
         </h4>
         <p className="clb-sub clb-sub-tight">
-          Earned from your last 30 days. Badges are yours alone — everyone can earn every one.
+          Earned from your last {period === 'week' ? 7 : 30} days. Badges are yours alone — everyone can earn every one.
         </p>
         <div className="clb-badges">
           {badges.earned.map(b => (
@@ -625,6 +800,16 @@ export default function ClassLeaderboard({ coachId, coachName, mode = 'student' 
       )}
         </div>
       </div>
+
+      {/* Habit breakdown for whichever row was tapped. Resolved from `rows`,
+          falling back to `me` — a student's own row is always in `me` even if
+          the rail were ever trimmed. */}
+      {breakdownId && (
+        <ComponentBreakdown
+          row={rows.find(r => r.id === breakdownId) || (me?.id === breakdownId ? me : null)}
+          onClose={() => setBreakdownId(null)}
+        />
+      )}
     </div>
   );
 }

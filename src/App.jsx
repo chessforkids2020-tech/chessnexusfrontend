@@ -25,6 +25,11 @@ import CoachAttendancePage from "./pages/coach/CoachAttendancePage";
 import CoachSchedulePage from "./pages/coach/CoachSchedulePage";
 import MyMeetingsPage from "./pages/coach/MyMeetingsPage";
 import LiveClassroomPage from "./pages/coach/LiveClassroomPage";
+import TrialClassesPage from "./pages/coach/TrialClassesPage";
+import TrialJoinPage from "./pages/TrialJoinPage";
+import NewsletterPage from "./pages/NewsletterPage";
+import NewsletterPostPage from "./pages/NewsletterPostPage";
+import AdminNewsletter from "./pages/AdminNewsletter";
 import CoachActivities from "./pages/coach/CoachActivities";
 import CoachBatches from "./pages/coach/CoachBatches";
 import CoachLeaderboard from "./pages/coach/CoachLeaderboard";
@@ -861,6 +866,18 @@ export default function App() {
             <Footer />
           </div>
         } />
+        {/* Admin: write the newsletter. requiredRole="admin" here mirrors the
+            server's requireAdmin on every /api/newsletter/admin/* route. */}
+        <Route path="/admin/newsletter" element={
+          <div style={styles.container}>
+            <div style={styles.content}>
+              <ProtectedRoute requiredRole="admin">
+                <AdminNewsletter />
+              </ProtectedRoute>
+            </div>
+            <Footer />
+          </div>
+        } />
         <Route path="/admin/testimonials" element={
           <div style={styles.container}>
             <div style={styles.content}>
@@ -1404,6 +1421,32 @@ export default function App() {
           <ProtectedRoute>
             <LiveClassroomPage mode="join" />
           </ProtectedRoute>
+        } />
+        {/* TRIAL CLASSES — a one-time link for someone who is NOT a student yet.
+            GuestAllowedRoute mints a throwaway account behind the scenes, so the
+            parent never signs up; the trial routes do their own link checks. */}
+        <Route path="/coach/trial-classes" element={
+          <UserLayout>
+            <CoachRoute>
+              <TrialClassesPage />
+            </CoachRoute>
+          </UserLayout>
+        } />
+        {/* NEWSLETTER — deliberately PUBLIC (no ProtectedRoute): a shared
+            link has to open for anyone, and the page doubles as a blog.
+            Audience filtering happens server-side, so a logged-out visitor
+            simply sees fewer posts rather than being turned away. */}
+        <Route path="/newsletter" element={<UserLayout><NewsletterPage /></UserLayout>} />
+        <Route path="/newsletter/:id" element={<UserLayout><NewsletterPostPage /></UserLayout>} />
+        <Route path="/trial/:joinCode" element={
+          <GuestAllowedRoute>
+            <TrialJoinPage />
+          </GuestAllowedRoute>
+        } />
+        <Route path="/trial/:joinCode/room" element={
+          <GuestAllowedRoute>
+            <LiveClassroomPage mode="trial" />
+          </GuestAllowedRoute>
         } />
         <Route path="/coach/activities" element={
           <UserLayout>

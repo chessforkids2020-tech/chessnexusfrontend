@@ -56,6 +56,16 @@ interface ChessboardProps {
   onDrop?: (sourceSquare: string, targetSquare: string, promotion?: string) => boolean | void;
   onSquareRightClick?: (square: string, event: React.MouseEvent) => void;
   orientation?: 'white' | 'black';
+  /**
+   * Called when the user flips the board with the `F` key.
+   *
+   * The F shortcut flips this component's own `localFlipped` state, which the
+   * parent cannot see. In the live classroom that meant a coach pressing F
+   * turned only their own board while the class kept watching the old side —
+   * the ⇅ button broadcast the flip, F silently did not. Pass this so the
+   * parent can mirror the change (and, in a shared board, tell everyone else).
+   */
+  onFlip?: (orientation: 'white' | 'black') => void;
   boardStyle?: React.CSSProperties;
   boardWidth?: number;
   /**
@@ -189,6 +199,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
   onDrop,
   onSquareRightClick,
   orientation = 'white',
+  onFlip,
   boardStyle = {},
   boardWidth: boardWidthProp = 440,
   // undefined = edge-to-edge on mobile (the default). Pass fullBleed={false} to
@@ -1697,7 +1708,14 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
       onKeyDown={(e) => {
         if (e.key === 'f' || e.key === 'F') {
           e.preventDefault();
-          setLocalFlipped(prev => !prev);
+          // Computed from the CURRENT state rather than inside the updater:
+          // a setState updater must stay pure, and React may run it twice in
+          // StrictMode — which would emit the flip to the class twice.
+          const next = !localFlipped;
+          setLocalFlipped(next);
+          // Tell the parent, so a shared board can broadcast the flip. Without
+          // this the F key is invisible outside this component.
+          onFlip?.(next ? 'black' : 'white');
         }
       }}
       style={{

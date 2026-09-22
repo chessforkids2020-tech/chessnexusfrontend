@@ -68,6 +68,10 @@
 /* ── Move notation ───────────────────────────────────────────────────────────
    DESKTOP: a paired table — move number, white's move, black's move — which
    reads well in the narrow right-hand sidebar. */
+.at-live-moves {
+  max-height: 132px;
+  overflow-y: auto;
+}
 .at-live-move-row {
   display: grid;
   grid-template-columns: 28px 1fr 1fr;
@@ -317,13 +321,27 @@
      "1. e4 e5  2. Nf3 Nf6  3. Bb5 a6 …", wrapping as needed. A phone has the
      width for this and not the height: stacked pairs made a tall scroller that
      showed only four or five moves at a time. */
+  /* ONE line that scrolls sideways — the Lichess / chess.com mobile pattern.
+     Not a wrapping block: wrapping grows the panel downwards as the game goes
+     on, pushing the board and controls around mid-game. A single strip keeps
+     the page height fixed however long the game runs, and the player swipes
+     left/right through the notation. */
   .at-live-moves {
-    max-height: 96px;          /* a few wrapped lines, then scroll */
     display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    gap: 2px 6px;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    gap: 0 8px;
+    max-height: none;          /* the desktop cap would clip a single row */
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 2px;
+    /* No scrollbar: it would eat height in a one-line strip. Two properties
+       because Firefox uses scrollbar-width and WebKit the pseudo-element. */
+    scrollbar-width: none;
   }
+  .at-live-moves::-webkit-scrollbar { display: none; }
+  /* Items must not be squeezed to fit — they keep their width and overflow. */
+  .at-live-move-row { flex: 0 0 auto; }
   .at-live-move-row {
     display: inline-flex;      /* was a 3-column grid on desktop */
     align-items: baseline;
@@ -380,5 +398,38 @@
   .at-live-chat-inner {
     min-height: 0;
     border-radius: var(--radius-lg);
+  }
+
+  /* ── Floating chat button: a small circle, icon only ──────────────────────
+     On desktop this is a labelled pill ("💬 Chat"). On a phone that pill was
+     106px wide and sat on top of the board and the action buttons. The label
+     is dropped and the button becomes a plain 48px circle — the icon already
+     says what it does. */
+  .at-live-chat-fab {
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+    font-size: 22px;
+  }
+  /* Only the text label — targeted by its own class so the unread badge,
+     which is also a span inside this button, keeps showing. */
+  .at-live-chat-fab-label {
+    display: none;
+  }
+
+  /* ── Chat panel: fit the screen instead of hanging off it ────────────────
+     Fixed at 340px it was 92% of a 360px screen and overflowed the left edge
+     (left: -3px). Anchored to both sides with a gutter, and capped by the
+     viewport height so the composer is never pushed off the bottom. */
+  .at-live-chat-overlay {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    bottom: 76px;
+    height: min(60vh, 420px);
   }
 }

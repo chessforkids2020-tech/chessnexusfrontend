@@ -1381,6 +1381,7 @@ function AdminDashboard() {
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
         {[
           { to: '/admin/reports',      label: '🚩 Reports',      count: badgeCounts.reports },
+          { to: '/admin/newsletter',   label: '📰 Newsletter' },
           { to: '/admin/testimonials', label: '💬 Testimonials', count: badgeCounts.testimonials },
           { to: '/admin/feedback',     label: '💡 User Feedback', count: badgeCounts.feedback },
           { to: '/admin/help-center',  label: '❓ Help Center',  count: badgeCounts.helpCenter },

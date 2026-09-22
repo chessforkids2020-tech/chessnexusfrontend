@@ -1898,13 +1898,25 @@ export default function Sidebar({ user, onNavigate }) {
                       onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent-a40)'; e.currentTarget.style.background = 'var(--color-accent-a08)'; }}
                       onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-white-a07)'; e.currentTarget.style.background = 'var(--color-white-a04)'; }}
                     >
-                      {n.topic && <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent)', marginBottom: '3px' }}>{n.topic}</div>}
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text)', marginBottom: '4px', display: 'flex', gap: '6px' }}>
+                      {/* Four sizes, spaced far enough apart to actually read as
+                          a hierarchy. They were 10.5 / 13 / 12 / 11.5 — under a
+                          1px apart, so every line looked the same weight and the
+                          eye had nowhere to land. The TITLE is now clearly the
+                          biggest thing in the row; the topic above it is a small
+                          uppercase label, not a competing heading. */}
+                      {n.topic && (
+                        <div style={{
+                          fontSize: '10px', fontWeight: 700, color: 'var(--color-accent)',
+                          marginBottom: '5px', letterSpacing: '0.06em', textTransform: 'uppercase',
+                          opacity: 0.9,
+                        }}>{n.topic}</div>
+                      )}
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--color-text)', marginBottom: '5px', display: 'flex', gap: '6px', lineHeight: 1.3 }}>
                         {n.icon && <span>{n.icon}</span>}<span>{n.title}</span>
                       </div>
-                      {n.desc && <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', lineHeight: 1.55 }}>{n.desc}</div>}
-                      {n.date && <div style={{ fontSize: '10.5px', color: 'var(--color-text-faint)', marginTop: '5px' }}>{n.date}</div>}
-                      {n.link && <div style={{ fontSize: '11.5px', color: 'var(--color-accent)', fontWeight: 600, marginTop: '7px' }}>{n.linkLabel || 'View →'}</div>}
+                      {n.desc && <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>{n.desc}</div>}
+                      {n.date && <div style={{ fontSize: '10px', color: 'var(--color-text-faint)', marginTop: '5px' }}>{n.date}</div>}
+                      {n.link && <div style={{ fontSize: '11.5px', color: 'var(--color-accent)', fontWeight: 700, marginTop: '8px' }}>{n.linkLabel || 'View →'}</div>}
                     </div>
                   ))
                 )}

@@ -435,3 +435,42 @@
   margin-bottom: 12px;
 }
 .ca-pgn-target strong { color: #e6edf3; }
+
+/* ── Scheduled release ──────────────────────────────────────────────────────
+   A coach can post-date an assignment so a week of work surfaces a day at a
+   time. Amber, matching the "pending/waiting" colour used elsewhere in the
+   coach pages, because this is a not-yet state rather than a problem. */
+.ca-release-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ca-release-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.ca-release-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(226, 232, 240, 0.6);
+}
+
+.ca-release-hint strong { color: #fcd34d; }
+
+/* On the assignment card: marks an item students cannot see yet. */
+.ca-scheduled-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  color: #fcd34d;
+  font-weight: 700;
+  white-space: nowrap;
+}

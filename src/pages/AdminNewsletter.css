@@ -1,0 +1,191 @@
+/* Admin newsletter — write and manage posts. Tokens only, so it follows the
+   app theme rather than introducing a third palette. */
+
+.anl {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+  color: var(--color-text);
+}
+
+.anl-h1 { margin: 0; font-size: 21px; font-weight: 800; }
+
+.anl-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.anl-bar-right { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.anl-btn {
+  padding: 8px 15px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-white-a04);
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.anl-btn:hover { border-color: var(--color-accent); }
+.anl-btn:disabled { opacity: 0.55; cursor: default; }
+
+.anl-primary { background: var(--color-accent); border-color: var(--color-accent); color: #06222a; }
+.anl-go { background: var(--color-success); border-color: var(--color-success); color: #05231a; }
+.anl-danger { color: var(--color-danger); border-color: var(--color-danger); background: transparent; }
+
+.anl-msg {
+  padding: 10px 13px;
+  border-radius: var(--radius-md);
+  background: var(--color-success-a12, var(--color-white-a04));
+  border: 1px solid var(--color-white-a07);
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+.anl-err { color: var(--color-danger); border-color: var(--color-danger); }
+.anl-note { padding: 30px 4px; color: var(--color-text-faint); font-size: 14px; }
+
+/* ── Form ──────────────────────────────────────────────────────────────── */
+.anl-form { display: grid; gap: 18px; }
+
+.anl-f { display: block; }
+.anl-f > span {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--color-text-faint);
+  margin-bottom: 6px;
+}
+.anl-f input[type="text"],
+.anl-f input:not([type]),
+.anl-f textarea,
+.anl-f select {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-white-a04);
+  color: var(--color-text);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.anl-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.anl-row .anl-f { flex: 1 1 180px; }
+
+.anl-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-end;
+  padding-bottom: 9px;
+  flex: 0 0 auto !important;
+}
+.anl-check span { margin: 0; font-size: 13px; color: var(--color-text); font-weight: 700; }
+.anl-check input { width: auto; }
+
+.anl-hint {
+  font-size: 11.5px;
+  color: var(--color-text-faint);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.anl-cover { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+.anl-cover img {
+  width: 260px;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-white-a07);
+}
+
+.anl-img {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 9px;
+  margin-bottom: 9px;
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg);
+  background: var(--color-white-a04);
+}
+.anl-img img { width: 96px; height: 60px; object-fit: cover; border-radius: var(--radius-md); }
+.anl-img input { flex: 1 1 160px; min-width: 0; }
+
+.anl-danger-zone {
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-white-a07);
+}
+
+/* ── List ──────────────────────────────────────────────────────────────── */
+.anl-list { display: grid; gap: 10px; }
+
+.anl-item {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  padding: 11px;
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg);
+  background: var(--color-white-a04);
+  flex-wrap: wrap;
+}
+
+.anl-thumb {
+  width: 84px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  flex: none;
+}
+.anl-thumb-empty {
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  background: var(--color-white-a07);
+}
+
+.anl-item-body { flex: 1 1 220px; min-width: 0; }
+.anl-item-top { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.anl-item-title { font-size: 14.5px; font-weight: 800; }
+
+.anl-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-white-a07);
+  color: var(--color-text-faint);
+  white-space: nowrap;
+}
+.anl-tag.is-live { background: var(--color-accent-a15); color: var(--color-accent); }
+.anl-tag.is-draft { background: var(--color-warning-a12); color: var(--color-warning); }
+.anl-tag.is-pin { background: var(--color-warning-a12); color: var(--color-warning); }
+
+.anl-stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+  font-size: 12px;
+  color: var(--color-text-faint);
+}
+.anl-up { color: var(--color-success); font-weight: 700; }
+/* The dislike count appears ONLY on this page. Amber, not red: it is feedback
+   to act on, not an error. */
+.anl-down { color: var(--color-warning); font-weight: 700; }
+
+.anl-item-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+
+@media (max-width: 560px) {
+  .anl-item-actions { width: 100%; }
+  .anl-item-actions .anl-btn { flex: 1; }
+}

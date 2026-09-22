@@ -317,14 +317,72 @@
   padding: 16px 20px 20px;
 }
 
-.hm-message-inline {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--hm-text-dim);
-  padding: 12px 14px;
+/* The prompt line and its hint bulb, side by side. The box moved from the text
+   to this row so the bulb sits INSIDE the same panel rather than floating
+   beside it. */
+.hm-message-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
   background: var(--color-black-a20);
   border: 1px solid var(--hm-stroke);
   border-radius: var(--hm-radius-sm);
+}
+
+/* The bulb. Deliberately small and quiet: a hint is a nudge, and a button the
+   size of the main actions invites a student to reach for it first. */
+.hm-bulb {
+  flex: none;
+  /* PADDING: 0 IS LOAD-BEARING. The global `button` rule in index.css sets
+     `padding: 0.6em 1.2em` and its own border-radius, which stretched this
+     fixed-size box into a padded oval — the bulb sat off-centre inside it.
+     Both are reset here, and `display: grid + place-items` does the centring
+     instead of relying on line-height. */
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+
+  /* IT HAS TO LOOK PRESSABLE.
+     A transparent disc with a --hm-stroke border (white at 7%) read as
+     decoration next to the text, not as a control — students did not know it
+     could be clicked. Amber fill, a real border and a soft glow give it the
+     weight of a button, and separate it from the panel it sits in. */
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.28), rgba(245, 158, 11, 0.16));
+  border: 1px solid rgba(245, 158, 11, 0.65);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+
+  font-size: 19px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease,
+              transform 0.12s ease, box-shadow 0.15s ease;
+}
+.hm-bulb:hover {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.42), rgba(245, 158, 11, 0.26));
+  border-color: rgba(252, 211, 77, 0.9);
+  box-shadow: 0 3px 14px rgba(245, 158, 11, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px) scale(1.06);
+}
+/* A real press: the button moves under the finger. */
+.hm-bulb:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.hm-bulb:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.hm-message-inline {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--hm-text-dim);
   text-align: center;
   letter-spacing: 0.2px;
 }

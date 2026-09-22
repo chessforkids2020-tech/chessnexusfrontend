@@ -1485,6 +1485,17 @@ export default function SocialHubPage() {
               </span>
             </button>
           )}
+          {/* Newsletter — a way IN, not a preview. Product news lives on its
+              own page; this is just the door, sitting beside Chat because both
+              are "leave the hub and go somewhere" actions. */}
+          <button
+            type="button"
+            className="sh-chat-launch"
+            title="Chess Nexus news and new features"
+            onClick={() => navigate('/newsletter')}
+          >
+            <span>📰 Newsletter</span>
+          </button>
           <button
             type="button"
             className={`sh-chat-launch${activeTab === 'chat' ? ' sh-chat-launch-active' : ''}`}

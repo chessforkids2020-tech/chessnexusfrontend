@@ -2061,6 +2061,14 @@ const cg = {
   reviewBtn: { padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(139,92,246,0.5)', background: 'rgba(139,92,246,0.14)', color: '#c4b5fd', cursor: 'pointer', fontSize: 12.5, fontWeight: 700 },
 };
 
+// Just the given name, for addressing a child directly: "Sara, you have the
+// board" lands where "Sara Kumar S." reads like a form letter. Falls back to
+// "You" so the message still makes sense for an account with no name set.
+function firstName(u) {
+  const full = String(u?.displayName || u?.username || '').trim();
+  return full ? full.split(/\s+/)[0] : 'You';
+}
+
 export default function LiveClassroomPage({ mode = 'host' }) {
   // mode 'host' → :sessionId param (started from MyMeetings).
   // mode 'join' → :joinCode param (student via shareable link).
@@ -2083,9 +2091,23 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const [raisedHandIds, setRaisedHandIds] = useState([]);
   const [myHandRaised, setMyHandRaised] = useState(false);
   const [phase, setPhase] = useState('loading'); // loading | waiting | live | ended | error
+  // Did I leave on purpose (student pressed Leave), as opposed to the coach
+  // ending the class? Both land on phase 'ended', but telling a student "Meeting
+  // ended" when the class is still running without them is simply untrue.
+  const [leftByChoice, setLeftByChoice] = useState(false);
+  // Set (host side) when the meeting being taught is a TRIAL. Drives the
+  // "keep or close this link?" prompt when the class ends; null for a normal
+  // class, which must never see that question.
+  const [trialMeetingId, setTrialMeetingId] = useState(null);
   const phaseRef = useRef('loading');
   useEffect(() => { phaseRef.current = phase; }, [phase]);
   const [note, setNote] = useState('');
+  // A self-dismissing toast for the student who has just been GIVEN something
+  // (board control, screen share). The board already carried a small grey line
+  // saying so, but a student watching the coach's face or the position simply
+  // did not notice it — so the coach ended up announcing it out loud every
+  // time. This is deliberately loud and deliberately temporary.
+  const [grantToast, setGrantToast] = useState(null); // { title, body } | null
   const [waiting, setWaiting] = useState([]); // host panel
   // Shared STUDY tree (move tree with variations) + current path. The board
   // position is derived from nodeAtPath(tree, path).fen. Everyone stays in sync.
@@ -2277,6 +2299,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // collection by player (either side), a "X vs Y" pairing, or opening name.
   const [mgQuery, setMgQuery] = useState('');
   const [mgField, setMgField] = useState('player');    // 'player' | 'opening'
+  // OPENING PICKERS. Typing an opening name from memory is the wrong ask: the
+  // stored `opening` is matched EXACTLY on the server (routes/masterGames.js
+  // buildQuery), so "Sicilian" found nothing unless it happened to be the whole
+  // stored string — the coach had to guess the exact wording. These two selects
+  // replace the guesswork: family first, then its variations, both read from
+  // the data itself so every option is guaranteed to return games.
+  const [mgFamilies, setMgFamilies] = useState([]);    // ["Sicilian Defense", …]
+  const [mgFamily, setMgFamily] = useState('');        // chosen family
+  const [mgVariations, setMgVariations] = useState([]);// variations within it
+  const [mgVariation, setMgVariation] = useState('');  // chosen variation
   const [mgList, setMgList] = useState([]);
   const [mgLoading, setMgLoading] = useState(false);
   const [mgErr, setMgErr] = useState('');
@@ -2292,6 +2324,17 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // Current position derived from the shared tree + path.
   const curNode = nodeAtPath(tree, treePath);
   const curFen = curNode?.fen || new Chess().fen();
+
+  // WHOSE TURN IT IS, read straight from the position.
+  //
+  // Beginners cannot work this out from a board — nothing on it says so — and
+  // on a puzzle it is the first thing they need. Without it the coach had to
+  // announce "it's Black to move" every single time, for every position.
+  //
+  // Derived from `curFen`, which comes from the SHARED tree, so the coach and
+  // every student read the same answer. FEN field 2 is the side to move:
+  // "… w KQkq -" / "… b KQkq -".
+  const turnToMove = String(curFen).split(/\s+/)[1] === 'b' ? 'black' : 'white';
 
   // SAN moves from the start of the tree to the current node — the prefix the
   // opening explorer matches on. Walks the same path nodeAtPath does.
@@ -2340,8 +2383,13 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // only turns their own view. Teaching from Black's side is a normal thing to
   // want, and a coach-only flip meant they ended up narrating a board the class
   // could not see.
-  const flipBoard = () => {
-    const next = boardOrientation === 'white' ? 'black' : 'white';
+  // `to` lets a caller state the orientation outright instead of toggling.
+  // The board's own F-key shortcut has already flipped itself by the time it
+  // tells us, so toggling again here would put the class one flip behind — and
+  // that is exactly the bug this fixes: F flipped the coach's board locally and
+  // broadcast nothing, so students had to flip themselves.
+  const flipBoard = (to) => {
+    const next = to || (boardOrientation === 'white' ? 'black' : 'white');
     setFlipOverride(next);
     if (iControl && session) {
       socket.emit('liveclass:orientation', { sessionId: session.id, orientation: next });
@@ -2379,7 +2427,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const enterRoom = useCallback(async (joinCode) => {
     let r;
     try {
-      r = await api.post(`/api/coach-live/join/${joinCode}/token`);
+      // A TRIAL guest gets their token from the trial router: they have no
+      // roster link, so the normal endpoint would refuse them, and no
+      // attendance may be written for them. Same room, same media, different
+      // door — see backend/routes/coachTrialClass.js.
+      const tokenUrl = mode === 'trial'
+        ? `/api/trial-class/join/${joinCode}/token`
+        : `/api/coach-live/join/${joinCode}/token`;
+      r = await api.post(tokenUrl);
     } catch (e) {
       const status = e.response?.status;
       if (status === 403) { setPhase('waiting'); setNote('Waiting for the coach to let you in…'); return; }
@@ -2402,7 +2457,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       try { await lkConnectRef.current({ url, token }); }
       catch { setNote('Video unavailable right now. The board and class still work.'); }
     }
-  }, []);
+    // `mode` decides which token endpoint is called, so it must be a dependency
+    // — with an empty array this closure would keep the mode from first render.
+  }, [mode]);
 
   // Student: announce myself to the waiting room. If the class hasn't started yet
   // (409), stay on the waiting screen — the socket signal + poll retry when it does.
@@ -2439,10 +2496,36 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           // so the host token is minted through the same endpoint keyed by joinCode.
           // MyMeetings passes us here after /start; fetch the meeting's joinCode:
           const mr = await api.get(`/api/coach-live/meetings`);
-          const meeting = (mr.data || []).find(m => String(m.id) === String(sess.meetingId));
+          let meeting = (mr.data || []).find(m => String(m.id) === String(sess.meetingId));
+
+          // Not in the normal list? Then this is a TRIAL — /meetings excludes
+          // them so one-time links never bury a coach's reusable meetings. Look
+          // it up on the trial router instead, and remember that it IS a trial
+          // so the end-of-class prompt can offer to close the link.
+          if (!meeting) {
+            try {
+              const tl = await api.get('/api/trial-class/links');
+              const t = (tl.data?.links || []).find(l => String(l.id) === String(sess.meetingId));
+              if (t) {
+                meeting = { joinCode: t.joinCode };
+                if (alive) setTrialMeetingId(t.id);
+              }
+            } catch { /* not a trial either — fall through with no meeting */ }
+          }
+
           if (meeting) await enterRoom(meeting.joinCode);
         } catch (e) {
           if (alive) { setPhase('error'); setNote(e.response?.data?.message || 'Could not open the classroom.'); }
+        }
+      } else if (mode === 'trial') {
+        // TRIAL GUEST. They arrive here already admitted — TrialJoinPage does the
+        // knocking and only navigates once the coach has let them in — so go
+        // straight for the token. No coach-live resolve: that endpoint requires a
+        // roster link this person deliberately does not have.
+        try {
+          await enterRoom(params.joinCode);
+        } catch (e) {
+          if (alive) { setPhase('error'); setNote(e.response?.data?.message || 'Could not join this class.'); }
         }
       } else {
         // Student via link: resolve. If not started yet, sit on the waiting screen
@@ -2499,6 +2582,25 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   useEffect(() => { controllerRef.current = controllerId; }, [controllerId]);
   const screenSharerRef = useRef(screenSharerId);
   useEffect(() => { screenSharerRef.current = screenSharerId; }, [screenSharerId]);
+  // Auto-dismiss, with two different lifetimes because the two messages ask
+  // different things of the reader:
+  //
+  //   GRANT  (40s) — asks the student to DO something ("make your move"). It
+  //                  has to survive a child who was looking at the coach's face
+  //                  rather than the screen.
+  //   INFO   (5s)  — only tells them control has gone back to the coach. There
+  //                  is nothing to act on, so it should say its piece and get
+  //                  out of the way.
+  //
+  // Re-armed on each new toast, and cleared on unmount so a timer never fires
+  // into a dead component.
+  useEffect(() => {
+    if (!grantToast) return;
+    const ms = grantToast.tone === 'info' ? 5000 : 40000;
+    const t = setTimeout(() => setGrantToast(null), ms);
+    return () => clearTimeout(t);
+  }, [grantToast]);
+
   const myIdRef = useRef(myId);
   useEffect(() => { myIdRef.current = myId; }, [myId]);
 
@@ -2527,11 +2629,48 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     };
     // Board control — no token change needed (board moves are gated client-side
     // + via the board-sync socket, not the LiveKit token).
-    const onControl = ({ controllerId: cid }) => setControllerId(cid);
+    const onControl = ({ controllerId: cid }) => {
+      // Tell the student they have been handed the board. Only on the CHANGE to
+      // them — re-announcing on every control event would fire on someone
+      // else's grant too. The host is skipped: they did the granting.
+      const meNow = String(cid || '') === String(myIdRef.current);
+      const meWas = String(controllerRef.current || '') === String(myIdRef.current);
+      if (!hostStateRef.current.isHost && meNow && !meWas) {
+        setGrantToast({
+          title: `${firstName(user)}, you have the board`,
+          body: 'Your coach gave you control — make your move on the chessboard.',
+          icon: '♟️',
+          tone: 'grant',
+        });
+      } else if (!hostStateRef.current.isHost && !meNow && meWas) {
+        // Control TAKEN BACK. Without this the student keeps trying to move a
+        // board that has quietly stopped responding and assumes it is broken —
+        // being told you have control matters just as much as being told you
+        // no longer do.
+        setGrantToast({
+          title: 'Your coach has the board again',
+          body: 'Control went back to your coach — just follow along for now.',
+          icon: '👀',
+          tone: 'info',
+        });
+      }
+      controllerRef.current = cid;
+      setControllerId(cid);
+    };
     // Screen-share control — this IS in the LiveKit token, so when MY screen-share
     // permission changes, re-fetch the token & reconnect to apply the new grant.
     const onScreenShare = ({ screenSharerId: sid }) => {
       const prev = screenSharerRef.current;
+      if (!hostStateRef.current.isHost
+          && String(sid || '') === String(myIdRef.current)
+          && String(prev || '') !== String(myIdRef.current)) {
+        setGrantToast({
+          title: `${firstName(user)}, you can share your screen`,
+          body: 'Your coach gave you screen-share permission — press Share screen when you are ready.',
+          icon: '🖥️',
+          tone: 'grant',
+        });
+      }
       setScreenSharerId(sid);
       if (!hostStateRef.current.isHost && mode === 'join') {
         const meNow = String(sid || '') === String(myIdRef.current);
@@ -3302,14 +3441,42 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // "Fischer vs Spassky" pairing (matched as both players in the same game), or an
   // opening name. The list endpoint returns light rows only — no PGN — so loading
   // a game onto the board goes through loadMasterGame(id).
+  // Families, once. Reuses the same /filters endpoint the Master Games pages
+  // already call, so the classroom offers exactly the openings that exist.
+  useEffect(() => {
+    let alive = true;
+    api.get('/api/master-games/filters')
+      .then(r => { if (alive) setMgFamilies(r.data?.families || []); })
+      .catch(() => { /* the free-text box still works without it */ });
+    return () => { alive = false; };
+  }, []);
+
+  // Variations for the chosen family, from the /variations endpoint that
+  // already existed for this exact purpose and was never wired up here.
+  useEffect(() => {
+    if (!mgFamily) { setMgVariations([]); setMgVariation(''); return; }
+    let alive = true;
+    setMgVariation('');
+    api.get(`/api/master-games/variations?family=${encodeURIComponent(mgFamily)}`)
+      .then(r => { if (alive) setMgVariations(r.data?.variations || []); })
+      .catch(() => { if (alive) setMgVariations([]); });
+    return () => { alive = false; };
+  }, [mgFamily]);
+
   const searchMasterGames = async () => {
     const q = mgQuery.trim();
-    if (!q) return;
+    // In OPENING mode the dropdowns are the input, so an empty text box is fine
+    // — but a search with nothing chosen at all still has nothing to do.
+    if (mgField === 'opening' ? !(mgFamily || mgVariation) : !q) return;
     setMgLoading(true); setMgErr(''); setMgList([]);
     try {
       const params = new URLSearchParams({ limit: '30' });
       if (mgField === 'opening') {
-        params.set('opening', q);
+        // A variation is the more specific of the two, so it wins when set.
+        // Both are values the server itself supplied, so the exact-match filter
+        // in buildQuery() is guaranteed to hit.
+        if (mgVariation) params.set('opening', mgVariation);
+        else params.set('family', mgFamily);
       } else {
         // "A vs B" → filter by A, then keep rows where B is the other player.
         const vs = q.split(/\s+vs\.?\s+/i);
@@ -3503,9 +3670,28 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   };
 
   // ── Host actions ─────────────────────────────────────────────────────────────
+  // Admitting normally writes attendance and requires the person to be on the
+  // coach's roster. A TRIAL guest is neither — so when the roster check refuses
+  // (403 "not in your roster"), retry through the trial route, which admits
+  // without touching the register. Falling back on the error rather than asking
+  // the page to know in advance keeps a normal class on exactly its old path.
   const admit = async (studentId, outcome) => {
-    try { await api.post(`/api/coach-live/sessions/${session.id}/admit`, { studentId, outcome }); refreshWaiting(); }
-    catch (e) { alert(e.response?.data?.message || 'Could not admit.'); }
+    try {
+      await api.post(`/api/coach-live/sessions/${session.id}/admit`, { studentId, outcome });
+      refreshWaiting();
+    } catch (e) {
+      if (e.response?.status === 403) {
+        try {
+          await api.post(`/api/trial-class/sessions/${session.id}/admit`, { guestId: studentId });
+          refreshWaiting();
+          return;
+        } catch (e2) {
+          alert(e2.response?.data?.message || 'Could not admit.');
+          return;
+        }
+      }
+      alert(e.response?.data?.message || 'Could not admit.');
+    }
   };
   const removeStu = async (studentId) => {
     try { await api.post(`/api/coach-live/sessions/${session.id}/remove`, { studentId }); refreshWaiting(); }
@@ -3763,7 +3949,48 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const endClass = async () => {
     if (!window.confirm('End the class for everyone?')) return;
     try { await api.post(`/api/coach-live/sessions/${session.id}/end`); } catch { /* */ }
+
+    // TRIAL CLASSES: a trial link is one-time, so once the lesson is over the
+    // coach decides its fate rather than the system guessing. "Keep it open" is
+    // for a family coming back for a second look; closing is the normal answer
+    // and is what makes the link genuinely one-time.
+    //
+    // Asked only when this really was a trial — `trialMeetingId` is set by the
+    // trial bootstrap, so a normal class never sees this prompt.
+    if (trialMeetingId) {
+      const reopen = window.confirm(
+        'Trial finished.\n\n'
+        + 'OK = keep this link working, so the same family can join again.\n'
+        + 'Cancel = close the link for good (recommended).'
+      );
+      try { await api.post(`/api/trial-class/links/${trialMeetingId}/finish`, { reopen }); }
+      catch { /* the coach can still close it from the Trial classes page */ }
+    }
+
     setPhase('ended'); lk.disconnect();
+  };
+  // STUDENT: leave the class without ending it for anyone else.
+  //
+  // Until now the ONLY exit control in the toolbar was the host's "End" button
+  // (`isHost && ...`), so a student had no way out at all — they were closing
+  // the tab or hitting Back, which leaves the LiveKit room without lowering a
+  // raised hand and looks to the coach like a connection drop.
+  //
+  // This is deliberately client-side only: there is no student-leave endpoint
+  // and there should not be one. /sessions/:sid/end is host-guarded, and a
+  // student must never be able to touch the session record — the class keeps
+  // running for everyone else. Disconnecting from the room is the whole job.
+  const leaveClass = async () => {
+    if (!window.confirm('Leave this class? Your coach and classmates stay in it, and you can rejoin with the same link.')) return;
+    // Lower a raised hand on the way out, so the coach isn't left looking at a
+    // ✋ from someone who is no longer in the room.
+    if (myHandRaised && session) {
+      setMyHandRaised(false);
+      try { await api.post(`/api/coach-live/sessions/${session.id}/raise-hand`, { raised: false }); } catch { /* leaving anyway */ }
+    }
+    setLeftByChoice(true);
+    setPhase('ended');
+    lk.disconnect();
   };
   const autoEnd = useCallback(async () => {
     if (isHost && session) { try { await api.post(`/api/coach-live/sessions/${session.id}/end`); } catch { /* */ } }
@@ -3964,22 +4191,48 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // When the meeting ends, a STUDENT is auto-sent to their own portal after a short
   // beat (they can't stay in the coach's classroom, and must not land on the coach's
   // meetings page). The coach stays on the "ended" screen and returns to meetings.
+  //
+  // NOT when the student left of their own accord: that screen offers "Rejoin
+  // the class", and a 3-second bounce to /my-coach would snatch it away before
+  // anyone who mis-clicked could take it. The reason for the auto-redirect —
+  // they cannot remain in a class that no longer exists — simply doesn't apply
+  // to a class that is still running. They leave via the buttons instead.
   useEffect(() => {
-    if (phase !== 'ended' || isHost) return;
+    if (phase !== 'ended' || isHost || leftByChoice) return;
     const t = setTimeout(() => nav('/my-coach'), 3000);
     return () => clearTimeout(t);
-  }, [phase, isHost, nav]);
+  }, [phase, isHost, leftByChoice, nav]);
 
   // ── Render ───────────────────────────────────────────────────────────────────
   if (phase === 'loading') return <div style={s.center}>Loading classroom…</div>;
   if (phase === 'error') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>🚫</div><p style={{ fontSize: 15, color: 'rgba(226,232,240,0.85)' }}>{note}</p><button style={s.ghost} onClick={() => nav(-1)}>Back</button></div></div>;
-  if (phase === 'ended') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>👋</div><h2 style={{ fontSize: 20, fontWeight: 700, margin: '6px 0 14px' }}>Meeting ended</h2>{/* Coach goes back to their meetings; a STUDENT goes to their own portal
+  // Two different events land here: the coach ENDED the class, or a student
+  // chose to LEAVE one that is still running. Saying "Meeting ended" to the
+  // student who just left is plainly false and makes them think they killed the
+  // class, so `leftByChoice` splits the wording — and offers the way back in,
+  // since leaving by mistake must not cost them the lesson.
+  if (phase === 'ended') return <div style={s.center}><div style={{ textAlign: 'center' }}><div style={{ fontSize: 40 }}>👋</div><h2 style={{ fontSize: 20, fontWeight: 700, margin: '6px 0 14px' }}>{leftByChoice ? 'You left the class' : 'Meeting ended'}</h2>{/* Coach goes back to their meetings; a STUDENT goes to their own portal
       (they have no access to the coach's meetings page) — auto-redirected after a
       moment, with a button to go now. */}
     {isHost
       ? <button style={s.ghost} onClick={() => nav('/coach/live')}>Back to meetings</button>
       : <>
-          <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.7)', margin: '0 0 14px' }}>Taking you back to My Coach…</p>
+          {leftByChoice && (
+            <>
+              <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.7)', margin: '0 0 12px' }}>
+                The class is still going without you. Left by mistake?
+              </p>
+              <button style={{ ...s.ghost, marginTop: 0, borderColor: 'rgba(6,182,212,0.5)', color: '#67e8f9' }} onClick={() => window.location.reload()}>
+                ↩ Rejoin the class
+              </button>
+              <div style={{ height: 10 }} />
+            </>
+          )}
+          {/* Only the auto-redirect case promises a redirect — see the effect
+              above, which skips it entirely when the student left by choice. */}
+          {!leftByChoice && (
+            <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.7)', margin: '0 0 14px' }}>Taking you back to My Coach…</p>
+          )}
           <button style={s.ghost} onClick={() => nav('/my-coach')}>Go to My Coach now</button>
         </>}
   </div></div>;
@@ -4392,11 +4645,54 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           {isFs ? '🡼' : '⛶'}
         </button>
         {isHost && <button style={s.endBtn} onClick={endClass}>End</button>}
+        {/* STUDENT: the way out. Students reported there was no "leave" control
+            at all — because there wasn't one: the toolbar's only exit was the
+            host-gated "End" above, so students resorted to closing the tab.
+            Labelled "Leave" (never "End") so it is obvious this affects only
+            them, and kept in red like the host's End so the eye finds it in the
+            same place. */}
+        {!isHost && (
+          <button style={s.leaveBtn} title="Leave this class (it keeps running for everyone else)" onClick={leaveClass}>
+            🚪 Leave
+          </button>
+        )}
       </div>
       {note && (
         <div style={s.noteBar}>
           <span style={{ flex: 1 }}>{note}</span>
           <button style={s.noteClose} title="Dismiss" aria-label="Dismiss" onClick={() => setNote('')}>✕</button>
+        </div>
+      )}
+
+      {/* ── "YOU HAVE THE BOARD" TOAST ──────────────────────────────────────
+          A student had no way of knowing the coach had handed them control:
+          the only sign was a small grey line under the board, which nobody
+          reading the position ever noticed — so the coach announced it aloud
+          every time.
+
+          A TOAST, not a modal: control is granted mid-lesson and a full-screen
+          dialog would cover the very board the student is being asked to play
+          on. It names them directly, says what to do, and clears itself after
+          40 seconds. Dismissable early, because a child who has understood
+          should not have to wait it out. */}
+      {grantToast && (
+        <div style={{
+          ...s.grantToast,
+          borderColor: grantToast.tone === 'info'
+            ? 'rgba(148,163,184,0.5)' : 'rgba(34,197,94,0.55)',
+        }} role="status" aria-live="polite">
+          <span style={s.grantToastIcon} aria-hidden="true">{grantToast.icon}</span>
+          <span style={{ minWidth: 0, flex: 1 }}>
+            <span style={{
+              ...s.grantToastTitle,
+              color: grantToast.tone === 'info' ? '#cbd5e1' : '#86efac',
+            }}>{grantToast.title}</span>
+            <span style={s.grantToastBody}>{grantToast.body}</span>
+          </span>
+          {/* An explicit OK, not just a small ×. A child who has read the
+              message wants to make it go away, and a 12px close cross is not a
+              target a nine-year-old reliably hits on a phone. */}
+          <button style={s.grantToastOk} onClick={() => setGrantToast(null)}>OK</button>
         </div>
       )}
 
@@ -4759,9 +5055,20 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     the sides that actually render labels (bottom+left), so there is no
                     empty top/right gutter to crop — negative margins here would clip the
                     board's own top rank. */}
+                {/* Board + who-to-move, side by side. The badge sits to the RIGHT
+                    of the board rather than under it: beside the position it is
+                    read at a glance, whereas below it competed with the controls
+                    and got skipped. `alignItems: flex-start` keeps it level with
+                    the top of the board instead of floating at the middle. */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
                 <div style={{ position: 'relative', display: 'inline-block', lineHeight: 0 }}>
                   <Chessboard position={curFen} lastMove={lastMove} boardWidth={shownBoardW} draggable={!!iControl} onDrop={onDrop}
                     orientation={boardOrientation}
+                    // The board's own F-key shortcut flips it locally. Routing
+                    // that back through flipBoard makes F behave exactly like
+                    // the ⇅ button — including broadcasting to the class when
+                    // the coach presses it.
+                    onFlip={flipBoard}
                     // Controller draws locally (its own arrows) and broadcasts them;
                     // everyone else renders the synced arrows/highlights as props.
                     arrows={iControl ? [] : drawArrows}
@@ -4773,12 +5080,54 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     onResize={iControl ? setBoardWidth : undefined}
                   />
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
-                  <span style={{ color: '#9ca3af', fontSize: 12 }}>
-                    {isHost ? 'You’re teaching — everyone follows'
-                      : iControl ? 'Your coach gave you control — make your move'
-                      : 'Your coach is teaching'}
+
+                {/* ── WHOSE TURN ── beside the board, deliberately LARGE.
+                    Nothing on a chessboard states the side to move, and a
+                    beginner cannot deduce it — so the coach was announcing it
+                    for every single position. The disc carries the meaning even
+                    for a child who reads little English; the words serve
+                    everyone else and screen readers. */}
+                <div
+                  role="status"
+                  aria-label={`${turnToMove === 'white' ? 'White' : 'Black'} to move`}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                    padding: '14px 16px', borderRadius: 14,
+                    background: turnToMove === 'white' ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.42)',
+                    border: `1px solid ${turnToMove === 'white' ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.24)'}`,
+                    minWidth: 104, flex: 'none',
+                  }}
+                >
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      width: 38, height: 38, borderRadius: '50%',
+                      background: turnToMove === 'white' ? '#f8fafc' : '#0b0f14',
+                      border: '2px solid rgba(255,255,255,0.7)',
+                      boxShadow: '0 2px 10px rgba(0,0,0,0.45)',
+                      flex: 'none',
+                    }}
+                  />
+                  <span style={{ fontSize: 15, fontWeight: 800, color: '#f1f5f9', lineHeight: 1.25, textAlign: 'center' }}>
+                    {turnToMove === 'white' ? 'White' : 'Black'}<br />
+                    <span style={{ fontSize: 12.5, fontWeight: 700, color: 'rgba(226,232,240,0.72)' }}>to move</span>
                   </span>
+                </div>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
+                  {/* "Your coach is teaching" is gone: a student sitting in the
+                      classroom already knows that, so it was a line of text
+                      earning nothing beside the board. The two remaining
+                      messages both say something the reader cannot otherwise
+                      tell — that the coach is driving, or that control has been
+                      handed to THIS student and a move is expected of them. */}
+                  {(isHost || iControl) && (
+                    <span style={{ color: '#9ca3af', fontSize: 12 }}>
+                      {isHost ? 'You’re teaching — everyone follows'
+                        : 'Your coach gave you control — make your move'}
+                    </span>
+                  )}
                   {/* Move navigation (host/controller drives; syncs to all). */}
                   {iControl && (
                     <span style={{ display: 'flex', gap: 4 }}>
@@ -5000,14 +5349,50 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                                 <option value="player">Player</option>
                                 <option value="opening">Opening</option>
                               </select>
-                              <input
-                                style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit', minWidth: 140 }}
-                                placeholder={mgField === 'opening' ? 'e.g. Sicilian Defense' : 'e.g. Fischer  ·  or  Fischer vs Spassky'}
-                                value={mgQuery}
-                                onChange={e => setMgQuery(e.target.value)}
-                                onKeyDown={e => { if (e.key === 'Enter') searchMasterGames(); }}
-                              />
-                              <button style={s.loadBtn} onClick={searchMasterGames} disabled={mgLoading || !mgQuery.trim()}>
+                              {/* OPENING: two dropdowns, family then variation.
+                                  A free-text box was the wrong control here —
+                                  the server matches `opening` EXACTLY, so a
+                                  coach typing "Sicilian" got nothing back
+                                  unless they guessed the stored wording
+                                  letter-for-letter. Every option below comes
+                                  from the data, so each one returns games. */}
+                              {mgField === 'opening' ? (
+                                <>
+                                  <select
+                                    style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit', minWidth: 150 }}
+                                    value={mgFamily}
+                                    onChange={e => { setMgFamily(e.target.value); setMgList([]); setMgErr(''); }}
+                                  >
+                                    <option value="">Choose an opening…</option>
+                                    {mgFamilies.map(f => <option key={f} value={f}>{f}</option>)}
+                                  </select>
+                                  {/* Only once a family is chosen, and only if it
+                                      actually has named variations. */}
+                                  {mgFamily && mgVariations.length > 0 && (
+                                    <select
+                                      style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit', minWidth: 150 }}
+                                      value={mgVariation}
+                                      onChange={e => { setMgVariation(e.target.value); setMgList([]); setMgErr(''); }}
+                                    >
+                                      <option value="">All variations ({mgVariations.length})</option>
+                                      {mgVariations.map(v => <option key={v} value={v}>{v}</option>)}
+                                    </select>
+                                  )}
+                                </>
+                              ) : (
+                                <input
+                                  style={{ ...s.loadInput, flex: 1, fontFamily: 'inherit', minWidth: 140 }}
+                                  placeholder="e.g. Fischer  ·  or  Fischer vs Spassky"
+                                  value={mgQuery}
+                                  onChange={e => setMgQuery(e.target.value)}
+                                  onKeyDown={e => { if (e.key === 'Enter') searchMasterGames(); }}
+                                />
+                              )}
+                              <button
+                                style={s.loadBtn}
+                                onClick={searchMasterGames}
+                                disabled={mgLoading || (mgField === 'opening' ? !mgFamily : !mgQuery.trim())}
+                              >
                                 {mgLoading ? 'Searching…' : 'Search'}
                               </button>
                             </div>
@@ -5823,6 +6208,32 @@ const s = {
   editorOverlay: { position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.72)', backdropFilter: 'blur(3px)',
     display: 'grid', placeItems: 'center', zIndex: 9500, padding: 16 },
   // Student "coach wants you to unmute" consent popup.
+  // Grant toast — bottom-centre, above the board but clear of the toolbar.
+  // TOP of the screen, not the bottom.
+  //
+  // At `bottom: 88` a 460px box sat directly over the board on a phone — the
+  // student was told to make a move while the thing they had to move was
+  // hidden underneath the message, for 40 seconds. The toolbar and the board
+  // both live in the lower half, so the top strip is the only area that is
+  // reliably free.
+  grantToast: {
+    position: 'fixed', left: '50%', top: 12, transform: 'translateX(-50%)',
+    zIndex: 9500, display: 'flex', alignItems: 'center', gap: 12,
+    width: 'min(94vw, 460px)', padding: '12px 12px 12px 16px',
+    background: 'rgba(12,18,26,0.98)',
+    border: '1px solid rgba(34,197,94,0.55)',
+    borderRadius: 'var(--radius-xl)',
+    boxShadow: '0 18px 50px rgba(0,0,0,0.65)',
+  },
+  grantToastIcon: { fontSize: 26, lineHeight: 1.1, flex: 'none' },
+  grantToastTitle: { display: 'block', fontSize: 15, fontWeight: 800, color: '#86efac', marginBottom: 3 },
+  grantToastBody: { display: 'block', fontSize: 13, lineHeight: 1.5, color: '#e2e8f0' },
+  grantToastOk: {
+    flex: 'none', padding: '8px 16px', borderRadius: 'var(--radius-md)',
+    border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)',
+    color: '#f1f5f9', fontSize: 13.5, fontWeight: 800, cursor: 'pointer',
+    fontFamily: 'inherit',
+  },
   unmuteOverlay: { position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.78)', backdropFilter: 'blur(4px)',
     display: 'grid', placeItems: 'center', zIndex: 9600, padding: 16 },
   unmuteCard: { background: 'rgba(15,20,28,0.98)', border: '1px solid rgba(6,182,212,0.4)', borderRadius: 'var(--radius-xl)',
@@ -5962,5 +6373,9 @@ const s = {
   devLabel: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
   screenBtn: { padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(6,182,212,0.4)', background: 'rgba(6,182,212,0.12)', color: '#67e8f9', cursor: 'pointer', fontWeight: 600 },
   endBtn: { padding: '6px 14px', borderRadius: 'var(--radius-md)', border: 'none', background: '#ef4444', color: '#fff', fontWeight: 700, cursor: 'pointer' },
+  // Student's "Leave". Red like the host's End so it reads as the exit and sits
+  // in the same spot, but outlined rather than filled — leaving is not the
+  // destructive, everyone-affecting action that ending a class is.
+  leaveBtn: { padding: '6px 14px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(239,68,68,0.55)', background: 'rgba(239,68,68,0.16)', color: '#fca5a5', fontWeight: 700, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' },
   ghost: { padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', cursor: 'pointer', marginTop: 12 },
 };

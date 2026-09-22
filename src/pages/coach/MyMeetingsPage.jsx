@@ -4,6 +4,7 @@
 // reused any day / pasted into a class-schedule slot. "Start" opens the classroom.
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import TrialClassesPanel from './TrialClassesPage';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -59,6 +60,13 @@ export default function MyMeetingsPage() {
   const [hostState, setHostState] = useState(null);
   // The coach's live-class plan limits (meetings/day, max minutes, room size).
   const [limits, setLimits] = useState(null); // { durationMin, meetingsPerDay(-1=∞), maxStudents, usedToday, limitToday }
+  // Which kind of classroom the coach is looking at. 'meeting' = the reusable
+  // classrooms they already had; 'trial' = one-time links for people who are
+  // not students yet. Tabs rather than a second sidebar entry: both are the
+  // same room doing the same job, so they belong on the same page.
+  const [tab, setTab] = useState('meeting');
+  // The "?" explainer beside the Trial tab. Collapsed by default — a coach who
+  // already knows what a trial is should not have to scroll past the pitch.
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -182,11 +190,22 @@ export default function MyMeetingsPage() {
           {/* Plan stat cards */}
           {limits && (
             <div style={s.chips}>
+              {/* Classes per day, WITH today's usage in the same card.
+                  This chip used to show only the limit ("1") while a separate
+                  strip underneath said "Today: 0 of 1 live class used" — which
+                  restated the same number twice on one screen. "0 / 1" answers
+                  both questions at once, so the strip below is gone. */}
               <div style={s.chip}>
                 <span style={{ ...s.chipIc, ...s.chipIcGreen }}><IconBolt size={17} /></span>
-                <span style={s.chipVal}>{unlimited ? '∞' : limits.limitToday}</span>
-                <span style={s.chipKey}>Classes / day</span>
-                <span style={{ ...s.chipTag, color: C.green }}>{unlimited ? 'Unlimited' : 'Per day'}</span>
+                <span style={s.chipVal}>
+                  {unlimited
+                    ? '∞'
+                    : <>{limits.usedToday ?? 0}<small style={s.chipUnit}>/{limits.limitToday}</small></>}
+                </span>
+                <span style={s.chipKey}>Classes today</span>
+                <span style={{ ...s.chipTag, color: atDailyLimit ? C.red : C.green }}>
+                  {unlimited ? 'Unlimited' : atDailyLimit ? 'None left today' : 'Used today'}
+                </span>
               </div>
               <div style={s.chip}>
                 <span style={{ ...s.chipIc, ...s.chipIcGreen }}><IconClock size={17} /></span>
@@ -215,13 +234,37 @@ export default function MyMeetingsPage() {
           )}
         </div>
 
-        {/* Today's usage — only when there's a real daily cap */}
-        {limits && !unlimited && (
-          <div style={{ ...s.usage, ...(atDailyLimit ? s.usageFull : {}) }}>
+        {/* ── TABS ── Classroom meeting vs Trial classroom. Deliberately NOT a
+            second sidebar item: a trial is the same live room with the roster
+            check removed, and splitting them in the nav implied two products. */}
+        <div style={s.tabs} role="tablist">
+          <button
+            role="tab" aria-selected={tab === 'meeting'}
+            style={{ ...s.tab, ...(tab === 'meeting' ? s.tabOn : {}) }}
+            onClick={() => setTab('meeting')}
+          >
+            Classroom meeting
+          </button>
+          <button
+            role="tab" aria-selected={tab === 'trial'}
+            style={{ ...s.tab, ...(tab === 'trial' ? s.tabOn : {}) }}
+            onClick={() => setTab('trial')}
+          >
+            Trial classroom
+          </button>
+        </div>
+
+        {tab === 'meeting' && (<>
+        {/* The "Today: 0 of 1 live class used" strip that used to sit here is
+            gone: the Classes-today chip in the hero now carries the same figure
+            as "0 / 1", and printing it twice on one screen was noise.
+            It is kept ONLY for the moment it stops being a statistic and starts
+            being a blocker — when the coach has none left, which is the one
+            time they need the reason and the way out. */}
+        {limits && !unlimited && atDailyLimit && (
+          <div style={{ ...s.usage, ...s.usageFull }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 9 }}>
-              {atDailyLimit
-                ? <><IconLock size={16} /> You’ve used today’s live class ({limits.usedToday}/{limits.limitToday}). Resets at midnight IST.</>
-                : <><IconBolt size={16} /> Today: <b style={{ color: C.text }}>{limits.usedToday ?? 0} of {limits.limitToday}</b> live class{limits.limitToday === 1 ? '' : 'es'} used</>}
+              <IconLock size={16} /> You’ve used today’s live class ({limits.usedToday}/{limits.limitToday}). Resets at midnight IST.
             </span>
             <a href="/coach/subscription" style={s.usageLink}>Get more →</a>
           </div>
@@ -310,12 +353,31 @@ export default function MyMeetingsPage() {
             ))}
           </div>
         )}
+        </>)}
+
+        {/* ── TRIAL CLASSROOM ── the same panel, rendered inside this page so a
+            trial is plainly a kind of classroom rather than a separate product.
+            It carries its own "?" explainer. */}
+        {tab === 'trial' && <TrialClassesPanel embedded />}
       </div>
     </div>
   );
 }
 
 const s = {
+  // ── Tabs (Classroom meeting / Trial classroom) ──
+  tabs: {
+    display: 'flex', gap: 6, margin: '22px 0 18px', padding: 5,
+    background: 'rgba(255,255,255,0.035)', border: `1px solid ${C.border}`,
+    borderRadius: 'var(--radius-pill)', width: 'fit-content', maxWidth: '100%', flexWrap: 'wrap',
+  },
+  tab: {
+    padding: '9px 18px', borderRadius: 'var(--radius-pill)', border: 'none',
+    background: 'transparent', color: C.dim, fontSize: 13.5, fontWeight: 700,
+    cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap',
+  },
+  tabOn: { background: 'rgba(34,211,238,0.16)', color: C.cyan, boxShadow: 'inset 0 0 0 1px rgba(34,211,238,0.35)' },
+
   wrap: { position: 'relative', minHeight: '100vh', background: '#0b0f14', color: C.text, padding: '28px 24px 80px', fontFamily: "'Poppins',sans-serif", fontSize: 15, overflow: 'hidden' },
   // Soft depth behind everything — kills the "flat dead black" look.
   bgGlow: {

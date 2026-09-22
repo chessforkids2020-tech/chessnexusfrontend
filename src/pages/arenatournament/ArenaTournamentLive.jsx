@@ -1093,6 +1093,20 @@ export default function ArenaTournamentLive() {
   const displayFen = reviewing ? (reviewPositions.fens[reviewPly] ?? gameState) : gameState;
   const displayLastMove = reviewing ? (reviewPositions.lasts[reviewPly] ?? null) : lastMove;
 
+  // Keep the current move visible in the notation strip. On mobile that strip
+  // is a single sideways-scrolling line, so without this the newest moves run
+  // off the right edge and the player is left looking at the opening. Also
+  // follows the cursor while stepping back and forth through a review.
+  const movesStripRef = useRef(null);
+  useEffect(() => {
+    const strip = movesStripRef.current;
+    if (!strip) return;
+    const active = strip.querySelector('[data-active-move="1"]');
+    if (!active) return;
+    // `nearest` so it never scrolls the PAGE — only the strip itself.
+    active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+  }, [totalPlies, reviewPly]);
+
   // A new live move arrived (gameState changed) → snap back to live so the player
   // never sits on an old position while it's their turn.
   useEffect(() => { setReviewPly(null); }, [gameState]);
@@ -1515,9 +1529,11 @@ export default function ArenaTournamentLive() {
           title={chatOpen ? 'Close chat' : 'Open chat'}
         >
           {chatOpen ? '✕' : '💬'}
-          {!chatOpen && <span style={{ fontSize: '13px', fontWeight: '700' }}>Chat</span>}
+          {/* Label hidden on mobile (see .at-live-chat-fab-label) so the button
+              is a small circle there rather than a wide pill. */}
+          {!chatOpen && <span className="at-live-chat-fab-label" style={{ fontSize: '13px', fontWeight: '700' }}>Chat</span>}
           {!chatOpen && unreadChat > 0 && (
-            <span style={{
+            <span className="at-live-chat-fab-badge" style={{
               position: 'absolute',
               top: '-6px',
               right: '-6px',
@@ -2008,7 +2024,10 @@ export default function ArenaTournamentLive() {
                   scroller on a phone for very little information. The switch is
                   CSS-only (.at-live-moves), so there is one source of truth for
                   the move data and no second render path to keep in sync. */}
-              <div className="at-live-moves" style={{ maxHeight: '132px', overflowY: 'auto', fontSize: '13px', lineHeight: 1.5 }}>
+              {/* maxHeight/overflow live in the stylesheet, not here: mobile
+                  turns this into a single sideways-scrolling line, and an
+                  inline overflow/height would beat the media query. */}
+              <div ref={movesStripRef} className="at-live-moves" style={{ fontSize: '13px', lineHeight: 1.5 }}>
                 {(() => {
                   const sans = reviewPositions.sans || [];
                   // Each ply's color from the FEN BEFORE it (fens[i] is before sans[i]).
@@ -2025,6 +2044,8 @@ export default function ArenaTournamentLive() {
                     ? <span className="at-live-move-gap" style={{ color: 'var(--color-text-faint)' }}>…</span>
                     : <span
                         onClick={() => setReviewPly(it.ply >= totalPlies ? null : it.ply)}
+                        // Marks the move the auto-scroll should keep in view.
+                        data-active-move={it.ply === activePly ? '1' : undefined}
                         style={{
                           cursor: 'pointer', padding: '1px 5px', borderRadius: 'var(--radius-sm)', fontWeight: 600,
                           background: it.ply === activePly ? 'var(--color-accent-2)' : 'transparent',

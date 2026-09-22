@@ -508,6 +508,136 @@
   line-height: 1.3;
 }
 
+/* ── Coach type: stacked, explanatory cards ──────────────────────────────
+   The individual-vs-academy choice carries real consequences (free-forever
+   plan vs a paid academy plan), and two centred icon tiles had no room to
+   say so — coaches were picking by the word "academy" alone. These cards
+   stack and read left-aligned so each option can carry a full sentence plus
+   its plan consequence. */
+.radio-row-stack {
+  flex-direction: column;
+  gap: 10px;
+}
+
+.radio-card-wide {
+  align-items: flex-start;
+  text-align: left;
+  padding: 14px 16px;
+  /* Icon sits on the same line as the label, description below both. */
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    "icon label"
+    ".    hint"
+    ".    tags";
+  column-gap: 10px;
+  row-gap: 4px;
+}
+
+.radio-card-wide .radio-icon { grid-area: icon; font-size: 20px; line-height: 1.2; }
+
+.radio-card-wide .radio-label {
+  grid-area: label;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f1f5f9;
+  align-self: center;
+}
+
+.radio-card-wide .radio-hint {
+  grid-area: hint;
+  margin-top: 0;
+  font-size: 12px;
+  text-align: left;
+  color: rgba(226, 232, 240, 0.68);
+  line-height: 1.45;
+}
+
+.radio-card-wide .radio-hint strong { color: #e2e8f0; }
+
+.radio-tags {
+  grid-area: tags;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.radio-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(226, 232, 240, 0.75);
+}
+
+/* Free-forever: the reassuring one, so it reads as a benefit not a warning. */
+.radio-tag.good {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+}
+
+/* The paywall consequence — stated up front rather than discovered at the
+   billing redirect after signup. */
+.radio-tag.paid {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.32);
+  color: #fcd34d;
+}
+
+@media (max-width: 420px) {
+  .radio-card-wide { padding: 12px 13px; }
+  .radio-card-wide .radio-label { font-size: 13.5px; }
+  .radio-card-wide .radio-hint { font-size: 11.5px; }
+}
+
+/* Shown once "other coaches teach under me" is chosen: confirms what that
+   means and offers the one-click way back for a solo coach who picked it
+   because of their academy's NAME. */
+.coach-onboard-academy-confirm {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  border-radius: var(--radius-lg);
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(226, 232, 240, 0.8);
+}
+
+.coach-onboard-academy-confirm-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fcd34d;
+  margin-bottom: 5px;
+}
+
+.coach-onboard-academy-confirm strong { color: #f1f5f9; }
+
+.coach-onboard-academy-confirm-alt {
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(245, 158, 11, 0.2);
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.coach-onboard-academy-confirm-alt button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: #22d3ee;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.coach-onboard-academy-confirm-alt button:hover { color: #67e8f9; }
+
 .form-error {
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);

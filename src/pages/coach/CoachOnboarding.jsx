@@ -322,10 +322,28 @@ export default function CoachOnboarding() {
               </select>
             </label>
 
+            {/* ── WHO TEACHES, NOT WHAT YOU CALL YOURSELF ──────────────────────
+                This used to read "Individual coach" vs "Academy / institute",
+                and coaches picked by what their business is CALLED in real
+                life. Someone running "Queen's Chess Academy" alone would pick
+                Academy — then hit the academy paywall (AcademyGate sends an
+                unpaid academy straight to billing), lose the free-forever coach
+                plan they actually qualified for, and be unable to switch back
+                on their own.
+
+                So the question is now the one that actually decides the
+                answer: does anyone else teach under you? A one-coach academy is
+                named as its own option so those coaches recognise themselves
+                and stop guessing — and the copy states plainly that they keep
+                their academy name on their public profile either way. */}
             <div className="field">
-              <span>You are *</span>
-              <div className="radio-row">
-                <label className={`radio-card ${form.coachType === 'individual' ? 'active' : ''}`}>
+              <span>How does your coaching run? *</span>
+              <div className="coach-onboard-social-hint" style={{ marginTop: 0, marginBottom: 10 }}>
+                Pick by <strong>who teaches</strong> — not by what your business is
+                called. Running an academy on your own? That's the first option.
+              </div>
+              <div className="radio-row radio-row-stack">
+                <label className={`radio-card radio-card-wide ${form.coachType === 'individual' ? 'active' : ''}`}>
                   <input
                     type="radio"
                     name="coachType"
@@ -334,9 +352,17 @@ export default function CoachOnboarding() {
                     onChange={() => update('coachType', 'individual')}
                   />
                   <span className="radio-icon">👤</span>
-                  <span className="radio-label">Individual coach</span>
+                  <span className="radio-label">I'm the only coach</span>
+                  <span className="radio-hint">
+                    Solo coach <strong>or a one-coach academy</strong> — you teach every
+                    student yourself. Most coaches here are this.
+                  </span>
+                  <span className="radio-tags">
+                    <span className="radio-tag good">Free forever · up to 30 students</span>
+                    <span className="radio-tag">Your academy name still shows on your profile</span>
+                  </span>
                 </label>
-                <label className={`radio-card ${form.coachType === 'academy' ? 'active' : ''}`}>
+                <label className={`radio-card radio-card-wide ${form.coachType === 'academy' ? 'active' : ''}`}>
                   <input
                     type="radio"
                     name="coachType"
@@ -345,17 +371,45 @@ export default function CoachOnboarding() {
                     onChange={() => update('coachType', 'academy')}
                   />
                   <span className="radio-icon">🏛️</span>
-                  <span className="radio-label">Academy / institute</span>
+                  <span className="radio-label">Other coaches teach under me</span>
+                  <span className="radio-hint">
+                    An academy with <strong>two or more coaches</strong>. You're the head:
+                    coaches join your academy, you approve them and manage them all together.
+                  </span>
+                  <span className="radio-tags">
+                    <span className="radio-tag paid">Needs a paid academy plan before it unlocks</span>
+                  </span>
                 </label>
+              </div>
+              <div className="coach-onboard-social-hint">
+                Not sure? Choose <strong>“I'm the only coach”</strong> — it's free, and you
+                can upgrade to a multi-coach academy later from your profile when you
+                take on your first coach.
               </div>
             </div>
 
             {form.coachType === 'academy' && (
               <>
-                <div className="coach-onboard-social-hint">
-                  You're setting up an academy — you'll be the head. After signup, share your
-                  academy join link so coaches can join (you approve them), and your academy
-                  can pay for their plans.
+                {/* Last chance to catch a solo coach who picked this because
+                    their business is called an academy. The paid plan is stated
+                    here too — previously they met it only as a redirect to
+                    /academy/billing right after finishing signup. */}
+                <div className="coach-onboard-academy-confirm">
+                  <div className="coach-onboard-academy-confirm-title">
+                    🏛️ You're setting up a multi-coach academy
+                  </div>
+                  <div>
+                    You'll be the head. After signup you share your academy join link,
+                    approve the coaches who join, and your academy pays for their plans —
+                    so this needs an <strong>active academy plan before it unlocks</strong>.
+                  </div>
+                  <div className="coach-onboard-academy-confirm-alt">
+                    Teaching all your students yourself, even under an academy name?{' '}
+                    <button type="button" onClick={() => update('coachType', 'individual')}>
+                      Pick “I'm the only coach” instead
+                    </button>{' '}
+                    — it's free forever and keeps your academy name on your profile.
+                  </div>
                 </div>
                 <div className="field">
                   <span>Will you also teach? *</span>
