@@ -26,6 +26,7 @@
 // document, re-sent on every read, and impossible to cache. This uploads first
 // and inserts a URL.
 import React, { Suspense, lazy, useCallback, useMemo, useRef } from 'react';
+import { resolveApiAssetUrl } from '../api';
 import 'react-quill/dist/quill.snow.css';
 import './CoachRichText.css';
 
@@ -59,7 +60,17 @@ export default function NewsletterRichText({ value, onChange, placeholder, onUpl
   // see backend/helpers/newsletterHtml.js. Hijacking alt is not elegant, but
   // the alternative is registering a custom blot, which means owning a
   // subclass of Quill's internals across upgrades for one attribute.
-  const insertImage = useCallback((url, placement) => {
+  // `url` arrives from the upload as a SERVER-RELATIVE path
+  // ("/api/public/newsletter/x.jpg"). Quill puts it straight into an <img>, and
+  // in production the browser then resolves it against the APP origin
+  // (chessnexus.in) rather than the API — so the picture 404'd inside the
+  // editor while the very same file served fine from api.chessnexus.in.
+  //
+  // Resolved to an absolute URL here so the admin SEES the image while writing.
+  // What gets STORED is normalised back to a relative path on save (see
+  // backend/helpers/newsletterHtml.js), so the post body stays host-agnostic.
+  const insertImage = useCallback((relUrl, placement) => {
+    const url = resolveApiAssetUrl(relUrl);
     const editor = quillRef.current?.getEditor?.();
     if (!editor) return;
     const range = editor.getSelection(true);
