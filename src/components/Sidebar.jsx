@@ -122,6 +122,17 @@ export default function Sidebar({ user, onNavigate }) {
   // of a hardcoded array. Read/unread is still tracked per-user by notification id.
   const [appNotifications, setAppNotifications] = useState([]);
   const [seenNotifIds, setSeenNotifIds] = useState(() => new Set(getSeenIds()));
+  // Which app notifications the panel is currently showing.
+  //
+  // A read notification should DISAPPEAR from the list — once you have read the
+  // newsletter post, the entry pointing at it is clutter. But opening the bell
+  // marks everything seen, so filtering live on `seenNotifIds` would empty the
+  // panel the instant it opened, in front of the reader.
+  //
+  // So the list is FROZEN when the panel opens: it shows what was unread at
+  // that moment, and anything read earlier is already gone. The next time it
+  // opens, whatever was read since has dropped out.
+  const [visibleNotifIds, setVisibleNotifIds] = useState(() => new Set());
   const appUnreadCount = appNotifications.filter(n => !seenNotifIds.has(n.id)).length;
   const markNotificationsSeen = () => {
     markSeen(appNotifications.map(n => n.id));
@@ -1161,6 +1172,11 @@ export default function Sidebar({ user, onNavigate }) {
                     const next = !showNotifications;
                     setShowNotifications(next);
                     if (next) {
+                      // Snapshot what is still unread BEFORE marking seen —
+                      // otherwise the panel would open empty.
+                      setVisibleNotifIds(new Set(
+                        appNotifications.filter(x => !seenNotifIds.has(x.id)).map(x => x.id)
+                      ));
                       markNotificationsSeen();   // clears the app-notification part of the badge
                       fetchFriendUnread();       // refresh friend messages (clears once actually read in chat)
                     }
@@ -1884,12 +1900,12 @@ export default function Sidebar({ user, onNavigate }) {
                 {/* myNotifs must be in this test too: it feeds the badge count, so
                     leaving it out made a lone academy invite show "1" on the bell
                     above an "all caught up" panel. */}
-                {appNotifications.length === 0 && friendMsgs.length === 0 && coachMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 && (myNotifs.notifications || []).filter(n => !n.read).length === 0 ? (
+                {appNotifications.filter(n => visibleNotifIds.has(n.id)).length === 0 && friendMsgs.length === 0 && coachMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 && (myNotifs.notifications || []).filter(n => !n.read).length === 0 ? (
                   <div style={{ color: 'var(--color-text-faint)', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
                     You're all caught up — no notifications.
                   </div>
                 ) : (
-                  appNotifications.map(n => (
+                  appNotifications.filter(n => visibleNotifIds.has(n.id)).map(n => (
                     <div
                       key={n.id}
                       onClick={() => { if (n.link) { handleNavigate(n.link); setShowNotifications(false); } }}
