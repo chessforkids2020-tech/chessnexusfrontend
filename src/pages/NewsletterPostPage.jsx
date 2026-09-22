@@ -13,6 +13,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api, { resolveApiAssetUrl } from '../api';
+import { markSeenByLink } from '../utils/seenNotifications';
 import SEO from '../components/SEO';
 import { useAuth } from '../contexts/AuthContext';
 import './Newsletter.css';
@@ -50,6 +51,28 @@ export default function NewsletterPostPage() {
       .then(r => { if (alive) setPost(r.data?.post || null); })
       .catch(e => { if (alive) setErr(e.response?.data?.message || 'Could not open that post.'); })
       .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
+  }, [id]);
+
+  // READING THE POST CLEARS ITS BELL NOTIFICATION.
+  //
+  // Publishing a post creates an app-wide notification pointing at it, and the
+  // bell only counted a notification as read when the BELL was opened — so
+  // someone who clicked through from the bell, read the whole post and came
+  // back still saw an unread dot for the thing they had just read.
+  //
+  // Matched on the notification's own `link` (`/newsletter/<id>`), which the
+  // publish route sets, rather than on anything stored here. Fetching the list
+  // again is cheap and avoids threading bell state through the router.
+  useEffect(() => {
+    if (!id) return;
+    let alive = true;
+    api.get('/api/public/notifications')
+      .then(r => {
+        if (!alive) return;
+        markSeenByLink(Array.isArray(r.data) ? r.data : [], `/newsletter/${id}`);
+      })
+      .catch(() => { /* the dot simply stays — never break the page for this */ });
     return () => { alive = false; };
   }, [id]);
 

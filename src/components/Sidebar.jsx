@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api';
 import socket from '../socket';
+import { getSeenIds, markSeen } from '../utils/seenNotifications';
 import UserAvatar from './UserAvatar';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -120,15 +121,21 @@ export default function Sidebar({ user, onNavigate }) {
   // App-wide bell notifications now come from the backend (admin-managed) instead
   // of a hardcoded array. Read/unread is still tracked per-user by notification id.
   const [appNotifications, setAppNotifications] = useState([]);
-  const [seenNotifIds, setSeenNotifIds] = useState(
-    () => new Set(JSON.parse(localStorage.getItem('seenNotificationIds') || '[]'))
-  );
+  const [seenNotifIds, setSeenNotifIds] = useState(() => new Set(getSeenIds()));
   const appUnreadCount = appNotifications.filter(n => !seenNotifIds.has(n.id)).length;
   const markNotificationsSeen = () => {
-    const all = new Set([...seenNotifIds, ...appNotifications.map(n => n.id)]);
-    setSeenNotifIds(all);
-    localStorage.setItem('seenNotificationIds', JSON.stringify([...all]));
+    markSeen(appNotifications.map(n => n.id));
+    setSeenNotifIds(new Set([...seenNotifIds, ...appNotifications.map(n => n.id)]));
   };
+
+  // Another page marked something seen — most often a newsletter post the user
+  // opened from this very bell. Without this the sidebar keeps the stale Set it
+  // read at mount and goes on showing an unread dot for a post already read.
+  useEffect(() => {
+    const onSeen = () => setSeenNotifIds(new Set(getSeenIds()));
+    window.addEventListener('notifications:seen', onSeen);
+    return () => window.removeEventListener('notifications:seen', onSeen);
+  }, []);
 
   const fetchAppNotifications = React.useCallback(async () => {
     if (!isAuthenticated) { setAppNotifications([]); return; }
