@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard, { coordinateGutter } from '../components/Chessboard';
+import soundManager from '../utils/soundManager';
 import EnginePanel from '../components/EnginePanel';
 import stockfishService from '../services/stockfishService';
 import { useAuth } from '../contexts/AuthContext';
@@ -13,32 +14,18 @@ import './HealthyMix.css';
 // candidate square, so this is deliberately shallower than the engine panel's.
 const SQUARE_EVAL_DEPTH = 12;
 
-// Small WebAudio blips (same feel as the daily puzzles page)
+// Puzzle outcome sounds — routed through the SHARED sound manager.
+//
+// This used to be a private copy of the oscillator code, which meant it ignored
+// the app's mute entirely. The symptom was exact and confusing: move and
+// capture fell silent when muted (those come from Chessboard, which uses
+// soundManager) while the sound at the END of a puzzle still played.
+//
+// One path now, so mute means mute.
 const playSound = (type) => {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    if (type === 'correct') {
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(660, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
-    } else if (type === 'wrong') {
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(180, ctx.currentTime);
-      osc.frequency.linearRampToValueAtTime(90, ctx.currentTime + 0.3);
-    } else {
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(523, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(1046, ctx.currentTime + 0.2);
-    }
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.3);
-  } catch (_) { /* ignore */ }
+  if (soundManager.muted) return;
+  const map = { correct: 'correct', wrong: 'wrong', complete: 'complete' };
+  soundManager.play(map[type] || type);
 };
 
 // normalize a SAN string for comparison (strip + # and lowercase)
@@ -450,6 +437,20 @@ export default function HealthyMix() {
   // `hint` names the piece to move (its square, never the destination), so it
   // points at where to look without giving away the idea.
   const [hint, setHint] = useState(null);          // { san, from } | null
+
+  // SOUND, shared with the rest of the app.
+  //
+  // Healthy Mix had no mute at all: its sounds could only be silenced from the
+  // daily Puzzles page, which a student practising here would never think to
+  // visit. Initialised from (and written back to) soundManager, so muting here
+  // silences everything — moves, captures and the end-of-puzzle sound — and
+  // survives a reload.
+  const [soundOn, setSoundOnState] = useState(() => !soundManager.muted);
+  const toggleSound = () => {
+    const next = !soundOn;
+    setSoundOnState(next);
+    soundManager.setMuted(!next);
+  };
   const tooEasyRef = useRef(false);  // last solve earned 0 (puzzle far below user rating)
   const statusRef = useRef('loading'); // mirror of status for use inside callbacks
 
@@ -2138,8 +2139,26 @@ export default function HealthyMix() {
                   onClick={showHint}
                   title="Hint"
                   aria-label="Show a hint"
-                >💡</button>
+                >
+                  {/* The word matters as much as the icon. A bare bulb assumes
+                      the reader already knows what it does — beginners do not,
+                      and the `title` tooltip needs a hover, so on a phone it
+                      never appears at all. */}
+                  <span aria-hidden="true">💡</span>
+                  <span className="hm-bulb-label">Hint</span>
+                </button>
               )}
+              {/* Mute. Sits beside the hint because this row is the one place
+                  a student already looks between moves. */}
+              <button
+                className={`hm-sound ${soundOn ? 'is-on' : 'is-off'}`}
+                onClick={toggleSound}
+                title={soundOn ? 'Mute sounds' : 'Turn sounds on'}
+                aria-label={soundOn ? 'Mute sounds' : 'Turn sounds on'}
+                aria-pressed={!soundOn}
+              >
+                {soundOn ? '🔊' : '🔇'}
+              </button>
             </div>
 
             {/* The wording half of the hint — the board rings the piece, this

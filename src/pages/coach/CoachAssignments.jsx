@@ -119,6 +119,17 @@ export default function CoachAssignments() {
     fenTolerance: 80,
     fenPositions: [{ fen: '', solution: '', userMoveCount: 1, tag: '' }]
   });
+  // The templates that can actually be loaded into the task being built.
+  //
+  // The picker listed EVERY saved template regardless of type, so building a
+  // play-vs-Stockfish assignment offered blunder templates — choosing one would
+  // have replaced the form with a task of the wrong kind. A template only
+  // applies to its own assignment type.
+  //
+  // NOTE the save-limit below still counts ALL templates (templates.length),
+  // because the server's cap is on the total, not per type.
+  const isFen = form.assignmentType === 'fen_solution';
+  const myTemplates = templates.filter(t => t.assignmentType === form.assignmentType);
 
   const loadAll = async () => {
     setLoading(true);
@@ -1212,7 +1223,11 @@ export default function CoachAssignments() {
                 <div className="ca-reuse-bar">
                   <div className="ca-reuse-row">
                     <label className="field" style={{ flex: 1, minWidth: 200 }}>
-                      <span>Start from a saved template or the built-in library</span>
+                      <span>
+                        {isFen
+                          ? 'Start from a saved template'
+                          : 'Start from a saved template or the built-in library'}
+                      </span>
                       <select
                         value=""
                         onChange={e => {
@@ -1222,17 +1237,31 @@ export default function CoachAssignments() {
                           e.target.value = '';
                         }}
                       >
-                        <option value="">＋ Load a template or library game…</option>
-                        {templates.length > 0 && (
+                        <option value="">
+                          {myTemplates.length === 0
+                            ? (isFen
+                                ? 'No saved templates yet — build one below and press Save as template'
+                                : '＋ Load a library game…')
+                            : '＋ Load a template…'}
+                        </option>
+                        {/* ONLY templates of the type being built.
+                            A play-vs-Stockfish assignment was listing blunder
+                            templates, which cannot be loaded into it — picking
+                            one would have replaced the form with a task of the
+                            wrong kind. */}
+                        {myTemplates.length > 0 && (
                           <optgroup label="My templates">
-                            {templates.map(t => (
+                            {myTemplates.map(t => (
                               <option key={t._id} value={`tpl:${t._id}`}>
                                 {t.assignmentType === 'custom' ? '🔎' : '♟'} {t.title}
                               </option>
                             ))}
                           </optgroup>
                         )}
-                        {library.length > 0 && (
+                        {/* The blunder library is PGN games with blunder
+                            answers — meaningless for a position-based
+                            play-vs-Stockfish task, so it is hidden there. */}
+                        {!isFen && library.length > 0 && (
                           <optgroup label="Blunder library (built-in)">
                             {library.map(l => (
                               <option key={l._id} value={`lib:${l._id}`} disabled={l.locked}>
@@ -1254,9 +1283,9 @@ export default function CoachAssignments() {
                     </button>
                   </div>
                   {tplMsg && <div className="ca-reuse-msg">✅ {tplMsg}</div>}
-                  {templates.length > 0 && (
+                  {myTemplates.length > 0 && (
                     <div className="ca-reuse-list">
-                      {templates.map(t => (
+                      {myTemplates.map(t => (
                         <span key={t._id} className="ca-reuse-chip">
                           {t.assignmentType === 'custom' ? '🔎' : '♟'} {t.title}
                           <button type="button" onClick={() => deleteTemplate(t._id)} title="Delete template">✕</button>

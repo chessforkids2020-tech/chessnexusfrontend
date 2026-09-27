@@ -5,6 +5,7 @@ import Chessboard from '../components/Chessboard';
 import stockfishService from '../services/stockfishService';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../api';
+import soundManager from '../utils/soundManager';
 import { trackEvent } from '../lib/analytics';
 import PuzzleReviewPanel from '../components/PuzzleReviewPanel';
 import './Puzzles.css';
@@ -12,61 +13,15 @@ import './Puzzles.css';
 const API = import.meta.env.VITE_API_URL || '';
 
 // Enhanced sound generation for puzzles
+// Puzzle outcome sounds — routed through the SHARED sound manager.
+//
+// This was a private copy of the oscillator code (a third one, alongside
+// HealthyMix and SoundGenerator), so it ignored the app's mute: the board's
+// move/capture fell silent while the puzzle's own correct/wrong/complete kept
+// playing. One path now, so mute means mute.
 const playSound = (type) => {
-  const soundMethods = {
-    'correct': () => {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(660, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
-      gain.gain.setValueAtTime(0.1, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.25);
-    },
-    'wrong': () => {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(180, ctx.currentTime);
-      osc.frequency.linearRampToValueAtTime(90, ctx.currentTime + 0.3);
-      gain.gain.setValueAtTime(0.12, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.35);
-    },
-    'complete': () => {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const now = ctx.currentTime;
-      [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, now + (i * 0.1));
-        gain.gain.setValueAtTime(0, now + (i * 0.1));
-        gain.gain.linearRampToValueAtTime(0.08, now + (i * 0.1) + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.1) + 0.3);
-        osc.start(now + (i * 0.1));
-        osc.stop(now + (i * 0.1) + 0.3);
-      });
-    }
-  };
-
-  try {
-    if (soundMethods[type]) {
-      soundMethods[type]();
-    }
-  } catch (err) {
-  }
+  if (soundManager.muted) return;
+  soundManager.play(type);
 };
 
 // Check if date is "today" according to Indian Standard Time (IST)
@@ -159,7 +114,21 @@ export default function Puzzles() {
   const [showSkipConfirm, setShowSkipConfirm] = useState(false);
   
   // Sound toggle
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  // Backed by the SHARED mute setting, not a page-local flag.
+  //
+  // This was useState(true), so silencing the puzzles page lasted exactly as
+  // long as that one page view — navigate away and back and the sound returned.
+  // It also had no relationship to the mute anywhere else in the app.
+  //
+  // This page still plays its own oscillator tones (its local playSound below,
+  // a duplicate of SoundGenerator) rather than going through soundManager, so
+  // reading the shared flag here is what actually ties the two together.
+  const [soundEnabled, setSoundEnabledState] = useState(() => !soundManager.muted);
+  const setSoundEnabled = (next) => {
+    const on = typeof next === 'function' ? next(soundEnabled) : next;
+    setSoundEnabledState(on);
+    soundManager.setMuted(!on);   // persists, and mutes the rest of the app too
+  };
   
   const chessRef = useRef(new Chess());
   const processingRef = useRef(false);

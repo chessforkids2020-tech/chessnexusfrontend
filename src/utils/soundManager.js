@@ -4,6 +4,25 @@
  * Preloads sounds for better performance and reliability
  */
 
+// ── MUTE, REMEMBERED ────────────────────────────────────────────────────────
+// The setting is stored per BROWSER, not per user id. Sound is a property of
+// the device you are sitting at — a coach on a shared laptop who silences it
+// for a quiet room means "quiet here", not "quiet for this login" — so unlike
+// the per-user keys elsewhere in the app, one key is correct.
+//
+// Every access is guarded: localStorage throws in a private window and when
+// site data is blocked, and a page that will not render is far worse than a
+// mute setting that does not survive.
+const MUTE_KEY = 'soundMuted';
+
+function loadMuted() {
+  try { return localStorage.getItem(MUTE_KEY) === '1'; } catch { return false; }
+}
+
+function persistMuted(muted) {
+  try { localStorage.setItem(MUTE_KEY, muted ? '1' : '0'); } catch { /* ignore */ }
+}
+
 // Enhanced Sound Generator for fallback sounds
 const SoundGenerator = {
   audioContext: null,
@@ -171,23 +190,28 @@ const SoundGenerator = {
 class SoundManager {
   constructor() {
     this.sounds = {};
-    this.muted = false;
+    // Restored from the last session: muting was in-memory only, so a child who
+    // turned the sound off got it back on the next page load — which is the
+    // same as the toggle not working.
+    this.muted = loadMuted();
     this.volume = 0.5;
     this.initialized = false;
     // Sounds already warned about, so a repeating ping logs once, not every time.
     this._warned = new Set();
     
-    // Define all sound files
+    // ONLY FILES THAT ACTUALLY EXIST.
+    //
+    // move/capture/correct/wrong/complete used to point at .mp3 files that were
+    // never committed — the repo only ever shipped a README listing them. Every
+    // one 404'd on page load, in every session, and then fell through to the
+    // synthesized tone in SoundGenerator anyway. Listing them bought nothing
+    // and cost five failed requests per visit, which is also why the browser
+    // console looked alarming.
+    //
+    // They are gone rather than "fixed": SoundGenerator produces all five, so
+    // removing the paths changes nothing a user can hear. Add a real file back
+    // here the day one is actually committed.
     this.soundFiles = {
-      // Chess move sounds
-      move: '/sounds/chess-move.mp3',
-      capture: '/sounds/capture.mp3',
-      
-      // Puzzle sounds
-      correct: '/sounds/correct.mp3',
-      wrong: '/sounds/error-buzz.mp3',
-      complete: '/sounds/success-chime.mp3',
-      
       // Chat notification
       // .wav, not .mp3: the repo shipped no audio at all (only a README listing
       // files nobody downloaded), so this one is generated and committed. Every
@@ -305,7 +329,8 @@ class SoundManager {
    * @param {boolean} mute - Whether to mute
    */
   setMuted(mute) {
-    this.muted = mute;
+    this.muted = !!mute;
+    persistMuted(this.muted);
   }
 
   /**
@@ -313,6 +338,7 @@ class SoundManager {
    */
   toggleMute() {
     this.muted = !this.muted;
+    persistMuted(this.muted);
     return this.muted;
   }
 

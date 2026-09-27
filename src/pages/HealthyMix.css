@@ -323,6 +323,10 @@
 .hm-message-row {
   display: flex;
   align-items: center;
+  /* The Hint pill is wider than the old bare bulb, so on a narrow phone let it
+     drop onto its own line rather than squeezing the prompt text. */
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
   padding: 10px 12px;
   background: var(--color-black-a20);
@@ -339,12 +343,16 @@
      fixed-size box into a padded oval — the bulb sat off-centre inside it.
      Both are reset here, and `display: grid + place-items` does the centring
      instead of relying on line-height. */
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
+  /* A PILL, NOT A CIRCLE — the word "Hint" sits beside the bulb.
+     A bare icon assumed the student already knew what it meant, and the
+     tooltip that explained it needs a hover, so on a phone there was nothing
+     to read at all. */
+  min-height: 38px;
+  padding: 0 14px 0 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-radius: 999px;
 
   /* IT HAS TO LOOK PRESSABLE.
      A transparent disc with a --hm-stroke border (white at 7%) read as
@@ -375,6 +383,37 @@
 .hm-bulb:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+/* Mute toggle. Same 38px height as the hint pill so the row reads as one set
+   of controls, but circular and neutral — it is a setting, not an action the
+   student is being invited to take. */
+.hm-sound {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--hm-stroke);
+  background: var(--color-white-a04);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+.hm-sound:hover { background: var(--color-white-a07); border-color: var(--color-accent); }
+.hm-sound:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+/* Muted reads as switched off rather than broken. */
+.hm-sound.is-off { opacity: 0.55; }
+
+.hm-bulb-label {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: #fde9b8;
+  line-height: 1;
 }
 
 .hm-message-inline {
