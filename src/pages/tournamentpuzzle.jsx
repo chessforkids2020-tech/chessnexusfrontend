@@ -1056,7 +1056,6 @@ function TournamentPuzzle() {
                     }}
                     orientation={boardOrientation}
                     draggable={gameMode === 'manual' || isUserTurn}
-                    transitionDuration={200}
                     showCoordinates={false}
                   />
                 </div>

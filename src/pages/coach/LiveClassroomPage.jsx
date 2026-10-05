@@ -21,6 +21,9 @@ import ClassOpeningExplorer from '../../components/coach/ClassOpeningExplorer';
 import { copyText } from '../../utils/clipboard';
 import { renderFrame } from '../../lib/videoEffects';
 import CoachArenaLive from './CoachArenaLive';
+import WhiteboardOverlay from '../../components/coach/WhiteboardOverlay';
+import VideoDebugPanel from '../../components/coach/VideoDebugPanel';
+import { createSampler, collectStudentReport } from '../../lib/videoDebug';
 
 // Zoom-style tile layout: pick the column count that maximizes each tile's area for
 // the stage shape + count (so few people → big tiles), and return that tile width so
@@ -2116,6 +2119,14 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // Drawn arrows + square highlights on the board, synced to everyone.
   const [drawArrows, setDrawArrows] = useState([]);       // [{ from, to, color }]
   const [drawHighlights, setDrawHighlights] = useState({}); // { square: color }
+  const [wbActive, setWbActive] = useState(false);
+  const [wbStrokes, setWbStrokes] = useState([]);
+  const [wbTexts, setWbTexts] = useState([]);
+  // Video debug: coach toggles it; students report only while it is on.
+  const [debugOn, setDebugOn] = useState(false);
+  const [debugReports, setDebugReports] = useState({}); // userId -> { report, name }
+  const [debugHost, setDebugHost] = useState(null);     // student side: coach identity while debug is on
+  const debugBeatRef = useRef(0);
   const [controllerId, setControllerId] = useState(null);     // board-move control
   const [screenSharerId, setScreenSharerId] = useState(null); // screen-share control
   // Board size — a single state the coach resizes by dragging the corner (like
@@ -2401,6 +2412,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     if (!iControl) return;
     setDrawArrows(arrows); setDrawHighlights(highlights);
     if (session) socket.emit('liveclass:draw', { sessionId: session.id, arrows, highlights });
+  };
+
+  const onWhiteboardUpdate = (strokes, texts) => {
+    setWbStrokes(strokes); setWbTexts(texts);
+    if (session) socket.emit('liveclass:whiteboard', { sessionId: session.id, strokes, texts });
   };
 
   // Keep a stable handle to the LiveKit connect fn so callbacks/effects don't
@@ -2789,6 +2805,20 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     socket.on('liveclass:ended', onEnded);
     socket.on('liveclass:waiting-updated', onWaiting);
     socket.on('liveclass:stage', onStage);
+    const onPuzzleStatus = ({ status }) => { if (!hostStateRef.current.isHost) setPuzzleStatus(status || ''); };
+    socket.on('liveclass:puzzleStatus', onPuzzleStatus);
+    const onWhiteboard = ({ strokes, texts }) => { if (!hostStateRef.current.isHost) { setWbStrokes(strokes || []); setWbTexts(texts || []); } };
+    socket.on('liveclass:whiteboard', onWhiteboard);
+    const onDebug = ({ on, host }) => {
+      if (hostStateRef.current.isHost) return;
+      if (on) { debugBeatRef.current = Date.now(); setDebugHost(host || null); } else setDebugHost(null);
+    };
+    const onDebugReport = ({ userId, name, report }) => {
+      if (!hostStateRef.current.isHost || !userId) return;
+      setDebugReports(prev => ({ ...prev, [userId]: { report, name } }));
+    };
+    socket.on('liveclass:debug', onDebug);
+    socket.on('liveclass:debug-report', onDebugReport);
     socket.on('liveclass:muted', onMuted);
     socket.on('liveclass:unmute-request', onUnmuteRequest);
     socket.on('liveclass:mic-state', onMicState);
@@ -2941,6 +2971,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       socket.off('liveclass:admitted', onAdmitted); socket.off('liveclass:removed', onRemoved);
       socket.off('liveclass:ended', onEnded); socket.off('liveclass:waiting-updated', onWaiting);
       socket.off('liveclass:stage', onStage);
+      socket.off('liveclass:puzzleStatus', onPuzzleStatus);
+      socket.off('liveclass:whiteboard', onWhiteboard);
+      socket.off('liveclass:debug', onDebug);
+      socket.off('liveclass:debug-report', onDebugReport);
       socket.off('liveclass:clock-started', onClockStarted);
       socket.off('liveclass:muted', onMuted); socket.off('liveclass:unmute-request', onUnmuteRequest);
       socket.off('liveclass:mic-state', onMicState); socket.off('liveclass:hand', onHand);
@@ -3151,10 +3185,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   const boardBoxSize = shownBoardW + 34;
 
   // Apply a new tree+path locally and broadcast to the class.
-  // Loading a new position drops any manual flip so the board auto-orients to the
-  // new side to move (a stale override would show the next puzzle backwards).
-  const applyTree = (t, p) => {
-    setTree(t); setTreePath(p); broadcastTree(t, p); clearDrawings(); setFlipOverride(null);
+  // `keepFlip` preserves the coach's manual orientation (e.g. after each move);
+  // omit it when loading a brand-new position so the board auto-orients.
+  const applyTree = (t, p, keepFlip) => {
+    setTree(t); setTreePath(p); broadcastTree(t, p); clearDrawings();
+    if (!keepFlip) setFlipOverride(null);
   };
   // Clear drawn arrows/highlights (on a move or navigation) and tell everyone.
   const clearDrawings = () => {
@@ -3169,7 +3204,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // tree and enters "puzzle mode" so moves are checked against the solution.
   const loadPuzzle = async (mode) => {
     if (!isHost) return;
-    setPuzzleStatus(''); setPuzzleStep(0);
+    broadcastPuzzleStatus(''); setPuzzleStep(0);
     const params = new URLSearchParams({ min: String(ratingMin), max: String(ratingMax) });
     if (mode === 'theme' && puzzleTheme) params.set('theme', puzzleTheme);
     if (mode === 'pieces' && puzzlePieces) params.set('pieces', puzzlePieces);
@@ -3178,15 +3213,20 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       const r = await api.get(`/api/coach-live/puzzle/next?${params.toString()}`);
       const pz = r.data?.puzzle;
       if (!pz?.fen) { setPuzzleStatus('none'); return; }
-      setPuzzle(pz); setPuzzleMode(mode); setPuzzleStep(0); setPuzzleStatus('');
+      setPuzzle(pz); setPuzzleMode(mode); setPuzzleStep(0); broadcastPuzzleStatus('');
       // Load the position as a fresh tree; the board goes to the solver's turn.
       applyTree(buildTreeFromPgn(`[FEN "${pz.fen}"]\n\n*`), []);
       if (!showBoard) toggleBoard();
-    } catch { setPuzzleStatus('none'); }
+    } catch { broadcastPuzzleStatus('none'); }
   };
 
   // Exit puzzle mode back to free study.
-  const exitPuzzle = () => { setPuzzle(null); setPuzzleMode(null); setPuzzleStatus(''); setPuzzleStep(0); };
+  const exitPuzzle = () => { setPuzzle(null); setPuzzleMode(null); broadcastPuzzleStatus(''); setPuzzleStep(0); };
+
+  const broadcastPuzzleStatus = (s) => {
+    setPuzzleStatus(s);
+    if (isHost && session) socket.emit('liveclass:puzzleStatus', { sessionId: session.id, status: s });
+  };
 
   // ── Host/controller move ─────────────────────────────────────────────────────
   // In PUZZLE mode: check the move against the solution, auto-play the reply, show
@@ -3204,8 +3244,8 @@ export default function LiveClassroomPage({ mode = 'host' }) {
       const isRightMove = normSan(mv.san) === normSan(expected) || c.isCheckmate();
       if (!isRightMove) {
         // Wrong — flash red, don't commit the move (board stays at the puzzle pos).
-        setPuzzleStatus('wrong');
-        setTimeout(() => setPuzzleStatus(''), 1200);
+        broadcastPuzzleStatus('wrong');
+        setTimeout(() => broadcastPuzzleStatus(''), 1200);
         return false;
       }
       // Correct solver move — commit it, then auto-play the opponent's reply.
@@ -3225,16 +3265,16 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         } catch { /* no reply */ }
       }
       setPuzzleStep(stepAfter);
-      applyTree(res.root, res.path);
-      setPuzzleStatus(stepAfter >= puzzle.solution.length || c.isCheckmate() ? 'solved' : 'correct');
-      if (!(stepAfter >= puzzle.solution.length || c.isCheckmate())) setTimeout(() => setPuzzleStatus(''), 900);
+      applyTree(res.root, res.path, true);
+      broadcastPuzzleStatus(stepAfter >= puzzle.solution.length || c.isCheckmate() ? 'solved' : 'correct');
+      if (!(stepAfter >= puzzle.solution.length || c.isCheckmate())) setTimeout(() => broadcastPuzzleStatus(''), 900);
       return true;
     }
 
     // Free-style: branch into the shared study tree.
     const cloned = JSON.parse(JSON.stringify(tree));
     const { root, path } = addMove(cloned, treePath, { san: mv.san, fen: c.fen(), from: mv.from, to: mv.to });
-    applyTree(root, path);
+    applyTree(root, path, true);
     return true;
   };
 
@@ -3251,7 +3291,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     if (!mv) return;
     const cloned = JSON.parse(JSON.stringify(tree));
     const { root, path } = addMove(cloned, treePath, { san: mv.san, fen: c.fen(), from: mv.from, to: mv.to });
-    applyTree(root, path);
+    applyTree(root, path, true);
   };
 
   // Jump to any node (clicking the SAN notation) — syncs to everyone.
@@ -3840,6 +3880,36 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     }, 5000);
     return () => clearInterval(id);
   }, [session?.id, isHost]);
+
+  // ── Video debug (coach-toggled) ──
+  // Coach re-announces every 8s so late joiners start reporting, and students
+  // stop by themselves if the announcements stop (coach left / reloaded).
+  useEffect(() => {
+    if (!isHost || !session?.id) return;
+    const send = (on) => socket.emit('liveclass:debug', { sessionId: session.id, on, host: String(myId || '') });
+    if (!debugOn) { send(false); setDebugReports({}); return; }
+    send(true);
+    const id = setInterval(() => send(true), 8000);
+    return () => clearInterval(id);
+  }, [debugOn, isHost, session?.id, myId]);
+
+  useEffect(() => {
+    if (isHost || !debugHost || !session?.id) return;
+    const sampler = createSampler();
+    const name = user?.displayName || user?.username || '';
+    const id = setInterval(async () => {
+      if (Date.now() - debugBeatRef.current > 25000) { setDebugHost(null); return; }
+      try {
+        const report = await collectStudentReport(lkRef.current?.room, sampler, {
+          hostIdentity: debugHost, audioBlocked: lkRef.current?.audioBlocked,
+        });
+        socket.emit('liveclass:debug-report', { sessionId: session.id, report, name });
+      } catch { /* debug must never disturb a class */ }
+    }, 3000);
+    return () => clearInterval(id);
+  }, [isHost, debugHost, session?.id, user]);
+
+  const getLkRoom = useCallback(() => lkRef.current?.room || null, []);
 
   const muteStudent = async (studentId) => { try { await api.post(`/api/coach-live/sessions/${session.id}/mute-student`, { studentId }); } catch { /* */ } };
   const requestUnmute = async (studentId) => { try { await api.post(`/api/coach-live/sessions/${session.id}/request-unmute`, { studentId }); } catch { /* */ } };
@@ -4573,6 +4643,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     <span style={s.devLabel}>Video info (diagnostics)…</span>
                   </button>
                 )}
+                {isHost && (
+                  <button
+                    style={{ ...s.devItem, color: debugOn ? '#f87171' : '#9ca3af' }}
+                    onClick={() => { setDebugOn(v => !v); setDevMenu(null); }}
+                  >
+                    <span style={s.devCheck}>🐞</span>
+                    <span style={s.devLabel}>{debugOn ? 'Turn video debug OFF' : 'Video debug (live)…'}</span>
+                  </button>
+                )}
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '4px 0' }} />
                 <div style={s.devMenuHead}>Select a camera</div>
                 {lk.cameras.length === 0 && <div style={s.devMenuEmpty}>No cameras found</div>}
@@ -5062,58 +5141,49 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     the top of the board instead of floating at the middle. */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
                 <div style={{ position: 'relative', display: 'inline-block', lineHeight: 0 }}>
-                  <Chessboard position={curFen} lastMove={lastMove} boardWidth={shownBoardW} draggable={!!iControl} onDrop={onDrop}
+                  <Chessboard position={curFen} lastMove={lastMove} boardWidth={shownBoardW} draggable={!!iControl && !wbActive} onDrop={onDrop}
                     orientation={boardOrientation}
-                    // The board's own F-key shortcut flips it locally. Routing
-                    // that back through flipBoard makes F behave exactly like
-                    // the ⇅ button — including broadcasting to the class when
-                    // the coach presses it.
                     onFlip={flipBoard}
-                    // Controller draws locally (its own arrows) and broadcasts them;
-                    // everyone else renders the synced arrows/highlights as props.
                     arrows={iControl ? [] : drawArrows}
                     highlightSquares={iControl ? undefined : drawHighlights}
-                    onDrawingChange={iControl ? onBoardDrawing : undefined}
-                    // Only the host/controller may resize; the board draws its own
-                    // grip, so this page no longer adds a second (blue) one.
+                    onDrawingChange={iControl && !wbActive ? onBoardDrawing : undefined}
                     resizable={!!iControl}
                     onResize={iControl ? setBoardWidth : undefined}
                   />
+                  <WhiteboardOverlay
+                    width={shownBoardW} height={shownBoardW}
+                    isHost={isHost} active={wbActive} strokes={wbStrokes} texts={wbTexts}
+                    onUpdate={onWhiteboardUpdate}
+                  />
                 </div>
 
-                {/* ── WHOSE TURN ── beside the board, deliberately LARGE.
-                    Nothing on a chessboard states the side to move, and a
-                    beginner cannot deduce it — so the coach was announcing it
-                    for every single position. The disc carries the meaning even
-                    for a child who reads little English; the words serve
-                    everyone else and screen readers. */}
+                </div>
+
+                {!isHost && (
                 <div
                   role="status"
                   aria-label={`${turnToMove === 'white' ? 'White' : 'Black'} to move`}
                   style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-                    padding: '14px 16px', borderRadius: 14,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    marginTop: 6, padding: '6px 14px', borderRadius: 10,
                     background: turnToMove === 'white' ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.42)',
                     border: `1px solid ${turnToMove === 'white' ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.24)'}`,
-                    minWidth: 104, flex: 'none',
                   }}
                 >
                   <span
                     aria-hidden="true"
                     style={{
-                      width: 38, height: 38, borderRadius: '50%',
+                      width: 20, height: 20, borderRadius: '50%',
                       background: turnToMove === 'white' ? '#f8fafc' : '#0b0f14',
                       border: '2px solid rgba(255,255,255,0.7)',
-                      boxShadow: '0 2px 10px rgba(0,0,0,0.45)',
                       flex: 'none',
                     }}
                   />
-                  <span style={{ fontSize: 15, fontWeight: 800, color: '#f1f5f9', lineHeight: 1.25, textAlign: 'center' }}>
-                    {turnToMove === 'white' ? 'White' : 'Black'}<br />
-                    <span style={{ fontSize: 12.5, fontWeight: 700, color: 'rgba(226,232,240,0.72)' }}>to move</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: '#f1f5f9' }}>
+                    {turnToMove === 'white' ? 'White' : 'Black'} to move
                   </span>
                 </div>
-                </div>
+                )}
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 6, flexWrap: 'wrap' }}>
                   {/* "Your coach is teaching" is gone: a student sitting in the
@@ -5146,6 +5216,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     onClick={() => flipBoard()}>
                     ⇅
                   </button>
+                  {isHost && (
+                    <button
+                      style={{ ...s.zoomBtn, ...(wbActive ? { border: '1.5px solid #06b6d4', background: 'rgba(6,182,212,0.2)', color: '#67e8f9' } : {}) }}
+                      title={wbActive ? 'Close whiteboard' : 'Whiteboard — draw & type on the board'}
+                      onClick={() => setWbActive(v => !v)}
+                    >
+                      🖊
+                    </button>
+                  )}
                 </div>
               </div>
               {/* ── board column ends ── */}
@@ -5658,9 +5737,33 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     )}
                   </div>
                 )}
-                <MoveTreeNotation tree={tree} path={treePath} onJump={goToPath} canNavigate={iControl} height={boardBoxSize}
+                <MoveTreeNotation tree={tree} path={treePath} onJump={goToPath} canNavigate={iControl}
+                  height={!isHost && puzzleStatus ? boardBoxSize - 52 : boardBoxSize}
                   width={movesCardW}
                   collapsed={movesCollapsed} onToggle={() => setMovesCollapsed(c => !c)} />
+                {!isHost && (puzzleStatus === 'wrong' || puzzleStatus === 'correct' || puzzleStatus === 'solved') && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                    padding: '10px 16px', borderRadius: 10,
+                    background: puzzleStatus === 'wrong' ? 'rgba(239,68,68,0.18)' : 'rgba(34,197,94,0.18)',
+                    border: `1.5px solid ${puzzleStatus === 'wrong' ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)'}`,
+                    width: movesCardW,
+                  }}>
+                    <span style={{
+                      width: 28, height: 28, borderRadius: '50%', display: 'grid', placeItems: 'center',
+                      background: puzzleStatus === 'wrong' ? '#ef4444' : '#22c55e',
+                      color: '#fff', fontSize: 16, fontWeight: 900, flex: 'none',
+                    }}>
+                      {puzzleStatus === 'wrong' ? '✗' : '✓'}
+                    </span>
+                    <span style={{
+                      fontSize: 15, fontWeight: 800,
+                      color: puzzleStatus === 'wrong' ? '#fca5a5' : '#86efac',
+                    }}>
+                      {puzzleStatus === 'wrong' ? 'Wrong' : puzzleStatus === 'solved' ? 'Correct!' : 'Correct — keep going'}
+                    </span>
+                  </div>
+                )}
                 {isHost && puzzle && contentTab === 'puzzles' && (
                   <div style={s.puzBar}>
                     <span style={{ fontSize: 12.5, fontWeight: 700,
@@ -5990,6 +6093,15 @@ export default function LiveClassroomPage({ mode = 'host' }) {
         <button style={s.showVideoPill} title="Bring the class videos back" onClick={() => setVideoMode('dock')}>
           📹 Show video ({tiles.length})
         </button>
+      )}
+
+      {isHost && debugOn && (
+        <VideoDebugPanel
+          getRoom={getLkRoom}
+          coachName={user?.displayName || user?.username || ''}
+          reports={debugReports}
+          onClose={() => setDebugOn(false)}
+        />
       )}
 
       {/* ── Video effects panel (free, Zoom-style: light / touch-up / blur) ── */}

@@ -3,6 +3,7 @@ import { Chess, Square, Move } from 'chess.js';
 import soundManager from '../utils/soundManager';
 import { useBoardTheme } from '../contexts/BoardThemeContext';
 import { usePieceTheme } from '../contexts/PieceThemeContext';
+import { useGamePrefs } from '../contexts/GamePrefsContext';
 
 export type CoordinateSide = 'top' | 'bottom' | 'left' | 'right';
 
@@ -101,7 +102,10 @@ interface ChessboardProps {
   lightSquareStyle?: React.CSSProperties;
   darkSquareStyle?: React.CSSProperties;
   draggable?: boolean;
+  /** Piece animation ms. Omit to follow the user's move-speed setting. */
   transitionDuration?: number;
+  /** Game boards only: honour the user's "always promote to queen" setting. */
+  allowAutoQueen?: boolean;
   showCoordinates?: boolean;
   coordinatesInside?: boolean;
   /** Multiplier on the coordinate label size. 1 = default; <1 for a smaller board. */
@@ -140,6 +144,9 @@ interface ChessboardProps {
    */
   squareEvals?: Record<string, { text?: string; score?: number; pending?: boolean }>;
 }
+
+// Ease-out cubic: quick start, soft landing.
+const MOVE_EASING = 'cubic-bezier(0.33, 1, 0.68, 1)';
 
 interface PieceInfo {
   piece: string;
@@ -213,7 +220,8 @@ const Chessboard: React.FC<ChessboardProps> = ({
   lightSquareStyle,
   darkSquareStyle,
   draggable = true,
-  transitionDuration = 400,
+  transitionDuration: transitionDurationProp,
+  allowAutoQueen = false,
   showCoordinates = true,
   coordinatesInside = false,
   coordinateScale = 1,
@@ -236,6 +244,12 @@ const Chessboard: React.FC<ChessboardProps> = ({
   const { theme: boardTheme } = useBoardTheme();
   // Pull active piece theme — provides getPieceSrc(code) -> URL
   const { getPieceSrc } = usePieceTheme();
+  const { moveMs, autoQueen: prefAutoQueen } = useGamePrefs();
+  const transitionDuration = transitionDurationProp ?? moveMs;
+  const autoQueen = allowAutoQueen && prefAutoQueen;
+  // Square the user just drag-dropped onto: that piece is already under the
+  // cursor, so it lands instantly instead of animating from its old square.
+  const dragDropRef = useRef<{ to: string; at: number } | null>(null);
   const effectiveLightStyle: React.CSSProperties =
     lightSquareStyle ?? { backgroundColor: boardTheme.light };
   const effectiveDarkStyle: React.CSSProperties =
@@ -367,7 +381,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
 
   // Refs for FLIP animation
   const pieceRefs = useRef<Record<string, HTMLDivElement>>({}); // map square -> DOM node
-  const prevPositions = useRef<{ positions?: Record<string, { left: number; top: number }>; board?: (string | null)[][] }>({}); // map square -> {left, top}
+  const prevPositions = useRef<{ board?: (string | null)[][] }>({}); // previous board, for FLIP pairing
   const isFlippedRef = useRef(false);
 
   // Calculate square size early (needed for useEffect)
@@ -849,6 +863,10 @@ const Chessboard: React.FC<ChessboardProps> = ({
       const isPromotionRank = (isPlayerWhite && toRank === 8) || (!isPlayerWhite && toRank === 1);
 
       if (isPawn && isPromotionRank) {
+        if (autoQueen) {
+          setPremoveAndNotify({ from: sourceSquare, to: targetSquare, promotion: 'q' });
+          return;
+        }
         // Show promotion popup — handlePromotion will store the premove
         isPremovePromotionRef.current = true;
         setPromotionPopup({ from: sourceSquare, to: targetSquare, color: isPlayerWhite ? 'w' : 'b' });
@@ -887,6 +905,11 @@ const Chessboard: React.FC<ChessboardProps> = ({
 
       // If move is legal and is a promotion, show promotion popup and wait for selection
       if (isPromotionByMove) {
+        if (autoQueen) {
+          if (matchedMove.captured) playCaptureSound(); else playMoveSound();
+          if (onDrop) onDrop(sourceSquare as Square, targetSquare as Square, 'q');
+          return;
+        }
         isPremovePromotionRef.current = false;
         setPromotionPopup({ from: sourceSquare, to: targetSquare, color: piece === 'P' ? 'w' : 'b' });
         return;
@@ -904,7 +927,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
       const result = onDrop(sourceSquare as Square, targetSquare as Square);
       if (result === false) return;
     }
-  }, [onDrop, fenToUse, board, isPremoveCandidate, playerColor]);
+  }, [onDrop, fenToUse, board, isPremoveCandidate, playerColor, autoQueen]);
 
   const handlePromotion = useCallback((piece: string) => {
     if (!promotionPopup) return;
@@ -1116,6 +1139,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
           const actualCol = isFlipped ? 7 - col : col;
 
           if (actualRow >= 0 && actualRow < 8 && actualCol >= 0 && actualCol < 8) {
+            dragDropRef.current = { to: String.fromCharCode(97 + actualCol) + (8 - actualRow), at: Date.now() };
             handlePieceMove(draggedPiece!.row, draggedPiece!.col, actualRow, actualCol);
           }
         }
@@ -1163,6 +1187,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
           const actualCol = isFlipped ? 7 - col : col;
 
           if (actualRow >= 0 && actualRow < 8 && actualCol >= 0 && actualCol < 8) {
+            dragDropRef.current = { to: String.fromCharCode(97 + actualCol) + (8 - actualRow), at: Date.now() };
             handlePieceMove(draggedPiece!.row, draggedPiece!.col, actualRow, actualCol);
           }
         }
@@ -1270,7 +1295,9 @@ const Chessboard: React.FC<ChessboardProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               pointerEvents: 'none',
-              transition: `transform ${transitionDuration || 600}ms cubic-bezier(0.33, 1, 0.68, 1)`,
+              // Positioned so the FLIP effect can raise it (z-index) mid-move.
+              position: 'relative',
+              transition: transitionDuration > 0 ? `transform ${transitionDuration}ms ${MOVE_EASING}` : 'none',
               userSelect: 'none',
               // Dim the premove source piece to indicate it is "in transit"
               opacity: isPremoveFrom ? 0.45 : 1
@@ -1577,25 +1604,9 @@ const Chessboard: React.FC<ChessboardProps> = ({
   useLayoutEffect(() => {
     // If transitionDuration is zero, skip FLIP animation entirely
     if (!transitionDuration || transitionDuration <= 0) {
-      const currentPositions: Record<string, { left: number; top: number }> = {};
-      Object.keys(pieceRefs.current).forEach(square => {
-        const el = pieceRefs.current[square];
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        currentPositions[square] = { left: rect.left, top: rect.top };
-      });
-      prevPositions.current.positions = currentPositions;
       prevPositions.current.board = board;
-      return; // skip FLIP animation
+      return;
     }
-    // Capture current positions for all piece elements
-    const currentPositions: Record<string, { left: number; top: number }> = {};
-    Object.keys(pieceRefs.current).forEach(square => {
-      const el = pieceRefs.current[square];
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      currentPositions[square] = { left: rect.left, top: rect.top };
-    });
 
     // Build maps of previous and current piece locations by piece type
     const prevBoard = prevPositions.current.board || [];
@@ -1615,31 +1626,77 @@ const Chessboard: React.FC<ChessboardProps> = ({
 
     const prevPieceMap = buildPieceMap(prevBoard);
     const currPieceMap = buildPieceMap(board);
+    const drop = dragDropRef.current && Date.now() - dragDropRef.current.at < 3000 ? dragDropRef.current : null;
 
-    // For each piece type, pair previous squares to current squares by index
+    // Pair only the pieces that actually MOVED. Matching every piece of a type by
+    // list index (the old way) made one pawn move slide every other pawn: after
+    // e2-e4 the scan order became [e4, a2, b2, …], so a2→e4, b2→a2, c2→b2 …
+    // Pieces still on their square are fixed; vacated squares are matched to
+    // newly occupied ones of the same piece type, nearest first.
+    const dist = (a: string, b: string) =>
+      Math.abs(a.charCodeAt(0) - b.charCodeAt(0)) + Math.abs(+a[1] - +b[1]);
+    // Screen cell of a square in the CURRENT layout. The glide's start point is
+    // computed from this, not from rects saved on the previous render: those are
+    // viewport coordinates and went stale whenever the page scrolled, the board
+    // resized, or a piece was still mid-glide — which is how a queen moving
+    // h6→f8 could appear to fly in from b1.
+    const cell = (sq: string) => {
+      const f = sq.charCodeAt(0) - 97, r = +sq[1];
+      return isFlipped ? { x: 7 - f, y: r - 1 } : { x: f, y: 8 - r };
+    };
+    // A real move changes at most two pieces' squares (castling). More than
+    // that is a new puzzle or a jump through a game — show it instantly rather
+    // than flying pieces in from an unrelated position.
+    let arrivals = 0;
     Object.keys(currPieceMap).forEach(pc => {
+      const prevSet = new Set(prevPieceMap[pc] || []);
+      arrivals += (currPieceMap[pc] || []).filter(s => !prevSet.has(s)).length;
+    });
+    const isSingleMove = arrivals <= 2;
+    Object.keys(currPieceMap).forEach(pc => {
+      if (!isSingleMove) return;
       const prevSquares = prevPieceMap[pc] || [];
       const currSquares = currPieceMap[pc] || [];
-      const pairCount = Math.min(prevSquares.length, currSquares.length);
-      for (let i = 0; i < pairCount; i++) {
-        const from = prevSquares[i];
-        const to = currSquares[i];
-        if (from === to) continue; // didn't move
+      const prevSet = new Set(prevSquares);
+      const currSet = new Set(currSquares);
+      const vacated = prevSquares.filter(s => !currSet.has(s));
+      const arrived = currSquares.filter(s => !prevSet.has(s));
+      const pairs: Array<[string, string]> = [];
+      const left = [...vacated];
+      for (const to of arrived) {
+        if (!left.length) break;           // e.g. a promoted piece appearing — no source
+        let best = 0;
+        for (let k = 1; k < left.length; k++) if (dist(left[k], to) < dist(left[best], to)) best = k;
+        pairs.push([left[best], to]);
+        left.splice(best, 1);
+      }
+      for (const [from, to] of pairs) {
+        if (drop && to === drop.to) { dragDropRef.current = null; continue; }
 
         const el = pieceRefs.current[to];
-        const prevPos = (prevPositions.current.positions) ? prevPositions.current.positions[from] : null;
-        const currPos = currentPositions[to];
-        if (el && prevPos && currPos) {
-          const dx = prevPos.left - currPos.left;
-          const dy = prevPos.top - currPos.top;
+        if (el) {
+          const a = cell(from), b = cell(to);
+          const dx = (a.x - b.x) * squareSize;
+          const dy = (a.y - b.y) * squareSize;
           if (dx !== 0 || dy !== 0) {
+            // FLIP: jump to the old square with NO transition, commit that
+            // frame, then glide to the new square.
+            // Raised while it travels: the piece lives inside its DESTINATION
+            // square, and squares later in the DOM (e.g. e3/e2 for e2-e4) paint
+            // over it, so it slid underneath the board on the way.
+            el.style.zIndex = '30';
+            el.style.transition = 'none';
             el.style.transform = `translate(${dx}px, ${dy}px)`;
-            // Force reflow
             // eslint-disable-next-line no-unused-expressions
             el.offsetWidth;
+            const lower = () => {
+              el.style.zIndex = '';
+              el.removeEventListener('transitionend', lower);
+            };
+            el.addEventListener('transitionend', lower);
+            setTimeout(lower, transitionDuration + 120);
             requestAnimationFrame(() => {
-
-el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0.68, 600)`;
+              el.style.transition = `transform ${transitionDuration}ms ${MOVE_EASING}`;
               el.style.transform = '';
             });
           }
@@ -1648,7 +1705,6 @@ el.style.transition = `transform ${transitionDuration}ms cubic-bezier(0.33, 1, 0
     });
 
     // Save current positions and board for next run
-    prevPositions.current.positions = currentPositions;
     prevPositions.current.board = board;
   }, [position, transitionDuration]);
 

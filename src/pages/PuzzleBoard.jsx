@@ -1097,7 +1097,6 @@ function TournamentPuzzle() {
                     }}
                     orientation={boardOrientation}
                     draggable={gameMode === 'manual' || isUserTurn}
-                    transitionDuration={200}
                     showCoordinates={false}
                     allowMovePiece={(piece, square) => {
                       // Only allow moving pieces that match the current turn in user-vs-stockfish mode

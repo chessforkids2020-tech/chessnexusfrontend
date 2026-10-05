@@ -2,6 +2,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from '../../components/Chessboard';
+import { RACE_MOVE_MS } from '../../contexts/GamePrefsContext';
 import io from 'socket.io-client';
 import api from '../../api';
 import PlayerName from '../../components/PlayerName';
@@ -816,6 +817,7 @@ function TeamRacePuzzle() {
         <div className="middle-board-section">
           <div className="chessboard-wrapper">
             <Chessboard
+              transitionDuration={RACE_MOVE_MS}
               position={(game || gameRef.current).fen()}
               onDrop={handleMove}
               orientation={playerColor}

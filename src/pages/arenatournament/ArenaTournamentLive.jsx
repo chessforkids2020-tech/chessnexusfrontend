@@ -1137,7 +1137,7 @@ export default function ArenaTournamentLive() {
     return () => window.removeEventListener('keydown', onKey);
   }, [totalPlies]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleMove = (from, to) => {
+  const handleMove = (from, to, promo) => {
     console.log('♟️ [ArenaTournamentLive] Move attempted:', from, '→', to);
 
     if (!myParticipant) {
@@ -1177,7 +1177,7 @@ export default function ArenaTournamentLive() {
     const isPromotion = piece?.type === 'p' && (toRank === '8' || toRank === '1');
 
     // Try the move with or without promotion
-    const moveData = isPromotion ? { from, to, promotion: 'q' } : { from, to };
+    const moveData = isPromotion ? { from, to, promotion: promo || 'q' } : { from, to };
     const move = chessRef.current.move(moveData);
 
     if (!move) {
@@ -1700,6 +1700,7 @@ export default function ArenaTournamentLive() {
                 position: 'relative'
               }}>
                 <Chessboard
+                  allowAutoQueen
                   position={displayFen}
                   onDrop={handleMove}
                   orientation={myColor}

@@ -186,7 +186,7 @@ export default function LiveGame() {
     return () => newSocket.disconnect();
   }, [gameId, user.id, user._id]);
 
-  const onDrop = (sourceSquare, targetSquare) => {
+  const onDrop = (sourceSquare, targetSquare, promo) => {
     if (status !== 'Playing') return false;
 
     // Check turn
@@ -197,7 +197,7 @@ export default function LiveGame() {
       const move = game.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: 'q' // always promote to queen for simplicity
+        promotion: promo || 'q'
       });
 
       if (move === null) return false;
@@ -469,9 +469,10 @@ export default function LiveGame() {
           </div>
         ) : (
           // Live Game Mode
-          <Chessboard 
-            position={game.fen()} 
-            onDrop={onDrop} 
+          <Chessboard
+            allowAutoQueen
+            position={game.fen()}
+            onDrop={onDrop}
             orientation={orientation}
             boardWidth={window.innerWidth < 600 ? 350 : 500}
           />

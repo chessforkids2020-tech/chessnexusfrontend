@@ -180,7 +180,6 @@ export default function OpeningStudy() {
                 orientation={orientation}
                 boardWidth={boardSize}
                 lastMove={lastMove}
-                transitionDuration={180}
               />
             </div>
           </div>

@@ -409,14 +409,14 @@ export default function PlayWithStockfish() {
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [phase, engineReady, result]);
 
-  const handleDrop = (from, to) => {
+  const handleDrop = (from, to, promo) => {
     if (result || thinking) return false;
     const game = new Chess(chessRef.current.fen());
     if (game.turn() !== myColorRef.current) return false;
     let mv;
     try {
       const piece = game.get(from);
-      const promotion = piece && piece.type === 'p' && (to[1] === '8' || to[1] === '1') ? 'q' : undefined;
+      const promotion = piece && piece.type === 'p' && (to[1] === '8' || to[1] === '1') ? (promo || 'q') : undefined;
       mv = game.move({ from, to, promotion });
     } catch (e) { return false; }
     if (!mv) return false;
@@ -641,6 +641,7 @@ export default function PlayWithStockfish() {
           {/* The board, with the game-over popup laid over it. */}
           <div className="pvs-board-wrap" style={{ width: boardSize }}>
           <Chessboard
+            allowAutoQueen
             position={displayFen}
             onDrop={handleDrop}
             orientation={orientation}

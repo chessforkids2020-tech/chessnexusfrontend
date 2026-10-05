@@ -10,41 +10,115 @@
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
 }
+/* Same visual language as the Games page cards (Games.css .play-option-card--row):
+   accent bloom at the top, ringed icon, Orbitron title, crowned divider, pill CTA. */
 .fg-modal {
-  background: rgba(23, 23, 23, 0.85);
-  border: 1px solid var(--color-white-a07);
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, var(--color-accent-a15), transparent 70%),
+    var(--color-surface);
+  border: 1px solid var(--color-accent-a20);
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
-  border-radius: var(--radius-2xl); width: 100%; max-width: 640px;
+  border-radius: var(--radius-2xl); width: 100%; max-width: 660px;
+  max-height: calc(100vh - 40px); overflow-y: auto;
   padding: 28px; position: relative;
-  box-shadow: 0 20px 60px var(--color-black-a65);
+  box-shadow: 0 24px 70px var(--color-black-a65), 0 0 0 1px var(--color-black-a35);
   color: var(--color-text);
 }
 .fg-close {
-  position: absolute; top: 14px; right: 16px;
-  background: none; border: none; font-size: 20px; cursor: pointer;
-  color: var(--color-text-muted); transition: color .15s;
+  position: absolute; top: 14px; right: 16px; z-index: 2;
+  width: 34px; height: 34px; border-radius: var(--radius-circle);
+  background: var(--color-white-a07); border: 1px solid var(--color-white-a10);
+  font-size: 15px; cursor: pointer;
+  color: var(--color-text-muted); transition: color .15s, border-color .15s, background .15s;
 }
-.fg-close:hover { color: var(--color-text); }
-.fg-title { font-size: 24px; font-weight: 800; color: var(--color-text); margin: 0 0 6px; }
-.fg-sub { color: var(--color-text-muted); margin: 0 0 18px; }
+.fg-close:hover { color: var(--color-text); border-color: var(--color-accent-a40); background: var(--color-accent-a15); }
+
+.fg-head { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 18px; }
+.fg-head-ring {
+  width: 60px; height: 60px; display: grid; place-items: center; font-size: 28px;
+  border-radius: var(--radius-circle);
+  background: var(--color-black-a35); border: 1px solid var(--color-accent-a30);
+  box-shadow: 0 6px 22px var(--color-black-a50), 0 0 24px var(--color-accent-a15);
+  margin-bottom: 12px;
+}
+.fg-title {
+  font-family: var(--font-display); font-size: 21px; font-weight: 700; letter-spacing: 0.6px;
+  color: var(--color-text); margin: 0;
+}
+.fg-divider { display: flex; align-items: center; gap: 8px; width: 140px; margin: 8px 0 10px; }
+.fg-divider::before, .fg-divider::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-accent-a40), transparent);
+}
+.fg-divider span { font-size: 11px; color: var(--color-accent); line-height: 1; }
+.fg-sub { color: var(--color-text-muted); margin: 0; font-size: 14px; }
 
 .fg-home-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.fg-big-btn {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  padding: 28px 14px; border-radius: var(--radius-lg);
-  border: 1px solid var(--color-white-a07);
-  background: var(--color-black-a35);
-  cursor: pointer; font-size: 16px; font-weight: 700; color: var(--color-text);
-  transition: transform .15s, box-shadow .15s, border-color .15s, background .15s;
+.fg-choice {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 24px 16px 18px; border-radius: var(--radius-xl);
+  background: var(--color-black-a35); border: 1px solid var(--color-accent-a20);
+  color: var(--color-text); cursor: pointer; font: inherit;
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
 }
-.fg-big-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 28px var(--color-black-a50);
+.fg-choice:hover, .fg-choice:focus-visible {
+  transform: translateY(-4px);
   border-color: var(--color-accent-a40);
-  background: var(--color-accent-a08);
+  box-shadow: 0 14px 38px var(--color-black-a50);
+  outline: none;
 }
-.fg-big-icon { font-size: 30px; }
+.fg-choice-glow {
+  position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+  width: 170px; height: 170px; border-radius: var(--radius-circle);
+  background: radial-gradient(circle, var(--color-accent-a15) 0%, transparent 68%);
+  pointer-events: none; opacity: .85; transition: opacity .2s ease;
+}
+.fg-choice:hover .fg-choice-glow { opacity: 1; }
+.fg-choice-ring {
+  position: relative; width: 62px; height: 62px; display: grid; place-items: center;
+  font-size: 26px; border-radius: var(--radius-circle);
+  background: var(--color-black-a35); border: 1px solid var(--color-accent-a30);
+  box-shadow: 0 6px 22px var(--color-black-a50);
+  margin-bottom: 12px; transition: transform .2s ease, border-color .2s ease;
+}
+.fg-choice:hover .fg-choice-ring { transform: scale(1.05); border-color: var(--color-accent); }
+.fg-choice-title {
+  position: relative; font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  letter-spacing: 0.5px; line-height: 1.3;
+}
+.fg-choice-blurb {
+  position: relative; margin: 8px 0 14px; font-size: 12.5px; line-height: 1.5; color: var(--color-text-muted);
+}
+.fg-choice-cta {
+  position: relative; margin-top: auto; min-width: 96px; padding: 8px 22px;
+  border-radius: var(--radius-2xl); border: 1px solid var(--color-accent-a40);
+  color: var(--color-accent); font-size: 14px; line-height: 1;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.fg-choice:hover .fg-choice-cta { background: var(--color-accent-a15); border-color: var(--color-accent); transform: translateX(3px); }
+
+/* Create / Join panels inside the modal */
+.fg-modal .fg-col {
+  background: var(--color-black-a35); border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg); padding: 16px;
+}
+.fg-modal .fg-col-title { color: var(--color-accent); font-size: 13px; letter-spacing: 0.4px; }
+.fg-modal .fg-tc, .fg-modal .fg-var { border-color: var(--color-accent-a15); }
+.fg-modal .fg-tc.active, .fg-modal .fg-var.active { box-shadow: 0 6px 18px var(--color-accent-a20); }
+.fg-modal .fg-primary, .fg-modal .fg-secondary { border-radius: var(--radius-2xl); padding: 12px 24px; }
+.fg-modal .fg-code-input:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--color-accent-a15); }
+
+@media (max-width: 520px) {
+  .fg-modal { padding: 22px 16px; }
+  .fg-home-actions { gap: 10px; }
+  .fg-choice { padding: 18px 10px 14px; }
+  .fg-choice-ring { width: 48px; height: 48px; font-size: 21px; }
+  .fg-choice-title { font-size: 13px; }
+  .fg-choice-blurb { font-size: 11.5px; }
+  .fg-title { font-size: 18px; }
+}
 
 .fg-create-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
 .fg-col-title { font-size: 14px; font-weight: 700; color: var(--color-text); margin: 0 0 10px; }
@@ -154,10 +228,11 @@
   background: var(--color-black-a35); border: 1px solid var(--color-white-a07);
   border-radius: var(--radius-md); padding: 10px 14px; cursor: pointer;
 }
-.fg-code-text { font-size: 22px; font-weight: 800; letter-spacing: 3px; color: var(--color-accent); }
+.fg-code-text { font-size: 20px; font-weight: 800; letter-spacing: 2px; color: var(--color-accent); min-width: 0; }
 .fg-copy-btn {
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); color: #06121a; border: none;
-  padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; font-weight: 800;
+  padding: 7px 10px; border-radius: var(--radius-md); cursor: pointer; font-weight: 800;
+  font-size: 13px; white-space: nowrap; flex: none;
 }
 .fg-waiting { font-size: 13px; color: var(--color-text-muted); margin: 12px 0 0; }
 
@@ -178,6 +253,7 @@
 .fg-invite-friend-row { display: flex; gap: 7px; }
 .fg-invite-friend-input {
   flex: 1;
+  min-width: 0;
   background: var(--color-black-a35);
   border: 1px solid var(--color-white-a10);
   border-radius: var(--radius-md);
@@ -192,7 +268,7 @@
   background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
   color: #06121a; border: none; border-radius: var(--radius-md);
   padding: 7px 14px; font-size: 13px; font-weight: 800;
-  cursor: pointer; white-space: nowrap;
+  cursor: pointer; white-space: nowrap; flex: none;
 }
 .fg-invite-friend-btn:disabled { opacity: 0.5; cursor: default; }
 .fg-invite-friend-msg { font-size: 12px; margin: 6px 0 0; }
@@ -291,6 +367,10 @@
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   border-radius: var(--radius-lg); text-align: center; gap: 8px;
   border: 1px solid var(--color-white-a07);
+  /* The board wrap sets line-height:0 (so the board has no stray gap); without
+     resetting it here the title and subtitle lines draw on top of each other. */
+  line-height: 1.3;
+  z-index: 20;   /* above the board's own square highlights */
 }
 .fg-result-overlay h3 { font-size: 26px; color: var(--color-accent); margin: 0; }
 .fg-result-overlay p { color: var(--color-text-muted); }
@@ -301,6 +381,7 @@
   /* Fixed-height scroll area: the panel keeps a constant height so adding
      moves never reflows the column — only this box scrolls internally. */
   flex: 0 0 auto; height: 340px; overflow-y: auto;
+  position: relative; /* offsetParent for the auto-scroll in MoveList */
   background: var(--color-black-a20);
   border: 1px solid var(--color-white-a07);
   border-radius: var(--radius-md) 10px 0 0; padding: 6px;
@@ -324,9 +405,99 @@ button.fg-move-san:hover { background: var(--color-accent-a15); }
 button.fg-move-san.active { background: var(--color-accent-a30); color: var(--color-text); }
 
 @media (max-width: 1040px) {
-  .fg-room-inner { grid-template-columns: 1fr; }
   .fg-create-grid { grid-template-columns: 1fr; }
-  .fg-home-actions { grid-template-columns: 1fr; }
-  .fg-moves-list { height: 200px; }
-  .fg-board-wrap { width: 100%; max-width: 620px; }
+}
+
+/* ── Phones + tablets/iPad: one column, board edge to edge (like HealthyMix).
+   1024px matches the board's own touch layout (coordinates inside, no frame)
+   and MOBILE_MAX_PX in FriendGame.jsx. ── */
+@media (max-width: 1024px) {
+  .fg-room { padding: 0 0 96px; }               /* room under the floating chat button */
+  /* stretch, not the desktop grid's `start` — otherwise every strip shrinks to its content. */
+  .fg-room-inner { display: flex; flex-direction: column; align-items: stretch; gap: 8px; max-width: none; }
+
+  /* Right card dissolves so its strips can sit above/below the board. */
+  .fg-right { display: contents; }
+  .fg-pbar-opp   { order: 1; }
+  .fg-center     { order: 2; }
+  .fg-pbar-me    { order: 3; }
+  .fg-nav        { order: 4; }
+  .fg-left       { order: 5; }
+  .fg-moves-list { order: 6; }
+  /* While waiting, the invite code is the only thing that matters. */
+  .is-waiting .fg-left { order: 0; }
+
+  /* Board: no card chrome, full width, centred (a height-capped board on a
+     landscape tablet sits in the middle). */
+  .fg-center {
+    background: none; border: none; border-radius: 0; box-shadow: none;
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    width: 100%;
+  }
+  /* Hug the board so the result overlay covers exactly the board, even when a
+     landscape tablet caps the board by height. */
+  .fg-board-wrap, .fg-center .fg-board-wrap { width: fit-content; max-width: 100%; margin: 0 auto; display: block; }
+  .fg-result-overlay { border-radius: 0; padding: 0 16px; }
+  .fg-result-overlay h3 { font-size: 22px; }
+
+  /* Strips and cards keep a small side inset; only the board is full-bleed. */
+  .fg-pbar, .fg-nav, .fg-left, .fg-moves-list {
+    width: auto; margin-left: 10px; margin-right: 10px; box-sizing: border-box;
+  }
+  .fg-pbar { padding: 6px 10px; }
+  .fg-clock { font-size: 20px; }
+  .fg-nav { margin-top: 0; border: 1px solid var(--color-white-a07); border-radius: var(--radius-md); }
+  .fg-nav-btn { height: 44px; font-size: 17px; }   /* thumb-sized */
+  .fg-left { padding: 12px; }
+  .fg-moves-list { height: auto; max-height: 200px; border-radius: var(--radius-md); }
+  .fg-icon-btn { padding: 12px 0; }
+}
+
+@media (max-width: 480px) {
+  .fg-pname { font-size: 14px; }
+  .fg-avatar { width: 30px; height: 30px; }
+  .fg-code-text { font-size: 18px; letter-spacing: 1.5px; }
+}
+
+/* ── Post-game panel (left card) ── */
+.fg-post { display: flex; flex-direction: column; gap: 8px; }
+.fg-post-title { font-weight: 800; font-size: 15px; color: var(--color-text); display: flex; flex-direction: column; gap: 2px; }
+.fg-post-sub { font-weight: 600; font-size: 13px; color: var(--color-text-muted); }
+.fg-post-btn { width: 100%; padding: 10px 14px; font-size: 14px; }
+.fg-post-btn:disabled { opacity: .55; cursor: default; }
+.fg-post-btn.on { border-color: var(--color-accent); color: var(--color-accent); background: var(--color-accent-a15); }
+.fg-post-tools { display: flex; gap: 8px; }
+.fg-post-tools .fg-post-btn { flex: 1; padding: 9px 8px; font-size: 13px; }
+.fg-post-note { margin: 0; font-size: 12.5px; color: var(--color-text-muted); }
+.fg-post-note.ok { color: var(--color-success); font-weight: 700; }
+.fg-post-hint { margin: 0; font-size: 12px; color: var(--color-text-muted); }
+.fg-post-progress { height: 6px; border-radius: 3px; background: var(--color-white-a07); overflow: hidden; }
+.fg-post-progress > div { height: 100%; background: var(--color-accent); transition: width .3s; }
+.fg-post-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fg-post-summary .fg-post-hint { grid-column: 1 / -1; }
+.fg-post-side { background: var(--color-white-a04); border: 1px solid var(--color-white-a07); border-radius: var(--radius-md); padding: 8px; }
+.fg-post-side-name { font-weight: 700; font-size: 12.5px; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fg-post-count { display: flex; justify-content: space-between; font-size: 12px; }
+
+/* ── Floating chat ── */
+.fg-chat-fab {
+  position: fixed; left: 20px; bottom: 20px; z-index: 60;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 12px 18px; border-radius: 999px; border: none; cursor: pointer; font-weight: 800;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); color: #06121a;
+  box-shadow: 0 10px 26px var(--color-black-a50);
+}
+.fg-chat-badge { min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--color-danger); color: #fff; font-size: 12px; display: inline-grid; place-items: center; }
+.fg-chat-float {
+  position: fixed; left: 20px; bottom: 20px; z-index: 60; width: min(340px, calc(100vw - 32px));
+  background: var(--color-surface); border: 1px solid var(--color-white-a10); border-radius: var(--radius-xl);
+  box-shadow: 0 16px 40px var(--color-black-a50); padding: 10px;
+}
+.fg-chat-close { position: absolute; top: 8px; right: 10px; background: none; border: none; color: var(--color-text-muted); cursor: pointer; font-size: 15px; z-index: 1; }
+@media (max-width: 1024px) {
+  /* Icon-only round button so it covers as little of the page as possible. */
+  .fg-chat-fab { left: 14px; bottom: 14px; padding: 0; width: 52px; height: 52px; justify-content: center; font-size: 0; }
+  .fg-chat-fab::before { content: '💬'; font-size: 22px; }
+  .fg-chat-badge { position: absolute; top: -4px; right: -4px; font-size: 12px; }
+  .fg-chat-float { right: 10px; left: 10px; bottom: 10px; width: auto; }
 }

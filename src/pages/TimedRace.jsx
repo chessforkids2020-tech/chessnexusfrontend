@@ -3,6 +3,7 @@ import { Chess } from 'chess.js';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../api';
 import Chessboard from '../components/Chessboard';
+import { RACE_MOVE_MS } from '../contexts/GamePrefsContext';
 import useResponsiveBoardSize from '../hooks/useResponsiveBoardSize';
 
 export default function TimedRace() {
@@ -74,7 +75,7 @@ export default function TimedRace() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [attempts, setAttempts] = useState([]);
   const [maxStreak, setMaxStreak] = useState(0);
-  const [boardAnimDuration, setBoardAnimDuration] = useState(200);
+  const [boardAnimDuration, setBoardAnimDuration] = useState(RACE_MOVE_MS);
   const isFetchingMoreRef = useRef(false);
 
   const currentAttemptStart = useRef(null);
@@ -106,7 +107,7 @@ export default function TimedRace() {
     setCurrentPosition(chess.fen());
     setMoveIndex(0);
     setBoardAnimDuration(0);
-    setTimeout(() => setBoardAnimDuration(200), 120);
+    setTimeout(() => setBoardAnimDuration(RACE_MOVE_MS), 120);
   }, [availablePuzzles]);
 
   useEffect(() => {

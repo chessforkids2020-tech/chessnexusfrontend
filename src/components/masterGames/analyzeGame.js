@@ -46,18 +46,26 @@ function toWhiteCp(evaluation, sideToMove) {
 /**
  * Analyze a game.
  * @param {string[]} sanMoves  main-line moves in SAN
- * @param {object} opts        { depth=14, onProgress(doneCount,total) }
+ * @param {object} opts        { depth=14, startFen, onProgress(doneCount,total), isCancelled() }
  * @returns {Promise<{analysis: Array, depth: number}>}
  */
 export async function analyzeGame(sanMoves, opts = {}) {
   const depth = opts.depth || 14;
   const onProgress = opts.onProgress || (() => {});
+  const isCancelled = opts.isCancelled || (() => false);
 
   if (!stockfish.isReady()) {
     await stockfish.init();
   }
 
-  const chess = new Chess();
+  // Each position is both "after" one move and "before" the next — search it once.
+  const evalCache = new Map();
+  const evalOf = async (fen) => {
+    if (!evalCache.has(fen)) evalCache.set(fen, await stockfish.getBestMove(fen, { depth, moveTime: 1500 }));
+    return evalCache.get(fen);
+  };
+
+  const chess = opts.startFen ? new Chess(opts.startFen) : new Chess();
   // Pre-build the list of positions: fen BEFORE each move + the move + fen AFTER.
   const steps = [];
   for (const san of sanMoves) {
@@ -106,11 +114,12 @@ export async function analyzeGame(sanMoves, opts = {}) {
     }
 
     // Best eval available before the move (side-to-move POV -> White POV).
-    const before = await stockfish.getBestMove(step.fenBefore, { depth, moveTime: 1500 });
+    if (isCancelled()) throw new Error('cancelled');
+    const before = await evalOf(step.fenBefore);
     const bestWhiteCp = toWhiteCp(before.evaluation, step.sideToMove);
 
     // Eval after the move actually played.
-    const after = await stockfish.getBestMove(step.fenAfter, { depth, moveTime: 1500 });
+    const after = await evalOf(step.fenAfter);
     const afterSide = step.sideToMove === 'w' ? 'b' : 'w';
     const playedWhiteCp = toWhiteCp(after.evaluation, afterSide);
 

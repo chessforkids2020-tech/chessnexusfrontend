@@ -7,6 +7,10 @@ import api, { resolveApiAssetUrl } from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 import { getFriendIdentity } from './friendIdentity';
 import FriendGameChat from '../../components/FriendGameChat';
+import FriendVoiceBar from '../../components/FriendVoiceBar';
+import EnginePanel from '../../components/EnginePanel';
+import useSquareEvals from '../../hooks/useSquareEvals';
+import { analyzeGame } from '../../components/masterGames/analyzeGame';
 import UserAvatar from '../../components/UserAvatar';
 import './FriendGame.css';
 
@@ -33,6 +37,9 @@ const SOCKET_TRANSPORTS = IS_PROD ? ['websocket', 'polling'] : ['polling', 'webs
 // screen (1280 container - two 300px cards - two 20px gaps), so 600 lets a big
 // display actually use its space while leaving room for the coordinate gutter.
 const BOARD_MAX_PX = 600;
+// Single-column layout at or below this width (matches FriendGame.css and the
+// board's own touch breakpoint).
+const MOBILE_MAX_PX = 1024;
 
 function fmtClock(secs) {
   if (secs == null) return '--:--';
@@ -42,26 +49,48 @@ function fmtClock(secs) {
   return `${m}:${r.toString().padStart(2, '0')}`;
 }
 
+const MOVE_MARKS = {
+  blunder: { color: '#ef4444', symbol: '??', label: 'Blunders' },
+  mistake: { color: '#f97316', symbol: '?', label: 'Mistakes' },
+  inaccuracy: { color: '#eab308', symbol: '?!', label: 'Inaccuracies' },
+};
+
 // Clickable move list (Lichess-style): White/Black columns. `current` is the ply
 // being viewed (moves.length = live). onSelect(plyAfterThisMove) jumps the board.
-function MoveList({ moves, current, onSelect }) {
+// `marks` (ply → blunder|mistake|inaccuracy) colours analysed moves.
+function MoveList({ moves, current, onSelect, marks = {} }) {
   const rows = [];
   for (let i = 0; i < moves.length; i += 2) {
     rows.push({ no: i / 2 + 1, w: moves[i], wPly: i + 1, b: moves[i + 1], bPly: i + 2 });
   }
   const endRef = useRef(null);
-  useEffect(() => { endRef.current?.scrollIntoView({ block: 'nearest' }); }, [current, moves.length]);
-  const cell = (san, ply) =>
-    san ? (
+  const listRef = useRef(null);
+  // Scroll the LIST only. scrollIntoView also scrolls the page, and on a phone or
+  // iPad (list below the board) that made the board jump on every move.
+  useEffect(() => {
+    const el = endRef.current, box = listRef.current;
+    if (!el || !box) return;
+    const top = el.offsetTop;
+    if (top < box.scrollTop || top > box.scrollTop + box.clientHeight - 24) {
+      box.scrollTop = Math.max(0, top - box.clientHeight / 2);
+    }
+  }, [current, moves.length]);
+  const cell = (san, ply) => {
+    if (!san) return <span className="fg-move-san" />;
+    const mark = MOVE_MARKS[marks[ply]];
+    return (
       <button
         className={`fg-move-san ${current === ply ? 'active' : ''}`}
         onClick={() => onSelect(ply)}
+        style={mark ? { color: mark.color, fontWeight: 800 } : undefined}
+        title={mark ? marks[ply] : undefined}
       >
-        {san}
+        {san}{mark ? mark.symbol : ''}
       </button>
-    ) : <span className="fg-move-san" />;
+    );
+  };
   return (
-    <div className="fg-moves-list">
+    <div className="fg-moves-list" ref={listRef}>
       {rows.length === 0 ? (
         <div className="fg-moves-empty">No moves yet</div>
       ) : (
@@ -103,6 +132,8 @@ export default function FriendGame() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const me = getFriendIdentity(user);
+  // Guest accounts (no login, or a role:'guest' account) cannot use voice.
+  const voiceGuest = !user || user.role === 'guest';
 
   // Map of basic-avatar key → absolute imageUrl (fetched once). Used to render
   // a player's chosen basic avatar; custom photos use profilePhotoUrl directly.
@@ -161,6 +192,29 @@ export default function FriendGame() {
   const [viewPly, setViewPly] = useState(null);
   const startFenRef = useRef('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
   const [lastMove, setLastMove] = useState(null);       // { from, to } — highlighted
+
+  // ── Post-game (finished/aborted only) ──
+  const [popupHidden, setPopupHidden] = useState(false);
+  const [rematchState, setRematchState] = useState(null);   // null | 'sent' | 'offered'
+  const [friendLeftRoom, setFriendLeftRoom] = useState(false);
+  const [engineOn, setEngineOn] = useState(false);
+  const [squaresOn, setSquaresOn] = useState(false);
+  // { status: idle|running|done|error, done, total, marks: { ply: class } }
+  const [analysis, setAnalysis] = useState({ status: 'idle' });
+  const analysisRunRef = useRef(0);
+  // Free exploration from a game position: { fen, sans, lastMove }. Local only.
+  const [explore, setExplore] = useState(null);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatUnread, setChatUnread] = useState(0);
+  const chatOpenRef = useRef(false);
+  chatOpenRef.current = chatOpen;
+
+  const resetPostGame = useCallback(() => {
+    analysisRunRef.current++;               // cancels a running analysis
+    setPopupHidden(false); setRematchState(null); setEngineOn(false); setSquaresOn(false);
+    setAnalysis({ status: 'idle' }); setExplore(null);
+  }, []);
+  useEffect(() => () => { analysisRunRef.current++; }, []);
   const chessboardPremoveRef = useRef(null);            // queued premove, fired on opponent's move
 
   // Render the board at its TRUE measured pixel width so the arrow SVG overlay
@@ -175,6 +229,13 @@ export default function FriendGame() {
     const ro = new ResizeObserver((entries) => {
       const w = entries[0]?.contentRect?.width;
       if (!w) return;
+      // Phones/tablets (same 1024px line as the board's own touch layout): edge
+      // to edge like HealthyMix. Coordinates sit inside the board there, so no
+      // gutter; Chessboard itself caps the size by screen height.
+      if (window.innerWidth <= MOBILE_MAX_PX) {
+        setBoardPx(Math.floor(window.innerWidth));
+        return;
+      }
       // The board draws its coordinate labels in a gutter OUTSIDE boardWidth, so
       // the element it renders is wider than the number we hand it. Sizing the
       // board to the full container therefore overflowed by the gutter (~16px at
@@ -189,7 +250,16 @@ export default function FriendGame() {
       setBoardPx(Math.max(200, Math.min(BOARD_MAX_PX, probe - g.left - g.right)));
     });
     ro.observe(el);
-    return () => ro.disconnect();
+    // On mobile the wrap hugs the board, so it won't resize by itself when the
+    // screen gets wider (rotating a tablet) — follow the window directly too.
+    const onWin = () => { if (window.innerWidth <= MOBILE_MAX_PX) setBoardPx(Math.floor(window.innerWidth)); };
+    window.addEventListener('resize', onWin);
+    window.addEventListener('orientationchange', onWin);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', onWin);
+      window.removeEventListener('orientationchange', onWin);
+    };
   }, []);
 
   // Local clock ticker for smoothness between server updates.
@@ -270,6 +340,7 @@ export default function FriendGame() {
           variant: createIntent.variant,
           timeControl: createIntent.timeControl,
           chatEnabled: createIntent.chatEnabled,
+          voiceEnabled: !!createIntent.voiceEnabled && !!user && user.role !== 'guest',
           isRated: createIntent.isRated,
           ...ident,
         });
@@ -308,7 +379,7 @@ export default function FriendGame() {
       if (pending) {
         chessboardPremoveRef.current = null;
         // Defer so gameRef/fen state settles before validating the premove.
-        setTimeout(() => { applyAndSendRef.current?.(pending.from, pending.to); }, 0);
+        setTimeout(() => { applyAndSendRef.current?.(pending.from, pending.to, pending.promotion); }, 0);
       }
     });
 
@@ -316,15 +387,20 @@ export default function FriendGame() {
 
     s.on('game_over', (r) => {
       applyRoom(r);
+      resetPostGame();
       setPhase('finished');
       setResult({ text: r.result, winnerColor: r.winnerColor, winnerName: r.winnerName, ratingChanges: r.ratingChanges || null });
     });
 
-    s.on('game_aborted', (r) => { applyRoom(r); setPhase('aborted'); });
+    s.on('game_aborted', (r) => { applyRoom(r); resetPostGame(); setPhase('aborted'); });
     s.on('opponentDisconnected', () => setOpponentLeft(true));
     s.on('opponentReconnected', () => setOpponentLeft(false));
     s.on('draw_offered', () => setDrawOffered(true));
+    s.on('rematch_offered', () => setRematchState(st => (st === 'sent' ? st : 'offered')));
+    s.on('opponent_left_room', () => setFriendLeftRoom(true));
+    s.on('friendChatMessage', () => { if (!chatOpenRef.current) setChatUnread(n => n + 1); });
     s.on('rematch_start', (r) => {
+      resetPostGame(); setFriendLeftRoom(false);
       setResult(null); setDrawOffered(false); setOpponentLeft(false);
       // colors were swapped server-side; pick mine from the players list
       const mine = r.players.find(p => p.userId === me.userId);
@@ -357,10 +433,10 @@ export default function FriendGame() {
   // Used by both drag-drop and premove firing. Does NOT check whose turn it is —
   // callers gate that (handleDrop checks isMyTurn; premove fires only after the
   // opponent moves, making it our turn).
-  const applyAndSend = useCallback((from, to) => {
+  const applyAndSend = useCallback((from, to, promo) => {
     const piece = gameRef.current.get(from);
     let promotion;
-    if (piece && piece.type === 'p' && (to[1] === '8' || to[1] === '1')) promotion = 'q';
+    if (piece && piece.type === 'p' && (to[1] === '8' || to[1] === '1')) promotion = promo || 'q';
 
     const test = new Chess(gameRef.current.fen());
     const moved = test.move({ from, to, promotion });
@@ -390,9 +466,9 @@ export default function FriendGame() {
     return true;
   }, [roomCode, room?.variant]);
 
-  const handleDrop = useCallback((from, to) => {
+  const handleDrop = useCallback((from, to, promo) => {
     if (!isMyTurn) return false;
-    return applyAndSend(from, to);
+    return applyAndSend(from, to, promo);
   }, [isMyTurn, applyAndSend]);
 
   // Keep a stable ref so the once-registered socket handler fires the latest premove.
@@ -442,8 +518,9 @@ export default function FriendGame() {
 
   // ── Move-list navigation ───────────────────────────────────────────────────
   const isLive = viewPly === null || viewPly >= moves.length;
-  // FEN to display: live position, or the replayed position at viewPly.
-  const displayFen = (() => {
+  const gameOver = phase === 'finished' || phase === 'aborted';
+  // Game position at viewPly (or live), before any post-game exploration.
+  const gameFen = (() => {
     if (isLive) return fen;
     try {
       const c = new Chess(startFenRef.current);
@@ -451,19 +528,93 @@ export default function FriendGame() {
       return c.fen();
     } catch (_) { return fen; }
   })();
+  const displayFen = explore ? explore.fen : gameFen;
   const gotoPly = (ply) => {
+    setExplore(null);
     const clamped = Math.max(0, Math.min(ply, moves.length));
     setViewPly(clamped >= moves.length ? null : clamped);
   };
-  const navFirst = () => setViewPly(moves.length === 0 ? null : 0);
-  const navPrev = () => gotoPly((viewPly === null ? moves.length : viewPly) - 1);
+  const navFirst = () => { setExplore(null); setViewPly(moves.length === 0 ? null : 0); };
+  const navPrev = () => gotoPly((viewPly === null ? moves.length : viewPly) - (explore ? 0 : 1));
   const navNext = () => gotoPly((viewPly === null ? moves.length : viewPly) + 1);
-  const navLast = () => setViewPly(null);
+  const navLast = () => { setExplore(null); setViewPly(null); };
+
+  // Post-game: try your own moves from any position (local, never sent).
+  const handleExploreDrop = (from, to, promo) => {
+    let mv;
+    const c = new Chess(displayFen);
+    try { mv = c.move({ from, to, promotion: promo || 'q' }); } catch { return false; }
+    if (!mv) return false;
+    setExplore(e => ({ fen: c.fen(), sans: [...(e?.sans || []), mv.san], lastMove: { from, to } }));
+    return true;
+  };
+
+  const { squareEvals, onSelectionChange } = useSquareEvals(displayFen, gameOver && squaresOn);
+
+  // Engine features share one Stockfish worker, so only one runs at a time.
+  const toggleEngine = () => { setEngineOn(v => !v); setSquaresOn(false); };
+  const toggleSquares = () => { setSquaresOn(v => !v); setEngineOn(false); };
+
+  const runAnalysis = async () => {
+    if (!moves.length) return;
+    const run = ++analysisRunRef.current;
+    setEngineOn(false); setSquaresOn(false); setPopupHidden(true);
+    setAnalysis({ status: 'running', done: 0, total: moves.length });
+    try {
+      const { analysis: rows } = await analyzeGame(moves, {
+        depth: 12,
+        startFen: startFenRef.current,
+        isCancelled: () => run !== analysisRunRef.current,
+        onProgress: (done, total) => {
+          if (run === analysisRunRef.current) setAnalysis(a => ({ ...a, done, total }));
+        },
+      });
+      if (run !== analysisRunRef.current) return;
+      const marks = {};
+      rows.forEach(r => { if (r.classification) marks[r.ply] = r.classification; });
+      setAnalysis({ status: 'done', marks });
+    } catch {
+      if (run === analysisRunRef.current) setAnalysis({ status: 'error' });
+    }
+  };
+
+  // Per-colour counts. Ply 1 is White's first move.
+  const markCounts = (() => {
+    const c = { white: {}, black: {} };
+    Object.entries(analysis.marks || {}).forEach(([ply, cls]) => {
+      const side = Number(ply) % 2 === 1 ? 'white' : 'black';
+      c[side][cls] = (c[side][cls] || 0) + 1;
+    });
+    return c;
+  })();
+
+  const playAgain = () => {
+    setPopupHidden(true);
+    setRematchState('sent');
+    socketRef.current?.emit('rematch', { roomCode });
+  };
+  const leaveRoom = () => {
+    socketRef.current?.emit('leave_room', { roomCode });
+    navigate('/games');
+  };
+
+  // ←/→ step through the game after it ends.
+  useEffect(() => {
+    if (!gameOver) return undefined;
+    const onKey = (e) => {
+      const tag = (e.target?.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+      if (e.key === 'ArrowLeft') { e.preventDefault(); navPrev(); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); navNext(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
   // Any new move snaps the view back to live.
   useEffect(() => { setViewPly(null); }, [moves.length]);
 
   const pbar = (player, color, isYou) => (
-    <div className={`fg-pbar ${gameRef.current.turn() === (color === 'white' ? 'w' : 'b') && phase === 'active' ? 'on-move' : ''}`}>
+    <div className={`fg-pbar ${isYou ? 'fg-pbar-me' : 'fg-pbar-opp'} ${gameRef.current.turn() === (color === 'white' ? 'w' : 'b') && phase === 'active' ? 'on-move' : ''}`}>
       <div className="fg-player-id">
         <PlayerAvatar
           name={player?.displayName || (isYou ? me.displayName : undefined)}
@@ -486,7 +637,7 @@ export default function FriendGame() {
 
   return (
     <div className="fg-room">
-      <div className="fg-room-inner">
+      <div className={`fg-room-inner ${phase === 'waiting' || phase === 'connecting' ? 'is-waiting' : ''}`}>
 
         {/* LEFT CARD: controls + chat */}
         <div className="fg-card fg-left">
@@ -507,7 +658,7 @@ export default function FriendGame() {
           <div className="fg-icon-actions">
             <button
               className="fg-icon-btn"
-              onClick={() => navigate('/games')}
+              onClick={() => (gameOver ? leaveRoom() : navigate('/games'))}
               title="Back to Games"
               aria-label="Back to Games"
             >🏠</button>
@@ -600,27 +751,122 @@ export default function FriendGame() {
             <div className="fg-banner fg-warn">Opponent disconnected.</div>
           )}
 
-          {room?.chatEnabled && (phase === 'active' || phase === 'finished') && (
-            <FriendGameChat socket={socketRef.current} roomCode={roomCode} myName={me.displayName} />
+          {gameOver && (
+            <div className="fg-post">
+              <div className="fg-post-title">
+                {phase === 'aborted' ? 'Game ended — opponent left' : (result?.text || 'Game over')}
+                {phase === 'finished' && result && (
+                  <span className="fg-post-sub">{result.winnerName ? `${result.winnerName} wins` : 'Draw'}</span>
+                )}
+              </div>
+
+              <button className="fg-primary fg-post-btn" onClick={playAgain}
+                disabled={friendLeftRoom || rematchState === 'sent'}>
+                {rematchState === 'sent' ? '⏳ Waiting for your friend…'
+                  : rematchState === 'offered' ? '✓ Accept rematch' : '↻ Play again'}
+              </button>
+              {rematchState === 'offered' && <p className="fg-post-note ok">Your friend wants a rematch!</p>}
+              {friendLeftRoom && <p className="fg-post-note">Your friend left the room.</p>}
+
+              <button className="fg-secondary fg-post-btn" onClick={runAnalysis}
+                disabled={!moves.length || analysis.status === 'running'}>
+                {analysis.status === 'running' ? `Analyzing… ${analysis.done || 0}/${analysis.total || moves.length}`
+                  : analysis.status === 'done' ? '🔍 Analyze again' : '🔍 Analyze game'}
+              </button>
+              {analysis.status === 'running' && (
+                <div className="fg-post-progress">
+                  <div style={{ width: `${Math.round(100 * (analysis.done || 0) / Math.max(1, analysis.total || 1))}%` }} />
+                </div>
+              )}
+              {analysis.status === 'error' && <p className="fg-post-note">Analysis failed — try again.</p>}
+              {analysis.status === 'done' && (
+                <div className="fg-post-summary">
+                  {['white', 'black'].map(side => {
+                    const pl = room?.players?.find(p => p.color === side);
+                    return (
+                      <div key={side} className="fg-post-side">
+                        <div className="fg-post-side-name">{side === 'white' ? '♔' : '♚'} {pl?.displayName || side}</div>
+                        {Object.entries(MOVE_MARKS).map(([cls, m]) => (
+                          <div key={cls} className="fg-post-count" style={{ color: m.color }}>
+                            <span>{m.label}</span><b>{markCounts[side][cls] || 0}</b>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                  <p className="fg-post-hint">Coloured moves in the move list are clickable.</p>
+                </div>
+              )}
+
+              <div className="fg-post-tools">
+                <button className={`fg-secondary fg-post-btn ${engineOn ? 'on' : ''}`} onClick={toggleEngine}
+                  aria-pressed={engineOn}
+                  disabled={analysis.status === 'running'}>⚙️ Stockfish</button>
+                <button className={`fg-secondary fg-post-btn ${squaresOn ? 'on' : ''}`} onClick={toggleSquares}
+                  aria-pressed={squaresOn}
+                  disabled={analysis.status === 'running'}>🎯 Square evals</button>
+              </div>
+              {squaresOn && <p className="fg-post-hint">Click a piece — every square it can reach gets a score.</p>}
+              {engineOn && analysis.status !== 'running' && (
+                <EnginePanel fen={displayFen} numLines={3} enabled onToggle={toggleEngine} />
+              )}
+              {explore && (
+                <p className="fg-post-hint">
+                  Exploring: {explore.sans.join(' ')}{' '}
+                  <button className="fg-link" onClick={() => setExplore(null)}>back to game</button>
+                </p>
+              )}
+
+              <button className="fg-secondary fg-post-btn" onClick={leaveRoom}>🚪 Leave room</button>
+            </div>
           )}
+
+          {(room?.voiceEnabled || voiceGuest) && ['waiting', 'active', 'finished'].includes(phase) && (
+            <FriendVoiceBar
+              socket={socketRef.current}
+              roomCode={roomCode}
+              isGuest={voiceGuest}
+              friendName={room?.players?.find(p => p.userId !== me.userId)?.displayName}
+            />
+          )}
+
         </div>
+
+        {/* Floating chat: kept mounted (so history survives) and shown on demand. */}
+        {room?.chatEnabled && ['active', 'finished', 'aborted'].includes(phase) && (
+          <>
+            <div className="fg-chat-float" style={{ display: chatOpen ? 'block' : 'none' }}>
+              <button className="fg-chat-close" onClick={() => setChatOpen(false)} aria-label="Close chat">✕</button>
+              <FriendGameChat socket={socketRef.current} roomCode={roomCode} myName={me.displayName} />
+            </div>
+            {!chatOpen && (
+              <button className="fg-chat-fab" onClick={() => { setChatOpen(true); setChatUnread(0); }} aria-label="Open chat">
+                💬 Chat
+                {chatUnread > 0 && <span className="fg-chat-badge">{chatUnread}</span>}
+              </button>
+            )}
+          </>
+        )}
 
         {/* MIDDLE CARD: board (biggest) + move navigation */}
         <div className="fg-card fg-center">
           <div className="fg-board-wrap" ref={boardWrapRef}>
             <Chessboard
+              allowAutoQueen
               position={displayFen}
               orientation={orientation}
-              onDrop={isLive ? handleDrop : () => false}
+              onDrop={gameOver ? handleExploreDrop : (isLive ? handleDrop : () => false)}
               boardWidth={boardPx}
-              lastMove={isLive ? lastMove : null}
+              lastMove={explore ? explore.lastMove : (isLive ? lastMove : null)}
               draggable={true}
               playerColor={myColor || 'white'}
               allowPremove={isLive && phase === 'active'}
               onPremoveChange={(p) => { chessboardPremoveRef.current = p; }}
+              squareEvals={squareEvals}
+              onSelectionChange={onSelectionChange}
             />
 
-            {phase === 'finished' && result && (
+            {phase === 'finished' && result && !popupHidden && (
               <div className="fg-result-overlay">
                 <h3>{result.text}</h3>
                 <p>{result.winnerName ? `${result.winnerName} wins` : 'Draw'}</p>
@@ -639,17 +885,23 @@ export default function FriendGame() {
                   );
                 })()}
                 <div className="fg-result-actions">
-                  <button className="fg-primary" onClick={() => socketRef.current.emit('rematch', { roomCode })}>Rematch</button>
-                  <button className="fg-secondary" onClick={() => navigate('/games')}>Leave</button>
+                  <button className="fg-primary" onClick={playAgain} disabled={friendLeftRoom}>
+                    {rematchState === 'offered' ? '✓ Accept rematch' : '↻ Play again'}
+                  </button>
+                  <button className="fg-secondary" onClick={runAnalysis} disabled={!moves.length}>🔍 Analyze</button>
                 </div>
+                <button className="fg-link" style={{ marginTop: 8 }} onClick={() => setPopupHidden(true)}>Close</button>
               </div>
             )}
 
-            {phase === 'aborted' && (
+            {phase === 'aborted' && !popupHidden && (
               <div className="fg-result-overlay">
                 <h3>Game ended</h3>
                 <p>Your opponent left the game.</p>
-                <button className="fg-secondary" onClick={() => navigate('/games')}>Back to Games</button>
+                <div className="fg-result-actions">
+                  {moves.length > 0 && <button className="fg-secondary" onClick={runAnalysis}>🔍 Analyze</button>}
+                  <button className="fg-secondary" onClick={() => setPopupHidden(true)}>Close</button>
+                </div>
               </div>
             )}
 
@@ -666,13 +918,14 @@ export default function FriendGame() {
         {/* RIGHT CARD: player strips (opponent top, you bottom) + clickable moves */}
         <div className="fg-card fg-right">
           {pbar(topPlayer, topColor, false)}
-          <MoveList moves={moves} current={viewPly ?? moves.length} onSelect={gotoPly} />
+          <MoveList moves={moves} current={explore ? -1 : (viewPly ?? moves.length)} onSelect={gotoPly}
+            marks={gameOver && analysis.status === 'done' ? analysis.marks : undefined} />
           {/* Move navigation — attached below the moves list */}
           <div className="fg-nav">
             <button className="fg-nav-btn" onClick={navFirst} disabled={moves.length === 0} title="First">⏮</button>
             <button className="fg-nav-btn" onClick={navPrev} disabled={(viewPly ?? moves.length) <= 0} title="Previous">◀</button>
-            <button className="fg-nav-btn" onClick={navNext} disabled={isLive} title="Next">▶</button>
-            <button className="fg-nav-btn" onClick={navLast} disabled={isLive} title="Latest">⏭</button>
+            <button className="fg-nav-btn" onClick={navNext} disabled={isLive && !explore} title="Next">▶</button>
+            <button className="fg-nav-btn" onClick={navLast} disabled={isLive && !explore} title="Latest">⏭</button>
           </div>
           {pbar(bottomPlayer, bottomColor, true)}
         </div>

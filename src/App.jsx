@@ -229,6 +229,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SupporterProvider } from './context/SupporterContext';
 import { BoardThemeProvider } from './contexts/BoardThemeContext';
 import { PieceThemeProvider } from './contexts/PieceThemeContext';
+import { GamePrefsProvider } from './contexts/GamePrefsContext';
 import { UiThemeProvider } from './contexts/UiThemeContext';
 import SettingsPage from './pages/SettingsPage';
 // Study Sparring + Position Creator
@@ -490,7 +491,9 @@ function AppWithTheme({ children }) {
     <UiThemeProvider userId={userId}>
       <BoardThemeProvider userId={userId}>
         <PieceThemeProvider userId={userId}>
-          {children}
+          <GamePrefsProvider userId={userId}>
+            {children}
+          </GamePrefsProvider>
         </PieceThemeProvider>
       </BoardThemeProvider>
     </UiThemeProvider>

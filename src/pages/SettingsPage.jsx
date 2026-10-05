@@ -1,5 +1,7 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import Chessboard from '../components/Chessboard';
+import { useGamePrefs, MOVE_SPEEDS } from '../contexts/GamePrefsContext';
 import CustomBoardColors from '../components/CustomBoardColors';
 import { BOARD_THEMES, useBoardTheme } from '../contexts/BoardThemeContext';
 import AppThemePanel from '../components/AppThemePanel';
@@ -129,6 +131,78 @@ function OptionCard({ isActive, onClick, defaultBadge, children }) {
   );
 }
 
+const PREVIEW_FENS = [
+  '8/8/8/8/8/2N5/8/8 w - - 0 1',
+  '8/8/8/3N4/8/8/8/8 w - - 0 1',
+];
+
+function Choice({ active, onClick, title, sub }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        flex: '1 1 140px', textAlign: 'left', padding: '12px 14px', cursor: 'pointer',
+        borderRadius: 'var(--radius-md)',
+        border: active ? '2px solid var(--color-accent)' : '2px solid var(--color-border)',
+        background: active ? 'var(--color-accent-a15)' : 'var(--color-white-a04)',
+        color: 'var(--color-text)',
+      }}
+    >
+      <div style={{ fontWeight: 700, fontSize: 14, color: active ? 'var(--color-accent)' : 'var(--color-text)' }}>{title}</div>
+      <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 2 }}>{sub}</div>
+    </button>
+  );
+}
+
+function GamesPanel() {
+  const { moveSpeed, autoQueen, setGamePref } = useGamePrefs();
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setI(v => (v + 1) % 2), 1400);
+    return () => clearInterval(id);
+  }, []);
+
+  const card = { background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)', padding: '24px', marginBottom: 20 };
+  const h2 = { fontSize: 18, fontWeight: 600, color: 'var(--color-text)', marginBottom: 4 };
+  const p = { color: 'var(--color-text-muted)', fontSize: 13, marginBottom: 16 };
+
+  return (
+    <>
+      <section style={card}>
+        <h2 style={h2}>🏃 Piece movement</h2>
+        <p style={p}>How fast pieces glide to their square. Applies to games, puzzles and studies (races always stay fast).</p>
+        <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: '1 1 260px' }}>
+            <Choice active={moveSpeed === 'slow'} onClick={() => setGamePref('moveSpeed', 'slow')} title="Slow" sub={`Easy to follow · ${MOVE_SPEEDS.slow}ms`} />
+            <Choice active={moveSpeed === 'normal'} onClick={() => setGamePref('moveSpeed', 'normal')} title="Normal (default)" sub={`Smooth · ${MOVE_SPEEDS.normal}ms`} />
+            <Choice active={moveSpeed === 'fast'} onClick={() => setGamePref('moveSpeed', 'fast')} title="Fast" sub={`Snappy · ${MOVE_SPEEDS.fast}ms`} />
+          </div>
+          <div style={{ flex: 'none' }}>
+            <Chessboard
+              position={PREVIEW_FENS[i]}
+              boardWidth={200}
+              draggable={false}
+              resizable={false}
+              showCoordinates={false}
+              mute
+            />
+            <div style={{ fontSize: 11, color: 'var(--color-text-faint)', textAlign: 'center', marginTop: 6 }}>Preview</div>
+          </div>
+        </div>
+      </section>
+
+      <section style={card}>
+        <h2 style={h2}>♛ Pawn promotion</h2>
+        <p style={p}>In games only (vs friends, vs computer, arena tournaments). Puzzles always ask, since the right piece is part of the answer.</p>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Choice active={!autoQueen} onClick={() => setGamePref('autoQueen', false)} title="Ask every time (default)" sub="Pick queen, rook, bishop or knight" />
+          <Choice active={autoQueen} onClick={() => setGamePref('autoQueen', true)} title="Always queen" sub="Promotes instantly, no popup" />
+        </div>
+      </section>
+    </>
+  );
+}
+
 export default function SettingsPage() {
   const { theme: activeTheme, setThemeById } = useBoardTheme();
   const { pieceTheme: activePiece, setPieceThemeById } = usePieceTheme();
@@ -193,6 +267,9 @@ export default function SettingsPage() {
           <button style={TAB_STYLE('pieces')} onClick={() => setActiveTab('pieces')}>
             ♞ Pieces
           </button>
+          <button style={TAB_STYLE('games')} onClick={() => setActiveTab('games')}>
+            ♟ Games
+          </button>
           <button style={TAB_STYLE('avatar')} onClick={() => setActiveTab('avatar')}>
             🖼️ Avatar
           </button>
@@ -218,6 +295,8 @@ export default function SettingsPage() {
         {activeTab === 'profile' && (
           <ProfilePanel />
         )}
+
+        {activeTab === 'games' && <GamesPanel />}
 
         {/* ── App Theme Tab ── */}
         {activeTab === 'app' && <AppThemePanel />}

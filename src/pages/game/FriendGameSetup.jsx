@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TIME_CONTROL_PRESETS } from './friendIdentity';
+import { useAuth } from '../../contexts/AuthContext';
+import { GUEST_VOICE_MSG } from '../../components/FriendVoiceBar';
 import './FriendGame.css';
 
 /**
@@ -20,6 +22,9 @@ export default function FriendGameSetup({ onClose }) {
   const [customInc, setCustomInc] = useState(0);
   const [variant, setVariant] = useState('standard');
   const [chatEnabled, setChatEnabled] = useState(true);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const { user } = useAuth();
+  const isGuest = !user || user.role === 'guest';
   const [isRated, setIsRated] = useState(false); // default casual (current behavior)
 
   // Join form state
@@ -43,6 +48,7 @@ export default function FriendGameSetup({ onClose }) {
         variant,
         timeControl: resolvedTc,
         chatEnabled,
+        voiceEnabled: voiceEnabled && !isGuest,
         // Chess960 is always casual (mirrors the arena rule).
         isRated: isRated && variant === 'standard',
       },
@@ -63,16 +69,26 @@ export default function FriendGameSetup({ onClose }) {
 
         {tab === 'home' && (
           <div className="fg-home">
-            <h2 className="fg-title">♟️ Play with a Friend</h2>
-            <p className="fg-sub">Create a private game and share the code — even as a guest.</p>
+            <div className="fg-head">
+              <span className="fg-head-ring" aria-hidden="true">🤝</span>
+              <h2 className="fg-title">Play with a Friend</h2>
+              <div className="fg-divider" aria-hidden="true"><span>♛</span></div>
+              <p className="fg-sub">Create a private game and share the code — even as a guest.</p>
+            </div>
             <div className="fg-home-actions">
-              <button className="fg-big-btn fg-create" onClick={() => setTab('create')}>
-                <span className="fg-big-icon">➕</span>
-                <span>Create a game</span>
+              <button className="fg-choice" onClick={() => setTab('create')}>
+                <span className="fg-choice-glow" aria-hidden="true" />
+                <span className="fg-choice-ring" aria-hidden="true">➕</span>
+                <span className="fg-choice-title">Create a game</span>
+                <span className="fg-choice-blurb">Pick a time control and get a code to share.</span>
+                <span className="fg-choice-cta" aria-hidden="true">→</span>
               </button>
-              <button className="fg-big-btn fg-join" onClick={() => setTab('join')}>
-                <span className="fg-big-icon">🔗</span>
-                <span>Join with a code</span>
+              <button className="fg-choice" onClick={() => setTab('join')}>
+                <span className="fg-choice-glow" aria-hidden="true" />
+                <span className="fg-choice-ring" aria-hidden="true">🔗</span>
+                <span className="fg-choice-title">Join with a code</span>
+                <span className="fg-choice-blurb">Paste the code or link your friend sent you.</span>
+                <span className="fg-choice-cta" aria-hidden="true">→</span>
               </button>
             </div>
           </div>
@@ -80,7 +96,10 @@ export default function FriendGameSetup({ onClose }) {
 
         {tab === 'create' && (
           <div className="fg-create-view">
-            <h2 className="fg-title">Create a game</h2>
+            <div className="fg-head">
+              <h2 className="fg-title">Create a game</h2>
+              <div className="fg-divider" aria-hidden="true"><span>♛</span></div>
+            </div>
             <div className="fg-create-grid">
               {/* LEFT: time controls */}
               <div className="fg-col">
@@ -169,10 +188,21 @@ export default function FriendGameSetup({ onClose }) {
                     onChange={(e) => setChatEnabled(e.target.checked)} />
                   Enable chat
                 </label>
-                <label className="fg-check fg-disabled" title="Coming soon">
-                  <input type="checkbox" disabled />
-                  Voice call <span className="fg-soon">(coming soon)</span>
-                </label>
+                {isGuest ? (
+                  <>
+                    <label className="fg-check fg-disabled" title={GUEST_VOICE_MSG}>
+                      <input type="checkbox" disabled />
+                      Voice call
+                    </label>
+                    <p className="fg-tc-note">🎙️ {GUEST_VOICE_MSG}</p>
+                  </>
+                ) : (
+                  <label className="fg-check">
+                    <input type="checkbox" checked={voiceEnabled}
+                      onChange={(e) => setVoiceEnabled(e.target.checked)} />
+                    Voice call
+                  </label>
+                )}
               </div>
             </div>
 
@@ -188,8 +218,12 @@ export default function FriendGameSetup({ onClose }) {
 
         {tab === 'join' && (
           <div className="fg-join-view">
-            <h2 className="fg-title">Join a game</h2>
-            <p className="fg-sub">Paste the code (or invite link) your friend sent you.</p>
+            <div className="fg-head">
+              <span className="fg-head-ring" aria-hidden="true">🔗</span>
+              <h2 className="fg-title">Join a game</h2>
+              <div className="fg-divider" aria-hidden="true"><span>♛</span></div>
+              <p className="fg-sub">Paste the code (or invite link) your friend sent you.</p>
+            </div>
             <input
               className="fg-code-input"
               value={joinCode}
@@ -199,6 +233,7 @@ export default function FriendGameSetup({ onClose }) {
               autoFocus
             />
             {error && <p className="fg-error">{error}</p>}
+            {isGuest && <p className="fg-tc-note">🎙️ {GUEST_VOICE_MSG}</p>}
             <div className="fg-create-footer">
               <button className="fg-secondary" onClick={() => setTab('home')}>← Back</button>
               <button className="fg-primary" onClick={handleJoin}>Join →</button>

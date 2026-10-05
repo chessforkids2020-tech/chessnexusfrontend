@@ -268,7 +268,6 @@ export default function GameAnalysisModal({ gameId, onClose, initialPly = 0 }) {
                   orientation="white"
                   boardWidth={boardSize}
                   lastMove={lastMove}
-                  transitionDuration={200}
                 />
               </div>
             </div>

@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../api';
 import PlayerName from '../../components/PlayerName';
 import Chessboard from '../../components/Chessboard';
+import { RACE_MOVE_MS } from '../../contexts/GamePrefsContext';
 import { useAuth } from '../../contexts/AuthContext';
 import socket from '../../socket';
 
@@ -1484,6 +1485,7 @@ export default function ArenaRace({ isAdminView = false }) {
           }}>
             <Chessboard
               key={currentPuzzle?._id}
+              transitionDuration={RACE_MOVE_MS}
               position={chess.fen()}
               onDrop={handleMove}
               orientation={userSide}
