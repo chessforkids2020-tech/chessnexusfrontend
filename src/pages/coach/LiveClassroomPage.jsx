@@ -5140,7 +5140,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     and got skipped. `alignItems: flex-start` keeps it level with
                     the top of the board instead of floating at the middle. */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-                <div style={{ position: 'relative', display: 'inline-block', lineHeight: 0 }}>
+                {/* The whiteboard toolbar floats 38px ABOVE the board; the stage is
+                    overflow:auto and the board sits at its top edge, so without this
+                    room the toolbar was clipped and the whiteboard looked dead. */}
+                <div style={{ position: 'relative', display: 'inline-block', lineHeight: 0, marginTop: isHost && wbActive ? 42 : 0 }}>
                   <Chessboard position={curFen} lastMove={lastMove} boardWidth={shownBoardW} draggable={!!iControl && !wbActive} onDrop={onDrop}
                     orientation={boardOrientation}
                     onFlip={flipBoard}
