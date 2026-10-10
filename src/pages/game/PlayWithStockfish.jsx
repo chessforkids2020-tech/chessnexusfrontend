@@ -4,6 +4,7 @@ import { Chess } from 'chess.js';
 import Chessboard, { gutterFor } from '../../components/Chessboard';
 import InlineBoardEditor from '../../components/PositionEditor/InlineBoardEditor';
 import stockfishService from '../../services/stockfishService';
+import api from '../../api';
 import './PlayWithStockfish.css';
 
 const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -36,6 +37,12 @@ const loadSaved = () => {
   } catch { return null; }
 };
 const clearSaved = () => { try { sessionStorage.removeItem(SAVE_KEY); } catch { /* ignore */ } };
+
+// Id for one game, sent with the save so a retried/duplicated POST stores it once.
+const newGameId = () => {
+  try { if (crypto?.randomUUID) return crypto.randomUUID().replace(/-/g, ''); } catch { /* fall through */ }
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+};
 
 // ── Time controls ────────────────────────────────────────────────────────────
 // base = minutes, inc = increment seconds. `null` base means unlimited (no clock
@@ -206,6 +213,12 @@ export default function PlayWithStockfish() {
   // The position the game began from — replay starts here, so custom start
   // positions rewind correctly rather than to the standard opening.
   const startFenRef = useRef(saved?.startFen || START_FEN);
+  // Server save (logged-in users): the game shows up in the dashboard's All
+  // Games tab. `serverSaved` lives in the snapshot so a reload of a finished
+  // game does not post it again (the server dedupes on gameId anyway).
+  const gameIdRef = useRef(saved?.gameId || null);
+  const startedAtRef = useRef(saved?.startedAt || null);
+  const [serverSaved, setServerSaved] = useState(!!saved?.serverSaved);
 
   // Clocks in ms. null when the time control is unlimited.
   const [whiteMs, setWhiteMs] = useState(saved?.whiteMs ?? null);
@@ -268,9 +281,10 @@ export default function PlayWithStockfish() {
         startFen: startFenRef.current,
         whiteMs: whiteMsRef.current, blackMs: blackMsRef.current,
         myColor, orientation, tcId, levelId,
+        gameId: gameIdRef.current, startedAt: startedAtRef.current, serverSaved,
       }));
     } catch { /* storage full / disabled — the game still plays, just won't resume */ }
-  }, [phase, moves, lastMove, result, myColor, orientation, tcId, levelId]);
+  }, [phase, moves, lastMove, result, myColor, orientation, tcId, levelId, serverSaved]);
 
   useEffect(() => { snapshot(); }, [snapshot]);
 
@@ -296,6 +310,37 @@ export default function PlayWithStockfish() {
     })();
     return () => { cancelled = true; };
   }, [phase]);
+
+  // Save a finished game to the account. Only real outcomes — 'Game over'
+  // (engine failure) is not a result. Guests have no account to save to.
+  useEffect(() => {
+    if (phase !== 'playing' || !result || serverSaved || !gameIdRef.current) return;
+    let token = null;
+    try { token = localStorage.getItem('authToken'); } catch { /* ignore */ }
+    if (!token) return;
+    const me = myColor === 'w' ? 'white' : 'black';
+    const opp = me === 'white' ? 'black' : 'white';
+    const outcome = result.text === 'You win!' ? `${me}_won`
+      : result.text === 'Stockfish wins' ? `${opp}_won`
+      : result.text === 'Draw' ? 'draw' : null;
+    if (!outcome) return;
+    let cancelled = false;
+    api.post('/api/user-games/stockfish', {
+      clientGameId: gameIdRef.current,
+      userColor: me,
+      level: levelId,
+      timeControl: tc.base == null ? null : { minutes: tc.base, increment: tc.inc || 0 },
+      result: outcome,
+      resultReason: result.detail || null,
+      moves,
+      startFen: startFenRef.current === START_FEN ? null : startFenRef.current,
+      startedAt: startedAtRef.current,
+    }).then(() => { if (!cancelled) setServerSaved(true); })
+      .catch(() => { /* not saved — the game itself is unaffected */ });
+    return () => { cancelled = true; };
+    // Fires when the result arrives; moves/settings are final by then.
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [phase, result, serverSaved]);
 
   const endGame = useCallback((text, detail) => {
     resultRef.current = { text, detail };
@@ -449,8 +494,11 @@ export default function PlayWithStockfish() {
     startFenRef.current = startFen;
     resultRef.current = null;
     myColorRef.current = colour === 'white' ? 'w' : 'b';
+    gameIdRef.current = newGameId();
+    startedAtRef.current = new Date().toISOString();
 
     setChess(game);
+    setServerSaved(false);
     setMyColor(colour === 'white' ? 'w' : 'b');
     setOrientation(colour);
     setMoves([]);

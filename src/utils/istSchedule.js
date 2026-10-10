@@ -66,6 +66,26 @@ export function localDayLabel(utcDow, timeUTC) {
   return occ ? DAY_NAMES[occ.getDay()] : (DAY_NAMES[utcDow] || '');
 }
 
+// How a class looks in ANOTHER timezone (e.g. a student abroad), for the coach.
+// Returns { place: "New York", abbr: "EDT", days: "Sun, Wed", time: "10:00 PM" }
+// or null for an invalid zone.
+export function zoneSchedule(utcDays, timeUTC, tz) {
+  try {
+    const dayFmt = new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'short' });
+    const timeFmt = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit' });
+    const occs = (utcDays || []).map(d => nextOccurrence(d, timeUTC)).filter(Boolean);
+    if (occs.length === 0) return null;
+    const names = [...new Set(occs.map(o => dayFmt.format(o)))]
+      .sort((a, b) => DAY_NAMES.indexOf(a) - DAY_NAMES.indexOf(b));
+    const abbr = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'short' })
+      .formatToParts(occs[0]).find(p => p.type === 'timeZoneName')?.value || '';
+    const place = String(tz).split('/').pop().replace(/_/g, ' ');
+    return { place, abbr, days: names.join(', '), time: timeFmt.format(occs[0]) };
+  } catch {
+    return null;
+  }
+}
+
 // Local occurrences of one class on a specific LOCAL calendar date.
 // `date` is a Date at local midnight of the day in question. Returns an array of
 // { at: Date, time: "h:mm AM/PM" } — usually 0 or 1 entries. Computed by scanning

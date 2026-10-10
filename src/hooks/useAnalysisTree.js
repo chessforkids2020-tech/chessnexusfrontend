@@ -114,6 +114,66 @@ export function useAnalysisTree(startFen) {
     });
   }, []);
 
+  // Replace the tree with a parsed line + sidelines ({ children: [{ san, children }] },
+  // first child = mainline), positioned at the root. Returns the new tree so the
+  // caller can see its node ids straight away.
+  const load = useCallback((fen, parsed) => {
+    const t = build(fen);
+    const nodes = { ...t.nodes };
+    const add = (parentId, kids) => {
+      for (const k of kids || []) {
+        const parent = nodes[parentId];
+        const game = new Chess(parent.fen);
+        let applied;
+        try { applied = game.move(k.san); } catch { applied = null; }
+        if (!applied) continue;
+        const id = nextId();
+        nodes[id] = {
+          id, move: { from: applied.from, to: applied.to, promotion: applied.promotion },
+          san: applied.san, from: applied.from, to: applied.to,
+          fen: game.fen(), ply: parent.ply + 1, parentId, children: [],
+          ...(k.comment ? { comment: k.comment } : {}),
+        };
+        nodes[parentId] = { ...nodes[parentId], children: [...nodes[parentId].children, id] };
+        add(id, k.children);
+      }
+    };
+    if (parsed?.comment) nodes[t.rootId] = { ...nodes[t.rootId], comment: parsed.comment };
+    add(t.rootId, parsed?.children);
+    const next = { ...t, nodes };
+    setTree(next);
+    return next;
+  }, [build]);
+
+  // Delete a node and everything after it; the board moves to its parent.
+  // Returns the new tree (or null for the root, which can't be deleted).
+  const deleteFrom = useCallback((id) => {
+    const t = treeRef.current;
+    const node = t.nodes[id];
+    if (!node || !node.parentId) return null;
+    const nodes = { ...t.nodes };
+    const drop = (nid) => { nodes[nid].children.forEach(drop); delete nodes[nid]; };
+    drop(id);
+    const parent = nodes[node.parentId];
+    nodes[parent.id] = { ...parent, children: parent.children.filter((c) => c !== id) };
+    const next = { ...t, nodes, currentId: parent.id };
+    setTree(next);
+    return next;
+  }, []);
+
+  // Set (or, with empty text, remove) the comment shown after node `id`.
+  // Returns the new tree.
+  const setComment = useCallback((id, text) => {
+    const t = treeRef.current;
+    const node = t.nodes[id];
+    if (!node) return null;
+    const { comment: _old, ...rest } = node;
+    const c = (text || '').trim();
+    const next = { ...t, nodes: { ...t.nodes, [id]: c ? { ...rest, comment: c } : rest } };
+    setTree(next);
+    return next;
+  }, []);
+
   // Step one move back along the current line (to the parent).
   const back = useCallback(() => {
     setTree((t) => {
@@ -146,6 +206,6 @@ export function useAnalysisTree(startFen) {
 
   return {
     tree, current, currentPath, hasMoves,
-    playMove, playLine, goTo, back, forward, toStart, reset,
+    playMove, playLine, goTo, back, forward, toStart, reset, load, deleteFrom, setComment,
   };
 }

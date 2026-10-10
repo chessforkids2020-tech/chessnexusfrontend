@@ -86,6 +86,7 @@ export default function ScheduleFloatingButton() {
       )}
 
       <div
+        className="schedule-fab"
         style={{
           position: 'fixed',
           bottom: 24,

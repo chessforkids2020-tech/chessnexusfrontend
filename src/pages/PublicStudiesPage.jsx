@@ -181,16 +181,6 @@ const PublicStudiesPage = () => {
       textTransform: 'capitalize',
       flexShrink: 0,
     }),
-    description: {
-      fontSize: 13,
-      color: 'var(--color-text-muted)',
-      marginBottom: 14,
-      lineHeight: 1.5,
-      display: '-webkit-box',
-      WebkitLineClamp: 2,
-      WebkitBoxOrient: 'vertical',
-      overflow: 'hidden',
-    },
     cardMeta: {
       display: 'flex',
       gap: 16,
@@ -300,9 +290,6 @@ const PublicStudiesPage = () => {
                     <div style={s.cardName}>{study.name}</div>
                     <span style={s.typeBadge(study.studyType)}>{study.studyType || 'other'}</span>
                   </div>
-                  {study.description && (
-                    <div style={s.description}>{study.description}</div>
-                  )}
                   <div style={s.cardMeta}>
                     <div style={s.metaItem}>📂 {chapterCount} chapter{chapterCount !== 1 ? 's' : ''}</div>
                     <div style={s.metaItem}>♟️ {puzzleCount} position{puzzleCount !== 1 ? 's' : ''}</div>

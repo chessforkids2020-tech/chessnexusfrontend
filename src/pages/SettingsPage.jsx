@@ -9,6 +9,7 @@ import { PIECE_THEMES, usePieceTheme } from '../contexts/PieceThemeContext';
 import AvatarStudio from '../components/AvatarStudio';
 import ProfilePanel from '../components/ProfilePanel';
 import MemberPanel from '../components/MemberPanel';
+import ChessboardDevicePanel from '../components/ChessboardDevicePanel';
 
 // Mini 4-square swatch to preview each board theme
 function BoardSwatch({ light, dark, size = 44 }) {
@@ -172,7 +173,7 @@ function GamesPanel() {
         <h2 style={h2}>🏃 Piece movement</h2>
         <p style={p}>How fast pieces glide to their square. Applies to games, puzzles and studies (races always stay fast).</p>
         <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, flex: '1 1 260px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 10, flex: '1 1 300px' }}>
             <Choice active={moveSpeed === 'slow'} onClick={() => setGamePref('moveSpeed', 'slow')} title="Slow" sub={`Easy to follow · ${MOVE_SPEEDS.slow}ms`} />
             <Choice active={moveSpeed === 'normal'} onClick={() => setGamePref('moveSpeed', 'normal')} title="Normal (default)" sub={`Smooth · ${MOVE_SPEEDS.normal}ms`} />
             <Choice active={moveSpeed === 'fast'} onClick={() => setGamePref('moveSpeed', 'fast')} title="Fast" sub={`Snappy · ${MOVE_SPEEDS.fast}ms`} />
@@ -252,6 +253,7 @@ export default function SettingsPage() {
         {/* Tabs */}
         <div style={{
           display: 'flex',
+          flexWrap: 'wrap',
           gap: 4,
           marginBottom: 28,
           borderBottom: '1px solid var(--color-border)',
@@ -279,7 +281,13 @@ export default function SettingsPage() {
           <button style={TAB_STYLE('member')} onClick={() => setActiveTab('member')}>
             💬 Member
           </button>
+          <button style={TAB_STYLE('chessboard')} onClick={() => setActiveTab('chessboard')}>
+            ♟ Chessboard
+          </button>
         </div>
+
+        {/* ── Smart chessboard pairing (?tab=chessboard) ── */}
+        {activeTab === 'chessboard' && <ChessboardDevicePanel />}
 
         {/* ── Member Tab ── */}
         {activeTab === 'member' && (

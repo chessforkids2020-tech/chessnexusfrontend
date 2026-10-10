@@ -60,6 +60,23 @@ export function AuthProvider({ children }) {
     }
   }, [user]);
 
+  // Report this browser's timezone (at most once a day per account+zone) so a
+  // coach can see the day/time their students see for each class. Key is
+  // scoped per user: coaches log into many student accounts on one browser.
+  useEffect(() => {
+    const uid = user?.id || user?._id;
+    if (!uid || user.role === 'guest') return;
+    let tz = '';
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* ignore */ }
+    if (!tz) return;
+    const key = `tzReported:${uid}`;
+    const today = new Date().toISOString().slice(0, 10);
+    try { if (localStorage.getItem(key) === `${tz}|${today}`) return; } catch { /* ignore */ }
+    api.post('/api/coach-schedule/my-timezone', { tz })
+      .then(() => { try { localStorage.setItem(key, `${tz}|${today}`); } catch { /* ignore */ } })
+      .catch(() => {});
+  }, [user?.id, user?._id, user?.role]);
+
   // Listen for new messages
   useEffect(() => {
     if (!user) return;

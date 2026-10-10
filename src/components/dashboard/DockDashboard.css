@@ -1,0 +1,193 @@
+/* ─── 5-view dashboard with a floating dock ─────────────────────────────────
+   Builds on AliveDashboard.css (same .alive scope and theme tokens). Gold is
+   --a-gold (= --color-warning) so every theme gets its own warm accent. */
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+
+.alive.docked { gap: 40px; padding-bottom: 120px; }
+.alive .serif {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.alive .dash-view { display: flex; flex-direction: column; gap: 40px; min-width: 0; }
+.alive .dash-view[hidden] { display: none; }
+
+/* ── Dock ── */
+.alive .dash-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 900;
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--color-surface) 86%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 20px 44px -12px var(--color-black-a65, rgba(0,0,0,.65)), inset 0 1px 0 var(--color-white-a04);
+  max-width: calc(100% - 24px);
+  box-sizing: border-box;
+}
+.alive .dash-dock button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 18px;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  transition: background .2s, color .2s, transform .2s;
+}
+.alive .dash-dock button:hover { background: var(--color-white-a07); color: var(--color-text); }
+.alive .dash-dock button:active { transform: scale(.96); }
+.alive .dash-dock button:focus-visible { outline: 2px solid var(--a-gold); outline-offset: 2px; }
+.alive .dash-dock .dk-ic { font-size: 17px; line-height: 1; }
+.alive .dash-dock button.on {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--a-gold) 55%, #fff), var(--a-gold));
+  color: #1e1806;
+  box-shadow: 0 8px 20px -8px var(--a-gold);
+}
+/* The app-wide Schedule button is fixed bottom-right; where the dock could
+   reach it, lift it above the dock (inline styles, hence !important). */
+@media (max-width: 760px) {
+  body.has-dash-dock .schedule-fab { bottom: 92px !important; right: 12px !important; }
+}
+@media (max-width: 600px) {
+  .alive.docked { padding-left: 16px; padding-right: 16px; padding-top: 28px; }
+  .alive .dash-dock { left: 10px; right: 10px; bottom: 10px; transform: none; justify-content: space-between; }
+  .alive .dash-dock button { min-width: 0; flex: 1; flex-direction: column; gap: 2px; padding: 5px 2px 4px; font-size: 10.5px; }
+  .alive .dash-dock .dk-ic { font-size: 16px; }
+}
+
+/* ── Headings ── */
+.alive .v-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 16px; }
+.alive .v-title { font-size: clamp(40px, 5vw, 58px); line-height: 1; margin: 10px 0 0; }
+.alive .v-sub { font-size: 15px; color: var(--color-text-muted); margin-top: 10px; }
+.alive .s-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.alive .s-title { font-size: 32px; line-height: 1.1; margin-top: 4px; }
+
+/* ── Small shared bits ── */
+.alive .d-ico {
+  width: 46px; height: 46px; border-radius: 14px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+  background: var(--a-gold-soft); border: 1px solid color-mix(in srgb, var(--a-gold) 25%, transparent);
+}
+.alive .d-bar { height: 6px; border-radius: 3px; background: var(--a-track); overflow: hidden; }
+.alive .d-bar > i {
+  display: block; height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--a-gold) 55%, #000), var(--a-gold));
+  transition: width .8s cubic-bezier(.2,.8,.2,1);
+}
+.alive .d-btn, .alive .d-btn2 {
+  display: inline-block; padding: 10px 20px; border-radius: 999px; font-weight: 700; font-size: 14px;
+  white-space: nowrap; text-decoration: none; transition: filter .2s, transform .2s, border-color .2s;
+}
+.alive .d-btn { background: var(--a-gold); color: #1e1806; }
+.alive .d-btn:hover { color: #1e1806; filter: brightness(1.1); transform: translateY(-1px); }
+.alive .d-btn2 { border: 1px solid var(--color-border); color: var(--color-text); }
+.alive .d-btn2:hover { color: var(--color-text); border-color: var(--a-gold); }
+.alive .dv-title { font-weight: 700; font-size: 16px; }
+
+/* ── Home hero ── */
+.alive .home-hero { display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }
+.alive .hh-text { flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.alive .hh-title { font-size: clamp(48px, 6vw, 76px); line-height: .98; margin: 0; }
+.alive .hh-title i { color: var(--a-gold); }
+.alive .hh-name { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.alive .hh-sub { font-size: 16px; color: var(--color-text-muted); max-width: 520px; line-height: 1.6; }
+.alive .hh-sub b { color: var(--color-text); }
+.alive .hh-id { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.alive .hh-card { flex: 1 1 340px; display: flex; justify-content: center; }
+
+.alive .mcard {
+  position: relative; overflow: hidden; box-sizing: border-box;
+  width: 100%; max-width: 420px; aspect-ratio: 1.586; padding: 26px 28px; border-radius: 22px;
+  color: #2b220c;
+  background: linear-gradient(125deg,
+    color-mix(in srgb, var(--a-gold) 45%, #fff) 0%,
+    var(--a-gold) 28%,
+    color-mix(in srgb, var(--a-gold) 35%, #fff) 48%,
+    color-mix(in srgb, var(--a-gold) 80%, #000) 70%,
+    color-mix(in srgb, var(--a-gold) 70%, #fff) 100%);
+  box-shadow: 0 30px 60px -25px var(--a-gold), inset 0 1px 0 rgba(255,255,255,.6);
+  transition: transform .4s cubic-bezier(.2,.8,.2,1);
+}
+.alive .mcard:hover { transform: rotate(-1.5deg) translateY(-4px); }
+.alive .mcard::after {
+  content: ''; position: absolute; inset: -40%; pointer-events: none;
+  background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,.5) 50%, transparent 58%);
+  animation: mc-sheen 4.5s ease-in-out 1s infinite;
+}
+@keyframes mc-sheen { 0% { transform: translateX(-60%); } 45%, 100% { transform: translateX(60%); } }
+.alive .mc-top { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-start; }
+.alive .mc-kicker { font-size: 10px; letter-spacing: .25em; font-weight: 700; opacity: .7; }
+.alive .mc-tier { font-size: 30px; margin-top: 2px; }
+.alive .mc-glyph { font-size: 30px; }
+.alive .mc-bottom {
+  position: absolute; left: 28px; right: 28px; bottom: 24px; z-index: 1;
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 12px;
+}
+.alive .mc-xp { font-size: 34px; font-weight: 800; }
+.alive .mc-name { font-size: 12px; font-weight: 600; opacity: .75; letter-spacing: .08em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.alive .mc-streak { text-align: right; font-size: 12px; font-weight: 700; opacity: .75; flex-shrink: 0; }
+
+/* ── Today's plan ── */
+.alive .plan-grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.alive .plan-card { display: flex; flex-direction: column; gap: 16px; }
+.alive .plan-card.done { border-color: color-mix(in srgb, var(--color-success) 40%, transparent); }
+.alive .plan-card.going { border-color: color-mix(in srgb, var(--a-gold) 45%, transparent); }
+.alive .pc-top { display: flex; gap: 14px; align-items: center; }
+.alive .pc-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+
+/* ── Stats row ── */
+.alive .stats-row {
+  border-top: 1px solid var(--color-border); padding-top: 30px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 30px;
+}
+.alive .big { font-size: 64px; line-height: .9; margin-top: 8px; }
+.alive .big .unit { font-size: 26px; color: var(--color-text-faint); }
+.alive .st-sub { font-size: 13px; margin-top: 6px; }
+@media (max-width: 700px) { .alive .big { font-size: 48px; } }
+
+/* ── Ratings + up next ── */
+.alive .home-split { display: flex; flex-wrap: wrap; gap: 30px; align-items: flex-start; }
+.alive .home-split > .hs-main { flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.alive .up-next { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.alive .un-row {
+  display: flex; gap: 14px; align-items: center; text-align: left; width: 100%;
+  color: var(--color-text); text-decoration: none; font: inherit; cursor: pointer; padding: 18px 20px;
+}
+.alive .un-row:hover { color: var(--color-text); }
+.alive .un-right { color: var(--a-gold); font-size: 13px; font-weight: 700; white-space: nowrap; }
+
+/* ── Next class ── */
+.alive .next-class {
+  background: linear-gradient(135deg, var(--a-gold-soft), transparent 70%), var(--color-surface);
+  border-color: color-mix(in srgb, var(--a-gold) 35%, transparent);
+}
+.alive .nc-when { font-size: 44px; line-height: 1; margin-top: 10px; }
+
+/* ── Train tiles ── */
+.alive .tile-grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.alive .tile { display: flex; flex-direction: column; gap: 14px; color: var(--color-text); text-decoration: none; }
+.alive .tile:hover { color: var(--color-text); }
+.alive .tile-cta { margin-top: auto; color: var(--a-gold); font-size: 13px; font-weight: 700; }
+.alive .tile:hover .tile-cta .arr { transform: translateX(3px); }
+
+@media (prefers-reduced-motion: reduce) {
+  .alive .mcard::after { animation: none; display: none; }
+  .alive .mcard:hover { transform: none; }
+}
+
+/* Ratings sit beside "Up next" on Home: let all five cells share one line. */
+.alive .home-split .rate { flex-basis: 110px; }

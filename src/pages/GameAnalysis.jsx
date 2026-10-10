@@ -1384,6 +1384,7 @@ export default function GameAnalysis() {
   const [quickPgn, setQuickPgn] = useState('');
   const [quickError, setQuickError] = useState(null);
   const [quickGame, setQuickGame] = useState(null); // { pgn, playerSide, moveAnalysis }
+  const [quickSide, setQuickSide] = useState('white'); // whose moves the Detailed Report scores
 
   // Board editor (set up a position by hand, then Quick Analyze it).
   const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
@@ -1666,6 +1667,35 @@ export default function GameAnalysis() {
     }
   }
 
+  // Replays a pasted PGN move by move and names the first move that can't be
+  // played, e.g. "Move 4. Qf4 is not a legal move…". Returns null if all legal.
+  function describePgnProblem(pgn) {
+    let start;
+    const fenTag = pgn.match(/\[FEN\s+"([^"]+)"\]/i);
+    try { start = new Chess(fenTag ? fenTag[1] : undefined); } catch { return null; }
+    const body = pgn
+      .replace(/\[[^\]]*\]/g, ' ')        // header tags
+      .replace(/\{[^}]*\}/g, ' ')          // {comments}
+      .replace(/;[^\n]*/g, ' ')            // ; comments
+      .replace(/\$\d+/g, ' ');             // $NAGs
+    // Drop variations (nested parentheses), innermost first.
+    let flat = body;
+    while (/\([^()]*\)/.test(flat)) flat = flat.replace(/\([^()]*\)/g, ' ');
+    const tokens = flat.split(/\s+/)
+      .map(t => t.replace(/^\d+\.(\.\.)?/, '').replace(/[!?]+$/, ''))
+      .filter(t => t && !/^(1-0|0-1|1\/2-1\/2|\*)$/.test(t));
+    for (const san of tokens) {
+      const moveNo = start.moveNumber();
+      const label = start.turn() === 'w' ? `${moveNo}. ${san}` : `${moveNo}... ${san}`;
+      let ok = false;
+      try { ok = !!start.move(san, { strict: false }); } catch { ok = false; }
+      if (!ok) {
+        return `Move ${label} is not a legal move in that position — please check the game and fix that move.`;
+      }
+    }
+    return null;
+  }
+
   // ── Quick Analyze — open the live engine board from a pasted FEN or PGN.
   // No server call, nothing saved to DB; it's the same study board as a game.
   function handleQuickAnalyze() {
@@ -1679,7 +1709,7 @@ export default function GameAnalysis() {
       let ok = true;
       try { if (c.loadPgn(pgn, { strict: false }) === false) ok = false; } catch { ok = false; }
       if (!ok || c.history().length < 1) {
-        setQuickError('Could not read that PGN. Paste a valid PGN with at least one move.');
+        setQuickError(describePgnProblem(pgn) || 'Could not read that PGN. Paste a valid PGN with at least one move.');
         return;
       }
       // Re-emit a clean PGN from the parsed moves.
@@ -1730,12 +1760,16 @@ export default function GameAnalysis() {
     setPgnError(null);
     const pgn = quickPgn.trim();
     if (!pgn) { setQuickError('Paste a PGN (with moves) to get a detailed report.'); return; }
+    // Catch an illegal move here so the user is told WHICH move is wrong
+    // instead of the server's generic "could not read that PGN".
+    const problem = describePgnProblem(pgn);
+    if (problem) { setPgnError(problem); return; }
     setPgnAnalyzing(true);
     setError(null);
     setResult(null);
     setLastAnalysis(null);
     try {
-      const res = await api.post('/api/otb-analysis/analyze-pgn', { pgn });
+      const res = await api.post('/api/otb-analysis/analyze-pgn', { pgn, playerSide: quickSide });
       const { cacheId: id, status } = res.data;
       setCacheId(id);
       setPollStatus(status);
@@ -2009,6 +2043,21 @@ export default function GameAnalysis() {
                 rows={6}
                 spellCheck={false}
               />
+              <div className="ga-otb-side-row" style={{ marginTop: 12, marginBottom: 0 }}>
+                <span className="ga-otb-side-label">Which colour did you play?</span>
+                <div className="ga-otb-side-toggle">
+                  <button
+                    type="button"
+                    className={`ga-otb-side-btn${quickSide === 'white' ? ' active' : ''}`}
+                    onClick={() => setQuickSide('white')}
+                  >♔ White</button>
+                  <button
+                    type="button"
+                    className={`ga-otb-side-btn${quickSide === 'black' ? ' active' : ''}`}
+                    onClick={() => setQuickSide('black')}
+                  >♚ Black</button>
+                </div>
+              </div>
               <div className="ga-input-row ga-analyze-row" style={{ marginTop: 14, gap: 10, flexWrap: 'wrap' }}>
                 <button
                   type="button"

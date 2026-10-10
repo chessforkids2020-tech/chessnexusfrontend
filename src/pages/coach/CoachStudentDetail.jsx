@@ -5,6 +5,7 @@ import GameReplay from '../../components/GameReplay';
 import { viewOpenings, viewComparison } from '../../lib/streakReportView';
 import UserAvatar from '../../components/UserAvatar';
 import ArenaGameReplayModal from '../../components/ArenaGameReplayModal';
+import InfoTip from '../../components/InfoTip';
 // Reuse the SAME detailed report cards the student's "Analyze My Games" page
 // renders, so the coach sees an identical deep report (no drift).
 import {
@@ -493,122 +494,123 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
             )}
           </p>
 
-          {/* Share a private, read-only progress report with this student's parent.
-              Two actions: copy the private link, or open the report in a new tab.
-              The token is unguessable so the link can't be derived from a name. */}
-          <div className="csd-share-row">
-            <button
-              type="button"
-              className="csd-share-progress"
-              title="Copy a private progress link to send to this student's parent"
-              onClick={copyReportLink}
-            >
-              📋 Copy progress link
-            </button>
-            <button
-              type="button"
-              className="csd-share-progress csd-share-open"
-              title="Open the parent's progress report in a new tab"
-              onClick={openReport}
-            >
-              ↗ Open report
-            </button>
-          </div>
-          {shareMsg && <div className="csd-share-msg">{shareMsg}</div>}
         </div>
-        <div className="csd-rating">
-          <span>Puzzle rating</span>
-          <strong>{fmtRating(student?.liveRating)}</strong>
+        {/* Every rating in one place, as compact chips. Empty ones are left
+            out rather than shown as a "—" card. */}
+        <div className="csd-hratings">
+          {[
+            ['🧩 Puzzle', student?.liveRating, true],
+            ['♟ Bullet', gameRatings?.bullet],
+            ['⚡ Blitz', gameRatings?.blitz],
+            ['⏱ Rapid', gameRatings?.rapid],
+            ['♚ Classical', gameRatings?.classical],
+          ].filter(([, v, always]) => always || v != null).map(([label, v, main]) => (
+            <div key={label} className={`csd-hrating${main ? ' is-main' : ''}`}>
+              <span>{label}</span>
+              <strong>{fmtRating(v)}</strong>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* ── Private notes ─────────────── */}
-      <div className="coach-section" style={{ marginTop: 12 }}>
-        <div className="coach-section-head">
-          <h2>📝 Notes</h2>
-          <button className="btn-ghost" onClick={saveNotes} disabled={savingNotes}>
-            {savingNotes ? 'Saving…' : 'Save'}{notesSaved && ` · ${notesSaved}`}
-          </button>
-        </div>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          maxLength={1000}
-          placeholder="Private notes about this student (only you see these)…"
-          style={{ width: '100%', minHeight: 70, resize: 'vertical', boxSizing: 'border-box', padding: 10, borderRadius: 'var(--radius-md)', border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.04)', color: '#e7eaf0', fontSize: 14 }}
-        />
-      </div>
+      <div className="csd-layout">
+        {/* ── Coach tools column (right on desktop, after the progress on phones) ── */}
+        <aside className="csd-side">
+          <div className="csd-card">
+            <div className="csd-card-head">
+              <h2>📝 Notes<InfoTip>Private — only you see these notes. The student and parents never do.</InfoTip></h2>
+            </div>
+            <textarea
+              className="csd-textarea"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              maxLength={1000}
+              rows={4}
+              placeholder="Private notes about this student…"
+            />
+            <div className="csd-card-foot">
+              <span className="csd-muted">{notesSaved}</span>
+              <button className="btn-ghost csd-save" onClick={saveNotes} disabled={savingNotes}>
+                {savingNotes ? 'Saving…' : 'Save'}
+              </button>
+            </div>
+          </div>
 
-      {/* ── Note for the parent ──────────────────────────────────────────
-          Sits directly under the private notes on purpose, and is styled
-          differently, because the two are one careless click apart: the box
-          above is only ever seen by the coach, this one is published to
-          anyone holding the report link. The heading, the border colour and
-          the placeholder all say so — a coach must never have to remember
-          which box they are typing in. */}
-      <div className="coach-section coach-parent-note" style={{ marginTop: 12 }}>
-        <div className="coach-section-head">
-          <h2>💬 Note for the parent</h2>
-          <button className="btn-ghost" onClick={saveReportNote} disabled={savingReportNote}>
-            {savingReportNote ? 'Saving…' : 'Save'}{reportNoteSaved && ` · ${reportNoteSaved}`}
-          </button>
-        </div>
-        <p className="coach-parent-note-hint">
-          This appears on the progress report you share with parents. Write it
-          for someone who may not play chess.
-        </p>
-        <textarea
-          value={reportNote}
-          onChange={(e) => setReportNote(e.target.value)}
-          maxLength={1500}
-          placeholder="e.g. Aarav has worked hard this month and his tactics have improved a lot. He needs to slow down in longer games — we are working on that."
-          style={{ width: '100%', minHeight: 90, resize: 'vertical', boxSizing: 'border-box', padding: 10, borderRadius: 'var(--radius-md)', border: '1px solid var(--color-accent-a30)', background: 'var(--color-accent-a06)', color: '#e7eaf0', fontSize: 14 }}
-        />
-        <div className="coach-parent-note-foot">
-          {reportNote.length}/1500
-          {reportNoteAt && ` · last updated ${new Date(reportNoteAt).toLocaleDateString()}`}
-        </div>
-      </div>
+          {/* ── Parent report ──────────────────────────────────────────────
+              The share buttons and the note that appears ON that report live in
+              one card. Styled differently from the private notes above on
+              purpose: this text is published to anyone holding the link. */}
+          <div className="csd-card coach-parent-note">
+            <div className="csd-card-head">
+              <h2>💬 Parent report<InfoTip>
+                Copy a private link to this student's progress report and send it to
+                the parent. The note below is printed on that report — write it for
+                someone who may not play chess.
+              </InfoTip></h2>
+            </div>
+            <div className="csd-share-row">
+              <button
+                type="button"
+                className="csd-share-progress"
+                title="Copy a private progress link to send to this student's parent"
+                onClick={copyReportLink}
+              >
+                📋 Copy link
+              </button>
+              <button
+                type="button"
+                className="csd-share-progress csd-share-open"
+                title="Open the parent's progress report in a new tab"
+                onClick={openReport}
+              >
+                ↗ Open report
+              </button>
+            </div>
+            {shareMsg && <div className="csd-share-msg">{shareMsg}</div>}
+            <textarea
+              className="csd-textarea csd-textarea--parent"
+              value={reportNote}
+              onChange={(e) => setReportNote(e.target.value)}
+              maxLength={1500}
+              rows={5}
+              placeholder="e.g. Aarav has worked hard this month and his tactics have improved a lot. He needs to slow down in longer games — we are working on that."
+            />
+            <div className="csd-card-foot">
+              <span className="coach-parent-note-foot">
+                {reportNoteSaved || <>
+                  {reportNote.length}/1500
+                  {reportNoteAt && ` · updated ${new Date(reportNoteAt).toLocaleDateString()}`}
+                </>}
+              </span>
+              <button className="btn-ghost csd-save" onClick={saveReportNote} disabled={savingReportNote}>
+                {savingReportNote ? 'Saving…' : 'Save'}
+              </button>
+            </div>
+          </div>
+        </aside>
 
-      {/* ── Game ratings (Bullet / Blitz / Rapid / Classical) ─────── */}
-      {gameRatings && (
-        <div className="coach-stat-row">
-          <div className="coach-stat-card">
-            <div className="stat-label">♟ Bullet</div>
-            <div className="stat-value">{fmtRating(gameRatings.bullet)}</div>
-          </div>
-          <div className="coach-stat-card">
-            <div className="stat-label">⚡ Blitz</div>
-            <div className="stat-value">{fmtRating(gameRatings.blitz)}</div>
-          </div>
-          <div className="coach-stat-card">
-            <div className="stat-label">⏱ Rapid</div>
-            <div className="stat-value">{fmtRating(gameRatings.rapid)}</div>
-          </div>
-          <div className="coach-stat-card">
-            <div className="stat-label">♚ Classical</div>
-            <div className="stat-value">{fmtRating(gameRatings.classical)}</div>
-          </div>
+        <div className="csd-main">
+      {/* ── Summary stats (last 30 days) ─────────── */}
+      <div className="csd-stats">
+        <div className="csd-stat">
+          <span>Puzzles solved</span>
+          <strong>{fmt(totals.puzzlesSolved)}</strong>
+          <em>last 30 days</em>
         </div>
-      )}
-
-      {/* ── Summary stats ─────────── */}
-      <div className="coach-stat-row">
-        <div className="coach-stat-card">
-          <div className="stat-label">Puzzles solved (30d)</div>
-          <div className="stat-value">{fmt(totals.puzzlesSolved)}</div>
+        <div className="csd-stat">
+          <span>Avg accuracy</span>
+          <strong>{totals.avgAccuracy != null ? Math.round(totals.avgAccuracy) + '%' : '—'}</strong>
+          <em>last 30 days</em>
         </div>
-        <div className="coach-stat-card">
-          <div className="stat-label">Avg accuracy (30d)</div>
-          <div className="stat-value">{totals.avgAccuracy != null ? Math.round(totals.avgAccuracy) + '%' : '—'}</div>
+        <div className="csd-stat">
+          <span>Active days</span>
+          <strong>{totals.activeDays || 0}<small> / 30</small></strong>
+          <em>last 30 days</em>
         </div>
-        <div className="coach-stat-card">
-          <div className="stat-label">Active days</div>
-          <div className="stat-value">{totals.activeDays || 0}<span className="stat-cap">/ 30</span></div>
-        </div>
-        <div className="coach-stat-card">
-          <div className="stat-label">Best race score</div>
-          <div className="stat-value">{fmt(student?.highestArenaRaceScore)}</div>
+        <div className="csd-stat">
+          <span>Best race score</span>
+          <strong>{fmt(student?.highestArenaRaceScore)}</strong>
+          <em>all time</em>
         </div>
       </div>
 
@@ -620,7 +622,10 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       {(ratings?.lichess || ratings?.chesscom) && (
         <div className="coach-section">
           <div className="coach-section-head">
-            <h2>📈 Rating over recent games</h2>
+            <h2>📈 Rating over recent games<InfoTip>
+              Built from this student's most recent games on each site, so it shows
+              the current trend rather than their whole history.
+            </InfoTip></h2>
           </div>
           <div className="csd-rating-grid">
             {ratings.lichess && (
@@ -640,10 +645,6 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
               />
             )}
           </div>
-          <p className="csd-chart-desc" style={{ marginTop: 10 }}>
-            Built from this student's most recent games on each site, so it shows the
-            current trend rather than their whole history.
-          </p>
         </div>
       )}
 
@@ -654,7 +655,11 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       {streakReport?.payload && (
         <div className="coach-section">
           <div className="coach-section-head">
-            <h2>🔥 Practice report</h2>
+            <h2>🔥 Practice report<InfoTip>
+              The student earns this report by practising several days in a row. It is
+              built from their own games: accuracy by phase (b = blunders, m = mistakes,
+              i = inaccuracies), how they defend, and the study plan they were given.
+            </InfoTip></h2>
             <span className="csd-muted" style={{ fontSize: 12.5 }}>
               {fmtDate(streakReport.periodStart)} – {fmtDate(streakReport.periodEnd)} ·
               {' '}{streakReport.milestoneDay}-day streak ·
@@ -765,7 +770,15 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
       {/* ── Game analysis (deep Stockfish report) ───── */}
       <div className="coach-section">
         <div className="coach-section-head csd-analyze-head">
-          <h2>🔎 Game analysis</h2>
+          <h2>🔎 Game analysis<InfoTip>
+            Runs a deep Stockfish review of {student?.displayName || student?.username || 'the student'}'s
+            last 25 games on the platform you pick — accuracy by phase, blunders, playstyle and
+            recurring patterns. Each platform is analysed separately; press the same button again
+            to re-run. Results are kept for 24 hours.
+            {!student?.lichessUsername && !student?.chessComUsername && (
+              <> Lichess and Chess.com buttons appear once the student saves those usernames in their profile.</>
+            )}
+          </InfoTip></h2>
           <div className="csd-analyze-actions">
             {/* One button per platform. Lichess and Chess.com only appear when
                 the student has actually saved that username — offering a button
@@ -798,16 +811,6 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
           </div>
         </div>
 
-        <p className="csd-analyze-hint">
-          Runs a deep Stockfish review of {student?.displayName || student?.username || 'the student'}'s
-          last 25 games on the platform you pick — accuracy by phase, blunders, playstyle and
-          recurring patterns. Each platform is analysed separately; press the same button again to
-          re-run. Results are cached for 24 hours.
-          {!student?.lichessUsername && !student?.chessComUsername && (
-            <> Lichess and Chess.com appear here once the student saves those usernames in their profile.</>
-          )}
-        </p>
-
         {analyzeErr && <div className="coach-error" style={{ marginTop: 8 }}>⚠️ {analyzeErr}</div>}
 
         {analyzing && (
@@ -825,16 +828,18 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
         {analysis && !analyzing && <AnalysisReport result={analysis} />}
 
         {!analysis && !analyzing && !analyzeErr && (
-          <div className="coach-empty">No analysis yet. Click <strong>Analyze last 25 games</strong> above.</div>
+          <div className="coach-empty">No analysis yet — pick a platform above.</div>
         )}
       </div>
 
       {/* ── Daily activity chart ───── */}
       <div className="coach-section">
         <div className="coach-section-head">
-          <h2>⏱️ Time on app (last 30 days)</h2>
+          <h2>⏱️ Time on app (last 30 days)<InfoTip>
+            Minutes {student?.displayName || student?.username || 'the student'} spent practising
+            each day. A higher line means more time that day; dots mark the days they practised.
+          </InfoTip></h2>
         </div>
-        <p className="csd-chart-desc">Minutes {student?.displayName || student?.username || 'the student'} spent practising each day. Higher line = more time that day.</p>
         {activity.length === 0 ? (
           <div className="coach-empty">No activity recorded yet.</div>
         ) : (() => {
@@ -984,9 +989,6 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
 
         {/* ── Arena tournament games ─── */}
         {activityTab === 'arena' && (<>
-          {arenaGames.length > 0 && (
-            <div className="csd-tab-hint">Tap ▶ Watch to replay a game</div>
-          )}
           {arenaGames.length === 0 ? (
           <div className="coach-empty">No arena games in the last 30 days.</div>
         ) : (
@@ -1127,6 +1129,8 @@ export default function CoachStudentDetail({ studentLinkId: propLinkId, onBack, 
         )}
         </>)}
       </div>
+        </div>{/* /csd-main */}
+      </div>{/* /csd-layout */}
 
       {arenaGamePopup && (
         <ArenaGameReplayModal
@@ -1429,9 +1433,12 @@ function AnalysisReport({ result }) {
     <div className="csd-analysis">
       {lowSample && (
         <div className="csd-lowsample">
-          ⚠️ Only {gamesN} game{gamesN === 1 ? '' : 's'} ({movesAnalyzed} of this player's moves) could be analyzed —
-          not enough to judge skill reliably. Treat accuracy, cp-loss and the playstyle below as rough indicators,
-          not a true rating. Ask the student to play a few more arena games, then re-analyze.
+          ⚠️ Only {gamesN} game{gamesN === 1 ? '' : 's'} analyzed — results are rough.
+          <InfoTip>
+            {movesAnalyzed} of this player's moves could be analyzed — not enough to judge skill
+            reliably. Treat accuracy, cp-loss and playstyle as rough indicators, not a true rating.
+            Ask the student to play a few more games, then re-analyze.
+          </InfoTip>
         </div>
       )}
 
@@ -1461,7 +1468,7 @@ function AnalysisReport({ result }) {
         </div>
         {result.capsScore?.avgCpLoss != null && (
           <div className="csd-an-card">
-            <span className="csd-an-label">Avg cp lost / move</span>
+            <span className="csd-an-label">Avg cp lost / move<InfoTip>Centipawns lost per move compared with Stockfish's best move. Lower is better — strong players lose under 30.</InfoTip></span>
             <span className="csd-an-val">{result.capsScore.avgCpLoss}</span>
           </div>
         )}
@@ -1522,8 +1529,7 @@ function AnalysisReport({ result }) {
       {/* Per-game breakdown + move-by-move replay */}
       {result.games && result.games.length > 0 && (
         <>
-          <h3 className="ga-section-title">📋 Per-Game Breakdown</h3>
-          <p className="ga-section-desc">Click a game to replay it move-by-move with full analysis.</p>
+          <h3 className="ga-section-title">📋 Per-Game Breakdown<InfoTip>Click a game to replay it move by move with full analysis.</InfoTip></h3>
           <GameBreakdownTable games={result.games} />
           <div className="ga-game-btns">
             {result.games.map((g, i) => (

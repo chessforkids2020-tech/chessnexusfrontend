@@ -28,6 +28,32 @@ export default function MyStudiesPage() {
   const [importErr, setImportErr] = useState('');
   const [importOk, setImportOk] = useState('');
 
+  // ── New study (name + private/public; Chapter 1 is made for you) ──
+  const [newOpen, setNewOpen] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newPublic, setNewPublic] = useState(false);
+  const [newType, setNewType] = useState('basics');
+  const [newBusy, setNewBusy] = useState(false);
+  const [newErr, setNewErr] = useState('');
+
+  const openNewStudy = () => {
+    setNewName(''); setNewPublic(false); setNewType('basics'); setNewErr(''); setNewOpen(true);
+  };
+
+  const createStudy = async () => {
+    if (!newName.trim()) { setNewErr('Give your study a name'); return; }
+    setNewErr(''); setNewBusy(true);
+    try {
+      const s = await api.post('/api/user-studies', { name: newName.trim(), studyType: newType, isPublic: newPublic });
+      const c = await api.post(`/api/user-studies/${s.data._id}/chapters`, { name: 'Chapter 1' });
+      // Straight into the empty chapter, where "Create First Position" waits.
+      navigate(`/my-studies/${s.data._id}/chapter/${c.data.chapter._id}`);
+    } catch (e) {
+      setNewErr(e.response?.data?.error || 'Could not create the study.');
+      setNewBusy(false);
+    }
+  };
+
   const loadStudies = () => api.get('/api/user-studies/mine')
     .then(res => setStudies(res.data || []))
     .catch(() => setError('Failed to load your studies'))
@@ -99,8 +125,75 @@ export default function MyStudiesPage() {
             >
               + Add Position
             </button>
+            <button
+              onClick={openNewStudy}
+              style={{ padding: '12px 22px', background: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent))', border: 'none', borderRadius: 'var(--radius-lg)', color: '#04211d', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
+            >
+              + New Study
+            </button>
           </div>
         </div>
+
+        {/* New-study modal */}
+        {newOpen && (
+          <div
+            onClick={() => !newBusy && setNewOpen(false)}
+            style={{ position: 'fixed', inset: 0, background: 'rgba(3,7,12,0.72)', backdropFilter: 'blur(3px)', display: 'grid', placeItems: 'center', zIndex: 9500, padding: 16 }}
+          >
+            <div onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 420, background: '#0f1520', border: '1px solid rgba(99,102,241,0.35)', borderRadius: 'var(--radius-xl)', padding: 22 }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--color-accent-2)', marginBottom: 6 }}>📚 New study</div>
+              <div style={{ fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6, marginBottom: 16 }}>
+                We'll make <b>Chapter 1</b> for you. Add positions, then just play the moves on the board — it's saved automatically.
+              </div>
+              <input
+                autoFocus
+                value={newName}
+                onChange={e => setNewName(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !newBusy) createStudy(); }}
+                placeholder="Study name (e.g. Mate in 2 for beginners)"
+                style={{ width: '100%', boxSizing: 'border-box', padding: '11px 13px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, marginBottom: 12 }}
+              />
+              <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+                {[[false, '🔒 Private', 'Only you'], [true, '🌐 Public', 'Anyone can study it']].map(([pub, label, hint]) => {
+                  const on = newPublic === pub;
+                  return (
+                    <button
+                      key={label}
+                      onClick={() => setNewPublic(pub)}
+                      style={{ flex: 1, padding: '9px 6px', borderRadius: 'var(--radius-md)', border: `1px solid ${on ? 'var(--color-accent-2)' : 'var(--color-white-a10)'}`, background: on ? 'rgba(99,102,241,0.18)' : 'transparent', color: on ? 'var(--color-accent-2)' : 'var(--color-text-faint)', cursor: 'pointer', fontSize: 13, fontWeight: on ? 700 : 500 }}
+                    >{label}<div style={{ fontSize: 10.5, fontWeight: 400, opacity: 0.8 }}>{hint}</div></button>
+                  );
+                })}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--color-text-faint)', marginBottom: 14 }}>
+                Category:
+                {[['basics', '📗 Basics'], ['positional', '📘 Positional']].map(([t, label]) => (
+                  <button
+                    key={t}
+                    onClick={() => setNewType(t)}
+                    style={{ padding: '3px 10px', borderRadius: 999, border: `1px solid ${newType === t ? 'var(--color-warning)' : 'var(--color-white-a10)'}`, background: newType === t ? 'var(--color-warning-a12)' : 'transparent', color: newType === t ? 'var(--color-warning)' : 'var(--color-text-faint)', cursor: 'pointer', fontSize: 11.5, fontWeight: 600 }}
+                  >{label}</button>
+                ))}
+              </div>
+              {newErr && <div style={{ color: 'var(--color-danger)', fontSize: 13, marginBottom: 10 }}>{newErr}</div>}
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button
+                  onClick={createStudy}
+                  disabled={newBusy}
+                  style={{ flex: 1, padding: '11px', borderRadius: 'var(--radius-md)', border: 'none', background: 'linear-gradient(135deg,var(--color-accent),var(--color-accent-2))', color: '#04211d', fontWeight: 800, fontSize: 14, cursor: newBusy ? 'default' : 'pointer', opacity: newBusy ? 0.6 : 1 }}
+                >
+                  {newBusy ? 'Creating…' : 'Create study'}
+                </button>
+                <button
+                  onClick={() => !newBusy && setNewOpen(false)}
+                  style={{ padding: '11px 18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a04)', color: 'var(--color-text)', fontSize: 14, cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Import-from-Lichess modal */}
         {importOpen && (
@@ -176,11 +269,16 @@ export default function MyStudiesPage() {
               {filter === 'all' ? 'No studies yet' : `No ${filter} studies`}
             </div>
             <div style={{ color: 'var(--color-text-faint)', marginBottom: 24, fontSize: 14 }}>
-              Create a position and save it to a Private or Public Study to organise and play through your positions.
+              Start a study, add positions, and play the solution on the board — it's recorded for you.
             </div>
-            <button onClick={() => navigate('/create-position')} style={{ padding: '14px 32px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 'var(--radius-lg)', color: 'var(--color-accent-2)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
-              + Create Position
-            </button>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button onClick={openNewStudy} style={{ padding: '14px 32px', background: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent))', border: 'none', borderRadius: 'var(--radius-lg)', color: '#04211d', fontSize: 15, fontWeight: 800, cursor: 'pointer' }}>
+                + New Study
+              </button>
+              <button onClick={() => navigate('/create-position')} style={{ padding: '14px 32px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 'var(--radius-lg)', color: 'var(--color-accent-2)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+                + Create Position
+              </button>
+            </div>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>

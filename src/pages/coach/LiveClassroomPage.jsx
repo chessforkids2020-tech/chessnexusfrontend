@@ -21,7 +21,7 @@ import ClassOpeningExplorer from '../../components/coach/ClassOpeningExplorer';
 import { copyText } from '../../utils/clipboard';
 import { renderFrame } from '../../lib/videoEffects';
 import CoachArenaLive from './CoachArenaLive';
-import WhiteboardOverlay from '../../components/coach/WhiteboardOverlay';
+import WhiteboardOverlay, { wbToolbarSpace } from '../../components/coach/WhiteboardOverlay';
 import VideoDebugPanel from '../../components/coach/VideoDebugPanel';
 import { createSampler, collectStudentReport } from '../../lib/videoDebug';
 
@@ -3220,6 +3220,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     } catch { broadcastPuzzleStatus('none'); }
   };
 
+  // Solved = the line ran out, or it ended early in a mate (status is set then too).
+  const puzzleDone = !!puzzle && (puzzleStatus === 'solved' || puzzleStep >= (puzzle.solution?.length || 0));
+
   // Exit puzzle mode back to free study.
   const exitPuzzle = () => { setPuzzle(null); setPuzzleMode(null); broadcastPuzzleStatus(''); setPuzzleStep(0); };
 
@@ -3238,8 +3241,11 @@ export default function LiveClassroomPage({ mode = 'host' }) {
     try { mv = c.move({ from, to, promotion: promotion || 'q' }); } catch { return false; }
     if (!mv) return false;
 
-    // Puzzle checking (only when a puzzle is loaded and we have its solution).
-    if (puzzle && puzzle.solution && puzzle.solution.length) {
+    // Puzzle checking (only while a puzzle is loaded and still unsolved). Once it is
+    // solved the board is a free study board, like Healthy Mix: without this the
+    // solution was exhausted, every move compared against `undefined`, and the
+    // class could not explore the final position at all.
+    if (puzzle && puzzle.solution && puzzle.solution.length && !puzzleDone) {
       const expected = puzzle.solution[puzzleStep];
       const isRightMove = normSan(mv.san) === normSan(expected) || c.isCheckmate();
       if (!isRightMove) {
@@ -4267,11 +4273,31 @@ export default function LiveClassroomPage({ mode = 'host' }) {
   // anyone who mis-clicked could take it. The reason for the auto-redirect —
   // they cannot remain in a class that no longer exists — simply doesn't apply
   // to a class that is still running. They leave via the buttons instead.
+  //
+  // WHICH portal: My Coach hides the admin coach (its students use the Student
+  // Portal, /attendance), so an admin-coached student sent to /my-coach hit
+  // "No coach linked yet" + the join-a-coach form. Same rule as the dashboard's
+  // Coach button: any private coach → /my-coach; admin coach only → /attendance.
+  const [studentHome, setStudentHome] = useState('/my-coach');
+  useEffect(() => {
+    if (phase !== 'ended' || isHost) return;
+    let alive = true;
+    api.get('/api/coach-attendance/my/coaches')
+      .then(r => {
+        const list = Array.isArray(r.data) ? r.data : [];
+        if (alive && !list.some(c => !c.isAdmin) && list.some(c => c.isAdmin)) setStudentHome('/attendance');
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [phase, isHost]);
+  const studentHomeLabel = studentHome === '/attendance' ? 'My Classes' : 'My Coach';
+
   useEffect(() => {
     if (phase !== 'ended' || isHost || leftByChoice) return;
-    const t = setTimeout(() => nav('/my-coach'), 3000);
+    // replace: Back from the portal must not return to the finished classroom.
+    const t = setTimeout(() => nav(studentHome, { replace: true }), 3000);
     return () => clearTimeout(t);
-  }, [phase, isHost, leftByChoice, nav]);
+  }, [phase, isHost, leftByChoice, nav, studentHome]);
 
   // ── Render ───────────────────────────────────────────────────────────────────
   if (phase === 'loading') return <div style={s.center}>Loading classroom…</div>;
@@ -4301,9 +4327,9 @@ export default function LiveClassroomPage({ mode = 'host' }) {
           {/* Only the auto-redirect case promises a redirect — see the effect
               above, which skips it entirely when the student left by choice. */}
           {!leftByChoice && (
-            <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.7)', margin: '0 0 14px' }}>Taking you back to My Coach…</p>
+            <p style={{ fontSize: 14, color: 'rgba(226,232,240,0.7)', margin: '0 0 14px' }}>Taking you back to {studentHomeLabel}…</p>
           )}
-          <button style={s.ghost} onClick={() => nav('/my-coach')}>Go to My Coach now</button>
+          <button style={s.ghost} onClick={() => nav(studentHome, { replace: true })}>Go to {studentHomeLabel} now</button>
         </>}
   </div></div>;
   if (phase === 'waiting') return <WaitingRoom note={note} user={user} joinCode={mode === 'join' ? params.joinCode : null} />;
@@ -5140,10 +5166,10 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                     and got skipped. `alignItems: flex-start` keeps it level with
                     the top of the board instead of floating at the middle. */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-                {/* The whiteboard toolbar floats 38px ABOVE the board; the stage is
+                {/* The whiteboard toolbar floats just ABOVE the board; the stage is
                     overflow:auto and the board sits at its top edge, so without this
                     room the toolbar was clipped and the whiteboard looked dead. */}
-                <div style={{ position: 'relative', display: 'inline-block', lineHeight: 0, marginTop: isHost && wbActive ? 42 : 0 }}>
+                <div style={{ position: 'relative', display: 'inline-block', lineHeight: 0, marginTop: isHost && wbActive ? wbToolbarSpace(shownBoardW) : 0 }}>
                   <Chessboard position={curFen} lastMove={lastMove} boardWidth={shownBoardW} draggable={!!iControl && !wbActive} onDrop={onDrop}
                     orientation={boardOrientation}
                     onFlip={flipBoard}
@@ -5155,7 +5181,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   />
                   <WhiteboardOverlay
                     width={shownBoardW} height={shownBoardW}
-                    isHost={isHost} active={wbActive} strokes={wbStrokes} texts={wbTexts}
+                    isHost={isHost} orientation={boardOrientation} active={wbActive} strokes={wbStrokes} texts={wbTexts}
                     onUpdate={onWhiteboardUpdate}
                   />
                 </div>
@@ -5771,7 +5797,7 @@ export default function LiveClassroomPage({ mode = 'host' }) {
                   <div style={s.puzBar}>
                     <span style={{ fontSize: 12.5, fontWeight: 700,
                       color: puzzleStatus === 'wrong' ? '#fca5a5' : puzzleStatus === 'solved' ? '#6ee7b7' : puzzleStatus === 'correct' ? '#67e8f9' : '#9ca3af' }}>
-                      {puzzleStatus === 'wrong' ? '✗ Try again' : puzzleStatus === 'solved' ? '✓ Solved!' : puzzleStatus === 'correct' ? '✓ Keep going' : '🧩 Best move?'}
+                      {puzzleStatus === 'wrong' ? '✗ Try again' : puzzleDone ? '✓ Solved! Board is free — explore any move' : puzzleStatus === 'correct' ? '✓ Keep going' : '🧩 Best move?'}
                     </span>
                     <button style={{ ...s.loadBtn, flex: '0 0 auto', marginLeft: 'auto' }} onClick={() => loadPuzzle(puzzleMode)}>Next ▶</button>
                     <button style={s.ghostSm} onClick={exitPuzzle}>Exit</button>

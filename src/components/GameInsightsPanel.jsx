@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Chess } from 'chess.js';
 import Chessboard from './Chessboard';
@@ -43,6 +44,22 @@ export default function GameInsightsPanel() {
   const [explainText, setExplainText] = useState('');     // current explanation shown
   const [explainAI, setExplainAI] = useState(false);      // is it the AI one?
   const [explaining, setExplaining] = useState(false);
+
+  // Modal board fills the screen. 90 = overlay padding (2×20) + modal padding
+  // (2×24) + border. Desktop also leaves room for the 260px side column + gap
+  // and the coordinate gutter; the nav lives in that column, so the board
+  // gets the full height.
+  const fitBoard = () => {
+    const w = window.innerWidth, h = window.innerHeight;
+    if (w <= 600) return Math.max(240, w - 90);
+    return Math.max(280, Math.min(680, h - 90 - 28, w - 90 - 24 - 260 - 28));
+  };
+  const [modalBoard, setModalBoard] = useState(fitBoard);
+  useEffect(() => {
+    const onResize = () => setModalBoard(fitBoard());
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const loadAll = async () => {
     try {
@@ -375,17 +392,23 @@ export default function GameInsightsPanel() {
         </>
       )}
 
-      {/* Solving modal */}
-      {active && (
+      {/* Solving modal — portalled to <body> so it sits above the dashboard's
+          floating dock and Schedule button (a parent's stacking context would
+          otherwise cap it underneath them). */}
+      {active && createPortal(
         <div className="gip-modal-overlay" onClick={closePuzzle}>
           <div className="gip-modal" onClick={(e) => e.stopPropagation()}>
             <button className="gip-modal-close" onClick={closePuzzle}>✕</button>
             <div className="gip-modal-body">
               <div className="gip-modal-board">
-                <Chessboard position={fen} boardWidth={420} draggable={feedback !== 'correct'}
+                <Chessboard position={fen} boardWidth={modalBoard} draggable={feedback !== 'correct'}
                   onDrop={handleDrop} orientation={active.sideToMove} />
               </div>
+              {/* Side column: text scrolls, nav stays pinned to its bottom so
+                  the panel is only as tall as the board (bigger board). */}
               <div className="gip-modal-side">
+               <div className="gip-modal-side-inner">
+               <div className="gip-modal-side-main">
                 <h3>{themeLabel(active.theme)}</h3>
                 <p className="gip-modal-context">
                   {active.opponentName ? `vs ${active.opponentName} · ` : ''}move {active.moveNumber}
@@ -437,14 +460,12 @@ export default function GameInsightsPanel() {
                     </p>
                   </div>
                 )}
-              </div>
-            </div>
+               </div>
 
-            {/* Navigation sits on the MODAL, not inside the right-hand column:
-                as a last child of .gip-modal-side it landed below the
-                explanation and solution line and fell past the bottom of the
-                panel, so students never found it. Always rendered — with a
-                single moment the arrows are simply disabled. */}
+            {/* Navigation is pinned OUTSIDE the scrolling text (it once sat
+                after the solution line and fell past the bottom of the panel,
+                so students never found it). Always rendered — with a single
+                moment the arrows are simply disabled. */}
             <div className="gip-nav">
               <button
                 className="gip-nav-btn"
@@ -459,10 +480,14 @@ export default function GameInsightsPanel() {
                 className="gip-nav-btn gip-nav-next"
                 onClick={() => nextPuzzle ? goToPuzzle(nextPuzzle) : closePuzzle()}
                 aria-label={nextPuzzle ? 'Next moment' : 'Finish'}
-              >{nextPuzzle ? 'Next moment →' : 'Done'}</button>
+              >{nextPuzzle ? 'Next →' : 'Done'}</button>
+            </div>
+               </div>
+              </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

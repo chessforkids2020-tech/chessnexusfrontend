@@ -18,6 +18,27 @@ import {
 } from 'chart.js';
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend, Filler);
 
+function assignmentIcon(type = '') {
+  if (/puzzle|tactic/.test(type)) return '🧩';
+  if (/endgame/.test(type)) return '♜';
+  if (/game|review|blunder/.test(type)) return '♟';
+  if (/study|course|lesson/.test(type)) return '📚';
+  if (/opening|repertoire/.test(type)) return '📖';
+  return '📝';
+}
+
+// "Today" / "Yesterday" / "3 days ago", then a short date.
+function relativeDay(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  const start = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const days = Math.round((start(new Date()) - start(d)) / 864e5);
+  if (days <= 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  if (days < 7) return `${days} days ago`;
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
+
 // ── Pure helpers for chart config ─────────────────────────────────────
 function buildChartData(data) {
   const labels = data.map(d => {
@@ -385,18 +406,23 @@ export default function CoachDashboard() {
         </div>
       )}
       <div className="coach-dash-header">
-        <div>
-          <h1>
-            Welcome Coach, {summary?.coachProfile?.coachName || 'Coach'} 👋
-            {summary?.coachProfile?.verified && (
-              <span className="coach-verified-badge" title="Verified by the Nexus team">🎓 Verified Coach</span>
-            )}
-          </h1>
-          <p className="coach-dash-sub">
-            {summary?.coachProfile?.coachType === 'academy'
-              ? summary?.coachProfile?.academyName
-              : `Individual coach · ${summary?.coachProfile?.coachCountry || ''}`}
-          </p>
+        <div className="cd-hero-id">
+          <div className="cd-hero-avatar" aria-hidden="true">
+            {(summary?.coachProfile?.coachName || 'C').charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h1>
+              Welcome Coach, {summary?.coachProfile?.coachName || 'Coach'} 👋
+              {summary?.coachProfile?.verified && (
+                <span className="coach-verified-badge" title="Verified by the Nexus team">🎓 Verified Coach</span>
+              )}
+            </h1>
+            <p className="coach-dash-sub">
+              {summary?.coachProfile?.coachType === 'academy'
+                ? summary?.coachProfile?.academyName
+                : `Individual coach · ${summary?.coachProfile?.coachCountry || ''}`}
+            </p>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <CoachNotificationBell />
@@ -411,23 +437,27 @@ export default function CoachDashboard() {
 
       {/* ── Stat cards ──────────────────────── */}
       <div className="coach-stat-row">
-        <div className="coach-stat-card">
+        <div className="coach-stat-card cd-stat cd-stat--cyan">
+          <span className="cd-stat-icon" aria-hidden="true">👥</span>
           <div className="stat-label">Students</div>
           <div className="stat-value">{count} <span className="stat-cap">/ {max}</span></div>
           <div className="stat-bar"><div style={{ width: `${Math.min(100, (count / max) * 100)}%` }} /></div>
           <div className="stat-foot">{remaining} slots remaining</div>
         </div>
-        <div className="coach-stat-card">
+        <div className="coach-stat-card cd-stat cd-stat--amber">
+          <span className="cd-stat-icon" aria-hidden="true">📝</span>
           <div className="stat-label">Active assignments</div>
           <div className="stat-value">{summary?.assignmentsCount || 0}</div>
           <Link to="/coach/assignments" className="stat-link">View all →</Link>
         </div>
-        <div className="coach-stat-card">
+        <div className="coach-stat-card cd-stat cd-stat--violet">
+          <span className="cd-stat-icon" aria-hidden="true">🎯</span>
           <div className="stat-label">Activities</div>
           <div className="stat-value">{summary?.activitiesCount || 0}</div>
           <Link to="/coach/activities" className="stat-link">View all →</Link>
         </div>
-        <div className="coach-stat-card">
+        <div className="coach-stat-card cd-stat cd-stat--green">
+          <span className="cd-stat-icon" aria-hidden="true">⚡</span>
           <div className="stat-label">Active students</div>
           <div className="stat-value">
             {summary?.activeStudents || 0} <span className="stat-cap">/ {count}</span>
@@ -439,13 +469,13 @@ export default function CoachDashboard() {
       {/* ── Class overview: two charts side by side ─────────────── */}
       <div className="coach-section">
         <div className="coach-section-head">
-          <h2>Class overview</h2>
-          <div style={{ display: 'flex', gap: 6 }}>
+          <h2><span className="cd-h-icon" aria-hidden="true">📊</span>Class overview</h2>
+          <div className="cd-seg" role="group" aria-label="Chart range">
             {[7, 30, 90].map(d => (
               <button
                 key={d}
-                className={chartDays === d ? 'btn-primary' : 'btn-ghost'}
-                style={{ padding: '5px 12px', fontSize: 12 }}
+                className={`cd-seg-btn ${chartDays === d ? 'active' : ''}`}
+                aria-pressed={chartDays === d}
                 onClick={() => setChartDays(d)}
               >
                 {d}d
@@ -492,7 +522,7 @@ export default function CoachDashboard() {
       {/* ── Students section ─────────────────── */}
       <div className="coach-section">
         <div className="coach-section-head">
-          <h2>Your students</h2>
+          <h2><span className="cd-h-icon" aria-hidden="true">👥</span>Your students</h2>
           <button
             className="btn-primary"
             onClick={() => setShowAdd(true)}
@@ -530,10 +560,13 @@ export default function CoachDashboard() {
                 const u = r.studentId;
                 const name = u?.displayName || u?.username || r.studentName || 'Student';
                 return (
-                  <div key={r._id} className="coach-student-card" style={{ border: '1px solid rgba(16,185,129,0.45)' }}>
-                    <div className="coach-student-name">{name}</div>
-                    <div style={{ fontSize: '12px', color: '#6ee7b7', margin: '4px 0' }}>
-                      asked to join your students
+                  <div key={r._id} className="coach-student-card cd-req-card cd-req-card--in">
+                    <div className="cd-req-head">
+                      <span className="cd-req-avatar" aria-hidden="true">{name.charAt(0).toUpperCase()}</span>
+                      <div>
+                        <div className="coach-student-name">{name}</div>
+                        <div className="cd-req-sub cd-req-sub--in">asked to join your students</div>
+                      </div>
                     </div>
                     {/* What the student wrote. Shown BEFORE the buttons on
                         purpose: accepting a stranger with no idea who they are
@@ -547,7 +580,7 @@ export default function CoachDashboard() {
                         “{r.requestNote}”
                       </div>
                     )}
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <div className="cd-req-actions">
                       {/* Message first. The coach can now open a 1:1 with a
                           PENDING applicant (see coachContactableIdSet on the
                           server), so they can ask questions before deciding
@@ -579,10 +612,17 @@ export default function CoachDashboard() {
                 const u = p.studentId;
                 const name = u?.displayName || u?.username || p.studentName || 'Student';
                 return (
-                  <div key={p._id} className="coach-student-card" style={{ opacity: 0.85, border: '1px dashed rgba(139,92,246,0.4)' }}>
-                    <div className="coach-student-name">{name}</div>
-                    <div style={{ fontSize: '12px', color: '#a78bfa', margin: '4px 0' }}>Waiting for approval…</div>
-                    <button className="btn-ghost" onClick={() => cancelPending(p._id)}>Cancel request</button>
+                  <div key={p._id} className="coach-student-card cd-req-card cd-req-card--out">
+                    <div className="cd-req-head">
+                      <span className="cd-req-avatar" aria-hidden="true">{name.charAt(0).toUpperCase()}</span>
+                      <div>
+                        <div className="coach-student-name">{name}</div>
+                        <div className="cd-req-sub cd-req-sub--out">Waiting for approval…</div>
+                      </div>
+                    </div>
+                    <div className="cd-req-actions">
+                      <button className="btn-ghost" onClick={() => cancelPending(p._id)}>Cancel request</button>
+                    </div>
                   </div>
                 );
               })}
@@ -722,21 +762,22 @@ export default function CoachDashboard() {
       {summary?.recentAssignments?.length > 0 && (
         <div className="coach-section">
           <div className="coach-section-head">
-            <h2>Recent assignments</h2>
+            <h2><span className="cd-h-icon" aria-hidden="true">📝</span>Recent assignments</h2>
             <Link to="/coach/assignments" className="btn-ghost">See all</Link>
           </div>
           <div className="coach-assignment-list">
             {summary.recentAssignments.map(a => (
               <div key={a._id} className="coach-assignment-row">
-                <div>
+                <span className="cd-assign-icon" aria-hidden="true">{assignmentIcon(a.assignmentType)}</span>
+                <div className="cd-assign-main">
                   <div className="assign-title">{a.title}</div>
                   <div className="assign-meta">
-                    {a.assignmentType.replace('_', ' ')} · {a.studentIds.length} student{a.studentIds.length === 1 ? '' : 's'}
+                    {a.assignmentType.replace(/_/g, ' ')} · {a.studentIds.length} student{a.studentIds.length === 1 ? '' : 's'}
                     {a.targetCount ? ` · ${a.targetCount} puzzles` : ''}
                   </div>
                 </div>
-                <div className="assign-date">
-                  {new Date(a.createdAt).toLocaleDateString()}
+                <div className="assign-date" title={new Date(a.createdAt).toLocaleString()}>
+                  {relativeDay(a.createdAt)}
                 </div>
               </div>
             ))}

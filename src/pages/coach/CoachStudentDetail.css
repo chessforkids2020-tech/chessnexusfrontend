@@ -732,3 +732,102 @@
 .csd-ext-link:hover, .csd-ext-link:focus-visible {
   color: #67e8f9; border-color: rgba(6, 182, 212, 0.5); background: rgba(6, 182, 212, 0.1);
 }
+
+/* ══ Layout: header ratings, two columns, compact stats ═════════════════════ */
+
+/* Header: name/details left, every rating as a compact chip on the right. */
+.csd-header { align-items: center; margin-bottom: 18px; }
+.csd-meta { min-width: 0; flex: 1 1 280px; }
+.csd-hratings { display: flex; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.csd-hrating {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-width: 78px; padding: 8px 12px;
+  border-radius: var(--radius-lg);
+  background: var(--color-black-a35); border: 1px solid var(--color-white-a07);
+}
+.csd-hrating span { font-size: 11px; color: var(--color-text-muted); white-space: nowrap; }
+.csd-hrating strong { font-size: 20px; font-weight: 800; color: var(--color-text); line-height: 1.2; }
+.csd-hrating.is-main { border-color: var(--color-accent-a40); }
+.csd-hrating.is-main strong { color: var(--color-accent); }
+
+/* Two columns: progress (main) + coach tools (side). The side column comes
+   first in the DOM but sits on the right; on phones it moves below the progress. */
+.csd-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 22px;
+  align-items: start;
+}
+.csd-main { grid-column: 1; grid-row: 1; min-width: 0; }
+.csd-side {
+  grid-column: 2; grid-row: 1;
+  display: flex; flex-direction: column; gap: 14px;
+  position: sticky; top: 16px;
+}
+
+/* Side cards */
+.csd-card {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-surface);
+  padding: 14px;
+}
+.csd-card.coach-parent-note { border-color: var(--color-accent-a30); }
+.csd-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.csd-card-head h2 { margin: 0; font-size: 15px; color: var(--color-text); }
+.csd-card-head .csd-muted { font-size: 11.5px; }
+.csd-card .csd-share-row { margin-top: 0; margin-bottom: 10px; }
+.csd-card .csd-share-row .csd-share-progress { flex: 1; justify-content: center; }
+.csd-card .coach-parent-note-hint { margin: 0 0 8px; }
+.csd-textarea {
+  width: 100%; box-sizing: border-box; resize: vertical; min-height: 84px;
+  padding: 10px; border-radius: var(--radius-md); font: inherit; font-size: 13.5px; line-height: 1.5;
+  border: 1px solid var(--color-white-a10); background: var(--color-black-a35); color: var(--color-text);
+}
+.csd-textarea:focus { outline: none; border-color: var(--color-accent-a40); }
+.csd-textarea--parent { border-color: var(--color-accent-a30); background: var(--color-accent-a06); }
+.csd-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.csd-card-foot .coach-parent-note-foot { margin: 0; }
+.csd-save { padding: 6px 18px !important; font-size: 13px !important; }
+
+/* Four key numbers in one compact row */
+.csd-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 26px; }
+.csd-stat {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 12px 14px; border-radius: var(--radius-lg);
+  background: var(--color-surface); border: 1px solid var(--color-white-a07);
+}
+.csd-stat span { font-size: 11.5px; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.csd-stat strong { font-size: 24px; font-weight: 800; color: var(--color-text); line-height: 1.15; }
+.csd-stat strong small { font-size: 13px; font-weight: 600; color: var(--color-text-muted); }
+.csd-stat em { font-style: normal; font-size: 11px; color: var(--color-text-faint); }
+
+/* Analysis platform buttons: compact, not three big primaries */
+.csd-analyze-actions { gap: 6px !important; }
+.csd-analyze-actions > button { padding: 7px 13px !important; font-size: 13px !important; }
+
+/* Main-column sections sit a little tighter */
+.csd-main .coach-section { margin-bottom: 26px; }
+
+@media (max-width: 1100px) {
+  .csd-layout { grid-template-columns: minmax(0, 1fr); }
+  .csd-main, .csd-side { grid-column: 1; grid-row: auto; }
+  .csd-side { order: 2; position: static; display: grid; grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 760px) {
+  .csd-side { grid-template-columns: 1fr; }
+  .csd-stats { grid-template-columns: 1fr 1fr; }
+  .csd-header { padding: 16px; gap: 12px; }
+  .csd-hratings { margin-left: 0; width: 100%; }
+  .csd-hrating { flex: 1 1 0; min-width: 0; padding: 7px 6px; }
+  .csd-hrating strong { font-size: 17px; }
+  .csd-hrating span { font-size: 10px; }
+}
+@media (max-width: 760px) {
+  /* Three short percentages fit side by side; stacked they were three tall cards. */
+  .csd-phase-row { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px; }
+  .csd-phase { padding: 10px 6px; }
+  .csd-phase-acc { font-size: 21px; }
+  .csd-phase-name { font-size: 10px; }
+  .csd-phase-sub { font-size: 10.5px; }
+}

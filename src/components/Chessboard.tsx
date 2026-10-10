@@ -143,6 +143,11 @@ interface ChessboardProps {
    * so a square that is still being searched reads as "working", not "0.00".
    */
   squareEvals?: Record<string, { text?: string; score?: number; pending?: boolean }>;
+  /**
+   * Small round marker in a square's top-right corner, keyed by square — the
+   * move-quality glyph ("??", "?", "★") on the square a reviewed move landed on.
+   */
+  squareBadges?: Record<string, { text: string; color: string; title?: string }>;
 }
 
 // Ease-out cubic: quick start, soft landing.
@@ -237,7 +242,8 @@ const Chessboard: React.FC<ChessboardProps> = ({
   extraLegalMoves = [],
   onPremoveChange,
   onSelectionChange,
-  squareEvals
+  squareEvals,
+  squareBadges
 }) => {
   // Pull active board theme so every board respects the user's colour preference.
   // Props can still override per-board if needed (e.g. a fixed-colour analysis view).
@@ -1374,6 +1380,39 @@ const Chessboard: React.FC<ChessboardProps> = ({
             }}
           >
             {squareEvals[squareId].pending ? '…' : squareEvals[squareId].text}
+          </div>
+        )}
+        {/* Move-quality badge — top-right corner, above the piece. Kept inside
+            the square (not overhanging) so an h-file badge is never clipped by
+            the board edge. */}
+        {squareBadges?.[squareId] && (
+          <div
+            title={squareBadges[squareId].title}
+            style={{
+              position: 'absolute',
+              top: Math.round(squareSize * 0.03),
+              right: Math.round(squareSize * 0.03),
+              minWidth: Math.max(16, Math.round(squareSize * 0.36)),
+              height: Math.max(16, Math.round(squareSize * 0.36)),
+              padding: '0 3px',
+              boxSizing: 'border-box',
+              borderRadius: 999,
+              background: squareBadges[squareId].color,
+              color: '#fff',
+              border: '1.5px solid rgba(255,255,255,0.9)',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.45)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: `${Math.max(9, Math.round(squareSize * 0.2))}px`,
+              fontWeight: 900,
+              lineHeight: 1,
+              letterSpacing: '-0.04em',
+              pointerEvents: 'none',
+              zIndex: 20,
+            }}
+          >
+            {squareBadges[squareId].text}
           </div>
         )}
         {/* Right-click highlight — inset ring so the square colour shows through */}

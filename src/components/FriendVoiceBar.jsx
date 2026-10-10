@@ -40,7 +40,19 @@ export default function FriendVoiceBar({ socket, roomCode, isGuest, friendName }
   }, [socket, roomCode, inCall]);
 
   if (isGuest) {
-    return <div style={{ ...box, color: 'var(--color-text-muted)' }}>🎙️ {GUEST_VOICE_MSG}</div>;
+    // Login opens in a NEW TAB: the seat in this room belongs to the guest id,
+    // so logging in here would swap identities and drop the player's game.
+    return (
+      <div style={{ ...box, color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <span style={{ flex: '1 1 180px' }}>🎙️ {GUEST_VOICE_MSG}</span>
+        <a
+          href="/login"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ ...btn('go'), display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}
+        >🔑 Log in for voice call</a>
+      </div>
+    );
   }
 
   const join = async () => {

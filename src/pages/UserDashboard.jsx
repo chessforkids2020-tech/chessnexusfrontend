@@ -6,13 +6,13 @@ import api, { resolveApiAssetUrl } from '../api';
 import AskCoachPanel from '../components/AskCoachPanel';
 import ThemeScope from '../components/ThemeScope';
 import { trackEvent } from '../lib/analytics';
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import './UserDashboard.css';
-import PerformanceMonitor from "../components/PerformanceMonitor";
 import DetailedRaceStatsModal from "../components/DetailedRaceStatsModal";
 import ActivityTracker from "../components/ActivityTracker";
 import BestRacers from "../components/BestRacers";
-import FriendGamesSection from "../components/FriendGamesSection";
+import AllGamesTab from "../components/dashboard/AllGamesTab";
+import ActivityTab from "../components/dashboard/ActivityTab";
 import GameInsightsPanel from "../components/GameInsightsPanel";
 import KnightBadge from "../components/KnightBadge";
 import FoundingBadge from "../components/FoundingBadge";
@@ -289,61 +289,6 @@ function BadgeWall({ badges, userId, isPublicView = false }) {
         )}
       </div>
     </>
-  );
-}
-
-// ─── My Coach Card ──────────────────────────────────────────────────────────
-// Shows a link to the student's coach portal when they are linked to a coach
-// who has enrolled them in the coach attendance system.
-function MyCoachCard() {
-  const [coaches, setCoaches] = React.useState(null);
-  React.useEffect(() => {
-    let alive = true;
-    api.get('/api/coach-attendance/my/coaches')
-      .then(r => { if (alive) setCoaches(r.data || []); })
-      .catch(() => { if (alive) setCoaches([]); });
-    return () => { alive = false; };
-  }, []);
-
-  if (!coaches || coaches.length === 0) return null;
-
-  // Route by who coaches the student:
-  //   • admin coach   → Student Portal (/attendance) — admin's attendance/fees + assignments
-  //   • private coach → My Coach (/my-coach)
-  // A student with both sees both cards.
-  const adminCoaches = coaches.filter(c => c.isAdmin);
-  const privateCoaches = coaches.filter(c => !c.isAdmin);
-  const names = (list) => list.map(c => c.coachName).join(', ');
-
-  return (
-    <div className="attendance-section">
-      {adminCoaches.length > 0 && (
-        <div className="racing-mode-card attendance-card">
-          <div className="racing-mode-icon">🎓</div>
-          <h3 className="racing-mode-title">My Classes</h3>
-          <p className="racing-mode-description">
-            {`Coached by ${names(adminCoaches)}. `}
-            Assignments, attendance &amp; payments — all in one place.
-          </p>
-          <Link to="/attendance" style={{ textDecoration: 'none' }}>
-            <button className="watch-games-btn">Open Student Portal</button>
-          </Link>
-        </div>
-      )}
-      {privateCoaches.length > 0 && (
-        <div className="racing-mode-card attendance-card">
-          <div className="racing-mode-icon">🎓</div>
-          <h3 className="racing-mode-title">My Coach</h3>
-          <p className="racing-mode-description">
-            {privateCoaches.length === 1 ? `Coached by ${names(privateCoaches)}. ` : `Coaches: ${names(privateCoaches)}. `}
-            Assignments, attendance &amp; payments your coach has recorded.
-          </p>
-          <Link to="/my-coach" style={{ textDecoration: 'none' }}>
-            <button className="watch-games-btn">View Coach Records</button>
-          </Link>
-        </div>
-      )}
-    </div>
   );
 }
 
@@ -993,28 +938,241 @@ function StreakHowTo({ progress, onClose }) {
   );
 }
 
-// ─── Dashboard Tabs ─────────────────────────────────────────────────────────
-function DashboardTabs({ activeTab, onChange }) {
-  const tabs = [
-    { id: 'nexusguide',   icon: '🧭', label: 'Nexus Guide' },
-    { id: 'friendgames',  icon: '🎮', label: 'Games with Friends' },
-    { id: 'achievements', icon: '🏅', label: 'My Achievements' },
-    { id: 'mycoach',      icon: '👨‍🏫', label: 'My Coach' },
-  ];
-  return (
-    <div className="dash-tabs" role="tablist">
-      {tabs.map(t => (
+// ─── Floating dock ──────────────────────────────────────────────────────────
+// The dashboard's sections, switched from a dock pinned to the bottom of the
+// screen. The view lives in the URL (?view=) so refresh/back keep it.
+const DOCK_VIEWS = [
+  { id: 'home',     icon: '🏠', label: 'Home' },
+  { id: 'activity', icon: '📈', label: 'Activity' },
+  { id: 'puzzles',  icon: '🧩', label: 'Stats' },
+  { id: 'guide',    icon: '🧭', label: 'Guide' },
+  { id: 'coach',    icon: '🎓', label: 'Coach' },
+];
+
+function DashDock({ views, active, onChange }) {
+  // Lets the app-wide Schedule button (main.jsx) lift itself above the dock.
+  useEffect(() => {
+    document.body.classList.add('has-dash-dock');
+    return () => document.body.classList.remove('has-dash-dock');
+  }, []);
+  // Portalled to <body>: inside the page an ancestor's stacking context kept
+  // the dock under the site footer no matter how high its own z-index was.
+  return ReactDOM.createPortal(
+    <nav className="dash-dock" aria-label="Dashboard sections">
+      {views.map(v => (
         <button
-          key={t.id}
-          role="tab"
-          aria-selected={activeTab === t.id}
-          className={`dash-tab ${activeTab === t.id ? 'active' : ''}`}
-          onClick={() => onChange(t.id)}
+          key={v.id}
+          type="button"
+          className={active === v.id ? 'on' : ''}
+          aria-current={active === v.id ? 'page' : undefined}
+          onClick={() => onChange(v.id)}
         >
-          <span className="dash-tab-icon">{t.icon}</span>
-          <span className="dash-tab-label">{t.label}</span>
+          <span className="dk-ic" aria-hidden="true">{v.icon}</span>
+          <span className="dk-lb">{v.label}</span>
         </button>
       ))}
+    </nav>,
+    document.body
+  );
+}
+
+// ─── Puzzle trend (last 30 days) ────────────────────────────────────────────
+// Rating line, one point per day, from the same /puzzle-stats/range data the
+// Puzzle Stats card uses.
+function PuzzleTrendCard({ stats }) {
+  const s = stats?.series;
+  const days = s?.rating?.length || 0;
+  const W = 600, H = 150, PAD_L = 40, PAD_R = 10, PAD_T = 14, PAD_B = 8;
+  const lineH = H - PAD_T - PAD_B;
+  const plotW = W - PAD_L - PAD_R;
+
+  let chart = null;
+  if (days >= 2 && stats.attempts > 0) {
+    const r = s.rating;
+    const lo = Math.min(...r), hi = Math.max(...r);
+    const span = Math.max(hi - lo, 10);
+    const mid = (hi + lo) / 2;
+    const top = mid + span / 2 + span * 0.1, bot = mid - span / 2 - span * 0.1;
+    const x = i => PAD_L + (i / (days - 1)) * plotW;
+    const y = v => PAD_T + (1 - (v - bot) / (top - bot)) * lineH;
+    const line = r.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+    const area = `${line} L${x(days - 1).toFixed(1)},${PAD_T + lineH} L${PAD_L},${PAD_T + lineH} Z`;
+    chart = (
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block' }} role="img"
+        aria-label={`Puzzle rating over the last ${days} days, from ${r[0]} to ${r[days - 1]}`}>
+        <defs>
+          <linearGradient id="ptc-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {[top, (top + bot) / 2, bot].map((v, i) => (
+          <g key={i}>
+            <line x1={PAD_L} x2={W - PAD_R} y1={y(v)} y2={y(v)} stroke="var(--color-border)" strokeDasharray="3 4" />
+            <text x={PAD_L - 6} y={y(v) + 4} textAnchor="end" fontSize="11" fill="var(--color-text-faint)">{Math.round(v)}</text>
+          </g>
+        ))}
+        <path d={area} fill="url(#ptc-fill)" />
+        <path d={line} fill="none" stroke="var(--color-accent)" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+        <circle cx={x(days - 1)} cy={y(r[days - 1])} r="4.5" fill="var(--color-accent)" />
+      </svg>
+    );
+  }
+
+  const trend = stats?.trend ?? 0;
+  const facts = [
+    { label: 'Rating', value: stats?.rating ?? '—', extra: trend ? `${trend > 0 ? '+' : ''}${trend}` : null, extraColor: trend > 0 ? 'var(--color-success)' : 'var(--color-danger)' },
+    { label: 'Puzzles', value: stats?.attempts ?? 0 },
+    { label: 'Solved', value: stats?.solved ?? 0, color: 'var(--color-success)' },
+    { label: 'Accuracy', value: stats?.attempts ? `${stats.accuracy}%` : '—', color: 'var(--color-accent-2)' },
+  ];
+
+  return (
+    <div className="dash-panel ptc">
+      <div className="ptc-head">
+        <div>
+          <div className="ptc-eyebrow">🧩 Puzzles · last 30 days</div>
+          <div className="ptc-title">Puzzle rating</div>
+        </div>
+        <Link to="/puzzle-dashboard" className="ptc-link">Puzzle dashboard →</Link>
+      </div>
+      <div className="ptc-facts">
+        {facts.map(f => (
+          <div key={f.label}>
+            <div className="ptc-fl">{f.label}</div>
+            <div className="ptc-fv" style={f.color ? { color: f.color } : undefined}>
+              {f.value}{f.extra && <small style={{ color: f.extraColor }}> {f.extra}</small>}
+            </div>
+          </div>
+        ))}
+      </div>
+      {chart || <div className="ptc-empty">Solve a few puzzles and your 30-day graph appears here.</div>}
+    </div>
+  );
+}
+
+// ─── Tournament ratings (bullet / blitz / rapid / classical) ────────────────
+// One line per rating category, one point per rated arena tournament game,
+// from /api/user/tournament-rating-history. Categories never played in the
+// window are left out.
+const TRT_CATS = [
+  { key: 'bullet',    label: 'Bullet',    color: 'var(--color-warning)' },
+  { key: 'blitz',     label: 'Blitz',     color: 'var(--color-accent)' },
+  { key: 'rapid',     label: 'Rapid',     color: 'var(--color-success)' },
+  { key: 'classical', label: 'Classical', color: '#a78bfa' },
+];
+const TRT_RANGES = [{ id: 30, label: '30d' }, { id: 90, label: '90d' }, { id: 365, label: '1y' }];
+
+function TournamentTrendCard({ arena }) {
+  const [days, setDays] = useState(90);
+  const [data, setData] = useState(null); // { days, series } for `days`
+  useEffect(() => {
+    let alive = true;
+    api.get(`/api/user/tournament-rating-history?days=${days}`)
+      .then(r => { if (alive) setData(r.data); })
+      .catch(() => { if (alive) setData({ days, series: {} }); });
+    return () => { alive = false; };
+  }, [days]);
+
+  const now = Date.now();
+  const start = now - days * 86400000;
+  const lines = TRT_CATS
+    .map(c => ({ ...c, pts: (data?.series?.[c.key] || []).filter(p => p.r != null) }))
+    .filter(c => c.pts.length > 0);
+
+  const W = 600, H = 170, PAD_L = 40, PAD_R = 10, PAD_T = 12, PAD_B = 20;
+  const plotW = W - PAD_L - PAD_R, plotH = H - PAD_T - PAD_B;
+  let chart = null;
+  if (lines.length) {
+    const all = lines.flatMap(l => l.pts.map(p => p.r));
+    const lo = Math.min(...all), hi = Math.max(...all);
+    const span = Math.max(hi - lo, 20);
+    const mid = (hi + lo) / 2;
+    const top = mid + span * 0.6, bot = mid - span * 0.6;
+    const x = t => PAD_L + (Math.max(0, t - start) / (now - start)) * plotW;
+    const y = v => PAD_T + (1 - (v - bot) / (top - bot)) * plotH;
+    const fmt = t => new Date(t).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+    chart = (
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block' }} role="img"
+        aria-label={`Tournament ratings over the last ${days} days: ${lines.map(l => `${l.label} ${l.pts[l.pts.length - 1].r}`).join(', ')}`}>
+        {[top, mid, bot].map((v, i) => (
+          <g key={i}>
+            <line x1={PAD_L} x2={W - PAD_R} y1={y(v)} y2={y(v)} stroke="var(--color-border)" strokeDasharray="3 4" />
+            <text x={PAD_L - 6} y={y(v) + 4} textAnchor="end" fontSize="11" fill="var(--color-text-faint)">{Math.round(v)}</text>
+          </g>
+        ))}
+        <text x={PAD_L} y={H - 4} fontSize="10.5" fill="var(--color-text-faint)">{fmt(start)}</text>
+        <text x={W - PAD_R} y={H - 4} textAnchor="end" fontSize="10.5" fill="var(--color-text-faint)">Today</text>
+        {lines.map(l => {
+          // Hold the latest rating flat to today, so every line ends at the right edge.
+          const pts = [...l.pts, { t: now, r: l.pts[l.pts.length - 1].r }];
+          const d = pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.t).toFixed(1)},${y(p.r).toFixed(1)}`).join(' ');
+          const last = l.pts[l.pts.length - 1];
+          return (
+            <g key={l.key}>
+              <path d={d} fill="none" stroke={l.color} strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+              {l.pts.length <= 60 && l.pts.slice(1).map((p, i) => (
+                <circle key={i} cx={x(p.t)} cy={y(p.r)} r="2.6" fill={l.color}>
+                  <title>{`${l.label} ${p.r} · ${fmt(p.t)}`}</title>
+                </circle>
+              ))}
+              <circle cx={x(now)} cy={y(last.r)} r="4.5" fill={l.color} />
+            </g>
+          );
+        })}
+      </svg>
+    );
+  }
+
+  const facts = [
+    { label: 'Tournaments', value: arena?.totalTournaments ?? '—', color: 'var(--color-warning)' },
+    { label: 'Games', value: arena?.totalGamesPlayed ?? '—', color: 'var(--color-accent)' },
+    { label: 'Carry pts', value: arena?.arenaCarryPoints > 0 ? `+${arena.arenaCarryPoints}` : (arena ? 0 : '—'), color: 'var(--color-accent-2)' },
+  ];
+
+  return (
+    <div className="dash-panel ptc">
+      <div className="ptc-head">
+        <div>
+          <div className="ptc-eyebrow">🏟️ Tournaments · last {TRT_RANGES.find(r => r.id === days)?.label}</div>
+          <div className="ptc-title">Tournament ratings</div>
+        </div>
+        <div className="trt-tools">
+          <div className="trt-range" role="group" aria-label="Time range">
+            {TRT_RANGES.map(r => (
+              <button key={r.id} type="button" className={days === r.id ? 'on' : ''} aria-pressed={days === r.id} onClick={() => setDays(r.id)}>{r.label}</button>
+            ))}
+          </div>
+          <Link to="/arena-tournament-dashboard" className="ptc-link">Tournament dashboard →</Link>
+        </div>
+      </div>
+      <div className="ptc-facts trt-facts">
+        {facts.map(f => (
+          <div key={f.label}>
+            <div className="ptc-fl">{f.label}</div>
+            <div className="ptc-fv" style={{ color: f.color }}>{f.value}</div>
+          </div>
+        ))}
+      </div>
+      {lines.length > 0 && (
+        <div className="trt-legend">
+          {lines.map(l => {
+            const first = l.pts[0].r, last = l.pts[l.pts.length - 1].r;
+            const ch = last - first;
+            return (
+              <span key={l.key}>
+                <i style={{ background: l.color }} />{l.label} <b>{last}</b>
+                {ch !== 0 && <small style={{ color: ch > 0 ? 'var(--color-success)' : 'var(--color-danger)' }}>{ch > 0 ? `+${ch}` : ch}</small>}
+              </span>
+            );
+          })}
+        </div>
+      )}
+      {chart || (
+        <div className="ptc-empty">
+          {data ? <>No rated tournament games in this period. <Link to="/arenatournament">Join a tournament</Link> and your rating graph appears here.</> : 'Loading…'}
+        </div>
+      )}
     </div>
   );
 }
@@ -1297,18 +1455,46 @@ export default function UserDashboard() {
   const [raceModalOpen, setRaceModalOpen] = useState(false);
   const [raceModalType, setRaceModalType] = useState(null);
   const openRaceModal = (type) => { setRaceModalType(type); setRaceModalOpen(true); };
-  const DASH_TABS = ['nexusguide', 'friendgames', 'achievements', 'mycoach'];
-  const initialTab = (() => {
-    const saved = localStorage.getItem('dashboardTab');
-    return DASH_TABS.includes(saved) ? saved : 'nexusguide';
-  })();
-  const [activeTab, setActiveTab] = useState(initialTab);
-  const [visitedTabs, setVisitedTabs] = useState(() => new Set([initialTab]));
-  const selectTab = (t) => {
-    setActiveTab(t);
-    setVisitedTabs(prev => new Set(prev).add(t));
-    localStorage.setItem('dashboardTab', t);
-  };
+  // ── Dock views (?view=) ──
+  // A visitor to /player/:name sees the profile views only — Guide and Coach
+  // are about the viewer's own account.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const dockViews = routeDisplayName
+    ? DOCK_VIEWS.filter(v => v.id !== 'guide' && v.id !== 'coach')
+    : DOCK_VIEWS;
+  const requestedView = searchParams.get('view');
+  const activeView = dockViews.some(v => v.id === requestedView) ? requestedView : 'home';
+  // Views mount on first visit and then stay mounted (just hidden), so going
+  // back to one doesn't refetch it.
+  const [visitedViews, setVisitedViews] = useState(() => new Set([activeView]));
+  useEffect(() => {
+    setVisitedViews(prev => (prev.has(activeView) ? prev : new Set(prev).add(activeView)));
+  }, [activeView]);
+  const isVisited = (v) => v === activeView || visitedViews.has(v);
+
+  // Who coaches this user decides where the Coach button goes:
+  //   private coach (or an accepted coach request) → /my-coach
+  //   admin coach only                           → Student Portal (/attendance)
+  //   no coach                                   → the Coach view's join form
+  const [myCoaches, setMyCoaches] = useState(null);
+  useEffect(() => {
+    if (routeDisplayName || !localStorage.getItem('authToken')) return;
+    let alive = true;
+    api.get('/api/coach-attendance/my/coaches')
+      .then(r => { if (alive) setMyCoaches(Array.isArray(r.data) ? r.data : []); })
+      .catch(() => { if (alive) setMyCoaches([]); });
+    return () => { alive = false; };
+  }, [routeDisplayName]);
+
+  // 30-day puzzle series for the Puzzles & Arena graph (own dashboard only;
+  // the public profile payload carries 24h/7d only).
+  const [puzzleStats30d, setPuzzleStats30d] = useState(null);
+  useEffect(() => {
+    if (routeDisplayName || !localStorage.getItem('authToken') || !isVisited('puzzles')) return;
+    if (puzzleStats30d) return;
+    api.get('/api/public/puzzle-stats/range?range=30d').then(r => setPuzzleStats30d(r.data)).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeDisplayName, activeView]);
   const [publicView, setPublicView] = useState(null); // when viewing another user's profile: { activity, trainingStats, arenaSummary }
   // The profile owner's app theme, so their profile renders in their colours
   // for whoever opens it. null until the fetch lands, and for owners who never
@@ -1345,6 +1531,27 @@ export default function UserDashboard() {
       .catch(() => {});
     return () => { alive = false; };
   }, [isPublicView]);
+
+  const coachTarget = (() => {
+    if (isPublicView) return null;
+    const list = myCoaches || [];
+    if (isStudent || list.some(c => !c.isAdmin)) return '/my-coach';
+    if (list.some(c => c.isAdmin)) return '/attendance';
+    return null;
+  })();
+  const selectView = (v) => {
+    if (v === 'coach' && coachTarget) { navigate(coachTarget); return; }
+    if (v === activeView) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    const next = new URLSearchParams(searchParams);
+    if (v === 'home') next.delete('view'); else next.set('view', v);
+    setSearchParams(next, { replace: true });
+    window.scrollTo({ top: 0 });
+  };
+  // A student who already has a coach never sees the join page: a ?view=coach
+  // link (or the coach list arriving after they clicked) sends them on.
+  useEffect(() => {
+    if (activeView === 'coach' && coachTarget) navigate(coachTarget, { replace: true });
+  }, [activeView, coachTarget, navigate]);
 
 
   // Intersection Observer for scroll animations
@@ -1931,14 +2138,15 @@ export default function UserDashboard() {
           </div>
         )}
 
-        {/* Stats Bar — 4 ratings (bullet / blitz / rapid / classical) */}
-        {user && (
-          <StatsBar ratings={user.ratings} />
-        )}
-
-        {/* ── Tabbed dashboard ── */}
+        {/* ── Dock views. Home stays mounted (display:contents/none) so
+            TodayStrip and the activity tracker don't refetch on every switch;
+            the other views mount on first visit and then stay mounted. ── */}
         {user && (
           <>
+            <div style={{ display: activeView === 'home' ? 'contents' : 'none' }}>
+            {/* Stats Bar — 4 ratings (bullet / blitz / rapid / classical) */}
+            <StatsBar ratings={user.ratings} />
+
             {!isPublicView && <TodayStrip />}
 
             {/* Two-column card: 65% Practice Activity | 35% right panel.
@@ -2007,10 +2215,34 @@ export default function UserDashboard() {
               </div>
             </div>
 
-            {/* Combined card — Puzzle Stats | Tournament Stats | Daily Puzzles.
+            {/* Monthly Focus */}
+            <MonthlyFocusPanel
+              publicData={isPublicView ? (publicView?.monthlyFocus || { focuses: [], statsMap: {} }) : null}
+            />
+
+            {/* My Achievements */}
+            <BadgeWall badges={badges} userId={user._id || user.id || 'me'} isPublicView={isPublicView} />
+            </div>
+
+            {/* ── Activity: lifetime totals + last-30-days feed, then every game ── */}
+            {isVisited('activity') && (
+              <div className="dash-view" hidden={activeView !== 'activity'}>
+                <ActivityTab who={user._id || user.id || user.username} />
+                <AllGamesTab who={user._id || user.id || user.username} />
+              </div>
+            )}
+
+            {/* ── Puzzles & Arena ── */}
+            {isVisited('puzzles') && (
+            <div className="dash-view" hidden={activeView !== 'puzzles'}>
+            {!isPublicView && <PuzzleTrendCard stats={puzzleStats30d} />}
+            {!isPublicView && <TournamentTrendCard arena={ownArenaSummary} />}
+
+            {/* Visitors only (the two cards above are own-dashboard only):
+                Puzzle Stats | Tournament Stats.
                 `display:flex` lives in CSS (.dash-triple) so a media query can
-                stack it: three side-by-side panels in 390px gave each ~120px,
-                which is what overlapped the headings on top of each other. */}
+                stack it on phones. */}
+            {isPublicView && (
             <div className="dash-triple" style={{
               background: 'var(--obsidian-surface-elevated, var(--color-surface))',
               border: '1px solid var(--obsidian-border, var(--color-border))',
@@ -2059,7 +2291,7 @@ export default function UserDashboard() {
                 return (
                   <>
                     {/* ── Section 1: Puzzle Stats (circle + table) ── */}
-                    <div style={{ flex: '38 1 0', minWidth: 0, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
+                    <div style={{ flex: '1 1 0', minWidth: 0, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 8, position: 'relative', zIndex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span style={{ fontSize: 15 }}>🧩</span>
@@ -2111,7 +2343,7 @@ export default function UserDashboard() {
                     <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--color-border)', flexShrink: 0, zIndex: 1 }} />
 
                     {/* ── Section 2: Tournament Stats ── */}
-                    <div style={{ flex: '32 1 0', minWidth: 0, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12, position: 'relative', zIndex: 1 }}>
+                    <div style={{ flex: '1 1 0', minWidth: 0, padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12, position: 'relative', zIndex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span style={{ fontSize: 15 }}>🏟️</span>
@@ -2129,70 +2361,34 @@ export default function UserDashboard() {
                         ))}
                       </div>
                     </div>
-
-                    {/* Divider */}
-                    <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--color-border)', flexShrink: 0, zIndex: 1 }} />
-
-                    {/* ── Section 3: Today's Daily Puzzles ── */}
-                    <div style={{ flex: '30 1 0', minWidth: 0, position: 'relative', zIndex: 1 }}>
-                      <PerformanceMonitor
-                        user={user}
-                        publicTrainingStats={publicView?.trainingStats || null}
-                        publicArenaSummary={null}
-                        publicMonthlyFocus={null}
-                        publicPuzzleStatsRange={null}
-                        viewedDisplayName={isPublicView ? routeDisplayName : null}
-                        section="dailypuzzle"
-                      />
-                    </div>
                   </>
                 );
               })()}
             </div>
+            )}
+            </div>
+            )}
 
-            {/* Monthly Focus — shown directly below the stats card */}
-            <MonthlyFocusPanel
-              publicData={isPublicView ? (publicView?.monthlyFocus || { focuses: [], statsMap: {} }) : null}
-            />
-
-            <DashboardTabs activeTab={activeTab} onChange={selectTab} />
-
-            {/* Tab 1 — Nexus Guide (your training buddy) */}
-            {visitedTabs.has('nexusguide') && (
-              <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'nexusguide'}>
+            {/* ── Guide: Nexus Guide (your training buddy) ── */}
+            {isVisited('guide') && (
+              <div className="dash-view" hidden={activeView !== 'guide'}>
                 {!isPublicView && isViewerLoggedIn && <GameInsightsPanel />}
               </div>
             )}
 
-            {/* Tab 2 — Games with Friends */}
-            {visitedTabs.has('friendgames') && (
-              <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'friendgames'}>
-                <FriendGamesSection userId={user._id || user.id || user.username} />
+            {/* ── Coach: only students WITHOUT a coach ever land here (the dock
+                button and the effect above send everyone else to /my-coach or
+                the Student Portal). Wait for the coach list before offering the
+                join form so a student with a coach never sees it flash. ── */}
+            {activeView === 'coach' && !isPublicView && (
+              <div className="dash-view">
+                {myCoaches && !coachTarget
+                  ? <AskCoachPanel />
+                  : <div className="ptc-empty">Opening your coach page…</div>}
               </div>
             )}
 
-            {/* Tab 3 — My Achievements */}
-            {visitedTabs.has('achievements') && (
-              <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'achievements'}>
-                <BadgeWall badges={badges} userId={user._id || user.id || 'me'} isPublicView={isPublicView} />
-              </div>
-            )}
-
-            {/* Tab 4 — My Coach. MyCoachCard now renders the RIGHT single card:
-                admin-added students → "My Classes" (Student Portal); private-coach
-                students → "My Coach". The old standalone "Student Attendance" card
-                was redundant with this and has been removed. */}
-            {visitedTabs.has('mycoach') && (
-              <div className="dash-tabpanel" role="tabpanel" hidden={activeTab !== 'mycoach'}>
-                {!isPublicView && <MyCoachCard />}
-                {/* A student with NO coach used to get a blank panel here:
-                    MyCoachCard returns null, and every link to /my-coach is
-                    gated behind already having a coach — so the one page that
-                    offered the request form was unreachable for exactly the
-                    people who needed it. Offer it here instead. */}
-                {!isPublicView && !isStudent && <AskCoachPanel />}
-              </div>
-            )}
+            <DashDock views={dockViews} active={activeView} onChange={selectView} />
 
             <DetailedRaceStatsModal
               isOpen={raceModalOpen}

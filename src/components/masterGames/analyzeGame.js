@@ -46,22 +46,24 @@ function toWhiteCp(evaluation, sideToMove) {
 /**
  * Analyze a game.
  * @param {string[]} sanMoves  main-line moves in SAN
- * @param {object} opts        { depth=14, startFen, onProgress(doneCount,total), isCancelled() }
+ * @param {object} opts        { depth=14, startFen, onProgress(doneCount,total), isCancelled(),
+ *                               engine — a StockfishService to use instead of the shared one }
  * @returns {Promise<{analysis: Array, depth: number}>}
  */
 export async function analyzeGame(sanMoves, opts = {}) {
   const depth = opts.depth || 14;
   const onProgress = opts.onProgress || (() => {});
   const isCancelled = opts.isCancelled || (() => false);
+  const engine = opts.engine || stockfish;
 
-  if (!stockfish.isReady()) {
-    await stockfish.init();
+  if (!engine.isReady()) {
+    await engine.init();
   }
 
   // Each position is both "after" one move and "before" the next — search it once.
   const evalCache = new Map();
   const evalOf = async (fen) => {
-    if (!evalCache.has(fen)) evalCache.set(fen, await stockfish.getBestMove(fen, { depth, moveTime: 1500 }));
+    if (!evalCache.has(fen)) evalCache.set(fen, await engine.getBestMove(fen, { depth, moveTime: 1500 }));
     return evalCache.get(fen);
   };
 
@@ -106,7 +108,13 @@ export async function analyzeGame(sanMoves, opts = {}) {
         san: step.san,
         fenAfter: step.fenAfter,
         classification: null,
-        eval: Math.round(finalWhiteCp) / 100
+        eval: Math.round(finalWhiteCp) / 100,
+        side: step.sideToMove,
+        bestUci: null,
+        fenBefore: step.fenBefore,
+        winBefore: winChance(finalWhiteCp),
+        winAfter: winChance(finalWhiteCp),
+        drop: 0,
       });
       prevAfterWhiteCp = finalWhiteCp;
       onProgress(i + 1, total);
@@ -134,7 +142,15 @@ export async function analyzeGame(sanMoves, opts = {}) {
       san: step.san,
       fenAfter: step.fenAfter,
       classification: classify(dropForMover),
-      eval: Math.round(playedWhiteCp) / 100 // store White-POV pawns
+      eval: Math.round(playedWhiteCp) / 100, // store White-POV pawns
+      // Extra detail for the single-game analysis page. Callers that POST the
+      // rows (Master Games) pick their own fields, so these are never stored.
+      side: step.sideToMove,                  // 'w' | 'b' — who played this move
+      bestUci: before.bestMove || null,       // engine's choice in fenBefore
+      fenBefore: step.fenBefore,
+      winBefore: wBest,                       // White win % with the best move
+      winAfter: wPlayed,                      // White win % after the move played
+      drop: Math.max(0, dropForMover),        // win % the mover gave away
     });
 
     prevAfterWhiteCp = playedWhiteCp;

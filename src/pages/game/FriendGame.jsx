@@ -165,6 +165,10 @@ export default function FriendGame() {
   // /friend/:code → we join the room with that code.
   const createIntent = location.state?.create ? location.state : null;
   const isCreator = !!createIntent;
+  // /friend/:code?watch=1 → open as a watcher. Opening a full room's normal link
+  // also makes you a watcher (the server decides). One of the two players opening
+  // the watch link is simply re-seated as that player.
+  const watchIntent = !isCreator && new URLSearchParams(location.search).get('watch') === '1';
 
   const socketRef = useRef(null);
   const gameRef = useRef(new Chess());
@@ -208,6 +212,16 @@ export default function FriendGame() {
   const [chatUnread, setChatUnread] = useState(0);
   const chatOpenRef = useRef(false);
   chatOpenRef.current = chatOpen;
+
+  // ── Watchers (spectators) ──
+  // A watcher sees the board, clocks and moves, and chats only with other
+  // watchers. No moves, resign, draw, rematch or voice.
+  const [isSpectator, setIsSpectator] = useState(false);
+  const isSpectatorRef = useRef(false);          // reconnects re-watch instead of re-join
+  const [spectatorCount, setSpectatorCount] = useState(0);
+  const [specChat, setSpecChat] = useState([]);  // history handed over on watch
+  const [roomClosed, setRoomClosed] = useState(false);
+  const [watchCopied, setWatchCopied] = useState(false);
 
   const resetPostGame = useCallback(() => {
     analysisRunRef.current++;               // cancels a running analysis
@@ -302,6 +316,7 @@ export default function FriendGame() {
       }
     }
     if (r.clocks) setClocks(r.clocks);
+    if (typeof r.spectatorCount === 'number') setSpectatorCount(r.spectatorCount);
     if (r.status === 'waiting') setPhase('waiting');
     else if (r.status === 'active') setPhase('active');
     else if (r.status === 'aborted') setPhase('aborted');
@@ -348,9 +363,25 @@ export default function FriendGame() {
         // Joiner, OR a reconnect after we already have a code → (re)join by code.
         // Server treats a same-user/same-socket join as an idempotent re-seat.
         const code = roomCodeRef.current || roomCode;
-        if (code) s.emit('join_room', { roomCode: code, ...ident });
+        if (!code) return;
+        if (watchIntent || isSpectatorRef.current) s.emit('watch_room', { roomCode: code, ...ident });
+        else s.emit('join_room', { roomCode: code, ...ident });
       }
     });
+
+    // We're watching, not playing (watch link, or the room already had two players).
+    s.on('room_watching', (r) => {
+      if (r.code) roomCodeRef.current = r.code;
+      isSpectatorRef.current = true;
+      setIsSpectator(true);
+      setMyColor(null);
+      setSpecChat(r.specChat || []);
+      applyRoom(r);
+    });
+    s.on('spectator_count', ({ count }) => setSpectatorCount(count || 0));
+    // Both players left: the server deleted the room. Watchers keep the last position.
+    s.on('room_closed', () => setRoomClosed(true));
+    s.on('spectatorChatMessage', () => { if (!chatOpenRef.current) setChatUnread(n => n + 1); });
 
     s.on('room_created', (r) => {
       createdRef.current = true;       // never create again on reconnect
@@ -363,6 +394,8 @@ export default function FriendGame() {
     });
     s.on('room_joined', (r) => {
       if (r.code) roomCodeRef.current = r.code;
+      isSpectatorRef.current = false;
+      setIsSpectator(false);
       setMyColor(r.you);
       applyRoom(r);
     });
@@ -478,8 +511,9 @@ export default function FriendGame() {
   const opponent = room?.players?.find(p => p.userId !== me.userId);
   const myPlayer = room?.players?.find(p => p.userId === me.userId);
   const orientation = myColor || 'white';
-  const topPlayer = opponent;   // shown above board
-  const bottomPlayer = myPlayer;
+  // Watchers: White at the bottom, Black on top, picked by colour (neither is "you").
+  const topPlayer = isSpectator ? room?.players?.find(p => p.color === 'black') : opponent;
+  const bottomPlayer = isSpectator ? room?.players?.find(p => p.color === 'white') : myPlayer;
   const topColor = myColor === 'white' ? 'black' : 'white';
   const bottomColor = myColor || 'white';
 
@@ -487,6 +521,12 @@ export default function FriendGame() {
     if (!roomCode) return;
     navigator.clipboard?.writeText(roomCode).then(() => {
       setCopied(true); setTimeout(() => setCopied(false), 1500);
+    });
+  };
+  const copyWatchLink = () => {
+    if (!roomCode) return;
+    navigator.clipboard?.writeText(`${window.location.origin}/friend/${roomCode}?watch=1`).then(() => {
+      setWatchCopied(true); setTimeout(() => setWatchCopied(false), 1500);
     });
   };
 
@@ -651,32 +691,61 @@ export default function FriendGame() {
               }}>
                 {room?.isRated ? 'Rated' : 'Casual'}
               </span>
+              {spectatorCount > 0 && (
+                <span className="fg-watch-count" title={`${spectatorCount} watching`}>
+                  {' • '}👁 {spectatorCount} watching
+                </span>
+              )}
             </span>
           </div>
 
-          {/* Icon action bar: Back · Resign · Offer draw — one row, no labels */}
+          {/* Icon action bar: Back · Resign · Offer draw — one row, no labels.
+              Watchers only get Back (plain navigation, no leave_room). */}
           <div className="fg-icon-actions">
             <button
               className="fg-icon-btn"
-              onClick={() => (gameOver ? leaveRoom() : navigate('/games'))}
+              onClick={() => (gameOver && !isSpectator ? leaveRoom() : navigate('/games'))}
               title="Back to Games"
               aria-label="Back to Games"
             >🏠</button>
-            <button
-              className="fg-icon-btn"
-              onClick={() => socketRef.current.emit('resign', { roomCode })}
-              title="Resign"
-              aria-label="Resign"
-              disabled={phase !== 'active'}
-            >🏳️</button>
-            <button
-              className="fg-icon-btn"
-              onClick={() => socketRef.current.emit('offer_draw', { roomCode })}
-              title="Offer draw"
-              aria-label="Offer draw"
-              disabled={phase !== 'active'}
-            >🤝</button>
+            {isSpectator ? (
+              <span className="fg-watching-label">👁 You're watching</span>
+            ) : (
+              <>
+                <button
+                  className="fg-icon-btn"
+                  onClick={() => socketRef.current.emit('resign', { roomCode })}
+                  title="Resign"
+                  aria-label="Resign"
+                  disabled={phase !== 'active'}
+                >🏳️</button>
+                <button
+                  className="fg-icon-btn"
+                  onClick={() => socketRef.current.emit('offer_draw', { roomCode })}
+                  title="Offer draw"
+                  aria-label="Offer draw"
+                  disabled={phase !== 'active'}
+                >🤝</button>
+              </>
+            )}
           </div>
+
+          {/* Players can share a link for others to watch (guests too). */}
+          {!isSpectator && roomCode && ['waiting', 'active', 'finished'].includes(phase) && (
+            <button className="fg-watch-link" onClick={copyWatchLink}>
+              {watchCopied ? '✓ Watch link copied' : '👁 Copy watch link'}
+            </button>
+          )}
+
+          {isSpectator && roomClosed && (
+            <div className="fg-banner fg-warn">Both players have left — this game room is closed.</div>
+          )}
+
+          {isSpectator && phase === 'waiting' && !roomClosed && (
+            <div className="fg-invite">
+              <p className="fg-waiting">Waiting for the second player to join…</p>
+            </div>
+          )}
 
           {isCreator && !roomCode && (phase === 'connecting' || phase === 'waiting') && (
             <div className="fg-invite">
@@ -700,7 +769,7 @@ export default function FriendGame() {
             </div>
           )}
 
-          {phase === 'waiting' && roomCode && (
+          {phase === 'waiting' && roomCode && !isSpectator && (
             <div className="fg-invite">
               <p className="fg-invite-label">Share this code with your friend</p>
               <div className="fg-code-box" onClick={copyCode}>
@@ -754,19 +823,28 @@ export default function FriendGame() {
           {gameOver && (
             <div className="fg-post">
               <div className="fg-post-title">
-                {phase === 'aborted' ? 'Game ended — opponent left' : (result?.text || 'Game over')}
+                {phase === 'aborted'
+                  ? (isSpectator ? 'Game ended — a player left' : 'Game ended — opponent left')
+                  : (result?.text || 'Game over')}
                 {phase === 'finished' && result && (
                   <span className="fg-post-sub">{result.winnerName ? `${result.winnerName} wins` : 'Draw'}</span>
                 )}
               </div>
 
-              <button className="fg-primary fg-post-btn" onClick={playAgain}
-                disabled={friendLeftRoom || rematchState === 'sent'}>
-                {rematchState === 'sent' ? '⏳ Waiting for your friend…'
-                  : rematchState === 'offered' ? '✓ Accept rematch' : '↻ Play again'}
-              </button>
-              {rematchState === 'offered' && <p className="fg-post-note ok">Your friend wants a rematch!</p>}
-              {friendLeftRoom && <p className="fg-post-note">Your friend left the room.</p>}
+              {!isSpectator && (
+                <>
+                  <button className="fg-primary fg-post-btn" onClick={playAgain}
+                    disabled={friendLeftRoom || rematchState === 'sent'}>
+                    {rematchState === 'sent' ? '⏳ Waiting for your friend…'
+                      : rematchState === 'offered' ? '✓ Accept rematch' : '↻ Play again'}
+                  </button>
+                  {rematchState === 'offered' && <p className="fg-post-note ok">Your friend wants a rematch!</p>}
+                  {friendLeftRoom && <p className="fg-post-note">Your friend left the room.</p>}
+                </>
+              )}
+              {isSpectator && !roomClosed && (
+                <p className="fg-post-note">Stay here — if they play again, you'll keep watching.</p>
+              )}
 
               <button className="fg-secondary fg-post-btn" onClick={runAnalysis}
                 disabled={!moves.length || analysis.status === 'running'}>
@@ -817,11 +895,14 @@ export default function FriendGame() {
                 </p>
               )}
 
-              <button className="fg-secondary fg-post-btn" onClick={leaveRoom}>🚪 Leave room</button>
+              {isSpectator
+                ? <button className="fg-secondary fg-post-btn" onClick={() => navigate('/games')}>🚪 Stop watching</button>
+                : <button className="fg-secondary fg-post-btn" onClick={leaveRoom}>🚪 Leave room</button>}
             </div>
           )}
 
-          {(room?.voiceEnabled || voiceGuest) && ['waiting', 'active', 'finished'].includes(phase) && (
+          {/* Voice is players-only (the server refuses watchers too). */}
+          {!isSpectator && (room?.voiceEnabled || voiceGuest) && ['waiting', 'active', 'finished'].includes(phase) && (
             <FriendVoiceBar
               socket={socketRef.current}
               roomCode={roomCode}
@@ -833,15 +914,29 @@ export default function FriendGame() {
         </div>
 
         {/* Floating chat: kept mounted (so history survives) and shown on demand. */}
-        {room?.chatEnabled && ['active', 'finished', 'aborted'].includes(phase) && (
+        {/* Watchers get their own chat (other watchers only); the players never see it. */}
+        {room?.chatEnabled && (isSpectator ? ['waiting', 'active', 'finished', 'aborted'] : ['active', 'finished', 'aborted']).includes(phase) && (
           <>
             <div className="fg-chat-float" style={{ display: chatOpen ? 'block' : 'none' }}>
               <button className="fg-chat-close" onClick={() => setChatOpen(false)} aria-label="Close chat">✕</button>
-              <FriendGameChat socket={socketRef.current} roomCode={roomCode} myName={me.displayName} />
+              {isSpectator ? (
+                <FriendGameChat
+                  key="watchers"
+                  socket={socketRef.current}
+                  roomCode={roomCode}
+                  myName={me.displayName}
+                  event="spectatorChatMessage"
+                  title="👁 Watchers' chat"
+                  emptyText="Chat with other watchers — the players can't see this."
+                  initialMessages={specChat}
+                />
+              ) : (
+                <FriendGameChat key="players" socket={socketRef.current} roomCode={roomCode} myName={me.displayName} />
+              )}
             </div>
             {!chatOpen && (
               <button className="fg-chat-fab" onClick={() => { setChatOpen(true); setChatUnread(0); }} aria-label="Open chat">
-                💬 Chat
+                {isSpectator ? '👁 Watchers\' chat' : '💬 Chat'}
                 {chatUnread > 0 && <span className="fg-chat-badge">{chatUnread}</span>}
               </button>
             )}
@@ -858,9 +953,9 @@ export default function FriendGame() {
               onDrop={gameOver ? handleExploreDrop : (isLive ? handleDrop : () => false)}
               boardWidth={boardPx}
               lastMove={explore ? explore.lastMove : (isLive ? lastMove : null)}
-              draggable={true}
+              draggable={!isSpectator || gameOver}
               playerColor={myColor || 'white'}
-              allowPremove={isLive && phase === 'active'}
+              allowPremove={!isSpectator && isLive && phase === 'active'}
               onPremoveChange={(p) => { chessboardPremoveRef.current = p; }}
               squareEvals={squareEvals}
               onSelectionChange={onSelectionChange}
@@ -870,7 +965,7 @@ export default function FriendGame() {
               <div className="fg-result-overlay">
                 <h3>{result.text}</h3>
                 <p>{result.winnerName ? `${result.winnerName} wins` : 'Draw'}</p>
-                {result.ratingChanges && (() => {
+                {!isSpectator && result.ratingChanges && (() => {
                   const mine = myColor === 'black' ? result.ratingChanges.black : result.ratingChanges.white;
                   if (!mine) return null;
                   const up = mine.change >= 0;
@@ -885,9 +980,11 @@ export default function FriendGame() {
                   );
                 })()}
                 <div className="fg-result-actions">
-                  <button className="fg-primary" onClick={playAgain} disabled={friendLeftRoom}>
-                    {rematchState === 'offered' ? '✓ Accept rematch' : '↻ Play again'}
-                  </button>
+                  {!isSpectator && (
+                    <button className="fg-primary" onClick={playAgain} disabled={friendLeftRoom}>
+                      {rematchState === 'offered' ? '✓ Accept rematch' : '↻ Play again'}
+                    </button>
+                  )}
                   <button className="fg-secondary" onClick={runAnalysis} disabled={!moves.length}>🔍 Analyze</button>
                 </div>
                 <button className="fg-link" style={{ marginTop: 8 }} onClick={() => setPopupHidden(true)}>Close</button>
@@ -897,7 +994,7 @@ export default function FriendGame() {
             {phase === 'aborted' && !popupHidden && (
               <div className="fg-result-overlay">
                 <h3>Game ended</h3>
-                <p>Your opponent left the game.</p>
+                <p>{isSpectator ? 'A player left the game.' : 'Your opponent left the game.'}</p>
                 <div className="fg-result-actions">
                   {moves.length > 0 && <button className="fg-secondary" onClick={runAnalysis}>🔍 Analyze</button>}
                   <button className="fg-secondary" onClick={() => setPopupHidden(true)}>Close</button>
@@ -927,7 +1024,7 @@ export default function FriendGame() {
             <button className="fg-nav-btn" onClick={navNext} disabled={isLive && !explore} title="Next">▶</button>
             <button className="fg-nav-btn" onClick={navLast} disabled={isLive && !explore} title="Latest">⏭</button>
           </div>
-          {pbar(bottomPlayer, bottomColor, true)}
+          {pbar(bottomPlayer, bottomColor, !isSpectator)}
         </div>
 
       </div>

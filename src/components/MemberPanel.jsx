@@ -71,7 +71,7 @@ export default function MemberPanel() {
 
   return (
     <div>
-      {/* ── Become a Coach / Elite Member ───────────── */}
+      {/* ── Community + memberships (held = lit, rest dim) ── */}
       <UpgradeCard />
 
       {/* ── Testimonial ─────────────────────────────── */}

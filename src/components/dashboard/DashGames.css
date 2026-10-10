@@ -1,0 +1,297 @@
+/* Dashboard "All Games" (dg-*) and "Activity" (da-*) tabs. */
+
+.dg-wrap, .da-wrap { display: flex; flex-direction: column; gap: 12px; padding: 8px 0; }
+
+.dg-empty, .dg-loading {
+  text-align: center;
+  padding: 28px 12px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+.dg-empty-icon { font-size: 2rem; margin-bottom: 6px; }
+
+/* ── Filters ── */
+.dg-filters { display: flex; flex-direction: column; gap: 8px; }
+.dg-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.dg-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.dg-chip.is-on {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+}
+.dg-chip-count {
+  font-size: 0.72rem;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, currentColor 18%, transparent);
+}
+.dg-filter-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.dg-select, .dg-search {
+  padding: 7px 10px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.85rem;
+}
+.dg-search { flex: 1; min-width: 160px; }
+.dg-export {
+  padding: 7px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
+  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.dg-export:disabled { opacity: 0.55; cursor: default; }
+
+.dg-total { font-size: 0.8rem; color: var(--color-text-faint); }
+
+/* All Games summary: one compact tile per game type (last 6 months) */
+.dg-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.dg-sum {
+  display: flex; flex-direction: column; gap: 7px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.dg-sum-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.dg-sum-label { font-size: 0.85rem; color: var(--color-text-muted); white-space: nowrap; }
+.dg-sum-n { font-size: 1.15rem; font-weight: 700; color: var(--color-text); font-variant-numeric: tabular-nums; }
+.dg-sum-unit { font-size: 0.75rem; font-weight: 400; color: var(--color-text-faint); }
+.dg-sum-bar { display: flex; height: 5px; border-radius: var(--radius-pill); overflow: hidden; background: var(--color-white-a07); }
+.dg-sum-bar .w { background: var(--color-success); }
+.dg-sum-bar .d { background: var(--color-text-faint); }
+.dg-sum-bar .l { background: var(--color-danger); }
+.dg-sum-wdl { display: flex; gap: 12px; font-size: 0.8rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.dg-sum-wdl .w { color: var(--color-success); }
+.dg-sum-wdl .d { color: var(--color-text-muted); }
+.dg-sum-wdl .l { color: var(--color-danger); }
+
+/* Desktop: type chips and filters share one line */
+@media (min-width: 900px) {
+  .dg-filters { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+  .dg-filters .dg-filter-row { flex: 1; min-width: 420px; }
+}
+@media (max-width: 520px) {
+  .dg-summary { gap: 6px; }
+  .dg-sum { padding: 8px 10px; gap: 5px; }
+  .dg-sum-label { font-size: 0.75rem; }
+  .dg-sum-unit { display: none; }
+  .dg-sum-wdl { gap: 6px; font-size: 0.72rem; }
+}
+
+/* ── Game rows ── */
+.dg-list { display: flex; flex-direction: column; gap: 8px; }
+.dg-row {
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.dg-row:hover { border-color: var(--color-accent); transform: translateY(-1px); }
+.dg-row--win { border-left-color: var(--color-success); }
+.dg-row--loss { border-left-color: var(--color-danger); }
+.dg-row--draw { border-left-color: var(--color-text-faint); }
+.dg-board { flex-shrink: 0; width: 112px; pointer-events: none; }
+.dg-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.dg-top { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 0.78rem; color: var(--color-text-muted); }
+.dg-type { font-weight: 600; color: var(--color-accent); }
+.dg-type--stockfish { color: var(--color-success); }
+.dg-type--friend { color: var(--color-warning); }
+.dg-when { margin-left: auto; color: var(--color-text-faint); }
+.dg-players { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-weight: 600; font-size: 0.92rem; }
+.dg-p { display: inline-flex; align-items: center; gap: 6px; min-width: 0; overflow-wrap: anywhere; }
+.dg-prating { font-weight: 400; font-size: 0.82rem; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
+.dg-speed { font-weight: 600; color: var(--color-text); }
+.dg-speed--friendly { color: var(--color-warning); }
+.dg-vs { font-weight: 400; color: var(--color-text-faint); font-size: 0.8rem; }
+.dg-dot { width: 10px; height: 10px; border-radius: var(--radius-circle); border: 1px solid var(--color-border-strong); flex-shrink: 0; }
+.dg-dot--white { background: #f4f4f4; }
+.dg-dot--black { background: #222; }
+.dg-sub { font-size: 0.78rem; color: var(--color-text-muted); }
+.dg-opening { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 0.8rem; }
+.dg-side { flex-shrink: 0; padding: 1px 8px; border-radius: var(--radius-2xl); font-size: 0.72rem; font-weight: 700; border: 1px solid var(--color-border-strong); }
+.dg-side--white { background: #f4f4f4; color: #222; }
+.dg-side--black { background: #222; color: #f4f4f4; }
+.dg-open-name { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-height: 1.3; color: var(--color-text); }
+.dg-eco { margin-right: 6px; font-weight: 700; color: var(--color-accent); font-variant-numeric: tabular-nums; }
+.dg-bottom { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 0.8rem; color: var(--color-text-muted); }
+.dg-outcome { font-weight: 700; }
+.dg-outcome--win { color: var(--color-success); }
+.dg-outcome--loss { color: var(--color-danger); }
+.dg-score { font-weight: 600; color: var(--color-text); }
+.dg-reason { display: inline-block; }
+.dg-reason::first-letter { text-transform: uppercase; }
+.dg-rc { font-weight: 600; }
+.dg-rc.up { color: var(--color-success); }
+.dg-rc.down { color: var(--color-danger); }
+.dg-plies { margin-left: auto; color: var(--color-text-faint); }
+
+.dg-more {
+  align-self: center;
+  padding: 8px 22px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+.dg-more:hover { border-color: var(--color-accent); }
+
+/* Desktop: bigger cards — board width matches BOARD_DESKTOP in AllGamesTab.jsx */
+@media (min-width: 900px) {
+  .dg-list { gap: 12px; }
+  .dg-row { gap: 22px; padding: 16px 20px 16px 16px; }
+  .dg-board { width: 176px; }
+  .dg-info { gap: 10px; }
+  .dg-top { font-size: 0.9rem; }
+  .dg-players { font-size: 1.15rem; gap: 6px 10px; }
+  .dg-prating { font-size: 0.95rem; }
+  .dg-vs { font-size: 0.9rem; }
+  .dg-dot { width: 12px; height: 12px; }
+  .dg-opening { font-size: 0.98rem; gap: 10px; }
+  .dg-side { font-size: 0.8rem; padding: 2px 10px; }
+  .dg-sub { font-size: 0.88rem; }
+  .dg-bottom { font-size: 0.95rem; }
+}
+
+@media (max-width: 520px) {
+  .dg-row { gap: 8px; }
+  .dg-when, .dg-plies { margin-left: 0; }
+}
+
+/* ── Activity ── */
+.da-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
+}
+.da-big { font-size: 1.6rem; font-weight: 700; color: var(--color-text); line-height: 1.2; }
+.da-sub { font-size: 0.78rem; color: var(--color-text-muted); }
+.da-muted { color: var(--color-text-faint); font-size: 0.78rem; }
+
+.da-games { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.da-game-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+.da-game-row--total { border-top: 1px solid var(--color-border); padding-top: 6px; font-weight: 600; }
+.da-game-n { font-weight: 700; min-width: 2.5em; text-align: right; }
+
+.da-feed-title { margin: 8px 0 0; font-size: 1rem; color: var(--color-text); }
+.da-feed { display: flex; flex-direction: column; }
+.da-day {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.da-day:last-child { border-bottom: none; }
+.da-day-date { font-size: 0.82rem; font-weight: 600; color: var(--color-text-muted); padding-top: 2px; }
+.da-day-lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.da-day-lines > li { display: flex; align-items: baseline; gap: 8px; font-size: 0.88rem; color: var(--color-text); }
+.da-line-icon { width: 1.3em; text-align: center; flex-shrink: 0; }
+
+@media (max-width: 520px) {
+  .da-day { grid-template-columns: 1fr; gap: 6px; }
+}
+
+/* Activity table: one <tbody> per day, date + day cells span its rows */
+.da-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.da-table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 0.9rem; }
+.da-table th {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-faint);
+  border-bottom: 1px solid var(--color-border-strong);
+  white-space: nowrap;
+}
+.da-table td { padding: 16px; vertical-align: top; color: var(--color-text); }
+.da-tday + .da-tday tr:first-child td { border-top: 1px solid var(--color-border); }
+.da-tday tr + tr td:not(.da-t-date) { border-top: 1px dashed color-mix(in srgb, var(--color-border) 70%, transparent); }
+.da-t-date { font-weight: 600; white-space: nowrap; }
+.da-t-what { display: flex; align-items: baseline; gap: 8px; }
+.da-table .da-t-num { text-align: right; white-space: nowrap; }
+.da-num { font-weight: 700; font-size: 1rem; color: var(--color-text-faint); }
+.da-num--good { color: var(--color-success); }
+.da-num--bad { color: var(--color-danger); }
+.da-num--draw { color: var(--color-text-muted); }
+.da-num-word { font-weight: 400; font-size: 0.78rem; color: var(--color-text-muted); }
+.da-none { color: var(--color-text-faint); }
+.da-rating { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.da-rating-net { font-weight: 700; font-size: 1rem; }
+.da-rating-net.up { color: var(--color-success); }
+.da-rating-net.down { color: var(--color-danger); }
+.da-rating-split { display: inline-flex; gap: 8px; font-size: 0.75rem; }
+.da-rating-split .up { color: var(--color-success); }
+.da-rating-split .down { color: var(--color-danger); }
+.da-h-short { display: none; }
+
+@media (max-width: 600px) {
+  .da-table { min-width: 0; font-size: 0.84rem; }
+  .da-table th, .da-table td { padding: 12px 8px; }
+  .da-table th:first-child, .da-table td.da-t-date { padding-left: 12px; }
+  .da-table th:last-child, .da-table td:last-child { padding-right: 12px; }
+  .da-t-date { white-space: normal; width: 64px; }
+  .da-h-long { display: none; }
+  .da-h-short { display: inline; }
+  .da-num-word { display: none; }
+}
+
+/* Current ratings strip above the activity table */
+.da-line-body { flex: 1; min-width: 0; }
+.da-ratings { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+.da-rating-chip {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.da-rating-chip-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-text-faint); white-space: nowrap; }
+.da-rating-chip-val { font-size: 1.35rem; font-weight: 700; color: var(--color-text); font-variant-numeric: tabular-nums; }
+@media (max-width: 600px) {
+  .da-ratings { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .da-rating-chip { padding: 10px; }
+  .da-rating-chip-val { font-size: 1.1rem; }
+}

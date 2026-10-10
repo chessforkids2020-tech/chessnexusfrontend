@@ -1232,18 +1232,14 @@ const StudyPuzzleView = () => {
                 )}
               </motion.div>
 
-            <div style={styles.descriptionContainer}>
-              <h3 style={styles.sectionTitle}>Puzzle Description</h3>
-              <div style={styles.descriptionText}>
-                {currentPuzzle.puzzleDescription ? (
-                  currentPuzzle.puzzleDescription
-                ) : (
-                  <span style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
-                    No description available. Try to find the best move!
-                  </span>
-                )}
+            {/* Admin studies only. Shown only when the admin wrote one — leaving
+                the description blank in Admin → Study Management hides it. */}
+            {currentPuzzle.puzzleDescription?.trim() && (
+              <div style={styles.descriptionContainer}>
+                <h3 style={styles.sectionTitle}>Description</h3>
+                <div style={styles.descriptionText}>{currentPuzzle.puzzleDescription}</div>
               </div>
-            </div>
+            )}
           </motion.div>
         </div>
       </div>

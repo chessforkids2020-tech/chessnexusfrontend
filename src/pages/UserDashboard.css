@@ -2636,89 +2636,124 @@ button.today-chip:hover {
 }
 .today-chip--done .today-chip-text strong { color: var(--color-success); }
 
-/* ─── Dashboard Tabs ───────────────────────────────────────────────────────── */
-.dash-tabs {
-  position: sticky;
-  top: 0;
-  z-index: 6;
+/* ─── Floating dock (Home / Activity / Puzzles & Arena / Guide / Coach) ──── */
+.dash-dock {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  /* Above the site footer (50) and page chrome; below the Schedule FAB
+     (9998) and modals/drawers (99999+). */
+  z-index: 9000;
   display: flex;
-  gap: 6px;
-  padding: 8px;
-  margin: 0 0 18px 0;
-  border-radius: var(--radius-lg);
-  background: rgba(15, 15, 15, 0.82);
-  border: 1px solid var(--obsidian-border);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  gap: 4px;
+  padding: 6px;
+  border-radius: 22px;
+  /* Set apart from the same-coloured cards and footer behind it: a lighter,
+     accent-tinted glass with an accent rim and glow. */
+  background:
+    linear-gradient(180deg, var(--color-white-a07), transparent),
+    linear-gradient(135deg, var(--color-accent-a20), var(--color-accent-2-a30, var(--color-accent-a20))),
+    var(--color-surface);
+  border: 1.5px solid var(--color-accent-a30);
+  box-shadow:
+    0 14px 40px var(--color-black-a50),
+    0 0 26px var(--color-accent-a30),
+    0 1px 0 var(--color-white-a13) inset;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
-
-.dash-tab {
-  flex: 1;
-  display: inline-flex;
+/* Icon beside the label (not stacked) keeps the dock low. */
+.dash-dock button {
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 11px 14px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
+  gap: 7px;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 16px;
   background: transparent;
-  color: var(--obsidian-text-muted);
-  font-size: 14px;
+  color: var(--color-text);
+  opacity: 0.82;
+  font: inherit;
+  font-size: 12.5px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
   white-space: nowrap;
-  position: relative;
+  transition: background 0.18s, color 0.18s, transform 0.18s;
 }
-.dash-tab:hover { color: var(--obsidian-text); background: var(--color-white-a04); }
-.dash-tab.active {
+.dash-dock button:hover { opacity: 1; background: var(--color-white-a07); }
+.dash-dock button.on {
+  opacity: 1;
   color: var(--color-text);
-  background: var(--obsidian-button);
+  background: var(--obsidian-button, linear-gradient(135deg, var(--color-accent), var(--color-accent-2)));
   box-shadow: 0 6px 18px var(--color-accent-a30);
 }
-.dash-tab-icon { font-size: 16px; }
-.dash-tab-dot {
-  position: absolute;
-  top: 4px;
-  right: 8px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: var(--radius-pill);
-  background: var(--color-danger);
-  color: var(--color-text);
-  font-size: 11px;
-  font-weight: 800;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
+.dash-dock button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.dash-dock .dk-ic { font-size: 17px; line-height: 1; }
 
-.dash-tabpanel { animation: dashFade 0.25s ease; }
-.dash-tabpanel[hidden] { display: none !important; animation: none; }
+/* Room for the dock under the last card */
+body.has-dash-dock .main-content { padding-bottom: 86px; }
+
+.dash-view { animation: dashFade 0.25s ease; }
+.dash-view[hidden] { display: none !important; animation: none; }
+.dash-view > * + * { margin-top: 18px; }
 @keyframes dashFade {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.dash-footer {
-  margin-top: 26px;
-  padding-top: 22px;
-  border-top: 1px solid var(--obsidian-border);
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
+@media (max-width: 600px) {
+  .dash-dock { left: 10px; right: 10px; bottom: 10px; transform: none; justify-content: space-between; gap: 2px; padding: 5px; }
+  /* Five buttons don't fit side-by-side labels on a phone: stack again, tighter. */
+  .dash-dock button { min-width: 0; flex: 1; flex-direction: column; gap: 2px; padding: 5px 2px 4px; font-size: 10px; }
+  .dash-dock .dk-ic { font-size: 16px; }
+  /* Guard against a long label overflowing a fifth of a phone */
+  .dash-dock .dk-lb { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  body.has-dash-dock .main-content { padding-bottom: 96px; }
 }
 
-/* Mobile: icon-forward tabs, wrapping strip, single visible panel = far less scroll */
+/* The app-wide Schedule button sits bottom-right; lift it above the dock on
+   phones where the dock spans the full width. */
+@media (max-width: 760px) {
+  body.has-dash-dock .schedule-fab { bottom: 92px !important; right: 12px !important; }
+}
+
+/* ─── Puzzle trend card (Puzzles & Arena view) ──────────────────────────── */
+.ptc {
+  background: var(--obsidian-surface-elevated, var(--color-surface));
+  border: 1px solid var(--obsidian-border, var(--color-border));
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--obsidian-shadow, 0 8px 32px var(--color-black-a50));
+  padding: 18px 20px;
+  margin: 0 0 18px 0;
+}
+.ptc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.ptc-eyebrow { font-size: 11px; font-weight: 800; color: var(--color-text-faint); text-transform: uppercase; letter-spacing: 0.1em; }
+.ptc-title { font-size: 17px; font-weight: 800; color: var(--color-text); margin-top: 3px; }
+.ptc-link { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); color: #04201f; font-weight: 700; font-size: 12px; text-decoration: none; white-space: nowrap; }
+.ptc-link:hover { filter: brightness(1.08); }
+.trt-tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.trt-range { display: flex; gap: 2px; padding: 2px; border-radius: var(--radius-md); background: var(--color-black-a35); }
+.trt-range button { border: none; cursor: pointer; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 11.5px; font-weight: 700; background: transparent; color: var(--color-text-faint); }
+.trt-range button.on { background: linear-gradient(135deg, var(--color-accent), var(--color-accent-2)); color: #04201f; }
+.ptc-facts.trt-facts { grid-template-columns: repeat(3, 1fr); }
+.trt-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 2px 0 6px; font-size: 12.5px; font-weight: 600; color: var(--color-text-muted); }
+.trt-legend span { display: inline-flex; align-items: baseline; gap: 5px; }
+.trt-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; align-self: center; }
+.trt-legend b { color: var(--color-text); font-weight: 800; }
+.trt-legend small { font-size: 11px; font-weight: 700; }
+.ptc-facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+.ptc-facts > div { padding: 10px 12px; border-radius: var(--radius-lg); background: var(--color-white-a04); border: 1px solid var(--obsidian-border, var(--color-border)); }
+.ptc-fl { font-size: 10.5px; font-weight: 700; color: var(--color-text-faint); text-transform: uppercase; letter-spacing: 0.05em; }
+.ptc-fv { font-size: 22px; font-weight: 900; color: var(--color-text); line-height: 1.2; margin-top: 2px; }
+.ptc-fv small { font-size: 12px; font-weight: 700; }
+.ptc-empty { padding: 28px 12px; text-align: center; color: var(--color-text-muted); font-size: 14px; }
 @media (max-width: 600px) {
-  .dash-tabs { gap: 4px; padding: 6px; }
-  .dash-tab { padding: 10px 8px; font-size: 12.5px; }
-  .dash-tab-label { display: none; }
-  .dash-tab.active .dash-tab-label {
-    display: inline;
-    font-size: 12.5px;
-  }
+  .ptc { padding: 14px; }
+  .ptc-facts { grid-template-columns: repeat(2, 1fr); }
+  .ptc-fv { font-size: 19px; }
 }
 
 /* ── Mobile: keep the welcome card compact ────────────────────────────────

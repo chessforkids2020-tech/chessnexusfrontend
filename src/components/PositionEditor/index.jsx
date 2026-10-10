@@ -7,6 +7,7 @@ import EditableBoard from './EditableBoard';
 import FenBar from './FenBar';
 import SetupControls from './SetupControls';
 import api from '../../api';
+import { useAuth } from '../../contexts/AuthContext';
 
 const CATEGORIES = [['basics', '📗 Basics'], ['positional', '📘 Positional']];
 
@@ -34,6 +35,9 @@ function validatePosition(chess) {
 
 export default function PositionEditor({ initialFen = START_FEN }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  // Per-user key: coaches sign into several student accounts on one browser.
+  const lastSaveKey = `posEditorLastSave:${user?.id || user?._id || 'anon'}`;
   const [chess, setChess] = useState(() => {
     try { return new Chess(initialFen, { skipValidation: true }); } catch { return new Chess(START_FEN); }
   });
@@ -49,24 +53,23 @@ export default function PositionEditor({ initialFen = START_FEN }) {
   chessRef.current = chess;
 
   // ── Save modal state ──────────────────────────────────────────────
+  // One picker: Study → Chapter, each with an inline "➕ New…" option. All of the
+  // user's studies are listed (private and public together); the last study and
+  // chapter they saved into are preselected.
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const [saveTab, setSaveTab] = useState('private-study'); // 'private-study' | 'public'
   const [modalTitle, setModalTitle] = useState('');
-  const [modalDesc, setModalDesc] = useState('');
   const [modalSolution, setModalSolution] = useState('');
-  // Public study state
   const [myStudies, setMyStudies] = useState([]);
   const [studiesLoading, setStudiesLoading] = useState(false);
-  const [studyMode, setStudyMode] = useState('pick'); // 'pick' | 'new'
-  const [selectedStudyId, setSelectedStudyId] = useState('');
+  const [selectedStudyId, setSelectedStudyId] = useState('');   // '' | '__new__' | studyId
   const [selectedChapterId, setSelectedChapterId] = useState(''); // '' | '__new__' | chapterId
   const [newChapterInStudy, setNewChapterInStudy] = useState(''); // name for a brand-new chapter in an existing study
   const [newStudyName, setNewStudyName] = useState('');
-  const [newStudyType, setNewStudyType] = useState('basics');
+  const [newStudyPublic, setNewStudyPublic] = useState(false);
   const [newChapterName, setNewChapterName] = useState('Chapter 1');
   const [nameAvailable, setNameAvailable] = useState(null); // null | true | false
   const [nameChecking, setNameChecking] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(''); // 'basics' | 'positional'
+  const [selectedCategory, setSelectedCategory] = useState('basics'); // only used for a NEW study
   const [modalSaving, setModalSaving] = useState(false);
   const [modalError, setModalError] = useState('');
   const [modalSuccess, setModalSuccess] = useState('');
@@ -122,16 +125,13 @@ export default function PositionEditor({ initialFen = START_FEN }) {
     if (validationError) return;
     // Open modal instead of direct save
     setModalTitle(titleInput.trim());
-    setModalDesc('');
     setModalSolution('');
-    setSaveTab('private-study');
-    setStudyMode('pick');
-    setSelectedCategory('');
+    setSelectedCategory('basics');
     setSelectedStudyId('');
     setSelectedChapterId('');
     setNewChapterInStudy('');
     setNewStudyName('');
-    setNewStudyType('basics');
+    setNewStudyPublic(false);
     setNewChapterName('Chapter 1');
     setNameAvailable(null);
     setModalError('');
@@ -139,31 +139,48 @@ export default function PositionEditor({ initialFen = START_FEN }) {
     setShowSaveModal(true);
   }
 
-  // Fetch user's studies when switching to public tab
-  async function fetchMyStudies() {
-    setStudiesLoading(true);
-    try {
-      const res = await api.get('/api/user-studies/mine');
-      setMyStudies(res.data || []);
-    } catch {
-      setMyStudies([]);
-    } finally {
-      setStudiesLoading(false);
-    }
+  // Pick a sensible chapter for a study: the remembered one if it is still
+  // there, else the newest chapter, else "new chapter".
+  function defaultChapterFor(study, rememberedChapterId) {
+    const chapters = study?.chapters || [];
+    if (rememberedChapterId && chapters.some(c => c._id === rememberedChapterId)) return rememberedChapterId;
+    return chapters.length ? chapters[chapters.length - 1]._id : '__new__';
   }
 
+  // Load ALL the user's studies whenever the modal opens (previously this only
+  // ran on the Public tab, so "choose existing" was always empty on Private),
+  // then preselect where they saved last time.
   useEffect(() => {
-    if (showSaveModal && saveTab === 'public') {
-      fetchMyStudies();
-    }
-  }, [showSaveModal, saveTab]);
+    if (!showSaveModal) return;
+    let cancelled = false;
+    (async () => {
+      setStudiesLoading(true);
+      let list = [];
+      try {
+        const res = await api.get('/api/user-studies/mine');
+        list = res.data || [];
+      } catch { list = []; }
+      if (cancelled) return;
+      setMyStudies(list);
+      setStudiesLoading(false);
+      let last = null;
+      try { last = JSON.parse(localStorage.getItem(lastSaveKey) || 'null'); } catch { last = null; }
+      const study = list.find(s => s._id === last?.studyId) || list[0];
+      if (!study) { setSelectedStudyId('__new__'); return; }
+      setSelectedStudyId(study._id);
+      setSelectedChapterId(defaultChapterFor(study, last?.chapterId));
+    })();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showSaveModal]);
 
-  // Check study name availability, debounced (only for public studies)
-  function handleNewStudyNameChange(val) {
+  // Check study name availability, debounced (only for public studies — the
+  // public catalogue needs unique names; private ones only per user).
+  function handleNewStudyNameChange(val, isPublicStudy = newStudyPublic) {
     setNewStudyName(val);
     setNameAvailable(null);
     clearTimeout(nameCheckTimer.current);
-    if (!val.trim() || saveTab !== 'public') return;
+    if (!val.trim() || !isPublicStudy) return;
     nameCheckTimer.current = setTimeout(async () => {
       setNameChecking(true);
       try {
@@ -180,18 +197,18 @@ export default function PositionEditor({ initialFen = START_FEN }) {
 
   // Save to public OR private study
   async function handlePublicSave() {
-    const isPublicStudy = saveTab === 'public';
+    const isNewStudy = selectedStudyId === '__new__';
+    const pickedStudy = myStudies.find(s => s._id === selectedStudyId);
+    const isPublicStudy = isNewStudy ? newStudyPublic : !!pickedStudy?.isPublic;
     setModalSaving(true);
     setModalError('');
     try {
       let studyId = selectedStudyId;
       let chapterId = selectedChapterId;
 
-      if (!selectedCategory) { setModalError('Please choose a category (Basics or Positional)'); setModalSaving(false); return; }
-      if (studyMode === 'new') {
+      if (isNewStudy) {
         if (!newStudyName.trim()) { setModalError('Study name is required'); setModalSaving(false); return; }
-        if (nameAvailable === false) { setModalError('Study name is already taken'); setModalSaving(false); return; }
-        if (!newChapterName.trim()) { setModalError('Chapter name is required'); setModalSaving(false); return; }
+        if (isPublicStudy && nameAvailable === false) { setModalError('Study name is already taken'); setModalSaving(false); return; }
         // Create study + first chapter
         const studyRes = await api.post('/api/user-studies', {
           name: newStudyName.trim(),
@@ -199,15 +216,15 @@ export default function PositionEditor({ initialFen = START_FEN }) {
           isPublic: isPublicStudy,
         });
         studyId = studyRes.data._id;
-        const chapRes = await api.post(`/api/user-studies/${studyId}/chapters`, { name: newChapterName.trim() });
+        const chapRes = await api.post(`/api/user-studies/${studyId}/chapters`, { name: newChapterName.trim() || 'Chapter 1' });
         chapterId = chapRes.data.chapter._id;
       } else {
         if (!studyId) { setModalError('Please select a study'); setModalSaving(false); return; }
         if (!chapterId) { setModalError('Please select a chapter'); setModalSaving(false); return; }
         // Add a brand-new chapter to the chosen existing study
         if (chapterId === '__new__') {
-          if (!newChapterInStudy.trim()) { setModalError('New chapter name is required'); setModalSaving(false); return; }
-          const chapRes = await api.post(`/api/user-studies/${studyId}/chapters`, { name: newChapterInStudy.trim() });
+          const name = newChapterInStudy.trim() || `Chapter ${(pickedStudy?.chapters?.length || 0) + 1}`;
+          const chapRes = await api.post(`/api/user-studies/${studyId}/chapters`, { name });
           chapterId = chapRes.data.chapter._id;
         }
       }
@@ -215,9 +232,9 @@ export default function PositionEditor({ initialFen = START_FEN }) {
       await api.post(`/api/user-studies/${studyId}/chapters/${chapterId}/puzzles`, {
         fen: chess.fen(),
         title: modalTitle,
-        description: modalDesc,
         solution: modalSolution,
       });
+      try { localStorage.setItem(lastSaveKey, JSON.stringify({ studyId, chapterId })); } catch { /* storage off */ }
       setModalSuccess(isPublicStudy ? '✅ Position added to your public study!' : '✅ Saved to your private study!');
       setSaveMsg(isPublicStudy ? '✅ Saved to public study!' : '✅ Saved to private study!');
       setTitleInput('');
@@ -411,154 +428,120 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                   style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
                 />
               </div>
-              <div style={{ marginBottom: 12 }}>
-                <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>DESCRIPTION (optional)</label>
-                <textarea
-                  value={modalDesc}
-                  onChange={e => setModalDesc(e.target.value)}
-                  placeholder="What is the key idea here?"
-                  rows={2}
-                  style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box', resize: 'vertical' }}
-                />
-              </div>
               <div style={{ marginBottom: 18 }}>
-                <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>SOLUTION MOVES (optional)</label>
+                <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>MOVES (optional)</label>
                 <input
                   value={modalSolution}
                   onChange={e => setModalSolution(e.target.value)}
-                  placeholder="e.g. Nf6 Bg5 e6..."
+                  placeholder="e.g. 1. Nf6+ gxf6 2. Bxf7#"
                   style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
                 />
-              </div>
-
-              {/* Tab chooser */}
-              <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
-                {[['private-study', '🔒 Private Study'], ['public', '🌐 Public Study']].map(([tab, label]) => (
-                  <button
-                    key={tab}
-                    onClick={() => setSaveTab(tab)}
-                    style={{ flex: 1, padding: '10px 8px', borderRadius: 10, border: `1px solid ${saveTab === tab ? (tab === 'public' ? '#10b981' : '#6366f1') : 'rgba(255,255,255,0.1)'}`, background: saveTab === tab ? (tab === 'public' ? 'rgba(16,185,129,0.15)' : 'rgba(99,102,241,0.15)') : 'transparent', color: saveTab === tab ? (tab === 'public' ? '#34d399' : '#a5b4fc') : '#64748b', cursor: 'pointer', fontSize: 12, fontWeight: saveTab === tab ? 700 : 400 }}
-                  >{label}</button>
-                ))}
-              </div>
-
-              {saveTab === 'private-study' && (
-                <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 14, padding: '10px 14px', background: 'rgba(99,102,241,0.08)', borderRadius: 10, border: '1px solid rgba(99,102,241,0.2)' }}>
-                  Saved into your <strong style={{ color: '#a5b4fc' }}>Private Study</strong> — organised by chapters. View and play through positions at <strong style={{ color: '#a5b4fc' }}>My Studies</strong>. Only you can see it.
+                <div style={{ fontSize: 11, color: '#64748b', marginTop: 5 }}>
+                  Easier: leave this empty, save, then just play the moves on the board — they're saved automatically, sidelines too.
                 </div>
-              )}
+              </div>
 
-              {/* Study tab content (public OR private-study) */}
-              {(saveTab === 'public' || saveTab === 'private-study') && (
-                <div>
-                  {/* Step 1: Category */}
-                  <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 8 }}>CHOOSE CATEGORY <span style={{ color: '#f87171' }}>*</span></label>
-                  <div style={{ display: 'flex', gap: 10, marginBottom: 18 }}>
-                    {CATEGORIES.map(([cat, label]) => {
-                      const isActive = selectedCategory === cat;
-                      const col = cat === 'basics' ? '#10b981' : '#6366f1';
-                      return (
-                        <button
-                          key={cat}
-                          onClick={() => { setSelectedCategory(cat); setSelectedStudyId(''); setSelectedChapterId(''); setStudyMode('pick'); }}
-                          style={{ flex: 1, padding: '14px 8px', borderRadius: 12, border: `2px solid ${isActive ? col : 'rgba(255,255,255,0.1)'}`, background: isActive ? `rgba(${cat === 'basics' ? '16,185,129' : '99,102,241'},0.15)` : 'rgba(255,255,255,0.03)', color: isActive ? col : '#64748b', cursor: 'pointer', fontSize: 15, fontWeight: 700, transition: 'all 0.15s' }}
-                        >{label}</button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Step 2: Only show after category chosen */}
-                  {selectedCategory && (
-                    <>
-                      {/* Mode toggle */}
-                      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
-                        {[['pick', 'Choose Existing Study'], ['new', 'Create New Study']].map(([m, l]) => (
-                          <button key={m} onClick={() => setStudyMode(m)} style={{ flex: 1, padding: '8px 6px', borderRadius: 8, border: `1px solid ${studyMode === m ? '#fbbf24' : 'rgba(255,255,255,0.1)'}`, background: studyMode === m ? 'rgba(251,191,36,0.12)' : 'transparent', color: studyMode === m ? '#fbbf24' : '#64748b', cursor: 'pointer', fontSize: 12, fontWeight: studyMode === m ? 700 : 400 }}>{l}</button>
+              {/* Where to save: Study → Chapter, with "new" inline */}
+              {studiesLoading ? (
+                <div style={{ fontSize: 13, color: '#64748b', textAlign: 'center', padding: 16 }}>Loading your studies...</div>
+              ) : (() => {
+                const fieldStyle = { width: '100%', background: '#1e293b', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, boxSizing: 'border-box' };
+                const inputStyle = { width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' };
+                const labelStyle = { fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 };
+                const study = myStudies.find(s => s._id === selectedStudyId);
+                const chapters = study?.chapters || [];
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div>
+                      <label style={labelStyle}>SAVE TO STUDY</label>
+                      <select
+                        data-testid="save-study"
+                        value={selectedStudyId}
+                        onChange={e => {
+                          const v = e.target.value;
+                          setSelectedStudyId(v);
+                          setNewChapterInStudy('');
+                          setSelectedChapterId(v === '__new__' ? '' : defaultChapterFor(myStudies.find(s => s._id === v)));
+                        }}
+                        style={fieldStyle}
+                      >
+                        {myStudies.map(s => (
+                          <option key={s._id} value={s._id}>{s.isPublic ? '🌐' : '🔒'} {s.name}</option>
                         ))}
-                      </div>
+                        <option value="__new__">➕ New study…</option>
+                      </select>
+                    </div>
 
-                      {studyMode === 'pick' && (() => {
-                        const filtered = myStudies.filter(s => s.studyType === selectedCategory);
-                        return studiesLoading ? (
-                          <div style={{ fontSize: 13, color: '#64748b', textAlign: 'center', padding: 16 }}>Loading your studies...</div>
-                        ) : filtered.length === 0 ? (
-                          <div style={{ fontSize: 13, color: '#64748b', textAlign: 'center', padding: '14px 10px' }}>
-                            No {selectedCategory} studies yet.{' '}
-                            <button onClick={() => setStudyMode('new')} style={{ background: 'none', border: 'none', color: '#fbbf24', cursor: 'pointer', fontSize: 13, textDecoration: 'underline' }}>Create one</button>
-                          </div>
-                        ) : (
-                          <>
-                            <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>SELECT STUDY</label>
-                            <select
-                              value={selectedStudyId}
-                              onChange={e => { setSelectedStudyId(e.target.value); setSelectedChapterId(''); }}
-                              style={{ width: '100%', background: '#1e293b', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, marginBottom: 10 }}
-                            >
-                              <option value="">-- choose a study --</option>
-                              {filtered.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
-                            </select>
-                            {selectedStudyId && (() => {
-                              const study = filtered.find(s => s._id === selectedStudyId);
-                              const chapters = study?.chapters || [];
-                              return (
-                                <>
-                                  <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>SELECT CHAPTER</label>
-                                  <select
-                                    value={selectedChapterId}
-                                    onChange={e => { setSelectedChapterId(e.target.value); if (e.target.value !== '__new__') setNewChapterInStudy(''); }}
-                                    style={{ width: '100%', background: '#1e293b', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13 }}
-                                  >
-                                    <option value="">-- choose a chapter --</option>
-                                    {chapters.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                                    <option value="__new__">➕ New chapter…</option>
-                                  </select>
-                                  {selectedChapterId === '__new__' && (
-                                    <input
-                                      value={newChapterInStudy}
-                                      onChange={e => setNewChapterInStudy(e.target.value)}
-                                      placeholder={`New chapter name (e.g. Chapter ${chapters.length + 1})`}
-                                      autoFocus
-                                      style={{ width: '100%', marginTop: 8, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(251,191,36,0.4)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
-                                    />
-                                  )}
-                                </>
-                              );
-                            })()}
-                          </>
-                        );
-                      })()}
-
-                      {studyMode === 'new' && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                          <div>
-                            <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>STUDY NAME <span style={{ color: '#f87171' }}>*</span></label>
-                            <div style={{ position: 'relative' }}>
-                              <input
-                                value={newStudyName}
-                                onChange={e => handleNewStudyNameChange(e.target.value)}
-                                placeholder={selectedCategory === 'basics' ? "e.g. King's Indian Fundamentals" : "e.g. Pawn Structure Mastery"}
-                                style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: `1px solid ${nameAvailable === false ? '#ef4444' : nameAvailable === true ? '#10b981' : 'rgba(255,255,255,0.12)'}`, borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
-                              />
-                              {saveTab === 'public' && nameChecking && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 11, color: '#64748b' }}>checking...</span>}
-                              {saveTab === 'public' && !nameChecking && nameAvailable === true && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#10b981' }}>✓ available</span>}
-                              {saveTab === 'public' && !nameChecking && nameAvailable === false && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#ef4444' }}>✗ taken</span>}
-                            </div>
-                          </div>
-                          <div>
-                            <label style={{ fontSize: 12, color: '#64748b', fontWeight: 600, display: 'block', marginBottom: 4 }}>FIRST CHAPTER NAME <span style={{ color: '#f87171' }}>*</span></label>
-                            <input
-                              value={newChapterName}
-                              onChange={e => setNewChapterName(e.target.value)}
-                              placeholder="e.g. Introduction"
-                              style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#f1f5f9', padding: '8px 12px', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
-                            />
-                          </div>
+                    {selectedStudyId === '__new__' ? (
+                      <>
+                        <div style={{ position: 'relative' }}>
+                          <input
+                            data-testid="new-study-name"
+                            value={newStudyName}
+                            onChange={e => handleNewStudyNameChange(e.target.value)}
+                            placeholder="New study name (e.g. My Tactics)"
+                            autoFocus
+                            style={{ ...inputStyle, ...(nameAvailable === false && newStudyPublic ? { border: '1px solid #ef4444' } : {}) }}
+                          />
+                          {newStudyPublic && nameChecking && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 11, color: '#64748b' }}>checking...</span>}
+                          {newStudyPublic && !nameChecking && nameAvailable === true && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#10b981' }}>✓ available</span>}
+                          {newStudyPublic && !nameChecking && nameAvailable === false && <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 12, color: '#ef4444' }}>✗ taken</span>}
                         </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              )}
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          {[[false, '🔒 Private', 'Only you'], [true, '🌐 Public', 'Anyone can study it']].map(([pub, label, hint]) => {
+                            const on = newStudyPublic === pub;
+                            return (
+                              <button
+                                key={label}
+                                type="button"
+                                onClick={() => { setNewStudyPublic(pub); handleNewStudyNameChange(newStudyName, pub); }}
+                                style={{ flex: 1, padding: '8px 6px', borderRadius: 8, border: `1px solid ${on ? (pub ? '#10b981' : '#6366f1') : 'rgba(255,255,255,0.1)'}`, background: on ? (pub ? 'rgba(16,185,129,0.15)' : 'rgba(99,102,241,0.15)') : 'transparent', color: on ? (pub ? '#34d399' : '#a5b4fc') : '#64748b', cursor: 'pointer', fontSize: 12, fontWeight: on ? 700 : 500 }}
+                              >{label}<div style={{ fontSize: 10, fontWeight: 400, opacity: 0.8 }}>{hint}</div></button>
+                            );
+                          })}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#64748b' }}>
+                          Category:
+                          {CATEGORIES.map(([cat, label]) => (
+                            <button
+                              key={cat}
+                              type="button"
+                              onClick={() => setSelectedCategory(cat)}
+                              style={{ padding: '3px 9px', borderRadius: 999, border: `1px solid ${selectedCategory === cat ? '#fbbf24' : 'rgba(255,255,255,0.1)'}`, background: selectedCategory === cat ? 'rgba(251,191,36,0.12)' : 'transparent', color: selectedCategory === cat ? '#fbbf24' : '#64748b', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}
+                            >{label}</button>
+                          ))}
+                        </div>
+                        <div>
+                          <label style={labelStyle}>FIRST CHAPTER</label>
+                          <input value={newChapterName} onChange={e => setNewChapterName(e.target.value)} placeholder="Chapter 1" style={{ ...inputStyle, border: '1px solid rgba(255,255,255,0.12)' }} />
+                        </div>
+                      </>
+                    ) : study && (
+                      <div>
+                        <label style={labelStyle}>CHAPTER</label>
+                        <select
+                          data-testid="save-chapter"
+                          value={selectedChapterId}
+                          onChange={e => { setSelectedChapterId(e.target.value); if (e.target.value !== '__new__') setNewChapterInStudy(''); }}
+                          style={fieldStyle}
+                        >
+                          {chapters.map(c => <option key={c._id} value={c._id}>{c.name}{c.puzzleCount != null ? ` (${c.puzzleCount})` : ''}</option>)}
+                          <option value="__new__">➕ New chapter…</option>
+                        </select>
+                        {selectedChapterId === '__new__' && (
+                          <input
+                            value={newChapterInStudy}
+                            onChange={e => setNewChapterInStudy(e.target.value)}
+                            placeholder={`New chapter name (e.g. Chapter ${chapters.length + 1})`}
+                            autoFocus
+                            style={{ ...inputStyle, marginTop: 8 }}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Errors / success */}
               {modalError && (
@@ -579,8 +562,8 @@ export default function PositionEditor({ initialFen = START_FEN }) {
                   <button
                     onClick={handlePublicSave}
                     disabled={modalSaving}
-                    style={{ flex: 2, padding: '11px 0', borderRadius: 10, border: 'none', background: saveTab === 'public' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #6366f1, #4f46e5)', color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 700, opacity: modalSaving ? 0.7 : 1 }}
-                  >{modalSaving ? '⏳ Saving...' : saveTab === 'public' ? '🌐 Save to Public Study' : '🔒 Save to Private Study'}</button>
+                    style={{ flex: 2, padding: '11px 0', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg, #10b981, #059669)', color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 700, opacity: modalSaving ? 0.7 : 1 }}
+                  >{modalSaving ? '⏳ Saving...' : '💾 Save'}</button>
                 </div>
               )}
               {modalSuccess && (

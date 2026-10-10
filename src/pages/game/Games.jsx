@@ -124,7 +124,7 @@ export default function Games() {
     {
       id: 'friend',
       title: "Play with a Friend",
-      blurb: "Share a code and play — they don't even need an account.",
+      blurb: "Share a code and talk while you play — free voice call built in.",
       icon: "🤝",
       color: "var(--color-success)",
       action: () => setShowFriendSetup(true)

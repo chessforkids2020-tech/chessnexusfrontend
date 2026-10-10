@@ -770,7 +770,7 @@ const AdminStudyManagement = () => {
                 />
               </div>
               <div style={styles.formGroup}>
-                <label style={styles.label}>Puzzle Description (Shown to users)</label>
+                <label style={styles.label}>Puzzle Description (shown to users — leave blank to hide)</label>
                 <textarea
                   style={styles.textarea}
                   value={puzzleForm.puzzleDescription}

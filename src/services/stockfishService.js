@@ -396,4 +396,7 @@ class StockfishService {
 // Create singleton instance
 const stockfishService = new StockfishService();
 
+// The class too, for a page that needs a SECOND engine running alongside the
+// shared one (single-game review runs while the live panel keeps working).
+export { StockfishService };
 export default stockfishService;

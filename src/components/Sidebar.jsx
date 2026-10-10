@@ -156,7 +156,8 @@ export default function Sidebar({ user, onNavigate }) {
     } catch { /* silent — non-critical */ }
   }, [isAuthenticated]);
 
-  // Unread messages from friends (shown in the bell alongside app notifications)
+  // Unread messages from ANYONE in /social/chat chats (1:1 and group), shown in
+  // the bell alongside app notifications. Not limited to friends.
   const [friendMsgs, setFriendMsgs] = useState([]);
   const [friendMsgTotal, setFriendMsgTotal] = useState(0);
   // If the endpoint is unavailable on this backend (404), stop polling after a
@@ -275,6 +276,27 @@ export default function Sidebar({ user, onNavigate }) {
     } catch { /* silent — non-critical */ }
   }, [isAuthenticated]);
 
+  // Incoming friend requests (pending, sent TO this user). Accept / Decline
+  // inline; full list also on /friends.
+  const [friendRequests, setFriendRequests] = useState([]);
+  const fetchFriendRequests = React.useCallback(async () => {
+    if (!isAuthenticated) { setFriendRequests([]); return; }
+    try {
+      const res = await api.get('/api/friends/requests');
+      setFriendRequests(Array.isArray(res.data) ? res.data : []);
+    } catch { /* silent — non-critical */ }
+  }, [isAuthenticated]);
+
+  const respondToFriendRequest = async (friendshipId, action) => {
+    try {
+      await api.post(`/api/friends/${action}/${friendshipId}`);
+      setFriendRequests(prev => prev.filter(r => r.friendshipId !== friendshipId));
+    } catch (e) {
+      // The item stays so the user can retry.
+      console.error('friend request action failed', e?.response?.data?.message || e.message);
+    }
+  };
+
   const respondToGameInvite = async (inviteId, action, roomCode) => {
     try {
       await api.post(`/api/game-invites/${inviteId}/respond`, { action });
@@ -322,13 +344,13 @@ export default function Sidebar({ user, onNavigate }) {
     // Fetch once, then poll. Poll quickly (30s) only while the bell is open;
     // otherwise refresh slowly (120s) just to keep the badge count fresh. This
     // cuts request volume well below the old constant 60s polling.
-    const poll = () => { fetchFriendUnread(); fetchCoachUnread(); fetchReportReplies(); fetchCoachRequests(); fetchAppNotifications(); fetchOnlineFriends(); fetchGameInvites(); };
+    const poll = () => { fetchFriendUnread(); fetchCoachUnread(); fetchReportReplies(); fetchCoachRequests(); fetchAppNotifications(); fetchOnlineFriends(); fetchGameInvites(); fetchFriendRequests(); };
     poll();
     // Poll faster (30s) while either the bell or friends panel is open.
     const intervalMs = (showNotifications || showFriends) ? 30000 : 120000;
     const id = setInterval(poll, intervalMs);
     return () => clearInterval(id);
-  }, [isAuthenticated, fetchFriendUnread, fetchCoachUnread, fetchReportReplies, fetchCoachRequests, fetchAppNotifications, fetchOnlineFriends, fetchGameInvites, showNotifications, showFriends]);
+  }, [isAuthenticated, fetchFriendUnread, fetchCoachUnread, fetchReportReplies, fetchCoachRequests, fetchAppNotifications, fetchOnlineFriends, fetchGameInvites, fetchFriendRequests, showNotifications, showFriends]);
 
   // Real-time game invite via main socket
   useEffect(() => {
@@ -349,8 +371,18 @@ export default function Sidebar({ user, onNavigate }) {
     return () => socket.off('game_invite', handler);
   }, [isAuthenticated]);
 
-  // Total red badge = unread app notifications + friend messages + coach messages + report replies + coach requests + game invites
-  const unreadNotifCount = appUnreadCount + friendMsgTotal + coachMsgTotal + reportReplies.length + coachRequests.length + gameInvites.length + myNotifs.unread;
+  // Real-time friend request (server emits `friend_request` to our user room).
+  // Refetch rather than build the row from the event: the list endpoint
+  // carries the requester's avatar data the event lacks.
+  useEffect(() => {
+    if (!isAuthenticated || !socket) return;
+    const onReq = () => fetchFriendRequests();
+    socket.on('friend_request', onReq);
+    return () => socket.off('friend_request', onReq);
+  }, [isAuthenticated, fetchFriendRequests]);
+
+  // Total red badge = unread app notifications + friend messages + coach messages + report replies + coach requests + game invites + friend requests
+  const unreadNotifCount = appUnreadCount + friendMsgTotal + coachMsgTotal + reportReplies.length + coachRequests.length + gameInvites.length + friendRequests.length + myNotifs.unread;
 
   // Load coach status once when authenticated
   useEffect(() => {
@@ -1725,6 +1757,47 @@ export default function Sidebar({ user, onNavigate }) {
                   </>
                 )}
 
+                {/* Friend requests — someone wants to be this user's friend. Accept / Decline inline. */}
+                {friendRequests.length > 0 && (
+                  <>
+                    <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
+                      👋 Friend requests
+                    </div>
+                    {friendRequests.map(r => {
+                      const fromName = r.user?.displayName || r.user?.username || 'Someone';
+                      return (
+                        <div
+                          key={r.friendshipId}
+                          style={{
+                            background: 'var(--color-accent-a08)', border: '1px solid var(--color-accent-a20)',
+                            borderRadius: 'var(--radius-md)', padding: '9px 11px', marginBottom: '8px',
+                          }}
+                        >
+                          <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--color-accent)' }}>
+                            👋 <strong>{fromName}</strong> sent you a friend request
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                            <button
+                              onClick={() => respondToFriendRequest(r.friendshipId, 'accept')}
+                              style={{ flex: 1, background: 'var(--color-success-a20)', color: 'var(--color-success)', border: '1px solid var(--color-success-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                            >✓ Accept</button>
+                            <button
+                              onClick={() => respondToFriendRequest(r.friendshipId, 'decline')}
+                              style={{ flex: 1, background: 'var(--color-danger-a12)', color: 'var(--color-danger)', border: '1px solid var(--color-danger-a30)', borderRadius: 'var(--radius-md)', padding: '6px 0', fontSize: '12px', fontWeight: 700, cursor: 'pointer' }}
+                            >✕ Decline</button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div
+                      onClick={() => { handleNavigate('/friends'); setShowNotifications(false); }}
+                      style={{ fontSize: '11px', color: 'var(--color-accent)', cursor: 'pointer', textAlign: 'right', marginBottom: '10px' }}
+                    >
+                      See all requests →
+                    </div>
+                  </>
+                )}
+
                 {/* Coach requests — a coach wants to add this user as a student. Approve / Decline inline. */}
                 {coachRequests.length > 0 && (
                   <>
@@ -1799,7 +1872,7 @@ export default function Sidebar({ user, onNavigate }) {
                   </>
                 )}
 
-                {/* Friend messages — unread chats from friends */}
+                {/* Messages — unread chats from anyone (friend or not) */}
                 {friendMsgs.length > 0 && (
                   <>
                     <div style={{ fontSize: '10.5px', fontWeight: 700, color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '2px 0 6px' }}>
@@ -1900,7 +1973,7 @@ export default function Sidebar({ user, onNavigate }) {
                 {/* myNotifs must be in this test too: it feeds the badge count, so
                     leaving it out made a lone academy invite show "1" on the bell
                     above an "all caught up" panel. */}
-                {appNotifications.filter(n => visibleNotifIds.has(n.id)).length === 0 && friendMsgs.length === 0 && coachMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 && (myNotifs.notifications || []).filter(n => !n.read).length === 0 ? (
+                {appNotifications.filter(n => visibleNotifIds.has(n.id)).length === 0 && friendMsgs.length === 0 && coachMsgs.length === 0 && reportReplies.length === 0 && coachRequests.length === 0 && gameInvites.length === 0 && friendRequests.length === 0 && (myNotifs.notifications || []).filter(n => !n.read).length === 0 ? (
                   <div style={{ color: 'var(--color-text-faint)', fontSize: '13px', textAlign: 'center', padding: '20px 4px' }}>
                     You're all caught up — no notifications.
                   </div>

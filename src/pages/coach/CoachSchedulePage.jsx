@@ -8,7 +8,10 @@ import { Link } from 'react-router-dom';
 import api from '../../api';
 import { useAuth } from '../../contexts/AuthContext';
 import { buildJoinLink } from './MyMeetingsPage';
-import { DAY_NAMES, localToUtc, localDow, localTimeValue, localTimeLabel, localDayLabel, classesOnLocalDate } from '../../utils/istSchedule';
+import { DAY_NAMES, localToUtc, localDow, localTimeValue, localTimeLabel, localDayLabel, classesOnLocalDate, zoneSchedule } from '../../utils/istSchedule';
+
+// The coach's own browser zone — students in other zones are listed per slot.
+const MY_TZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { return ''; } })();
 import './CoachDashboard.css';
 import '../MyCoachPortal.css'; // reuse the monthly calendar styles (mcp-cal-*)
 
@@ -68,7 +71,7 @@ export default function CoachSchedulePage() {
     setLoading(true);
     try {
       const [s, g, h] = await Promise.all([
-        api.get('/api/coach-schedule'),
+        api.get('/api/coach-schedule', { params: { tz: MY_TZ } }),
         api.get('/api/coach/groups').catch(() => ({ data: { groups: [] } })),
         api.get('/api/coach-schedule/holidays').catch(() => ({ data: { holidays: [] } })),
       ]);
@@ -435,6 +438,33 @@ export default function CoachSchedulePage() {
                   {slot.durationMinutes} min
                   {slot.memberCount != null ? ` · ${slot.memberCount} in batch` : ''}
                 </div>
+                {(() => {
+                  // Students in other timezones see a different day/time. Zones
+                  // that read the same as the coach's (e.g. Asia/Kolkata vs
+                  // Asia/Calcutta aliases) are dropped.
+                  const mine = zoneSchedule(slot.days, slot.timeUTC, MY_TZ);
+                  const abroad = (slot.studentZones || [])
+                    .filter(z => z.tz && z.tz !== MY_TZ)
+                    .map(z => ({ ...z, view: zoneSchedule(slot.days, slot.timeUTC, z.tz) }))
+                    .filter(z => z.view && !(mine && z.view.days === mine.days && z.view.time === mine.time));
+                  if (abroad.length === 0) return null;
+                  return (
+                    <div style={{
+                      fontSize: 12, margin: '0 0 10px', padding: '8px 10px', borderRadius: 8,
+                      background: 'rgba(56,189,248,0.08)', border: '1px solid rgba(56,189,248,0.25)',
+                    }}>
+                      <div style={{ color: 'rgba(226,232,240,0.7)', marginBottom: 4 }}>🌎 Students in other timezones see:</div>
+                      {abroad.map(z => (
+                        <div key={z.tz} style={{ color: '#7dd3fc' }}>
+                          <strong>{z.view.days} · {z.view.time}</strong>
+                          <span style={{ color: 'rgba(226,232,240,0.6)' }}>
+                            {' '}— {z.view.place}{z.view.abbr ? ` (${z.view.abbr})` : ''} · {z.count} student{z.count === 1 ? '' : 's'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
                 {slot.meetingLink && (
                   <a href={slot.meetingLink} target="_blank" rel="noopener noreferrer" className="btn-ghost" style={{ display: 'inline-block', marginBottom: 8 }}>
                     🔗 Open link

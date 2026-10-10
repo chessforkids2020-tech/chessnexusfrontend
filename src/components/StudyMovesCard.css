@@ -1,0 +1,170 @@
+/* Study moves card — same look as the Healthy Mix moves card (HealthyMix.css
+   .hm-moves / .hm-var), tinted with the study's accent via --sm-accent. */
+.sm-moves {
+  --sm-accent: var(--color-accent-2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-lg);
+}
+
+.sm-moves-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--color-white-a07);
+  background: var(--color-black-a20);
+}
+.sm-moves-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  color: var(--color-text-faint);
+}
+
+.sm-moves-list {
+  max-height: 560px;
+  min-height: 300px;
+  overflow-y: auto;
+  padding: 4px 0 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-white-a10) transparent;
+}
+.sm-moves-list::-webkit-scrollbar { width: 6px; }
+.sm-moves-list::-webkit-scrollbar-thumb { background: var(--color-white-a07); border-radius: 3px; }
+
+.sm-moves-empty {
+  display: block;
+  color: var(--color-text-faint);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 28px 20px;
+  text-align: center;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Mainline: dense 2-column notation, striped rows */
+.sm-mrow {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  font-size: 13.5px;
+}
+.sm-mrow:nth-child(odd) { background: var(--color-white-a04); }
+.sm-mno {
+  color: var(--color-text-faint);
+  font-weight: 700;
+  text-align: center;
+  font-size: 12px;
+}
+.sm-mv {
+  padding: 7px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14.5px;
+  text-align: left;
+  min-height: 34px;
+  transition: background 0.15s;
+  letter-spacing: -0.2px;
+}
+span.sm-mv { cursor: default; }
+.sm-dots { color: var(--color-text-faint); }
+button.sm-mv:hover { background: var(--color-white-a07); }
+.sm-mv.on {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--sm-accent) 22%, transparent), transparent);
+  box-shadow: inset 2px 0 0 var(--sm-accent);
+}
+
+/* Sidelines: indented, wrapped run under the row they branch from */
+.sm-var {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 4px;
+  margin: 2px 6px 4px 22px;
+  padding: 4px 6px;
+  border-left: 2px solid color-mix(in srgb, var(--sm-accent) 45%, transparent);
+  background: color-mix(in srgb, var(--sm-accent) 5%, transparent);
+  border-radius: 0 6px 6px 0;
+}
+/* A sideline inside a sideline takes its own full-width line, indented again */
+.sm-var .sm-var { flex-basis: calc(100% - 14px); margin: 3px 0 3px 12px; }
+.sm-var-no {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-faint);
+}
+.sm-var-mv {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 1px 4px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.sm-var-mv:hover { background: var(--color-white-a07); color: var(--color-text); }
+.sm-var-mv.on {
+  background: color-mix(in srgb, var(--sm-accent) 30%, transparent);
+  color: var(--color-text);
+}
+
+/* Comments: a mainline move's comment gets its own line under the row;
+   a sideline move's comment runs inline after the move. */
+.sm-cm {
+  padding: 6px 14px 8px 50px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.sm-cm-root { padding-left: 14px; cursor: default; border-bottom: 1px solid var(--color-white-a07); }
+.sm-var-cm {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--color-text-faint);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 0 2px;
+}
+
+/* Nav bar at the bottom of the card */
+.sm-moves-foot {
+  border-top: 1px solid var(--color-white-a07);
+  padding: 9px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-white-a04);
+}
+.sm-moves-nav { display: inline-flex; gap: 6px; }
+.sm-nav-btn {
+  min-width: 40px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--color-white-a04);
+  border: 1px solid var(--color-white-a10);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background .15s;
+}
+.sm-nav-btn:hover:not(:disabled) { background: var(--color-white-a10); }
+.sm-nav-btn:disabled { opacity: 0.28; cursor: default; }

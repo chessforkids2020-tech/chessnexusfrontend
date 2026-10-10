@@ -1424,6 +1424,15 @@ export default function SocialHubPage() {
             <h1 className="sh-title" style={{ margin: 0 }}>Social Hub</h1>
             <p className="sh-subtitle">See who's most active and the best players across the app</p>
           </div>
+          {/* Newsletter is public (no login), so guests get the door too. */}
+          <button
+            type="button"
+            className="sh-chat-launch"
+            title="Chess Nexus news and new features"
+            onClick={() => navigate('/newsletter')}
+          >
+            <span>📰 Newsletter</span>
+          </button>
         </div>
 
         {/* Sign-up banner */}

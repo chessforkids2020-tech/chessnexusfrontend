@@ -33,7 +33,11 @@ const MCP_TABS = [
 
 export default function MyCoachPortal() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState('overview');
+  // `?tab=messages` opens a tab directly (e.g. after "Ask my coach" on a game).
+  const [tab, setTab] = useState(() => {
+    const t = new URLSearchParams(window.location.search).get('tab');
+    return MCP_TABS.some(x => x.id === t) ? t : 'overview';
+  });
   // Mobile tab menu (the ☰ beside the page title). The app rail's generic
   // burger is suppressed on this route — see StudyPuzzleSidebar's
   // hideMobileBurger — so this is the only ☰ on the page.

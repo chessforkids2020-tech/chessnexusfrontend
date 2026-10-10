@@ -71,56 +71,77 @@ function fenMeta(fen) {
   return { moveNo: parseInt(parts[5] || '1', 10), whiteToMove: (parts[1] || 'w') === 'w' };
 }
 
-// Recursive move-tree renderer (Lichess/ChessBase style). Renders the mainline
-// inline; each variation (children[1..]) is shown nested in ( … ). The current
-// node is highlighted; clicking any move jumps to it.
+// Move-tree renderer. The mainline is a 2-column table (move no. | White |
+// Black); each variation (children[1..]) is an indented block under the row it
+// branches from — nested sub-variations stay inline in ( … ) inside that block.
+// When a variation replaces White's move, the row splits Lichess-style: the
+// Black reply continues on a "…" row after the block. The current node is
+// highlighted; clicking any move jumps to it.
 //   root, path: from GameReplay state
 //   moveAnalysis, turningPointPly: mainline annotations (variations have none)
 //   onGoTo(path): navigate to a node
 function MoveTree({ root, path, moveAnalysis, turningPointPly, onGoTo }) {
   const curId = path[path.length - 1] || 'root';
 
-  // Render a chain starting at `node` along children[0], emitting any sibling
-  // variations after each move. `nodePath` = path to `node` (excluding root).
-  // `mainline` = whether this chain is the game mainline (for annotations).
-  const renderChain = (node, nodePath, mainline) => {
+  const renderMainline = () => {
     const out = [];
-    let cur = node;
-    let curPath = nodePath;
-    let ply = nodePath.length; // mainline ply index of `cur`
+    let row = null; // { no, w, b } — cells are elements, null = empty
+    const flush = () => {
+      if (row && (row.w || row.b)) {
+        out.push(
+          <div key={`r${out.length}`} className="gr-mrow">
+            <span className="gr-mno">{row.no}.</span>
+            {row.w || <span className="gr-mv gr-mv-empty">…</span>}
+            {row.b || <span className="gr-mv gr-mv-empty" />}
+          </div>
+        );
+      }
+      row = null;
+    };
+
+    let cur = root;
+    let curPath = [];
+    let ply = 0;
     while (cur.children.length > 0) {
       const child = cur.children[0];
       const childPath = [...curPath, child.id];
       const childPly = ply + 1;
       const { moveNo, whiteToMove } = fenMeta(cur.fen);
-      const ann = mainline ? moveAnalysis[childPly - 1] : null;
-      const cls = ann?.classification || '';
-      const isTurning = mainline && turningPointPly != null && childPly === turningPointPly;
-      const numText = whiteToMove ? `${moveNo}.` : (out.length === 0 ? `${moveNo}…` : '');
-      out.push(
-        <span
+      const cls = moveAnalysis[childPly - 1]?.classification || '';
+      const isTurning = turningPointPly != null && childPly === turningPointPly;
+      const cell = (
+        <button
           key={child.id}
-          className={`gr-move-chip ${cls}${child.id === curId ? ' current' : ''}${isTurning ? ' turning-point' : ''}`}
+          type="button"
+          className={`gr-mv ${cls}${child.id === curId ? ' current' : ''}${isTurning ? ' turning-point' : ''}`}
           onClick={() => onGoTo(childPath)}
         >
-          {numText}{child.san}{isTurning && <span className="gr-tp-marker">⚡</span>}
-        </span>
+          {child.san}{isTurning && <span className="gr-tp-marker">⚡</span>}
+        </button>
       );
-      // Variations branching from `cur` (siblings of child beyond index 0).
-      for (let i = 1; i < cur.children.length; i++) {
-        const v = cur.children[i];
+      if (whiteToMove) { flush(); row = { no: moveNo, w: cell, b: null }; }
+      else { if (!row) row = { no: moveNo, w: null, b: null }; row.b = cell; }
+
+      // Variations branching from `cur` (alternatives to `child`).
+      if (cur.children.length > 1) {
+        flush();
         out.push(
-          <span key={`var-${v.id}`} className="gr-var">
-            <span className="gr-var-paren"> (</span>
-            {renderVariation(v, [...curPath, v.id])}
-            <span className="gr-var-paren">) </span>
-          </span>
+          <div key={`v${child.id}`} className="gr-var-block">
+            {cur.children.slice(1).map(v => (
+              <div key={v.id} className="gr-var-line">
+                {renderVariation(v, [...curPath, v.id])}
+              </div>
+            ))}
+          </div>
         );
+        // Black's reply to this White move continues on a "…" row.
+        if (whiteToMove) row = { no: moveNo, w: null, b: null };
       }
       cur = child;
       curPath = childPath;
       ply = childPly;
     }
+    flush();
     return out;
   };
 
@@ -169,7 +190,7 @@ function MoveTree({ root, path, moveAnalysis, turningPointPly, onGoTo }) {
     return out;
   };
 
-  return <>{renderChain(root, [], true)}</>;
+  return <>{renderMainline()}</>;
 }
 
 // FEN of the position BEFORE the node at `nodePath` (i.e. its parent's fen).
@@ -282,9 +303,8 @@ function EnginePanel({ fen, numLines = ENGINE_LINES, enabled = true, onToggle })
           </button>
         </div>
       </div>
-      {!enabled ? (
-        <div className="gr-engine-empty">Engine off — turn it on to see Stockfish lines.</div>
-      ) : status === 'error' ? (
+      {/* Off: just the header (name + switch) — no message line. */}
+      {!enabled ? null : status === 'error' ? (
         <div className="gr-engine-empty">Engine could not start in this browser.</div>
       ) : lines.length === 0 ? (
         <div className="gr-engine-empty">Analysing…</div>
@@ -318,9 +338,47 @@ const CLASS_META = {
   good:        { icon: '',   color: 'var(--color-success)', label: '' },
 };
 
+// Glyph on the square the current move landed on. Solid colours, not theme
+// vars: the badge sits on the board, whose colours don't follow the app theme.
+// "good" moves get no badge — marking every move would drown out the ones that
+// matter.
+const MOVE_BADGE = {
+  brilliant:  { text: '!!', color: '#1baca6', title: 'Brilliant' },
+  best:       { text: '★',  color: '#3f9f4a', title: 'Best move' },
+  inaccuracy: { text: '?!', color: '#c99a06', title: 'Inaccuracy' },
+  mistake:    { text: '?',  color: '#e07b22', title: 'Mistake' },
+  blunder:    { text: '??', color: '#d63b3b', title: 'Blunder' },
+};
+
+// ── Learn from your mistakes ──
+// A tried move counts as right when it is the engine's move, or when it keeps
+// the win chance within this many points of the position before the mistake —
+// i.e. it would NOT itself have been flagged (analyzeGame flags a 10%+ drop as
+// an inaccuracy). Intermediate players often find a different good move; it
+// should not be marked wrong just because it isn't the engine's first choice.
+const PRACTICE_OK_DROP = 10;
+const PRACTICE_DEPTH = 12; // same depth the game was reviewed at
+const winChanceCp = (cp) => 100 / (1 + Math.exp(-0.00368208 * cp));
+const PIECE_NAME = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' };
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, quick = false }) {
+// Optional props for hosts other than the bulk "Analyze My Games" report (the
+// single-game page uses them): `headerTitle`/`headerSub` replace "Game N ·
+// opening", `backLabel` renames the back buttons, `seekPly` + `seekNonce` jump
+// to a mainline ply from outside (eval graph clicks), and `onPlyChange(ply)`
+// reports the mainline ply being shown (null inside a variation).
+// `belowBoard` renders under the playback controls (board width);
+// `belowMoves` renders in the right column, under the moves + commentary cards.
+// `belowAll` renders full width under both columns.
+// `hideHeader` drops the Back button + title row entirely.
+// `practiceEnabled` offers "Learn from your mistakes" — needs moveAnalysis
+// entries carrying `bestUci` (the single-game page provides it).
+export default function GameReplay({
+  game, totalGames, onClose, onNext, onPrev, quick = false,
+  headerTitle, headerSub, backLabel, seekPly, seekNonce, onPlyChange, belowBoard, belowMoves, belowAll,
+  hideHeader = false, practiceEnabled = false,
+}) {
   const { pgn, playerSide, moveAnalysis = [], accuracy, totalBlunders, gameThemes = [], opening, result, gameNumber, coachAnalysis, turningPoint } = game;
 
   // Resolve the turning point ply index for the player's side
@@ -378,9 +436,16 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
   const [tree, setTree] = useState(() => loadTreeInto(pgn, buildTreeFromPgn(pgn)));
   const [path, setPath] = useState([]); // [] = starting position
   const [moveMenu, setMoveMenu] = useState(null); // {x,y} right-click menu on move list, or null
+  // "Learn from your mistakes" session, or null. See the practice block below.
+  const [practice, setPractice] = useState(null);
 
-  // Rebuild the tree when the game changes.
+  // Rebuild the tree when the game changes. Not on mount: useState above already
+  // built it from this pgn, and node ids come from a global counter, so a second
+  // build would orphan any path set on mount (e.g. a ?ply= deep-link seek).
+  const treeBuiltForRef = useRef(pgn);
   useEffect(() => {
+    if (treeBuiltForRef.current === pgn) return;
+    treeBuiltForRef.current = pgn;
     const t = loadTreeInto(pgn, buildTreeFromPgn(pgn));
     setTree(t);
     setPath([]);
@@ -392,6 +457,19 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
   const curNode  = useMemo(() => nodeAtPath(tree, path), [tree, path]);
   const onMainline = useMemo(() => isMainlinePath(tree, path), [tree, path]);
   const exploring = path.length > 0 && !onMainline;
+
+  // External seek (eval graph). Keyed on the nonce so clicking the same ply
+  // twice still jumps back after the user has moved away from it.
+  useEffect(() => {
+    if (seekPly == null) return;
+    setPlaying(false);
+    setPath(mainlinePath.slice(0, Math.max(0, Math.min(seekPly, mainlinePath.length))));
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [seekNonce]);
+
+  useEffect(() => {
+    if (onPlyChange) onPlyChange(onMainline ? path.length : null);
+  }, [onPlyChange, onMainline, path.length]);
 
   // Step one move forward on the CURRENT line (follows children[0] of curNode,
   // i.e. stays on whatever variation/mainline you're in).
@@ -422,6 +500,32 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
   // measures the column and a column that sizes to the board feed each other.
   const [boardSize, setBoardSize] = useState(520);
 
+  // The board resizes itself (drag grip, viewport cap), so `boardSize` is only
+  // what we ASK for. The vertical win bar follows the squares actually drawn:
+  // measure the square grid (parent of the [data-square] cells) and keep the
+  // bar at its exact top offset + height.
+  const boardWrapRef = useRef(null);
+  const [gridBox, setGridBox] = useState(null); // { top, h } relative to the wrap
+  useEffect(() => {
+    const wrap = boardWrapRef.current;
+    if (!wrap || typeof ResizeObserver === 'undefined') return undefined;
+    const measure = () => {
+      const grid = wrap.querySelector('[data-square]')?.parentElement;
+      if (!grid) return;
+      const top = Math.round(grid.getBoundingClientRect().top - wrap.getBoundingClientRect().top);
+      const h = Math.round(grid.getBoundingClientRect().height);
+      setGridBox(prev => (prev && prev.top === top && prev.h === h ? prev : { top, h }));
+    };
+    const ro = new ResizeObserver(measure);
+    ro.observe(wrap);
+    const grid = wrap.querySelector('[data-square]')?.parentElement;
+    if (grid) ro.observe(grid);
+    measure();
+    return () => ro.disconnect();
+  }, []);
+  // Width for everything lined up under the board (tools, graph, phone win bar).
+  const drawnBoardSize = gridBox?.h ?? boardSize;
+
   // Auto-play — steps forward along the current line.
   useEffect(() => {
     if (playing) {
@@ -443,9 +547,29 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
     }
   }, [path]);
 
+  // Keep the current move visible inside the moves list (scrolls the list only,
+  // never the page). The ref is the scrolling rows area, between the MOVES
+  // header and the controls footer.
+  const moveListRef = useRef(null);
+  useEffect(() => {
+    const box = moveListRef.current;
+    const el = box?.querySelector('.gr-mv.current, .gr-var-move.current');
+    if (!box || !el) return;
+    const b = box.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    if (r.top < b.top) box.scrollTop -= b.top - r.top + 4;
+    else if (r.bottom > b.bottom) box.scrollTop += r.bottom - b.bottom + 4;
+  }, [path]);
+
   // Keyboard navigation
+  // While practising, the keys must not walk the game (that would leave the
+  // position being solved); Escape ends practice instead of leaving the page.
   useEffect(() => {
     const handler = (e) => {
+      if (practice) {
+        if (e.key === 'Escape') { e.preventDefault(); setPractice(null); }
+        return;
+      }
       if (e.key === 'ArrowRight') { e.preventDefault(); goForwardOne(); }
       else if (e.key === 'ArrowLeft')  { e.preventDefault(); goBackOne(); }
       else if (e.key === ' ')          { e.preventDefault(); setPlaying(p => !p); }
@@ -453,7 +577,7 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [goForwardOne, goBackOne, onClose]);
+  }, [goForwardOne, goBackOne, onClose, practice]);
 
   // Control-bar aliases (kept names from the old API).
   const goFirst = goToStart;
@@ -615,20 +739,220 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
     try { localStorage.removeItem(treeStorageKey(pgn)); } catch { /* ignore */ }
   }, [tree, pgn, hasVars]);
 
+  // ── Board tools: Copy FEN / Copy game / Export PGN ──
+  // The game's PGN normalised by chess.js (headers + mainline + result). Falls
+  // back to the raw string if chess.js can't parse it.
+  const gamePgn = useMemo(() => {
+    try {
+      const c = new Chess();
+      c.loadPgn(pgn || '');
+      const full = c.pgn();
+      const parts = full.split(/\r?\n\r?\n/);
+      return { full, moves: parts[parts.length - 1].trim(), headers: c.getHeaders() };
+    } catch {
+      return { full: pgn || '', moves: (pgn || '').replace(/^\[.*\]\s*$/gm, '').trim(), headers: {} };
+    }
+  }, [pgn]);
+  const [copied, setCopied] = useState(null); // 'fen' | 'game' | null
+  const copiedTimerRef = useRef(null);
+  useEffect(() => () => clearTimeout(copiedTimerRef.current), []);
+  const copyText = useCallback(async (text, key) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // Older browsers / non-secure contexts: hidden textarea + execCommand.
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch { /* ignore */ }
+      document.body.removeChild(ta);
+    }
+    setCopied(key);
+    clearTimeout(copiedTimerRef.current);
+    copiedTimerRef.current = setTimeout(() => setCopied(null), 1500);
+  }, []);
+  const copyFen = useCallback(() => {
+    copyText(currentFen === 'start' ? new Chess().fen() : currentFen, 'fen');
+  }, [copyText, currentFen]);
+  const copyGame = useCallback(() => copyText(gamePgn.moves, 'game'), [copyText, gamePgn]);
+  const exportPgn = useCallback(() => {
+    const { White = 'White', Black = 'Black' } = gamePgn.headers;
+    const safe = (s) => String(s).replace(/[^\w-]+/g, '_').slice(0, 40) || 'player';
+    const blob = new Blob([`${gamePgn.full}\n`], { type: 'application/x-chess-pgn' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${safe(White)}_vs_${safe(Black)}.pgn`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, [gamePgn]);
+
   // Detailed move analysis only applies on the GAME mainline. The mainline ply
   // equals path length when we're on the mainline; in a variation there's none.
   const mainlinePly = onMainline ? path.length : 0;
   const currentAnalysis = (onMainline && mainlinePly > 0) ? moveAnalysis[mainlinePly - 1] : null;
   const meta = currentAnalysis ? CLASS_META[currentAnalysis.classification] || CLASS_META.good : null;
+  // End-of-game summary: only at the end of the real mainline, and only with
+  // analysis (without it every stat would be blank).
+  const showSummary = moveAnalysis.length > 0 && onMainline && path.length > 0 && path.length === mainlinePath.length;
 
-  // Move arrows: green bestMove for blunders/mistakes, gold for brilliant.
+  // ── Learn from your mistakes ──────────────────────────────────────────────
+  // Steps through the player's own ?!/?/?? moves. Each one puts the board back
+  // on the position BEFORE the mistake and asks for a better move. The tried
+  // move is shown as a board override (`practice.fen`) — never added to the
+  // variation tree, so practising leaves no clutter in the move list.
+  const practiceList = useMemo(() => {
+    if (!practiceEnabled) return [];
+    const side = playerSide || 'white';
+    return moveAnalysis
+      .map((m, i) => ({ m, ply: i + 1 }))
+      .filter(({ m, ply }) => m.side === side && m.bestUci && m.bestMove && ply <= mainlinePath.length
+        && (m.classification === 'inaccuracy' || m.classification === 'mistake' || m.classification === 'blunder'));
+  }, [practiceEnabled, playerSide, moveAnalysis, mainlinePath.length]);
+
+  const practiceItem = practice && practice.idx < practiceList.length ? practiceList[practice.idx] : null;
+  const practiceRunRef = useRef(0);
+  const practiceTimerRef = useRef(null);
+  useEffect(() => () => clearTimeout(practiceTimerRef.current), []);
+
+  const openPracticeItem = useCallback((idx, results) => {
+    clearTimeout(practiceTimerRef.current);
+    practiceRunRef.current++;
+    setPlaying(false);
+    setSelection(null);
+    const item = practiceList[idx];
+    if (item) setPath(mainlinePath.slice(0, item.ply - 1));
+    setPractice({ idx, status: item ? 'ask' : 'done', fen: null, hint: false, note: null, results });
+  }, [practiceList, mainlinePath]);
+  const startPractice = useCallback(() => openPracticeItem(0, {}), [openPracticeItem]);
+  const nextPractice = useCallback(() => {
+    if (practice) openPracticeItem(practice.idx + 1, practice.results);
+  }, [practice, openPracticeItem]);
+  const stopPractice = useCallback(() => {
+    clearTimeout(practiceTimerRef.current);
+    practiceRunRef.current++;
+    setPractice(null);
+  }, []);
+
+  // Any navigation away from the position being solved (move list, eval graph,
+  // the playback buttons) ends the session — the panel would otherwise be
+  // asking about a position that is no longer on the board.
+  useEffect(() => {
+    if (!practiceItem) return;
+    if (!onMainline || path.length !== practiceItem.ply - 1) stopPractice();
+  }, [path, onMainline, practiceItem, stopPractice]);
+
+  const showPracticeSolution = useCallback(() => {
+    if (!practiceItem) return;
+    clearTimeout(practiceTimerRef.current);
+    practiceRunRef.current++;
+    const { bestUci, bestMove } = practiceItem.m;
+    let fen = null;
+    let san = bestMove;
+    try {
+      const c = new Chess(currentFen);
+      const mv = c.move({ from: bestUci.slice(0, 2), to: bestUci.slice(2, 4), promotion: bestUci[4] || undefined });
+      if (mv) { fen = c.fen(); san = mv.san; }
+    } catch { /* leave the board as is — the arrow still shows it */ }
+    setPractice(p => ({
+      ...p, status: 'shown', fen, note: { san },
+      results: { ...p.results, [practiceItem.ply]: p.results[practiceItem.ply] || 'shown' },
+    }));
+  }, [practiceItem, currentFen]);
+
+  const handlePracticeMove = useCallback((from, to, promotion) => {
+    if (!practiceItem || practice.status !== 'ask') return false;
+    let c, mv;
+    try {
+      c = new Chess(currentFen);
+      mv = c.move({ from, to, promotion: promotion || 'q' });
+    } catch { return false; }
+    if (!mv) return false;
+
+    const { m, ply } = practiceItem;
+    const uci = mv.from + mv.to + (mv.promotion || '');
+    const fen = c.fen();
+    const run = ++practiceRunRef.current;
+    clearTimeout(practiceTimerRef.current);
+
+    const right = (exact, drop) => setPractice(p => ({
+      ...p, status: 'right', fen, note: { san: mv.san, exact, drop },
+      results: { ...p.results, [ply]: p.results[ply] || 'solved' },
+    }));
+    // Wrong: show the move for a moment, then put the position back.
+    const wrong = (note) => {
+      setPractice(p => ({ ...p, status: 'wrong', fen, note }));
+      practiceTimerRef.current = setTimeout(() => {
+        if (run !== practiceRunRef.current) return;
+        setPractice(p => (p ? { ...p, status: 'ask', fen: null } : p));
+      }, 1100);
+    };
+
+    if (uci === m.bestUci || c.isCheckmate()) { right(true, 0); return true; }
+    if (mv.san === m.move) { wrong({ san: mv.san, same: true }); return true; }
+
+    // Not the engine's move — ask the engine whether it is still good.
+    setPractice(p => ({ ...p, status: 'checking', fen, note: { san: mv.san } }));
+    (async () => {
+      let res = null;
+      try {
+        if (!stockfishService.isReady()) await stockfishService.init();
+        if (run !== practiceRunRef.current) return;
+        res = await stockfishService.analyzePosition(fen, { depth: PRACTICE_DEPTH, multipv: 1 });
+      } catch { /* treated as "couldn't check" below */ }
+      if (run !== practiceRunRef.current) return;
+      const line = res?.lines?.[0];
+      if (!line) { wrong({ san: mv.san, unknown: true }); return; }
+      // The engine scores from the side to move — the opponent now — so negate
+      // for the player who just moved.
+      const moverWin = line.scoreType === 'mate'
+        ? (-line.score > 0 ? 100 : 0)
+        : winChanceCp(-line.score);
+      const drop = Math.max(0, Math.round(m.winChanceBefore - moverWin));
+      if (drop < PRACTICE_OK_DROP) right(false, drop);
+      else wrong({ san: mv.san, drop });
+    })();
+    return true;
+  }, [practiceItem, practice, currentFen]);
+
+  // The practice check uses the shared engine; stop it if the session ends
+  // mid-search so the live panel can have it back.
+  useEffect(() => {
+    if (practice?.status !== 'checking') return undefined;
+    return () => { stockfishService.stop(); };
+  }, [practice?.status]);
+
+  // Move-quality badge on the square the current move landed on.
+  const squareBadges = useMemo(() => {
+    if (practiceItem) {
+      if (practice.status !== 'ask' || !practice.hint) return undefined;
+      return { [practiceItem.m.bestUci.slice(0, 2)]: { text: '💡', color: '#2f74c0', title: 'Hint' } };
+    }
+    if (!currentAnalysis || !onMainline || !curNode.to) return undefined;
+    const b = MOVE_BADGE[currentAnalysis.isBest ? 'best' : currentAnalysis.classification];
+    return b ? { [curNode.to]: b } : undefined;
+  }, [practiceItem, practice, currentAnalysis, onMainline, curNode]);
+
+  // Move arrows: green best move for inaccuracies, mistakes and blunders (the
+  // move that should have been played, from the position before it); gold-green
+  // on the move itself for brilliant.
   const arrows = useMemo(() => {
+    if (practiceItem) {
+      if (practice.status !== 'shown') return [];
+      const u = practiceItem.m.bestUci;
+      return [{ from: u.slice(0, 2), to: u.slice(2, 4), color: 'var(--color-success)' }];
+    }
     if (!currentAnalysis || !onMainline) return [];
     if (currentAnalysis.classification === 'brilliant') {
       if (curNode.from && curNode.to) return [{ from: curNode.from, to: curNode.to, color: 'var(--color-success)' }];
       return [];
     }
-    if (!currentAnalysis.bestMove || currentAnalysis.classification === 'good' || currentAnalysis.classification === 'inaccuracy') return [];
+    if (!currentAnalysis.bestMove || currentAnalysis.classification === 'good') return [];
     const prevFen = nodeAtPath(tree, path.slice(0, -1))?.fen;
     if (!prevFen) return [];
     try {
@@ -637,7 +961,7 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
       if (m) return [{ from: m.from, to: m.to, color: 'var(--color-success)' }];
     } catch {}
     return [];
-  }, [currentAnalysis, onMainline, curNode, tree, path]);
+  }, [practiceItem, practice, currentAnalysis, onMainline, curNode, tree, path]);
 
   // Win chance bar (white's perspective)
   const whiteWinPct = useMemo(() => {
@@ -657,54 +981,81 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
     <div className={`gr-container${quick ? ' gr-quick' : ''}`}>
       {/* Header. In Quick Analyze there's no "game" to label (it's a pasted FEN/
           PGN), so drop the "Game N" + opening info and keep just a Back button. */}
+      {!hideHeader && (
       <div className="gr-header">
-        <button className="gr-back-btn" onClick={onClose}>{quick ? '← Back' : '← Back to Overview'}</button>
-        {!quick && (
+        <button className="gr-back-btn" onClick={onClose}>{backLabel ? `← ${backLabel}` : quick ? '← Back' : '← Back to Overview'}</button>
+        {headerTitle ? (
+          <div className="gr-header-info">
+            <span className="gr-game-num">{headerTitle}</span>
+            {headerSub && <span className="gr-opening">{headerSub}</span>}
+          </div>
+        ) : !quick && (
           <div className="gr-header-info">
             <span className="gr-game-num">Game {gameNumber}</span>
             <span className="gr-opening">{opening || 'Unknown'}</span>
           </div>
         )}
       </div>
+      )}
 
       <div className="gr-layout">
         {/* Board */}
         <div className="gr-board-col">
-          <div className="gr-board-wrap">
-            <Chessboard
-              position={currentFen}
-              orientation={playerSide || 'white'}
-              draggable={true}
-              onDrop={(from, to, promotion) => handleStudyMove(from, to, promotion)}
-              lastMove={currentMove}
-              arrows={exploring ? [] : arrows}
-              boardWidth={boardSize}
-              onSelectionChange={squareEvalsOn ? setSelection : undefined}
-              squareEvals={squareEvalsOn ? squareEvals : undefined}
-            />
-            {/* Shared grip — positions itself from the board's exported geometry. */}
+          <div className="gr-board-row">
+            <div className="gr-board-wrap" ref={boardWrapRef}>
+              <Chessboard
+                position={(practiceItem && practice.fen) || currentFen}
+                orientation={playerSide || 'white'}
+                draggable={true}
+                onDrop={(from, to, promotion) => (practice
+                  ? handlePracticeMove(from, to, promotion)
+                  : handleStudyMove(from, to, promotion))}
+                lastMove={currentMove}
+                arrows={exploring ? [] : arrows}
+                boardWidth={boardSize}
+                onSelectionChange={squareEvalsOn && !practice ? setSelection : undefined}
+                squareEvals={squareEvalsOn && !practice ? squareEvals : undefined}
+                squareBadges={exploring ? undefined : squareBadges}
+              />
+              {/* Shared grip — positions itself from the board's exported geometry. */}
+            </div>
+
+            {/* Vertical win chance bar right of the board (desktop/tablet).
+                White's share sits on White's side of the board. */}
+            <div
+              className={`gr-vbar${(playerSide || 'white') === 'black' ? ' flipped' : ''}`}
+              style={{
+                ...(gridBox ? { height: gridBox.h, marginTop: gridBox.top } : { height: boardSize }),
+                // Hidden (not removed) while practising — it shows the eval, and
+                // keeping its space stops the board from jumping sideways.
+                ...(practice ? { visibility: 'hidden' } : null),
+              }}
+              title={`White ${whiteWinPct}% · Black ${100 - whiteWinPct}%`}
+            >
+              <div className="gr-vbar-white" style={{ height: `${whiteWinPct}%` }} />
+            </div>
           </div>
 
-          {exploring ? (
-            <div className="gr-study-banner">
-              <span>🔬 In your variation — saved on this device</span>
-              <span style={{ display: 'flex', gap: 8 }}>
-                <button className="gr-study-return" onClick={deleteCurrentVariation}>🗑 Delete line</button>
-                {hasVars && <button className="gr-study-return" onClick={clearVariations} title="Remove every variation and return to the game line">🧹 Delete all</button>}
-              </span>
+          {/* Learn from your mistakes — straight under the board, so it stays in
+              view on phones too (the right column drops below the fold there). */}
+          {practiceEnabled && practiceList.length > 0 && !practice && (
+            <div className="gr-practice gr-practice--cta" style={{ maxWidth: drawnBoardSize }}>
+              <div className="gr-practice-cta-text">
+                <b>🎯 Learn from your mistakes</b>
+                <span>{practiceList.length} position{practiceList.length === 1 ? '' : 's'} where you can find a better move</span>
+              </div>
+              <button type="button" className="gr-practice-btn gr-practice-btn--go" onClick={startPractice}>Start</button>
             </div>
-          ) : hasVars ? (
-            /* The instructional sentence was removed — it repeated under every
-               game and the behaviour is self-evident. "Delete all variations"
-               was nested INSIDE that line, so this row still renders whenever
-               there are variations to clear; with none, nothing shows at all. */
-            <div className="gr-study-hint">
-              <button className="gr-link-btn" onClick={clearVariations} title="Remove every variation and return to the game line">🧹 Delete all variations</button>
-            </div>
-          ) : null}
+          )}
 
-          {/* Win Chance Bar */}
-          <div className="gr-winbar-wrap" style={{ maxWidth: boardSize }}>
+          {/* No variation banner under the board — "Delete this line" /
+              "Delete all variations" live in the moves list's right-click menu. */}
+
+          {/* While practising, the board column is just the board: the win bars,
+              tools and graph would all give the answer (or the game) away. */}
+          {!practice && (<>
+          {/* Horizontal win chance bar — phones only (the vertical one is hidden there). */}
+          <div className="gr-winbar-wrap" style={{ maxWidth: drawnBoardSize }}>
             <div className="gr-winbar">
               <div className="gr-winbar-white" style={{ width: `${whiteWinPct}%` }} />
             </div>
@@ -714,60 +1065,146 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
             </div>
           </div>
 
-          {/* Controls — walk the current line (mainline or the variation you're in) */}
-          <div className="gr-controls">
-            <button className="gr-ctrl-btn" onClick={goFirst} disabled={path.length <= 0}>⏮</button>
-            <button className="gr-ctrl-btn" onClick={goPrev} disabled={path.length <= 0}>◀</button>
-            <button className="gr-ctrl-btn gr-play-btn" onClick={() => setPlaying(p => !p)}>
-              {playing ? '⏸' : '▶'}
+          {/* Board tools — copy the position / the game, export the PGN, and the
+              square-evals toggle. Square evals are off by default: they take
+              over the shared engine for a second or two per click, which should
+              be the user's choice. */}
+          <div className="gr-boardtools" style={{ maxWidth: drawnBoardSize }}>
+            <button type="button" className="gr-boardtool" onClick={copyFen} title="Copy the position on the board (FEN)">
+              {copied === 'fen' ? '✓ Copied' : '📋 Copy FEN'}
             </button>
-            <button className="gr-ctrl-btn" onClick={goNext} disabled={atEnd}>▶</button>
-            <button className="gr-ctrl-btn" onClick={goLast} disabled={atEnd}>⏭</button>
+            <button type="button" className="gr-boardtool" onClick={copyGame} title="Copy the game's moves">
+              {copied === 'game' ? '✓ Copied' : '📝 Copy game'}
+            </button>
+            <button type="button" className="gr-boardtool" onClick={exportPgn} title="Download this game as a .pgn file">
+              📥 Export PGN
+            </button>
+            <button
+              type="button"
+              className={`gr-boardtool gr-boardtool--eval${squareEvalsOn ? ' on' : ''}`}
+              onClick={toggleSquareEvals}
+              aria-pressed={squareEvalsOn}
+              title="Click a piece and every square it can reach shows the eval after moving there"
+            >
+              🎯 Square evals
+              <span className="gr-boardtool-state">{squareEvalsOn ? (evalBusy ? '…' : 'On') : 'Off'}</span>
+            </button>
           </div>
-          <div className="gr-controls-hint">
-            Use ← → arrow keys · Space to play/pause · Esc to close
-          </div>
+
+          {belowBoard && <div className="gr-below-board" style={{ maxWidth: drawnBoardSize }}>{belowBoard}</div>}
+          </>)}
         </div>
 
-        {/* Commentary + Move List */}
+        {/* Commentary + Move List. While practising this column holds only the
+            practice panel, so it plays like a puzzle: no moves list, commentary,
+            engine lines or accuracy that would show the answer. */}
         <div className="gr-info-col">
-          {/* ── MOVES TAB ── */}
-          {activeTab === 'moves' && (<>
-          {/* Square evaluations toggle. Sits BESIDE the board rather than under
-              it: it belongs with the other engine controls, and below the board
-              it pushed the win bar and playback controls further down.
-              Off by default — it takes over the shared engine for a second or
-              two per click, which should be the user's choice. */}
-          <div className="gr-sqeval-bar">
-            <label className="gr-sqeval-toggle">
-              <input
-                type="checkbox"
-                checked={squareEvalsOn}
-                onChange={toggleSquareEvals}
-              />
-              <span>🎯 Show evaluation on each square</span>
-            </label>
-            <span className="gr-sqeval-note">
-              {squareEvalsOn
-                ? (evalBusy
-                    ? 'Checking each square…'
-                    : 'Click a piece to see how good each of its squares is.')
-                : 'Click a piece and every square it can reach shows the eval after moving there.'}
-            </span>
-          </div>
+          {practice && (
+            <div className={`gr-practice gr-practice--${practice.status}`} style={{ maxWidth: drawnBoardSize }}>
+              <div className="gr-practice-head">
+                <b>🎯 Learn from your mistakes</b>
+                {practiceItem && <span className="gr-practice-count">{practice.idx + 1} / {practiceList.length}</span>}
+                <button type="button" className="gr-practice-x" onClick={stopPractice} title="Stop (Esc)" aria-label="Stop practising">✕</button>
+              </div>
 
+              {practiceItem && (() => {
+                const { m } = practiceItem;
+                const sideName = m.side === 'white' ? 'White' : 'Black';
+                const n = practice.note;
+                const fromSq = m.bestUci.slice(0, 2);
+                let hintPiece = null;
+                try { hintPiece = new Chess(currentFen).get(fromSq)?.type; } catch { /* ignore */ }
+                return (
+                  <>
+                    <div className="gr-practice-q">
+                      Move {m.moveNumber}{m.side === 'black' ? '…' : '.'} you played{' '}
+                      <span className={`gr-practice-played c-${m.classification}`}>{m.move}{MOVE_BADGE[m.classification].text}</span>
+                      {' '}<span className="gr-practice-drop">−{m.winChanceDrop}% win chance</span>
+                    </div>
+
+                    {practice.status === 'ask' && (
+                      <div className="gr-practice-msg">
+                        {n?.same ? <span className="bad">That's the move from the game. Look for something better.</span>
+                          : n?.unknown ? <span className="bad">Couldn't check {n.san}. Try again.</span>
+                            : n?.drop != null ? <span className="bad">{n.san} isn't it: it loses {n.drop}% win chance. Try again.</span>
+                              : <>Find a better move for <b>{sideName}</b>.</>}
+                        {practice.hint && hintPiece && (
+                          <div className="gr-practice-hint">💡 Look at your {PIECE_NAME[hintPiece]} on {fromSq}.</div>
+                        )}
+                      </div>
+                    )}
+                    {practice.status === 'checking' && <div className="gr-practice-msg">Checking {n?.san}…</div>}
+                    {practice.status === 'wrong' && (
+                      <div className="gr-practice-msg bad">
+                        {n?.same ? `${n.san} is what you played in the game.` : n?.drop != null ? `${n.san}: loses ${n.drop}% win chance.` : `${n?.san}: not it.`}
+                      </div>
+                    )}
+                    {practice.status === 'right' && (
+                      <div className="gr-practice-msg good">
+                        {n.exact
+                          ? <>✓ <b>{n.san}</b>, the best move!</>
+                          : <>✓ <b>{n.san}</b> works too{n.drop > 0 ? ` (only −${n.drop}%)` : ''}. The engine's choice was <b>{m.bestMove}</b>.</>}
+                      </div>
+                    )}
+                    {practice.status === 'shown' && (
+                      <div className="gr-practice-msg">The best move was <b>{n?.san || m.bestMove}</b>.</div>
+                    )}
+
+                    <div className="gr-practice-actions">
+                      {practice.status === 'ask' && (<>
+                        {!practice.hint && (
+                          <button type="button" className="gr-practice-btn" onClick={() => setPractice(p => ({ ...p, hint: true }))}>💡 Hint</button>
+                        )}
+                        <button type="button" className="gr-practice-btn" onClick={showPracticeSolution}>👁 Show answer</button>
+                        <button type="button" className="gr-practice-btn" onClick={nextPractice}>Skip →</button>
+                      </>)}
+                      {(practice.status === 'right' || practice.status === 'shown') && (
+                        <button type="button" className="gr-practice-btn gr-practice-btn--go" onClick={nextPractice}>
+                          {practice.idx + 1 < practiceList.length ? 'Next mistake →' : 'Finish'}
+                        </button>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
+
+              {practice.status === 'done' && (() => {
+                const vals = Object.values(practice.results);
+                const solved = vals.filter(v => v === 'solved').length;
+                return (
+                  <>
+                    <div className="gr-practice-msg">
+                      You found <b>{solved}</b> of <b>{practiceList.length}</b> on your own
+                      {vals.length - solved > 0 ? `, ${vals.length - solved} with the answer shown` : ''}
+                      {practiceList.length - vals.length > 0 ? `, ${practiceList.length - vals.length} skipped` : ''}.
+                      {solved === practiceList.length ? ' 🎉' : ''}
+                    </div>
+                    <div className="gr-practice-actions">
+                      <button type="button" className="gr-practice-btn" onClick={startPractice}>↻ Try again</button>
+                      <button type="button" className="gr-practice-btn gr-practice-btn--go" onClick={stopPractice}>Done</button>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          )}
+          {/* ── MOVES TAB ── */}
+          {activeTab === 'moves' && !practice && (<>
           {/* Live Stockfish engine lines for the current position */}
           {/* `enabled` also goes false while the square evaluations are running.
               stockfishService is a single shared worker: if the panel kept its
               own search going, the two would call stop() on each other and both
               would return nothing. The panel resumes automatically the moment
               the squares finish. */}
-          <EnginePanel
-            fen={currentFen}
-            numLines={quick ? 4 : 3}
-            enabled={engineOn && !evalBusy}
-            onToggle={toggleEngine}
-          />
+          {/* (The square-evals toggle lives in the board tools row under the board.) */}
+          <div className="gr-engine-row">
+            <EnginePanel
+              fen={currentFen}
+              numLines={quick ? 4 : 3}
+              enabled={engineOn && !evalBusy && !practice}
+              onToggle={toggleEngine}
+            />
+          </div>
 
           {/* Move list — full variation tree. Mainline inline; user variations
               shown nested in ( … ), persisted on this device. Right-click for a
@@ -780,7 +1217,8 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
               setMoveMenu({ x: e.clientX, y: e.clientY });
             }}
           >
-            <div className="gr-move-list-inner">
+            <div className="gr-moves-head">Moves</div>
+            <div ref={moveListRef} className="gr-move-list-inner">
               <MoveTree
                 root={tree}
                 path={path}
@@ -788,6 +1226,17 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
                 turningPointPly={turningPointPly}
                 onGoTo={goToPath}
               />
+            </div>
+            {/* Controls — attached to the bottom of the moves card; walk the
+                current line (mainline or the variation you're in). */}
+            <div className="gr-controls">
+              <button className="gr-ctrl-btn" onClick={goFirst} disabled={path.length <= 0} title="First move">⏮</button>
+              <button className="gr-ctrl-btn" onClick={goPrev} disabled={path.length <= 0} title="Previous (←)">◀</button>
+              <button className="gr-ctrl-btn gr-play-btn" onClick={() => setPlaying(p => !p)} title="Play / pause (Space)">
+                {playing ? '⏸' : '▶'}
+              </button>
+              <button className="gr-ctrl-btn" onClick={goNext} disabled={atEnd} title="Next (→)">▶</button>
+              <button className="gr-ctrl-btn" onClick={goLast} disabled={atEnd} title="Last move">⏭</button>
             </div>
           </div>
 
@@ -819,7 +1268,9 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
             </>
           )}
 
-          {/* Commentary */}
+          {/* Commentary — only rendered when it has something to say (inside a
+              variation, or on an unanalysed move, there is nothing). */}
+          {(path.length === 0 || currentAnalysis || showSummary) && (
           <div className="gr-commentary">
             {path.length === 0 && (
               <div className="gr-comment-bubble gr-comment-info">
@@ -867,7 +1318,9 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
             )}
 
             {/* End-of-game summary (only at the end of the real mainline) */}
-            {onMainline && path.length > 0 && path.length === mainlinePath.length && (
+            {/* Needs analysis to summarise — without it every stat is blank
+                (Quick Analyze, or a single game not yet analysed). */}
+            {showSummary && (
               <div className="gr-summary">
                 <h4 className="gr-summary-title">Game Summary</h4>
                 <div className="gr-summary-stats">
@@ -911,16 +1364,20 @@ export default function GameReplay({ game, totalGames, onClose, onNext, onPrev, 
                   {gameNumber < totalGames && (
                     <button className="gr-nav-btn gr-nav-next" onClick={onNext}>Next Game →</button>
                   )}
-                  <button className="gr-nav-btn gr-nav-back" onClick={onClose}>Back to Overview</button>
+                  <button className="gr-nav-btn gr-nav-back" onClick={onClose}>{backLabel || 'Back to Overview'}</button>
                 </div>
               </div>
             )}
           </div>
+          )}
+
+          {belowMoves}
           </>)}
 
-          {/* ── COACH TAB ── (disabled for performance — re-enable when AI commentary is re-added) */}
+          {/* ── COACH TAB ──(disabled for performance — re-enable when AI commentary is re-added) */}
         </div>
       </div>
+      {belowAll && !practice && <div className="gr-below-all">{belowAll}</div>}
     </div>
   );
 }

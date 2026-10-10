@@ -218,6 +218,7 @@ import PlayWithStockfish from './pages/game/PlayWithStockfish';
 import ReplayTraining from './pages/game/ReplayTraining';
 import HelpCenter from './pages/HelpCenter';
 import GameAnalysis from './pages/GameAnalysis';
+import SingleGameAnalysis from './pages/SingleGameAnalysis';
 import ArcadeHome from './pages/arcade/ArcadeHome';
 import ArcadeLobby from './pages/arcade/ArcadeLobby';
 import TTTChoose from './pages/arcade/TTTChoose';
@@ -1535,6 +1536,12 @@ export default function App() {
         <Route path="/game-analysis" element={
           <UserLayout>
             <GameAnalysis />
+          </UserLayout>
+        } />
+        {/* One saved game (arena / friend / vs Stockfish) — public, like Lichess */}
+        <Route path="/game/:type/:id" element={
+          <UserLayout>
+            <SingleGameAnalysis />
           </UserLayout>
         } />
         <Route path="/attendance" element={

@@ -11,8 +11,19 @@ import PieceSelector from '../components/PositionEditor/PieceSelector';
 import SetupControls from '../components/PositionEditor/SetupControls';
 import FenBar from '../components/PositionEditor/FenBar';
 import { useAnalysisTree } from '../hooks/useAnalysisTree';
-import AnalysisMoveTree from '../components/AnalysisMoveTree';
+import StudyMovesCard from '../components/StudyMovesCard';
 import SolutionText from '../components/SolutionText';
+import { parseSolutionTree, formatSolutionTree } from '../utils/solutionLine';
+
+// `tree` with a node that playMove just created (its state update hasn't landed yet).
+const withNode = (tree, node) => {
+  if (tree.nodes[node.id]) return tree;
+  const parent = tree.nodes[node.parentId];
+  return {
+    ...tree,
+    nodes: { ...tree.nodes, [node.id]: node, [parent.id]: { ...parent, children: [...parent.children, node.id] } },
+  };
+};
 
 // ── Full-screen board layout budget ────────────────────────────────────────
 // These pages render OUTSIDE UserLayout (see App.jsx), so there is no sidebar
@@ -72,9 +83,6 @@ const UserStudyPuzzleView = () => {
   // A Chess instance for the current node — used for turn/legal-move checks.
   const chess = useMemo(() => new Chess(currentNode.fen), [currentNode.fen]);
 
-  // Right-panel tab: 'solution' (default) | 'moves'
-  const [activeTab, setActiveTab] = useState('solution');
-
   const [studyName, setStudyName] = useState('');
   const [chapterName, setChapterName] = useState('');
   const [studyType, setStudyType] = useState('basics');
@@ -93,18 +101,31 @@ const UserStudyPuzzleView = () => {
   const [editorSelectedPiece, setEditorSelectedPiece] = useState(undefined);
   const [editorOrientation, setEditorOrientation] = useState('white');
   const [posTitle, setPosTitle] = useState('');
-  const [posDesc, setPosDesc] = useState('');
   const [posSolution, setPosSolution] = useState('');
   const [posCreating, setPosCreating] = useState(false);
   const [posError, setPosError] = useState('');
 
-  // Inline annotate: the creator edits THIS position's solution/description
-  // without leaving the study view (previously only possible at create time).
-  const [editingMeta, setEditingMeta] = useState(false);
-  const [metaDesc, setMetaDesc] = useState('');
-  const [metaSolution, setMetaSolution] = useState('');
-  const [metaSaving, setMetaSaving] = useState(false);
-  const [metaError, setMetaError] = useState('');
+  // Comments (creator only): a comment is attached to one move and saved with
+  // the moves. commentFor = id of the move being commented on (null = closed).
+  // (User studies have no descriptions — admin only.)
+  const [commentFor, setCommentFor] = useState(null);
+  const [commentText, setCommentText] = useState('');
+
+  // Auto-record (creator only): moves the study's creator plays on the board are
+  // saved as this position's moves (mainline + sidelines) — no Record button.
+  // Anyone else's moves are only local analysis and are never saved, even in a
+  // public study.
+  //   recordable — false when the saved text is hand-written prose (then nothing
+  //                is overwritten unless the creator explicitly replaces it).
+  //   recordedRef — ids of the tree nodes that make up the saved moves; moves
+  //                 played while paused / vs Stockfish stay out of it.
+  const [recordable, setRecordable] = useState(true);
+  const [recOn, setRecOn] = useState(true);
+  const [recStatus, setRecStatus] = useState('');   // '' | 'saving' | 'saved' | 'error'
+  const creatorRef = useRef(false);
+  const recordedRef = useRef(new Set());
+  const recPendingRef = useRef(null);               // { puzzleId, text } awaiting save
+  const recTimerRef = useRef(null);
 
   // Stockfish mode
   const [sfMode, setSfMode] = useState(false);
@@ -115,9 +136,8 @@ const UserStudyPuzzleView = () => {
 
   // ── Analysis mode (evaluate the CURRENT position; does not play moves) ──
   // Separate from "play vs Stockfish": this runs an infinite search on whatever
-  // position is on the board and streams back the eval + best line.
+  // position is on the board and streams back the top three lines.
   const [anMode, setAnMode] = useState(false);
-  const [anEval, setAnEval] = useState(null);   // { cp } | { mate } — from White's POV
   // Top-3 engine lines, keyed by MultiPV index: { 1: {cp|mate, san}, 2: …, 3: … }.
   // Keyed rather than an array because Stockfish emits each line separately and
   // out of order, so we overwrite per index and render whatever we have.
@@ -137,6 +157,11 @@ const UserStudyPuzzleView = () => {
   const anWorkerRef = useRef(null);
   const anModeRef = useRef(false);
   const anFenRef = useRef('');   // FEN the current search is running on (for SAN + POV)
+  // With 3 lines on, this Stockfish build crashes ("RuntimeError: unreachable")
+  // if a new search starts before the old one has finished stopping. So a new
+  // position waits in anPendingFenRef until the engine answers 'bestmove'.
+  const anSearchingRef = useRef(false);
+  const anPendingFenRef = useRef(null);
 
   const typeColors = {
     basics:     { color: 'var(--color-success)', gradient: 'linear-gradient(135deg,var(--color-accent-2),var(--color-accent))', accentColor: 'var(--color-success-a12)', bgColor: 'var(--color-success-a20)' },
@@ -199,6 +224,9 @@ const UserStudyPuzzleView = () => {
         const study = res.data;
         setStudyName(study.name);
         setStudyOwnerId(study.userId);
+        // Set before loadPuzzle below, which needs it to preload the solution.
+        const uid = authUser?.id || authUser?._id;
+        creatorRef.current = !!uid && !!study.userId && String(study.userId) === String(uid);
         setStudyType(study.studyType || 'basics');
         const chapter = study.chapters.find(c => c._id?.toString() === chapterId?.toString());
         if (!chapter) { setError('Chapter not found'); setLoading(false); return; }
@@ -219,28 +247,88 @@ const UserStudyPuzzleView = () => {
   }, [id, chapterId]);
 
   /* ── puzzle helpers ──────────────────────────── */
+  // Save the pending recorded solution now (debounce fired, or we're leaving
+  // this position / the page). Updates the list by _id, so it is safe after the
+  // creator has already moved on to another position.
+  const flushRecSave = () => {
+    clearTimeout(recTimerRef.current);
+    const pending = recPendingRef.current;
+    if (!pending) return;
+    recPendingRef.current = null;
+    setRecStatus('saving');
+    api.patch(`/api/user-studies/${pending.studyId}/chapters/${pending.chapterId}/puzzles/${pending.puzzleId}`, { solution: pending.text })
+      .then(() => setRecStatus(recPendingRef.current ? 'saving' : 'saved'))
+      .catch(() => setRecStatus('error'));
+  };
+
+  // Store `text` as the moves of `puzzle`: shown at once, saved shortly after.
+  const recordSolution = (puzzle, text) => {
+    if (!puzzle?._id) return;
+    setRecordable(true);
+    setPuzzles(prev => prev.map(q => (q._id === puzzle._id ? { ...q, solution: text } : q)));
+    recPendingRef.current = { studyId: id, chapterId, puzzleId: puzzle._id, text };
+    setRecStatus('saving');
+    clearTimeout(recTimerRef.current);
+    recTimerRef.current = setTimeout(flushRecSave, 700);
+  };
+
+  // Save the recorded part of tree `t` as the current position's moves.
+  const saveTree = (t) => {
+    const keep = recordedRef.current;
+    recordSolution(puzzles[currentPuzzleIndex], formatSolutionTree(t, (nid) => keep.has(nid)));
+  };
+
+  // Don't lose the last few moves if the creator closes the page mid-debounce.
+  useEffect(() => () => flushRecSave(), []);
+
   const loadPuzzle = (puzzle) => {
+    flushRecSave();
+    setRecStatus('');
     // Reset SF when switching puzzle
     if (sfModeRef.current) {
       if (sfWorkerRef.current) { sfWorkerRef.current.terminate(); sfWorkerRef.current = null; }
       sfReadyRef.current = false; sfModeRef.current = false; sfThinkingRef.current = false;
       setSfMode(false); setSfReady(false); setSfThinking(false);
     }
+    // Saved moves (mainline + sidelines) go into the move tree for everyone, with
+    // the board at the start. Prose (null) is shown as notes instead, and is
+    // protected from being overwritten.
+    const parsed = parseSolutionTree(puzzle.solution, puzzle.fen);
+    setRecordable(parsed !== null);
+    let t;
     try {
       const c = new Chess(puzzle.fen);
       setBoardOrientation(c.turn() === 'b' ? 'black' : 'white');
-      analysis.reset(c.fen());
+      t = analysis.load(c.fen(), parsed);
     } catch {
       setBoardOrientation('white');
-      analysis.reset(new Chess().fen());
+      t = analysis.load(new Chess().fen(), null);
     }
+    recordedRef.current = new Set(Object.keys(t.nodes));
   };
 
   const handleMove = (source, target, promo) => {
     // Play into the analysis tree. Same move advances; a different move from a
-    // past position branches into a new variation (Lichess behaviour).
+    // past position branches into a new sideline (Lichess behaviour).
+    const before = analysis.tree;
     const node = analysis.playMove({ from: source, to: target, promotion: promo || 'q' });
+    // Auto-record — creator only, and never while playing Stockfish. Replaying
+    // saved moves changes nothing; a new move is saved together with the line
+    // leading to it.
+    if (node && creatorRef.current && recOn && recordable && !sfModeRef.current
+        && !recordedRef.current.has(node.id)) {
+      const t = withNode(before, node);
+      for (let n = node; n; n = t.nodes[n.parentId]) recordedRef.current.add(n.id);
+      saveTree(t);
+    }
     return !!node;
+  };
+
+  // ⏭ — follow the current line (first children) to its end.
+  const moveToEnd = () => {
+    let n = analysis.tree.nodes[analysis.tree.currentId];
+    while (n?.children.length) n = analysis.tree.nodes[n.children[0]];
+    if (n) analysis.goTo(n.id);
   };
 
   const moveBackward = () => {
@@ -254,10 +342,8 @@ const UserStudyPuzzleView = () => {
   const selectPuzzle = (index) => {
     setCurrentPuzzleIndex(index);
     loadPuzzle(puzzles[index]);
-    // Leave edit mode — otherwise the previous position's text would sit in the
-    // form and could be saved onto this one.
-    setEditingMeta(false);
-    setMetaError('');
+    // Close an open comment box — it belongs to the previous position's moves.
+    setCommentFor(null);
     if (isMobile) setShowPuzzleList(false);
   };
 
@@ -352,26 +438,52 @@ const UserStudyPuzzleView = () => {
   const stopAnalysis = useCallback(() => {
     if (anWorkerRef.current) { anWorkerRef.current.terminate(); anWorkerRef.current = null; }
     anModeRef.current = false;
-    setAnMode(false); setAnEval(null); setAnLines({}); setAnDepth(0);
+    anSearchingRef.current = false;
+    anPendingFenRef.current = null;
+    setAnMode(false); setAnLines({}); setAnDepth(0);
   }, []);
+
+  // Start a search on `fen` now, or — if one is still running — stop it and
+  // start once the engine confirms with 'bestmove' (see anPendingFenRef).
+  const startAnSearch = (w, fen) => {
+    anFenRef.current = fen;
+    anSearchingRef.current = true;
+    w.postMessage(`position fen ${fen}`);
+    w.postMessage('go depth 20');
+  };
+  const requestAnSearch = (fen) => {
+    const w = anWorkerRef.current;
+    if (!w) return;
+    if (anSearchingRef.current) {
+      const alreadyStopping = anPendingFenRef.current !== null;
+      anPendingFenRef.current = fen;
+      if (!alreadyStopping) w.postMessage('stop');
+    } else {
+      startAnSearch(w, fen);
+    }
+  };
 
   const toggleAnalysis = useCallback(() => {
     if (anModeRef.current) { stopAnalysis(); return; }
     anModeRef.current = true;
     setAnMode(true);
-    setAnEval(null); setAnLines({}); setAnDepth(0);
+    setAnLines({}); setAnDepth(0);
     if (anWorkerRef.current) anWorkerRef.current.terminate();
+    anSearchingRef.current = false;
+    anPendingFenRef.current = null;
     const w = new Worker('/stockfish.js');
     anWorkerRef.current = w;
     w.onmessage = (e) => {
       const line = typeof e.data === 'string' ? e.data : '';
-      if (line.includes('uciok')) {
-        // Ask for THREE lines before starting the search. MultiPV must be set
-        // while the engine is idle — sending it mid-search is ignored.
-        w.postMessage('setoption name MultiPV value 3');
-        w.postMessage('isready');
+      if (line.startsWith('bestmove')) {
+        anSearchingRef.current = false;
+        const next = anPendingFenRef.current;
+        if (next !== null) { anPendingFenRef.current = null; startAnSearch(w, next); }
         return;
       }
+      // Lines still arriving from a search we've asked to stop are for the old
+      // position — ignore them.
+      if (anPendingFenRef.current !== null) return;
       if (!line.startsWith('info') || !line.includes(' pv ')) return;
       // "info depth 18 multipv 2 ... score cp 34 ... pv e2e4 e7e5 ..."
       const d = /\bdepth (\d+)/.exec(line);
@@ -387,8 +499,6 @@ const UserStudyPuzzleView = () => {
       const evalObj = mate ? { mate: Number(mate[1]) * sideToMove }
                     : cp   ? { cp: Number(cp[1]) * sideToMove }
                     : null;
-      // Line 1 is the engine's best — it drives the headline evaluation.
-      if (idx === 1 && evalObj) setAnEval(evalObj);
       if (!pv) return;
       // Convert the UCI principal variation to SAN for readability.
       try {
@@ -405,18 +515,20 @@ const UserStudyPuzzleView = () => {
       } catch { /* malformed pv — keep whatever we already have */ }
     };
     w.onerror = () => stopAnalysis();
+    // THREE lines, set once while the engine is idle — before any search. (It
+    // used to be sent on 'uciok', after the first search had already started,
+    // so it was ignored and the first position only ever showed one line.)
     w.postMessage('uci');
+    w.postMessage('setoption name MultiPV value 3');
+    w.postMessage('isready');
   }, [stopAnalysis]);
 
   // Re-run the search whenever the board position changes while analysis is on.
   useEffect(() => {
-    anFenRef.current = currentNode.fen;
-    const w = anWorkerRef.current;
-    if (!anMode || !w) return;
-    setAnEval(null); setAnLines({}); setAnDepth(0);
-    w.postMessage('stop');
-    w.postMessage(`position fen ${currentNode.fen}`);
-    w.postMessage('go depth 20');
+    if (!anMode || !anWorkerRef.current) return;
+    setAnLines({}); setAnDepth(0);
+    requestAnSearch(currentNode.fen);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentNode.fen, anMode]);
   /* ─────────────────────────────────────────────── */
 
@@ -456,7 +568,6 @@ const UserStudyPuzzleView = () => {
     setEditorSelectedPiece(undefined);
     setEditorOrientation('white');
     setPosTitle('');
-    setPosDesc('');
     setPosSolution('');
     setPosError('');
     setShowCreateModal(true);
@@ -478,7 +589,6 @@ const UserStudyPuzzleView = () => {
       await api.post(`/api/user-studies/${id}/chapters/${chapterId}/puzzles`, {
         fen: editorChess.fen(),
         title: posTitle.trim(),
-        description: posDesc.trim(),
         solution: posSolution.trim(),
       });
       const res = await api.get(`/api/user-studies/${id}`);
@@ -524,43 +634,61 @@ const UserStudyPuzzleView = () => {
   };
 
   /* ── inline annotate (creator only) ───────────────── */
-  const startEditMeta = () => {
+  // Wipe all saved moves and put the board back at the start.
+  const clearRecording = () => {
     const p = puzzles[currentPuzzleIndex];
-    setMetaDesc(p?.description || '');
-    setMetaSolution(p?.solution || '');
-    setMetaError('');
-    setEditingMeta(true);
+    if (!p) return;
+    if (!window.confirm('Delete all moves for this position?')) return;
+    const t = analysis.load(p.fen, null);
+    recordedRef.current = new Set([t.rootId]);
+    recordSolution(p, '');
   };
 
-  const cancelEditMeta = () => {
-    setEditingMeta(false);
-    setMetaError('');
+  // Delete the current move and everything after it (sidelines included).
+  const deleteFromHere = () => {
+    const nid = analysis.tree.currentId;
+    if (nid === analysis.tree.rootId) return;
+    if (!window.confirm('Delete this move and everything after it?')) return;
+    const wasSaved = recordedRef.current.has(nid);
+    const t = analysis.deleteFrom(nid);
+    if (!t) return;
+    recordedRef.current = new Set([...recordedRef.current].filter((k) => t.nodes[k]));
+    if (wasSaved && creatorRef.current && recordable) saveTree(t);
   };
 
-  const saveMeta = async () => {
+  // The saved text is prose: the creator opts in to replacing it with the
+  // moves currently on the board.
+  const replaceWithBoardLine = () => {
     const p = puzzles[currentPuzzleIndex];
-    if (!p?._id) return;
-    setMetaSaving(true);
-    setMetaError('');
-    try {
-      const res = await api.patch(
-        `/api/user-studies/${id}/chapters/${chapterId}/puzzles/${p._id}`,
-        { description: metaDesc, solution: metaSolution }
-      );
-      const saved = res.data?.puzzle;
-      // Patch in place rather than refetching + loadPuzzle: reloading would
-      // reset the board and throw away whatever line the user was exploring.
-      setPuzzles(prev => prev.map((q, i) => (
-        i === currentPuzzleIndex
-          ? { ...q, description: saved?.description ?? metaDesc, solution: saved?.solution ?? metaSolution }
-          : q
-      )));
-      setEditingMeta(false);
-    } catch (err) {
-      setMetaError(err.response?.data?.error || 'Failed to save. Please try again.');
-    } finally {
-      setMetaSaving(false);
-    }
+    if (!p) return;
+    if (!window.confirm('Replace the written notes with the moves on the board?')) return;
+    recordedRef.current = new Set(Object.keys(analysis.tree.nodes));
+    saveTree(analysis.tree);
+  };
+
+  // "12. Nf3" / "12… Nf6" for a node — or "the start" for the root.
+  const moveLabel = (nid) => {
+    const n = analysis.tree.nodes[nid];
+    if (!n?.parentId) return 'the start';
+    const parts = analysis.tree.nodes[n.parentId].fen.split(' ');
+    return `${parseInt(parts[5], 10) || 1}${parts[1] === 'w' ? '.' : '…'} ${n.san}`;
+  };
+
+  const startComment = (nid = analysis.tree.currentId) => {
+    if (nid !== analysis.tree.currentId) analysis.goTo(nid);
+    setCommentFor(nid);
+    setCommentText(analysis.tree.nodes[nid]?.comment || '');
+  };
+
+  // Save the comment onto its move. Commenting is a deliberate act, so the move
+  // (and the line leading to it) is saved too, even if it was played paused.
+  const saveComment = () => {
+    const nid = commentFor;
+    setCommentFor(null);
+    const t = analysis.setComment(nid, commentText);
+    if (!t) return;
+    for (let n = t.nodes[nid]; n; n = t.nodes[n.parentId]) recordedRef.current.add(n.id);
+    saveTree(t);
   };
 
   /* ── styles (identical structure to StudyPuzzleView) ── */
@@ -629,6 +757,7 @@ const UserStudyPuzzleView = () => {
   /* ── computed (after styles so st is available) ── */
   const currentUserId = authUser?.id || authUser?._id;
   const isCreator = !!currentUserId && !!studyOwnerId && String(studyOwnerId) === String(currentUserId);
+  creatorRef.current = isCreator;
   const editorBoardWidth = isMobile ? Math.min(280, window.innerWidth - 40) : 440;
   const editorValidErr = validateEditorPosition(editorChess);
 
@@ -670,15 +799,8 @@ const UserStudyPuzzleView = () => {
                 onChange={e => setPosTitle(e.target.value)}
                 style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }}
               />
-              <textarea
-                placeholder="Description (optional)"
-                value={posDesc}
-                onChange={e => setPosDesc(e.target.value)}
-                rows={3}
-                style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, resize: 'vertical', fontFamily: 'inherit', outline: 'none', width: '100%', boxSizing: 'border-box' }}
-              />
               <input
-                placeholder="Solution moves (e.g. Nh5 Nc3 Nf4)"
+                placeholder="Moves (optional — or just play them on the board after creating)"
                 value={posSolution}
                 onChange={e => setPosSolution(e.target.value)}
                 style={{ background: 'var(--color-black-a35)', border: '1px solid var(--color-white-a13)', borderRadius: 'var(--radius-md)', color: 'var(--color-text)', padding: '10px 14px', fontSize: 14, fontFamily: 'monospace', outline: 'none', width: '100%', boxSizing: 'border-box' }}
@@ -898,33 +1020,31 @@ const UserStudyPuzzleView = () => {
 
           {/* Right Panel – moves + solution + description */}
           <motion.div style={st.rightPanel} initial={{ x: 20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5 }}>
-            {/* ── Analyze with Stockfish (evaluates the position; plays nothing) ── */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: anMode ? 8 : 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: anMode ? '#38bdf8' : 'var(--color-text-faint)', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
-                🔍 {anMode ? (anDepth ? `Analysing · depth ${anDepth}` : 'Starting…') : 'Analysis'}
-              </div>
+            {/* ── Engine row: Stockfish on/off (evaluates the position, plays
+                nothing) + play vs Stockfish, side by side ── */}
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
               <button
+                data-testid="sf-analysis-toggle"
                 onClick={toggleAnalysis}
-                style={{ padding: '5px 14px', borderRadius: 'var(--radius-2xl)', cursor: 'pointer', fontSize: 12, fontWeight: 700, background: anMode ? 'var(--color-danger-a12)' : 'rgba(56,189,248,0.12)', color: anMode ? 'var(--color-danger)' : '#38bdf8', border: `1px solid ${anMode ? 'var(--color-danger-a30)' : 'rgba(56,189,248,0.35)'}`, transition: 'all 0.2s' }}
-              >{anMode ? '■ Stop' : '🔍 Analyse'}</button>
+                title={anMode ? 'Turn the engine evaluation off' : 'Show the engine evaluation for this position'}
+                style={{ flex: 1, padding: '8px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap', background: anMode ? 'rgba(56,189,248,0.16)' : 'var(--color-white-a04)', color: anMode ? '#38bdf8' : 'var(--color-text-muted)', border: `1px solid ${anMode ? 'rgba(56,189,248,0.45)' : 'var(--color-white-a10)'}`, transition: 'all 0.2s' }}
+              >
+                🔍 Stockfish {anMode ? 'On' : 'Off'}
+                {anMode && anDepth ? <span style={{ fontWeight: 500, opacity: 0.75 }}> · d{anDepth}</span> : null}
+              </button>
+              <button
+                data-testid="sf-play-toggle"
+                onClick={toggleSfMode}
+                style={{ flex: 1, padding: '8px 10px', borderRadius: 'var(--radius-md)', cursor: 'pointer', fontSize: 12.5, fontWeight: 700, whiteSpace: 'nowrap', background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
+              >{sfMode ? (sfReady ? '■ Stop vs Stockfish' : 'Loading…') : '🤖 vs Stockfish'}</button>
             </div>
             {anMode && (
-              <div style={{ marginBottom: 14, padding: '10px 12px', borderRadius: 'var(--radius-md)', background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                  <span style={{ fontSize: 20, fontWeight: 800, color: '#e0f2fe', fontVariantNumeric: 'tabular-nums' }}>
-                    {anEval == null ? '…'
-                      : anEval.mate != null
-                        ? `M${Math.abs(anEval.mate)}${anEval.mate < 0 ? ' ♚' : ''}`
-                        : `${anEval.cp > 0 ? '+' : ''}${(anEval.cp / 100).toFixed(2)}`}
-                  </span>
-                  <span style={{ fontSize: 11, color: 'var(--color-accent-2)' }}>
-                    {anEval == null ? '' : anEval.mate != null
-                      ? (anEval.mate > 0 ? 'White mates' : 'Black mates')
-                      : anEval.cp > 30 ? 'White is better' : anEval.cp < -30 ? 'Black is better' : 'Equal'}
-                  </span>
-                </div>
-                {/* Top 3 engine lines. Rendered in MultiPV order, so line 1 is the
-                    engine's preference and 2–3 are the next-best alternatives. */}
+              <div data-testid="sf-lines" style={{ marginBottom: 14, padding: '6px 12px 10px', borderRadius: 'var(--radius-md)', background: 'rgba(56,189,248,0.06)', border: '1px solid rgba(56,189,248,0.18)' }}>
+                {!anLines[1] && (
+                  <div style={{ marginTop: 4, fontSize: 11.5, color: 'var(--color-text-faint)' }}>Thinking…</div>
+                )}
+                {/* Top 3 engine lines (no separate headline score). Rendered in
+                    MultiPV order: line 1 is the engine's best, 2–3 the next-best. */}
                 {[1, 2, 3].map((i) => {
                   const ln = anLines[i];
                   if (!ln) return null;
@@ -944,16 +1064,6 @@ const UserStudyPuzzleView = () => {
               </div>
             )}
 
-            {/* ── Stockfish Toggle ── */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: sfMode ? 'var(--color-success)' : 'var(--color-text-faint)', letterSpacing: 0.5, display: 'flex', alignItems: 'center', gap: 6 }}>
-                🤖 {sfMode ? (sfThinking ? 'Thinking…' : sfReady ? 'Stockfish ON' : 'Loading…') : 'vs Computer'}
-              </div>
-              <button
-                onClick={toggleSfMode}
-                style={{ padding: '5px 14px', borderRadius: 'var(--radius-2xl)', cursor: 'pointer', fontSize: 12, fontWeight: 700, background: sfMode ? 'var(--color-danger-a12)' : 'rgba(34,197,94,0.12)', color: sfMode ? 'var(--color-danger)' : 'var(--color-success)', border: `1px solid ${sfMode ? 'var(--color-danger-a30)' : 'rgba(34,197,94,0.35)'}`, transition: 'all 0.2s' }}
-              >{sfMode ? '■ Stop' : '▶ Play vs Stockfish'}</button>
-            </div>
             {sfMode && (
               <>
                 <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
@@ -970,145 +1080,120 @@ const UserStudyPuzzleView = () => {
 
 
 
-            {/* Tabs: Solution (default) · Your Moves (analysis tree) */}
-            <div style={{ display: 'flex', gap: 4, marginBottom: 12, borderBottom: '1px solid var(--color-white-a07)' }}>
-              {[
-                { id: 'solution', label: 'Solution' },
-                { id: 'moves', label: 'Your Moves' },
-              ].map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => setActiveTab(t.id)}
-                  style={{
-                    padding: '8px 16px',
-                    border: 'none',
-                    background: 'transparent',
-                    cursor: 'pointer',
-                    fontSize: 13,
-                    fontWeight: 700,
-                    color: activeTab === t.id ? currentColor.color : 'var(--color-text-faint)',
-                    borderBottom: activeTab === t.id ? `2px solid ${currentColor.color}` : '2px solid transparent',
-                  }}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-
-            {activeTab === 'solution' && (
-              <div style={st.solutionContainer}>
-                {editingMeta ? (
-                  <textarea
-                    value={metaSolution}
-                    onChange={(e) => setMetaSolution(e.target.value)}
-                    placeholder="e.g. 1. Nf6+ gxf6 2. Bxf7# — moves you write here become clickable for students."
-                    rows={6}
-                    style={metaInputStyle}
-                  />
-                ) : (
-                  <>
-                    <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.9, letterSpacing: 0.2 }}>
-                      {puzzles[currentPuzzleIndex]?.solution ? (
-                        <SolutionText
-                          text={puzzles[currentPuzzleIndex].solution}
-                          startFen={puzzles[currentPuzzleIndex].fen}
-                          accentColor={currentColor.color}
-                          onPlayLine={(seq) => { analysis.playLine(seq); setActiveTab('moves'); }}
-                        />
-                      ) : (
-                        <span style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
-                          {isCreator ? 'No solution yet — click Annotate to add one.' : 'No solution provided by creator'}
-                        </span>
-                      )}
-                    </div>
-                    {puzzles[currentPuzzleIndex]?.solution && (
-                      <div style={{ fontSize: 10.5, color: 'var(--color-text-faint)', marginTop: 10 }}>
-                        💡 Click any highlighted move to play that line on the board.
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'moves' && (
-              <div style={st.movesContainer}>
-                {!analysis.hasMoves ? (
-                  <div style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>No moves yet. Make a move on the board!</div>
-                ) : (
-                  <AnalysisMoveTree
-                    tree={analysis.tree}
-                    currentId={analysis.tree.currentId}
+            {/* Written notes (a saved text that isn't just moves) — moves in it
+                stay clickable. The creator can swap it for the board's moves. */}
+            {puzzles[currentPuzzleIndex]?.solution && !recordable && (
+              <div data-testid="rec-prose" style={{ ...st.descContainer, padding: 14, marginBottom: 12 }}>
+                <h3 style={{ ...st.sectionTitle, fontSize: 13, marginBottom: 8 }}>Notes</h3>
+                <div style={{ fontSize: 14, color: 'var(--color-text-muted)', lineHeight: 1.8 }}>
+                  <SolutionText
+                    text={puzzles[currentPuzzleIndex].solution}
+                    startFen={puzzles[currentPuzzleIndex].fen}
                     accentColor={currentColor.color}
-                    onSelect={(id) => analysis.goTo(id)}
+                    onPlayLine={(seq) => analysis.playLine(seq)}
                   />
-                )}
-                <div style={{ fontSize: 10.5, color: 'var(--color-text-faint)', marginTop: 10 }}>
-                  Play different moves to branch into variations. Use ← → to step, ↑ to jump to start. Lines reset when you leave the page.
                 </div>
-              </div>
-            )}
-
-            {/* Description */}
-            <div style={st.descContainer}>
-              <h3 style={st.sectionTitle}>Description</h3>
-              {editingMeta ? (
-                <textarea
-                  value={metaDesc}
-                  onChange={(e) => setMetaDesc(e.target.value)}
-                  placeholder="What should the student notice about this position?"
-                  rows={3}
-                  style={metaInputStyle}
-                />
-              ) : (
-                <div style={st.descText}>
-                  {currentPuzzle?.description || (
-                    <span style={{ color: 'var(--color-text-faint)', fontStyle: 'italic' }}>
-                      {isCreator ? 'No description yet — click Annotate to add one.' : 'No description available. Try to find the best move!'}
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Creator-only: annotate this position in place */}
-            {isCreator && currentPuzzle?._id && (
-              <div style={{ marginTop: 12 }}>
-                {metaError && (
-                  <div style={{ color: 'var(--color-danger)', fontSize: 12.5, marginBottom: 8 }}>{metaError}</div>
-                )}
-                {editingMeta ? (
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button onClick={saveMeta} disabled={metaSaving} style={metaBtnStyle(true, metaSaving)}>
-                      {metaSaving ? 'Saving…' : '✓ Save'}
-                    </button>
-                    <button onClick={cancelEditMeta} disabled={metaSaving} style={metaBtnStyle(false, metaSaving)}>
-                      Cancel
+                {isCreator && (
+                  <div style={{ marginTop: 10, fontSize: 11.5, color: 'var(--color-text-faint)', lineHeight: 1.5 }}>
+                    Because these are written notes, your board moves aren't saved automatically here.
+                    <button onClick={replaceWithBoardLine} style={{ display: 'block', marginTop: 6, padding: '4px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'var(--color-white-a07)', color: 'var(--color-text-muted)', fontSize: 11.5, fontWeight: 700, cursor: 'pointer' }}>
+                      Replace with the moves on the board
                     </button>
                   </div>
+                )}
+              </div>
+            )}
+
+            <StudyMovesCard
+                tree={analysis.tree}
+                currentId={analysis.tree.currentId}
+                accentColor={currentColor.color}
+                onSelect={(nid) => analysis.goTo(nid)}
+                onComment={isCreator && recordable && !sfMode ? startComment : undefined}
+                onFirst={() => analysis.toStart()}
+                onPrev={moveBackward}
+                onNext={moveForward}
+                onLast={moveToEnd}
+                emptyText={isCreator && recordable
+                  ? 'Play moves on the board — they are saved automatically. Go back and play a different move to add a sideline.'
+                  : 'No moves yet — make a move on the board.'}
+                headExtra={isCreator && recordable ? (
+                  <span data-testid="rec-strip" style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                    <span style={{ fontSize: 10.5, color: recStatus === 'error' ? 'var(--color-danger)' : 'var(--color-text-faint)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {sfMode ? 'Not saving vs Stockfish'
+                        : !recOn ? 'Not saving'
+                        : recStatus === 'saving' ? 'Saving…'
+                        : recStatus === 'saved' ? 'Saved ✓'
+                        : recStatus === 'error' ? "Couldn't save"
+                        : 'Auto-saving'}
+                    </span>
+                    <button
+                      onClick={() => setRecOn(v => !v)}
+                      title={recOn ? 'Pause saving your moves' : 'Resume saving your moves'}
+                      style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 9px', borderRadius: 'var(--radius-2xl)', cursor: 'pointer', fontSize: 10.5, fontWeight: 800, letterSpacing: 0.5, background: recOn && !sfMode ? 'var(--color-danger-a12)' : 'var(--color-white-a04)', color: recOn && !sfMode ? 'var(--color-danger)' : 'var(--color-text-faint)', border: `1px solid ${recOn && !sfMode ? 'var(--color-danger-a30)' : 'var(--color-white-a07)'}` }}
+                    >
+                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />
+                      {recOn && !sfMode ? 'REC' : 'PAUSED'}
+                    </button>
+                  </span>
+                ) : null}
+                footExtra={isCreator && recordable ? (
+                  analysis.hasMoves && (
+                    <span style={{ display: 'flex', gap: 8 }}>
+                      {analysis.tree.currentId !== analysis.tree.rootId && (
+                        <button onClick={deleteFromHere} style={{ padding: '3px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'transparent', color: 'var(--color-text-faint)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                          Delete from here
+                        </button>
+                      )}
+                      <button onClick={clearRecording} style={{ padding: '3px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-white-a13)', background: 'transparent', color: 'var(--color-text-faint)', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                        Clear all
+                      </button>
+                    </span>
+                  )
+                ) : !isCreator ? (
+                  <span style={{ fontSize: 10.5, color: 'var(--color-text-faint)', textAlign: 'center' }}>
+                    Play your own moves to explore — they aren't saved.
+                  </span>
+                ) : null}
+              />
+
+            {/* Creator-only: comment on the selected move; it shows right after
+                that move in the moves card and is saved with the moves. */}
+            {isCreator && recordable && currentPuzzle?._id && !sfMode && (
+              <div style={{ marginTop: 4 }} data-testid="comment-box">
+                {commentFor && analysis.tree.nodes[commentFor] ? (
+                  <>
+                    <div style={{ fontSize: 12, color: 'var(--color-text-faint)', marginBottom: 6 }}>
+                      Comment after <strong style={{ color: 'var(--color-text-muted)' }}>{moveLabel(commentFor)}</strong>
+                    </div>
+                    <textarea
+                      autoFocus
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) saveComment(); }}
+                      placeholder="e.g. White takes the centre."
+                      rows={3}
+                      style={metaInputStyle}
+                    />
+                    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                      <button onClick={saveComment} style={metaBtnStyle(true, false)}>✓ Save</button>
+                      <button onClick={() => setCommentFor(null)} style={metaBtnStyle(false, false)}>Cancel</button>
+                    </div>
+                  </>
+                ) : analysis.tree.currentId === analysis.tree.rootId && !analysis.current?.comment ? (
+                  // At the start nothing is selected — commenting here used to
+                  // put every comment at the top. Point at the moves instead.
+                  <div style={{ fontSize: 12, color: 'var(--color-text-faint)', lineHeight: 1.5 }}>
+                    💬 To add a comment, click a move in the list (or play one) — the comment appears right after that move.
+                  </div>
                 ) : (
-                  <button onClick={startEditMeta} style={metaBtnStyle(false, false)}>
-                    ✏️ Annotate this position
+                  <button onClick={() => startComment()} style={metaBtnStyle(false, false)}>
+                    💬 {analysis.current?.comment ? 'Edit comment' : 'Comment'} on {moveLabel(analysis.tree.currentId)}
                   </button>
                 )}
               </div>
             )}
 
-            {/* Prev / Next puzzle */}
-            <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-              <motion.button
-                disabled={currentPuzzleIndex <= 0}
-                onClick={() => selectPuzzle(currentPuzzleIndex - 1)}
-                style={{ ...st.btn, flex: 1, justifyContent: 'center', ...(currentPuzzleIndex <= 0 ? st.navBtnDisabled : st.navBtn) }}
-                whileHover={currentPuzzleIndex > 0 ? { scale: 1.03, background: currentColor.accentColor } : {}}
-              >◀ Prev</motion.button>
-              <motion.button
-                disabled={currentPuzzleIndex >= puzzles.length - 1}
-                onClick={() => selectPuzzle(currentPuzzleIndex + 1)}
-                style={{ ...st.btn, flex: 1, justifyContent: 'center', ...(currentPuzzleIndex >= puzzles.length - 1 ? st.navBtnDisabled : st.navBtn) }}
-                whileHover={currentPuzzleIndex < puzzles.length - 1 ? { scale: 1.03, background: currentColor.accentColor } : {}}
-              >Next ▶</motion.button>
-            </div>
           </motion.div>
         </div>
       </div>

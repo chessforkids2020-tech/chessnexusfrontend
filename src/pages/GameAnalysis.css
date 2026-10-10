@@ -1156,6 +1156,35 @@
   display: inline-block;
   line-height: 0;
 }
+/* Board + vertical win bar, tight together */
+.gr-board-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+.gr-vbar {
+  width: 12px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;   /* White's share grows up from the bottom */
+  background: #1f2937;
+  border: 1px solid var(--color-white-a07);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.gr-vbar.flipped { justify-content: flex-start; } /* board flipped: White on top */
+.gr-vbar-white {
+  background: #e8e8e8;
+  transition: height 0.4s ease;
+}
+/* Horizontal bar is the phone fallback only */
+.gr-winbar-wrap { display: none; }
+@media (max-width: 768px) {
+  .gr-vbar { display: none; }
+  .gr-winbar-wrap { display: block; }
+}
+
 /* Win chance bar */
 .gr-winbar-wrap {
   width: 100%;
@@ -1186,16 +1215,21 @@
   padding: 0 2px;
 }
 
-/* Controls */
+/* Controls — footer bar fixed to the bottom of the moves card */
 .gr-controls {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
+  padding: 6px;
+  border-top: 1px solid var(--color-white-a07);
+  background: var(--color-surface);
+  flex-shrink: 0;
 }
 
 .gr-ctrl-btn {
-  width: 40px;
-  height: 36px;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 28px;
   background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
   border-radius: var(--radius-md);
@@ -1219,8 +1253,8 @@
 }
 
 .gr-play-btn {
-  width: 48px;
-  height: 40px;
+  flex-grow: 1.3;
+  height: 28px;
   background: var(--color-accent-a12);
   border-color: var(--color-accent-a30);
   color: var(--color-accent);
@@ -1236,6 +1270,7 @@
   color: var(--color-text-faint);
   text-align: center;
 }
+.gr-below-board { width: 100%; }
 
 /* Info column */
 .gr-info-col {
@@ -1250,18 +1285,75 @@
   background: var(--color-surface);
   border: 1px solid var(--color-white-a07);
   border-radius: var(--radius-lg);
-  padding: 12px 14px;
-  max-height: 340px;
-  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
-.gr-move-list-inner {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+/* Moves table: MOVES header, scrolling rows (no. | White | Black), controls footer */
+.gr-moves-head {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.6px;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-white-a07);
 }
+.gr-move-list-inner { padding: 6px 0; max-height: 300px; overflow-y: auto; }
+.gr-mrow {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+}
+.gr-mrow:nth-child(odd of .gr-mrow) { background: var(--color-white-a04); }
+.gr-mno {
+  color: var(--color-text-muted);
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+}
+.gr-mv {
+  padding: 7px 12px;
+  min-height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+button.gr-mv:hover { background: var(--color-white-a07); }
+.gr-mv-empty { color: var(--color-text-faint); cursor: default; }
+.gr-mv.current {
+  background: var(--color-accent-a20);
+  color: var(--color-accent);
+  box-shadow: inset 2px 0 0 var(--color-accent);
+}
+.gr-mv.blunder  { color: var(--color-danger); }
+.gr-mv.mistake, .gr-mv.inaccuracy { color: var(--color-warning); }
+.gr-mv.brilliant { color: var(--color-success); }
+.gr-mv.turning-point { background: rgba(251, 191, 36, 0.07); }
+
+/* Variation block under the row it branches from */
+.gr-var-block {
+  margin: 2px 8px 4px 34px;
+  padding: 4px 8px;
+  border-left: 2px solid var(--color-accent-a20);
+  background: var(--color-white-a04);
+  border-radius: 0 6px 6px 0;
+}
+.gr-var-line { line-height: 1.9; }
+.gr-var-line .gr-var-move { font-family: 'JetBrains Mono', monospace; margin-right: 6px; }
 
 .gr-move-chip {
   font-size: 12px;
@@ -1314,7 +1406,6 @@
   border: 1px solid var(--color-white-a07);
   border-radius: var(--radius-lg);
   padding: 14px 16px;
-  min-height: 100px;
   max-height: 300px;
   overflow-y: auto;
   -webkit-backdrop-filter: blur(10px);
@@ -3824,43 +3915,144 @@
   }
 }
 
-/* ── Square evaluations toggle ───────────────────────────────────────────────
-   Off by default: each click takes the shared engine for a second or two, so
-   turning it on is the user's decision rather than something that happens to
-   them. */
-/* Stacked, not a horizontal row: this now lives in the ~330px right column
-   beside the board, where a label and its explanation side by side would leave
-   the note wrapping to two or three ragged lines. */
-.gr-sqeval-bar {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  padding: 8px 12px;
-  margin-bottom: 6px;
-  background: var(--color-white-a04);
-  border: 1px solid var(--color-white-a07);
+/* ── Board tools row (under the playback controls) ──────────────────────────
+   Copy FEN · Copy game · Export PGN · Square evals. Four across on desktop,
+   2×2 on phones. */
+/* ── Learn from your mistakes (under the board) ── */
+.gr-practice {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+  padding: 10px 12px;
   border-radius: var(--radius-md);
+  border: 1px solid var(--color-accent-a30);
+  background: var(--color-accent-a08);
+  font-size: 13px;
+  line-height: 1.45;
 }
-
-.gr-sqeval-toggle {
-  display: inline-flex;
+.gr-practice--cta {
+  display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 10px;
+}
+.gr-practice-cta-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.gr-practice-cta-text span { color: var(--color-text-muted); font-size: 12px; }
+.gr-practice-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.gr-practice-head b { flex: 1; min-width: 0; }
+.gr-practice-count {
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-white-a07);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.gr-practice-x {
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.gr-practice-x:hover { color: var(--color-text); }
+.gr-practice-q { color: var(--color-text-muted); }
+.gr-practice-played { font-weight: 800; }
+.gr-practice-played.c-inaccuracy { color: #c99a06; }
+.gr-practice-played.c-mistake { color: #e07b22; }
+.gr-practice-played.c-blunder { color: #d63b3b; }
+.gr-practice-drop { font-size: 12px; }
+.gr-practice-msg { margin-top: 6px; font-weight: 600; }
+.gr-practice-msg .bad, .gr-practice-msg.bad { color: var(--color-danger); }
+.gr-practice-msg.good { color: var(--color-success); }
+.gr-practice-hint { margin-top: 4px; font-weight: 500; color: var(--color-text); }
+.gr-practice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.gr-practice-btn {
+  flex: 1 1 auto;
+  padding: 7px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-white-a04);
+  color: var(--color-text);
+  font-family: inherit;
   font-size: 12.5px;
   font-weight: 700;
-  color: var(--color-text);
   cursor: pointer;
-  /* No `white-space: nowrap` here any more: in the narrow right column that
-     would push the label past the panel edge rather than wrapping. */
+  white-space: nowrap;
 }
-/* Keep the checkbox from being squashed when the label does wrap. */
-.gr-sqeval-toggle input { flex: none; }
-.gr-sqeval-toggle input { cursor: pointer; }
+.gr-practice-btn:hover { border-color: var(--color-accent-a40); }
+.gr-practice-btn--go {
+  flex: 0 0 auto;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+.gr-practice-actions .gr-practice-btn--go { flex: 1 1 auto; }
+.gr-practice-btn--go:hover { filter: brightness(1.08); }
 
-.gr-sqeval-note {
-  font-size: 11.5px;
-  line-height: 1.45;
-  color: var(--color-text-faint);
-  min-width: 0;
+.gr-boardtools {
+  width: 100%;
+  display: grid;
+  /* Square evals carries an On/Off chip, so it gets a little more room. */
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.4fr);
+  gap: 6px;
+  margin: 10px 0 12px;
 }
+.gr-boardtool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-white-a07);
+  background: var(--color-white-a04);
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.gr-boardtool:hover { border-color: var(--color-accent-a30); color: var(--color-text); }
+.gr-boardtool--eval.on {
+  color: var(--color-text);
+  border-color: var(--color-accent-a40);
+  background: var(--color-accent-a08);
+}
+.gr-boardtool-state {
+  flex: none;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--color-white-a07);
+  color: var(--color-text-muted);
+}
+.gr-boardtool--eval.on .gr-boardtool-state {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+@media (max-width: 480px) {
+  .gr-boardtools { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.gr-engine-row { display: flex; }
+.gr-engine-row .gr-engine { flex: 1 1 auto; min-width: 0; }
+/* Off = header only, so drop the gap it kept above the (now absent) lines. */
+.gr-engine-row .gr-engine-off .gr-engine-head { margin-bottom: 0; }
